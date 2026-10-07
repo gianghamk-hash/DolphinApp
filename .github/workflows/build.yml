@@ -288,7 +288,7 @@ jobs:
           sed -i 's/^          //' app/src/main/java/com/dolphin/cruise/MainActivity.java
 
           cp index.html dolphin-bungalow.html dolphin-lounge.html dolphin-restaurant.html dolphin-show.html app/src/main/assets/
-
+          cp master.js app/src/main/assets/
       - name: Generate icons from uploaded PNG
         run: |
           sudo apt-get install -y imagemagick

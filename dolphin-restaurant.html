@@ -624,6 +624,40 @@ window.renderReception=function(){const d=document.getElementById('current-recep
 window.renderAdmin=function(){const bA=document.getElementById('btn-status-auto'),bO=document.getElementById('btn-status-open'),bC=document.getElementById('btn-status-closed');const base='px-2 md:px-4 py-2 rounded-lg text-[9.5px] md:text-xs ';bA.className=base+(state.serviceStatusOverride==='auto'?'font-black bg-teal-600 text-white':'font-bold text-teal-400');bO.className=base+(state.serviceStatusOverride==='open'?'font-black bg-emerald-500 text-white':'font-bold text-teal-400');bC.className=base+(state.serviceStatusOverride==='closed'?'font-black bg-red-600 text-white':'font-bold text-teal-400');document.getElementById('stat-total').innerText=state.orders.length;document.getElementById('stat-pending').innerText=state.orders.filter(o=>o.status==='pending').length;document.getElementById('stat-prep').innerText=state.orders.filter(o=>o.status==='preparing').length;document.getElementById('stat-done').innerText=state.orders.filter(o=>o.status==='completed').length;const dly=state.orders.filter(o=>o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000).length;const fa=document.getElementById('fc-all'),fp=document.getElementById('fc-pending'),fc=document.getElementById('fc-cooking'),fd=document.getElementById('fc-delayed'),fdone=document.getElementById('fc-done');if(fa)fa.textContent=state.orders.length;if(fp)fp.textContent=state.orders.filter(o=>o.status==='pending').length;if(fc)fc.textContent=state.orders.filter(o=>o.status==='preparing').length;if(fd)fd.textContent=dly;if(fdone)fdone.textContent=state.orders.filter(o=>o.status==='completed').length;const rm=(tables,id)=>{document.getElementById(id).innerHTML=tables.map(t=>{const to=state.orders.filter(o=>o.table===t&&o.status!=='completed');const hc=state.activeCalls.some(c=>c.table===t);let bg='bg-teal-900/40 border-teal-700/50 text-teal-400',badge='';if(hc){bg='bg-red-600 text-white animate-pulse border-red-500';badge='🛎️';}else if(to.some(o=>o.status==='preparing')){bg='bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black border-transparent';badge='🔥';}else if(to.some(o=>o.status==='pending')){bg='bg-gold-900/50 text-gold-400 border-gold-700/50';badge='⏳';}return`<div class="p-1.5 rounded-lg border text-center ${bg} text-[9.5px] font-bold">${t} ${badge}</div>`;}).join('');};rm(TABLES_J,'matrix-tables-j');rm(TABLES_Q,'matrix-tables-q');rm(TABLES_LOUNGE,'matrix-tables-lounge');const sv=(document.getElementById('admin-search-order')?.value||'').toLowerCase();const tb=document.getElementById('admin-orders-tbody');let f=state.orders.filter(o=>{const mi=o.items.some(i=>(i.name['VI']||i.name).toLowerCase().includes(sv));return!sv||o.table.toLowerCase().includes(sv)||(o.preparedBy||'').toLowerCase().includes(sv)||mi;});const ff=state.adminFilter||'all';if(ff==='pending')f=f.filter(o=>o.status==='pending');else if(ff==='cooking')f=f.filter(o=>o.status==='preparing');else if(ff==='done')f=f.filter(o=>o.status==='completed');else if(ff==='delayed')f=f.filter(o=>o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000);if(f.length===0){tb.innerHTML=`<tr><td colspan="6" class="text-center py-8 text-teal-500/80 font-bold text-[10.5px]">Không có đơn.</td></tr>`;}else{tb.innerHTML=f.map(o=>{const dly=o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000;let st='<span class="state-chip state-pending" style="font-size:9px;padding:2px 8px;"><span class="dot"></span>Chờ</span>';if(o.status==='preparing')st='<span class="state-chip state-cooking" style="font-size:9px;padding:2px 8px;"><span class="dot"></span>Nấu</span>';if(o.status==='completed')st='<span class="state-chip state-ready" style="font-size:9px;padding:2px 8px;">✅ Xong</span>';const its=o.items.map((i,idx)=>{const c=i.cancelledQty||(i.cancelled?i.qty:0);if(c>=i.qty)return`<span class="line-through text-teal-600 text-[9.5px]">${i.name['VI']||i.name} (x${i.qty})</span>`;return`<span class="inline-block mr-1 mb-0.5 text-[9.5px]">${i.name['VI']||i.name} <strong class="text-white tabular">x${i.qty-c}</strong> <button onclick="openCancelModal('${o.id}', ${idx}, ${i.qty}, ${c})" class="text-[7.5px] bg-red-950/80 text-red-300 px-1 py-0.5 rounded ml-0.5 border border-red-900/50">HỦY</button></span>`;}).join(' ');let pn=o.preparedBy?`Nấu: ${o.preparedBy}`:'--';if(o.completedBy)pn+=` · Giao: ${o.completedBy}`;return`<tr class="${dly?'bg-red-950/20':''} border-b border-teal-700/30 text-[9.5px]"><td class="py-2.5 px-2.5 font-mono text-teal-300 tabular">${o.time}</td><td class="py-2.5 px-2.5 font-black text-gold-400 tabular">${o.table}</td><td class="py-2.5 px-2.5 text-[9.5px]">${its}</td><td class="py-2.5 px-2.5">${st}</td><td class="py-2.5 px-2.5 text-teal-200 text-[8.5px]">${pn}</td><td class="py-2.5 px-2.5 text-right"><button onclick="openStaffNameModal('${o.id}', 'completed')" class="bg-teal-900 border border-teal-700 text-teal-200 px-2 py-1 rounded text-[8.5px] font-bold">XONG</button></td></tr>`;}).join('');}};
 
 window.renderAll=function(){['view-customer','view-staff','view-admin','view-reception','welcome-screen','main-customer-content'].forEach(id=>document.getElementById(id).classList.add('hidden'));const sp=state.orders.filter(o=>o.status==='pending').length;document.getElementById('pending-count-staff').innerText=`(${sp})`;if(state.currentRole==='customer'){document.getElementById('view-customer').classList.remove('hidden');if(!state.tableSelected)document.getElementById('welcome-screen').classList.remove('hidden');else{document.getElementById('main-customer-content').classList.remove('hidden');window.renderCustomer();}}else if(state.currentRole==='staff'){document.getElementById('view-staff').classList.remove('hidden');window.renderStaff();}else if(state.currentRole==='admin'){document.getElementById('view-admin').classList.remove('hidden');window.renderAdmin();}else if(state.currentRole==='reception'){document.getElementById('view-reception').classList.remove('hidden');window.renderReception();}};
+/* ===== MASTER HOOK ===== */
+window.__masterGetPendingRole = function(){ 
+  try { return pendingRoleRequest; } catch(e){ return null; } 
+};
+window.__masterExecuteManagerAction = async function(){
+  try {
+    if (typeof pendingManagerAction !== 'undefined' && pendingManagerData) {
+      if (pendingManagerAction === 'clear' && window.executeClearCustomerName)
+        await window.executeClearCustomerName(pendingManagerData.table);
+      else if (pendingManagerAction === 'save' && window.executeSaveCustomerName)
+        await window.executeSaveCustomerName(pendingManagerData);
+    }
+  } catch(e){ console.warn('masterHook mgr:', e); }
+};
+window.__masterExecuteClearAll = async function(){
+  try {
+    var coll = 'res_tables';
+    var snap = await getDocs(collection(db, coll));
+    await Promise.all(snap.docs.map(function(d){ return deleteDoc(d.ref); }));
+    window.showToast && window.showToast('Đã xóa toàn bộ khách!', '🧹');
+  } catch(e){ console.warn('masterHook clear:', e); }
+};
+window.__masterExecutePass = function(){
+  try {
+    if (typeof passMode !== 'undefined') {
+      if (passMode === 'delete' && window.doDelete) window.doDelete();
+      else if (passMode === 'deleteShow' && window.doDeleteShow) window.doDeleteShow();
+      else {
+        svcUnlocked = true;
+        if (window.lockUi) window.lockUi(false);
+      }
+    }
+  } catch(e){ console.warn('masterHook pass:', e); }
+};
 </script>
 </body>
 </html>

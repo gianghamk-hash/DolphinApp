@@ -36,6 +36,11 @@ jobs:
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
           mkdir -p app/src/main/assets
+          mkdir -p app/src/main/res/mipmap-mdpi
+          mkdir -p app/src/main/res/mipmap-hdpi
+          mkdir -p app/src/main/res/mipmap-xhdpi
+          mkdir -p app/src/main/res/mipmap-xxhdpi
+          mkdir -p app/src/main/res/mipmap-xxxhdpi
 
           cat > settings.gradle << 'EOF_SETTINGS'
           pluginManagement {
@@ -81,8 +86,8 @@ jobs:
                   applicationId "com.dolphin.cruise"
                   minSdk 24
                   targetSdk 34
-                  versionCode 1
-                  versionName "1.0"
+                  versionCode 3
+                  versionName "1.2"
               }
               signingConfigs {
                   release {
@@ -115,7 +120,7 @@ jobs:
               <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
               <uses-permission android:name="android.permission.VIBRATE" />
               <application
-                                    android:allowBackup="true"
+                  android:allowBackup="true"
                   android:icon="@mipmap/ic_launcher"
                   android:roundIcon="@mipmap/ic_launcher_round"
                   android:label="@string/app_name"
@@ -284,10 +289,43 @@ jobs:
 
           cp index.html dolphin-bungalow.html dolphin-lounge.html dolphin-restaurant.html dolphin-show.html app/src/main/assets/
 
-          echo "=== Project structure ==="
-          find app -type f
-          echo "=== Assets ==="
-          ls -la app/src/main/assets/
+      - name: Generate icons from uploaded PNG
+        run: |
+          sudo apt-get install -y imagemagick
+          
+          # Kiểm tra file có tồn tại không
+          if [ ! -f "icon-source.png" ]; then
+            echo "LỖI: Không tìm thấy file icon-source.png ở thư mục gốc repo!"
+            echo "Vui lòng upload file icon-source.png lên trước."
+            exit 1
+          fi
+          
+          echo "Đã tìm thấy icon-source.png"
+          identify icon-source.png
+          
+          # Đảm bảo ảnh vuông 1024x1024, thêm nền trắng nếu cần
+          convert icon-source.png -resize 1024x1024^ -gravity center -extent 1024x1024 /tmp/icon_1024.png
+          
+          # Tạo tất cả kích thước mipmap (Android icon)
+          convert /tmp/icon_1024.png -resize 48x48 app/src/main/res/mipmap-mdpi/ic_launcher.png
+          convert /tmp/icon_1024.png -resize 72x72 app/src/main/res/mipmap-hdpi/ic_launcher.png
+          convert /tmp/icon_1024.png -resize 96x96 app/src/main/res/mipmap-xhdpi/ic_launcher.png
+          convert /tmp/icon_1024.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher.png
+          convert /tmp/icon_1024.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
+          
+          # Round icon (bo tròn) - cùng kích thước
+          convert /tmp/icon_1024.png -resize 48x48 app/src/main/res/mipmap-mdpi/ic_launcher_round.png
+          convert /tmp/icon_1024.png -resize 72x72 app/src/main/res/mipmap-hdpi/ic_launcher_round.png
+          convert /tmp/icon_1024.png -resize 96x96 app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
+          convert /tmp/icon_1024.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
+          convert /tmp/icon_1024.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
+          
+          # Copy 1024 vào drawable làm icon độ nét cao cho màn hình lớn
+          mkdir -p app/src/main/res/drawable-nodpi
+          cp /tmp/icon_1024.png app/src/main/res/drawable-nodpi/ic_launcher_large.png
+          
+          echo "=== Icon files generated ==="
+          find app/src/main/res -name "*.png" -exec ls -lh {} \;
 
       - name: Generate release keystore
         run: |
@@ -300,15 +338,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: DolphinApp-APK
+          name: DolphinApp-APK-v3
           path: app/build/outputs/apk/release/*.apk
-          if-no-files-found: warn
-
-      - name: Upload build logs on failure
-        if: failure()
-        uses: actions/upload-artifact@v4
-        with:
-          name: BuildLogs
-          path: |
-            app/build/outputs/logs/
           if-no-files-found: warn

@@ -286,6 +286,43 @@
   // ============================================================
   // BADGE VƯƠNG MIỆN
   // ============================================================
+     // ============================================================
+  // NÚT FLOATING KÍCH HOẠT (cho máy CHƯA là Master)
+  // ============================================================
+  function injectActivateButton(){
+    if (isMasterDevice()) return; // Đã là Master thì không cần nút này
+    if (document.getElementById('masterActivateBtn')) return;
+    var btn = document.createElement('div');
+    btn.id = 'masterActivateBtn';
+    btn.textContent = '👑';
+    btn.title = 'Bấm để kích hoạt Máy Chủ';
+    btn.style.cssText = [
+      'position:fixed',
+      'bottom:20px',
+      'right:20px',
+      'z-index:99998',
+      'width:44px',
+      'height:44px',
+      'display:flex',
+      'align-items:center',
+      'justify-content:center',
+      'background:rgba(18,54,52,.75)',
+      'border:1px solid rgba(244,184,66,.35)',
+      'border-radius:50%',
+      'font-size:20px',
+      'cursor:pointer',
+      'opacity:.5',
+      'box-shadow:0 4px 14px rgba(0,0,0,.35)',
+      'transition:opacity .3s',
+      'user-select:none'
+    ].join(';');
+    btn.onclick = function(){ showActivateModal(); };
+    // Hover: hiện rõ
+    btn.addEventListener('mouseenter', function(){ btn.style.opacity = '1'; });
+    btn.addEventListener('mouseleave', function(){ btn.style.opacity = '.5'; });
+    document.body.appendChild(btn);
+  }
+
   function injectCrownBadge(){
     if (!isMasterDevice()) return;
     if (document.getElementById('masterCrownBadge')) return;
@@ -453,6 +490,10 @@
       }
     }, 150);
     if (isMasterDevice()) setTimeout(injectModal, 800);
+         // Nếu chưa là Master → hiện nút kích hoạt floating
+    if (!isMasterDevice()) {
+      setTimeout(injectActivateButton, 1200);
+    }
     fetchMasterCode().catch(function(e){ console.warn('[Master] fetch:', e); });
   }
 

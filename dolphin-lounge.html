@@ -2964,6 +2964,41 @@ window.renderAll = function(){
   else if(state.currentRole==='reception'){ document.getElementById('view-reception').classList.remove('hidden'); window.renderReception(); }
   else if(state.currentRole==='bungalow'){ document.getElementById('view-bungalow').classList.remove('hidden'); window.renderBungalowTrack(); }
 };
+  /* ===== MASTER HOOK ===== */
+window.__masterGetPendingRole = function(){ 
+  try { return pendingRoleRequest; } catch(e){ return null; } 
+};
+window.__masterExecuteManagerAction = async function(){
+  try {
+    if (typeof pendingManagerAction !== 'undefined' && pendingManagerData) {
+      if (pendingManagerAction === 'clear' && window.executeClearCustomerName)
+        await window.executeClearCustomerName(pendingManagerData.table);
+      else if (pendingManagerAction === 'save' && window.executeSaveCustomerName)
+        await window.executeSaveCustomerName(pendingManagerData);
+    }
+  } catch(e){ console.warn('masterHook mgr:', e); }
+};
+window.__masterExecuteClearAll = async function(){
+  try {
+    var coll = (window.location.pathname.indexOf('restaurant') >= 0) ? 'res_tables' : 'lounge_tables';
+    var snap = await getDocs(collection(db, coll));
+    await Promise.all(snap.docs.map(function(d){ return deleteDoc(d.ref); }));
+    window.showToast && window.showToast('Đã xóa toàn bộ khách!', '🧹');
+  } catch(e){ console.warn('masterHook clear:', e); }
+};
+window.__masterExecutePass = function(){
+  try {
+    if (typeof passMode !== 'undefined') {
+      if (passMode === 'delete' && window.doDelete) window.doDelete();
+      else if (passMode === 'deleteShow' && window.doDeleteShow) window.doDeleteShow();
+      else {
+        // Unlock editor
+        svcUnlocked = true;
+        if (window.lockUi) window.lockUi(false);
+      }
+    }
+  } catch(e){ console.warn('masterHook pass:', e); }
+};
 </script>
 </body>
 </html>

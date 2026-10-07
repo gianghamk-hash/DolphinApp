@@ -416,11 +416,40 @@
     }
   }
 
-  document.addEventListener('click', function(e){
+    document.addEventListener('click', function(e){
     var t = e.target;
     if (!t) return;
-    var cls = t.className || '';
-    if (typeof cls === 'string' && cls.indexOf('brand-title') >= 0) {
+
+    // Cách 1: Kiểm tra class brand-title hoặc bất kỳ element cha nào
+    var cls = (typeof t.className === 'string') ? t.className : '';
+    var inBrandTitle = cls.indexOf('brand-title') >= 0
+                    || cls.indexOf('brand-sub') >= 0
+                    || (t.closest && (
+                          t.closest('.brand-title') ||
+                          t.closest('.brand-sub') ||
+                          t.closest('#landing h1') ||
+                          t.closest('#landing header')
+                       ));
+
+    // Cách 2: Kiểm tra text content có chữ DOLPHIN
+    var txt = (t.textContent || '').toUpperCase();
+    var isDolphinText = txt.indexOf('DOLPHIN') >= 0 && txt.length < 50;
+
+    // Cách 3: Fallback — bấm 5 lần vào vùng 30% trên cùng màn hình
+    var y = (e.clientY !== undefined) ? e.clientY : ((e.touches && e.touches[0]) ? e.touches[0].clientY : 0);
+    var inTopZone = y < window.innerHeight * 0.30;
+
+    if (inBrandTitle || isDolphinText || inTopZone) {
+      handleLogoTap();
+    }
+  }, true);
+
+  // Thêm sự kiện touchstart cho mobile (nhanh và chính xác hơn)
+  document.addEventListener('touchend', function(e){
+    var t = e.target;
+    if (!t) return;
+    var cls = (typeof t.className === 'string') ? t.className : '';
+    if (cls.indexOf('brand-title') >= 0 || cls.indexOf('brand-sub') >= 0) {
       handleLogoTap();
     }
   }, true);

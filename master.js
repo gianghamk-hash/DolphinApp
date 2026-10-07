@@ -434,7 +434,15 @@
   // ============================================================
   // KHỞI TẠO
   // ============================================================
-  async function init(){
+  async function init(){    // DEBUG
+    setTimeout(function(){
+      var dbg = document.createElement('div');
+      dbg.textContent = '👑 master.js đã load';
+      dbg.style.cssText = 'position:fixed;top:70px;left:50%;transform:translateX(-50%);background:#FBD77A;color:#123634;padding:10px 20px;border-radius:20px;font-weight:900;font-size:14px;z-index:9999999;font-family:system-ui';
+      document.body.appendChild(dbg);
+      setTimeout(function(){ dbg.remove(); }, 6000);
+    }, 1500);
+    // END DEBUG
     var attempts = 0;
     var interval = setInterval(function(){
       attempts++;

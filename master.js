@@ -1,12 +1,10 @@
 /* ============================================================
-   👑 MASTER DEVICE SYSTEM v3 — Đổi mã chủ động qua Firebase
+   👑 MASTER DEVICE SYSTEM v4 — Custom modal (không dùng prompt)
    File này được load tự động bởi 5 file HTML.
-   Cung cấp: bypass PIN, đổi mã chủ, đồng bộ nhiều thiết bị.
    ============================================================ */
 (function(){
   'use strict';
 
-  // ============ CONFIG ============
   var FIREBASE_PROJECT = 'dolphin-f6d67';
   var FIREBASE_API_KEY = 'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ';
   var MASTER_KEY = 'dolphinMasterDevice';
@@ -17,27 +15,21 @@
   var masterCodeCache = null;
   var authToken = null;
 
-  // ============ LOCAL STORAGE HELPERS ============
   function isMasterDevice(){
     try { return localStorage.getItem(MASTER_KEY) === 'true'; } catch(e){ return false; }
   }
-
   function getCachedCode(){
     try { return localStorage.getItem(MASTER_CODE_CACHE); } catch(e){ return null; }
   }
-
   function cacheCode(code){
     try { localStorage.setItem(MASTER_CODE_CACHE, code); } catch(e){}
   }
-
   function verifyMasterCode(input){
     var expected = masterCodeCache || getCachedCode() || DEFAULT_MASTER_CODE;
     return input === expected;
   }
 
-  // ============ FIREBASE REST API ============
   async function signInAnonymous(){
-    // Tái sử dụng token cũ nếu còn hạn
     try {
       var saved = JSON.parse(localStorage.getItem(AUTH_TOKEN_KEY) || 'null');
       if (saved && saved.expiresAt > Date.now() && saved.idToken) {
@@ -45,22 +37,17 @@
         return saved.idToken;
       }
     } catch(e){}
-
     var res = await fetch(
       'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' + FIREBASE_API_KEY,
-      {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-        body: JSON.stringify({ returnSecureToken: true })
-      }
+      { method: 'POST', headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify({ returnSecureToken: true }) }
     );
     var data = await res.json();
     if (!data.idToken) throw new Error('Sign-in failed');
     authToken = data.idToken;
     try {
       localStorage.setItem(AUTH_TOKEN_KEY, JSON.stringify({
-        idToken: data.idToken,
-        refreshToken: data.refreshToken,
+        idToken: data.idToken, refreshToken: data.refreshToken,
         expiresAt: Date.now() + (parseInt(data.expiresIn || 3600) * 1000) - 60000
       }));
     } catch(e){}
@@ -85,7 +72,6 @@
       cacheCode(code);
       return code;
     } catch(e) {
-      // Offline: dùng cache
       var cached = getCachedCode();
       if (cached) masterCodeCache = cached;
       return masterCodeCache || DEFAULT_MASTER_CODE;
@@ -96,7 +82,6 @@
     if (!verifyMasterCode(oldCode)) return { ok: false, msg: 'Mã cũ không đúng!' };
     if (!newCode || newCode.length < 6) return { ok: false, msg: 'Mã mới phải từ 6 ký tự!' };
     if (newCode === oldCode) return { ok: false, msg: 'Mã mới phải khác mã cũ!' };
-
     try {
       var token = await signInAnonymous();
       var url = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE_PROJECT +
@@ -111,10 +96,7 @@
       };
       var res = await fetch(updateUrl, {
         method: 'PATCH',
-        headers: {
-          'Authorization': 'Bearer ' + token,
-          'Content-Type': 'application/json'
-        },
+        headers: { 'Authorization': 'Bearer ' + token, 'Content-Type': 'application/json' },
         body: JSON.stringify(body)
       });
       if (!res.ok) throw new Error('HTTP ' + res.status);
@@ -126,12 +108,9 @@
     }
   }
 
-  // ============ GHI ĐÈ CÁC HÀM VERIFY ============
   function overrideVerifyFunctions(){
-    // Chỉ ghi đè khi trang có hàm gốc
     var hooked = false;
 
-    // 1. requestPinAccess — entry point của mọi role
     if (typeof window.requestPinAccess === 'function') {
       var _origReq = window.requestPinAccess;
       window.requestPinAccess = function(role){
@@ -143,7 +122,7 @@
             } else if (typeof window.changeRole === 'function') {
               window.changeRole(role);
             }
-          } catch(e) { console.warn('[Master] requestPinAccess:', e); }
+          } catch(e) { console.warn('[Master] reqPin:', e); }
           return;
         }
         return _origReq.apply(this, arguments);
@@ -151,13 +130,11 @@
       hooked = true;
     }
 
-    // 2. verifyPin — fallback
     if (typeof window.verifyPin === 'function') {
       var _origVerify = window.verifyPin;
       window.verifyPin = function(){
         if (isMasterDevice()) {
           if (typeof window.closePinModal === 'function') window.closePinModal();
-          // Lấy pending role từ hook nếu có
           try {
             if (window.__masterGetPendingRole) {
               var r = window.__masterGetPendingRole();
@@ -178,17 +155,13 @@
       hooked = true;
     }
 
-    // 3. verifyManagerAuth — lounge, restaurant
     if (typeof window.verifyManagerAuth === 'function') {
       var _origMgr = window.verifyManagerAuth;
       window.verifyManagerAuth = async function(){
         if (isMasterDevice()) {
           if (typeof window.closeManagerAuthModal === 'function') window.closeManagerAuthModal();
-          try {
-            if (window.__masterExecuteManagerAction) {
-              await window.__masterExecuteManagerAction();
-            }
-          } catch(e) { console.warn('[Master] managerAuth:', e); }
+          try { if (window.__masterExecuteManagerAction) await window.__masterExecuteManagerAction(); }
+          catch(e) { console.warn('[Master] mgr:', e); }
           return;
         }
         return _origMgr.apply(this, arguments);
@@ -196,17 +169,13 @@
       hooked = true;
     }
 
-    // 4. verifyClearAllPin — lounge, restaurant
     if (typeof window.verifyClearAllPin === 'function') {
       var _origClear = window.verifyClearAllPin;
       window.verifyClearAllPin = async function(){
         if (isMasterDevice()) {
           if (typeof window.closeClearAllModal === 'function') window.closeClearAllModal();
-          try {
-            if (window.__masterExecuteClearAll) {
-              await window.__masterExecuteClearAll();
-            }
-          } catch(e) { console.warn('[Master] clearAll:', e); }
+          try { if (window.__masterExecuteClearAll) await window.__masterExecuteClearAll(); }
+          catch(e) { console.warn('[Master] clear:', e); }
           return;
         }
         return _origClear.apply(this, arguments);
@@ -214,17 +183,13 @@
       hooked = true;
     }
 
-    // 5. verifyPass — show
     if (typeof window.verifyPass === 'function') {
       var _origPass = window.verifyPass;
       window.verifyPass = function(){
         if (isMasterDevice()) {
           if (typeof window.closeM === 'function') window.closeM('m-pass');
-          try {
-            if (window.__masterExecutePass) {
-              window.__masterExecutePass();
-            }
-          } catch(e) { console.warn('[Master] pass:', e); }
+          try { if (window.__masterExecutePass) window.__masterExecutePass(); }
+          catch(e) { console.warn('[Master] pass:', e); }
           return;
         }
         return _origPass.apply(this, arguments);
@@ -235,11 +200,86 @@
     return hooked;
   }
 
+  // ============ UI: MODAL KÍCH HOẠT (thay prompt) ============
+  function buildModalStyles(){
+    return ''
+      + 'position:fixed;inset:0;z-index:9999998;background:rgba(10,22,40,.94);'
+      + 'backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;'
+      + 'padding:16px;font-family:system-ui,-apple-system,sans-serif;color:#fff';
+  }
+
+  function showActivateModal(){
+    var old = document.getElementById('masterActivateModal');
+    if (old) old.remove();
+
+    var modal = document.createElement('div');
+    modal.id = 'masterActivateModal';
+    modal.style.cssText = buildModalStyles();
+    modal.innerHTML = ''
+      + '<div style="background:linear-gradient(135deg,#1a4a45,#123634);border:1px solid #FBD77A;border-radius:18px;max-width:420px;width:100%;padding:26px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.7);text-align:center">'
+      +   '<div style="font-size:44px;margin-bottom:8px">👑</div>'
+      +   '<h3 style="color:#FBD77A;margin:0 0 8px;font-size:17px;text-transform:uppercase;letter-spacing:.08em;font-weight:900">Kích Hoạt Máy Chủ</h3>'
+      +   '<p style="color:#98dccb;font-size:12.5px;margin:0 0 20px;line-height:1.5">Nhập mã chủ để biến thiết bị này thành <b style="color:#FBD77A">MÁY CHỦ</b> — có toàn quyền, bỏ qua mọi PIN.</p>'
+      +   '<input id="masterActivateInput" type="text" placeholder="Nhập mã chủ..." autocomplete="off" style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(251,215,122,.5);border-radius:10px;padding:14px;color:#FBD77A;font-family:monospace;font-size:15px;box-sizing:border-box;margin-bottom:14px;outline:none;text-align:center;font-weight:700;letter-spacing:.05em">'
+      +   '<div id="masterActivateMsg" style="font-size:11.5px;margin-bottom:12px;display:none;padding:9px;border-radius:8px;text-align:center;font-weight:700"></div>'
+      +   '<div style="display:flex;gap:10px">'
+      +     '<button id="masterActivateCancel" style="flex:1;background:rgba(10,50,45,.9);border:1px solid rgba(152,220,203,.35);color:#98dccb;padding:14px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px">Hủy</button>'
+      +     '<button id="masterActivateOK" style="flex:2;background:linear-gradient(135deg,#FBD77A,#F4B842);border:none;color:#123634;padding:14px;border-radius:10px;font-weight:900;text-transform:uppercase;cursor:pointer;font-size:13px;letter-spacing:.05em">👑 Kích Hoạt</button>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(modal);
+
+    var input = document.getElementById('masterActivateInput');
+    var msg = document.getElementById('masterActivateMsg');
+    setTimeout(function(){ input.focus(); }, 200);
+
+    function submit(){
+      var code = input.value.trim();
+      if (!code) { showMsg(msg, 'error', 'Vui lòng nhập mã!'); return; }
+      if (verifyMasterCode(code)) {
+        try { localStorage.setItem(MASTER_KEY, 'true'); } catch(e){}
+        showMsg(msg, 'success', '✅ ĐÃ KÍCH HOẠT! Đang tải lại...');
+        setTimeout(function(){
+          modal.remove();
+          location.reload();
+        }, 900);
+      } else {
+        showMsg(msg, 'error', '❌ Mã chủ không đúng!');
+        input.value = '';
+        input.focus();
+      }
+    }
+
+    document.getElementById('masterActivateCancel').onclick = function(){ modal.remove(); };
+    document.getElementById('masterActivateOK').onclick = submit;
+    input.addEventListener('keydown', function(e){
+      if (e.key === 'Enter') { e.preventDefault(); submit(); }
+      if (e.key === 'Escape') { modal.remove(); }
+    });
+  }
+
+  function showMsg(el, type, text){
+    el.style.display = 'block';
+    el.textContent = text;
+    if (type === 'error') {
+      el.style.background = 'rgba(239,83,80,.15)';
+      el.style.color = '#ef5350';
+      el.style.border = '1px solid rgba(239,83,80,.4)';
+    } else if (type === 'success') {
+      el.style.background = 'rgba(16,185,129,.15)';
+      el.style.color = '#10b981';
+      el.style.border = '1px solid rgba(16,185,129,.4)';
+    } else {
+      el.style.background = 'rgba(251,215,122,.1)';
+      el.style.color = '#FBD77A';
+      el.style.border = '1px solid rgba(251,215,122,.3)';
+    }
+  }
+
   // ============ UI: BADGE VƯƠNG MIỆN ============
   function injectCrownBadge(){
     if (!isMasterDevice()) return;
     if (document.getElementById('masterCrownBadge')) return;
-
     var badge = document.createElement('div');
     badge.id = 'masterCrownBadge';
     badge.textContent = '👑';
@@ -257,7 +297,6 @@
     ].join(';');
     badge.onclick = openMasterModal;
     document.body.appendChild(badge);
-
     if (!document.getElementById('masterCrownPulseStyle')) {
       var style = document.createElement('style');
       style.id = 'masterCrownPulseStyle';
@@ -271,13 +310,7 @@
     if (document.getElementById('masterModal')) return;
     var modal = document.createElement('div');
     modal.id = 'masterModal';
-    modal.style.cssText = [
-      'position:fixed', 'inset:0', 'z-index:99998',
-      'background:rgba(10,22,40,.92)', 'backdrop-filter:blur(16px)',
-      'display:none', 'align-items:center', 'justify-content:center',
-      'padding:16px', 'font-family:system-ui,-apple-system,sans-serif',
-      'color:#fff'
-    ].join(';');
+    modal.style.cssText = buildModalStyles().replace('9999998','9999997');
     modal.innerHTML = ''
       + '<div style="background:linear-gradient(135deg,#1a4a45,#123634);border:1px solid #FBD77A;border-radius:18px;max-width:440px;width:100%;padding:24px;position:relative;box-shadow:0 20px 60px rgba(0,0,0,.7)">'
       +   '<button id="masterModalClose" style="position:absolute;top:8px;right:8px;background:transparent;border:none;color:#FBD77A;font-size:20px;cursor:pointer;padding:8px;line-height:1">✕</button>'
@@ -299,18 +332,15 @@
       +   '<button id="masterModalDeactivate" style="width:100%;margin-top:12px;background:transparent;border:1px solid rgba(239,83,80,.5);color:#ef5350;padding:11px;border-radius:10px;font-weight:700;font-size:11px;text-transform:uppercase;cursor:pointer">❌ Tắt Máy Chủ trên thiết bị này</button>'
       + '</div>';
     document.body.appendChild(modal);
-
     document.getElementById('masterModalClose').onclick = closeMasterModal;
     document.getElementById('masterModalCancel').onclick = closeMasterModal;
     document.getElementById('masterModalSave').onclick = saveNewCode;
     document.getElementById('masterModalDeactivate').onclick = deactivate;
-    modal.addEventListener('click', function(e){
-      if (e.target === modal) closeMasterModal();
-    });
+    modal.addEventListener('click', function(e){ if (e.target === modal) closeMasterModal(); });
   }
 
   function openMasterModal(){
-    if (!isMasterDevice()) { alert('Chỉ Máy Chủ mới có quyền này!'); return; }
+    if (!isMasterDevice()) { showActivateModal(); return; }
     injectModal();
     var modal = document.getElementById('masterModal');
     modal.style.display = 'flex';
@@ -320,7 +350,6 @@
     document.getElementById('masterNewCodeConfirm').value = '';
     document.getElementById('masterModalMsg').style.display = 'none';
   }
-
   function closeMasterModal(){
     var m = document.getElementById('masterModal');
     if (m) m.style.display = 'none';
@@ -330,75 +359,60 @@
     var nc = document.getElementById('masterNewCode').value.trim();
     var cc = document.getElementById('masterNewCodeConfirm').value.trim();
     var msg = document.getElementById('masterModalMsg');
-
     if (nc !== cc) { showMsg(msg, 'error', '❌ Hai mã không khớp!'); return; }
     if (nc.length < 6) { showMsg(msg, 'error', '❌ Mã phải từ 6 ký tự!'); return; }
-
     var oc = masterCodeCache || getCachedCode() || DEFAULT_MASTER_CODE;
     var staff = (typeof window.getStaffName === 'function' && window.getStaffName()) || 'Master';
-
     showMsg(msg, 'info', '⏳ Đang lưu lên Firebase...');
     var result = await updateMasterCodeInFirebase(oc, nc, staff);
-
     if (result.ok) {
       showMsg(msg, 'success', '✅ ' + result.msg);
       document.getElementById('masterCodeDisplay').textContent = nc;
       setTimeout(function(){
         closeMasterModal();
-        alert('🔑 ĐÃ ĐỔI MÃ CHỦ!\n\nMã mới: ' + nc + '\n\nMọi thiết bị khác sẽ tự động nhận mã mới qua Firebase trong vài giây.');
+        var old = document.createElement('div');
+        old.style.cssText = 'position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#123634;border:2px solid #FBD77A;color:#FBD77A;padding:20px 30px;border-radius:14px;font-weight:900;font-size:14px;z-index:99999999;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.8);font-family:system-ui';
+        old.innerHTML = '🔑 ĐÃ ĐỔI MÃ CHỦ!<br><br><span style="font-size:16px;color:#fff">Mã mới: ' + nc + '</span><br><br><span style="font-size:11px;color:#98dccb;font-weight:600">Mọi thiết bị khác sẽ nhận mã mới trong vài giây</span>';
+        document.body.appendChild(old);
+        setTimeout(function(){ old.remove(); }, 5000);
       }, 800);
     } else {
       showMsg(msg, 'error', '❌ ' + result.msg);
     }
   }
 
-  function showMsg(el, type, text){
-    el.style.display = 'block';
-    el.textContent = text;
-    if (type === 'error') {
-      el.style.background = 'rgba(239,83,80,.15)';
-      el.style.color = '#ef5350';
-      el.style.border = '1px solid rgba(239,83,80,.4)';
-    } else if (type === 'success') {
-      el.style.background = 'rgba(16,185,129,.15)';
-      el.style.color = '#10b981';
-      el.style.border = '1px solid rgba(16,185,129,.4)';
-    } else {
-      el.style.background = 'rgba(251,215,122,.1)';
-      el.style.color = '#FBD77A';
-      el.style.border = '1px solid rgba(251,215,122,.3)';
-    }
-  }
-
   function deactivate(){
-    if (!confirm('❌ TẮT MÁY CHỦ TRÊN THIẾT BỊ NÀY?\n\nSau khi tắt, máy này phải nhập PIN bình thường.\n\nMã chủ trên Firebase vẫn giữ nguyên.')) return;
-    localStorage.removeItem(MASTER_KEY);
-    alert('Đã tắt Máy Chủ trên thiết bị này.');
-    location.reload();
+    var cfm = document.createElement('div');
+    cfm.style.cssText = buildModalStyles().replace('9999998','9999999');
+    cfm.innerHTML = ''
+      + '<div style="background:linear-gradient(135deg,#4a1a1a,#3a0e0e);border:1px solid #ef5350;border-radius:18px;max-width:400px;width:100%;padding:26px;text-align:center">'
+      +   '<div style="font-size:40px;margin-bottom:10px">⚠️</div>'
+      +   '<h3 style="color:#ef5350;margin:0 0 12px;font-size:16px;font-weight:900;text-transform:uppercase">Tắt Máy Chủ?</h3>'
+      +   '<p style="color:#fecaca;font-size:12.5px;margin:0 0 20px;line-height:1.5">Sau khi tắt, máy này phải nhập PIN bình thường.<br>Mã chủ trên Firebase vẫn giữ nguyên.</p>'
+      +   '<div style="display:flex;gap:10px">'
+      +     '<button id="cfmCancel" style="flex:1;background:rgba(10,50,45,.9);border:1px solid rgba(152,220,203,.35);color:#98dccb;padding:13px;border-radius:10px;font-weight:700;cursor:pointer;font-size:12px">Hủy</button>'
+      +     '<button id="cfmOK" style="flex:1;background:#ef5350;border:none;color:#fff;padding:13px;border-radius:10px;font-weight:900;cursor:pointer;font-size:12px;text-transform:uppercase">Tắt Máy Chủ</button>'
+      +   '</div>'
+      + '</div>';
+    document.body.appendChild(cfm);
+    document.getElementById('cfmCancel').onclick = function(){ cfm.remove(); };
+    document.getElementById('cfmOK').onclick = function(){
+      try { localStorage.removeItem(MASTER_KEY); } catch(e){}
+      cfm.remove();
+      location.reload();
+    };
   }
 
-  // ============ BẮT SỰ KIỆN BẤM 5 LẦN VÀO LOGO ============
+  // ============ BẮT SỰ KIỆN BẤM 5 LẦN ============
   var tapCount = 0, tapTimer = null;
   function handleLogoTap(){
     tapCount++;
     clearTimeout(tapTimer);
     tapTimer = setTimeout(function(){ tapCount = 0; }, 1500);
-
     if (tapCount >= 5) {
       tapCount = 0;
-      if (isMasterDevice()) {
-        openMasterModal();
-      } else {
-        var code = prompt('👑 KÍCH HOẠT MÁY CHỦ\n\nNhập mã chủ:');
-        if (code === null) return;
-        if (verifyMasterCode(code)) {
-          localStorage.setItem(MASTER_KEY, 'true');
-          alert('✅ ĐÃ KÍCH HOẠT MÁY CHỦ!\n\nBấm logo DOLPHIN 5 lần để quản lý mã chủ.');
-          location.reload();
-        } else {
-          alert('❌ Mã chủ không đúng!\n\nLiên hệ quản trị viên để lấy mã.');
-        }
-      }
+      if (isMasterDevice()) openMasterModal();
+      else showActivateModal();
     }
   }
 
@@ -413,10 +427,16 @@
 
   // ============ KHỞI TẠO ============
   async function init(){
-    // Đọc mã chủ từ Firebase (hoặc cache)
-    await fetchMasterCode();
+    // DEBUG toast
+    setTimeout(function(){
+      var dbg = document.createElement('div');
+      dbg.textContent = '👑 master.js ready';
+      dbg.style.cssText = 'position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:#FBD77A;color:#123634;padding:8px 18px;border-radius:20px;font-weight:900;font-size:12px;z-index:9999999;box-shadow:0 4px 16px rgba(0,0,0,.4);font-family:system-ui';
+      document.body.appendChild(dbg);
+      setTimeout(function(){ dbg.remove(); }, 4000);
+    }, 1200);
 
-    // Đợi module script chạy xong rồi ghi đè
+    // Override hàm verify ngay lập tức
     var attempts = 0;
     var interval = setInterval(function(){
       attempts++;
@@ -427,17 +447,17 @@
       }
     }, 150);
 
-    // Pre-inject modal nếu là Master (để sẵn sàng)
-    if (isMasterDevice()) {
-      setTimeout(injectModal, 800);
-    }
+    if (isMasterDevice()) setTimeout(injectModal, 800);
+
+    // Fetch mã chủ từ Firebase SAU khi đã override (không chặn)
+    fetchMasterCode().catch(function(e){ console.warn('[Master] fetchCode:', e); });
   }
 
-  // Public API cho HTML hooks
   window.MasterSystem = {
     isMaster: isMasterDevice,
     verifyCode: verifyMasterCode,
     openModal: openMasterModal,
+    activate: showActivateModal,
     changeCode: updateMasterCodeInFirebase,
     syncFromCloud: fetchMasterCode
   };

@@ -1,0 +1,698 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin Bungalow</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif'],mono:['JetBrains Mono','monospace']},colors:{teal:{50:'#effaf6',100:'#d8f3ea',200:'#bfe9dc',300:'#98dccb',400:'#6cc7b3',500:'#4aa896',600:'#37897b',700:'#2a6e65',800:'#215852',900:'#194743',950:'#123634'},gold:{400:'#FBD77A',500:'#F4B842',600:'#D99A2B'}}}}}</script>
+<style>
+*{box-sizing:border-box}html,body{overscroll-behavior-y:contain}
+body{background-color:#6fc3bf;color:#fff;font-family:'Nunito',sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.28em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.tabular,.qty-num,.clock-time,.stat-number{font-variant-numeric:tabular-nums}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
+.table-radio:checked+label,.lang-radio:checked+label{background:linear-gradient(135deg,#FBD77A 0%,#E8A24A 100%);color:#123634;border-color:transparent;font-weight:900;transform:scale(1.04)}
+.glass-card{background:rgba(25,71,67,.82);backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.22);box-shadow:0 4px 12px rgba(0,0,0,.18),0 16px 40px -12px rgba(10,50,60,.5);position:relative}
+.glass-card.premium::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,transparent 40%,rgba(244,184,66,.2) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.6}
+.halong-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
+.halong-bg svg{width:100%;height:100%;display:block}
+.weather-overlay{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
+.cloud-layer{will-change:transform}
+.cloud-slow{animation:c1 40s ease-in-out infinite alternate}
+.cloud-medium{animation:c2 30s ease-in-out infinite alternate}
+.cloud-fast{animation:c3 20s ease-in-out infinite alternate}
+.cloud-storm{animation:c4 8s ease-in-out infinite alternate}
+@keyframes c1{0%{transform:translateX(-3%)}100%{transform:translateX(3%)}}
+@keyframes c2{0%{transform:translateX(-5%)}100%{transform:translateX(5%)}}
+@keyframes c3{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}
+@keyframes c4{0%{transform:translateX(-15%)}100%{transform:translateX(15%)}}
+@keyframes boat-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
+.ghibli-boat{animation:boat-bob 5s ease-in-out infinite;transform-origin:center}
+@keyframes birds-fly{0%{transform:translate(-200px,30px);opacity:0}10%{opacity:.75}90%{opacity:.75}100%{transform:translate(1600px,-40px);opacity:0}}
+.birds-flying{animation:birds-fly 55s linear infinite}
+@keyframes bird-flap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
+.bird-wing{transform-origin:center;animation:bird-flap .6s ease-in-out infinite}
+@keyframes sun-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+.sun-core-group{animation:sun-breathe 6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+@keyframes halo-pulse{0%,100%{opacity:.65}50%{opacity:.95}}
+.sun-halo{animation:halo-pulse 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
+.sun-element{transition:transform 3s ease-in-out,opacity 2s ease-in-out}
+.rain-drop{position:absolute;width:2px;background:linear-gradient(to bottom,transparent,rgba(180,220,255,.75));animation:rain-fall linear infinite;pointer-events:none;border-radius:50%}
+@keyframes rain-fall{0%{transform:translateY(-100vh);opacity:0}10%,90%{opacity:1}100%{transform:translateY(100vh) translateX(-50px);opacity:0}}
+.fog-overlay{position:fixed;inset:0;pointer-events:none;background:linear-gradient(to bottom,transparent,rgba(220,230,240,.6));opacity:0;transition:opacity 2s;z-index:-1}
+.fog-overlay.active{opacity:1}
+@keyframes lightning-flash{0%,92%,100%{opacity:0}93%,95%{opacity:.9}94%,96%{opacity:.3}}
+.lightning-overlay{position:fixed;inset:0;background:white;pointer-events:none;opacity:0;z-index:-1}
+.lightning-overlay.active{animation:lightning-flash 8s infinite}
+.weather-cluster{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;background:rgba(18,54,52,.82);border:1px solid rgba(244,184,66,.35);border-radius:999px;white-space:nowrap}
+.clock-display{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;color:#FBD77A;display:inline-flex;align-items:center;gap:3px}
+.weather-temp-text{font-size:11px;font-weight:800;color:#FBD77A}
+.state-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:800;text-transform:uppercase;border:1px solid;white-space:nowrap}
+.state-pending{color:#FFA726;background:rgba(255,167,38,.12);border-color:rgba(255,167,38,.4)}
+.state-cooking{color:#FF6B6B;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4)}
+.state-ready{color:#66BB6A;background:rgba(102,187,106,.12);border-color:rgba(102,187,106,.4)}
+.state-alert{color:#EF5350;background:rgba(239,83,80,.12);border-color:rgba(239,83,80,.5)}
+.state-chip .dot{width:6px;height:6px;border-radius:50%;background:currentColor;box-shadow:0 0 6px currentColor;animation:chip-dot 1.6s ease-in-out infinite}
+@keyframes chip-dot{0%,100%{opacity:1}50%{opacity:.5}}
+.icon-badge{display:inline-flex;align-items:center;justify-content:center;width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,rgba(244,184,66,.15),rgba(244,184,66,.05));border:1px solid rgba(244,184,66,.28);font-size:17px;flex-shrink:0}
+.icon-badge.sm{width:28px;height:28px;font-size:14px}
+.icon-badge.emerald{background:linear-gradient(135deg,rgba(16,185,129,.18),rgba(16,185,129,.06));border-color:rgba(16,185,129,.35)}
+.icon-badge.red{background:linear-gradient(135deg,rgba(239,83,80,.18),rgba(239,83,80,.06));border-color:rgba(239,83,80,.4)}
+.icon-badge.teal{background:linear-gradient(135deg,rgba(55,137,123,.25),rgba(55,137,123,.08));border-color:rgba(55,137,123,.4)}
+.qty-badge{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;font-size:10px;padding:1px 8px;border-radius:999px;min-width:28px;text-align:center}
+.qty-badge.cancel{background:#fecaca;color:#7f1d1d;text-decoration:line-through}
+.empty-state{padding:40px 20px;text-align:center;color:rgba(152,220,203,.65)}
+.empty-state h4{font-size:14px;font-weight:800;color:rgba(191,233,220,.85);margin-bottom:4px}
+.empty-state p{font-size:11.5px;color:rgba(152,220,203,.6)}
+.modal-backdrop{background:rgba(10,22,40,.88);backdrop-filter:blur(16px)}
+.modal-header-icon{position:relative;width:60px;height:60px;margin:0 auto 16px;display:flex;align-items:center;justify-content:center;font-size:26px;background:linear-gradient(135deg,rgba(244,184,66,.15),rgba(244,184,66,.03));border:1px solid rgba(244,184,66,.4);border-radius:50%}
+.modal-header-icon.emerald{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.04));border-color:rgba(16,185,129,.5)}
+.modal-header-icon.red{background:linear-gradient(135deg,rgba(239,83,80,.2),rgba(239,83,80,.04));border-color:rgba(239,83,80,.5)}
+.top-sim-bar{padding:8px 12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px}
+.role-buttons-wrap{display:flex;gap:4px;padding:3px;border-radius:12px;overflow-x:auto;width:100%}
+.role-btn{flex-shrink:0;padding:7px 10px;font-size:10.5px;border-radius:9px;min-height:34px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-weight:700;transition:all .15s;border:1px solid transparent}
+.role-btn.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900}
+.role-btn:not(.active){background:rgba(45,110,101,.5);color:#98dccb;border-color:rgba(55,137,123,.4)}
+.conn-status{display:flex;align-items:center;gap:6px;font-size:9.5px}
+.conn-dot{width:7px;height:7px;border-radius:50%}
+.welcome-card{padding:16px 18px!important;max-height:96vh;border-radius:22px!important}
+.welcome-tables-scroll{height:260px!important;padding:10px!important;overflow-y:auto}
+.table-choice-label{min-height:46px!important;padding:8px 6px!important;font-size:13px!important;border-radius:12px!important}
+.lang-choice-label{min-height:42px!important;padding:8px 4px!important;font-size:11.5px!important;border-radius:11px!important}
+.cust-header{padding:10px 14px!important}
+.table-display-box{padding:7px 12px!important;min-width:86px;border-radius:14px!important}
+.header-action-btn{padding:7px 9px!important;border-radius:14px!important;min-height:50px!important}
+.header-action-btn .btn-icon{font-size:17px!important}
+.header-action-btn .btn-text{font-size:8.5px!important}
+.search-input{padding:11px 14px 11px 40px!important;font-size:13.5px!important;border-radius:15px!important}
+.cat-bar{padding:9px 0!important;top:82px!important}
+.cat-btn{padding:9px 16px!important;font-size:11.5px!important;min-height:36px}
+#menu-items-grid{grid-template-columns:repeat(2,1fr)!important;gap:10px!important}
+.menu-card{padding:12px!important;border-radius:16px!important}
+.menu-card h3{font-size:13.5px!important}
+.menu-card .btn-select{padding:7px 14px!important;font-size:11px!important;border-radius:11px!important}
+.menu-card .qty-control{padding:2px!important}
+.menu-card .qty-control button{width:30px!important;height:30px!important;font-size:15px!important}
+.menu-card .qty-control .qty-num{font-size:14px!important;padding:0 10px!important}
+.floating-cart{padding:11px 14px!important}
+.floating-cart-btn{padding:12px 18px!important;font-size:13px!important;border-radius:15px!important}
+.modal-content{max-height:92vh;overflow-y:auto;border-radius:22px!important;padding:18px!important}
+.order-card{padding:14px!important;border-radius:16px!important}
+.order-card .order-btn{padding:12px!important;font-size:12px!important;border-radius:13px!important}
+.order-slot{background:linear-gradient(180deg,rgba(255,250,235,.10),rgba(255,250,235,.04));border:1px solid rgba(255,255,255,.18);border-left:3px solid #FBD77A;border-radius:12px;padding:8px 10px}
+.order-slot.done{border-left-color:#6ee7b7}
+.order-slot.prep{border-left-color:#fb7185}
+.order-slot .item-row{display:flex;align-items:center;justify-content:space-between;gap:6px;padding:4px 0;border-bottom:1px dashed rgba(255,255,255,.15)}
+.order-slot .item-row:last-child{border-bottom:none}
+.filter-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid rgba(55,137,123,.4);background:rgba(25,71,67,.55);color:#bfe9dc;cursor:pointer;white-space:nowrap}
+.filter-chip.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
+.filter-chip .chip-count{background:rgba(0,0,0,.2);padding:1px 6px;border-radius:999px;font-size:10px;font-weight:900}
+.filter-chip.active .chip-count{background:rgba(18,54,52,.3);color:#FBD77A}
+@media (min-width:768px){
+.top-sim-bar{padding:10px 22px;flex-wrap:nowrap}
+.role-buttons-wrap{width:auto;flex-wrap:wrap;justify-content:flex-end}
+.role-btn{padding:9px 15px;font-size:12.5px;min-height:42px}
+.welcome-card{padding:34px 40px!important;max-width:800px!important}
+.welcome-tables-scroll{height:400px!important;padding:18px!important}
+.table-choice-label{min-height:62px!important;font-size:16px!important}
+#menu-items-grid{grid-template-columns:repeat(3,1fr)!important;gap:18px!important}
+.menu-card{padding:22px!important;border-radius:22px!important;min-height:150px}
+.menu-card h3{font-size:18px!important}
+.menu-card .btn-select{padding:14px 28px!important;font-size:14px!important}
+.menu-card .qty-control button{width:42px!important;height:42px!important;font-size:22px!important}
+.modal-content{max-width:580px!important;padding:32px!important}
+}
+.sound-toggle{position:fixed;bottom:20px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(18,54,52,.85);border:1px solid rgba(244,184,66,.35);color:#FBD77A;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:150;box-shadow:0 4px 14px rgba(0,0,0,.35)}
+.bell-test-btn{position:fixed;bottom:20px;right:76px;width:44px;height:44px;border-radius:50%;background:rgba(18,54,52,.85);border:1px solid rgba(244,184,66,.35);color:#FBD77A;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:150}
+.bell-test-menu{position:fixed;bottom:76px;right:76px;display:flex;flex-direction:column;gap:6px;background:rgba(18,54,52,.96);border:1px solid rgba(244,184,66,.4);border-radius:14px;padding:12px 10px 10px;z-index:151}
+.bell-test-menu.hidden{display:none}
+.bell-test-menu button{padding:9px 16px;font-size:12.5px;font-weight:700;border-radius:9px;background:rgba(45,110,101,.5);color:#bfe9dc;border:1px solid rgba(55,137,123,.4);cursor:pointer;text-align:left;font-family:'Nunito',sans-serif}
+.bell-test-menu button:hover{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634}
+.bell-test-menu::before{content:'🔔 THỬ CHUÔNG';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#F4B842;color:#123634;padding:2px 10px;border-radius:999px;font-size:9px;font-weight:900;white-space:nowrap}
+.transfer-target-btn{transition:all .2s ease}
+.transfer-target-btn.selected{border-color:#34d399!important;background:rgba(6,78,59,.65)!important;box-shadow:0 0 0 2px rgba(52,211,153,.35),0 8px 24px -8px rgba(16,185,129,.5)!important;transform:translateY(-1px)}
+</style>
+</head>
+<body class="min-h-screen flex flex-col selection:bg-gold-500 selection:text-black relative z-0">
+
+<div class="halong-bg" aria-hidden="true">
+<svg id="halongSvg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1"><stop id="skyStop1" offset="0" stop-color="#5fb4d9"/><stop id="skyStop2" offset="0.55" stop-color="#a9e0e6"/><stop id="skyStop3" offset="1" stop-color="#fbf0cf"/></linearGradient>
+<linearGradient id="seaGradient" x1="0" y1="0" x2="0" y2="1"><stop id="seaStop1" offset="0" stop-color="#3fb8b0"/><stop id="seaStop2" offset="0.5" stop-color="#2a9d9b"/><stop id="seaStop3" offset="1" stop-color="#1c7c82"/></linearGradient>
+<linearGradient id="farMountainGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb9c9"/><stop offset="1" stop-color="#b9d9de"/></linearGradient>
+<linearGradient id="midMountainGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8f86"/><stop offset="1" stop-color="#6fb0a4"/></linearGradient>
+<linearGradient id="nearMountainGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f7461"/><stop offset="1" stop-color="#3f8c73"/></linearGradient>
+<radialGradient id="sunHalo" cx="0.5" cy="0.5" r="0.5"><stop id="haloStop" offset="0" stop-color="#fff6c8" stop-opacity="0.9"/><stop offset="0.5" stop-color="#ffd070" stop-opacity="0.5"/><stop offset="1" stop-color="#ffb040" stop-opacity="0"/></radialGradient>
+<radialGradient id="sunDiscGrad" cx="0.5" cy="0.5" r="0.5"><stop id="discStop1" offset="0" stop-color="#ffffff" stop-opacity="1"/><stop id="discStop2" offset="0.7" stop-color="#fff6c8" stop-opacity="0.98"/><stop id="discStop3" offset="1" stop-color="#ffe090" stop-opacity="0.9"/></radialGradient>
+<filter id="cloudBlur"><feGaussianBlur stdDeviation="1.5"/></filter>
+</defs>
+<rect id="skyRect" width="1440" height="900" fill="url(#skyGradient)"/>
+<g id="sunGroup" class="sun-element" style="transform-origin:720px 220px;">
+<circle id="sunMidHalo" cx="720" cy="220" r="260" fill="url(#sunHalo)" opacity="0.9"/>
+<circle id="sunGlowRing" cx="720" cy="220" r="165" fill="url(#sunHalo)" opacity="1"/>
+<g class="sun-core-group">
+<circle id="sunDisc" cx="720" cy="220" r="115" fill="url(#sunDiscGrad)"/>
+<circle id="sunInnerCore" cx="720" cy="220" r="78" fill="#ffffff" opacity="0.95"/>
+</g>
+</g>
+<g id="cloudsFar">
+<g class="cloud-layer cloud-slow" fill="#fff" opacity="0.72" filter="url(#cloudBlur)"><ellipse cx="200" cy="100" rx="110" ry="32"/><ellipse cx="290" cy="80" rx="78" ry="36"/><ellipse cx="130" cy="88" rx="65" ry="26"/></g>
+<g class="cloud-layer cloud-slow" fill="#fff" opacity="0.68" filter="url(#cloudBlur)"><ellipse cx="1180" cy="70" rx="120" ry="30"/><ellipse cx="1290" cy="55" rx="85" ry="35"/></g>
+</g>
+<g id="darkClouds" opacity="0" style="transition:opacity 2s;"><ellipse cx="300" cy="80" rx="180" ry="55" fill="#4a5a6a"/><ellipse cx="700" cy="90" rx="200" ry="60" fill="#4a5a6a"/><ellipse cx="1100" cy="100" rx="220" ry="65" fill="#4a5a6a"/></g>
+<g class="birds-flying" opacity="0.7"><g><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a" class="bird-wing"/></g><g transform="translate(20,8)"><path d="M0 0 Q4 -3 8 0 Q4 -1 0 0" fill="#2a4a5a" class="bird-wing"/></g><g transform="translate(35,2)"><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a" class="bird-wing"/></g></g>
+<g id="mountainsFar"><path d="M0 420 L60 350 Q80 330 105 350 L150 390 L210 310 Q232 285 258 312 L300 380 L380 350 Q400 335 420 355 L470 400 L560 320 Q585 298 610 325 L660 390 L760 330 Q785 310 808 332 L860 390 L950 335 Q975 315 1000 338 L1060 400 L1130 340 Q1155 320 1180 345 L1200 365 L1200 470 L0 470Z" fill="url(#farMountainGradient)"/></g>
+<g id="mountainsMid"><path d="M0 480 L40 410 Q70 365 110 390 L150 430 L200 370 Q235 330 270 370 L320 450 L420 380 Q460 345 495 385 L540 450 L700 390 Q740 355 775 395 L820 460 L980 385 Q1020 355 1055 390 L1110 450 L1200 400 L1200 540 L0 540Z" fill="url(#midMountainGradient)"/></g>
+<rect id="seaRect" y="480" width="1440" height="420" fill="url(#seaGradient)"/>
+<g id="wavesGroup" stroke="#d9f6f2" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"><path d="M80 550 q25 -10 50 0 t50 0"/><path d="M360 600 q28 -11 56 0 t56 0"/><path d="M640 560 q25 -10 50 0 t50 0"/><path d="M900 620 q30 -11 60 0 t60 0"/><path d="M520 700 q32 -12 64 0 t64 0"/><path d="M1020 690 q28 -11 56 0 t56 0"/></g>
+<g id="islandsNear">
+<path d="M-30 900 L-30 620 Q10 570 70 600 L120 550 Q160 520 205 560 L250 620 Q290 645 320 690 L330 900Z" fill="url(#nearMountainGradient)"/>
+<path d="M520 900 L540 740 Q575 680 625 695 L660 660 Q705 630 745 675 L790 740 L810 900Z" fill="#3a8570"/>
+<path d="M1100 900 L1120 720 Q1160 660 1210 680 L1250 630 Q1295 610 1335 650 L1370 900Z" fill="url(#nearMountainGradient)"/>
+</g>
+<g id="boat1" class="ghibli-boat" transform="translate(950 540)"><path d="M0 45 L130 45 L115 62 L15 62Z" fill="#f6efe0"/><path d="M38 38 L50 -5 L64 38Z" fill="#e8a24a"/><path d="M62 38 L78 -12 L94 38Z" fill="#d98a35"/></g>
+<g id="dolphins"></g>
+</svg>
+</div>
+
+<div id="rainContainer" class="weather-overlay"></div>
+<div id="fogOverlay" class="fog-overlay"></div>
+<div id="lightningOverlay" class="lightning-overlay"></div>
+<button id="soundToggle" class="sound-toggle" onclick="toggleAmbientSound()" title="Âm thanh">🔇</button>
+<button id="bellTestBtn" class="bell-test-btn" onclick="toggleBellTest()" title="Thử chuông">🔔</button>
+<div id="bellTestMenu" class="bell-test-menu hidden">
+<button onclick="testBell('newOrder')">🔔 Order mới</button>
+<button onclick="testBell('call')">🛎️ Khách gọi</button>
+<button onclick="testBell('delayed')">⚠️ Quá 5 phút</button>
+<button onclick="testBell('complete')">✅ Hoàn thành</button>
+</div>
+
+<div class="bg-teal-950/85 backdrop-blur-md border-b border-teal-800/50 z-50 relative top-sim-bar">
+<div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
+<div class="conn-status"><span id="cloud-status-dot" class="conn-dot bg-gold-500 animate-pulse"></span><span id="cloud-status-text" class="font-bold text-teal-200 uppercase">KẾT NỐI...</span></div>
+<div id="weather-badge" class="weather-cluster hidden">
+<span id="weather-icon" class="weather-icon-wrap">☀️</span>
+<span class="clock-display"><span id="clock-time">--:--</span><span id="clock-seconds">:--</span></span>
+<span id="weather-text" class="weather-temp-text">--°C</span>
+</div>
+</div>
+<div class="role-buttons-wrap bg-teal-900/50 border border-teal-800/50">
+<button onclick="changeRole('customer')" id="btn-role-customer" class="role-btn active"><span>🏝️</span> Khách</button>
+<button onclick="requestPinAccess('reception')" id="btn-role-reception" class="role-btn"><span>💁</span> Lễ Tân</button>
+<button onclick="requestPinAccess('bungalow')" id="btn-role-bungalow" class="role-btn"><span>🌴</span> QL Bungalow<span id="pending-count-bungalow" class="text-gold-400 font-black ml-1">(0)</span></button>
+<button onclick="requestPinAccess('admin')" id="btn-role-admin" class="role-btn"><span>⚙️</span> Quản Trị</button>
+</div>
+</div>
+
+<div id="toast" class="fixed top-24 right-3 z-[200] transform translate-y-2 opacity-0 pointer-events-none transition-all duration-300 max-w-[85vw] md:max-w-md">
+<div class="px-5 py-3 rounded-2xl glass-card premium border border-gold-500/50 text-gold-200 text-[12px] md:text-[14px] font-bold flex items-center gap-3 shadow-2xl">
+<span id="toast-icon">✨</span><span id="toast-msg">Thông báo</span>
+</div>
+</div>
+
+<main class="flex-1 flex flex-col relative">
+<!-- ===== CUSTOMER VIEW ===== -->
+<div id="view-customer" class="flex-1 flex flex-col hidden relative">
+<div id="welcome-screen" class="absolute inset-0 bg-teal-950/92 z-[100] flex flex-col items-center justify-center p-2 md:p-6 backdrop-blur-lg overflow-y-auto">
+<div class="glass-card premium welcome-card border border-teal-700/40 w-full max-w-lg shadow-2xl relative my-auto">
+<div class="text-center mb-5 md:mb-7 relative z-10">
+<h1 class="brand-title mb-1 text-2xl md:text-4xl">DOLPHIN</h1>
+<p class="text-[9px] md:text-[12px] text-teal-300 uppercase font-bold tracking-[0.35em] mb-3 md:mb-5">Bungalow</p>
+<h2 id="welcome-title" class="font-black text-white uppercase tracking-wider text-[12.5px] md:text-base">VUI LÒNG CHỌN PHÒNG<br><span class="text-[10.5px] md:text-sm text-gold-400 font-medium normal-case mt-1.5 block opacity-90">Chọn số phòng để bắt đầu gọi món</span></h2>
+</div>
+<div class="mb-4 md:mb-7 relative z-10">
+<span id="welcome-step-1" class="block text-[10.5px] md:text-xs font-black text-teal-400 mb-2.5 md:mb-3.5 uppercase tracking-wider flex items-center gap-2"><span class="w-3 md:w-5 h-px bg-teal-600"></span>1. CHỌN NGÔN NGỮ:<span class="flex-1 h-px bg-teal-800/50"></span></span>
+<div class="grid grid-cols-3 sm:grid-cols-4 gap-1.5 md:gap-3">
+<div><input type="radio" name="lang" id="w-lang-VI" value="VI" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-VI" class="lang-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer">🇻🇳 VI</label></div>
+<div><input type="radio" name="lang" id="w-lang-EN" value="EN" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-EN" class="lang-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer">🇺🇸 EN</label></div>
+<div><input type="radio" name="lang" id="w-lang-ZH" value="ZH" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-ZH" class="lang-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer">🇨🇳 中文</label></div>
+<div><input type="radio" name="lang" id="w-lang-KO" value="KO" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-KO" class="lang-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer">🇰🇷 KO</label></div>
+<div><input type="radio" name="lang" id="w-lang-JA" value="JA" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-JA" class="lang-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer">🇯🇵 JA</label></div>
+<div><input type="radio" name="lang" id="w-lang-TH" value="TH" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-TH" class="lang-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer">🇹🇭 TH</label></div>
+<div><input type="radio" name="lang" id="w-lang-RU" value="RU" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-RU" class="lang-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer">🇷🇺 RU</label></div>
+</div>
+</div>
+<div class="mb-5 md:mb-8 relative z-10">
+<span id="welcome-step-2" class="block text-[10.5px] md:text-xs font-black text-teal-400 mb-2.5 md:mb-3.5 uppercase tracking-wider flex items-center gap-2"><span class="w-3 md:w-5 h-px bg-teal-600"></span>2. CHỌN PHÒNG:<span class="flex-1 h-px bg-teal-800/50"></span></span>
+<div class="welcome-tables-scroll bg-teal-950/30 rounded-xl md:rounded-2xl border border-teal-800/30">
+<div class="space-y-3 md:space-y-5">
+<div><span class="text-[9.5px] md:text-[11px] text-emerald-400 font-bold block mb-2 uppercase">TẦNG 2:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-2.5" id="welcome-tables-b2"></div></div>
+<div><span class="text-[9.5px] md:text-[11px] text-emerald-400 font-bold block mb-2 uppercase">TẦNG 3:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-2.5" id="welcome-tables-b3"></div></div>
+<div><span class="text-[9.5px] md:text-[11px] text-emerald-400 font-bold block mb-2 uppercase">TẦNG 4:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-2.5" id="welcome-tables-b4"></div></div>
+</div>
+</div>
+</div>
+<button id="btn-start-order" disabled onclick="completeOnboarding()" class="w-full bg-gradient-to-r from-teal-800 to-teal-900 text-teal-500 py-3.5 md:py-4 rounded-xl font-black uppercase tracking-widest cursor-not-allowed transition-all text-[12.5px] md:text-sm border border-teal-800/50">BẮT ĐẦU GỌI MÓN ➔</button>
+</div>
+</div>
+<div id="main-customer-content" class="flex-1 flex flex-col hidden">
+<div class="glass-card premium border-b border-teal-700/30 sticky top-0 z-30 shadow-lg cust-header">
+<div class="max-w-7xl mx-auto flex justify-between items-center gap-2 md:gap-4">
+<div class="text-left flex-shrink-0"><h1 class="brand-title text-lg md:text-2xl leading-none">DOLPHIN</h1><p class="text-[7.5px] md:text-[10px] text-teal-300 uppercase font-bold tracking-[0.25em] mt-0.5">Bungalow</p></div>
+<div class="flex items-center gap-1.5 md:gap-3">
+<div class="bg-teal-950/60 border border-teal-700/50 table-display-box text-center"><span id="lbl-table" class="block text-[7.5px] md:text-[9.5px] text-teal-400 font-black uppercase mb-0.5">PHÒNG</span><span id="current-table-display" class="text-[13px] md:text-base font-black text-gold-400 leading-tight">--</span></div>
+<button onclick="resetCustomerTable()" class="bg-red-900/40 text-red-400 border border-red-500/30 header-action-btn"><span class="btn-icon">🔄</span><br><span id="lbl-btn-change-table" class="btn-text uppercase font-black">ĐỔI</span></button>
+<button onclick="callStaffOnline()" class="bg-teal-900/40 text-gold-400 border border-gold-500/30 header-action-btn"><span class="btn-icon">🛎️</span><br><span id="lbl-btn-call" class="btn-text uppercase font-black">GỌI</span></button>
+</div>
+</div>
+</div>
+<div id="out-of-hours-banner" class="bg-red-950/80 backdrop-blur border-b border-red-500/40 p-2.5 text-center hidden"><span class="text-sm md:text-lg mr-1.5">⏰</span><span id="lbl-out-of-hours" class="text-[10.5px] md:text-xs font-black text-red-200 uppercase">Ngoài giờ phục vụ.</span></div>
+<div class="max-w-7xl mx-auto w-full px-3 md:px-8 mt-3.5 md:mt-6">
+<div class="relative"><span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-teal-500 text-base pointer-events-none">🔍</span><input type="text" id="search-input" oninput="handleSearch(this.value)" placeholder="Tìm kiếm món..." class="search-input w-full glass-card border border-teal-700/50 text-white placeholder-teal-600 focus:outline-none focus:border-gold-500"></div>
+</div>
+<div class="max-w-7xl mx-auto w-full px-3 md:px-8 mt-3.5 hidden" id="customer-active-orders-section">
+<div class="glass-card premium border border-gold-500/30 p-3.5 md:p-5 rounded-2xl">
+<h4 class="text-[10.5px] md:text-xs font-black text-gold-400 uppercase tracking-widest mb-3 flex items-center gap-2"><span>⏳</span><span id="lbl-active-orders-title">ĐƠN ĐANG CHẾ BIẾN</span></h4>
+<div class="space-y-2 md:space-y-3" id="customer-active-orders-list"></div>
+</div>
+</div>
+<div class="sticky cat-bar bg-teal-950/85 backdrop-blur-xl z-20 border-b border-teal-800/40 mt-3.5">
+<div class="max-w-7xl mx-auto px-3 md:px-8 flex gap-2 overflow-x-auto" id="categories-container"></div>
+</div>
+<div class="max-w-7xl mx-auto w-full px-3 md:px-8 mt-3.5 md:mt-6 flex-1 pb-32">
+<div class="grid grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-2.5 md:gap-4" id="menu-items-grid"></div>
+</div>
+<div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-teal-950/92 backdrop-blur-xl border-t border-gold-500/30 floating-cart z-40 hidden">
+<div class="max-w-3xl mx-auto flex items-center justify-between gap-2">
+<div class="flex-1"><span id="lbl-cart-title" class="text-[9.5px] md:text-xs font-black text-teal-400 uppercase block">GIỎ HÀNG</span><span id="cart-summary-text" class="text-[12.5px] md:text-base text-gold-400 font-bold block">0 món</span></div>
+<button onclick="toggleCartModal(true)" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black floating-cart-btn uppercase"><span id="lbl-view-cart">Xem</span> ➔</button>
+</div>
+</div>
+</div>
+</div>
+
+<!-- ===== BUNGALOW MANAGER VIEW ===== -->
+<div id="view-bungalow" class="flex-1 max-w-7xl mx-auto w-full p-3 md:p-6 space-y-4 hidden relative z-10">
+<div class="text-center py-1.5 border-b border-teal-800/50 mb-3"><h1 class="brand-title text-xl md:text-3xl">DOLPHIN</h1><p class="text-[9.5px] md:text-xs text-teal-400 uppercase font-bold tracking-widest mt-0.5">Quản Lý Bungalow</p></div>
+<div class="flex justify-between items-center glass-card premium p-3.5 md:p-5 rounded-2xl border border-teal-700/50 gap-2">
+<div class="flex items-center gap-2.5"><span class="icon-badge emerald">🌴</span><div><h2 class="font-black text-white text-[11.5px] md:text-base uppercase">TIẾP NHẬN ORDER</h2><p class="text-teal-400 text-[9.5px] md:text-xs">NV: <strong id="current-bungalow-staff-name-display" class="text-gold-400 font-black">Chưa đặt</strong></p></div></div>
+<button onclick="promptStaffName()" class="bg-teal-800 text-white px-3.5 py-2.5 rounded-xl text-[10.5px] md:text-sm font-bold border border-teal-600">Đổi tên</button>
+</div>
+<div id="bungalow-calls-section" class="bg-red-950/60 border border-red-500/50 p-3.5 md:p-5 rounded-2xl hidden">
+<h3 class="text-[10.5px] md:text-xs font-black text-red-400 uppercase mb-3 flex items-center gap-2"><span class="icon-badge red sm">🚨</span> GỌI PHỤC VỤ</h3>
+<div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5" id="bungalow-calls-grid"></div>
+</div>
+<div class="border border-gold-500/40 p-3.5 md:p-5 rounded-2xl glass-card premium">
+<h3 class="font-black text-gold-400 text-[11.5px] md:text-sm uppercase mb-3 flex items-center gap-2"><span class="icon-badge">📋</span> YÊU CẦU TỪ BUNGALOW</h3>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3 mb-3" id="bungalow-my-orders-grid"></div>
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3" id="bungalow-other-orders-grid"></div>
+</div>
+<div id="bungalow-alert-banner" class="hidden bg-red-950/80 border border-red-500/50 p-3.5 md:p-5 rounded-2xl shadow-lg flex items-center gap-3 animate-pulse"><span class="text-2xl md:text-4xl">⏰</span><div><h3 class="text-red-400 font-black text-[12px] md:text-base uppercase">16:20 - Rà soát Bungalow!</h3><p class="text-[10px] md:text-sm text-red-200 mt-0.5">Các phòng đỏ chưa gọi đủ tiêu chuẩn. Nhắc khách trước 17:30.</p></div></div>
+<div class="glass-card premium p-4 md:p-6 rounded-2xl border border-emerald-500/30">
+<h3 class="font-black text-emerald-400 text-[11.5px] md:text-sm uppercase border-b border-teal-700/50 pb-2.5 mb-4 flex flex-wrap justify-between gap-2"><span class="flex items-center gap-2"><span class="icon-badge emerald">👁️</span> BẢN ĐỒ TIẾN ĐỘ</span><span class="text-[9.5px] md:text-xs text-teal-300 bg-teal-900/50 px-2 py-1 rounded">Max: 1 Khoai - 1 Quả - 5 Nước</span></h3>
+<span class="text-[10px] md:text-xs text-emerald-300 font-black block mb-2 uppercase bg-teal-900/50 inline-block px-2 py-0.5 rounded">TẦNG 2</span>
+<div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-4 mb-4" id="bungalow-track-b2"></div>
+<span class="text-[10px] md:text-xs text-emerald-300 font-black block mb-2 uppercase bg-teal-900/50 inline-block px-2 py-0.5 rounded">TẦNG 3</span>
+<div class="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-4 mb-4" id="bungalow-track-b3"></div>
+<span class="text-[10px] md:text-xs text-emerald-300 font-black block mb-2 uppercase bg-teal-900/50 inline-block px-2 py-0.5 rounded">TẦNG 4</span>
+<div class="grid grid-cols-2 lg:grid-cols-3 gap-2.5 md:gap-4" id="bungalow-track-b4"></div>
+</div>
+</div>
+
+<!-- ===== RECEPTION VIEW ===== -->
+<div id="view-reception" class="flex-1 max-w-7xl mx-auto w-full p-3 md:p-6 space-y-4 hidden relative z-10">
+<div class="text-center py-1.5 border-b border-teal-800/50 mb-3"><h1 class="brand-title text-xl md:text-3xl">DOLPHIN</h1><p class="text-[9.5px] md:text-xs text-teal-400 uppercase font-bold tracking-widest mt-0.5">Lễ Tân Bungalow</p></div>
+<div class="glass-card premium p-3.5 md:p-5 rounded-2xl border border-gold-500/40 flex justify-between items-center gap-2">
+<div class="flex items-center gap-2.5"><span class="icon-badge">👤</span><div><span class="text-[9.5px] text-teal-400 block">Nhân viên trực</span><strong id="current-reception-staff-name-display" class="text-gold-400 font-black text-[12px] md:text-base">Chưa đặt</strong></div></div>
+<button onclick="promptStaffName()" class="bg-teal-800 text-white px-3.5 py-2.5 rounded-xl text-[10.5px] md:text-sm font-bold border border-teal-600">Đổi tên</button>
+</div>
+<div class="glass-card premium p-3.5 md:p-6 rounded-2xl border border-teal-700/50">
+<h3 class="font-black text-white text-[11.5px] md:text-sm uppercase border-b border-teal-700/50 pb-3 mb-4">👥 SƠ ĐỒ GẮN TÊN PHÒNG</h3>
+<span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 2:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-3 mb-4" id="reception-tables-b2"></div>
+<span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 3:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-3 mb-4" id="reception-tables-b3"></div>
+<span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 4:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-3" id="reception-tables-b4"></div>
+</div>
+</div>
+
+<!-- ===== ADMIN VIEW (MỚI) ===== -->
+<div id="view-admin" class="flex-1 max-w-7xl mx-auto w-full p-3 md:p-6 space-y-4 hidden relative z-10">
+<div class="text-center py-1.5 border-b border-teal-800/50 mb-3 flex flex-wrap justify-between items-center gap-2">
+<div class="text-left"><h1 class="brand-title text-xl md:text-3xl">DOLPHIN</h1><p class="text-[9.5px] md:text-xs text-teal-400 uppercase font-bold tracking-widest mt-0.5">Quản Trị Bungalow</p></div>
+<button onclick="confirmResetSystem()" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[10.5px] md:text-sm font-black px-3.5 py-2.5 rounded-xl flex items-center gap-1.5">📦 Đóng ca</button>
+</div>
+
+<!-- STATS -->
+<div class="grid grid-cols-2 md:grid-cols-4 gap-2.5">
+<div class="glass-card premium p-3.5 md:p-5 rounded-2xl border border-teal-700/50"><span class="text-[9.5px] md:text-xs text-teal-300 font-bold uppercase block mb-1">TỔNG</span><span id="stat-total" class="stat-number text-2xl md:text-4xl font-black text-white">0</span></div>
+<div class="glass-card premium p-3.5 md:p-5 rounded-2xl border border-teal-700/50"><span class="text-[9.5px] md:text-xs text-gold-500 font-bold uppercase block mb-1">CHỜ</span><span id="stat-pending" class="stat-number text-2xl md:text-4xl font-black text-gold-400">0</span></div>
+<div class="glass-card premium p-3.5 md:p-5 rounded-2xl border border-teal-700/50"><span class="text-[9.5px] md:text-xs text-red-400 font-bold uppercase block mb-1">NẤU</span><span id="stat-prep" class="stat-number text-2xl md:text-4xl font-black text-red-500">0</span></div>
+<div class="glass-card premium p-3.5 md:p-5 rounded-2xl border border-teal-700/50"><span class="text-[9.5px] md:text-xs text-emerald-400 font-bold uppercase block mb-1">XONG</span><span id="stat-done" class="stat-number text-2xl md:text-4xl font-black text-emerald-400">0</span></div>
+</div>
+
+<!-- GIÁM SÁT PHÒNG -->
+<div class="glass-card premium p-3.5 md:p-6 rounded-2xl border border-teal-700/50">
+<h3 class="font-black text-white text-[10.5px] md:text-sm uppercase border-b border-teal-700/50 pb-3 mb-4 flex justify-between items-center flex-wrap gap-2"><span class="flex items-center gap-2"><span class="icon-badge emerald">🗺️</span> GIÁM SÁT PHÒNG</span><div class="flex gap-2 text-[8.5px] md:text-[10.5px] font-bold bg-teal-900/50 px-2 py-1 rounded"><span class="text-teal-400">Trống</span><span class="text-gold-500">Chờ</span><span class="text-red-400">Nấu</span></div></h3>
+<span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 2:</span><div class="grid grid-cols-4 md:grid-cols-6 gap-1 md:gap-2 mb-2.5" id="matrix-tables-b2"></div>
+<span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 3:</span><div class="grid grid-cols-4 md:grid-cols-6 gap-1 md:gap-2 mb-2.5" id="matrix-tables-b3"></div>
+<span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 4:</span><div class="grid grid-cols-4 md:grid-cols-6 gap-1 md:gap-2" id="matrix-tables-b4"></div>
+</div>
+
+<!-- QUẢN LÝ ĐƠN HÀNG -->
+<div class="glass-card premium p-3.5 md:p-6 rounded-2xl border border-teal-700/50 overflow-hidden">
+<div class="flex flex-col md:flex-row gap-2.5 md:gap-4 md:items-center border-b border-teal-700/50 pb-3 mb-3">
+<h3 class="font-black text-white text-[11.5px] md:text-sm uppercase flex items-center gap-2"><span class="icon-badge teal">📋</span> QUẢN LÝ ĐƠN HÀNG</h3>
+<div class="relative flex-1"><span class="absolute inset-y-0 left-0 pl-3 flex items-center text-teal-500 text-[13px] pointer-events-none">🔍</span><input type="text" id="admin-search-order" oninput="renderAdmin()" placeholder="Tìm phòng, món, tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 rounded-xl pl-9 pr-3 py-2.5 text-[11.5px] md:text-sm text-white focus:outline-none focus:border-gold-500"></div>
+</div>
+<div id="admin-quick-filters" class="flex gap-2 overflow-x-auto pb-3 mb-3">
+<button class="filter-chip active" data-filter="all" onclick="setAdminFilter('all')">📊 Tất cả <span class="chip-count" id="fc-all">0</span></button>
+<button class="filter-chip" data-filter="pending" onclick="setAdminFilter('pending')">⏳ Chờ <span class="chip-count" id="fc-pending">0</span></button>
+<button class="filter-chip" data-filter="cooking" onclick="setAdminFilter('cooking')">🔥 Đang nấu <span class="chip-count" id="fc-cooking">0</span></button>
+<button class="filter-chip" data-filter="delayed" onclick="setAdminFilter('delayed')">⚠️ Quá 5p <span class="chip-count" id="fc-delayed">0</span></button>
+<button class="filter-chip" data-filter="done" onclick="setAdminFilter('done')">✅ Xong <span class="chip-count" id="fc-done">0</span></button>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-[10.5px] md:text-xs min-w-[700px]">
+<thead><tr class="border-b border-teal-700/50 text-teal-300 text-[9.5px] md:text-[10.5px] uppercase font-black bg-teal-900/40"><th class="py-2.5 md:py-4 px-2.5 md:px-4">TG</th><th class="py-2.5 md:py-4 px-2.5 md:px-4">Phòng</th><th class="py-2.5 md:py-4 px-2.5 md:px-4">Món</th><th class="py-2.5 md:py-4 px-2.5 md:px-4">TT</th><th class="py-2.5 md:py-4 px-2.5 md:px-4">NV</th><th class="py-2.5 md:py-4 px-2.5 md:px-4 text-right">Thao tác</th></tr></thead>
+<tbody id="admin-orders-tbody" class="divide-y divide-teal-800/30 text-teal-50"></tbody>
+</table>
+</div>
+</div>
+
+<!-- LỊCH SỬ LƯU TRỮ -->
+<div class="glass-card premium p-3.5 md:p-6 rounded-2xl border border-gold-500/40">
+<div class="flex flex-col md:flex-row gap-2.5 md:gap-4 md:items-center border-b border-teal-700/50 pb-3 md:pb-5 mb-3 md:mb-5">
+<h3 class="font-black text-gold-400 text-[11.5px] md:text-sm uppercase flex items-center gap-2"><span class="icon-badge">☁️</span> LỊCH SỬ LƯU TRỮ</h3>
+<div class="grid grid-cols-2 md:flex gap-1.5 md:gap-3 flex-1">
+<input type="text" id="history-search-table" placeholder="Phòng (201...)" class="bg-teal-950/80 border border-teal-600/50 rounded-xl px-2.5 md:px-4 py-2.5 md:py-3 text-[10.5px] md:text-xs text-white focus:outline-none focus:border-gold-500 md:w-32">
+<input type="date" id="history-search-date" class="bg-teal-950/80 border border-teal-600/50 rounded-xl px-2.5 md:px-4 py-2.5 md:py-3 text-[10.5px] md:text-xs text-white focus:outline-none focus:border-gold-500 [color-scheme:dark]">
+<select id="history-search-shift" class="bg-teal-950/80 border border-teal-600/50 rounded-xl px-2.5 md:px-4 py-2.5 md:py-3 text-[10.5px] md:text-xs text-white focus:outline-none focus:border-gold-500"><option value="Tối">Ca Tối</option><option value="Trưa">Ca Trưa</option><option value="Cả Ngày">Cả Ngày</option></select>
+<button onclick="fetchHistoryData()" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black py-2.5 md:py-3 px-3 md:px-6 rounded-xl text-[10.5px] md:text-xs font-black uppercase col-span-2 md:col-span-1">🔍 Tra cứu</button>
+</div>
+</div>
+<div class="overflow-x-auto">
+<table class="w-full text-left text-[10.5px] md:text-xs min-w-[600px]">
+<thead><tr class="border-b border-teal-700/50 text-gold-400/80 text-[9.5px] md:text-[10.5px] uppercase font-black bg-teal-900/40"><th class="py-2.5 md:py-4 px-2.5 md:px-4">TG</th><th class="py-2.5 md:py-4 px-2.5 md:px-4">Phòng</th><th class="py-2.5 md:py-4 px-2.5 md:px-4">Chi tiết</th><th class="py-2.5 md:py-4 px-2.5 md:px-4">NV</th></tr></thead>
+<tbody id="history-orders-tbody" class="divide-y divide-teal-800/30 text-teal-50"><tr><td colspan="4" class="text-center py-8 md:py-12 text-teal-500/80 font-bold text-[10.5px] md:text-xs">Chọn ngày và ca để tra cứu.</td></tr></tbody>
+</table>
+</div>
+</div>
+</div>
+</main>
+
+<!-- Modals -->
+<div id="modal-pin" class="fixed inset-0 z-[150] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+<div class="glass-card premium border border-teal-700/50 w-full max-w-xs md:max-w-md modal-content text-center relative">
+<button onclick="closePinModal()" class="absolute top-2 right-2 text-teal-400 p-2 text-base">✕</button>
+<div class="modal-header-icon">🔒</div>
+<h3 id="pin-modal-title" class="font-black text-white text-[14px] md:text-lg uppercase mb-1.5">Khu Vực Nội Bộ</h3>
+<p class="text-[10.5px] md:text-sm text-teal-300 mb-4">Nhập mã PIN.</p>
+<input type="password" id="pin-input" placeholder="••••" class="w-full bg-teal-950/80 border border-teal-600/50 p-3.5 text-center text-2xl tracking-[0.3em] rounded-xl focus:outline-none focus:border-gold-500 text-white mb-3 tabular" inputmode="numeric">
+<p id="pin-error" class="text-red-400 text-[11px] font-bold mb-3 hidden bg-red-950/50 py-1.5 rounded-lg">PIN không đúng!</p>
+<button onclick="verifyPin()" class="w-full bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3.5 rounded-xl text-[12.5px] md:text-sm font-black uppercase">Xác Nhận</button>
+</div>
+</div>
+<div id="modal-customer-name" class="fixed inset-0 z-[160] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+<div class="glass-card premium border border-teal-700/50 w-full max-w-sm md:max-w-lg modal-content relative">
+<h3 class="font-black text-gold-400 text-[14px] md:text-lg uppercase mb-2 flex items-center gap-2"><span class="icon-badge emerald">🌴</span> Thông Tin Khách Bungalow</h3>
+<p class="text-[10.5px] md:text-sm text-teal-300 mb-3.5">Cập nhật: <strong id="lbl-reception-table" class="text-white text-[11.5px] bg-teal-800 px-2 py-0.5 rounded tabular">P.--</strong></p>
+<input type="hidden" id="reception-target-table">
+<div class="mb-3.5"><label class="block text-[9.5px] font-bold text-teal-400 uppercase mb-1.5">Tên Khách Hàng</label><input type="text" id="customer-name-input" placeholder="VD: John Doe..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-[13px] rounded-lg focus:outline-none focus:border-gold-500 text-white"></div>
+<div class="bg-teal-900/40 p-3.5 border border-emerald-500/30 rounded-lg mb-3.5">
+<label class="block text-[9.5px] font-bold text-gold-400 uppercase mb-1.5">1. Số bàn NH (Bắt buộc)</label>
+<input type="text" id="bungalow-restaurant-table-input" placeholder="VD: J1..." class="w-full bg-teal-950/80 border border-teal-600/50 p-2.5 text-[12.5px] rounded-lg text-white uppercase mb-3">
+<label class="block text-[9.5px] font-bold text-emerald-400 uppercase mb-1.5">2. Thanh toán</label>
+<select id="bungalow-payment-method" class="w-full bg-teal-950/80 border border-teal-600/50 p-2.5 text-[12.5px] rounded-lg text-white mb-3"><option value="">-- Chọn --</option><option value="Tiền mặt">💵 Tiền mặt</option><option value="Chuyển khoản">🏦 CK</option><option value="Visa">💳 Visa</option><option value="TA chưa thanh toán">⏳ TA chưa TT</option><option value="TA đã thanh toán">✅ TA đã TT</option></select>
+<label class="block text-[9.5px] font-bold text-emerald-400 uppercase mb-1.5">3. NV mở phòng</label>
+<input type="text" id="bungalow-staff-opener" placeholder="Tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 p-2.5 text-[12.5px] rounded-lg text-white">
+</div>
+<div class="flex gap-2.5 mb-2.5">
+<button onclick="closeCustomerNameModal()" class="w-1/3 bg-teal-900 border border-teal-700 text-teal-300 py-3 rounded-xl text-[11.5px] font-bold">Hủy</button>
+<button onclick="saveCustomerName()" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3 rounded-xl text-[11.5px] font-black uppercase">LƯU</button>
+</div>
+<button onclick="clearCustomerName()" class="w-full border border-red-500/40 text-red-400 py-2.5 rounded-xl text-[10.5px] font-bold uppercase">✕ Xóa trống phòng này</button>
+</div>
+</div>
+<div id="modal-cancel-qty" class="fixed inset-0 z-[170] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+<div class="bg-red-950/90 border border-red-700/50 w-full max-w-xs md:max-w-md modal-content text-center">
+<div class="modal-header-icon red">✕</div>
+<h3 class="font-black text-red-400 text-[14px] md:text-lg uppercase mb-2">Hủy Món</h3>
+<p class="text-[10.5px] text-red-200 mb-4">Chọn số lượng muốn hủy.</p>
+<div class="flex items-center justify-center gap-3 mb-4 bg-red-900/30 p-3.5 rounded-xl"><span class="text-[11.5px] text-red-300 font-bold uppercase">SL:</span><input type="number" id="cancel-qty-input" min="1" value="1" class="tabular w-20 bg-red-950 border border-red-500/50 p-2.5 text-center text-xl font-black rounded-xl text-white"></div>
+<div class="flex gap-2.5"><button onclick="closeCancelModal()" class="w-1/3 bg-red-900/50 text-red-300 py-3 rounded-xl text-[11.5px] font-bold">Quay lại</button><button onclick="confirmCancelItem()" class="flex-1 bg-red-600 text-white py-3 rounded-xl text-[11.5px] font-black uppercase">HỦY</button></div>
+</div>
+</div>
+<div id="modal-staff-name" class="fixed inset-0 z-[150] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+<div class="glass-card premium border border-teal-700/50 w-full max-w-xs md:max-w-md modal-content relative text-center">
+<div class="modal-header-icon">👤</div>
+<h3 id="staff-name-modal-title" class="font-black text-gold-400 text-[14px] md:text-lg uppercase mb-2.5">XÁC NHẬN NHÂN SỰ</h3>
+<p id="staff-name-modal-subtitle" class="text-[10.5px] text-teal-300 mb-4">Vui lòng nhập tên của bạn.</p>
+<input type="text" id="staff-name-input" placeholder="Tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3.5 text-[13.5px] rounded-xl text-white mb-4 text-center font-bold">
+<div class="flex gap-2.5"><button id="staff-name-cancel-btn" onclick="closeStaffNameModal()" class="w-1/3 bg-teal-900 border border-teal-700 text-teal-300 py-3 rounded-xl text-[11.5px] font-bold">Hủy</button><button onclick="confirmStaffAction()" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3 rounded-xl text-[11.5px] font-black uppercase"><span id="staff-name-confirm-label">GHI NHẬN</span></button></div>
+</div>
+</div>
+<div id="modal-reset" class="fixed inset-0 z-[250] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+<div class="glass-card premium border border-gold-500/50 w-full max-w-sm md:max-w-lg modal-content text-center relative">
+<div class="modal-header-icon">📦</div>
+<h3 class="font-black text-white text-[15px] md:text-2xl uppercase mb-2.5">ĐÓNG CA BUNGALOW</h3>
+<p class="text-[10.5px] md:text-sm text-teal-200 mb-4">Hệ thống sẽ lưu trữ toàn bộ đơn hàng vào lịch sử và dọn dẹp phòng để đón ca mới.</p>
+<div class="flex gap-2.5 mb-4"><input type="date" id="archive-date" class="flex-1 bg-teal-950/80 border border-teal-600/50 p-2.5 text-[11.5px] rounded-xl text-white [color-scheme:dark]"><select id="archive-shift" class="w-1/3 bg-teal-950/80 border border-teal-600/50 p-2.5 text-[11.5px] rounded-xl text-white"><option value="Tối">Tối</option><option value="Trưa">Trưa</option><option value="Cả Ngày">Cả Ngày</option></select></div>
+<div class="flex gap-2.5"><button onclick="closeResetModal()" class="flex-1 bg-teal-900 border border-teal-700 text-teal-300 py-3 rounded-xl text-[11.5px] font-bold">Hủy</button><button onclick="executeSystemReset()" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3 rounded-xl text-[11.5px] font-black uppercase">XÁC NHẬN</button></div>
+</div>
+</div>
+<div id="modal-cart" class="fixed inset-0 z-[120] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+<div class="glass-card premium border border-teal-700/50 w-full max-w-md md:max-w-2xl modal-content relative">
+<div class="flex justify-between items-center border-b border-teal-700/50 pb-3 mb-3.5"><h3 id="lbl-confirm-title" class="font-black text-gold-400 text-[14px] md:text-lg uppercase flex items-center gap-2"><span class="icon-badge">📝</span> XÁC NHẬN</h3><button onclick="toggleCartModal(false)" class="text-teal-400 text-lg bg-teal-900/50 rounded-lg w-8 h-8 flex items-center justify-center">✕</button></div>
+<div class="space-y-2 max-h-[35vh] overflow-y-auto pr-1" id="cart-items-list"></div>
+<div class="pt-3.5 border-t border-teal-700/50 mt-3.5"><label id="lbl-notes" class="block text-[9.5px] font-black text-teal-300 mb-2 uppercase">Ghi chú:</label><textarea rows="2" id="customer-notes-input" class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-[12.5px] rounded-xl text-white"></textarea></div>
+<div class="mt-3.5 flex gap-2.5"><button onclick="clearCart()" id="lbl-btn-clear" class="w-1/3 bg-teal-900 border border-teal-700 text-teal-300 py-3.5 rounded-xl text-[11.5px] font-bold uppercase">XÓA</button><button onclick="sendOrderOnline(this)" id="lbl-btn-send" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3.5 rounded-xl text-[12.5px] font-black uppercase flex items-center justify-center gap-2"><span id="send-btn-spinner" class="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin hidden"></span><span id="send-btn-label">GỬI</span></button></div>
+</div>
+</div>
+<div id="modal-transfer-bungalow" class="fixed inset-0 z-[180] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
+<div class="glass-card premium border border-emerald-500/50 w-full max-w-sm md:max-w-lg modal-content relative">
+<button onclick="closeTransferBungalowModal()" class="absolute top-2 right-2 text-teal-400 p-2 text-base z-10">✕</button>
+<div class="modal-header-icon emerald">🔄</div>
+<h3 class="font-black text-emerald-400 text-[14px] md:text-lg uppercase mb-2 text-center">CHUYỂN BUNGALOW</h3>
+<p class="text-[10.5px] md:text-sm text-teal-300 mb-3 text-center">Từ: <strong id="transfer-source-label" class="text-gold-400 bg-teal-950/80 px-2 py-0.5 rounded tabular">P.--</strong><br><span class="text-[9.5px] md:text-[11px] text-teal-400 italic">Toàn bộ thông tin (tên khách, bàn NH, thanh toán, NV mở, lịch sử order) sẽ được chuyển sang phòng mới.</span></p>
+<div class="mb-3">
+<label class="block text-[9.5px] md:text-xs font-bold text-emerald-400 uppercase mb-2">🎯 Chọn Bungalow trống để chuyển đến:</label>
+<div id="transfer-target-list" class="max-h-[42vh] md:max-h-[48vh] overflow-y-auto space-y-2 p-2 bg-teal-950/50 rounded-xl border border-teal-800/50">
+<div class="text-center py-6 text-teal-400 font-bold text-[11px]">Đang tải...</div>
+</div>
+</div>
+<div class="flex gap-2.5">
+<button onclick="closeTransferBungalowModal()" class="w-1/3 bg-teal-900 border border-teal-700 text-teal-300 py-3 rounded-xl text-[11.5px] md:text-sm font-bold">Hủy</button>
+<button onclick="confirmTransferBungalow()" id="btn-confirm-transfer" disabled class="flex-1 bg-gradient-to-r from-emerald-400 to-emerald-500 text-black py-3 rounded-xl text-[11.5px] md:text-sm font-black uppercase opacity-50 cursor-not-allowed">✅ XÁC NHẬN CHUYỂN</button>
+</div>
+</div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const state={currentRole:'customer',tableSelected:false,selectedTable:null,currentLanguage:'VI',activeCategory:'all',searchTerm:'',cart:{},orders:[],activeCalls:[],tableAssignments:{},isSending:false,isCallingStaff:false,pendingAction:null,alertedDelayedOrders:new Set(),lastTransactionWarning:null,adminFilter:'all',weather:{temp:25,effect:'clear',icon:'☀️'},soundEnabled:false};
+window.state=state;
+
+// Collections riêng cho Bungalow
+const COL_ORDERS='bun_orders',COL_CALLS='bun_calls',COL_TABLES='bun_tables',COL_HISTORY='bun_history';
+
+window.getStaffName=()=>localStorage.getItem('dolphinStaffName')||'';
+window.hasStaffName=()=>!!window.getStaffName().trim();
+window.setStaffName=(n)=>localStorage.setItem('dolphinStaffName',n.trim());
+
+window.getVNTime=function(){const now=new Date();const f=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric'});const p=f.formatToParts(now);const o={};for(const x of p)if(x.type!=='literal')o[x.type]=parseInt(x.value,10);const ts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:true,hour:'2-digit',minute:'2-digit'}).format(now);return{hours:o.hour===24?0:o.hour,minutes:o.minute,seconds:o.second,timeString:ts,fullYear:o.year,month:o.month-1,dateNum:o.day}};
+
+window.updateClock=function(){try{const now=new Date();const s=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(now);const p=s.split(':');const c=document.getElementById('clock-time');const sc=document.getElementById('clock-seconds');if(c)c.textContent=p[0]+':'+p[1];if(sc)sc.textContent=':'+p[2];}catch(e){}};
+setInterval(window.updateClock,1000);
+
+const HALONG_LAT=20.9101,HALONG_LON=107.1839;
+const WM={0:{d:'Trời quang',i:'☀️',e:'clear'},1:{d:'Ít mây',i:'🌤️',e:'partly'},2:{d:'Có mây',i:'⛅',e:'partly'},3:{d:'Âm u',i:'☁️',e:'overcast'},45:{d:'Sương mù',i:'🌫️',e:'fog'},51:{d:'Mưa phùn',i:'🌦️',e:'drizzle'},61:{d:'Mưa nhẹ',i:'🌧️',e:'rain'},63:{d:'Mưa',i:'🌧️',e:'rain'},65:{d:'Mưa to',i:'🌧️',e:'rain-heavy'},80:{d:'Mưa rào',i:'🌦️',e:'rain'},95:{d:'Giông bão',i:'⛈️',e:'storm'}};
+window.fetchWeather=async function(){try{const url=`https://api.open-meteo.com/v1/forecast?latitude=${HALONG_LAT}&longitude=${HALONG_LON}&current=temperature_2m,weather_code,wind_speed_10m,cloud_cover,is_day&timezone=Asia%2FHo_Chi_Minh`;const r=await fetch(url);if(!r.ok)throw 0;const d=await r.json();const c=d.current;const m=WM[c.weather_code]||{d:'?',i:'🌡️',e:'clear'};state.weather={temp:Math.round(c.temperature_2m),effect:m.e,icon:m.i,isDay:c.is_day===1,cloudCover:c.cloud_cover,windSpeed:c.wind_speed_10m};updateWeatherBadge();applyWeatherEffects();updateSunPosition();}catch(e){updateWeatherBadge();}};
+function updateWeatherBadge(){const b=document.getElementById('weather-badge');if(!b)return;b.classList.remove('hidden');document.getElementById('weather-icon').innerText=state.weather.icon;document.getElementById('weather-text').innerText=`${state.weather.temp}°C`;}
+
+window.updateSunPosition=function(){const vn=window.getVNTime();const h=vn.hours+vn.minutes/60;const sg=document.getElementById('sunGroup');if(!sg)return;const isDay=h>=5.5&&h<=18.5;const isStorm=state.weather.effect==='storm';let op=1;if(!isDay)op=0;else if(isStorm)op=0.15;sg.setAttribute('opacity',String(op));if(isDay){const dg=(h-5.5)/13;const x=250+dg*940;const y=520-Math.sin(Math.PI*dg)*320;sg.setAttribute('transform',`translate(${x-720},${y-220})`);}else sg.setAttribute('transform','translate(-600,-200)');const sky=isDay?['#5fb4d9','#a9e0e6','#fbf0cf']:['#0a1628','#1a2a4a','#2d3e5c'];const sea=isDay?['#3fb8b0','#2a9d9b','#1c7c82']:['#0a2838','#0d3540','#0a2028'];if(isStorm){sky[0]='#1a2535';sky[1]='#2a3a4a';sky[2]='#3a4a5a';}const s1=document.getElementById('skyStop1'),s2=document.getElementById('skyStop2'),s3=document.getElementById('skyStop3');if(s1)s1.setAttribute('stop-color',sky[0]);if(s2)s2.setAttribute('stop-color',sky[1]);if(s3)s3.setAttribute('stop-color',sky[2]);const a1=document.getElementById('seaStop1'),a2=document.getElementById('seaStop2'),a3=document.getElementById('seaStop3');if(a1)a1.setAttribute('stop-color',sea[0]);if(a2)a2.setAttribute('stop-color',sea[1]);if(a3)a3.setAttribute('stop-color',sea[2]);};
+
+window.applyWeatherEffects=function(){const e=state.weather.effect;const w=state.weather.windSpeed||0;document.querySelectorAll('.cloud-layer').forEach(el=>el.classList.remove('cloud-slow','cloud-medium','cloud-fast','cloud-storm'));let c='cloud-medium';if(e==='storm'||w>40)c='cloud-storm';else if(w>25)c='cloud-fast';else if(w>15)c='cloud-medium';else c='cloud-slow';document.querySelectorAll('.cloud-layer').forEach(el=>el.classList.add(c));const dc=document.getElementById('darkClouds');if(dc){if(e==='storm')dc.setAttribute('opacity','0.9');else if(e==='rain-heavy')dc.setAttribute('opacity','0.7');else if(e==='rain'||e==='overcast')dc.setAttribute('opacity','0.4');else dc.setAttribute('opacity','0');}document.body.classList.toggle('storm',e==='storm');const rc=document.getElementById('rainContainer');if(rc)rc.innerHTML='';let n=0,dur=0.6,hh='20px',op=1;if(e==='drizzle'){n=40;dur=1.4;hh='14px';op=0.6;}else if(e==='rain'){n=100;dur=0.9;hh='24px';op=0.85;}else if(e==='rain-heavy'){n=200;dur=0.55;hh='32px';}else if(e==='storm'){n=300;dur=0.45;hh='36px';}if(n>0&&rc){const f=document.createDocumentFragment();for(let i=0;i<n;i++){const d=document.createElement('div');d.className='rain-drop';d.style.left=Math.random()*110-5+'%';d.style.height=hh;d.style.animationDuration=(dur+Math.random()*0.4)+'s';d.style.animationDelay=(-Math.random()*2)+'s';d.style.opacity=op*(0.5+Math.random()*0.5);f.appendChild(d);}rc.appendChild(f);}document.getElementById('fogOverlay')?.classList.toggle('active',e==='fog');document.getElementById('lightningOverlay')?.classList.toggle('active',e==='storm');};
+
+const TABLES_B2=['201','202','203','204'];
+const TABLES_B3=['301','302','303','304','305','306'];
+const TABLES_B4=['401','402','403','404','405','406'];
+const ALL_BUNGALOW=[...TABLES_B2,...TABLES_B3,...TABLES_B4];
+const ADMIN_PIN='8888',RECEPTION_PIN='1111';
+
+window.isBungalow=()=>true;
+window.getOrderingTimeState=function(){const vn=window.getVNTime();const t=vn.hours*60+vn.minutes;const bs=9*60,be=17*60+30;if(t>=bs&&t<=be)return'allowed';if(t<bs)return'before';return'after';};
+window.isOrderingAllowed=()=>window.getOrderingTimeState()==='allowed';
+
+const WELCOME_TRANS={VI:{title:'CHỌN PHÒNG BUNGALOW',sub:'Chọn số phòng để bắt đầu gọi món',step1:'1. CHỌN NGÔN NGỮ:',step2:'2. CHỌN PHÒNG:',btn:'BẮT ĐẦU GỌI MÓN ➔'},EN:{title:'SELECT BUNGALOW ROOM',sub:'Select room to start',step1:'1. LANGUAGE:',step2:'2. ROOM:',btn:'START ORDERING ➔'},ZH:{title:'选择房间',sub:'选择房间号',step1:'1. 语言:',step2:'2. 房间:',btn:'开始点餐 ➔'},KO:{title:'룸 선택',sub:'룸 번호 선택',step1:'1. 언어:',step2:'2. 룸:',btn:'주문 시작 ➔'},JA:{title:'ルーム選択',sub:'ルーム番号',step1:'1. 言語:',step2:'2. ルーム:',btn:'注文開始 ➔'},TH:{title:'เลือกห้อง',sub:'เลือกหมายเลข',step1:'1. ภาษา:',step2:'2. ห้อง:',btn:'เริ่มสั่ง ➔'},RU:{title:'ВЫБЕРИТЕ НОМЕР',sub:'Выберите номер',step1:'1. ЯЗЫК:',step2:'2. НОМЕР:',btn:'НАЧАТЬ ➔'}};
+const TR={VI:{changeTableBtn:'ĐỔI',tableLabel:'PHÒNG',callStaffBtn:'GỌI',historyBtn:'XEM',searchPlaceholder:'Tìm kiếm món...',allCategory:'Tất cả',notesPlaceholder:'Ghi chú gửi đầu bếp...',clearCartBtn:'XÓA',sendToKitchenBtn:'GỬI',activeOrdersTitle:'ĐƠN ĐANG CHẾ BIẾN',cartTitle:'GIỎ HÀNG',cartSummary:'{count} món',confirmOrderTitle:'XÁC NHẬN',sending:'Đang gửi...',toastOrderSuccess:'Đã gửi tới Bếp!',toastOutHours:'Ngoài giờ (09:00-17:30)!',toastSetupSuccess:'Khởi tạo phòng thành công!',toastCallStaff:'Đã gọi lúc {time}!',toastStaffComing:'Đang tới...',toastLimitFries:'Hết khoai!',toastLimitFruits:'Hết trái!',toastLimitDrinks:'Đủ 5 nước!',outBefore:'Chưa tới giờ (09:00).',outAfter:'Ngoài giờ (09:00-17:30).'},EN:{changeTableBtn:'CHANGE',tableLabel:'ROOM',callStaffBtn:'CALL',historyBtn:'VIEW',searchPlaceholder:'Search...',allCategory:'All',notesPlaceholder:'Notes...',clearCartBtn:'CLEAR',sendToKitchenBtn:'SEND',activeOrdersTitle:'PREPARING',cartTitle:'CART',cartSummary:'{count} items',confirmOrderTitle:'CONFIRM',sending:'Sending...',toastOrderSuccess:'Sent!',toastOutHours:'Outside hours!',toastSetupSuccess:'Setup done!',toastCallStaff:'Called at {time}!',toastStaffComing:'Staff coming...',toastLimitFries:'No fries!',toastLimitFruits:'No fruits!',toastLimitDrinks:'Max 5 drinks!',outBefore:'Not started.',outAfter:'Outside hours.'},ZH:{changeTableBtn:'换房',tableLabel:'房间',callStaffBtn:'呼叫',historyBtn:'查看',searchPlaceholder:'搜寻...',allCategory:'全部',notesPlaceholder:'备注...',clearCartBtn:'清空',sendToKitchenBtn:'发送',activeOrdersTitle:'制作中',cartTitle:'购物车',cartSummary:'{count}份',confirmOrderTitle:'确认',sending:'发送中...',toastOrderSuccess:'已发！',toastOutHours:'不在服务时间！',toastSetupSuccess:'成功！',toastCallStaff:'{time}呼叫！',toastStaffComing:'马上到...',toastLimitFries:'薯条上限！',toastLimitFruits:'水果上限！',toastLimitDrinks:'最多5杯！',outBefore:'未开始.',outAfter:'非服务时间.'},KO:{changeTableBtn:'변경',tableLabel:'룸',callStaffBtn:'호출',historyBtn:'보기',searchPlaceholder:'검색...',allCategory:'전체',notesPlaceholder:'요청사항...',clearCartBtn:'비우기',sendToKitchenBtn:'전송',activeOrdersTitle:'준비중',cartTitle:'장바구니',cartSummary:'{count}개',confirmOrderTitle:'확인',sending:'전송중...',toastOrderSuccess:'주방 전송!',toastOutHours:'시간 외!',toastSetupSuccess:'완료!',toastCallStaff:'{time} 호출!',toastStaffComing:'이동중...',toastLimitFries:'한도!',toastLimitFruits:'한도!',toastLimitDrinks:'최대 5!',outBefore:'시작 전.',outAfter:'시간 외.'},JA:{changeTableBtn:'変更',tableLabel:'ルーム',callStaffBtn:'呼出',historyBtn:'表示',searchPlaceholder:'検索...',allCategory:'すべて',notesPlaceholder:'要望...',clearCartBtn:'空',sendToKitchenBtn:'送信',activeOrdersTitle:'調理中',cartTitle:'カート',cartSummary:'{count}品',confirmOrderTitle:'確認',sending:'送信中...',toastOrderSuccess:'厨房送信！',toastOutHours:'営業時間外！',toastSetupSuccess:'完了！',toastCallStaff:'{time}呼出！',toastStaffComing:'スタッフ向かってます...',toastLimitFries:'上限！',toastLimitFruits:'上限！',toastLimitDrinks:'最大5！',outBefore:'前です.',outAfter:'時間外.'},TH:{changeTableBtn:'เปลี่ยน',tableLabel:'ห้อง',callStaffBtn:'เรียก',historyBtn:'ดู',searchPlaceholder:'ค้นหา...',allCategory:'ทุก',notesPlaceholder:'หมายเหตุ...',clearCartBtn:'ล้าง',sendToKitchenBtn:'ส่ง',activeOrdersTitle:'กำลังปรุง',cartTitle:'ตะกร้า',cartSummary:'{count} รายการ',confirmOrderTitle:'ยืนยัน',sending:'ส่ง...',toastOrderSuccess:'ส่งครัวแล้ว!',toastOutHours:'นอกเวลา!',toastSetupSuccess:'สำเร็จ!',toastCallStaff:'เรียก {time}!',toastStaffComing:'กำลังไป...',toastLimitFries:'จำกัด!',toastLimitFruits:'จำกัด!',toastLimitDrinks:'สูงสุด 5!',outBefore:'ยังไม่เริ่ม.',outAfter:'นอกเวลา.'},RU:{changeTableBtn:'СМЕНИТЬ',tableLabel:'НОМЕР',callStaffBtn:'ЗВАТЬ',historyBtn:'СМОТР',searchPlaceholder:'Поиск...',allCategory:'Все',notesPlaceholder:'Заметки...',clearCartBtn:'ОЧИСТ',sendToKitchenBtn:'ОТПР',activeOrdersTitle:'ГОТОВЯТСЯ',cartTitle:'КОРЗИНА',cartSummary:'{count} готово',confirmOrderTitle:'ПОДТВ',sending:'Отпр...',toastOrderSuccess:'Отправлено!',toastOutHours:'Вне времени!',toastSetupSuccess:'Готово!',toastCallStaff:'Вызов {time}!',toastStaffComing:'Идет...',toastLimitFries:'Лимит!',toastLimitFruits:'Лимит!',toastLimitDrinks:'Макс 5!',outBefore:'До 09:00.',outAfter:'Закрыто.'}};
+const BTN_TRANS={VI:{select:'Chọn',outOfTime:'HẾT GIỜ',outOfTurns:'HẾT LƯỢT',limit5:'GIỚI HẠN 5'},EN:{select:'Select',outOfTime:'CLOSED',outOfTurns:'MAX',limit5:'MAX 5'},ZH:{select:'选择',outOfTime:'超时',outOfTurns:'用尽',limit5:'限5'},KO:{select:'선택',outOfTime:'시간초과',outOfTurns:'한도',limit5:'최대5'},JA:{select:'選択',outOfTime:'時間外',outOfTurns:'上限',limit5:'最大5'},TH:{select:'เลือก',outOfTime:'หมดเวลา',outOfTurns:'หมด',limit5:'สูงสุด5'},RU:{select:'Выбрать',outOfTime:'ЗАКРЫТО',outOfTurns:'ИЗРАСХ',limit5:'МАКС 5'}};
+
+const CATS=[{id:'b-cat-food',name:{VI:'Đồ Ăn',EN:'Food',ZH:'食物',KO:'음식',JA:'食べ物',TH:'อาหาร',RU:'Еда'}},{id:'b-cat-drink',name:{VI:'Đồ Uống',EN:'Drinks',ZH:'饮料',KO:'음료',JA:'飲み物',TH:'เครื่องดื่ม',RU:'Напитки'}}];
+const MENU=[{id:'b-m-1',category_id:'b-cat-food',name:{VI:'Khoai Tây Chiên',EN:'French Fries',ZH:'炸薯条',KO:'감자튀김',JA:'フライドポテト',TH:'เฟรนช์ฟรายส์',RU:'Картофель фри'}},{id:'b-m-2',category_id:'b-cat-food',name:{VI:'Hoa Quả Tươi',EN:'Fresh Fruits',ZH:'时令水果',KO:'계절 과일',JA:'季節のフルーツ',TH:'ผลไม้สด',RU:'Свежие фрукты'}},{id:'b-m-3',category_id:'b-cat-drink',name:{VI:'Coca Cola',EN:'Coca Cola',ZH:'可口可乐',KO:'코카콜라',JA:'コカ・コーラ',TH:'โคคาโคล่า',RU:'Кока-Кола'}},{id:'b-m-4',category_id:'b-cat-drink',name:{VI:'Fanta',EN:'Fanta',ZH:'芬达',KO:'환타',JA:'ファンタ',TH:'แฟนต้า',RU:'Фанта'}},{id:'b-m-5',category_id:'b-cat-drink',name:{VI:'Sprite',EN:'Sprite',ZH:'雪碧',KO:'스프라이트',JA:'スプライト',TH:'สไปรท์',RU:'Спрайт'}},{id:'b-m-6',category_id:'b-cat-drink',name:{VI:'Diet Coca',EN:'Diet Coke',ZH:'健怡可乐',KO:'다이어트 콜라',JA:'ダイエットコーラ',TH:'ไดเอทโค้ก',RU:'Диетическая Кола'}},{id:'b-m-7',category_id:'b-cat-drink',name:{VI:'Soda',EN:'Soda',ZH:'苏打水',KO:'소다',JA:'ソーダ',TH:'โซดา',RU:'Содовая'}},{id:'b-m-8',category_id:'b-cat-drink',name:{VI:'Nước Lọc I-on',EN:'Ion Water',ZH:'离子水',KO:'이온 워터',JA:'イオン水',TH:'น้ำไอออน',RU:'Ионная вода'}},{id:'b-m-9',category_id:'b-cat-drink',name:{VI:'Bia Hạ Long',EN:'Halong Beer',ZH:'下龙啤酒',KO:'하롱 맥주',JA:'ハロンビール',TH:'เบียร์ฮาลอง',RU:'Пиво Halong'}},{id:'b-m-10',category_id:'b-cat-drink',name:{VI:'Tonic',EN:'Tonic',ZH:'汤力水',KO:'토닉',JA:'トニック',TH:'โทนิค',RU:'Тоник'}}];
+
+const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
+let db,auth;
+
+window.showToast=function(msg,icon){const t=document.getElementById('toast');if(!t)return;document.getElementById('toast-msg').innerText=msg;document.getElementById('toast-icon').innerText=icon||'✨';t.classList.remove('opacity-0','pointer-events-none','translate-y-2');setTimeout(()=>t.classList.add('opacity-0','pointer-events-none','translate-y-2'),2500);};
+
+window.startCloudConnection=function(){try{const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);signInAnonymously(auth).then(()=>{const d=document.getElementById('cloud-status-dot');const t=document.getElementById('cloud-status-text');if(d)d.className='conn-dot bg-emerald-500';if(t){t.innerText='ONLINE';t.className='font-bold text-emerald-400 uppercase';}setupListeners();}).catch(()=>{const t=document.getElementById('cloud-status-text');if(t){t.innerText='OFFLINE';t.className='font-bold text-red-400 uppercase';}});}catch(e){}};
+
+let isInitOrder=true,isInitCall=true,globalAudioCtx=null;
+window.unlockAudio=()=>{if(!globalAudioCtx)globalAudioCtx=new(window.AudioContext||window.webkitAudioContext)();if(globalAudioCtx.state==='suspended')globalAudioCtx.resume();};
+document.addEventListener('click',window.unlockAudio);
+window.playNotificationAlert=function(type){if(navigator.vibrate){try{navigator.vibrate([300,100,300,100,300,100,300,100,300,100,300]);}catch(e){}}try{if(!globalAudioCtx)globalAudioCtx=new(window.AudioContext||window.webkitAudioContext)();if(globalAudioCtx.state==='suspended')globalAudioCtx.resume();const ctx=globalAudioCtx;const now=ctx.currentTime;const mg=ctx.createGain();mg.gain.value=0.75;mg.connect(ctx.destination);let bf=880,st=7;if(type==='delayed'){bf=523;st=8;}else if(type==='call')bf=988;else if(type==='complete'){bf=660;st=5;}for(let i=0;i<st;i++){const t=now+i*0.85;[1,2,2.76,4.07,5.43,8].forEach((r,j)=>{const o=ctx.createOscillator();const gg=ctx.createGain();o.type='sine';o.frequency.value=bf*r;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime([.55,.35,.22,.15,.10,.06][j],t+0.008);gg.gain.exponentialRampToValueAtTime(0.001,t+[2.8,2.4,2,1.6,1.3,.9][j]);o.connect(gg);gg.connect(mg);o.start(t);o.stop(t+3);});}}catch(e){}};
+window.toggleBellTest=()=>document.getElementById('bellTestMenu').classList.toggle('hidden');
+window.testBell=(t)=>{try{if(!globalAudioCtx)globalAudioCtx=new(window.AudioContext||window.webkitAudioContext)();if(globalAudioCtx.state==='suspended')globalAudioCtx.resume();}catch(e){}window.playNotificationAlert(t);setTimeout(()=>document.getElementById('bellTestMenu').classList.add('hidden'),700);};
+document.addEventListener('click',(e)=>{const m=document.getElementById('bellTestMenu');const b=document.getElementById('bellTestBtn');if(m&&!m.classList.contains('hidden')&&!m.contains(e.target)&&b&&!b.contains(e.target))m.classList.add('hidden');});
+
+function checkDelayedOrders(){if(state.currentRole==='customer')return;const now=Date.now();let has=false;state.orders.forEach(o=>{if(o.status==='pending'&&o.timestamp&&(now-o.timestamp)>300000){if(!state.alertedDelayedOrders.has(o.id)){state.alertedDelayedOrders.add(o.id);has=true;}}});if(has){playNotificationAlert('delayed');window.showToast('⚠️ CÓ ĐƠN QUÁ 5 PHÚT!','⚠️');renderAll();}}
+
+function setupListeners(){if(!db)return;
+onSnapshot(collection(db,COL_ORDERS),s=>{let has=false;s.docChanges().forEach(c=>{if(c.type==='added'&&!isInitOrder&&c.doc.data().status==='pending')has=true;});isInitOrder=false;const all=[];s.forEach(d=>all.push({id:d.id,...d.data()}));all.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));state.orders=all;if(has&&['bungalow','admin'].includes(state.currentRole)){playNotificationAlert('newOrder');window.showToast('🔔 CÓ ĐƠN MỚI!','🔔');}renderAll();});
+onSnapshot(collection(db,COL_CALLS),s=>{let has=false;s.docChanges().forEach(c=>{if(c.type==='added'&&!isInitCall&&c.doc.data().status==='pending')has=true;});isInitCall=false;const all=[];s.forEach(d=>all.push({id:d.id,...d.data()}));state.activeCalls=all.filter(c=>c.status==='pending');if(has&&['bungalow','admin'].includes(state.currentRole))playNotificationAlert('call');renderAll();});
+onSnapshot(collection(db,COL_TABLES),s=>{const a={};s.forEach(d=>{a[d.id]={customerName:d.data().customerName,restaurantTable:d.data().restaurantTable||'',paymentMethod:d.data().paymentMethod||'',openedByStaff:d.data().openedByStaff||''};});state.tableAssignments=a;window.updateWelcomeLabels();renderAll();});}
+
+window.onload=function(){
+const mk=(tables,prefix)=>tables.map(t=>`<div><input type="radio" name="table" id="w-t-${prefix}-${t}" value="${t}" class="hidden table-radio" onchange="checkWelcomeForm()"><label for="w-t-${prefix}-${t}" class="table-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer flex flex-col items-center justify-center"><span>${t}</span></label></div>`).join('');
+document.getElementById('welcome-tables-b2').innerHTML=mk(TABLES_B2,'b2');
+document.getElementById('welcome-tables-b3').innerHTML=mk(TABLES_B3,'b3');
+document.getElementById('welcome-tables-b4').innerHTML=mk(TABLES_B4,'b4');
+const saved=sessionStorage.getItem('dolphinBunSetup');
+if(saved){const p=JSON.parse(saved);state.selectedTable=p.table;state.currentLanguage=p.lang;state.tableSelected=true;}
+window.startCloudConnection();window.updateClock();window.fetchWeather();window.updateSunPosition();
+setInterval(window.updateSunPosition,60000);setInterval(window.fetchWeather,900000);setInterval(checkDelayedOrders,15000);setInterval(checkAutoArchive,30000);
+renderAll();
+};
+
+window.updateWelcomeLabels=function(){[{arr:TABLES_B2,p:'b2'},{arr:TABLES_B3,p:'b3'},{arr:TABLES_B4,p:'b4'}].forEach(g=>g.arr.forEach(t=>{const l=document.querySelector(`label[for="w-t-${g.p}-${t}"]`);if(l){const a=state.tableAssignments[t];const n=a?a.customerName:null;const rt=a&&a.restaurantTable?`(${a.restaurantTable})`:'';if(n)l.innerHTML=`<span>${t}</span><span class="block text-[8px] md:text-[10px] text-gold-400 font-black truncate w-full">${n.substring(0,8)} ${rt}</span>`;else l.innerHTML=`<span>${t}</span>`;}}));};
+
+window.checkWelcomeForm=function(){const lc=document.querySelector('input[name="lang"]:checked');const tc=document.querySelector('input[name="table"]:checked');const b=document.getElementById('btn-start-order');if(lc){const t=WELCOME_TRANS[lc.value]||WELCOME_TRANS['VI'];document.getElementById('welcome-title').innerHTML=`${t.title}<br><span class="text-[10px] md:text-sm text-gold-400 font-medium normal-case mt-1 block opacity-90">${t.sub}</span>`;document.getElementById('welcome-step-1').innerHTML=`<span class="w-3 md:w-4 h-px bg-teal-600"></span>${t.step1}<span class="flex-1 h-px bg-teal-800/50"></span>`;document.getElementById('welcome-step-2').innerHTML=`<span class="w-3 md:w-4 h-px bg-teal-600"></span>${t.step2}<span class="flex-1 h-px bg-teal-800/50"></span>`;b.innerText=t.btn;}if(lc&&tc){b.disabled=false;b.classList.remove('bg-gradient-to-r','from-teal-800','to-teal-900','text-teal-500','cursor-not-allowed','border-teal-800/50');b.classList.add('bg-gradient-to-r','from-gold-400','to-gold-500','text-black');}};
+
+window.completeOnboarding=function(){const l=document.querySelector('input[name="lang"]:checked').value;const t=document.querySelector('input[name="table"]:checked').value;state.currentLanguage=l;state.selectedTable=t;state.tableSelected=true;sessionStorage.setItem('dolphinBunSetup',JSON.stringify({lang:l,table:t}));renderAll();window.showToast((TR[l]||TR['VI']).toastSetupSuccess,'🏝️');};
+
+window.resetCustomerTable=function(){state.tableSelected=false;state.selectedTable=null;state.cart={};sessionStorage.removeItem('dolphinBunSetup');document.querySelectorAll('input[name="table"]').forEach(r=>r.checked=false);const b=document.getElementById('btn-start-order');b.disabled=true;b.classList.add('bg-gradient-to-r','from-teal-800','to-teal-900','text-teal-500','cursor-not-allowed','border-teal-800/50');b.classList.remove('bg-gradient-to-r','from-gold-400','to-gold-500','text-black');renderAll();};
+
+let pendingRoleRequest=null;
+window.requestPinAccess=function(role){
+const authKey=role==='reception'?'dolphinBunReceptionAuth':'dolphinBunAdminAuth';
+if(sessionStorage.getItem(authKey)==='true'){
+  if(!window.hasStaffName())window.requireStaffName(role);else window.changeRole(role);
+}else{
+  pendingRoleRequest=role;
+  document.getElementById('pin-modal-title').innerText=role==='reception'?'Lễ Tân Bungalow':(role==='bungalow'?'Quản Lý Bungalow':'Quản Trị Bungalow');
+  document.getElementById('modal-pin').classList.remove('hidden');
+  document.getElementById('pin-input').value='';document.getElementById('pin-input').focus();
+  document.getElementById('pin-error').classList.add('hidden');
+}};
+window.requireStaffName=function(r){state.pendingAction={type:'gate',roleToEnter:r};document.getElementById('staff-name-modal-title').innerText='⚠️ BẮT BUỘC NHẬP TÊN';document.getElementById('staff-name-modal-subtitle').innerHTML='Nhập tên NV <strong class="text-gold-400">1 lần</strong> để ghi nhận thao tác.';document.getElementById('staff-name-confirm-label').innerText='VÀO HỆ THỐNG';document.getElementById('staff-name-cancel-btn').classList.add('hidden');document.getElementById('staff-name-input').value='';document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();};
+window.verifyPin=function(){const pin=document.getElementById('pin-input').value;let ok=false,k='';if(pendingRoleRequest==='bungalow'&&pin===ADMIN_PIN){ok=true;k='dolphinBunAdminAuth';}if(pendingRoleRequest==='admin'&&pin===ADMIN_PIN){ok=true;k='dolphinBunAdminAuth';}if(pendingRoleRequest==='reception'&&pin===RECEPTION_PIN){ok=true;k='dolphinBunReceptionAuth';}if(ok){sessionStorage.setItem(k,'true');window.closePinModal();const r=pendingRoleRequest;if(r){if(!window.hasStaffName())window.requireStaffName(r);else window.changeRole(r);}}else document.getElementById('pin-error').classList.remove('hidden');};
+window.closePinModal=()=>{document.getElementById('modal-pin').classList.add('hidden');pendingRoleRequest=null;};
+window.promptStaffName=function(){state.pendingAction={type:'changeName'};document.getElementById('staff-name-modal-title').innerText='ĐỔI TÊN NHÂN VIÊN';document.getElementById('staff-name-modal-subtitle').innerHTML='Nhập tên NV mới.';document.getElementById('staff-name-confirm-label').innerText='LƯU TÊN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value=window.getStaffName();document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();};
+window.openStaffNameModal=async(id,ns)=>{const n=window.getStaffName();if(!n||!n.trim()){state.pendingAction={type:'orderGate',orderId:id,nextStatus:ns};document.getElementById('staff-name-modal-title').innerText='⚠️ CẦN NHẬP TÊN';document.getElementById('staff-name-modal-subtitle').innerText='Nhập tên để tiếp tục.';document.getElementById('staff-name-confirm-label').innerText='XÁC NHẬN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value='';document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();return;}await window.executeStaffOrderAction(id,ns,n);};
+window.executeStaffOrderAction=async(id,ns,name)=>{if(!db)return;const r=doc(db,COL_ORDERS,id);try{await runTransaction(db,async(tr)=>{const d=await tr.get(r);if(!d.exists())throw 0;const c=d.data();const u={status:ns};if(ns==='preparing'){if(c.status==='preparing'&&c.preparedBy&&!c.preparedBy.includes(name)){u.preparedBy=c.preparedBy+' & '+name;state.lastTransactionWarning=`⚠️ TRÙNG: ${c.preparedBy} cũng vừa nhận!`;}else{u.preparedBy=name;state.lastTransactionWarning=null;}u.preparedAt=Date.now();}else if(ns==='completed'){u.completedBy=name;u.completedAt=Date.now();u.completedTime=window.getVNTime().timeString;}tr.update(r,u);});if(state.lastTransactionWarning){window.showToast(state.lastTransactionWarning,'⚠️');playNotificationAlert('delayed');}else{window.showToast(`${name} ${ns==='preparing'?'nhận đơn':'hoàn thành'}!`,'✅');playNotificationAlert('complete');}}catch(e){window.showToast('Lỗi cập nhật!','❌');}};
+window.closeStaffNameModal=()=>{document.getElementById('modal-staff-name').classList.add('hidden');state.pendingAction=null;};
+window.confirmStaffAction=async function(){const n=document.getElementById('staff-name-input').value.trim();if(!n){window.showToast('Vui lòng nhập tên!','⚠️');return;}window.setStaffName(n);const pa=state.pendingAction;document.getElementById('modal-staff-name').classList.add('hidden');state.pendingAction=null;if(pa&&pa.type==='gate'){window.showToast(`Xin chào ${n}!`,'👋');if(pa.roleToEnter)window.changeRole(pa.roleToEnter);renderAll();return;}if(pa&&pa.type==='changeName'){window.showToast(`Đổi tên: ${n}`,'📝');renderAll();return;}if(pa&&pa.type==='orderGate'){window.showToast(`Xin chào ${n}!`,'👋');await window.executeStaffOrderAction(pa.orderId,pa.nextStatus,n);renderAll();return;}renderAll();};
+
+window.openCustomerNameModal=function(t){document.getElementById('reception-target-table').value=t;document.getElementById('lbl-reception-table').innerText=`P.${t}`;const a=state.tableAssignments[t]||{};document.getElementById('customer-name-input').value=a.customerName||'';document.getElementById('bungalow-restaurant-table-input').value=a.restaurantTable||'';document.getElementById('bungalow-payment-method').value=a.paymentMethod||'';document.getElementById('bungalow-staff-opener').value=a.openedByStaff||window.getStaffName();document.getElementById('modal-customer-name').classList.remove('hidden');document.getElementById('customer-name-input').focus();};
+window.closeCustomerNameModal=()=>document.getElementById('modal-customer-name').classList.add('hidden');
+window.saveCustomerName=async function(){const t=document.getElementById('reception-target-table').value;const n=document.getElementById('customer-name-input').value.trim();const rt=document.getElementById('bungalow-restaurant-table-input').value.trim();const pm=document.getElementById('bungalow-payment-method').value;const sn=document.getElementById('bungalow-staff-opener').value.trim();if(!n){window.showToast('Nhập tên khách!','⚠️');return;}if(!rt){window.showToast('Nhập số bàn NH!','⚠️');return;}try{if(db)await setDoc(doc(db,COL_TABLES,t),{customerName:n,restaurantTable:rt,paymentMethod:pm,openedByStaff:sn||window.getStaffName(),updatedBy:window.getStaffName()||'N/A',updatedAt:Date.now()});window.showToast(`Đã lưu P.${t}`,'✅');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi lưu!','❌');}};
+window.clearCustomerName=async function(){const t=document.getElementById('reception-target-table').value;try{if(db)await deleteDoc(doc(db,COL_TABLES,t));window.showToast(`Đã xóa P.${t}`,'🧹');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi xóa!','❌');}};
+
+let cancelCtx={orderId:null,itemIndex:null,maxQty:0};
+window.openCancelModal=(id,i,oq,ac)=>{const m=oq-ac;if(m<=0)return;cancelCtx={orderId:id,itemIndex:i,maxQty:m};const inp=document.getElementById('cancel-qty-input');inp.value=1;inp.max=m;document.getElementById('modal-cancel-qty').classList.remove('hidden');};
+window.closeCancelModal=()=>document.getElementById('modal-cancel-qty').classList.add('hidden');
+window.confirmCancelItem=async function(){const q=parseInt(document.getElementById('cancel-qty-input').value);if(!q||q<1||q>cancelCtx.maxQty){window.showToast('SL không hợp lệ!','⚠️');return;}if(!db)return;const o=state.orders.find(x=>x.id===cancelCtx.orderId);if(!o)return;const ni=[...o.items];const it=ni[cancelCtx.itemIndex];it.cancelledQty=(it.cancelledQty||0)+q;if(it.cancelledQty>=it.qty)it.cancelled=true;try{await updateDoc(doc(db,COL_ORDERS,cancelCtx.orderId),{items:ni,cancelledBy:window.getStaffName()||'N/A'});window.showToast(`Đã hủy ${q} phần!`,'✕');window.closeCancelModal();}catch(e){window.showToast('Lỗi hủy!','❌');}};
+window.toggleItemPrepared=async function(id,i){if(!db)return;const o=state.orders.find(x=>x.id===id);if(!o)return;const ni=[...o.items];ni[i].isPrepared=!ni[i].isPrepared;try{await updateDoc(doc(db,COL_ORDERS,id),{items:ni});}catch(e){}};
+
+window.changeRole=function(r){state.currentRole=r;['customer','reception','bungalow','admin'].forEach(x=>{const b=document.getElementById(`btn-role-${x}`);if(!b)return;if(x===r)b.classList.add('active');else b.classList.remove('active');});renderAll();};
+
+window.getUsage=function(tableName){let f=0,fr=0,d=0;state.orders.forEach(o=>{if(o.table===tableName&&o.status!=='cancelled'){o.items.forEach(it=>{const c=it.cancelledQty||(it.cancelled?it.qty:0);const aq=it.qty-c;if(aq>0){if(it.id==='b-m-1')f+=aq;if(it.id==='b-m-2')fr+=aq;if(it.id.startsWith('b-m-')&&it.id!=='b-m-1'&&it.id!=='b-m-2')d+=aq;}});}});return{fries:f,fruits:fr,drinks:d};};
+window.getCurrentUsage=function(){const u=window.getUsage(state.selectedTable);for(let id in state.cart){if(id==='b-m-1')u.fries+=state.cart[id];if(id==='b-m-2')u.fruits+=state.cart[id];if(id.startsWith('b-m-')&&id!=='b-m-1'&&id!=='b-m-2')u.drinks+=state.cart[id];}return u;};
+
+window.updateCart=function(id,delta){if(!window.isOrderingAllowed())return;const t=TR[state.currentLanguage]||TR['VI'];const u=window.getCurrentUsage();if(delta>0){if(id==='b-m-1'&&u.fries>=1){window.showToast(t.toastLimitFries,'⚠️');return;}if(id==='b-m-2'&&u.fruits>=1){window.showToast(t.toastLimitFruits,'⚠️');return;}if(id.startsWith('b-m-')&&id!=='b-m-1'&&id!=='b-m-2'&&u.drinks>=5){window.showToast(t.toastLimitDrinks,'⚠️');return;}}const q=(state.cart[id]||0)+delta;if(q<=0)delete state.cart[id];else state.cart[id]=q;window.renderCustomer();if(!document.getElementById('modal-cart').classList.contains('hidden'))window.renderCartModalItems();};
+window.handleSearch=(v)=>{state.searchTerm=v;window.renderCustomer();};
+window.changeCategory=(c)=>{state.activeCategory=c;window.renderCustomer();};
+window.toggleCartModal=(s)=>{const m=document.getElementById('modal-cart');if(s){m.classList.remove('hidden');window.renderCartModalItems();}else m.classList.add('hidden');};
+window.renderCartModalItems=function(){const t=TR[state.currentLanguage]||TR['VI'];document.getElementById('lbl-confirm-title').innerHTML='<span class="icon-badge">📝</span> '+t.confirmOrderTitle;document.getElementById('lbl-btn-clear').innerText=t.clearCartBtn;document.getElementById('send-btn-label').innerText=t.sendToKitchenBtn;document.getElementById('lbl-notes').innerText=t.notesPlaceholder;const list=document.getElementById('cart-items-list');list.innerHTML=Object.entries(state.cart).map(([id,q])=>{const i=MENU.find(x=>x.id===id);return`<div class="flex justify-between items-center bg-teal-900/60 p-3 rounded-xl border border-teal-700/50 mb-2"><span class="text-[12.5px] md:text-base font-bold text-white flex-1 mr-2">${i.name[state.currentLanguage]||i.name['VI']}</span><div class="flex items-center gap-0.5 bg-teal-950/80 rounded-xl p-1 border border-teal-700/50"><button onclick="updateCart('${id}', -1)" class="w-8 h-8 flex items-center justify-center text-teal-400">➖</button><span class="text-gold-400 font-black text-[13px] px-2 w-7 text-center tabular">${q}</span><button onclick="updateCart('${id}', 1)" class="w-8 h-8 flex items-center justify-center text-gold-400">➕</button></div></div>`;}).join('');};
+window.clearCart=()=>{state.cart={};window.toggleCartModal(false);window.renderCustomer();};
+window.sendOrderOnline=async function(b){const t=TR[state.currentLanguage]||TR['VI'];if(!window.isOrderingAllowed()){window.showToast(t.toastOutHours,'🚫');return;}if(state.isSending)return;const lo=sessionStorage.getItem('lastOrderTime_'+state.selectedTable);if(lo){const p=Date.now()-parseInt(lo);if(p<180000){const rs=Math.ceil((180000-p)/1000);window.showToast(`Chờ ${Math.floor(rs/60)}p ${rs%60}s!`,'⏳');return;}}const ci=Object.entries(state.cart).map(([id,q])=>{const i=MENU.find(x=>x.id===id);return{id,name:i.name,qty:q,cancelled:false,cancelledQty:0,isPrepared:false};});if(ci.length===0)return;state.isSending=true;document.getElementById('send-btn-spinner').classList.remove('hidden');document.getElementById('send-btn-label').innerText=t.sending;b.disabled=true;try{if(db)await addDoc(collection(db,COL_ORDERS),{table:state.selectedTable,time:window.getVNTime().timeString,timestamp:Date.now(),items:ci,status:'pending',notes:document.getElementById('customer-notes-input').value});sessionStorage.setItem('lastOrderTime_'+state.selectedTable,Date.now());state.cart={};window.toggleCartModal(false);window.showToast(t.toastOrderSuccess,'🚀');}catch(e){}finally{state.isSending=false;document.getElementById('send-btn-spinner').classList.add('hidden');b.disabled=false;renderAll();}};
+window.callStaffOnline=async function(){const t=TR[state.currentLanguage]||TR['VI'];if(!window.isOrderingAllowed()){window.showToast(t.toastOutHours,'🚫');return;}if(state.isCallingStaff){window.showToast(t.toastStaffComing,'🏃');return;}state.isCallingStaff=true;const ct=window.getVNTime().timeString;try{if(db)await addDoc(collection(db,COL_CALLS),{table:state.selectedTable,time:ct,timestamp:Date.now(),status:'pending'});window.showToast(t.toastCallStaff.replace('{time}',ct),'🛎️');setTimeout(()=>state.isCallingStaff=false,30000);}catch(e){state.isCallingStaff=false;}};
+window.resolveCallOnline=async(id)=>{try{if(db)await updateDoc(doc(db,COL_CALLS,id),{status:'resolved',resolvedBy:window.getStaffName()||'N/A'});}catch(e){}};
+
+/* ===== TRANSFER BUNGALOW ===== */
+let transferCtx={source:null,target:null,isProcessing:false};
+function getFloor(t){if(TABLES_B2.includes(t))return'Tầng 2';if(TABLES_B3.includes(t))return'Tầng 3';if(TABLES_B4.includes(t))return'Tầng 4';return'';}
+window.openTransferBungalowModal=function(src){if(!src)return;const sa=state.tableAssignments[src]||{};if(!sa.customerName){window.showToast('Phòng này trống, không thể chuyển!','⚠️');return;}transferCtx={source:src,target:null,isProcessing:false};document.getElementById('transfer-source-label').innerText='P.'+src+' · '+(sa.customerName||'');renderTransferTargets();const btn=document.getElementById('btn-confirm-transfer');btn.disabled=true;btn.classList.add('opacity-50','cursor-not-allowed');document.getElementById('modal-transfer-bungalow').classList.remove('hidden');};
+window.closeTransferBungalowModal=function(){if(transferCtx.isProcessing)return;document.getElementById('modal-transfer-bungalow').classList.add('hidden');transferCtx={source:null,target:null,isProcessing:false};};
+function renderTransferTargets(){const el=document.getElementById('transfer-target-list');const src=transferCtx.source;const empty=ALL_BUNGALOW.filter(t=>{if(t===src)return false;const a=state.tableAssignments[t];const hn=a&&a.customerName&&a.customerName.trim();const ho=state.orders.some(o=>o.table===t);return!hn&&!ho;});if(empty.length===0){el.innerHTML='<div class="text-center py-6 text-teal-400 font-bold text-[11px]">🚫 Không có Bungalow trống!</div>';return;}const grp={'Tầng 2':[],'Tầng 3':[],'Tầng 4':[]};empty.forEach(t=>grp[getFloor(t)].push(t));let html='';Object.keys(grp).forEach(f=>{if(grp[f].length===0)return;html+=`<div class="mb-2"><div class="text-[9px] font-black text-emerald-400 uppercase mb-1 px-1">${f}</div><div class="grid grid-cols-3 gap-1.5">${grp[f].map(t=>`<button type="button" onclick="selectTransferTarget('${t}')" data-target="${t}" class="transfer-target-btn w-full text-center p-2.5 rounded-lg border-2 border-teal-700/50 bg-teal-900/40 hover:bg-teal-800/60 text-white font-black text-[12px] tabular">P.${t}</button>`).join('')}</div></div>`;});el.innerHTML=html;}
+window.selectTransferTarget=function(t){transferCtx.target=t;document.querySelectorAll('.transfer-target-btn').forEach(b=>{if(b.dataset.target===t)b.classList.add('selected');else b.classList.remove('selected');});const btn=document.getElementById('btn-confirm-transfer');btn.disabled=false;btn.classList.remove('opacity-50','cursor-not-allowed');};
+window.confirmTransferBungalow=async function(){const src=transferCtx.source,tgt=transferCtx.target;if(!src||!tgt||transferCtx.isProcessing)return;if(!db){window.showToast('Chưa kết nối!','❌');return;}const sa=state.tableAssignments[src]||{};if(!sa.customerName){window.showToast('Phòng nguồn trống!','⚠️');return;}const ta=state.tableAssignments[tgt];const thn=ta&&ta.customerName&&ta.customerName.trim();const tho=state.orders.some(o=>o.table===tgt);if(thn||tho){window.showToast(`P.${tgt} vừa có khách!`,'⚠️');renderTransferTargets();document.getElementById('btn-confirm-transfer').disabled=true;document.getElementById('btn-confirm-transfer').classList.add('opacity-50','cursor-not-allowed');transferCtx.target=null;return;}transferCtx.isProcessing=true;const btn=document.getElementById('btn-confirm-transfer');btn.disabled=true;btn.classList.add('opacity-50','cursor-not-allowed');const oldHTML=btn.innerHTML;btn.innerHTML='<span class="relative z-10">⏳ ĐANG CHUYỂN...</span>';const sn=window.getStaffName()||'N/A';const now=Date.now();try{const newData={customerName:sa.customerName||'',restaurantTable:sa.restaurantTable||'',paymentMethod:sa.paymentMethod||'',openedByStaff:sa.openedByStaff||'',updatedBy:sn,updatedAt:now,transferredFrom:src,transferredAt:now,transferredBy:sn};await setDoc(doc(db,COL_TABLES,tgt),newData);const os=await getDocs(query(collection(db,COL_ORDERS),where('table','==',src)));await Promise.all(os.docs.map(d=>updateDoc(d.ref,{table:tgt,transferredFrom:src,transferredAt:now,transferredBy:sn})));const cs=await getDocs(query(collection(db,COL_CALLS),where('table','==',src)));await Promise.all(cs.docs.map(d=>{if(d.data().status==='pending')return updateDoc(d.ref,{table:tgt,transferredFrom:src,transferredAt:now});}));await deleteDoc(doc(db,COL_TABLES,src));const na={...state.tableAssignments};delete na[src];na[tgt]={customerName:newData.customerName,restaurantTable:newData.restaurantTable,paymentMethod:newData.paymentMethod,openedByStaff:newData.openedByStaff};state.tableAssignments=na;window.showToast(`✅ Đã chuyển P.${src} ➔ P.${tgt}!`,'🔄');playNotificationAlert('complete');transferCtx.isProcessing=false;document.getElementById('modal-transfer-bungalow').classList.add('hidden');transferCtx={source:null,target:null,isProcessing:false};renderAll();}catch(e){console.error(e);window.showToast('Lỗi chuyển, thử lại!','❌');transferCtx.isProcessing=false;btn.disabled=false;btn.classList.remove('opacity-50','cursor-not-allowed');btn.innerHTML=oldHTML;playNotificationAlert('delayed');}};
+document.addEventListener('keydown',(e)=>{if(e.key==='Escape'){const m=document.getElementById('modal-transfer-bungalow');if(m&&!m.classList.contains('hidden')&&!transferCtx.isProcessing)window.closeTransferBungalowModal();}});
+
+/* ===== AUTO ARCHIVE 17:30 ===== */
+async function checkAutoArchive(){if(!db)return;const vn=window.getVNTime();const h=vn.hours,m=vn.minutes;let ts=null;if(h===17&&m>=30&&m<=35)ts='Tối';if(!ts){state.lastAutoArchiveShift=null;return;}if(state.lastAutoArchiveShift===ts)return;const td=vn.fullYear+'-'+String(vn.month+1).padStart(2,'0')+'-'+String(vn.dateNum).padStart(2,'0');try{const q=query(collection(db,COL_HISTORY),where('date','==',td),where('shift','==',ts));const sn=await getDocs(q);if(!sn.empty){state.lastAutoArchiveShift=ts;return;}state.lastAutoArchiveShift=ts;const os=await getDocs(collection(db,COL_ORDERS));const arr=[];os.forEach(x=>arr.push(x.data()));if(arr.length>0)await addDoc(collection(db,COL_HISTORY),{date:td,shift:ts,timestamp:Date.now(),orders:arr,autoClosed:true});for(const x of os.docs)await deleteDoc(doc(db,COL_ORDERS,x.id));const cs=await getDocs(collection(db,COL_CALLS));for(const x of cs.docs)await deleteDoc(doc(db,COL_CALLS,x.id));const tsx=await getDocs(collection(db,COL_TABLES));for(const x of tsx.docs)await deleteDoc(doc(db,COL_TABLES,x.id));}catch(e){}}
+
+/* ===== CUSTOMER RENDER ===== */
+window.renderCustomer=function(){const t=TR[state.currentLanguage]||TR['VI'];document.getElementById('lbl-table').innerText=t.tableLabel;document.getElementById('lbl-btn-call').innerText=t.callStaffBtn;document.getElementById('lbl-btn-change-table').innerText=t.changeTableBtn;document.getElementById('search-input').placeholder=t.searchPlaceholder;document.getElementById('lbl-active-orders-title').innerText=t.activeOrdersTitle;document.getElementById('lbl-cart-title').innerText=t.cartTitle;const a=state.tableAssignments[state.selectedTable];const n=a?a.customerName:null;const rt=a?a.restaurantTable:null;let dh=state.selectedTable;if(n)dh+=` <span class="text-[10px] md:text-sm text-white block leading-tight">${n}</span>`;if(rt)dh+=` <span class="text-[8px] md:text-[10px] bg-gradient-to-r from-gold-400 to-gold-500 text-black px-1 md:px-2 py-0.5 rounded shadow font-black inline-block uppercase mt-0.5">NH: ${rt}</span>`;document.getElementById('current-table-display').innerHTML=dh;const tstate=window.getOrderingTimeState();const ia=tstate==='allowed';const bn=document.getElementById('out-of-hours-banner');if(tstate==='before'){bn.classList.remove('hidden');document.getElementById('lbl-out-of-hours').innerText=t.outBefore;}else if(tstate==='after'){bn.classList.remove('hidden');document.getElementById('lbl-out-of-hours').innerText=t.outAfter;}else bn.classList.add('hidden');const al=document.getElementById('customer-active-orders-list');const mo=state.orders.filter(o=>o.table===state.selectedTable&&o.status!=='completed');if(mo.length>0){document.getElementById('customer-active-orders-section').classList.remove('hidden');al.innerHTML=mo.map(o=>{let sc='<span class="state-chip state-pending"><span class="dot"></span>Chờ</span>';if(o.status==='preparing')sc='<span class="state-chip state-cooking"><span class="dot"></span>Đang nấu</span>';const ai=o.items.filter(i=>{const c=i.cancelledQty||(i.cancelled?i.qty:0);return c<i.qty;});return`<div class="bg-teal-900/40 border border-teal-700/50 p-3 rounded-xl"><div class="flex justify-between items-center mb-2"><span class="text-[10px] text-teal-300 font-mono bg-teal-950/50 px-2 py-1 rounded tabular">${o.time}</span>${sc}</div><div class="text-[11.5px] text-white font-bold leading-snug">${ai.length>0?ai.map(it=>{const c=it.cancelledQty||(it.cancelled?it.qty:0);return`<span class="inline-block mr-3 mb-0.5">• ${it.name[state.currentLanguage]||it.name['VI']} <span class="text-gold-400 tabular">x${it.qty-c}</span></span>`;}).join(''):'<span class="text-red-400 line-through">Đã hủy</span>'}</div></div>`;}).join('');}else document.getElementById('customer-active-orders-section').classList.add('hidden');const cc=document.getElementById('categories-container');cc.innerHTML=`<button onclick="changeCategory('all')" class="cat-btn rounded-full font-bold whitespace-nowrap ${state.activeCategory==='all'?'bg-gradient-to-r from-gold-400 to-gold-500 text-black':'bg-teal-900/60 text-teal-200 border border-teal-700/50'}">${t.allCategory}</button>`+CATS.map(cat=>{const nm=cat.name[state.currentLanguage]||cat.name['VI'];return`<button onclick="changeCategory('${cat.id}')" class="cat-btn rounded-full font-bold whitespace-nowrap ${state.activeCategory===cat.id?'bg-gradient-to-r from-gold-400 to-gold-500 text-black':'bg-teal-900/60 text-teal-200 border border-teal-700/50'}">${nm}</button>`;}).join('');const g=document.getElementById('menu-items-grid');const f=MENU.filter(it=>{const n=(it.name[state.currentLanguage]||it.name['VI']).toLowerCase();return(state.activeCategory==='all'||it.category_id===state.activeCategory)&&n.includes(state.searchTerm.toLowerCase());});const u=window.getCurrentUsage();if(f.length===0){g.innerHTML=`<div class="col-span-full empty-state"><h4>Không tìm thấy món</h4><p>Thử từ khóa khác nhé!</p></div>`;}else{g.innerHTML=f.map(it=>{const q=state.cart[it.id]||0;const nm=it.name[state.currentLanguage]||it.name['VI'];let locked=false,reason='';if(q===0){if(it.id==='b-m-1'&&u.fries>=1){locked=true;reason=BTN_TRANS[state.currentLanguage].outOfTurns;}else if(it.id==='b-m-2'&&u.fruits>=1){locked=true;reason=BTN_TRANS[state.currentLanguage].outOfTurns;}else if(it.category_id==='b-cat-drink'&&u.drinks>=5){locked=true;reason=BTN_TRANS[state.currentLanguage].limit5;}}return`<div class="glass-card menu-card flex flex-col justify-between ${q>0?'border-gold-500/60':'border-teal-700/30'}"><div class="pr-1 break-words w-full mb-3"><h3 class="text-white font-bold leading-snug">${nm}</h3>${state.currentLanguage!=='VI'?`<span class="text-teal-300 block mt-1 text-[10.5px] opacity-80">${it.name['VI']}</span>`:''}</div><div class="flex justify-end items-end w-full mt-auto"><div class="w-full sm:w-auto">${!ia?`<span class="block text-center text-[9.5px] text-red-200 font-bold bg-red-950/80 px-2.5 py-2 rounded-lg border border-red-800/50 w-full">${BTN_TRANS[state.currentLanguage].outOfTime}</span>`:(locked?`<span class="block text-center text-[9.5px] text-red-200 font-bold bg-red-950/80 px-2.5 py-2 rounded-lg border border-red-800/50 w-full">${reason}</span>`:(q===0?`<button onclick="updateCart('${it.id}', 1)" class="btn-select w-full bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-lg">${BTN_TRANS[state.currentLanguage].select}</button>`:`<div class="qty-control flex items-center justify-between bg-teal-950/80 border border-gold-500/50 w-full"><button onclick="updateCart('${it.id}', -1)" class="text-teal-400 flex items-center justify-center font-bold">➖</button><span class="text-gold-400 font-black qty-num tabular">${q}</span><button onclick="updateCart('${it.id}', 1)" class="text-gold-400 flex items-center justify-center font-bold">➕</button></div>`))}</div></div></div>`;}).join('');}const fc=document.getElementById('floating-cart');const cnt=Object.values(state.cart).reduce((a,b)=>a+b,0);if(cnt>0&&ia){fc.classList.remove('hidden');document.getElementById('cart-summary-text').innerText=t.cartSummary.replace('{count}',cnt);document.getElementById('lbl-view-cart').innerText=t.historyBtn;}else fc.classList.add('hidden');};
+
+/* ===== ORDER GRID HTML ===== */
+window.generateOrderGridHtml=function(list){if(list.length===0)return`<div class="col-span-full empty-state" style="padding:24px 16px;"><h4>Chưa có đơn hàng</h4><p>Đơn mới sẽ xuất hiện tại đây.</p></div>`;return list.map(o=>{const dly=o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000;const items=o.items.map((it,idx)=>{const c=it.cancelledQty||(it.cancelled?it.qty:0);if(c>=it.qty)return`<div class="flex justify-between items-center text-[10px] text-red-400 line-through px-2 py-1.5 bg-red-950/40 rounded-lg border border-red-900/50"><span>${it.name['VI']||it.name}</span><span class="font-bold tabular">(x${it.qty}) HỦY</span></div>`;const aq=it.qty-c;const ct=c>0?`<span class="text-red-400 text-[8px] line-through ml-1 opacity-80">(Hủy ${c})</span>`:'';const pc=it.isPrepared?'text-red-400 font-black':'text-teal-50';const bc=it.isPrepared?'bg-red-950/20 border-red-800/50':'bg-teal-950/80 border-teal-700/50';const bp=`<button onclick="toggleItemPrepared('${o.id}', ${idx})" class="${it.isPrepared?'bg-red-600 text-white border-red-500':'bg-teal-800 text-teal-200 border-teal-600'} text-[9px] font-bold px-2 py-1.5 rounded-lg border">${it.isPrepared?'☑':'☐'}</button>`;const bc2=`<button onclick="openCancelModal('${o.id}', ${idx}, ${it.qty}, ${c})" class="text-[9px] bg-red-950/80 text-red-300 font-bold px-1.5 py-1.5 rounded-lg border border-red-900/50">✕</button>`;return`<div class="flex flex-col gap-1.5 p-2 rounded-xl border ${bc}"><span class="${pc} text-[10.5px]">• ${it.name['VI']||it.name} ${ct}</span><div class="flex items-center gap-1.5 justify-end"><span class="font-black text-gold-400 text-[11.5px] mr-auto tabular">x${aq}</span>${bp}${bc2}</div></div>`;}).join('<div class="h-1.5"></div>');let btn='';if(o.status==='pending')btn=`<button onclick="openStaffNameModal('${o.id}', 'preparing')" class="order-btn bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black w-full uppercase">🔥 CHUẨN BỊ</button>`;else btn=`<button onclick="openStaffNameModal('${o.id}', 'completed')" class="order-btn bg-gradient-to-r from-emerald-400 to-emerald-500 text-black font-black w-full uppercase">✅ XONG</button>`;const bc3=o.status==='preparing'?'border-gold-500/60 shadow-lg':(dly?'border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.5)] animate-pulse':'border-teal-700/50');return`<div class="glass-card premium border ${bc3} order-card flex flex-col"><div class="flex justify-between items-start mb-2.5 gap-2"><span class="bg-gradient-to-r from-emerald-400 to-emerald-500 text-black text-[10px] font-black px-2 py-1 rounded-lg">BUNG: ${o.table}</span><div class="text-right flex flex-col items-end gap-1"><span class="text-[9.5px] text-teal-300 bg-teal-950/50 px-2 py-1 rounded tabular">${o.time}</span>${o.status==='pending'?'<span class="state-chip state-pending"><span class="dot"></span>Chờ</span>':'<span class="state-chip state-cooking"><span class="dot"></span>'+(o.preparedBy||'NV').substring(0,12)+'</span>'}${dly?'<span class="state-chip state-alert animate-bounce">⚠️ 5P</span>':''}</div></div><div class="mb-3 flex-1 space-y-2">${items}</div>${o.notes?`<div class="text-[10.5px] bg-gold-500/10 border border-gold-500/30 p-2.5 rounded-xl text-gold-200 italic mb-3">📝 ${o.notes}</div>`:''}${btn}</div>`;}).join('');};
+
+/* ===== TIMELINE HTML (cho bản đồ bungalow) ===== */
+window.buildTimelineHtml=function(orders){const list=(orders||[]).slice().sort((a,b)=>(a.timestamp||0)-(b.timestamp||0));if(list.length===0)return'';const itemName=(it)=>(it.name&&(it.name['VI']||it.name['EN']))||it.name||'';const summary={};let html='<div class="mt-2 pt-2 border-t border-white/15"><div class="text-[9.5px] font-black text-gold-400 uppercase mb-1.5">🕒 Lịch sử order</div><div class="space-y-1.5">';list.forEach(o=>{const cls=o.status==='completed'?'done':(o.status==='preparing'?'prep':'');const chip=o.status==='completed'?'<span class="state-chip state-ready" style="padding:1px 6px;font-size:8px;">✅</span>':o.status==='preparing'?'<span class="state-chip state-cooking" style="padding:1px 6px;font-size:8px;">🔥</span>':'<span class="state-chip state-pending" style="padding:1px 6px;font-size:8px;">⏳</span>';const rows=(o.items||[]).map(it=>{const c=it.cancelledQty||(it.cancelled?it.qty:0);const a=it.qty-c;if(a>0){const k=itemName(it);summary[k]=(summary[k]||0)+a;}return`<div class="item-row"><span class="text-[10px] text-white font-semibold">• ${itemName(it)}</span><span class="flex items-center gap-1">${c>0?`<span class="qty-badge cancel">x${c}</span>`:''}${a>0?`<span class="qty-badge">x${a}</span>`:''}</span></div>`;}).join('');html+=`<div class="order-slot ${cls}"><div class="flex flex-wrap items-center justify-between gap-1 mb-1 pb-1 border-b border-white/15"><span class="text-[10.5px] font-black text-white tabular">⏰ ${o.time||'--:--'}</span>${chip}</div>${rows}</div>`;});html+='</div>';const keys=Object.keys(summary);if(keys.length>0){html+=`<div class="mt-2 bg-teal-900/60 p-2 rounded-xl border border-teal-700/50"><div class="text-[8.5px] text-gold-400 font-black uppercase mb-1">📋 Tổng hợp</div>${keys.map(k=>`<div class="flex justify-between items-center text-[10px] py-0.5"><span class="text-teal-50 truncate mr-2">• ${k}</span><span class="qty-badge">x${summary[k]}</span></div>`).join('')}</div>`;}return html+'</div>';};
+
+/* ===== BUNGALOW MANAGER RENDER ===== */
+window.renderBungalow=function(){const n=window.getStaffName();const d=document.getElementById('current-bungalow-staff-name-display');if(d)d.innerText=n||'⚠️ Chưa đặt';const vn=window.getVNTime();const cm=vn.hours*60+vn.minutes;const ia=cm>=980&&cm<=1050;const b=document.getElementById('bungalow-alert-banner');if(ia)b.classList.remove('hidden');else b.classList.add('hidden');const bc=state.activeCalls;const cs=document.getElementById('bungalow-calls-section');if(bc.length>0){cs.classList.remove('hidden');document.getElementById('bungalow-calls-grid').innerHTML=bc.map(c=>`<div class="bg-red-900/40 border border-red-700/50 p-3 rounded-xl flex justify-between items-center gap-2"><div><span class="text-[11.5px] font-black text-red-200 block">🛎️ P.${c.table}</span><span class="text-[9.5px] text-red-300 font-mono mt-0.5 block tabular">🕒 ${c.time||'--:--'}</span></div><button onclick="resolveCallOnline('${c.id}')" class="bg-white text-red-800 text-[10.5px] font-black px-3 py-2 rounded-lg">XONG</button></div>`).join('');}else cs.classList.add('hidden');const bp=state.orders.filter(o=>o.status!=='completed');const mine=[],other=[];bp.forEach(o=>{if(o.status==='preparing'&&n&&o.preparedBy&&o.preparedBy.includes(n))mine.push(o);else other.push(o);});document.getElementById('bungalow-my-orders-grid').innerHTML=window.generateOrderGridHtml(mine);document.getElementById('bungalow-other-orders-grid').innerHTML=window.generateOrderGridHtml(other);const rg=(tables,id)=>{const c=document.getElementById(id);if(!c)return;c.innerHTML=tables.map(t=>{const a=state.tableAssignments[t]||{};const nm=a.customerName||'Trống';const rt=a.restaurantTable?`(NH: ${a.restaurantTable})`:'';const pm=a.paymentMethod?`<span class="bg-emerald-950/80 text-emerald-300 border border-emerald-500/30 px-1 py-0.5 rounded text-[7.5px] uppercase">${a.paymentMethod}</span>`:'';const op=a.openedByStaff?`<span class="bg-teal-900/80 text-teal-300 border border-teal-600/30 px-1 py-0.5 rounded text-[7.5px] uppercase">Mở: ${a.openedByStaff}</span>`:'';const ex=(pm||op)?`<div class="flex flex-wrap gap-0.5 mt-0.5 mb-1.5">${pm}${op}</div>`:'';const u=window.getUsage(t);const hm=u.fries<1||u.fruits<1||u.drinks<5;const na=nm!=='Trống'&&ia&&hm;const to=state.orders.filter(o=>o.table===t&&o.status!=='cancelled');const oh=window.buildTimelineHtml(to);let bc2=na?'bg-red-950/80 border-red-500 shadow-[0_0_20px_rgba(239,68,68,0.35)]':(nm!=='Trống'?'bg-teal-900/40 border-emerald-500/50':'bg-teal-950/30 border-teal-800/50 opacity-60');const occ=nm!=='Trống';const tb=occ?`<button onclick="openTransferBungalowModal('${t}')" class="text-[8.5px] bg-emerald-800/80 hover:bg-emerald-600 text-emerald-100 border border-emerald-400/50 px-1.5 py-0.5 rounded font-black uppercase active:scale-95 flex items-center gap-0.5"><span>🔄</span><span class="hidden md:inline">Đổi</span></button>`:'';return`<div class="p-2.5 rounded-xl border ${bc2} flex flex-col"><div class="flex justify-between items-start mb-1 gap-1"><span class="text-[12.5px] font-black text-emerald-400">${t}</span><div class="flex items-center gap-1">${na?'<span class="text-[7.5px] bg-red-600 text-white px-1.5 py-0.5 rounded font-bold uppercase animate-bounce">THIẾU</span>':''}${tb}</div></div><div class="text-[10.5px] font-bold text-white leading-tight truncate">${nm} <span class="text-gold-400">${rt}</span></div>${ex}<div class="space-y-0.5 mt-auto pt-1.5"><div class="flex justify-between text-[9.5px]"><span class="text-teal-300">Khoai:</span><span class="font-bold tabular ${u.fries>=1?'text-emerald-400':'text-gold-500'}">${u.fries}/1</span></div><div class="flex justify-between text-[9.5px]"><span class="text-teal-300">Trái:</span><span class="font-bold tabular ${u.fruits>=1?'text-emerald-400':'text-gold-500'}">${u.fruits}/1</span></div><div class="flex justify-between text-[9.5px]"><span class="text-teal-300">Nước:</span><span class="font-bold tabular ${u.drinks>=5?'text-emerald-400':'text-gold-500'}">${u.drinks}/5</span></div></div>${oh}</div>`;}).join('');};rg(TABLES_B2,'bungalow-track-b2');rg(TABLES_B3,'bungalow-track-b3');rg(TABLES_B4,'bungalow-track-b4');};
+
+/* ===== RECEPTION RENDER ===== */
+window.renderReception=function(){const d=document.getElementById('current-reception-staff-name-display');if(d)d.innerText=window.getStaffName()||'⚠️ Chưa đặt';const rt=(tables,id)=>{document.getElementById(id).innerHTML=tables.map(t=>{const a=state.tableAssignments[t];const n=a?a.customerName:null;const rtb=a&&a.restaurantTable?`<br><span class="text-[8px] font-black uppercase text-teal-950 bg-gold-400/80 px-1 rounded inline-block mt-0.5">NH: ${a.restaurantTable}</span>`:'';const ho=state.orders.some(o=>o.table===t&&o.status!=='completed');let bg=n?'bg-gradient-to-br from-gold-400 to-gold-500 text-black border-transparent':'bg-teal-900/40 border-teal-700/50 text-teal-300';if(ho&&!n)bg='bg-red-950/80 border-red-500/50 text-red-300';return`<button onclick="openCustomerNameModal('${t}')" class="p-2 rounded-xl border text-center ${bg} flex flex-col justify-center items-center min-h-[54px]"><span class="block text-[11.5px] font-black mb-0.5 tabular">${t}</span><span class="block text-[8.5px] font-bold w-full break-words px-0.5 opacity-90 truncate">${n?n.substring(0,12)+rtb:'Trống'}</span></button>`;}).join('');};rt(TABLES_B2,'reception-tables-b2');rt(TABLES_B3,'reception-tables-b3');rt(TABLES_B4,'reception-tables-b4');};
+
+/* ===== ADMIN RENDER (MỚI) ===== */
+window.setAdminFilter=function(f){state.adminFilter=f;document.querySelectorAll('#admin-quick-filters .filter-chip').forEach(c=>c.classList.toggle('active',c.dataset.filter===f));window.renderAdmin();};
+
+window.renderAdmin=function(){
+// STATS
+document.getElementById('stat-total').innerText=state.orders.length;
+document.getElementById('stat-pending').innerText=state.orders.filter(o=>o.status==='pending').length;
+document.getElementById('stat-prep').innerText=state.orders.filter(o=>o.status==='preparing').length;
+document.getElementById('stat-done').innerText=state.orders.filter(o=>o.status==='completed').length;
+const dly=state.orders.filter(o=>o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000).length;
+const fa=document.getElementById('fc-all'),fp=document.getElementById('fc-pending'),fc=document.getElementById('fc-cooking'),fd=document.getElementById('fc-delayed'),fdone=document.getElementById('fc-done');
+if(fa)fa.textContent=state.orders.length;
+if(fp)fp.textContent=state.orders.filter(o=>o.status==='pending').length;
+if(fc)fc.textContent=state.orders.filter(o=>o.status==='preparing').length;
+if(fd)fd.textContent=dly;
+if(fdone)fdone.textContent=state.orders.filter(o=>o.status==='completed').length;
+// MATRIX
+const rm=(tables,id)=>{document.getElementById(id).innerHTML=tables.map(t=>{const to=state.orders.filter(o=>o.table===t&&o.status!=='completed');const hc=state.activeCalls.some(c=>c.table===t);const hasName=state.tableAssignments[t]&&state.tableAssignments[t].customerName;let bg='bg-teal-900/40 border-teal-700/50 text-teal-400',badge='';if(hc){bg='bg-red-600 text-white animate-pulse border-red-500';badge='🛎️';}else if(to.some(o=>o.status==='preparing')){bg='bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black border-transparent';badge='🔥';}else if(to.some(o=>o.status==='pending')){bg='bg-gold-900/50 text-gold-400 border-gold-700/50';badge='⏳';}else if(hasName){bg='bg-emerald-950/60 text-emerald-300 border-emerald-700/50';badge='👤';}return`<div class="p-1.5 md:p-2.5 rounded-lg border text-center ${bg} text-[9.5px] md:text-xs font-bold">${t} ${badge}</div>`;}).join('');};
+rm(TABLES_B2,'matrix-tables-b2');rm(TABLES_B3,'matrix-tables-b3');rm(TABLES_B4,'matrix-tables-b4');
+// TABLE ORDERS
+const sv=(document.getElementById('admin-search-order')?.value||'').toLowerCase();
+const tb=document.getElementById('admin-orders-tbody');
+let f=state.orders.filter(o=>{const mi=o.items.some(i=>(i.name['VI']||i.name).toLowerCase().includes(sv));return!sv||o.table.toLowerCase().includes(sv)||(o.preparedBy||'').toLowerCase().includes(sv)||mi;});
+const ff=state.adminFilter||'all';
+if(ff==='pending')f=f.filter(o=>o.status==='pending');
+else if(ff==='cooking')f=f.filter(o=>o.status==='preparing');
+else if(ff==='done')f=f.filter(o=>o.status==='completed');
+else if(ff==='delayed')f=f.filter(o=>o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000);
+if(f.length===0){tb.innerHTML=`<tr><td colspan="6" class="text-center py-8 text-teal-500/80 font-bold text-[10.5px]">Không có đơn.</td></tr>`;}
+else{tb.innerHTML=f.map(o=>{const dly=o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000;let st='<span class="state-chip state-pending" style="font-size:9px;padding:2px 8px;"><span class="dot"></span>Chờ</span>';if(o.status==='preparing')st='<span class="state-chip state-cooking" style="font-size:9px;padding:2px 8px;"><span class="dot"></span>Nấu</span>';if(o.status==='completed')st='<span class="state-chip state-ready" style="font-size:9px;padding:2px 8px;">✅ Xong</span>';const its=o.items.map((i,idx)=>{const c=i.cancelledQty||(i.cancelled?i.qty:0);if(c>=i.qty)return`<span class="line-through text-teal-600 text-[9.5px]">${i.name['VI']||i.name} (x${i.qty})</span>`;return`<span class="inline-block mr-1 mb-0.5 text-[9.5px]">${i.name['VI']||i.name} <strong class="text-white tabular">x${i.qty-c}</strong> <button onclick="openCancelModal('${o.id}', ${idx}, ${i.qty}, ${c})" class="text-[7.5px] bg-red-950/80 text-red-300 px-1 py-0.5 rounded ml-0.5 border border-red-900/50">HỦY</button></span>`;}).join(' ');let pn=o.preparedBy?`Nấu: ${o.preparedBy}`:'--';if(o.completedBy)pn+=` · Giao: ${o.completedBy}`;return`<tr class="${dly?'bg-red-950/20':''} border-b border-teal-700/30 text-[9.5px]"><td class="py-2.5 px-2.5 font-mono text-teal-300 tabular">${o.time}</td><td class="py-2.5 px-2.5 font-black text-gold-400 tabular">${o.table}</td><td class="py-2.5 px-2.5 text-[9.5px]">${its}</td><td class="py-2.5 px-2.5">${st}</td><td class="py-2.5 px-2.5 text-teal-200 text-[8.5px]">${pn}</td><td class="py-2.5 px-2.5 text-right"><button onclick="openStaffNameModal('${o.id}', 'completed')" class="bg-teal-900 border border-teal-700 text-teal-200 px-2 py-1 rounded text-[8.5px] font-bold">XONG</button></td></tr>`;}).join('');}
+};
+
+/* ===== HISTORY / ARCHIVE ===== */
+window.confirmResetSystem=function(){const vn=window.getVNTime();document.getElementById('archive-date').value=vn.fullYear+'-'+String(vn.month+1).padStart(2,'0')+'-'+String(vn.dateNum).padStart(2,'0');document.getElementById('modal-reset').classList.remove('hidden');};
+window.closeResetModal=()=>document.getElementById('modal-reset').classList.add('hidden');
+
+window.executeSystemReset=async function(){if(!db)return;const d=document.getElementById('archive-date').value;const s=document.getElementById('archive-shift').value;if(!d){window.showToast('Chọn ngày!','⚠️');return;}document.getElementById('modal-reset').classList.add('hidden');window.showToast('Đang xử lý...','☁️');try{const os=await getDocs(collection(db,COL_ORDERS));const arr=[];os.forEach(x=>arr.push(x.data()));if(arr.length>0)await addDoc(collection(db,COL_HISTORY),{date:d,shift:s,timestamp:Date.now(),orders:arr,archivedBy:window.getStaffName()||'N/A'});for(const x of os.docs)await deleteDoc(doc(db,COL_ORDERS,x.id));const cs=await getDocs(collection(db,COL_CALLS));for(const x of cs.docs)await deleteDoc(doc(db,COL_CALLS,x.id));const ts=await getDocs(collection(db,COL_TABLES));for(const x of ts.docs)await deleteDoc(doc(db,COL_TABLES,x.id));window.showToast('Đã đóng ca & làm sạch!','✨');playNotificationAlert('complete');}catch(e){window.showToast('Lỗi: '+e.message,'❌');}};
+
+window.fetchHistoryData=async function(){if(!db)return;const d=document.getElementById('history-search-date').value;const s=document.getElementById('history-search-shift').value;const st=(document.getElementById('history-search-table').value||'').trim().toLowerCase();const tb=document.getElementById('history-orders-tbody');if(!d){window.showToast('Chọn ngày!','⚠️');return;}tb.innerHTML=`<tr><td colspan="4" class="text-center py-8 text-gold-400 font-bold animate-pulse text-[10.5px]">Đang tải...</td></tr>`;try{const q=(s==='Cả Ngày')?query(collection(db,COL_HISTORY),where('date','==',d)):query(collection(db,COL_HISTORY),where('date','==',d),where('shift','==',s));const qs=await getDocs(q);let all=[];qs.forEach(x=>{const dt=x.data();if(dt.orders)all=all.concat(dt.orders);});if(st)all=all.filter(o=>o.table.toLowerCase().includes(st));if(all.length===0){tb.innerHTML=`<tr><td colspan="4" class="text-center py-8 text-teal-400 font-bold text-[10.5px]">Không có dữ liệu.</td></tr>`;return;}all.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));tb.innerHTML=all.map(o=>{const is=o.items.map(i=>{const c=i.cancelledQty||(i.cancelled?i.qty:0);if(c>=i.qty)return`<span class="line-through text-teal-600">${i.name['VI']||i.name} (x${i.qty})</span>`;return`<span>${i.name['VI']||i.name} <strong class="text-gold-400 tabular">x${i.qty-c}</strong></span>`;}).join('<br>');let pn=o.preparedBy?`Nấu: ${o.preparedBy}`:'--';if(o.completedBy)pn+=`<br><span class="text-emerald-400">Giao: ${o.completedBy}</span>`;return`<tr class="border-b border-teal-700/30 text-[10.5px]"><td class="py-2.5 px-2.5 font-mono text-teal-300 tabular">${o.time||'--'}</td><td class="py-2.5 px-2.5 font-black text-gold-400">P.${o.table}</td><td class="py-2.5 px-2.5 text-white">${is}</td><td class="py-2.5 px-2.5 text-teal-200">${pn}</td></tr>`;}).join('');window.showToast('Tải lịch sử thành công!','✅');}catch(e){tb.innerHTML=`<tr><td colspan="4" class="text-center py-8 text-red-400 font-bold text-[10.5px]">Lỗi tải!</td></tr>`;}};
+
+/* ===== RENDER ALL ===== */
+window.renderAll=function(){
+['view-customer','view-bungalow','view-reception','view-admin','welcome-screen','main-customer-content'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+const bp=state.orders.filter(o=>o.status==='pending').length;
+document.getElementById('pending-count-bungalow').innerText=`(${bp})`;
+if(state.currentRole==='customer'){document.getElementById('view-customer').classList.remove('hidden');if(!state.tableSelected)document.getElementById('welcome-screen').classList.remove('hidden');else{document.getElementById('main-customer-content').classList.remove('hidden');window.renderCustomer();}}
+else if(state.currentRole==='bungalow'){document.getElementById('view-bungalow').classList.remove('hidden');window.renderBungalow();}
+else if(state.currentRole==='reception'){document.getElementById('view-reception').classList.remove('hidden');window.renderReception();}
+else if(state.currentRole==='admin'){document.getElementById('view-admin').classList.remove('hidden');window.renderAdmin();}
+};
+</script>
+</body>
+</html>

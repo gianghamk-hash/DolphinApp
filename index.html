@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin Ha Long Cruise</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;padding:0;height:100%;overflow:hidden}
+body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
+
+/* ==================== BRAND ==================== */
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.28em;
+  background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 4px 24px rgba(244,184,66,.65));
+  font-size:clamp(2.2rem,9vw,4.5rem);line-height:1;margin:0;padding-left:.28em}
+.brand-sub{letter-spacing:.55em;font-size:clamp(.55rem,1.7vw,.85rem);color:#bfe9dc;
+  font-weight:800;text-transform:uppercase;margin-top:.6rem;padding-left:.55em}
+
+/* ==================== WELCOME ==================== */
+.welcome-lbl{text-align:center;font-size:clamp(.8rem,1.7vw,1.05rem);font-weight:800;
+  color:#e6f7f2;margin:0 0 clamp(1.25rem,3vw,2rem);text-shadow:0 2px 10px rgba(0,0,0,.7);
+  letter-spacing:.02em;line-height:1.5}
+.welcome-lbl .wlc-vi{display:block;color:#FBD77A}
+.welcome-lbl .wlc-en{display:block;font-size:.85em;color:#bfe9dc;font-weight:700;margin-top:.35em;letter-spacing:.08em}
+
+/* ==================== AREA CARDS ==================== */
+.area-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(.75rem,2vw,1.25rem)}
+@media(min-width:900px){.area-grid{grid-template-columns:repeat(4,1fr)}}
+
+.area-card{position:relative;background:rgba(25,71,67,.55);
+  backdrop-filter:blur(18px) saturate(140%);-webkit-backdrop-filter:blur(18px) saturate(140%);
+  border:1px solid rgba(244,184,66,.25);border-radius:22px;
+  padding:1.8rem 1rem 1.5rem;text-align:center;cursor:pointer;
+  transition:all .45s cubic-bezier(.16,1,.3,1);overflow:hidden;isolation:isolate;
+  font-family:'Nunito',sans-serif;color:#fff;display:flex;flex-direction:column;
+  align-items:center;justify-content:center;width:100%;min-height:190px;gap:.4rem;
+  -webkit-appearance:none;appearance:none;outline:none}
+.area-card::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;
+  background:linear-gradient(135deg,rgba(244,184,66,.55),transparent 45%,rgba(244,184,66,.35));
+  -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
+  -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.75;transition:opacity .4s}
+.area-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(244,184,66,.85);
+  box-shadow:0 28px 56px -16px rgba(0,0,0,.7),0 0 50px -10px rgba(244,184,66,.55)}
+.area-card:hover::before{opacity:1}
+.area-card:hover .area-icon{transform:scale(1.2) rotate(-8deg)}
+.area-card:hover .area-title-en{color:#FBD77A;text-shadow:0 0 20px rgba(244,184,66,.7)}
+.area-card:active{transform:translateY(-2px) scale(.99)}
+.area-icon{font-size:clamp(2.6rem,6vw,3.6rem);line-height:1;display:block;margin-bottom:.85rem;
+  transition:transform .5s cubic-bezier(.16,1,.3,1);filter:drop-shadow(0 8px 16px rgba(0,0,0,.5))}
+.area-title-en{font-weight:900;font-size:clamp(.85rem,1.9vw,1.1rem);letter-spacing:.06em;
+  text-transform:uppercase;color:#fff;margin:0;transition:all .3s;line-height:1.15}
+.area-title-vi{font-weight:700;font-size:clamp(.7rem,1.5vw,.9rem);color:#bfe9dc;
+  margin:0;letter-spacing:.04em;opacity:.9;font-style:italic}
+.area-badge{position:absolute;top:.75rem;right:.85rem;
+  background:linear-gradient(135deg,#FBD77A,#D99A2B);color:#123634;
+  font-size:.55rem;font-weight:900;letter-spacing:.12em;
+  padding:3px 8px;border-radius:99px;text-transform:uppercase;box-shadow:0 3px 10px rgba(244,184,66,.5)}
+
+/* ==================== SCENE ANIM ==================== */
+@keyframes wave-flow{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.wave-anim{animation:wave-flow 14s linear infinite}
+.wave-anim-2{animation:wave-flow 22s linear infinite reverse}
+@keyframes cloud-drift{0%{transform:translateX(-6%)}100%{transform:translateX(6%)}}
+.cloud{animation:cloud-drift 32s ease-in-out infinite alternate}
+.cloud-2{animation:cloud-drift 40s ease-in-out infinite alternate-reverse;animation-delay:-8s}
+@keyframes boat-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(7px) rotate(.6deg)}}
+.boat{animation:boat-bob 5s ease-in-out infinite;transform-origin:center}
+.boat-2{animation:boat-bob 6.5s ease-in-out infinite;animation-delay:-2s;transform-origin:center}
+@keyframes sun-breathe{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.07);opacity:1}}
+.sun{animation:sun-breathe 6s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
+@keyframes bird-fly{0%{transform:translate(-150px,0);opacity:0}12%{opacity:.75}88%{opacity:.75}100%{transform:translate(1600px,-80px);opacity:0}}
+.bird-track{animation:bird-fly 48s linear infinite}
+.bird-track-2{animation:bird-fly 65s linear infinite;animation-delay:-20s}
+@keyframes float-up{0%{transform:translateY(28px);opacity:0}100%{transform:translateY(0);opacity:1}}
+.fade-up{animation:float-up .85s cubic-bezier(.16,1,.3,1) both}
+.d-1{animation-delay:.08s}.d-2{animation-delay:.22s}
+
+/* ==================== TRANSITIONS ==================== */
+#landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
+  position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden}
+#landing.fade-out{opacity:0;transform:scale(1.06);pointer-events:none}
+#app-view{opacity:0;transition:opacity .45s ease;position:fixed;inset:0;z-index:40;background:#123634}
+#app-view.show{opacity:1}
+#app-frame{width:100%;height:100%;border:0;display:block;background:#123634;position:absolute;inset:0;z-index:1}
+#app-frame.hidden-frame{opacity:0}
+#app-loading{position:absolute;inset:0;z-index:5;display:flex;align-items:center;
+  justify-content:center;flex-direction:column;gap:1rem;background:#123634;
+  transition:opacity .4s;pointer-events:none}
+#app-loading.hide{opacity:0}
+.loader-ring{width:56px;height:56px;border:4px solid rgba(244,184,66,.2);
+  border-top-color:#F4B842;border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{color:#FBD77A;font-weight:800;font-size:.85rem;letter-spacing:.15em;text-transform:uppercase}
+
+/* ==================== FLOATING HOME CONTROLS (NHỎ GỌN) ==================== */
+#home-controls{position:fixed;top:10px;left:10px;z-index:1000;
+  display:flex;gap:6px;align-items:center;transition:all .3s cubic-bezier(.16,1,.3,1);
+  user-select:none;-webkit-user-select:none}
+#btn-home{width:38px;height:38px;border-radius:50%;
+  background:rgba(18,54,52,.72);border:1px solid rgba(244,184,66,.5);
+  color:#FBD77A;display:flex;align-items:center;justify-content:center;
+  cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
+  box-shadow:0 4px 14px rgba(0,0,0,.4);transition:all .25s;
+  -webkit-appearance:none;appearance:none;padding:0}
+#btn-home:hover{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
+  transform:scale(1.08);box-shadow:0 6px 18px rgba(244,184,66,.5)}
+#btn-home:active{transform:scale(.95)}
+#btn-home svg{width:18px;height:18px;pointer-events:none}
+
+#btn-toggle{width:26px;height:26px;border-radius:50%;
+  background:rgba(18,54,52,.55);border:1px solid rgba(244,184,66,.3);
+  color:rgba(251,215,122,.85);display:flex;align-items:center;justify-content:center;
+  cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 3px 10px rgba(0,0,0,.3);transition:all .25s;
+  font-size:12px;-webkit-appearance:none;appearance:none;padding:0;line-height:1}
+#btn-toggle:hover{background:rgba(18,54,52,.85);color:#FBD77A;transform:scale(1.1)}
+
+/* Trạng thái ẩn: thu nhỏ thành chấm mờ */
+#home-controls.minimized #btn-home{width:14px;height:14px;opacity:.35;border-color:rgba(244,184,66,.4)}
+#home-controls.minimized #btn-home svg{display:none}
+#home-controls.minimized #btn-toggle{display:none}
+#home-controls.minimized #btn-home::after{content:'';width:6px;height:6px;border-radius:50%;
+  background:#FBD77A;box-shadow:0 0 6px rgba(244,184,66,.8)}
+#home-controls.minimized #btn-home:hover{width:38px;height:38px;opacity:1}
+#home-controls.minimized #btn-home:hover::after{display:none}
+#home-controls.minimized #btn-home:hover svg{display:block}
+
+/* ==================== PIN MODAL (SHOW) ==================== */
+#pin-modal{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
+  background:rgba(10,22,40,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
+  padding:1rem;opacity:0;pointer-events:none;transition:opacity .3s}
+#pin-modal.show{opacity:1;pointer-events:auto}
+.pin-card{background:rgba(25,71,67,.92);border:1px solid rgba(244,184,66,.4);
+  border-radius:22px;padding:1.75rem 1.5rem;width:100%;max-width:360px;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.6);position:relative;
+  transform:translateY(10px) scale(.97);transition:transform .35s cubic-bezier(.16,1,.3,1)}
+#pin-modal.show .pin-card{transform:translateY(0) scale(1)}
+.pin-icon{width:64px;height:64px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;
+  font-size:28px;background:linear-gradient(135deg,rgba(244,184,66,.2),rgba(244,184,66,.05));
+  border:1px solid rgba(244,184,66,.5);border-radius:50%;
+  box-shadow:0 6px 24px rgba(244,184,66,.25)}
+.pin-title{font-weight:900;color:#FBD77A;font-size:1rem;letter-spacing:.08em;
+  text-transform:uppercase;margin:0 0 .35rem}
+.pin-sub{font-size:.8rem;color:#bfe9dc;font-weight:600;margin:0 0 1.25rem;line-height:1.5}
+#pin-input{width:100%;background:rgba(18,54,52,.8);border:1px solid rgba(244,184,66,.45);
+  border-radius:12px;padding:1rem;text-align:center;font-size:2rem;
+  letter-spacing:.5em;color:#fff;font-weight:900;outline:none;
+  font-family:'Nunito',sans-serif;transition:all .25s}
+#pin-input:focus{border-color:#FBD77A;box-shadow:0 0 0 3px rgba(244,184,66,.15)}
+#pin-error{color:#ef4444;font-size:.78rem;font-weight:700;
+  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.35);
+  padding:.5rem;border-radius:8px;margin:.65rem 0 0;display:none}
+#pin-error.show{display:block;animation:shake .35s}
+@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
+.pin-actions{display:flex;gap:.65rem;margin-top:1.25rem}
+.pin-actions button{flex:1;padding:.9rem .5rem;border-radius:12px;
+  font-weight:900;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
+  border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
+  -webkit-appearance:none;appearance:none}
+.btn-pin-cancel{background:rgba(18,54,52,.8);color:#bfe9dc;border:1px solid rgba(55,137,123,.5)}
+.btn-pin-cancel:hover{background:rgba(18,54,52,1)}
+.btn-pin-ok{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
+  box-shadow:0 6px 18px rgba(244,184,66,.4)}
+.btn-pin-ok:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(244,184,66,.55)}
+.btn-pin-ok:active{transform:scale(.97)}
+
+/* ==================== MOBILE ==================== */
+@media (max-width:380px){
+  .area-card{min-height:160px;padding:1.4rem .7rem 1.2rem;gap:.3rem}
+  .area-icon{font-size:2.2rem;margin-bottom:.5rem}
+  #btn-home{width:34px;height:34px}
+  #btn-toggle{width:24px;height:24px}
+}
+@media (max-height:560px) and (orientation:landscape){
+  .brand-title{font-size:clamp(1.6rem,5vw,2.6rem)}
+  .area-card{min-height:130px;padding:1rem .5rem .9rem}
+  .area-icon{font-size:2rem;margin-bottom:.4rem}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════ LANDING PAGE ══════════════ -->
+<div id="landing">
+  <svg style="position:fixed;inset:0;width:100%;height:100%;z-index:-1" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <defs>
+      <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fb4d9"/><stop offset="0.55" stop-color="#a9e0e6"/><stop offset="1" stop-color="#fbf0cf"/></linearGradient>
+      <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fb8b0"/><stop offset="0.5" stop-color="#2a9d9b"/><stop offset="1" stop-color="#1c7c82"/></linearGradient>
+      <linearGradient id="farM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb9c9"/><stop offset="1" stop-color="#b9d9de"/></linearGradient>
+      <linearGradient id="midM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8f86"/><stop offset="1" stop-color="#6fb0a4"/></linearGradient>
+      <linearGradient id="nearM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f7461"/><stop offset="1" stop-color="#3f8c73"/></linearGradient>
+      <radialGradient id="sunCorona" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff6c8" stop-opacity="0.58"/><stop offset="0.4" stop-color="#ffe4a0" stop-opacity="0.3"/><stop offset="1" stop-color="#ffd080" stop-opacity="0"/></radialGradient>
+      <radialGradient id="sunHalo" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffffff" stop-opacity="1"/><stop offset="0.7" stop-color="#fff6c8" stop-opacity="0.98"/><stop offset="1" stop-color="#ffe090" stop-opacity="0.9"/></radialGradient>
+      <filter id="cloudBlur"><feGaussianBlur stdDeviation="1.6"/></filter>
+      <radialGradient id="vignette" cx="0.5" cy="0.55" r="0.72"><stop offset="0.5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>
+    </defs>
+    <rect width="1440" height="900" fill="url(#skyG)"/>
+    <g class="sun" style="transform-origin:1100px 250px"><circle cx="1100" cy="250" r="400" fill="url(#sunCorona)"/><circle cx="1100" cy="250" r="155" fill="url(#sunHalo)"/><circle cx="1100" cy="250" r="88" fill="#ffffff" opacity="0.96"/><ellipse cx="1075" cy="225" rx="30" ry="22" fill="#ffffff" opacity="0.7"/></g>
+    <g class="cloud" filter="url(#cloudBlur)" fill="#ffffff" opacity="0.78"><ellipse cx="200" cy="120" rx="110" ry="30"/><ellipse cx="290" cy="100" rx="78" ry="34"/><ellipse cx="130" cy="108" rx="65" ry="24"/><ellipse cx="240" cy="138" rx="130" ry="20" fill="#eef8fb"/></g>
+    <g class="cloud-2" filter="url(#cloudBlur)" fill="#ffffff" opacity="0.72"><ellipse cx="1180" cy="90" rx="120" ry="28"/><ellipse cx="1290" cy="75" rx="85" ry="32"/><ellipse cx="1110" cy="80" rx="70" ry="22"/><ellipse cx="1200" cy="115" rx="140" ry="18" fill="#eef8fb"/></g>
+    <g class="cloud" style="animation-delay:-15s" filter="url(#cloudBlur)" fill="#ffffff" opacity="0.6"><ellipse cx="700" cy="160" rx="90" ry="24"/><ellipse cx="770" cy="145" rx="60" ry="28"/><ellipse cx="650" cy="150" rx="55" ry="20"/></g>
+    <g class="bird-track" opacity="0.7"><g transform="translate(300,180)"><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a"/></g><g transform="translate(320,188)"><path d="M0 0 Q4 -3 8 0 Q4 -1 0 0" fill="#2a4a5a"/></g><g transform="translate(335,182)"><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a"/></g></g>
+    <g class="bird-track-2" opacity="0.55"><g transform="translate(400,220)"><path d="M0 0 Q4 -3 8 0 Q4 -1 0 0" fill="#2a4a5a"/></g><g transform="translate(415,226)"><path d="M0 0 Q3 -2 6 0 Q3 -1 0 0" fill="#2a4a5a"/></g></g>
+    <path d="M0 420 L60 350 Q80 330 105 350 L150 390 L210 310 Q232 285 258 312 L300 380 L380 350 Q400 335 420 355 L470 400 L560 320 Q585 298 610 325 L660 390 L760 330 Q785 310 808 332 L860 390 L950 335 Q975 315 1000 338 L1060 400 L1130 340 Q1155 320 1180 345 L1200 365 L1200 470 L0 470Z" fill="url(#farM)"/>
+    <path d="M0 480 L40 410 Q70 365 110 390 L150 430 L200 370 Q235 330 270 370 L320 450 L420 380 Q460 345 495 385 L540 450 L700 390 Q740 355 775 395 L820 460 L980 385 Q1020 355 1055 390 L1110 450 L1200 400 L1200 540 L0 540Z" fill="url(#midM)"/>
+    <g fill="#3f8c73" opacity="0.6"><circle cx="270" cy="378" r="15"/><circle cx="300" cy="392" r="11"/><circle cx="495" cy="392" r="14"/><circle cx="775" cy="400" r="15"/><circle cx="1055" cy="398" r="14"/></g>
+    <rect y="480" width="1440" height="420" fill="url(#seaG)"/><rect y="480" width="1440" height="30" fill="#cdeef0" opacity="0.3"/>
+    <ellipse cx="1100" cy="520" rx="140" ry="5" fill="#fff6c8" opacity="0.6"/><ellipse cx="1100" cy="545" rx="200" ry="4" fill="#fff6c8" opacity="0.45"/><ellipse cx="1100" cy="575" rx="120" ry="3" fill="#fff6c8" opacity="0.3"/>
+    <g class="wave-anim" stroke="#d9f6f2" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"><path d="M0 620 q30 -12 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/></g>
+    <g class="wave-anim-2" stroke="#d9f6f2" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.42"><path d="M0 700 q32 -12 64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0"/></g>
+    <g class="wave-anim" style="animation-duration:24s" stroke="#d9f6f2" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.35"><path d="M0 780 q36 -14 72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0"/></g>
+    <path d="M-30 900 L-30 720 Q10 670 70 700 L120 650 Q160 620 205 660 L250 720 Q290 745 320 790 L330 900Z" fill="url(#nearM)"/>
+    <path d="M1140 900 L1160 740 Q1200 680 1250 700 L1290 650 Q1335 630 1375 670 L1410 900Z" fill="url(#nearM)"/>
+    <g fill="#7cc58f" opacity="0.75"><circle cx="85" cy="708" r="16"/><circle cx="130" cy="665" r="14"/><circle cx="195" cy="668" r="15"/><circle cx="1250" cy="708" r="15"/><circle cx="1300" cy="665" r="14"/></g>
+    <g class="boat" transform="translate(450 640)"><path d="M0 40 L140 40 L124 58 L16 58Z" fill="#f6efe0"/><rect x="14" y="32" width="112" height="10" fill="#fffaf0"/><rect x="68" y="-10" width="5" height="46" fill="#8B6914" opacity="0.7"/><path d="M40 32 L52 -8 L66 32Z" fill="#e8a24a"/><path d="M64 32 L80 -14 L96 32Z" fill="#d98a35"/><path d="M94 32 L108 -4 L122 32Z" fill="#e8a24a"/></g>
+    <g class="boat-2" transform="translate(880 720) scale(.55)" opacity="0.75"><path d="M0 40 L140 40 L124 58 L16 58Z" fill="#f6efe0"/><path d="M40 32 L52 -8 L66 32Z" fill="#e8a24a"/><path d="M64 32 L80 -14 L96 32Z" fill="#d98a35"/></g>
+    <rect width="1440" height="900" fill="url(#vignette)"/>
+  </svg>
+
+  <div style="position:relative;z-index:10;width:100%;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem">
+    <div style="width:100%;max-width:1200px">
+
+      <div class="text-center fade-up" style="margin-bottom:clamp(1.5rem,3.5vw,2.5rem)">
+        <h1 class="brand-title">DOLPHIN</h1>
+        <p class="brand-sub">Ha Long Cruise</p>
+      </div>
+
+      <p class="fade-up d-1 welcome-lbl">
+        <span class="wlc-vi">Vui lòng chọn khu vực của quý khách</span>
+        <span class="wlc-en">Please select your area</span>
+      </p>
+
+      <div class="fade-up d-2 area-grid">
+
+        <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
+          <span class="area-badge">VIP</span>
+          <span class="area-icon">🍸</span>
+          <h3 class="area-title-en">PREMIUM LOUNGE ACCESS</h3>
+          <p class="area-title-vi">Phòng LOUNGE</p>
+        </button>
+
+        <button type="button" class="area-card" onclick="openApp('bungalow')" aria-label="Bungalow">
+          <span class="area-icon">🌴</span>
+          <h3 class="area-title-en">BUNGALOW</h3>
+          <p class="area-title-vi">KHU VỰC CHÒI BUNGALOW</p>
+        </button>
+
+        <button type="button" class="area-card" onclick="openApp('restaurant')" aria-label="Restaurant">
+          <span class="area-badge">BUFFET ALACARTE</span>
+          <span class="area-icon">🍽️</span>
+          <h3 class="area-title-en">SUN VIEW RESTAURANT</h3>
+          <p class="area-title-vi">Nhà Hàng Tầng 2</p>
+        </button>
+
+        <button type="button" class="area-card" onclick="openApp('show')" aria-label="Infinity Show">
+          <span class="area-badge">🔒 PIN</span>
+          <span class="area-icon">🎭</span>
+          <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
+          <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
+        </button>
+
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ APP VIEW (IFRAME) ══════════════ -->
+<div id="app-view" class="hidden">
+  <!-- Floating home controls (nhỏ gọn, có thể ẩn/hiện) -->
+  <div id="home-controls">
+    <button type="button" id="btn-home" onclick="goHome()" title="Quay lại trang chủ" aria-label="Trang chủ">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M3 11l9-8 9 8"/>
+        <path d="M5 10v10h14V10"/>
+      </svg>
+    </button>
+    <button type="button" id="btn-toggle" onclick="toggleHomeBtn()" title="Ẩn nút" aria-label="Ẩn/hiện nút">
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M9 12l2 2 4-4"/>
+      </svg>
+    </button>
+  </div>
+
+  <div id="app-loading"><div class="loader-ring"></div><div class="loader-text">Đang tải...</div></div>
+  <iframe id="app-frame" allow="microphone; camera; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen" title="Dolphin App"></iframe>
+</div>
+
+<!-- ══════════════ PIN MODAL (INFINITY SHOW) ══════════════ -->
+<div id="pin-modal">
+  <div class="pin-card">
+    <div class="pin-icon">🔒</div>
+    <h3 class="pin-title">Infinity Show</h3>
+    <p class="pin-sub">Khu vực nội bộ —<br>Vui lòng nhập mật khẩu để tiếp tục</p>
+    <input type="password" id="pin-input" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="Mật khẩu">
+    <p id="pin-error">❌ Mật khẩu không đúng. Vui lòng thử lại!</p>
+    <div class="pin-actions">
+      <button type="button" class="btn-pin-cancel" onclick="closePinModal()">Hủy</button>
+      <button type="button" class="btn-pin-ok" onclick="verifyPin()">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  /* ============ CONFIG ============ */
+  var APP_MAP = {
+    lounge:     'dolphin-lounge.html',
+    bungalow:   'dolphin-bungalow.html',
+    restaurant: 'dolphin-restaurant.html',
+    show:       'dolphin-show.html'
+  };
+  var SHOW_PIN = '1111';          // mật khẩu cho Infinity Show
+  var SESSION_KEY = 'dolphinShowAuthed';
+
+  var currentApp = null;
+  var transitionLock = false;
+  var pendingShowOpen = false;
+
+  /* ============ HOME BUTTON TOGGLE ============ */
+  var HOME_KEY = 'dolphinHomeBtnHidden';
+
+  function applyHomeBtnState(){
+    var ctrl = document.getElementById('home-controls');
+    var hidden = localStorage.getItem(HOME_KEY) === '1';
+    ctrl.classList.toggle('minimized', hidden);
+  }
+
+  window.toggleHomeBtn = function(){
+    var ctrl = document.getElementById('home-controls');
+    var nowHidden = !ctrl.classList.contains('minimized');
+    localStorage.setItem(HOME_KEY, nowHidden ? '1' : '0');
+    ctrl.classList.toggle('minimized', nowHidden);
+  };
+
+  applyHomeBtnState();
+
+  /* ============ PIN MODAL ============ */
+  var pinModal = document.getElementById('pin-modal');
+  var pinInput = document.getElementById('pin-input');
+  var pinError = document.getElementById('pin-error');
+
+  window.openPinModal = function(){
+    pinInput.value = '';
+    pinError.classList.remove('show');
+    pinModal.classList.add('show');
+    setTimeout(function(){ pinInput.focus(); }, 250);
+  };
+
+  window.closePinModal = function(){
+    pinModal.classList.remove('show');
+    pendingShowOpen = false;
+  };
+
+  window.verifyPin = function(){
+    var val = (pinInput.value || '').trim();
+    if (val === SHOW_PIN) {
+      try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e){}
+      pinModal.classList.remove('show');
+      var shouldOpen = pendingShowOpen;
+      pendingShowOpen = false;
+      if (shouldOpen) doOpenApp('show');
+    } else {
+      pinError.classList.remove('show');
+      void pinError.offsetWidth;
+      pinError.classList.add('show');
+      pinInput.value = '';
+      pinInput.focus();
+    }
+  };
+
+  // Enter để xác nhận
+  pinInput.addEventListener('keydown', function(e){
+    if (e.key === 'Enter') { e.preventDefault(); window.verifyPin(); }
+    if (e.key === 'Escape') { e.preventDefault(); window.closePinModal(); }
+  });
+
+  /* ============ OPEN APP ============ */
+  window.openApp = function(area){
+    if (transitionLock) return;
+    if (!APP_MAP[area]) return;
+
+    // Infinity Show cần PIN
+    if (area === 'show') {
+      var authed = false;
+      try { authed = sessionStorage.getItem(SESSION_KEY) === '1'; } catch(e){}
+      if (!authed) {
+        pendingShowOpen = true;
+        window.openPinModal();
+        return;
+      }
+    }
+
+    doOpenApp(area);
+  };
+
+  function doOpenApp(area){
+    if (transitionLock) return;
+    var url = APP_MAP[area];
+    if (!url) return;
+
+    transitionLock = true;
+
+    // Push hash cho nút Back
+    if (location.hash !== '#' + area) {
+      try { history.pushState({area: area}, '', '#' + area); } catch(e) { location.hash = area; }
+    }
+    currentApp = area;
+
+    var frame   = document.getElementById('app-frame');
+    var view    = document.getElementById('app-view');
+    var landing = document.getElementById('landing');
+    var loading = document.getElementById('app-loading');
+
+    loading.classList.remove('hide');
+    frame.classList.add('hidden-frame');
+
+    var done = false;
+    var onLoaded = function(){
+      if (done) return; done = true;
+      frame.removeEventListener('load', onLoaded);
+      setTimeout(function(){
+        loading.classList.add('hide');
+        frame.classList.remove('hidden-frame');
+        transitionLock = false;
+      }, 300);
+    };
+    frame.addEventListener('load', onLoaded);
+    frame.src = url;
+
+    // Fallback nếu iframe không load sau 10s
+    setTimeout(function(){
+      if (done) return; done = true;
+      loading.classList.add('hide');
+      frame.classList.remove('hidden-frame');
+      transitionLock = false;
+    }, 10000);
+
+    landing.classList.add('fade-out');
+    setTimeout(function(){
+      landing.style.display = 'none';
+      view.classList.remove('hidden');
+      void view.offsetWidth;
+      requestAnimationFrame(function(){ view.classList.add('show'); });
+    }, 420);
+  }
+
+  /* ============ GO HOME ============ */
+  window.goHome = function(){
+    if (transitionLock) return;
+    transitionLock = true;
+
+    if (location.hash) {
+      try { history.pushState({}, '', location.pathname + location.search); }
+      catch(e){ location.hash = ''; }
+    }
+    currentApp = null;
+
+    var frame   = document.getElementById('app-frame');
+    var view    = document.getElementById('app-view');
+    var landing = document.getElementById('landing');
+    var loading = document.getElementById('app-loading');
+
+    view.classList.remove('show');
+    setTimeout(function(){
+      view.classList.add('hidden');
+      frame.src = 'about:blank';
+      loading.classList.remove('hide');
+      frame.classList.remove('hidden-frame');
+      landing.style.display = '';
+      void landing.offsetWidth;
+      requestAnimationFrame(function(){
+        landing.classList.remove('fade-out');
+        transitionLock = false;
+      });
+    }, 420);
+  };
+
+  /* ============ POPSTATE (Back/Forward) ============ */
+  window.addEventListener('popstate', function(){
+    if (transitionLock) return;
+    var hash = (location.hash || '').replace('#', '');
+    if (hash && APP_MAP[hash]) {
+      if (currentApp !== hash) window.openApp(hash);
+    } else {
+      if (currentApp) window.goHome();
+    }
+  });
+
+  /* ============ INITIAL HASH ============ */
+  window.addEventListener('DOMContentLoaded', function(){
+    var hash = (location.hash || '').replace('#', '');
+    if (hash && APP_MAP[hash]) {
+      setTimeout(function(){ window.openApp(hash); }, 350);
+    }
+  });
+
+  /* ============ CHỐNG DOUBLE-TAP ZOOM (iOS) ============ */
+  var lastTouch = 0;
+  document.addEventListener('touchend', function(e){
+    var now = Date.now();
+    if (now - lastTouch <= 320) e.preventDefault();
+    lastTouch = now;
+  }, { passive: false });
+
+})();
+</script>
+</body>
+</html>

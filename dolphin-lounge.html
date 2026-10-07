@@ -1,0 +1,2968 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Dolphin Premium Lounge - Smart Flow</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script>
+tailwind.config = {
+  theme: { extend: {
+    fontFamily: { serif: ['Cinzel','serif'], sans: ['Plus Jakarta Sans','sans-serif'] },
+    colors: { teal: { 950:'#0A3350',900:'#0E4573',800:'#135A93',700:'#1C79BD' }, gold: { 400:'#FBBF24',500:'#F59E0B',600:'#D97706' } },
+    animation: {
+      'spin-slow':'spin 3s linear infinite','cloud-drift-1':'cloudDrift 55s linear infinite','cloud-drift-2':'cloudDrift 75s linear infinite','cloud-drift-3':'cloudDrift 95s linear infinite',
+      'dolphin-jump':'dolphinJump 7s ease-in-out infinite','palm-sway':'palmSway 4.5s ease-in-out infinite','wave-move':'waveMove 10s linear infinite','card-pop':'cardPop 0.45s ease',
+      'wave-bob-1':'waveBob 6s ease-in-out infinite','wave-bob-2':'waveBob 7.5s ease-in-out infinite','foam-pulse':'foamPulse 3.5s ease-in-out infinite',
+      'breath':'breath 4s ease-in-out infinite','shimmer':'shimmer 3.5s linear infinite','fly':'fly 18s linear infinite','glitter':'glitter 2.5s ease-in-out infinite'
+    },
+    keyframes: {
+      cloudDrift:{'0%':{transform:'translateX(-10vw)'},'100%':{transform:'translateX(110vw)'}},
+      dolphinJump:{'0%,100%':{transform:'translate(0,0) rotate(0deg)'},'15%':{transform:'translate(8vw,-70px) rotate(-18deg)'},'30%':{transform:'translate(16vw,0) rotate(10deg)'},'45%':{transform:'translate(24vw,-70px) rotate(-18deg)'},'60%':{transform:'translate(32vw,0) rotate(10deg)'},'75%':{transform:'translate(40vw,-55px) rotate(-14deg)'},'90%':{transform:'translate(46vw,0) rotate(6deg)'}},
+      palmSway:{'0%,100%':{transform:'rotate(-3deg)'},'50%':{transform:'rotate(4deg)'}},
+      waveMove:{'0%':{backgroundPositionX:'0px'},'100%':{backgroundPositionX:'1000px'}},
+      cardPop:{'0%':{transform:'scale(1)'},'30%':{transform:'scale(1.035)',boxShadow:'0 0 0 3px rgba(56,189,248,0.45)'},'100%':{transform:'scale(1)'}},
+      waveBob:{'0%,100%':{transform:'translateX(0) translateY(0) scaleY(1)'},'50%':{transform:'translateX(-2%) translateY(-6px) scaleY(1.06)'}},
+      foamPulse:{'0%,100%':{opacity:'0.5',transform:'scaleX(1)'},'50%':{opacity:'0.85',transform:'scaleX(1.03)'}},
+      breath:{'0%,100%':{textShadow:'0 0 8px rgba(245,158,11,0.5), 0 0 20px rgba(245,158,11,0.3)'},'50%':{textShadow:'0 0 20px rgba(245,158,11,0.9), 0 0 45px rgba(245,158,11,0.6)'}},
+      shimmer:{'0%':{backgroundPosition:'-200% center'},'100%':{backgroundPosition:'200% center'}},
+      fly:{'0%':{transform:'translateX(-15vw) translateY(0)'},'25%':{transform:'translateX(25vw) translateY(-15px)'},'50%':{transform:'translateX(50vw) translateY(-30px)'},'75%':{transform:'translateX(75vw) translateY(-15px)'},'100%':{transform:'translateX(115vw) translateY(0)'}},
+      glitter:{'0%,100%':{opacity:'0',transform:'scale(0.5)'},'50%':{opacity:'1',transform:'scale(1.2)'}}
+    }
+  }}
+}
+</script>
+<style>
+body{background-color:#0A3350;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden;cursor:default}
+.text-shadow-gold{text-shadow:0 2px 10px rgba(245,158,11,0.4)}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1C79BD;border-radius:99px}::-webkit-scrollbar-thumb:hover{background:#F59E0B}
+.table-radio:checked+label,.lang-radio:checked+label{background:linear-gradient(135deg,#FBBF24 0%,#D97706 100%);color:#000;border-color:transparent;transform:scale(1.05) translateY(-2px);font-weight:900;box-shadow:0 10px 25px -5px rgba(245,158,11,0.5)}
+.glass-card{background:rgba(10,51,80,0.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08)}
+
+.cloud-shape{position:absolute;background:#fff;border-radius:100px;opacity:.9;filter:blur(.5px);box-shadow:0 10px 30px rgba(255,255,255,.25)}
+.cloud-shape::before,.cloud-shape::after{content:'';position:absolute;background:inherit;border-radius:50%}
+.horizon-hills{position:absolute;left:0;right:0;height:70px}
+.ocean-waves{position:absolute;left:0;right:0;bottom:0;height:140px;background-image:repeating-radial-gradient(circle at 40px -10px,transparent 0,transparent 38px,rgba(255,255,255,.3) 40px,rgba(255,255,255,.3) 42px,transparent 44px);background-size:90px 50px;opacity:.5;animation:waveMove 10s linear infinite}
+.wave-crest{position:absolute;left:0;width:140%}
+.foam-line{position:absolute;left:0;right:0;height:26px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));border-radius:50%;animation:foamPulse 3.5s ease-in-out infinite}
+.dolphin-track{position:absolute;left:0;width:100%}
+.palm-sway-inner{transform-origin:bottom center}
+.hammock-swing{position:absolute;transform-origin:top center;animation:palmSway 5s ease-in-out infinite;animation-delay:-1s}
+.menu-card{transition:transform .35s ease,box-shadow .35s ease;will-change:transform}
+
+.mist{position:absolute;left:0;right:0;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,255,255,.55),transparent);filter:blur(18px);opacity:0;transition:opacity 2s}
+.mist-1{animation:mistDrift 40s linear infinite}
+.mist-2{animation:mistDrift 55s linear infinite reverse}
+@keyframes mistDrift{0%{transform:translateX(-10%)}100%{transform:translateX(10%)}}
+
+.glitter-column{position:absolute;pointer-events:none;mix-blend-mode:screen;filter:blur(3px);transition:opacity 1.5s;opacity:0}
+.glitter-column .shard{position:absolute;height:2px;background:linear-gradient(90deg,transparent,#fff,transparent);border-radius:99px;animation:glitterShard 2.8s ease-in-out infinite}
+@keyframes glitterShard{0%,100%{opacity:.15;transform:scaleX(.6)}50%{opacity:.95;transform:scaleX(1.15)}}
+
+.bio-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,#a7f3ff 0%,rgba(34,211,238,0) 70%);box-shadow:0 0 12px #22d3ee;animation:bioFloat 12s ease-in-out infinite}
+@keyframes bioFloat{0%{transform:translateY(0) scale(.8);opacity:.2}50%{transform:translateY(-40px) scale(1.4);opacity:.9}100%{transform:translateY(-90px) scale(.6);opacity:0}}
+
+.ripple-host{position:relative;overflow:hidden}
+.ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rippleExpand .6s ease-out;pointer-events:none}
+@keyframes rippleExpand{to{transform:scale(4);opacity:0}}
+
+.skeleton{background:linear-gradient(90deg,rgba(20,60,90,.6) 25%,rgba(40,90,130,.8) 50%,rgba(20,60,90,.6) 75%);background-size:200% 100%;animation:skeletonShimmer 1.4s ease-in-out infinite;border-radius:12px}
+@keyframes skeletonShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
+
+#toast-progress{height:3px;background:linear-gradient(90deg,#FBBF24,#F59E0B);border-radius:99px;transition:width linear}
+.toast-anim{animation:toastIn .4s cubic-bezier(.2,.9,.3,1.4)}
+@keyframes toastIn{0%{transform:translateX(120%) translateY(-20px);opacity:0}100%{transform:translateX(0) translateY(0);opacity:1}}
+
+.call-pulse{position:relative}
+.call-pulse::before,.call-pulse::after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid rgba(245,158,11,.6);animation:callRing 2s ease-out infinite}
+.call-pulse::after{animation-delay:1s}
+@keyframes callRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
+
+.logo-glow{animation:breath 4s ease-in-out infinite}
+.logo-shimmer{background:linear-gradient(90deg,#F59E0B 0%,#FBBF24 25%,#FFF7C2 50%,#FBBF24 75%,#F59E0B 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 3.5s linear infinite}
+
+.vip-spark{position:absolute;width:14px;height:14px;pointer-events:none;opacity:0;animation:vipTwinkle 1.8s ease-in-out infinite}
+@keyframes vipTwinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0deg)}50%{opacity:1;transform:scale(1.1) rotate(180deg)}}
+
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:500}
+#dust-canvas{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.55}
+
+#cocktail-cursor{position:fixed;pointer-events:none;z-index:9999;width:32px;height:32px;transition:transform .12s ease;opacity:0;transform:translate(-50%,-50%) scale(.6)}
+body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) scale(1)}
+
+#scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#FBBF24,#22d3ee,#FBBF24);background-size:200% 100%;z-index:999;width:0;box-shadow:0 0 10px rgba(245,158,11,.7);transition:width .1s linear;animation:shimmer 4s linear infinite}
+
+/* === Celestial — Sun là điểm nhấn chính === */
+#celestial-core { will-change: left, top, width, height, opacity, box-shadow, background; transition: left 1.2s linear, top 1.2s linear, width 1.2s ease, height 1.2s ease, box-shadow 1.2s ease, background 1.2s ease; }
+#celestial-glow { will-change: left, top, width, height, opacity; }
+
+/* === Sound toggle with mode popover === */
+.sound-toggle{position:relative;transition:all .3s}
+.sound-toggle.active{color:#FBBF24;text-shadow:0 0 12px rgba(245,158,11,.9);border-color:rgba(245,158,11,.6)!important}
+.sound-toggle.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(245,158,11,.7);animation:callRing 2s ease-out infinite}
+.sound-menu{position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,51,80,.95);backdrop-filter:blur(20px);border:1px solid rgba(245,158,11,.4);border-radius:16px;padding:8px;box-shadow:0 20px 40px rgba(0,0,0,.6);min-width:260px;transform-origin:top right;transition:all .25s cubic-bezier(.2,.9,.3,1.2);z-index:300}
+.sound-menu.hidden-pop{opacity:0;transform:scale(.9) translateY(-6px);pointer-events:none}
+.sound-menu .menu-title{padding:8px 14px 4px;font-size:9px;font-weight:900;color:#FBBF24;text-transform:uppercase;letter-spacing:.15em;opacity:.8}
+.sound-menu button.mode-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:11.5px;color:#cbd5e1;width:100%;text-align:left;transition:all .18s;letter-spacing:.01em}
+.sound-menu button.mode-btn:hover{background:rgba(28,121,189,.3);color:#fff}
+.sound-menu button.mode-btn.active{background:linear-gradient(135deg,#FBBF24,#D97706);color:#000;box-shadow:0 4px 12px rgba(245,158,11,.4)}
+.sound-menu button.mode-btn .icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
+.sound-menu button.mode-btn .meta{display:flex;flex-direction:column;flex:1;min-width:0}
+.sound-menu button.mode-btn .meta .name{font-weight:900;font-size:11.5px;line-height:1.2}
+.sound-menu button.mode-btn .meta .sub{font-size:8.5px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
+.sound-menu button.mode-btn.active .meta .sub{opacity:.75}
+.sound-menu .divider{height:1px;background:rgba(255,255,255,.08);margin:6px 0}
+.sound-menu .vol-wrap{padding:8px 12px 4px}
+.sound-menu input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#FBBF24,#F59E0B);border-radius:99px;outline:none}
+.sound-menu input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(245,158,11,.9);cursor:pointer}
+
+.weather-badge{transition:all .6s ease}
+
+@media(max-width:767px){
+  .hammock-swing svg{width:200px!important;height:75px!important}
+  .palm-sway-inner svg{width:95px!important;height:174px!important}
+  .dolphin-track svg{width:38px!important;height:19px!important}
+  .horizon-hills{opacity:.65}
+  .wave-crest{height:26px!important}
+  .foam-line{height:18px!important}
+  .hammock-swing{opacity:.55}
+  #btn-role-customer,#btn-role-reception,#btn-role-bungalow,#btn-role-staff,#btn-role-admin{padding:6px 10px!important;font-size:10px!important}
+  #cocktail-cursor{display:none}
+  .sound-menu{min-width:230px}
+  .sound-menu button.mode-btn{padding:9px 10px;font-size:11px}
+}
+@media(min-width:768px){#sky-scene{filter:saturate(1.05)}}
+@media(prefers-reduced-motion:reduce){.dolphin-track,.hammock-swing,.palm-sway-inner,.wave-crest,.foam-line,.ocean-waves,.cloud-shape,.logo-glow,.logo-shimmer,.shimmer{animation:none!important}}
+</style>
+</head>
+<body class="min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black relative z-0">
+
+<div id="scroll-progress"></div>
+<canvas id="confetti-canvas"></canvas>
+<canvas id="dust-canvas"></canvas>
+
+<div id="cocktail-cursor">
+  <svg viewBox="0 0 32 32" width="32" height="32" style="filter:drop-shadow(0 2px 6px rgba(245,158,11,.6))">
+    <path d="M6,6 L16,16 L26,6 Z" fill="#FBBF24" opacity=".9"/>
+    <path d="M6,6 L16,16 L26,6" fill="none" stroke="#D97706" stroke-width="1.5"/>
+    <line x1="16" y1="16" x2="16" y2="26" stroke="#fff" stroke-width="1.5"/>
+    <line x1="11" y1="27" x2="21" y2="27" stroke="#fff" stroke-width="1.5"/>
+    <circle cx="23" cy="4" r="3" fill="#ef4444"/>
+    <circle cx="23" cy="3" r="1.5" fill="#22c55e"/>
+  </svg>
+</div>
+
+<div id="sky-scene" class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
+  <div id="sky-gradient" class="absolute inset-0 transition-[background] duration-[1500ms] ease-linear"></div>
+  <div id="celestial-wrap" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0">
+    <div id="celestial-glow" class="absolute rounded-full" style="width:280px;height:280px;transform:translate(-50%,-50%);filter:blur(45px)"></div>
+    <div id="celestial-core" class="absolute rounded-full" style="width:80px;height:80px;transform:translate(-50%,-50%)"></div>
+  </div>
+  <div id="glitter-col" class="glitter-column" style="width:140px;height:26%;left:50%;bottom:22%"></div>
+  <div id="clouds-layer" class="absolute inset-0">
+    <div class="cloud-shape animate-cloud-drift-1" style="top:5%;width:130px;height:42px"></div>
+    <div class="cloud-shape animate-cloud-drift-2" style="top:13%;width:170px;height:48px;opacity:.85"></div>
+    <div class="cloud-shape animate-cloud-drift-3" style="top:2%;width:100px;height:34px;opacity:.75"></div>
+  </div>
+  <div class="horizon-hills" style="top:33%">
+    <svg viewBox="0 0 1000 120" width="100%" height="100%" preserveAspectRatio="none">
+      <path d="M0,120 L0,75 L70,45 L150,80 L230,35 L320,68 L410,25 L500,58 L590,20 L680,55 L770,30 L860,62 L930,22 L1000,58 L1000,120 Z" fill="#7FB3C2" opacity=".5"/>
+      <path d="M0,120 L0,95 L110,62 L210,88 L310,58 L430,84 L540,52 L650,82 L760,48 L880,80 L1000,65 L1000,120 Z" fill="#4F9C8E" opacity=".65"/>
+    </svg>
+  </div>
+  <div class="mist mist-1" style="top:34%;height:80px"></div>
+  <div class="mist mist-2" style="top:36%;height:60px"></div>
+  <svg class="wave-crest animate-wave-bob-1" style="bottom:20%" viewBox="0 0 800 60" height="40" preserveAspectRatio="none">
+    <path d="M0,40 Q40,15 80,35 Q120,52 160,32 Q200,12 240,34 Q280,52 320,30 Q360,10 400,32 Q440,50 480,30 Q520,12 560,32 Q600,50 640,30 Q680,12 720,34 Q760,50 800,32 L800,60 L0,60 Z" fill="rgba(255,255,255,.4)"/>
+  </svg>
+  <svg class="wave-crest animate-wave-bob-2" style="bottom:16%;animation-delay:-2.5s" viewBox="0 0 800 50" height="30" preserveAspectRatio="none">
+    <path d="M0,32 Q40,12 80,28 Q120,42 160,26 Q200,10 240,28 Q280,42 320,24 Q360,8 400,26 Q440,40 480,24 Q520,10 560,26 Q600,40 640,24 Q680,10 720,28 Q760,40 800,26 L800,50 L0,50 Z" fill="rgba(255,255,255,.28)"/>
+  </svg>
+  <div class="dolphin-track" id="dolphin-1" style="bottom:20%;left:6%;animation:dolphinJump 7s ease-in-out infinite">
+    <svg viewBox="0 0 100 50" width="56" height="28" style="filter:drop-shadow(0 4px 6px rgba(20,60,70,.3))">
+      <path d="M5,35 Q20,10 45,15 Q55,5 70,8 Q65,15 58,18 Q75,20 85,33 Q70,38 60,30 Q45,40 25,35 Q15,38 5,35 Z" fill="#FBFEFF"/>
+      <path d="M28,33 Q34,46 23,48 Q31,38 28,33 Z" fill="#FBFEFF"/>
+      <circle cx="16" cy="26" r="1.6" fill="#1C4D5A"/>
+    </svg>
+  </div>
+  <div class="dolphin-track" id="dolphin-2" style="bottom:22%;left:35%;animation:dolphinJump 9s ease-in-out -3s infinite;opacity:.85">
+    <svg viewBox="0 0 100 50" width="44" height="22" style="filter:drop-shadow(0 4px 6px rgba(20,60,70,.3))">
+      <path d="M5,35 Q20,10 45,15 Q55,5 70,8 Q65,15 58,18 Q75,20 85,33 Q70,38 60,30 Q45,40 25,35 Q15,38 5,35 Z" fill="#FBFEFF"/>
+      <path d="M28,33 Q34,46 23,48 Q31,38 28,33 Z" fill="#FBFEFF"/>
+      <circle cx="16" cy="26" r="1.6" fill="#1C4D5A"/>
+    </svg>
+  </div>
+  <div id="bio-layer" class="absolute inset-0" style="opacity:0;transition:opacity 2s"></div>
+  <div class="ocean-waves" style="bottom:4%;height:110px"></div>
+  <div class="foam-line" style="bottom:3%"></div>
+  <div class="foam-line" style="bottom:0%;animation-delay:-1.8s;opacity:.75"></div>
+  <div id="gulls-layer" class="absolute inset-0"></div>
+  <div id="boat-wrap" class="absolute" style="right:6%;bottom:3%">
+    <svg viewBox="0 0 200 70" width="140" height="49" style="animation:palmSway 6s ease-in-out infinite;transform-origin:center">
+      <ellipse cx="100" cy="55" rx="92" ry="6" fill="#0A3350" opacity=".18"/>
+      <path d="M10,38 Q100,66 190,38 Q172,18 100,18 Q28,18 10,38 Z" fill="#A9754A" stroke="#6B4226" stroke-width="2"/>
+      <line x1="45" y1="22" x2="45" y2="36" stroke="#6B4226" stroke-width="2"/>
+      <line x1="100" y1="19" x2="100" y2="36" stroke="#6B4226" stroke-width="2"/>
+      <line x1="155" y1="22" x2="155" y2="36" stroke="#6B4226" stroke-width="2"/>
+      <line x1="150" y1="2" x2="196" y2="42" stroke="#7A4A20" stroke-width="4" stroke-linecap="round"/>
+      <ellipse cx="198" cy="44" rx="9" ry="4.5" fill="#7A4A20" transform="rotate(42 198 44)"/>
+    </svg>
+  </div>
+  <div class="hammock-swing" style="left:50%;bottom:23%;transform:translateX(-50%)">
+    <svg viewBox="0 0 400 150" width="300" height="112">
+      <line x1="18" y1="8" x2="18" y2="40" stroke="#7A4A20" stroke-width="3"/>
+      <line x1="382" y1="8" x2="382" y2="40" stroke="#7A4A20" stroke-width="3"/>
+      <path d="M18,40 C75,115 325,115 382,40 L382,55 C325,128 75,128 18,55 Z" fill="#F2A33D" stroke="#C97A1E" stroke-width="2"/>
+      <path d="M18,40 C75,115 325,115 382,40" fill="none" stroke="#E08A2A" stroke-width="3" opacity=".6"/>
+      <path d="M45,122 C120,138 280,138 355,122" fill="none" stroke="#D43F3F" stroke-width="3" stroke-dasharray="4,7" stroke-linecap="round"/>
+      <line x1="40" y1="45" x2="30" y2="78" stroke="#7A4A20" stroke-width="2"/>
+      <circle cx="29" cy="90" r="13" fill="#F4F6F8" stroke="#E0526B" stroke-width="2"/>
+      <path d="M29,77 L29,103 M16,90 L42,90 M19,80 Q29,90 19,100 M39,80 Q29,90 39,100" stroke="#E0526B" stroke-width="2" fill="none"/>
+    </svg>
+  </div>
+  <div class="absolute" style="left:2%;bottom:0;transform:rotate(15deg);transform-origin:bottom center">
+    <div class="palm-sway-inner" style="animation:palmSway 4.5s ease-in-out infinite">
+      <svg viewBox="0 0 120 220" width="150" height="275">
+        <path d="M60,220 C54,160 38,138 46,88" stroke="#8A6A45" stroke-width="11" fill="none" stroke-linecap="round"/>
+        <g transform="translate(46,88)">
+          <path d="M0,0 C-10,-30 -45,-35 -60,-20 C-35,-15 -15,-10 0,0 Z" fill="#2F8F4E"/>
+          <path d="M0,0 C10,-35 45,-40 65,-25 C35,-18 15,-10 0,0 Z" fill="#37A25A"/>
+          <path d="M0,0 C-5,-40 -20,-60 -10,-75 C5,-55 5,-30 0,0 Z" fill="#3DB566"/>
+          <path d="M0,0 C8,-38 30,-55 45,-70 C25,-50 15,-25 0,0 Z" fill="#2F8F4E"/>
+          <path d="M0,0 C0,-45 10,-65 0,-80 C-10,-60 -5,-35 0,0 Z" fill="#37A25A"/>
+          <circle cx="2" cy="4" r="7" fill="#8A6A45"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div class="absolute" style="right:4%;bottom:0;transform:scaleX(-1) rotate(15deg);transform-origin:bottom center">
+    <div class="palm-sway-inner" style="animation:palmSway 5.2s ease-in-out infinite;animation-delay:-1.4s">
+      <svg viewBox="0 0 120 220" width="170" height="312">
+        <path d="M60,220 C54,160 38,138 46,88" stroke="#8A6A45" stroke-width="11" fill="none" stroke-linecap="round"/>
+        <g transform="translate(46,88)">
+          <path d="M0,0 C-10,-30 -45,-35 -60,-20 C-35,-15 -15,-10 0,0 Z" fill="#2F8F4E"/>
+          <path d="M0,0 C10,-35 45,-40 65,-25 C35,-18 15,-10 0,0 Z" fill="#37A25A"/>
+          <path d="M0,0 C-5,-40 -20,-60 -10,-75 C5,-55 5,-30 0,0 Z" fill="#3DB566"/>
+          <path d="M0,0 C8,-38 30,-55 45,-70 C25,-50 15,-25 0,0 Z" fill="#2F8F4E"/>
+          <path d="M0,0 C0,-45 10,-65 0,-80 C-10,-60 -5,-35 0,0 Z" fill="#37A25A"/>
+          <circle cx="2" cy="4" r="7" fill="#8A6A45"/>
+        </g>
+      </svg>
+    </div>
+  </div>
+  <div id="rain-layer" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0"></div>
+  <div id="wind-layer" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0"></div>
+  <div id="weather-overlay" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0;background:rgba(0,0,20,.35)"></div>
+  <div class="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-b from-transparent to-[#0A3350]/70"></div>
+</div>
+
+<div class="bg-teal-950/80 backdrop-blur-md border-b border-teal-800/50 px-4 py-2 text-xs flex flex-wrap justify-between items-center gap-3 z-50">
+  <div class="flex items-center gap-3 flex-wrap">
+    <div class="flex items-center gap-2">
+      <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,.8)]"></span>
+      <span id="cloud-status-text" class="font-bold text-teal-200 tracking-wider text-[10px] uppercase">⚡ ĐANG KẾT NỐI...</span>
+    </div>
+    <div id="vn-clock" class="hidden sm:flex items-center gap-1.5 bg-teal-900/60 border border-teal-700/50 px-2.5 py-1 rounded-lg text-[10px] font-black text-gold-400 tracking-wider">
+      <span>🕒</span><span id="vn-clock-text">--:--</span>
+    </div>
+    <div id="weather-badge" class="weather-badge hidden sm:flex items-center gap-1.5 bg-teal-900/60 border border-teal-700/50 px-2.5 py-1 rounded-lg text-[10px] font-black text-white tracking-wider">
+      <span id="wb-icon">☀️</span><span id="wb-text">--°C • --</span>
+    </div>
+  </div>
+  <div class="flex items-center gap-2">
+    <div class="relative">
+      <button id="sound-toggle" onclick="toggleSoundMenu(event)" class="sound-toggle w-9 h-9 rounded-lg bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 hover:text-white transition-colors text-sm" title="Nhạc nền Lounge">🔇</button>
+      <div id="sound-menu" class="sound-menu hidden-pop">
+        <div class="menu-title">🎹 Dolphin Lounge Ballad</div>
+        <button data-mode="off" onclick="setSoundMode('off')" class="mode-btn"><span class="icon">🔇</span><div class="meta"><span class="name">Tắt âm thanh</span><span class="sub">Silent Mode</span></div></button>
+        <div class="divider"></div>
+        <button data-mode="t1" onclick="setSoundMode('t1')" class="mode-btn"><span class="icon">🎹</span><div class="meta"><span class="name">Rhodes & Strings</span><span class="sub">Full Ballad · 68 BPM</span></div></button>
+        <button data-mode="t2" onclick="setSoundMode('t2')" class="mode-btn"><span class="icon">🎼</span><div class="meta"><span class="name">Piano Solo</span><span class="sub">Pure Piano · 70 BPM</span></div></button>
+        <button data-mode="t3" onclick="setSoundMode('t3')" class="mode-btn"><span class="icon">🌫️</span><div class="meta"><span class="name">Ambient Wash</span><span class="sub">Ethereal · 64 BPM</span></div></button>
+        <button data-mode="t4" onclick="setSoundMode('t4')" class="mode-btn"><span class="icon">🎸</span><div class="meta"><span class="name">Soft Guitar</span><span class="sub">Mellow · 72 BPM</span></div></button>
+        <button data-mode="t5" onclick="setSoundMode('t5')" class="mode-btn"><span class="icon">🌙</span><div class="meta"><span class="name">Late Night</span><span class="sub">Slow & Deep · 62 BPM</span></div></button>
+        <div class="divider"></div>
+        <button data-mode="loop" onclick="setSoundMode('loop')" class="mode-btn"><span class="icon">🔁</span><div class="meta"><span class="name">Auto Loop</span><span class="sub">Cycle 5 Arrangements</span></div></button>
+        <div class="divider"></div>
+        <div class="vol-wrap">
+          <div class="flex justify-between items-center mb-1.5 text-[9px] text-teal-300 font-black uppercase tracking-widest">
+            <span>Âm lượng</span><span id="vol-pct">30%</span>
+          </div>
+          <input id="vol-slider" type="range" min="0" max="100" value="30" oninput="setAmbientVolume(this.value)">
+        </div>
+      </div>
+    </div>
+    <div class="flex bg-teal-900/50 p-1 rounded-xl border border-teal-800/50 gap-1 flex-wrap backdrop-blur-sm">
+      <button onclick="changeRole('customer')" id="btn-role-customer" class="px-3 py-1.5 rounded-lg font-black transition-all text-[11px] bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-lg shadow-gold-500/30">🧑‍🍳 Khách</button>
+      <button onclick="requestPinAccess('reception')" id="btn-role-reception" class="px-3 py-1.5 rounded-lg font-bold transition-all text-[11px] text-teal-300 hover:text-white hover:bg-teal-800/50">💁 Lễ Tân</button>
+      <button onclick="requestPinAccess('bungalow')" id="btn-role-bungalow" class="px-3 py-1.5 rounded-lg font-bold transition-all text-[11px] text-teal-300 hover:text-white hover:bg-teal-800/50">💎 QL</button>
+      <button onclick="requestPinAccess('staff')" id="btn-role-staff" class="px-3 py-1.5 rounded-lg font-bold transition-all text-[11px] text-teal-300 hover:text-white hover:bg-teal-800/50">🍸 PV (<span id="pending-count-staff" class="text-gold-400 font-black">0</span>)</button>
+      <button onclick="requestPinAccess('admin')" id="btn-role-admin" class="px-3 py-1.5 rounded-lg font-bold transition-all text-[11px] text-teal-300 hover:text-white hover:bg-teal-800/50">⚙️ Admin</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="fixed top-16 right-4 z-[200] transform translate-y-2 opacity-0 pointer-events-none transition-all duration-300">
+  <div class="px-5 py-3 rounded-2xl glass-card border border-gold-500/50 text-gold-200 text-xs font-bold flex flex-col gap-2 shadow-[0_10px_40px_rgba(0,0,0,.5)] min-w-[220px]">
+    <div class="flex items-center gap-3">
+      <span id="toast-icon" class="text-base drop-shadow-md">✨</span>
+      <span id="toast-msg" class="tracking-wide flex-1">Thông báo</span>
+    </div>
+    <div class="w-full h-[3px] bg-teal-900/60 rounded-full overflow-hidden"><div id="toast-progress" style="width:100%"></div></div>
+  </div>
+</div>
+
+<main class="flex-1 flex flex-col relative">
+
+  <div id="view-customer" class="flex-1 flex flex-col hidden relative">
+    <div id="welcome-screen" class="absolute inset-0 bg-teal-950/90 z-[100] flex flex-col items-center justify-center p-4 backdrop-blur-lg">
+      <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-teal-700/40 w-full max-w-2xl shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar relative">
+        <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-32 bg-gold-500/20 blur-[60px] pointer-events-none"></div>
+        <div class="text-center mb-6 relative z-10">
+          <h1 class="text-3xl font-serif font-black logo-shimmer tracking-widest mb-1">DOLPHIN</h1>
+          <p class="text-[9px] text-teal-300 uppercase font-bold tracking-[0.3em] mb-4">Premium Lounge</p>
+          <h2 id="welcome-title" class="font-black text-white uppercase tracking-widest text-sm md:text-base leading-relaxed">VUI LÒNG THIẾT LẬP BÀN<br><span class="text-[11px] md:text-xs text-gold-400 font-medium normal-case mt-1.5 block opacity-90">Xin chọn ngôn ngữ và số bàn để tiếp tục</span></h2>
+        </div>
+        <div class="mb-6 relative z-10">
+          <span id="welcome-step-1" class="block text-xs font-black text-teal-400 mb-3 uppercase tracking-wider flex items-center gap-2"><span class="w-4 h-px bg-teal-600"></span>1. SELECT LANGUAGE:<span class="flex-1 h-px bg-teal-800/50"></span></span>
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-3">
+            <div><input type="radio" name="lang" id="w-lang-EN" value="EN" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-EN" class="block text-center py-3.5 rounded-xl border border-teal-700/50 bg-teal-900/40 text-teal-100 text-sm font-bold cursor-pointer transition-all hover:bg-teal-800/50">🇺🇸 English</label></div>
+            <div><input type="radio" name="lang" id="w-lang-VI" value="VI" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-VI" class="block text-center py-3.5 rounded-xl border border-teal-700/50 bg-teal-900/40 text-teal-100 text-sm font-bold cursor-pointer transition-all hover:bg-teal-800/50">🇻🇳 Tiếng Việt</label></div>
+            <div><input type="radio" name="lang" id="w-lang-ZH" value="ZH" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-ZH" class="block text-center py-3.5 rounded-xl border border-teal-700/50 bg-teal-900/40 text-teal-100 text-sm font-bold cursor-pointer transition-all hover:bg-teal-800/50">🇨🇳 中文</label></div>
+            <div><input type="radio" name="lang" id="w-lang-KO" value="KO" class="hidden lang-radio" onchange="checkWelcomeForm()"><label for="w-lang-KO" class="block text-center py-3.5 rounded-xl border border-teal-700/50 bg-teal-900/40 text-teal-100 text-sm font-bold cursor-pointer transition-all hover:bg-teal-800/50">🇰🇷 한국어</label></div>
+          </div>
+        </div>
+        <div class="mb-8 relative z-10">
+          <span id="welcome-step-2" class="block text-xs font-black text-teal-400 mb-3 uppercase tracking-wider flex items-center gap-2"><span class="w-4 h-px bg-teal-600"></span>2. SELECT TABLE:<span class="flex-1 h-px bg-teal-800/50"></span></span>
+          <div class="h-[200px] overflow-y-auto pr-3 custom-scrollbar bg-teal-950/30 rounded-2xl p-4 border border-teal-800/30">
+            <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5" id="welcome-tables-lounge"></div>
+          </div>
+        </div>
+        <button id="btn-start-order" disabled onclick="promptCustomerPassword()" class="w-full bg-gradient-to-r from-teal-800 to-teal-900 text-teal-500 py-4 rounded-2xl font-black uppercase tracking-widest cursor-not-allowed transition-all duration-300 text-sm border border-teal-800/50 relative z-10">TIẾP TỤC ➔</button>
+      </div>
+    </div>
+
+    <div id="main-customer-content" class="flex-1 flex flex-col hidden">
+      <div class="glass-card border-b border-teal-700/30 px-4 py-4 sticky top-0 z-30 shadow-[0_10px_30px_rgba(0,0,0,.3)]">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center gap-4">
+          <div class="text-center md:text-left">
+            <h1 class="text-2xl font-serif font-black logo-shimmer tracking-[0.15em]">DOLPHIN</h1>
+            <p class="text-[9px] text-teal-300 uppercase font-bold tracking-widest mt-0.5 opacity-80">Premium Lounge</p>
+          </div>
+          <div class="flex items-center justify-end gap-3 w-full md:w-auto">
+            <div id="table-vip-badge" class="relative bg-teal-950/60 border border-teal-700/50 px-5 py-2.5 rounded-2xl text-center shadow-inner flex-1 md:flex-none backdrop-blur-sm overflow-visible">
+              <span id="lbl-table" class="block text-[8px] text-teal-400 font-black uppercase tracking-widest mb-0.5">YOUR TABLE</span>
+              <span id="current-table-display" class="text-base font-black text-gold-400 leading-tight drop-shadow-md">--</span>
+            </div>
+            <button onclick="resetCustomerTable()" class="ripple-host bg-red-900/40 hover:bg-red-800 hover:text-white text-red-400 border border-red-500/30 px-4 py-2.5 rounded-2xl font-bold flex flex-col items-center justify-center transition-all duration-300 flex-1 md:flex-none shadow-md h-full group">
+              <span class="text-lg leading-none mb-1 group-hover:-rotate-180 transition-transform duration-500">🔄</span>
+              <span id="lbl-btn-change-table" class="text-[9px] uppercase tracking-wider font-black">Change Table</span>
+            </button>
+            <button id="btn-call-staff" onclick="callStaffOnline()" class="ripple-host bg-teal-900/40 hover:bg-gold-500 hover:text-black text-gold-400 border border-gold-500/30 px-4 py-2.5 rounded-2xl font-bold flex flex-col items-center justify-center transition-all duration-300 flex-1 md:flex-none shadow-md h-full group">
+              <span class="text-lg leading-none mb-1 group-hover:scale-110 transition-transform">🛎️</span>
+              <span id="lbl-btn-call" class="text-[9px] uppercase tracking-wider font-black">Call Staff</span>
+            </button>
+          </div>
+        </div>
+      </div>
+
+      <div id="pax-alert-banner" class="hidden bg-red-950/80 border border-red-500/50 p-4 rounded-2xl shadow-[0_0_20px_rgba(239,68,68,.3)] mx-4 mt-4 flex items-center gap-4 animate-pulse">
+        <span class="text-3xl">🛑</span>
+        <div>
+          <h3 id="lbl-pax-warning-title" class="text-red-400 font-black text-sm uppercase tracking-widest">TABLE NOT ACTIVATED!</h3>
+          <p id="lbl-pax-warning-msg" class="text-[11px] text-red-200 mt-1">Please contact Reception to activate guest count (Pax) before ordering.</p>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto w-full px-4 mt-6">
+        <div class="glass-card p-4 rounded-2xl border border-teal-700/50 shadow-md flex justify-between items-center bg-teal-900/40">
+          <div>
+            <span id="lbl-combo-title" class="text-[10px] text-teal-300 font-bold uppercase tracking-wider block mb-1">TABLE'S STANDARD COMBO:</span>
+            <span id="lbl-combo-info" class="text-sm font-black text-gold-400">0 Pax (0 Drinks & 0 Pastries)</span>
+          </div>
+          <div class="text-right">
+            <span id="lbl-usage-title" class="text-[9px] text-teal-400 font-bold uppercase tracking-wider block mb-1">ORDERED:</span>
+            <span id="lbl-usage-info" class="text-xs font-black text-white bg-teal-800 px-2 py-1 rounded">Drinks: 0 | Pastries: 0</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="max-w-7xl mx-auto w-full px-4 mt-5 hidden" id="customer-active-orders-section">
+        <div class="glass-card border border-gold-500/30 p-5 rounded-[2rem] shadow-[0_10px_30px_rgba(245,158,11,.1)] relative overflow-hidden">
+          <div class="absolute top-0 right-0 w-32 h-32 bg-gold-500/10 blur-[40px] pointer-events-none"></div>
+          <h4 class="text-[11px] font-black text-gold-400 uppercase tracking-widest mb-4 flex items-center gap-2 drop-shadow-md"><span class="animate-spin-slow">⏳</span><span id="lbl-active-orders-title">PREPARING ORDERS</span></h4>
+          <div class="space-y-3 relative z-10" id="customer-active-orders-list"></div>
+        </div>
+      </div>
+
+      <div class="sticky top-[100px] md:top-[90px] bg-teal-950/80 backdrop-blur-xl z-20 border-b border-teal-800/40 py-3 mt-5 shadow-sm">
+        <div class="max-w-7xl mx-auto px-4 flex gap-3 overflow-x-auto custom-scrollbar pb-1" id="categories-container"></div>
+      </div>
+
+      <div class="max-w-7xl mx-auto w-full px-4 mt-6 flex-1 pb-32">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-5" id="menu-items-grid"></div>
+      </div>
+
+      <div id="floating-cart" class="fixed bottom-0 left-0 right-0 bg-teal-950/90 backdrop-blur-xl border-t border-gold-500/30 p-4 z-40 shadow-[0_-15px_40px_rgba(0,0,0,.5)] hidden">
+        <div class="max-w-3xl mx-auto flex items-center justify-between gap-4">
+          <div class="flex-1">
+            <span id="lbl-cart-title" class="text-[10px] font-black text-teal-400 uppercase block tracking-widest mb-1">CART</span>
+            <span id="cart-summary-text" class="text-sm text-gold-400 font-bold drop-shadow-sm">0 items ready</span>
+          </div>
+          <button onclick="toggleCartModal(true)" class="ripple-host bg-gradient-to-r from-gold-400 to-gold-500 hover:from-gold-300 hover:to-gold-400 text-black font-black px-6 py-4 rounded-2xl text-sm flex items-center gap-2 shadow-[0_5px_20px_rgba(245,158,11,.4)] transition-all transform active:scale-95 uppercase tracking-widest"><span id="lbl-view-cart">View & Send</span> ➔</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-staff" class="flex-1 max-w-7xl mx-auto w-full p-4 space-y-6 hidden relative z-10">
+    <div class="text-center py-2 border-b border-teal-800/50 mb-4 relative">
+      <h1 class="text-2xl font-serif font-black logo-shimmer tracking-[0.2em]">DOLPHIN</h1>
+      <p class="text-[10px] text-teal-400 uppercase font-bold tracking-widest mt-1">Lounge Service Station</p>
+    </div>
+    <div class="flex justify-between items-end glass-card p-4 rounded-2xl border border-teal-700/50 shadow-lg">
+      <div>
+        <h2 class="font-black text-white text-sm uppercase flex items-center gap-2 tracking-wider">🍸 TIẾN TRÌNH PHA CHẾ & PHỤC VỤ</h2>
+        <p class="text-teal-400 text-[10px] mt-1">Tự động đồng bộ Realtime.</p>
+      </div>
+      <div class="text-right">
+        <span class="text-xs text-teal-400 block mb-1.5 font-medium">NV: <strong id="current-staff-name-display" class="text-gold-400 font-black">Chưa đặt</strong></span>
+        <button onclick="localStorage.removeItem('dolphinStaffName'); promptStaffName();" class="bg-teal-800 hover:bg-teal-700 text-white px-4 py-2 rounded-xl text-[10px] font-bold transition-all shadow-md border border-teal-600">Đổi tên</button>
+      </div>
+    </div>
+
+    <div id="heartbeat-panel" class="glass-card border border-gold-500/40 p-4 rounded-2xl flex items-center justify-between gap-4 shadow-lg">
+      <div class="flex items-center gap-3">
+        <div id="heartbeat-ring" class="relative w-14 h-14">
+          <svg viewBox="0 0 40 40" width="56" height="56">
+            <circle cx="20" cy="20" r="17" fill="none" stroke="rgba(255,255,255,.08)" stroke-width="3"/>
+            <circle id="hb-progress" cx="20" cy="20" r="17" fill="none" stroke="#FBBF24" stroke-width="3" stroke-linecap="round" stroke-dasharray="107" stroke-dashoffset="107" transform="rotate(-90 20 20)"/>
+          </svg>
+          <span id="heartbeat-count" class="absolute inset-0 flex items-center justify-center text-lg font-black text-gold-400 drop-shadow-md">0</span>
+        </div>
+        <div>
+          <div id="heartbeat-label" class="text-[11px] font-black text-white uppercase tracking-widest">NHỊP HOẠT ĐỘNG</div>
+          <div id="heartbeat-sub" class="text-[10px] text-teal-300 mt-0.5">Đang theo dõi...</div>
+        </div>
+      </div>
+      <div id="peak-alert" class="hidden bg-red-600 text-white px-4 py-2 rounded-xl text-[10px] font-black uppercase tracking-widest animate-pulse shadow-[0_5px_20px_rgba(220,38,38,.5)]">🚨 CAO ĐIỂM!</div>
+    </div>
+
+    <div class="flex justify-center mb-2">
+      <div class="bg-teal-900/50 p-1.5 rounded-xl border border-teal-700/50 flex gap-1 shadow-inner">
+        <button onclick="toggleStaffView('table')" id="btn-view-table" class="px-5 py-2.5 text-[11px] font-black rounded-lg transition-all bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-md tracking-wider">THEO BÀN</button>
+        <button onclick="toggleStaffView('batch')" id="btn-view-batch" class="px-5 py-2.5 text-[11px] font-bold rounded-lg transition-all text-teal-300 hover:text-white hover:bg-teal-800/50 tracking-wider">GỘP MÓN</button>
+      </div>
+    </div>
+
+    <div id="staff-calls-section" class="bg-red-950/60 backdrop-blur-md border border-red-500/50 p-5 rounded-2xl hidden shadow-[0_10px_30px_rgba(239,68,68,.2)]">
+      <h3 class="text-[11px] font-black text-red-400 uppercase tracking-widest mb-4 flex items-center gap-2 animate-pulse">🚨 YÊU CẦU TRỢ GIÚP</h3>
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3.5" id="staff-calls-grid"></div>
+    </div>
+
+    <div id="staff-batch-section" class="mt-6 hidden">
+      <h3 class="font-black text-gold-400 text-xs uppercase mb-4 flex items-center gap-2 tracking-widest"><span class="animate-spin-slow">⏳</span> MÓN CẦN PHA CHẾ (GỘP)</h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="staff-batch-grid"></div>
+    </div>
+
+    <div id="staff-tables-container">
+      <div id="my-orders-section" class="mt-6 border border-gold-500/40 p-5 rounded-2xl glass-card shadow-[0_10px_30px_rgba(245,158,11,.15)] relative overflow-hidden">
+        <div class="absolute top-0 right-0 w-40 h-40 bg-gold-500/10 blur-[50px] pointer-events-none"></div>
+        <h3 class="font-black text-gold-400 text-xs uppercase mb-4 flex items-center gap-2 tracking-widest relative z-10">🔥 ĐƠN CỦA TÔI</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 relative z-10" id="staff-my-orders-grid"></div>
+      </div>
+      <div id="other-orders-section" class="mt-8">
+        <h3 class="font-black text-teal-300 text-xs uppercase mb-4 flex items-center gap-2 tracking-widest">📋 ĐƠN CHỜ XÁC NHẬN</h3>
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="staff-other-orders-grid"></div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-bungalow" class="flex-1 max-w-7xl mx-auto w-full p-4 space-y-6 hidden relative z-10">
+    <div class="text-center py-2 border-b border-teal-800/50 mb-4 relative">
+      <h1 class="text-2xl font-serif font-black logo-shimmer tracking-[0.2em]">DOLPHIN</h1>
+      <p class="text-[10px] text-teal-400 uppercase font-bold tracking-widest mt-1">Lounge Tracking System</p>
+      <button onclick="confirmResetSystem()" class="absolute right-0 top-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[10px] font-black px-4 py-3 md:py-2.5 rounded-xl shadow-lg flex items-center gap-1.5 uppercase tracking-wider">📦 Đóng ca</button>
+    </div>
+
+    <div class="glass-card p-5 md:p-7 rounded-[2rem] border border-emerald-500/30 shadow-xl relative">
+      <div class="absolute top-4 right-4 bg-emerald-950/80 border border-emerald-500/50 text-emerald-100 px-5 py-3 rounded-2xl shadow-lg flex flex-col items-center justify-center">
+        <span class="text-[10px] font-black uppercase tracking-widest text-emerald-400 mb-1">TỔNG KHÁCH</span>
+        <span class="text-3xl font-black leading-none drop-shadow-md" id="total-pax-display">0</span>
+      </div>
+      <div class="absolute top-4 right-48 bg-teal-900/80 border border-teal-500/50 text-teal-100 px-5 py-3 rounded-2xl shadow-lg flex flex-col items-center justify-center">
+        <span class="text-[10px] font-black uppercase tracking-widest text-gold-400 mb-1">KHÁCH MUA VÉ</span>
+        <span class="text-3xl font-black leading-none drop-shadow-md text-gold-400" id="total-ticket-pax-display">0</span>
+      </div>
+      <h3 class="font-black text-emerald-400 text-sm uppercase border-b border-teal-700/50 pb-4 mb-6 tracking-wider flex items-center gap-2"><span>👁️ BẢN ĐỒ PHỤC VỤ</span></h3>
+      <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 mb-6" id="bungalow-track-b2"></div>
+    </div>
+
+    <div class="glass-card p-6 rounded-[2rem] border border-gold-500/40 shadow-xl overflow-hidden relative mt-8">
+      <div class="absolute -top-20 -right-20 w-64 h-64 bg-gold-500/10 blur-[80px] pointer-events-none"></div>
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-teal-700/50 pb-5 mb-5 relative z-10">
+        <h3 class="font-black text-gold-400 text-xs uppercase tracking-widest flex items-center gap-2">☁️ KHO LƯU TRỮ & XUẤT EXCEL</h3>
+        <div class="flex flex-wrap gap-2.5 w-full sm:w-auto">
+          <input type="text" id="history-search-table" placeholder="Số bàn..." class="bg-teal-950/80 border border-teal-600/50 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold-500 w-full sm:w-auto md:w-36 shadow-inner">
+          <input type="date" id="history-search-date" class="bg-teal-950/80 border border-teal-600/50 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold-500 shadow-inner [color-scheme:dark]">
+          <select id="history-search-shift" class="bg-teal-950/80 border border-teal-600/50 rounded-xl px-4 py-2.5 text-xs text-white focus:outline-none focus:border-gold-500 shadow-inner">
+            <option value="Trưa">Ca Trưa</option><option value="Tối">Ca Tối</option><option value="Cả Ngày">Cả Ngày</option>
+          </select>
+          <button onclick="fetchHistoryData()" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg flex items-center gap-1">🔍 Tra cứu</button>
+          <button onclick="exportHistoryToExcel()" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-xs font-black uppercase shadow-lg flex items-center gap-1 border border-emerald-400/50">📥 Excel</button>
+        </div>
+      </div>
+      <div class="relative z-10" id="history-cards-container">
+        <div class="text-center py-10 text-teal-500/80 font-bold tracking-wide border border-teal-800/30 rounded-xl border-dashed">Chọn Ngày và Ca, sau đó bấm Tra cứu.</div>
+      </div>
+    </div>
+  </div>
+
+  <div id="view-reception" class="flex-1 max-w-7xl mx-auto w-full p-4 space-y-6 hidden relative z-10">
+    <div class="text-center py-2 border-b border-teal-800/50 mb-4 relative">
+      <h1 class="text-2xl font-serif font-black logo-shimmer tracking-[0.2em]">DOLPHIN</h1>
+      <p class="text-[10px] text-teal-400 uppercase font-bold tracking-widest mt-1">Lounge Reception</p>
+    </div>
+    <div class="flex flex-col md:flex-row items-start md:items-center justify-between glass-card p-5 md:p-6 rounded-[2rem] border border-gold-500/40 mb-6 shadow-xl relative overflow-hidden">
+      <div class="absolute top-0 left-0 w-32 h-32 bg-gold-500/10 blur-[40px] pointer-events-none"></div>
+      <div class="mb-4 md:mb-0 relative z-10">
+        <h3 class="font-black text-gold-400 text-sm uppercase flex items-center gap-2 tracking-wider"><span class="text-xl">📁</span> IMPORT EXCEL</h3>
+        <p class="text-[10.5px] text-teal-200 mt-2 leading-relaxed opacity-90 max-w-lg">Cấu trúc:<br><span class="text-gold-300 font-mono font-bold">• Cột A: Tên KH</span><br><span class="text-gold-300 font-mono font-bold">• Cột B: Số bàn</span> (LOUNGE 1-LOUNGE 3)<br><span class="text-gold-300 font-mono font-bold">• Cột C: PAX</span></p>
+      </div>
+      <div class="flex flex-wrap gap-3 w-full md:w-auto relative z-10">
+        <input type="file" id="excel-file-input" accept=".xlsx,.xls,.csv" class="hidden" onchange="handleExcelUpload(event)">
+        <button onclick="document.getElementById('excel-file-input').click()" class="flex-1 md:flex-none bg-gradient-to-r from-gold-400 to-gold-500 text-black px-5 py-3 rounded-xl text-xs font-black uppercase shadow-lg tracking-wider">Tải lên</button>
+        <button onclick="promptClearAllCustomers()" class="flex-1 md:flex-none bg-red-900/80 hover:bg-red-800 text-red-200 border border-red-500/50 px-5 py-3 rounded-xl text-xs font-black uppercase shadow-lg flex items-center justify-center gap-1.5"><span class="text-base">🗑️</span> Xóa tất cả</button>
+      </div>
+    </div>
+    <div class="glass-card p-5 md:p-7 rounded-[2rem] border border-teal-700/50 shadow-xl mb-6">
+      <h3 class="font-black text-white text-sm uppercase border-b border-teal-700/50 pb-4 mb-6 tracking-wider flex flex-col md:flex-row justify-between md:items-center gap-3">
+        <span class="flex items-center gap-2">👥 SƠ ĐỒ LOUNGE</span>
+        <span class="text-[10px] text-gold-400 font-bold bg-gold-500/10 border border-gold-500/30 px-3 py-1.5 rounded-lg">Bấm vào bàn để thiết lập</span>
+      </h3>
+      <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3" id="reception-tables-lounge"></div>
+    </div>
+  </div>
+
+  <div id="view-admin" class="flex-1 max-w-7xl mx-auto w-full p-4 space-y-6 hidden relative z-10">
+    <div class="text-center py-2 border-b border-teal-800/50 mb-4 relative">
+      <h1 class="text-2xl font-serif font-black logo-shimmer tracking-[0.2em]">DOLPHIN</h1>
+      <p class="text-[10px] text-teal-400 uppercase font-bold tracking-widest mt-1">Admin Center</p>
+      <button onclick="playNotificationAlert()" class="absolute right-0 top-1 bg-gradient-to-r from-red-600 to-red-700 text-white text-[10px] font-black px-4 py-3 md:py-2.5 rounded-xl shadow-lg flex items-center gap-1.5 uppercase tracking-wider">🔔 Thử Chuông</button>
+    </div>
+    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+      <div class="glass-card p-5 rounded-2xl border border-teal-700/50 shadow-lg relative overflow-hidden"><div class="absolute -right-4 -bottom-4 text-4xl opacity-10">📊</div><span class="text-[10px] text-teal-300 font-bold uppercase block tracking-wider mb-1">TỔNG ĐƠN</span><span id="stat-total" class="text-3xl font-black text-white drop-shadow-md">0</span></div>
+      <div class="glass-card p-5 rounded-2xl border border-teal-700/50 shadow-lg relative overflow-hidden"><div class="absolute -right-4 -bottom-4 text-4xl opacity-10">⏳</div><span class="text-[10px] text-gold-500 font-bold uppercase block tracking-wider mb-1">CHỜ XÁC NHẬN</span><span id="stat-pending" class="text-3xl font-black text-gold-400 drop-shadow-md">0</span></div>
+      <div class="glass-card p-5 rounded-2xl border border-teal-700/50 shadow-lg relative overflow-hidden"><div class="absolute -right-4 -bottom-4 text-4xl opacity-10">🔥</div><span class="text-[10px] text-red-400 font-bold uppercase block tracking-wider mb-1">ĐANG PHA</span><span id="stat-prep" class="text-3xl font-black text-red-500 drop-shadow-md">0</span></div>
+      <div class="glass-card p-5 rounded-2xl border border-teal-700/50 shadow-lg relative overflow-hidden"><div class="absolute -right-4 -bottom-4 text-4xl opacity-10">✅</div><span class="text-[10px] text-emerald-400 font-bold uppercase block tracking-wider mb-1">ĐÃ PHỤC VỤ</span><span id="stat-done" class="text-3xl font-black text-emerald-400 drop-shadow-md">0</span></div>
+    </div>
+    <div class="glass-card p-6 rounded-[2rem] border border-teal-700/50 shadow-xl overflow-hidden">
+      <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 border-b border-teal-700/50 pb-5 mb-5">
+        <h3 class="font-black text-white text-xs uppercase tracking-wider flex items-center gap-2">📋 LỊCH SỬ ĐƠN TRONG CA</h3>
+        <div class="relative flex-1 min-w-[200px]">
+          <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-teal-500 pointer-events-none">🔍</span>
+          <input type="text" id="admin-search-order" oninput="renderAdmin()" placeholder="Tìm bàn, món, tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold-500 shadow-inner">
+        </div>
+      </div>
+      <div class="overflow-x-auto custom-scrollbar pb-2">
+        <table class="w-full text-left text-xs min-w-[800px]">
+          <thead><tr class="border-b border-teal-700/50 text-teal-300 text-[10px] uppercase font-black tracking-widest bg-teal-900/40">
+            <th class="py-4 px-4 rounded-tl-xl">Thời gian</th><th class="py-4 px-4">Bàn</th><th class="py-4 px-4">Món ăn</th><th class="py-4 px-4">Trạng thái</th><th class="py-4 px-4">Người làm</th><th class="py-4 px-4 rounded-tr-xl text-right">Thao tác</th>
+          </tr></thead>
+          <tbody id="admin-orders-tbody" class="divide-y divide-teal-800/30 text-teal-50"></tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</main>
+
+<div id="modal-hot-cold" class="fixed inset-0 z-[160] bg-teal-950/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-teal-700/50 w-full max-w-sm rounded-[2rem] overflow-hidden p-6 shadow-2xl relative text-center">
+    <button onclick="document.getElementById('modal-hot-cold').classList.add('hidden')" class="absolute top-4 right-4 text-teal-400 hover:text-white p-2 text-lg">✕</button>
+    <h3 id="hot-cold-title" class="font-black text-white text-base mb-2 mt-2 drop-shadow-md">Item</h3>
+    <p class="text-xs text-teal-300 mb-6 uppercase tracking-widest font-bold">CHỌN LOẠI</p>
+    <div class="flex gap-4 justify-center mb-6">
+      <button onclick="confirmHotColdSelection('HOT')" class="w-32 bg-gradient-to-br from-red-500 to-red-700 text-white font-black py-4 rounded-2xl flex flex-col items-center gap-2 shadow-lg border border-red-400/50 group"><span class="text-2xl group-hover:scale-110 transition-transform">♨️</span><span class="text-xs tracking-wider uppercase" id="lbl-btn-hot">HOT</span></button>
+      <button onclick="confirmHotColdSelection('COLD')" class="w-32 bg-gradient-to-br from-blue-400 to-blue-600 text-white font-black py-4 rounded-2xl flex flex-col items-center gap-2 shadow-lg border border-blue-300/50 group"><span class="text-2xl group-hover:scale-110 transition-transform">❄️</span><span class="text-xs tracking-wider uppercase" id="lbl-btn-cold">COLD</span></button>
+    </div>
+    <div class="flex items-center justify-center gap-4 mt-4 bg-teal-900/40 py-3 rounded-xl border border-teal-700/50 w-48 mx-auto">
+      <button onclick="document.getElementById('hot-cold-qty').value=Math.max(1,parseInt(document.getElementById('hot-cold-qty').value)-1)" class="w-8 h-8 text-teal-400 hover:text-white bg-teal-950 rounded-lg font-black text-lg">➖</button>
+      <input type="number" id="hot-cold-qty" value="1" min="1" class="w-12 bg-transparent text-center text-xl font-black text-gold-400 focus:outline-none">
+      <button onclick="document.getElementById('hot-cold-qty').value=parseInt(document.getElementById('hot-cold-qty').value)+1" class="w-8 h-8 text-teal-400 hover:text-white bg-teal-950 rounded-lg font-black text-lg">➕</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-pin" class="fixed inset-0 z-[150] bg-teal-950/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-teal-700/50 w-full max-w-xs rounded-[2rem] overflow-hidden p-7 shadow-2xl text-center relative">
+    <button onclick="closePinModal()" class="absolute top-4 right-4 text-teal-400 hover:text-white p-2 text-lg">✕</button>
+    <div class="w-14 h-14 bg-gold-500/10 border border-gold-500/30 text-gold-400 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl shadow-inner">🔒</div>
+    <h3 id="pin-modal-title" class="font-black text-white text-sm uppercase mb-1 tracking-widest">Khu Vực Nội Bộ</h3>
+    <p class="text-[10px] text-teal-300 mb-6 opacity-80">Nhập mã PIN.</p>
+    <input type="password" id="pin-input" placeholder="••••" class="w-full bg-teal-950/80 border border-teal-600/50 p-4 text-center text-3xl tracking-[0.3em] rounded-xl focus:outline-none focus:border-gold-500 text-white mb-4 shadow-inner" inputmode="numeric">
+    <p id="pin-error" class="text-red-400 text-xs font-bold mb-4 hidden bg-red-950/50 py-2 rounded-lg border border-red-900/50">Mã PIN không chính xác!</p>
+    <button onclick="verifyPin()" class="w-full bg-gradient-to-r from-gold-400 to-gold-500 text-black py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">Xác Nhận</button>
+  </div>
+</div>
+
+<div id="modal-customer-pwd" class="fixed inset-0 z-[160] bg-teal-950/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-gold-500/50 w-full max-w-xs rounded-[2rem] overflow-hidden p-7 shadow-2xl text-center relative">
+    <button onclick="closeCustomerPwdModal()" class="absolute top-4 right-4 text-teal-400 hover:text-white p-2 text-lg">✕</button>
+    <div class="w-14 h-14 bg-gold-500/20 border border-gold-500/50 text-gold-400 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl shadow-inner animate-pulse">🔑</div>
+    <h3 id="pwd-modal-title" class="font-black text-white text-sm uppercase mb-1 tracking-widest">TABLE SECURITY</h3>
+    <p id="pwd-modal-desc" class="text-[10px] text-teal-200 mb-6 leading-relaxed opacity-90">Enter Password.</p>
+    <input type="text" id="customer-pwd-input" placeholder="..." class="w-full bg-teal-950/80 border border-teal-600/50 p-4 text-center text-xl font-bold uppercase rounded-xl focus:outline-none focus:border-gold-500 text-white mb-4 shadow-inner">
+    <p id="customer-pwd-error" class="text-red-400 text-xs font-bold mb-4 hidden bg-red-950/50 py-2 rounded-lg border border-red-900/50">Invalid code!</p>
+    <button id="pwd-modal-btn" onclick="verifyCustomerPwd()" class="w-full bg-gradient-to-r from-gold-400 to-gold-500 text-black py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">Access</button>
+  </div>
+</div>
+
+<div id="modal-clear-all" class="fixed inset-0 z-[250] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="bg-red-950/90 border border-red-700 w-full max-w-xs rounded-[2rem] overflow-hidden p-7 shadow-2xl text-center relative">
+    <button onclick="closeClearAllModal()" class="absolute top-4 right-4 text-red-400 hover:text-white p-2 text-lg">✕</button>
+    <div class="w-14 h-14 bg-red-500/20 border border-red-500/50 text-red-400 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl animate-pulse">⚠️</div>
+    <h3 class="font-black text-white text-sm uppercase mb-2 tracking-widest">Xác nhận Xóa Tất Cả</h3>
+    <p class="text-[10px] text-red-200 mb-6 leading-relaxed opacity-90">PIN <strong class="text-white bg-red-900 px-1 rounded">(1234)</strong></p>
+    <input type="password" id="clear-all-pin" placeholder="••••" class="w-full bg-red-900/50 border border-red-500/50 p-4 text-center text-3xl tracking-[0.3em] rounded-xl focus:outline-none focus:border-red-400 text-white mb-4 shadow-inner" inputmode="numeric">
+    <p id="clear-all-error" class="text-red-300 text-xs font-bold mb-4 hidden bg-red-900 py-2 rounded-lg">Mã PIN sai!</p>
+    <button onclick="verifyClearAllPin()" class="w-full bg-red-600 hover:bg-red-500 text-white py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">Xác Nhận Xóa</button>
+  </div>
+</div>
+
+<div id="modal-manager-auth" class="fixed inset-0 z-[300] bg-black/95 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="bg-red-950/95 border border-red-600 w-full max-w-xs rounded-[2rem] overflow-hidden p-7 shadow-2xl text-center relative">
+    <button onclick="closeManagerAuthModal()" class="absolute top-4 right-4 text-red-400 hover:text-white p-2 text-lg">✕</button>
+    <div class="w-14 h-14 bg-red-500/20 border border-red-500/60 text-red-400 rounded-full flex items-center justify-center mx-auto mb-5 text-2xl animate-pulse">🔐</div>
+    <h3 class="font-black text-white text-sm uppercase mb-2 tracking-widest">Xác Thực Quản Lý</h3>
+    <p id="manager-auth-desc" class="text-[10px] text-red-200 mb-6 leading-relaxed opacity-90">Cần mật khẩu Quản Lý.</p>
+    <input type="password" id="manager-auth-pin" placeholder="••••••" class="w-full bg-red-900/50 border border-red-500/50 p-4 text-center text-3xl tracking-[0.3em] rounded-xl focus:outline-none focus:border-red-400 text-white mb-4 shadow-inner" inputmode="numeric">
+    <p id="manager-auth-error" class="hidden text-white text-[11px] font-black mb-4 bg-red-600 py-3 px-2 rounded-lg border border-red-300 leading-relaxed shadow-inner">Bạn không có quyền thao tác, vui lòng liên hệ quản lí để xác nhận xóa</p>
+    <button onclick="verifyManagerAuth()" class="w-full bg-red-600 hover:bg-red-500 text-white py-4 rounded-xl text-xs font-black uppercase tracking-widest shadow-lg">Xác Nhận</button>
+  </div>
+</div>
+
+<div id="modal-customer-name" class="fixed inset-0 z-[160] bg-teal-950/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-teal-700/50 w-full max-w-sm rounded-[2rem] overflow-hidden p-6 shadow-2xl relative">
+    <div class="absolute top-0 right-0 w-32 h-32 bg-gold-500/10 blur-[40px] pointer-events-none"></div>
+    <h3 class="font-black text-gold-400 text-sm uppercase mb-2 tracking-widest relative z-10">Thiết Lập Bàn</h3>
+    <p class="text-[11px] text-teal-300 mb-5 relative z-10">Cập nhật cho <strong id="lbl-reception-table" class="text-white text-xs bg-teal-800 px-1.5 py-0.5 rounded ml-1">--</strong></p>
+    <input type="hidden" id="reception-target-table">
+    <input type="hidden" id="customer-original-pax" value="0">
+    <div class="space-y-4 relative z-10 mb-6">
+      <div><label class="block text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5">Tên Khách</label><input type="text" id="customer-name-input" placeholder="Nhập tên..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner"></div>
+      <div class="flex gap-3">
+        <div class="flex-1"><label class="block text-[10px] font-bold text-gold-400 uppercase tracking-widest mb-1.5">PAX</label><input type="number" id="customer-pax-input" min="1" value="1" class="w-full bg-teal-950/80 border border-gold-500/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-400 text-white font-black shadow-inner"></div>
+        <div class="flex-1"><label class="block text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5">Bàn Ăn</label><input type="text" id="customer-rest-input" placeholder="VD: BÀN 1..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner uppercase"></div>
+      </div>
+      <div><label class="block text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5">Thanh Toán</label>
+        <select id="customer-payment-input" onchange="toggleFocReason()" class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner">
+          <option value="TM">Tiền Mặt</option><option value="CK">Chuyển Khoản</option><option value="VISA">Visa</option>
+          <option value="TA_PAID">TA Đã TT</option><option value="TA_UNPAID">TA Chưa TT</option><option value="FOC">FOC</option>
+          <option value="KTOUR" style="color:#ef4444;font-weight:900">🔒 KTOUR (Reserved)</option>
+        </select>
+      </div>
+      <div id="ktour-warning-container" class="hidden mt-3 bg-red-950/80 border border-red-500/60 rounded-xl p-3">
+        <p class="text-[11px] text-red-300 font-bold leading-relaxed">⚠️ KTOUR sẽ KHÓA toàn bộ menu của bàn này.</p>
+      </div>
+      <div id="foc-reason-container" class="hidden mt-4"><label class="block text-[10px] font-bold text-red-400 uppercase tracking-widest mb-1.5">Lý do (Bắt buộc)</label><input type="text" id="customer-foc-reason" placeholder="Nhập lý do..." class="w-full bg-teal-950/80 border border-red-500/50 p-3 text-sm rounded-xl focus:outline-none focus:border-red-400 text-white shadow-inner"></div>
+    </div>
+    <div class="flex gap-3 mb-4 mt-2 relative z-10">
+      <button onclick="closeCustomerNameModal()" class="w-1/3 bg-teal-900 border border-teal-700 text-teal-300 py-3.5 rounded-xl text-xs font-bold hover:bg-teal-800 transition-colors">Hủy</button>
+      <button onclick="saveCustomerName()" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3.5 rounded-xl text-xs font-black uppercase shadow-lg tracking-widest">Lưu</button>
+    </div>
+    <button onclick="clearCustomerName()" class="w-full border border-red-500/40 text-red-400 py-2.5 rounded-xl text-[10px] font-bold uppercase hover:bg-red-950/50 transition-all relative z-10">✕ Xóa bàn này</button>
+  </div>
+</div>
+
+<div id="modal-cancel-qty" class="fixed inset-0 z-[170] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="bg-red-950/90 border border-red-700/50 w-full max-w-xs rounded-[2rem] overflow-hidden p-6 shadow-2xl text-center">
+    <h3 class="font-black text-red-400 text-sm uppercase mb-2 tracking-widest">Hủy Món</h3>
+    <p class="text-[11px] text-red-200 mb-5 opacity-90">Chọn số lượng hủy.</p>
+    <div class="flex items-center justify-center gap-4 mb-6 bg-red-900/30 p-4 rounded-xl border border-red-800/50">
+      <span class="text-xs text-red-300 font-bold uppercase tracking-wider">SL:</span>
+      <input type="number" id="cancel-qty-input" min="1" value="1" class="w-20 bg-red-950 border border-red-500/50 p-2.5 text-center text-2xl font-black rounded-xl focus:outline-none focus:border-red-400 text-white shadow-inner">
+    </div>
+    <div class="flex gap-3">
+      <button onclick="closeCancelModal()" class="w-1/3 bg-red-900/50 text-red-300 py-3.5 rounded-xl text-xs font-bold hover:bg-red-800/50 transition-colors">Quay lại</button>
+      <button onclick="confirmCancelItem()" class="flex-1 bg-red-600 hover:bg-red-500 text-white py-3.5 rounded-xl text-xs font-black uppercase shadow-lg tracking-widest">Hủy</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-staff-name" class="fixed inset-0 z-[150] bg-teal-950/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-teal-700/50 w-full max-w-xs rounded-[2rem] overflow-hidden p-6 shadow-2xl relative">
+    <div class="absolute -top-10 -right-10 w-32 h-32 bg-gold-500/10 blur-[40px] pointer-events-none"></div>
+    <h3 class="font-black text-gold-400 text-sm uppercase mb-2 tracking-widest relative z-10">Xác Nhận Nhân Sự</h3>
+    <p class="text-[11px] text-teal-300 mb-5 leading-relaxed opacity-90 relative z-10">Nhập tên của bạn <strong class="text-gold-300">(chỉ hỏi 1 lần)</strong>.</p>
+    <input type="text" id="staff-name-input" placeholder="Tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 p-4 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white mb-6 shadow-inner relative z-10">
+    <div class="flex gap-3 relative z-10">
+      <button onclick="closeStaffNameModal()" class="w-1/3 bg-teal-900 border border-teal-700 text-teal-300 py-3.5 rounded-xl text-xs font-bold hover:bg-teal-800 transition-colors">Hủy</button>
+      <button onclick="confirmStaffAction()" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3.5 rounded-xl text-xs font-black uppercase shadow-lg tracking-widest">Ghi Nhận</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-reset" class="fixed inset-0 z-[250] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-gold-500/50 w-full max-w-sm rounded-[2rem] overflow-hidden p-7 shadow-2xl text-center relative">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-48 h-24 bg-gold-500/20 blur-[50px] pointer-events-none"></div>
+    <div class="w-16 h-16 bg-gold-500/10 border border-gold-500/30 text-gold-400 rounded-full flex items-center justify-center mx-auto mb-5 text-3xl font-black shadow-inner relative z-10">📦</div>
+    <h3 class="font-black text-white text-lg uppercase mb-2 tracking-widest relative z-10">ĐÓNG CA</h3>
+    <p class="text-[11px] text-teal-200 mb-6 leading-relaxed opacity-90 relative z-10">Lưu trữ lên Cloud và làm trống bàn.</p>
+    <div class="flex gap-3 mb-7 relative z-10">
+      <input type="date" id="archive-date" class="flex-1 bg-teal-950/80 border border-teal-600/50 p-3 text-xs rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner [color-scheme:dark]">
+      <select id="archive-shift" class="w-1/3 bg-teal-950/80 border border-teal-600/50 p-3 text-xs rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner">
+        <option value="Trưa">Trưa</option><option value="Tối">Tối</option><option value="Cả Ngày">Cả Ngày</option>
+      </select>
+    </div>
+    <div class="flex gap-3 relative z-10">
+      <button onclick="closeResetModal()" class="flex-1 bg-teal-900 border border-teal-700 text-teal-300 py-3.5 rounded-xl text-xs font-bold hover:bg-teal-800 transition-colors">Hủy</button>
+      <button onclick="executeSystemReset()" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-3.5 rounded-xl text-xs font-black uppercase shadow-lg tracking-widest">Đóng</button>
+    </div>
+  </div>
+</div>
+
+<div id="modal-cart" class="fixed inset-0 z-[120] bg-teal-950/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-teal-700/50 w-full max-w-md rounded-[2rem] overflow-hidden p-6 shadow-2xl relative">
+    <div class="absolute top-0 right-0 w-32 h-32 bg-gold-500/10 blur-[40px] pointer-events-none"></div>
+    <div class="flex justify-between items-center border-b border-teal-700/50 pb-4 mb-4 relative z-10">
+      <h3 id="lbl-confirm-title" class="font-black text-gold-400 text-sm uppercase tracking-widest drop-shadow-sm">Confirm Order</h3>
+      <button onclick="toggleCartModal(false)" class="text-teal-400 text-xl hover:text-white px-2 bg-teal-900/50 rounded-lg w-8 h-8 flex items-center justify-center transition-colors">✕</button>
+    </div>
+    <div class="space-y-2.5 max-h-[30vh] md:max-h-[280px] overflow-y-auto custom-scrollbar pr-2 relative z-10" id="cart-items-list"></div>
+    <div class="pt-5 border-t border-teal-700/50 mt-5 relative z-10">
+      <label id="lbl-notes" class="block text-[10px] font-black text-teal-300 mb-2 uppercase tracking-widest">Notes:</label>
+      <textarea rows="2" id="customer-notes-input" placeholder="..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3.5 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner"></textarea>
+    </div>
+    <div class="mt-5 flex gap-3 relative z-10">
+      <button onclick="clearCart()" id="lbl-btn-clear" class="w-1/3 bg-teal-900 border border-teal-700 text-teal-300 py-4 rounded-xl text-xs font-bold hover:bg-teal-800 transition-colors uppercase tracking-wider">Clear</button>
+      <button onclick="sendOrderOnline(this)" id="lbl-btn-send" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black py-4 rounded-xl text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 shadow-lg transition-transform active:scale-95">
+        <span id="send-btn-spinner" class="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin hidden"></span>
+        <span id="send-btn-label">Send Request</span>
+      </button>
+    </div>
+  </div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const state = { currentRole:'customer', staffViewMode:'table', tableSelected:false, selectedTable:null, currentLanguage:'VI', activeCategory:'all', cart:{}, orders:[], activeCalls:[], tableAssignments:{}, isSending:false, isCallingStaff:false, pendingAction:null, lastTransactionWarning:null };
+window.state = state;
+window.currentHistoryData = {};
+
+window.getVNTime = function() {
+  const now = new Date();
+  const f = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric'});
+  const parts = f.formatToParts(now);
+  let y,m,d,h,mi;
+  for(const p of parts){ if(p.type==='year')y=+p.value; if(p.type==='month')m=+p.value; if(p.type==='day')d=+p.value; if(p.type==='hour')h=+p.value; if(p.type==='minute')mi=+p.value; }
+  if(h===24)h=0;
+  const timeString = new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:true,hour:'2-digit',minute:'2-digit'}).format(now);
+  return { hours:h, minutes:mi, timeString, fullYear:y, month:m-1, dateNum:d };
+};
+
+const TABLES_LOUNGE = Array.from({length:20},(_,i)=>`LOUNGE ${i+1}`);
+const ADMIN_PIN="8888", RECEPTION_PIN="1111", MANAGER_PIN="451994";
+
+const WELCOME_TRANS = {
+  VI:{title:'VUI LÒNG THIẾT LẬP BÀN',sub:'Xin chọn ngôn ngữ và số bàn để tiếp tục',step1:'1. CHỌN NGÔN NGỮ:',step2:'2. CHỌN BÀN CỦA BẠN:',btn:'TIẾP TỤC ➔'},
+  EN:{title:'PLEASE SETUP YOUR TABLE',sub:'Select your language and table to continue',step1:'1. SELECT LANGUAGE:',step2:'2. SELECT YOUR TABLE:',btn:'CONTINUE ➔'},
+  ZH:{title:'请设置您的桌号',sub:'请选择您的语言和桌号以继续',step1:'1. 选择语言:',step2:'2. 选择桌号:',btn:'继续 ➔'},
+  KO:{title:'테이블을 설정해주세요',sub:'계속하려면 언어와 테이블 번호를 선택하세요',step1:'1. 언어 선택:',step2:'2. 테이블 선택:',btn:'계속하다 ➔'}
+};
+
+const TRANSLATIONS = {
+  VI:{tableLabel:'BÀN CỦA BẠN',callStaffBtn:'Gọi phục vụ',historyBtn:'Xem & Gửi',allCategory:'Tất cả',selectedItems:'{count} món ăn sẵn sàng',notesPlaceholder:'Lưu ý gửi nhân viên',clearCartBtn:'Xóa giỏ',sendToKitchenBtn:'Gửi yêu cầu',activeOrdersTitle:'ĐƠN ĐANG XỬ LÝ',cartTitle:'GIỎ HÀNG',confirmOrderTitle:'XÁC NHẬN GỌI MÓN',sending:'Đang gửi...',toastOrderSuccess:'Đã gửi yêu cầu thành công!',toastWait:'Vui lòng đợi {min}p {sec}s!',toastSetupSuccess:'Khởi tạo bàn thành công!',toastCallStaff:'Đã phát chuông lúc {time}!',toastStaffComing:'Phục vụ đang tới...',toastMaxDrink:'Vượt định mức {pax} Đồ uống!',toastMaxPastry:'Vượt định mức {pax} Bánh ngọt!',toastNoPax:'Bàn chưa có Pax. Liên hệ lễ tân!',statusPending:'⏳ Đang chờ',statusPreparing:'🔥 Đang pha',statusCancelled:'Đã hủy',changeTableBtn:'Đổi Bàn',pwdTitle:'TABLE SECURITY',pwdDesc:'Enter Password to view Menu.',pwdPlaceholder:'Enter table code...',pwdError:'Invalid code!',pwdBtn:'Access',comboTitle:'COMBO:',comboUsageTitle:'ĐÃ GỌI:',comboInfoMax:'{pax} Pax (Max: {pax} Đồ uống & {pax} Bánh)',usageInfo:'Uống: {drinks}/{pax} | Bánh: {pastries}/{pax}',paxWarningTitle:'BÀN CHƯA KÍCH HOẠT!',paxWarningMsg:'Liên hệ Lễ tân để kích hoạt Pax.',ktourWarningTitle:'🔒 BÀN RESERVED (KTOUR)',ktourWarningMsg:'Bàn đã đánh dấu KTOUR, không thể order.',toastKtourLocked:'Bàn Reserved (KTOUR). Không thể order!'},
+  EN:{tableLabel:'YOUR TABLE',callStaffBtn:'Call staff',historyBtn:'View & Send',allCategory:'All',selectedItems:'{count} items ready',notesPlaceholder:'Notes',clearCartBtn:'Clear Cart',sendToKitchenBtn:'Send Request',activeOrdersTitle:'PROCESSING',cartTitle:'CART',confirmOrderTitle:'CONFIRM ORDER',sending:'Sending...',toastOrderSuccess:'Request sent!',toastWait:'Wait {min}m {sec}s!',toastSetupSuccess:'Table setup!',toastCallStaff:'Staff called at {time}!',toastStaffComing:'Staff coming...',toastMaxDrink:'Exceeded {pax} Beverages!',toastMaxPastry:'Exceeded {pax} Pastries!',toastNoPax:'Pax not set. Contact reception!',statusPending:'⏳ Pending',statusPreparing:'🔥 Preparing',statusCancelled:'Cancelled',changeTableBtn:'Change Table',pwdTitle:'TABLE SECURITY',pwdDesc:'Enter Password to view Menu.',pwdPlaceholder:'Enter table code...',pwdError:'Invalid code!',pwdBtn:'Access',comboTitle:'COMBO:',comboUsageTitle:'ORDERED:',comboInfoMax:'{pax} Pax (Max: {pax} Drinks & {pax} Pastries)',usageInfo:'Drinks: {drinks}/{pax} | Pastries: {pastries}/{pax}',paxWarningTitle:'TABLE NOT ACTIVATED!',paxWarningMsg:'Contact Reception to activate Pax.',ktourWarningTitle:'🔒 TABLE RESERVED (KTOUR)',ktourWarningMsg:'Table marked KTOUR, ordering disabled.',toastKtourLocked:'Table reserved (KTOUR)!'},
+  ZH:{tableLabel:'您的桌号',callStaffBtn:'呼叫服务',historyBtn:'查看并发送',allCategory:'全部',selectedItems:'{count} 份准备好',notesPlaceholder:'备注',clearCartBtn:'清空',sendToKitchenBtn:'发送',activeOrdersTitle:'处理中',cartTitle:'购物车',confirmOrderTitle:'确认订单',sending:'发送中...',toastOrderSuccess:'已发送！',toastWait:'等待 {min}分 {sec}秒！',toastSetupSuccess:'桌号设置成功！',toastCallStaff:'已在 {time} 呼叫！',toastStaffComing:'服务员马上到...',toastMaxDrink:'超出 {pax} 饮料限制！',toastMaxPastry:'超出 {pax} 糕点限制！',toastNoPax:'尚未设置人数，请联系前台！',statusPending:'⏳ 等待',statusPreparing:'🔥 准备中',statusCancelled:'已取消',changeTableBtn:'换桌',pwdTitle:'桌号验证',pwdDesc:'请输入密码。',pwdPlaceholder:'输入桌号...',pwdError:'代码无效！',pwdBtn:'访问',comboTitle:'套餐：',comboUsageTitle:'已点：',comboInfoMax:'{pax} 人 (最多 {pax} 饮料 & {pax} 糕点)',usageInfo:'饮料: {drinks}/{pax} | 糕点: {pastries}/{pax}',paxWarningTitle:'未激活！',paxWarningMsg:'请联系前台。',ktourWarningTitle:'🔒 已预留 (KTOUR)',ktourWarningMsg:'无法自行点餐。',toastKtourLocked:'已预留 (KTOUR)！'},
+  KO:{tableLabel:'테이블',callStaffBtn:'직원 호출',historyBtn:'확인/전송',allCategory:'전체',selectedItems:'{count}개 준비됨',notesPlaceholder:'요청사항',clearCartBtn:'비우기',sendToKitchenBtn:'전송',activeOrdersTitle:'처리 중',cartTitle:'장바구니',confirmOrderTitle:'주문 확인',sending:'전송 중...',toastOrderSuccess:'전송되었습니다!',toastWait:'{min}분 {sec}초 대기!',toastSetupSuccess:'테이블 설정 완료!',toastCallStaff:'{time} 호출!',toastStaffComing:'직원이 가고 있습니다...',toastMaxDrink:'음료 {pax}잔 초과!',toastMaxPastry:'디저트 {pax}개 초과!',toastNoPax:'인원 미설정. 프론트 문의!',statusPending:'⏳ 대기',statusPreparing:'🔥 준비 중',statusCancelled:'취소됨',changeTableBtn:'테이블 변경',pwdTitle:'테이블 보안',pwdDesc:'비밀번호 입력.',pwdPlaceholder:'코드 입력...',pwdError:'유효하지 않음!',pwdBtn:'접속',comboTitle:'콤보:',comboUsageTitle:'주문:',comboInfoMax:'{pax} 명 (최대 음료 {pax}잔 & 디저트 {pax}개)',usageInfo:'음료: {drinks}/{pax} | 디저트: {pastries}/{pax}',paxWarningTitle:'활성화 안 됨!',paxWarningMsg:'프론트에 문의하세요.',ktourWarningTitle:'🔒 예약됨 (KTOUR)',ktourWarningMsg:'직접 주문 불가.',toastKtourLocked:'예약됨 (KTOUR)!'}
+};
+
+const LOUNGE_CATEGORIES = [
+  {id:'cat-coffee',name:{VI:'☕ Cà Phê & Socola',EN:'☕ Coffee & Chocolate',ZH:'☕ 咖啡与巧克力',KO:'☕ 커피 & 초콜릿'}},
+  {id:'cat-tea',name:{VI:'🍵 Trà & Matcha',EN:'🍵 Tea & Matcha',ZH:'🍵 茶与抹茶',KO:'🍵 티 & 말차'}},
+  {id:'cat-juice',name:{VI:'🍹 Nước Ép',EN:'🍹 Fresh Juice',ZH:'🍹 果汁',KO:'🍹 주스'}},
+  {id:'cat-pastry',name:{VI:'🍰 Bánh Ngọt',EN:'🍰 Sweet Pastry',ZH:'🍰 甜点',KO:'🍰 디저트'}}
+];
+
+const LOUNGE_ITEMS = [
+  {id:'l-m-1',category_id:'cat-coffee',name:{VI:'Americano',EN:'Americano',ZH:'美式',KO:'아메리카노'}},
+  {id:'l-m-2',category_id:'cat-coffee',name:{VI:'Cappuccino',EN:'Cappuccino',ZH:'卡布奇诺',KO:'카푸치노'}},
+  {id:'l-m-3',category_id:'cat-coffee',name:{VI:'Latte',EN:'Latte',ZH:'拿铁',KO:'라떼'}},
+  {id:'l-m-4',category_id:'cat-coffee',name:{VI:'Single Espresso',EN:'Single Espresso',ZH:'单浓缩',KO:'싱글 에스프레소'}},
+  {id:'l-m-5',category_id:'cat-coffee',name:{VI:'Double Espresso',EN:'Double Espresso',ZH:'双浓缩',KO:'더블 에스프레소'}},
+  {id:'l-m-6',category_id:'cat-coffee',name:{VI:'Cà Phê Muối',EN:'The Salt Coffee',ZH:'盐咖啡',KO:'소금 커피'}},
+  {id:'l-m-7',category_id:'cat-coffee',name:{VI:'Cà Phê Việt Nam',EN:'Vietnamese Coffee',ZH:'越南咖啡',KO:'베트남 커피'}},
+  {id:'l-m-8',category_id:'cat-coffee',name:{VI:'Hot Chocolate',EN:'Hot Chocolate',ZH:'热巧克力',KO:'핫 초콜릿'}},
+  {id:'l-m-13',category_id:'cat-tea',name:{VI:'Trà Anh Quốc',EN:'English Breakfast',ZH:'英式早餐茶',KO:'잉글리시 티'}},
+  {id:'l-m-14',category_id:'cat-tea',name:{VI:'Trà Nhài',EN:'Jasmine Tea',ZH:'茉莉花茶',KO:'자스민 차'}},
+  {id:'l-m-15',category_id:'cat-tea',name:{VI:'Trà Bá Tước',EN:'Earl Grey Tea',ZH:'伯爵茶',KO:'얼그레이'}},
+  {id:'l-m-16',category_id:'cat-tea',name:{VI:'Trà Bạc Hà',EN:'Peppermint Tea',ZH:'薄荷茶',KO:'페퍼민트'}},
+  {id:'l-m-17',category_id:'cat-tea',name:{VI:'Trà Xanh Việt Nam',EN:'Vietnamese Green Tea',ZH:'越南绿茶',KO:'베트남 녹차'}},
+  {id:'l-m-18',category_id:'cat-tea',name:{VI:'Matcha Sữa',EN:'Matcha Latte',ZH:'抹茶拿铁',KO:'말차 라떼'}},
+  {id:'l-m-19',category_id:'cat-tea',name:{VI:'Matcha Sữa Hạt',EN:'Matcha Nut Milk',ZH:'坚果奶抹茶',KO:'말차 넛 밀크'}},
+  {id:'l-m-9',category_id:'cat-juice',name:{VI:'Nước Ép Cam',EN:'Orange Juice',ZH:'橙汁',KO:'오렌지 주스'}},
+  {id:'l-m-10',category_id:'cat-juice',name:{VI:'Nước Chanh Dây',EN:'Passion Juice',ZH:'百香果汁',KO:'패션프루트'}},
+  {id:'l-m-11',category_id:'cat-juice',name:{VI:'Nước Ép Dứa',EN:'Pineapple Juice',ZH:'菠萝汁',KO:'파인애플'}},
+  {id:'l-m-12',category_id:'cat-juice',name:{VI:'Nước Ép Dưa Hấu',EN:'Watermelon Juice',ZH:'西瓜汁',KO:'수박 주스'}},
+  {id:'l-m-22',category_id:'cat-pastry',name:{VI:'Bánh Kem Trà Xanh',EN:'Green Tea Cream Cake',ZH:'绿茶蛋糕',KO:'녹차 케이크'}},
+  {id:'l-m-23',category_id:'cat-pastry',name:{VI:'Bánh Kem Việt Quất',EN:'Blueberry Cream Cake',ZH:'蓝莓蛋糕',KO:'블루베리 케이크'}}
+];
+
+const HOT_COLD_REQUIRED = ['l-m-1','l-m-2','l-m-3','l-m-7','l-m-8','l-m-13','l-m-14','l-m-15','l-m-16','l-m-17','l-m-18','l-m-19'];
+const HOT_COLD_TRANS = {HOT:{VI:'Nóng',EN:'Hot',ZH:'热',KO:'따뜻한'},COLD:{VI:'Lạnh',EN:'Cold',ZH:'冷',KO:'차가운'}};
+
+const firebaseConfig = { apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain:"dolphin-f6d67.firebaseapp.com", projectId:"dolphin-f6d67" };
+let db, auth;
+
+window.showToast = function(msg, icon) {
+  const t = document.getElementById('toast');
+  if(!t) return;
+  document.getElementById('toast-msg').innerText = msg;
+  document.getElementById('toast-icon').innerText = icon || '✨';
+  const bar = document.getElementById('toast-progress');
+  t.classList.remove('opacity-0','pointer-events-none','translate-y-2');
+  t.classList.add('toast-anim');
+  bar.style.transition = 'none'; bar.style.width = '100%';
+  void bar.offsetWidth;
+  bar.style.transition = 'width 3s linear'; bar.style.width = '0%';
+  clearTimeout(t._tId);
+  t._tId = setTimeout(()=>{ t.classList.add('opacity-0','pointer-events-none','translate-y-2'); t.classList.remove('toast-anim'); }, 3000);
+};
+
+window.startCloudConnection = function() {
+  try {
+    const app = initializeApp(firebaseConfig);
+    auth = getAuth(app); db = getFirestore(app);
+    signInAnonymously(auth).then(()=>{
+      const dot = document.getElementById('cloud-status-dot');
+      const text = document.getElementById('cloud-status-text');
+      if(dot) dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,.8)]";
+      if(text){ text.innerText = "🌐 ONLINE (REALTIME)"; text.className = "font-bold text-emerald-400 tracking-wider text-[10px] uppercase"; }
+      setupRealtimeListeners();
+    }).catch(()=>{
+      const text = document.getElementById('cloud-status-text');
+      if(text){ text.innerText = "⚠️ OFFLINE"; text.className = "font-bold text-red-400 tracking-wider text-[10px] uppercase"; }
+    });
+  } catch(e){}
+};
+
+let isInitialOrderLoad = true, isInitialCallLoad = true, globalAudioCtx = null;
+window.unlockAudio = function() {
+  if(!globalAudioCtx) globalAudioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  if(globalAudioCtx.state==='suspended') globalAudioCtx.resume();
+};
+['click','touchstart','touchend','keydown','scroll'].forEach(e=>document.addEventListener(e,window.unlockAudio,{capture:true,passive:true}));
+
+/* ============================================================
+   🔔 NOTIFICATION BELL — Hotel reception style, loud & long
+   ============================================================ */
+window.playNotificationAlert = function() {
+  if(navigator.vibrate){ try{ navigator.vibrate([500,120,500,120,500,120,500,120,800]); }catch(e){} }
+  try {
+    let ctx = (window.Ambient && Ambient.ctx && Ambient.ctx.state!=='closed') ? Ambient.ctx : globalAudioCtx;
+    if(!ctx){ ctx = new (window.AudioContext||window.webkitAudioContext)(); globalAudioCtx = ctx; }
+    if(ctx.state==='suspended') ctx.resume();
+
+    const notifGain = ctx.createGain();
+    notifGain.gain.value = 0.85;
+    notifGain.connect(ctx.destination);
+
+    const delayL = ctx.createDelay(); delayL.delayTime.value = 0.02;
+    const delayR = ctx.createDelay(); delayR.delayTime.value = 0.032;
+    const mergeL = ctx.createGain(); mergeL.gain.value = 0.35;
+    const mergeR = ctx.createGain(); mergeR.gain.value = 0.35;
+    delayL.connect(mergeL); delayR.connect(mergeR);
+    mergeL.connect(notifGain); mergeR.connect(notifGain);
+
+    const strikeBell = (freq, startTime, loudness, decay) => {
+      const partials = [
+        { r:1.00, g:1.00, d:1.00 },{ r:2.00, g:0.65, d:0.85 },{ r:2.76, g:0.45, d:0.75 },
+        { r:4.07, g:0.30, d:0.60 },{ r:5.43, g:0.20, d:0.45 },{ r:7.10, g:0.12, d:0.32 },{ r:8.93, g:0.08, d:0.22 }
+      ];
+      partials.forEach(p => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq * p.r;
+        osc.detune.value = (Math.random() - 0.5) * 4;
+        const a = startTime;
+        const peak = 0.42 * loudness * p.g;
+        const dec = decay * p.d;
+        g.gain.setValueAtTime(0.0001, a);
+        g.gain.exponentialRampToValueAtTime(peak, a + 0.004);
+        g.gain.exponentialRampToValueAtTime(peak * 0.4, a + 0.06);
+        g.gain.exponentialRampToValueAtTime(0.0001, a + dec);
+        osc.connect(g);
+        g.connect(notifGain);
+        g.connect(delayL);
+        g.connect(delayR);
+        osc.start(a);
+        osc.stop(a + dec + 0.05);
+      });
+      const clickOsc = ctx.createOscillator();
+      const clickG = ctx.createGain();
+      clickOsc.type = 'triangle';
+      clickOsc.frequency.value = freq * 3;
+      clickG.gain.setValueAtTime(0.15 * loudness, startTime);
+      clickG.gain.exponentialRampToValueAtTime(0.0001, startTime + 0.02);
+      clickOsc.connect(clickG); clickG.connect(notifGain);
+      clickOsc.start(startTime); clickOsc.stop(startTime + 0.03);
+    };
+
+    const now = ctx.currentTime + 0.05;
+    const baseFreq = 1046.50;
+    for (let i = 0; i < 6; i++) strikeBell(baseFreq, now + i * 0.22, 1.0 - i * 0.03, 1.4);
+    strikeBell(baseFreq, now + 2.1, 1.0, 6.5);
+    strikeBell(baseFreq * 0.75, now + 2.1, 0.6, 6.0);
+    strikeBell(baseFreq * 0.50, now + 2.15, 0.4, 5.0);
+    strikeBell(baseFreq, now + 3.5, 0.75, 5.0);
+  } catch(e){ console.log('Bell error:', e); }
+};
+
+/* ============================================================
+   🎹 DOLPHIN LOUNGE — ROMANTIC BALLAD ENGINE
+   ------------------------------------------------------------
+   Lấy cảm hứng từ dòng ballad tình cảm cuối thập niên 80
+   (tone ấm, progression I-vi-IV-V, tempo 62-72 BPM).
+   Giai điệu là ORIGINAL — không sao chép bất kỳ tác phẩm
+   có bản quyền nào. Chỉ mô phỏng đúng "chất" âm nhạc, tiết tấu
+   và màu sắc hòa âm của dòng nhạc này.
+   ============================================================ */
+
+const AMB_NOTES = {
+  Bb1: 58.27, C2: 65.41, D2: 73.42, Eb2: 77.78, F2: 87.31, G2: 98.00, A2: 110.00,
+  Bb2: 116.54, C3: 130.81, D3: 146.83, Eb3: 155.56, F3: 174.61, G3: 196.00, A3: 220.00,
+  Bb3: 233.08, C4: 261.63, D4: 293.66, Eb4: 311.13, F4: 349.23, G4: 392.00, A4: 440.00,
+  Bb4: 466.16, C5: 523.25, D5: 587.33, Eb5: 622.25, F5: 698.46, G5: 783.99, A5: 880.00,
+  Bb5: 932.33, C6: 1046.50
+};
+
+// Progression I–vi–IV–V (Bb–Gm7–Eb–F) — 8 bars
+const BALLAD_LOOP = [
+  { chord:[AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4, AMB_NOTES.A4], bass: AMB_NOTES.Bb2,
+    melody:[[AMB_NOTES.F5,1.5],[AMB_NOTES.Eb5,0.5],[AMB_NOTES.D5,2]] },
+  { chord:[AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4], bass: AMB_NOTES.G2,
+    melody:[[AMB_NOTES.D5,1.5],[AMB_NOTES.C5,0.5],[AMB_NOTES.Bb4,2]] },
+  { chord:[AMB_NOTES.Eb3, AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4], bass: AMB_NOTES.Eb2,
+    melody:[[AMB_NOTES.Eb5,1],[AMB_NOTES.F5,1],[AMB_NOTES.G5,2]] },
+  { chord:[AMB_NOTES.F3, AMB_NOTES.A3, AMB_NOTES.C4, AMB_NOTES.F4], bass: AMB_NOTES.F2,
+    melody:[[AMB_NOTES.F5,4]] },
+  { chord:[AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4, AMB_NOTES.A4], bass: AMB_NOTES.Bb2,
+    melody:[[AMB_NOTES.F5,1],[AMB_NOTES.Eb5,1],[AMB_NOTES.D5,1],[AMB_NOTES.C5,1]] },
+  { chord:[AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4], bass: AMB_NOTES.G2,
+    melody:[[AMB_NOTES.Bb4,1.5],[AMB_NOTES.C5,0.5],[AMB_NOTES.D5,2]] },
+  { chord:[AMB_NOTES.Eb3, AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4], bass: AMB_NOTES.Eb2,
+    melody:[[AMB_NOTES.Eb5,1],[AMB_NOTES.D5,1],[AMB_NOTES.C5,2]] },
+  { chord:[AMB_NOTES.F3, AMB_NOTES.A3, AMB_NOTES.C4, AMB_NOTES.F4], bass: AMB_NOTES.F2,
+    melody:[[AMB_NOTES.Bb4,4]] }
+];
+
+const Ambient = {
+  ctx: null, master: null, tracksGain: null, reverb: null,
+  enabled: false, mode: 'off', volume: 0.30,
+  bpm: 68,
+  seqState: { barIdx: 0, nextBarTime: 0, timer: null },
+  variant: 'full',
+
+  init() {
+    if (this.ctx) return;
+    this.ctx = new (window.AudioContext||window.webkitAudioContext)();
+    this.master = this.ctx.createGain();
+    this.master.gain.value = this.volume;
+    const comp = this.ctx.createDynamicsCompressor();
+    comp.threshold.value = -18; comp.ratio.value = 3;
+    comp.attack.value = 0.01; comp.release.value = 0.3;
+    this.master.connect(comp);
+    comp.connect(this.ctx.destination);
+    this.tracksGain = this.ctx.createGain();
+    this.tracksGain.gain.value = 1.0;
+    this.tracksGain.connect(this.master);
+
+    const conv = this.ctx.createConvolver();
+    const rate = this.ctx.sampleRate;
+    const len = Math.floor(rate * 2.4);
+    const buf = this.ctx.createBuffer(2, len, rate);
+    for (let ch = 0; ch < 2; ch++) {
+      const d = buf.getChannelData(ch);
+      for (let i = 0; i < len; i++) {
+        d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.6);
+      }
+    }
+    conv.buffer = buf;
+    const revGain = this.ctx.createGain();
+    revGain.gain.value = 0.30;
+    conv.connect(revGain);
+    revGain.connect(this.master);
+    this.reverb = conv;
+  },
+
+  _route(node, wetAmount = 0.25) {
+    node.connect(this.tracksGain);
+    if (this.reverb && wetAmount > 0) {
+      const g = this.ctx.createGain();
+      g.gain.value = wetAmount;
+      node.connect(g);
+      g.connect(this.reverb);
+    }
+  },
+
+  playLead(freq, t, dur, gain = 1.0) {
+    const o1 = this.ctx.createOscillator();
+    const o2 = this.ctx.createOscillator();
+    const o3 = this.ctx.createOscillator();
+    const g1 = this.ctx.createGain();
+    const g2 = this.ctx.createGain();
+    const g3 = this.ctx.createGain();
+    const filt = this.ctx.createBiquadFilter();
+    const out = this.ctx.createGain();
+
+    o1.type = 'sine';       o1.frequency.value = freq;
+    o2.type = 'triangle';   o2.frequency.value = freq * 2;
+    o3.type = 'sine';       o3.frequency.value = freq * 0.5;
+
+    g2.gain.setValueAtTime(0.0001, t);
+    g2.gain.exponentialRampToValueAtTime(0.42, t + 0.006);
+    g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
+    g3.gain.value = 0.16;
+
+    const peak = 0.155 * gain;
+    g1.gain.setValueAtTime(0.0001, t);
+    g1.gain.exponentialRampToValueAtTime(peak, t + 0.055);
+    g1.gain.exponentialRampToValueAtTime(peak * 0.72, t + 0.20);
+    g1.gain.setValueAtTime(peak * 0.68, t + Math.max(0.20, dur * 0.82));
+    g1.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.38);
+
+    filt.type = 'lowpass';
+    filt.frequency.value = 2200;
+    filt.Q.value = 0.7;
+
+    o1.connect(g1); o2.connect(g2); o3.connect(g3);
+    g1.connect(filt); g2.connect(filt); g3.connect(filt);
+    filt.connect(out);
+    this._route(out, 0.38);
+
+    o1.start(t); o1.stop(t + dur + 0.5);
+    o2.start(t); o2.stop(t + dur + 0.5);
+    o3.start(t); o3.stop(t + dur + 0.5);
+  },
+
+  playPad(freqs, t, dur, gain = 1.0) {
+    const peak = 0.024 * gain;
+    freqs.forEach((f, i) => {
+      [-5, 5].forEach(detune => {
+        const o = this.ctx.createOscillator();
+        o.type = 'sawtooth';
+        o.frequency.value = f;
+        o.detune.value = detune;
+        const g = this.ctx.createGain();
+        const filt = this.ctx.createBiquadFilter();
+        filt.type = 'lowpass';
+        filt.frequency.value = 820 + i*80;
+        filt.Q.value = 0.55;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.linearRampToValueAtTime(peak, t + 0.9);
+        g.gain.setValueAtTime(peak, t + Math.max(0.9, dur - 0.5));
+        g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.5);
+        o.connect(g); g.connect(filt);
+        this._route(filt, 0.55);
+        o.start(t); o.stop(t + dur + 0.6);
+      });
+    });
+  },
+
+  playBass(freq, t, dur, gain = 1.0) {
+    const o1 = this.ctx.createOscillator();
+    const o2 = this.ctx.createOscillator();
+    const g1 = this.ctx.createGain();
+    const g2 = this.ctx.createGain();
+    const filt = this.ctx.createBiquadFilter();
+    o1.type = 'sine'; o1.frequency.value = freq;
+    o2.type = 'sine'; o2.frequency.value = freq * 2;
+    g2.gain.value = 0.12;
+    const peak = 0.145 * gain;
+    g1.gain.setValueAtTime(0.0001, t);
+    g1.gain.exponentialRampToValueAtTime(peak, t + 0.025);
+    g1.gain.exponentialRampToValueAtTime(peak * 0.72, t + dur * 0.55);
+    g1.gain.setValueAtTime(peak * 0.68, t + Math.max(0.1, dur - 0.08));
+    g1.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.28);
+    filt.type = 'lowpass'; filt.frequency.value = 360; filt.Q.value = 0.6;
+    o1.connect(g1); o2.connect(g2);
+    g1.connect(filt); g2.connect(filt);
+    this._route(filt, 0.10);
+    o1.start(t); o1.stop(t + dur + 0.4);
+    o2.start(t); o2.stop(t + dur + 0.4);
+  },
+
+  playChord(freqs, t, dur, gain = 1.0) {
+    freqs.forEach((f, i) => {
+      const delay = i * 0.014;
+      this.playLead(f, t + delay, dur, gain * 0.52);
+    });
+  },
+
+  scheduleBars() {
+    if (!this.enabled) return;
+    const beatDur = 60 / this.bpm;
+    const barDur = beatDur * 4;
+    const lookAhead = 3.5;
+
+    while (this.seqState.nextBarTime < this.ctx.currentTime + lookAhead) {
+      const idx = this.seqState.barIdx % BALLAD_LOOP.length;
+      const bar = BALLAD_LOOP[idx];
+      const t = this.seqState.nextBarTime;
+      const v = this.variant;
+
+      const padGain = (v === 'piano') ? 0.35 : (v === 'ambient') ? 1.4 : 1.0;
+      this.playPad(bar.chord, t, barDur * 0.98, padGain);
+
+      if (v === 'full' || v === 'night') {
+        this.playChord(bar.chord, t + 0.02, barDur * 0.48, 1.0);
+        if (idx % 2 === 1) this.playChord(bar.chord, t + beatDur*2 + 0.02, barDur * 0.42, 0.72);
+      } else if (v === 'piano') {
+        this.playChord(bar.chord, t + 0.02, barDur * 0.85, 1.1);
+      } else if (v === 'ambient') {
+        this.playChord(bar.chord, t + 0.05, barDur * 0.98, 0.45);
+      } else if (v === 'guitar') {
+        this.playChord(bar.chord, t + 0.02, barDur * 0.5, 0.55);
+      }
+
+      if (v === 'full' || v === 'guitar' || v === 'night') {
+        const bassGain = (v === 'night') ? 1.15 : 1.0;
+        this.playBass(bar.bass, t + 0.03, barDur * 0.9, bassGain);
+        if (idx % 2 === 0) {
+          this.playBass(bar.bass * 1.5, t + beatDur*2, barDur * 0.4, 0.62);
+        }
+      }
+
+      const melGain = (v === 'ambient') ? 0.72 : 1.0;
+      let mtime = t;
+      bar.melody.forEach(([note, dur]) => {
+        if (note > 0 && dur > 0) {
+          this.playLead(note, mtime + 0.045, beatDur * dur * 0.92, melGain);
+        }
+        mtime += beatDur * dur;
+      });
+
+      this.seqState.nextBarTime += barDur;
+      this.seqState.barIdx++;
+    }
+    this.seqState.timer = setTimeout(() => this.scheduleBars(), 800);
+  },
+
+  stopSchedule() {
+    if (this.seqState.timer) { clearTimeout(this.seqState.timer); this.seqState.timer = null; }
+  },
+
+  fadeIn(sec = 1.2) {
+    const now = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(Math.max(0.0001, this.master.gain.value), now);
+    this.master.gain.linearRampToValueAtTime(this.volume, now + sec);
+  },
+  fadeOut(sec = 0.8) {
+    const now = this.ctx.currentTime;
+    this.master.gain.cancelScheduledValues(now);
+    this.master.gain.setValueAtTime(Math.max(0.0001, this.master.gain.value), now);
+    this.master.gain.linearRampToValueAtTime(0.0001, now + sec);
+  },
+
+  setMode(mode) {
+    this.init();
+    if (this.ctx.state === 'suspended') this.ctx.resume();
+    const prevEnabled = this.enabled;
+
+    if (mode === 'off') {
+      this.fadeOut(0.7);
+      this.stopSchedule();
+      setTimeout(()=>{ try{ this.ctx.suspend(); }catch(e){} }, 800);
+      this.enabled = false;
+      this.mode = 'off';
+      return;
+    }
+
+    const cfg = {
+      t1:   { variant: 'full',    bpm: 68 },
+      t2:   { variant: 'piano',   bpm: 70 },
+      t3:   { variant: 'ambient', bpm: 64 },
+      t4:   { variant: 'guitar',  bpm: 72 },
+      t5:   { variant: 'night',   bpm: 62 },
+      loop: { variant: 'full',    bpm: 68 }
+    }[mode] || { variant: 'full', bpm: 68 };
+
+    this.variant = cfg.variant;
+    this.bpm = cfg.bpm;
+
+    if (!prevEnabled) {
+      this.seqState.nextBarTime = this.ctx.currentTime + 0.15;
+      this.seqState.barIdx = 0;
+      this.stopSchedule();
+      this.scheduleBars();
+      this.fadeIn(1.3);
+    } else {
+      const now = this.ctx.currentTime;
+      this.master.gain.cancelScheduledValues(now);
+      this.master.gain.setValueAtTime(this.master.gain.value, now);
+      this.master.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.55);
+      setTimeout(() => {
+        this.stopSchedule();
+        this.seqState.nextBarTime = this.ctx.currentTime + 0.15;
+        this.seqState.barIdx = 0;
+        this.scheduleBars();
+        this.fadeIn(1.1);
+      }, 600);
+    }
+    this.mode = mode;
+    this.enabled = true;
+  },
+
+  setVolume(v) {
+    this.volume = v;
+    if (this.master && this.enabled) {
+      const now = this.ctx.currentTime;
+      this.master.gain.cancelScheduledValues(now);
+      this.master.gain.linearRampToValueAtTime(v, now + 0.15);
+    }
+  }
+};
+
+window.toggleSoundMenu = function(e) {
+  e.stopPropagation();
+  const menu = document.getElementById('sound-menu');
+  menu.classList.toggle('hidden-pop');
+};
+
+const SOUND_META = {
+  off:  { icon:'🔇', label:'Đã tắt nhạc nền Lounge' },
+  t1:   { icon:'🎹', label:'🎹 Rhodes & Strings — Full Ballad 68 BPM' },
+  t2:   { icon:'🎼', label:'🎼 Piano Solo — Pure 70 BPM' },
+  t3:   { icon:'🌫️', label:'🌫️ Ambient Wash — Ethereal 64 BPM' },
+  t4:   { icon:'🎸', label:'🎸 Soft Guitar — Mellow 72 BPM' },
+  t5:   { icon:'🌙', label:'🌙 Late Night — Slow & Deep 62 BPM' },
+  loop: { icon:'🔁', label:'🔁 Auto Loop — Dolphin Ballad Theme' }
+};
+
+window.setSoundMode = function(mode) {
+  Ambient.setMode(mode);
+  const meta = SOUND_META[mode] || SOUND_META.off;
+  const btn = document.getElementById('sound-toggle');
+  btn.innerText = meta.icon;
+  btn.classList.toggle('active', mode !== 'off');
+  document.querySelectorAll('#sound-menu .mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
+  localStorage.setItem('dolphinSoundMode', mode);
+  const menu = document.getElementById('sound-menu');
+  setTimeout(() => menu.classList.add('hidden-pop'), 150);
+  window.showToast(meta.label, meta.icon);
+};
+
+window.setAmbientVolume = function(v) {
+  const vol = parseInt(v) / 100;
+  Ambient.setVolume(vol);
+  document.getElementById('vol-pct').innerText = v + '%';
+  localStorage.setItem('dolphinSoundVolume', v);
+};
+
+document.addEventListener('click', (e) => {
+  const menu = document.getElementById('sound-menu');
+  if (menu && !menu.classList.contains('hidden-pop') && !e.target.closest('#sound-menu') && !e.target.closest('#sound-toggle')) {
+    menu.classList.add('hidden-pop');
+  }
+});
+
+/* ============================================================
+   SCENE — Weather + Sun / Moon (Sun = FOCAL POINT)
+   ============================================================ */
+const HLB_LAT = 20.9101, HLB_LNG = 107.1839;
+const sceneState = { weatherCode:0, cloudCover:30, windSpeed:5, isDay:1, temperature:25, condition:'clear', lastFetch:0 };
+
+function hexToRgb(h){ h=h.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const n=parseInt(h,16); return {r:(n>>16)&255,g:(n>>8)&255,b:n&255}; }
+function mixColor(a,b,t){
+  if(a.startsWith('rgb')){ const m=a.match(/\d+/g); a='#'+m.slice(0,3).map(x=>(+x).toString(16).padStart(2,'0')).join(''); }
+  if(b.startsWith('rgb')){ const m=b.match(/\d+/g); b='#'+m.slice(0,3).map(x=>(+x).toString(16).padStart(2,'0')).join(''); }
+  const A=hexToRgb(a),B=hexToRgb(b);
+  return `rgb(${Math.round(A.r+(B.r-A.r)*t)},${Math.round(A.g+(B.g-A.g)*t)},${Math.round(A.b+(B.b-A.b)*t)})`;
+}
+function getSunTimes(date){
+  const start = new Date(date.getFullYear(),0,0);
+  const doy = Math.floor((date-start)/86400000);
+  const lat = HLB_LAT*Math.PI/180;
+  const decl = 23.44*Math.PI/180*Math.sin(2*Math.PI*(doy-81)/365);
+  const cosHA = -Math.tan(lat)*Math.tan(decl);
+  const HA = Math.acos(Math.max(-1,Math.min(1,cosHA)))*12/Math.PI;
+  return {sunrise:12-HA, sunset:12+HA};
+}
+function classifyWeather(code,cc,ws,isDay){
+  if(!isDay) return 'night';
+  if(code>=95) return 'storm';
+  if(code>=80&&code<=82) return 'rain';
+  if(code>=61&&code<=65) return 'rain';
+  if(code>=51&&code<=57) return 'drizzle';
+  if(code===45||code===48) return 'fog';
+  if(ws>40) return 'storm';
+  if(ws>25) return 'windy';
+  if(cc>=85) return 'overcast';
+  if(cc>=45) return 'partly-cloudy';
+  return 'clear';
+}
+function weatherLabel(cond){
+  return {clear:'Trong xanh',night:'Đêm yên',storm:'Giông bão',rain:'Mưa',drizzle:'Mưa phùn',fog:'Sương mù',windy:'Gió mạnh',overcast:'Âm u','partly-cloudy':'Râm mát'}[cond]||'—';
+}
+function weatherIcon(cond,isDay){
+  if(!isDay) return '🌙';
+  return {clear:'☀️',storm:'⛈️',rain:'🌧️',drizzle:'🌦️',fog:'🌫️',windy:'💨',overcast:'☁️','partly-cloudy':'⛅'}[cond]||'☀️';
+}
+
+function updateSkyScene(){
+  const t = window.getVNTime();
+  const h = t.hours + t.minutes/60;
+  const {sunrise,sunset} = getSunTimes(new Date());
+  let sunProgress = null;
+  if(h>=sunrise && h<=sunset) sunProgress = (h-sunrise)/(sunset-sunrise);
+
+  const core = document.getElementById('celestial-core');
+  const glow = document.getElementById('celestial-glow');
+  const wrap = document.getElementById('celestial-wrap');
+  if(!core||!wrap) return;
+
+  let dim = 1;
+  if(['rain','storm','overcast','drizzle'].includes(sceneState.condition)) dim = 0.55;
+  if(sceneState.condition==='fog') dim = 0.4;
+  if(sceneState.condition==='partly-cloudy') dim = 0.9;
+  dim *= (1-Math.min(sceneState.cloudCover,90)/220);
+
+  let cx,cy,size;
+  if(sunProgress!==null){
+    cx = 5 + sunProgress*90;
+    const arcY = Math.sin(sunProgress*Math.PI);
+    cy = 60 - arcY*48;
+    const stops = [{p:0,c:'#ff6b35'},{p:.15,c:'#ffa34f'},{p:.35,c:'#ffd36b'},{p:.5,c:'#fff4b8'},{p:.65,c:'#ffd36b'},{p:.85,c:'#ffa34f'},{p:1,c:'#ff6b35'}];
+    let color='#ffd36b';
+    for(let i=0;i<stops.length-1;i++){ if(sunProgress>=stops[i].p && sunProgress<=stops[i+1].p){ const tt=(sunProgress-stops[i].p)/(stops[i+1].p-stops[i].p); color=mixColor(stops[i].c,stops[i+1].c,tt); break; } }
+
+    // === SUN SIZE — điểm nhấn chính của giao diện ===
+    const _isMobile = innerWidth < 768;
+    const _sunBase = _isMobile ? 200 : 280;
+    const _sunExtra = _isMobile ? 100 : 140;
+    size = _sunBase + (1-arcY)*_sunExtra;
+
+    wrap.style.opacity='1';
+    core.style.left=cx+'%'; core.style.top=cy+'%';
+    core.style.width=size+'px'; core.style.height=size+'px';
+    core.style.background = `radial-gradient(circle at 35% 35%, #ffffff 0%, #fff8d8 18%, ${color} 55%, ${color} 100%)`;
+    core.style.boxShadow = `0 0 ${size*0.5}px ${color}, 0 0 ${size*1.4}px ${color}cc, 0 0 ${size*2.8}px ${color}80, 0 0 ${size*4.5}px ${color}40`;
+    core.style.opacity = String(Math.max(0.75, dim));
+
+    glow.style.left=cx+'%'; glow.style.top=cy+'%';
+    glow.style.width=(size*2.8)+'px'; glow.style.height=(size*2.8)+'px';
+    glow.style.background = `radial-gradient(circle, ${color} 0%, ${color}80 25%, transparent 70%)`;
+    glow.style.opacity = String(0.65*dim);
+
+    const col = document.getElementById('glitter-col');
+    col.style.left = (cx-4)+'%';
+    col.style.opacity = String(0.9*dim);
+    if(col.dataset.built!=='1'){
+      col.dataset.built='1'; col.innerHTML='';
+      for(let i=0;i<16;i++){
+        const s = document.createElement('div');
+        s.className='shard';
+        s.style.left = (Math.random()*100)+'%';
+        s.style.top = (i/16*100)+'%';
+        s.style.width = (12+Math.random()*40)+'px';
+        s.style.animationDelay = (Math.random()*2.8)+'s';
+        col.appendChild(s);
+      }
+    }
+  } else {
+    // MOON — giữ nguyên kích thước vừa phải để sun là điểm nhấn chính
+    let moonProgress;
+    const nightDur = (24-sunset)+sunrise;
+    if(h>sunset) moonProgress = (h-sunset)/nightDur;
+    else moonProgress = (h+24-sunset)/nightDur;
+    cx = 5 + moonProgress*90;
+    const arcY = Math.sin(moonProgress*Math.PI);
+    cy = 60 - arcY*48;
+    wrap.style.opacity='1';
+    core.style.left=cx+'%'; core.style.top=cy+'%';
+    core.style.width='140px'; core.style.height='140px';
+    core.style.background='radial-gradient(circle at 35% 35%, #ffffff 0%, #e8eef5 60%, #b8c4d1 100%)';
+    core.style.boxShadow='0 0 80px #c8d8e8aa, 0 0 160px #c8d8e855, inset -14px -14px 32px #a8b5c280';
+    core.style.opacity = String(0.95*Math.max(dim,0.6));
+    glow.style.left=cx+'%'; glow.style.top=cy+'%';
+    glow.style.width='380px'; glow.style.height='380px';
+    glow.style.background='radial-gradient(circle, #c8d8e8 0%, transparent 65%)';
+    glow.style.opacity='0.45';
+    const col = document.getElementById('glitter-col');
+    col.style.left=(cx-4)+'%';
+    col.style.opacity=String(0.4*dim);
+    if(col.dataset.built!=='moon'){
+      col.dataset.built='moon'; col.innerHTML='';
+      for(let i=0;i<14;i++){
+        const s = document.createElement('div');
+        s.className='shard';
+        s.style.left=(Math.random()*100)+'%';
+        s.style.top=(i/14*100)+'%';
+        s.style.width=(8+Math.random()*28)+'px';
+        s.style.animationDelay=(Math.random()*2.8)+'s';
+        s.style.background='linear-gradient(90deg,transparent,#dbeafe,transparent)';
+        col.appendChild(s);
+      }
+    }
+  }
+
+  const bio = document.getElementById('bio-layer');
+  bio.style.opacity = sceneState.isDay ? '0' : '1';
+  if(!sceneState.isDay && bio.dataset.built!=='1'){
+    bio.dataset.built='1'; bio.innerHTML='';
+    for(let i=0;i<24;i++){
+      const d = document.createElement('div');
+      d.className='bio-dot';
+      d.style.left = (Math.random()*100)+'%';
+      d.style.top = (55+Math.random()*20)+'%';
+      d.style.animationDelay = (Math.random()*12)+'s';
+      d.style.animationDuration = (8+Math.random()*6)+'s';
+      bio.appendChild(d);
+    }
+  }
+
+  const isMorning = h>=4 && h<9;
+  const isFoggy = ['overcast','fog','drizzle','rain'].includes(sceneState.condition);
+  document.querySelectorAll('.mist').forEach(el=>{
+    el.style.opacity = (isMorning || isFoggy) ? '0.85' : '0';
+  });
+
+  updateSkyGradient(sunProgress);
+  updateClouds();
+  updateWeatherEffects();
+  updateWeatherBadge();
+}
+
+function updateSkyGradient(sp){
+  const sky = document.getElementById('sky-gradient');
+  const overlay = document.getElementById('weather-overlay');
+  if(!sky) return;
+  const N_top='#0a1c3a', N_bot='#1a2e4a';
+  const D_top='#5b4a7a', D_bot='#ff9a6b';
+  const M_top='#6fbce8', M_bot='#c8e4f0';
+  const No_top='#5db5ea',No_bot='#d8ecf5';
+  const K_top='#6a4a7a', K_bot='#ff7a4a';
+  let top,mid,bot;
+  if(sp===null){ top=N_top; mid='#142b4a'; bot=N_bot; }
+  else if(sp<0.12){ const t=sp/0.12; top=mixColor(N_top,D_top,t); mid=mixColor(N_bot,D_bot,t); bot=mixColor(N_bot,'#ffb88a',t); }
+  else if(sp<0.30){ const t=(sp-0.12)/0.18; top=mixColor(D_top,M_top,t); mid=mixColor(D_bot,M_bot,t); bot=mixColor('#ffb88a',M_bot,t); }
+  else if(sp<0.70){ top=No_top; mid='#a8d5e8'; bot=No_bot; }
+  else if(sp<0.88){ const t=(sp-0.70)/0.18; top=mixColor(No_top,K_top,t); mid=mixColor(No_bot,K_bot,t); bot=mixColor(No_bot,'#ff8a5a',t); }
+  else { const t=(sp-0.88)/0.12; top=mixColor(K_top,N_top,t); mid=mixColor(K_bot,N_bot,t); bot=mixColor('#ff8a5a',N_bot,t); }
+  let ov=0;
+  if(sceneState.condition==='rain'){ top=mixColor('#5a6a7a',top,.4); mid=mixColor('#6a7a8a',mid,.4); bot=mixColor('#7a8a9a',bot,.4); ov=.30; }
+  if(sceneState.condition==='storm'){ top=mixColor('#2a3a4a',top,.6); mid=mixColor('#3a4a5a',mid,.6); bot=mixColor('#4a5a6a',bot,.6); ov=.50; }
+  if(sceneState.condition==='drizzle'){ top=mixColor('#7a8a9a',top,.3); mid=mixColor('#8a9aaa',mid,.3); bot=mixColor('#9aaaba',bot,.3); ov=.20; }
+  if(sceneState.condition==='overcast'){ top=mixColor('#9aaaba',top,.4); mid=mixColor('#aabac8',mid,.4); bot=mixColor('#bac8d8',bot,.4); ov=.15; }
+  if(sceneState.condition==='fog'){ top=mixColor('#c8d0d8',top,.6); mid=mixColor('#d8e0e8',mid,.6); bot=mixColor('#e8f0f5',bot,.6); ov=.35; }
+  sky.style.background = `linear-gradient(180deg, ${top} 0%, ${mid} 38%, ${bot} 62%, #4FB2AE 78%, #63D2C4 90%, #E6E0B8 100%)`;
+  if(overlay) overlay.style.opacity = String(ov);
+}
+function updateClouds(){
+  const layer = document.getElementById('clouds-layer');
+  if(!layer) return;
+  const desired = Math.min(12, Math.max(3, Math.round(sceneState.cloudCover/100*12)+2));
+  const dark = ['storm','rain','overcast'].includes(sceneState.condition);
+  const fill = dark ? '#b8bfc7' : '#ffffff';
+  if(layer.children.length !== desired){
+    layer.innerHTML='';
+    for(let i=0;i<desired;i++){
+      const top = 3+Math.random()*30;
+      const speed = Math.max(30, 70+Math.random()*60-sceneState.windSpeed);
+      const size = 100+Math.random()*120;
+      const op = 0.55+Math.random()*0.4;
+      const c = document.createElement('div');
+      c.className='cloud-shape';
+      c.style.cssText = `top:${top}%;width:${size}px;height:${size*0.32}px;opacity:${op};background:${fill};animation:cloudDrift ${speed}s linear infinite;animation-delay:-${Math.random()*speed}s;`;
+      layer.appendChild(c);
+    }
+  } else {
+    Array.from(layer.children).forEach(c=>{ c.style.background=fill; });
+  }
+}
+function updateWeatherEffects(){
+  const rain = document.getElementById('rain-layer');
+  const wind = document.getElementById('wind-layer');
+  if(!rain||!wind) return;
+  const isRaining = ['rain','drizzle','storm'].includes(sceneState.condition);
+  const isWindy = sceneState.windSpeed>20 || sceneState.condition==='storm';
+  rain.style.opacity = isRaining ? '1':'0';
+  wind.style.opacity = isWindy ? '1':'0';
+  if(isRaining){
+    const sig = sceneState.condition;
+    if(rain.dataset.sig !== sig){
+      rain.dataset.sig = sig;
+      const n = sig==='storm'?140:sig==='rain'?80:40;
+      let html='';
+      for(let i=0;i<n;i++){
+        const left=Math.random()*100, delay=Math.random()*1.5, dur=.5+Math.random()*.6, len=10+Math.random()*20;
+        html += `<div style="position:absolute;left:${left}%;top:-10%;width:1.5px;height:${len}px;background:linear-gradient(180deg,transparent,rgba(200,220,255,.75));animation:rainFall ${dur}s linear ${delay}s infinite"></div>`;
+      }
+      rain.innerHTML = html;
+    }
+  } else if(rain.dataset.sig){ rain.dataset.sig=''; rain.innerHTML=''; }
+  if(isWindy){
+    const sig = sceneState.condition;
+    if(wind.dataset.sig !== sig){
+      wind.dataset.sig = sig;
+      const n = sig==='storm'?20:10;
+      let html='';
+      for(let i=0;i<n;i++){
+        const top=Math.random()*60, delay=Math.random()*3, dur=2+Math.random()*2;
+        html += `<div style="position:absolute;left:-15%;top:${top}%;width:${120+Math.random()*80}px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:windBlow ${dur}s linear ${delay}s infinite"></div>`;
+      }
+      wind.innerHTML = html;
+    }
+  } else if(wind.dataset.sig){ wind.dataset.sig=''; wind.innerHTML=''; }
+}
+function updateWeatherBadge(){
+  const badge = document.getElementById('weather-badge');
+  if(!badge) return;
+  const icon = weatherIcon(sceneState.condition, sceneState.isDay===1);
+  const temp = Math.round(sceneState.temperature);
+  document.getElementById('wb-icon').innerText = icon;
+  document.getElementById('wb-text').innerText = `${temp}°C • ${weatherLabel(sceneState.condition)}`;
+}
+async function fetchWeather(){
+  try{
+    const url = `https://api.open-meteo.com/v1/forecast?latitude=${HLB_LAT}&longitude=${HLB_LNG}&current=temperature_2m,weather_code,cloud_cover,wind_speed_10m,is_day&timezone=Asia%2FHo_Chi_Minh`;
+    const r = await fetch(url); if(!r.ok) throw new Error('fetch fail');
+    const d = await r.json(); const c = d.current;
+    sceneState.weatherCode = c.weather_code;
+    sceneState.cloudCover = c.cloud_cover;
+    sceneState.windSpeed = c.wind_speed_10m;
+    sceneState.isDay = c.is_day===1 ? 1 : 0;
+    sceneState.temperature = c.temperature_2m;
+    sceneState.condition = classifyWeather(c.weather_code, c.cloud_cover, c.wind_speed_10m, c.is_day);
+    sceneState.lastFetch = Date.now();
+  } catch(e){
+    const t = window.getVNTime();
+    sceneState.isDay = (t.hours>=6 && t.hours<18) ? 1 : 0;
+    sceneState.condition = sceneState.isDay ? 'clear' : 'night';
+  }
+  updateSkyScene();
+}
+
+function tickClock(){
+  const el = document.getElementById('vn-clock-text');
+  if(!el) return;
+  const t = window.getVNTime();
+  el.innerText = `${String(t.hours).padStart(2,'0')}:${String(t.minutes).padStart(2,'0')}`;
+}
+
+const Confetti = (()=>{
+  const canvas = document.getElementById('confetti-canvas');
+  const ctx = canvas.getContext('2d');
+  let parts = [], running=false;
+  function resize(){ canvas.width=innerWidth; canvas.height=innerHeight; }
+  addEventListener('resize', resize); resize();
+  function spawn(x,y,count=120){
+    const colors = ['#FBBF24','#F59E0B','#22d3ee','#34d399','#f472b6','#ffffff','#a78bfa'];
+    for(let i=0;i<count;i++){
+      const a = Math.random()*Math.PI*2;
+      const v = 6+Math.random()*10;
+      parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,life:0,max:90+Math.random()*40,color:colors[Math.floor(Math.random()*colors.length)],size:5+Math.random()*6,rot:Math.random()*Math.PI,vr:(Math.random()-.5)*0.3,shape:Math.random()<.5?'rect':'circle'});
+    }
+    if(!running){ running=true; loop(); }
+  }
+  function loop(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    parts.forEach(p=>{
+      p.life++;
+      p.vy += 0.32;
+      p.vx *= 0.99;
+      p.x += p.vx; p.y += p.vy;
+      p.rot += p.vr;
+      const alpha = Math.max(0, 1 - p.life/p.max);
+      ctx.save();
+      ctx.globalAlpha = alpha;
+      ctx.fillStyle = p.color;
+      ctx.translate(p.x,p.y); ctx.rotate(p.rot);
+      if(p.shape==='rect') ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
+      else { ctx.beginPath(); ctx.arc(0,0,p.size/2,0,Math.PI*2); ctx.fill(); }
+      ctx.restore();
+    });
+    parts = parts.filter(p=>p.life<p.max);
+    if(parts.length===0){ running=false; ctx.clearRect(0,0,canvas.width,canvas.height); }
+    else requestAnimationFrame(loop);
+  }
+  function burstFrom(el, count=120){
+    const r = el.getBoundingClientRect();
+    spawn(r.left+r.width/2, r.top+r.height/2, count);
+  }
+  return {spawn, burstFrom};
+})();
+
+(function(){
+  const canvas = document.getElementById('dust-canvas');
+  const ctx = canvas.getContext('2d');
+  let W,H,parts=[];
+  function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
+  addEventListener('resize', resize); resize();
+  const N = innerWidth<768?28:55;
+  for(let i=0;i<N;i++){
+    parts.push({x:Math.random()*W,y:Math.random()*H,r:0.6+Math.random()*1.6,vy:-0.08-Math.random()*0.25,vx:(Math.random()-.5)*0.15,ph:Math.random()*Math.PI*2});
+  }
+  function draw(){
+    ctx.clearRect(0,0,W,H);
+    parts.forEach(p=>{
+      p.y += p.vy; p.x += p.vx; p.ph += 0.015;
+      if(p.y< -5){ p.y = H+5; p.x = Math.random()*W; }
+      if(p.x< -5) p.x = W+5; if(p.x>W+5) p.x=-5;
+      const tw = 0.4 + 0.6*Math.abs(Math.sin(p.ph));
+      ctx.beginPath();
+      ctx.fillStyle = `rgba(251,191,36,${0.55*tw})`;
+      ctx.shadowColor = 'rgba(245,158,11,.9)';
+      ctx.shadowBlur = 8;
+      ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
+    });
+    requestAnimationFrame(draw);
+  }
+  draw();
+})();
+
+function spawnGulls(){
+  const layer = document.getElementById('gulls-layer');
+  if(!layer || layer.dataset.built==='1') return;
+  layer.dataset.built='1';
+  const N = 3;
+  for(let i=0;i<N;i++){
+    const g = document.createElement('div');
+    const dur = 16+Math.random()*14;
+    const top = 12+Math.random()*20;
+    const scl = 0.6+Math.random()*0.6;
+    g.style.cssText = `position:absolute;top:${top}%;left:-10vw;animation:fly ${dur}s linear -${Math.random()*dur}s infinite;transform:scale(${scl});`;
+    g.innerHTML = `
+      <svg viewBox="0 0 60 24" width="60" height="24" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))">
+        <path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/>
+        <path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#0A3350" stroke-width="1" stroke-linecap="round" opacity=".5"/>
+      </svg>`;
+    layer.appendChild(g);
+  }
+}
+function updateGullsVisibility(){
+  const layer = document.getElementById('gulls-layer');
+  if(!layer) return;
+  layer.style.opacity = sceneState.isDay===1 && !['storm','rain'].includes(sceneState.condition) ? '1' : '0.2';
+}
+function updateBoat(){
+  const boat = document.getElementById('boat-wrap');
+  if(!boat) return;
+  boat.style.right = '6%';
+  if(sceneState.condition==='storm') boat.style.animation = 'palmSway 1.2s ease-in-out infinite';
+  else if(sceneState.windSpeed>20) boat.style.animation = 'palmSway 2.5s ease-in-out infinite';
+  else boat.style.animation = 'palmSway 6s ease-in-out infinite';
+}
+
+window.startWeatherScene = function(){
+  fetchWeather();
+  spawnGulls();
+  tickClock();
+  setInterval(updateSkyScene, 60000);
+  setInterval(fetchWeather, 15*60*1000);
+  setInterval(tickClock, 30000);
+  setInterval(updateGullsVisibility, 60000);
+  setInterval(updateBoat, 30000);
+  updateGullsVisibility();
+  updateBoat();
+};
+
+function applyViewportClass(){
+  const m = innerWidth<768;
+  document.body.classList.toggle('is-mobile', m);
+  document.body.classList.toggle('is-desktop', !m);
+}
+addEventListener('resize', applyViewportClass);
+applyViewportClass();
+
+document.addEventListener('click', function(e){
+  const btn = e.target.closest('button');
+  if(!btn) return;
+  const r = btn.getBoundingClientRect();
+  const el = document.createElement('span');
+  el.className='ripple-el';
+  const size = Math.max(r.width, r.height);
+  el.style.width = el.style.height = size+'px';
+  el.style.left = (e.clientX-r.left-size/2)+'px';
+  el.style.top = (e.clientY-r.top-size/2)+'px';
+  btn.classList.add('ripple-host');
+  btn.appendChild(el);
+  setTimeout(()=>el.remove(), 600);
+}, true);
+
+(function(){
+  const cursor = document.getElementById('cocktail-cursor');
+  document.addEventListener('mousemove', e=>{
+    cursor.style.left = e.clientX+'px';
+    cursor.style.top = e.clientY+'px';
+  });
+  document.addEventListener('mouseover', e=>{
+    const inMenu = e.target.closest('#menu-items-grid, #categories-container, .menu-card');
+    document.body.classList.toggle('cocktail-zone', !!inMenu);
+  });
+})();
+
+document.addEventListener('mousemove', e=>{
+  const card = e.target.closest('.menu-card');
+  if(!card || innerWidth<1024){
+    document.querySelectorAll('.menu-card').forEach(c=>{ if(c.style.transform) c.style.transform=''; });
+    return;
+  }
+  const r = card.getBoundingClientRect();
+  const cx = r.left + r.width/2;
+  const cy = r.top + r.height/2;
+  const dx = (e.clientX - cx)/r.width;
+  const dy = (e.clientY - cy)/r.height;
+  const rx = (-dy*8).toFixed(2);
+  const ry = (dx*8).toFixed(2);
+  card.style.transform = `translateY(-6px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
+  card.style.boxShadow = '0 25px 45px -15px rgba(28,121,189,.5), 0 0 0 2px rgba(56,189,248,.35)';
+});
+document.addEventListener('mouseout', e=>{
+  const card = e.target.closest('.menu-card');
+  if(card){ card.style.transform=''; card.style.boxShadow=''; }
+});
+
+addEventListener('scroll', ()=>{
+  const h = document.documentElement.scrollHeight - innerHeight;
+  const p = h>0 ? (scrollY/h)*100 : 0;
+  const bar = document.getElementById('scroll-progress');
+  if(bar) bar.style.width = p+'%';
+});
+
+function setupRealtimeListeners(){
+  if(!db) return;
+  onSnapshot(collection(db,'lounge_orders'), snap=>{
+    let hasNew=false;
+    snap.docChanges().forEach(ch=>{ if(ch.type==='added' && !isInitialOrderLoad && ch.doc.data().status==='pending') hasNew=true; });
+    isInitialOrderLoad=false;
+    const arr=[]; snap.forEach(d=>arr.push({id:d.id,...d.data()}));
+    arr.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
+    state.orders = arr;
+    if(hasNew && ['staff','admin','bungalow'].includes(state.currentRole)){
+      playNotificationAlert();
+      window.showToast("🚨 CÓ YÊU CẦU MỚI TỪ LOUNGE!","🔔");
+      triggerDolphinCelebration();
+    }
+    renderAll();
+  });
+  onSnapshot(collection(db,'lounge_calls'), snap=>{
+    let hasNew=false;
+    snap.docChanges().forEach(ch=>{ if(ch.type==='added' && !isInitialCallLoad && ch.doc.data().status==='pending') hasNew=true; });
+    isInitialCallLoad=false;
+    const arr=[]; snap.forEach(d=>arr.push({id:d.id,...d.data()}));
+    state.activeCalls = arr.filter(c=>c.status==='pending');
+    if(hasNew && ['staff','admin','bungalow'].includes(state.currentRole)) playNotificationAlert();
+    renderAll();
+  });
+  onSnapshot(collection(db,'lounge_tables'), snap=>{
+    const a={};
+    snap.forEach(d=>{ a[d.id] = { customerName:d.data().customerName, restaurantTable:d.data().restaurantTable||'', pax:parseInt(d.data().pax)||0, paymentMethod:d.data().paymentMethod||'TM', focReason:d.data().focReason||'' }; });
+    state.tableAssignments = a;
+    window.updateWelcomeLabels();
+    renderAll();
+  });
+}
+
+function triggerDolphinCelebration(){
+  const d1 = document.getElementById('dolphin-1');
+  const d2 = document.getElementById('dolphin-2');
+  [d1,d2].forEach(d=>{
+    if(!d) return;
+    d.style.animation = 'dolphinJump 3.5s ease-in-out 1';
+    setTimeout(()=>{ d.style.animation = d.id==='dolphin-1'?'dolphinJump 7s ease-in-out infinite':'dolphinJump 9s ease-in-out -3s infinite'; }, 3600);
+  });
+}
+
+window.onload = function() {
+  const makeRadios = (tables,prefix)=>tables.map(t=>`<div><input type="radio" name="table" id="w-t-${prefix}-${t.replace(' ','')}" value="${t}" class="hidden table-radio" onchange="checkWelcomeForm()"><label for="w-t-${prefix}-${t.replace(' ','')}" class="block text-center py-3 md:py-3.5 rounded-xl border border-teal-700/50 bg-teal-900/40 text-teal-100 text-[13px] font-bold cursor-pointer transition-all flex flex-col items-center justify-center min-h-[55px] hover:bg-teal-800/50"><span class="block">${t}</span></label></div>`).join('');
+  document.getElementById('welcome-tables-lounge').innerHTML = makeRadios(TABLES_LOUNGE,'l');
+
+  const saved = sessionStorage.getItem('dolphinLoungeSetup');
+  if(saved){
+    const p = JSON.parse(saved);
+    state.selectedTable = p.table;
+    state.currentLanguage = p.lang;
+    state.tableSelected = true;
+  }
+
+  const savedMode = localStorage.getItem('dolphinSoundMode') || 'off';
+  const savedVol = localStorage.getItem('dolphinSoundVolume') || '30';
+  document.getElementById('vol-slider').value = savedVol;
+  document.getElementById('vol-pct').innerText = savedVol + '%';
+  Ambient.volume = parseInt(savedVol)/100;
+
+  const meta = SOUND_META[savedMode] || SOUND_META.off;
+  const btn = document.getElementById('sound-toggle');
+  btn.innerText = meta.icon;
+  btn.classList.toggle('active', savedMode !== 'off');
+  document.querySelectorAll('#sound-menu .mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === savedMode));
+
+  if (savedMode !== 'off') {
+    const enableOnFirst = () => {
+      Ambient.setMode(savedMode);
+      const m2 = SOUND_META[savedMode] || SOUND_META.off;
+      btn.innerText = m2.icon;
+      btn.classList.toggle('active', savedMode !== 'off');
+      document.removeEventListener('click', enableOnFirst);
+      document.removeEventListener('touchstart', enableOnFirst);
+    };
+    document.addEventListener('click', enableOnFirst);
+    document.addEventListener('touchstart', enableOnFirst);
+  }
+
+  window.startCloudConnection();
+  window.startWeatherScene();
+  renderAll();
+};
+
+window.updateWelcomeLabels = function() {
+  TABLES_LOUNGE.forEach(t=>{
+    const label = document.querySelector(`label[for="w-t-l-${t.replace(' ','')}"]`);
+    if(label){
+      const a = state.tableAssignments[t];
+      const name = a && a.customerName ? a.customerName : null;
+      if(name) label.innerHTML = `<span class="block text-base whitespace-nowrap">${t}</span><span class="block text-[10px] text-gold-400 font-black mt-1 break-words whitespace-normal leading-tight w-full px-1 drop-shadow-md">${name}</span>`;
+      else label.innerHTML = `<span class="block text-base whitespace-nowrap">${t}</span>`;
+    }
+  });
+};
+
+window.checkWelcomeForm = function() {
+  const lc = document.querySelector('input[name="lang"]:checked');
+  const tc = document.querySelector('input[name="table"]:checked');
+  const btn = document.getElementById('btn-start-order');
+  if(lc){
+    const wt = WELCOME_TRANS[lc.value] || WELCOME_TRANS['EN'];
+    document.getElementById('welcome-title').innerHTML = `${wt.title}<br><span class="text-[11px] md:text-xs text-gold-400 font-medium normal-case mt-1.5 block opacity-90">${wt.sub}</span>`;
+    document.getElementById('welcome-step-1').innerHTML = `<span class="w-4 h-px bg-teal-600"></span>${wt.step1}<span class="flex-1 h-px bg-teal-800/50"></span>`;
+    document.getElementById('welcome-step-2').innerHTML = `<span class="w-4 h-px bg-teal-600"></span>${wt.step2}<span class="flex-1 h-px bg-teal-800/50"></span>`;
+    btn.innerText = wt.btn;
+  }
+  if(lc && tc){
+    btn.disabled=false;
+    btn.classList.remove('opacity-50','cursor-not-allowed','bg-gradient-to-r','from-teal-800','to-teal-900','text-teal-500','border-teal-800/50');
+    btn.classList.add('bg-gradient-to-r','from-gold-400','to-gold-500','text-black','shadow-[0_10px_30px_rgba(245,158,11,.4)]','hover:from-gold-300','hover:to-gold-400','active:scale-95');
+  }
+};
+
+window.promptCustomerPassword = function() {
+  const lc = document.querySelector('input[name="lang"]:checked');
+  const lang = lc ? lc.value : 'EN';
+  const t = TRANSLATIONS[lang] || TRANSLATIONS['EN'];
+  document.getElementById('pwd-modal-title').innerText = t.pwdTitle;
+  document.getElementById('pwd-modal-desc').innerText = t.pwdDesc;
+  document.getElementById('customer-pwd-input').placeholder = t.pwdPlaceholder;
+  document.getElementById('customer-pwd-error').innerText = t.pwdError;
+  document.getElementById('pwd-modal-btn').innerText = t.pwdBtn;
+  document.getElementById('customer-pwd-input').value='';
+  document.getElementById('customer-pwd-error').classList.add('hidden');
+  document.getElementById('modal-customer-pwd').classList.remove('hidden');
+  document.getElementById('customer-pwd-input').focus();
+};
+window.closeCustomerPwdModal = function(){ document.getElementById('modal-customer-pwd').classList.add('hidden'); };
+window.verifyCustomerPwd = function(){
+  const table = document.querySelector('input[name="table"]:checked').value;
+  const pwd = document.getElementById('customer-pwd-input').value.replace(/\s+/g,'').toUpperCase();
+  const expected = table.replace('LOUNGE ','L').toUpperCase();
+  if(pwd===expected){ window.closeCustomerPwdModal(); window.completeOnboarding(); }
+  else document.getElementById('customer-pwd-error').classList.remove('hidden');
+};
+window.completeOnboarding = function(){
+  const lang = document.querySelector('input[name="lang"]:checked').value;
+  const table = document.querySelector('input[name="table"]:checked').value;
+  state.currentLanguage = lang; state.selectedTable = table; state.tableSelected = true;
+  sessionStorage.setItem('dolphinLoungeSetup', JSON.stringify({lang,table}));
+  renderAll();
+  const t = TRANSLATIONS[state.currentLanguage] || TRANSLATIONS['EN'];
+  window.showToast(t.toastSetupSuccess,'🍸');
+  Confetti.spawn(innerWidth/2, innerHeight/2, 60);
+};
+window.resetCustomerTable = function(){
+  state.tableSelected=false; state.selectedTable=null; state.cart={};
+  sessionStorage.removeItem('dolphinLoungeSetup');
+  document.querySelectorAll('input[name="table"]').forEach(r=>r.checked=false);
+  const btn = document.getElementById('btn-start-order');
+  btn.disabled=true;
+  btn.classList.add('opacity-50','cursor-not-allowed','bg-gradient-to-r','from-teal-800','to-teal-900','text-teal-500','border-teal-800/50');
+  btn.classList.remove('bg-gradient-to-r','from-gold-400','to-gold-500','text-black','shadow-[0_10px_30px_rgba(245,158,11,.4)]','hover:from-gold-300','hover:to-gold-400','active:scale-95');
+  renderAll();
+};
+
+let pendingRoleRequest = null;
+window.requestPinAccess = function(role){
+  const key = role==='reception'?'dolphinReceptionAuth':'dolphinAdminAuth';
+  if(sessionStorage.getItem(key)==='true'){ window.changeRole(role); }
+  else {
+    pendingRoleRequest = role;
+    document.getElementById('pin-modal-title').innerText = role==='reception'?'Lễ Tân - Đăng Nhập':'Nội Bộ - Đăng Nhập';
+    document.getElementById('modal-pin').classList.remove('hidden');
+    document.getElementById('pin-input').value='';
+    document.getElementById('pin-input').focus();
+    document.getElementById('pin-error').classList.add('hidden');
+  }
+};
+window.verifyPin = function(){
+  const pin = document.getElementById('pin-input').value;
+  let valid=false, key='';
+  if(pendingRoleRequest==='admin' && pin===ADMIN_PIN){ valid=true; key='dolphinAdminAuth'; }
+  if(pendingRoleRequest==='bungalow' && pin===ADMIN_PIN){ valid=true; key='dolphinAdminAuth'; }
+  if(pendingRoleRequest==='staff' && (pin===ADMIN_PIN||pin===RECEPTION_PIN)){ valid=true; key='dolphinAdminAuth'; }
+  if(pendingRoleRequest==='reception' && pin===RECEPTION_PIN){ valid=true; key='dolphinReceptionAuth'; }
+  if(valid){ sessionStorage.setItem(key,'true'); window.closePinModal(); if(pendingRoleRequest) window.changeRole(pendingRoleRequest); }
+  else document.getElementById('pin-error').classList.remove('hidden');
+};
+window.closePinModal = function(){ document.getElementById('modal-pin').classList.add('hidden'); pendingRoleRequest=null; };
+
+window.openCustomerNameModal = function(table){
+  document.getElementById('reception-target-table').value = table;
+  document.getElementById('lbl-reception-table').innerText = `${table}`;
+  const a = state.tableAssignments[table] || {};
+  document.getElementById('customer-name-input').value = a.customerName || '';
+  document.getElementById('customer-pax-input').value = a.pax || 1;
+  document.getElementById('customer-original-pax').value = a.pax || 0;
+  document.getElementById('customer-rest-input').value = a.restaurantTable || '';
+  document.getElementById('customer-payment-input').value = a.paymentMethod || 'TM';
+  document.getElementById('customer-foc-reason').value = a.focReason || '';
+  window.toggleFocReason();
+  document.getElementById('modal-customer-name').classList.remove('hidden');
+  document.getElementById('customer-name-input').focus();
+};
+window.toggleFocReason = function(){
+  const m = document.getElementById('customer-payment-input').value;
+  document.getElementById('foc-reason-container').classList.toggle('hidden', !(m==='FOC'||m==='TA_UNPAID'));
+  const k = document.getElementById('ktour-warning-container');
+  if(k) k.classList.toggle('hidden', m!=='KTOUR');
+};
+window.closeCustomerNameModal = function(){ document.getElementById('modal-customer-name').classList.add('hidden'); };
+window.saveCustomerName = async function(){
+  const table = document.getElementById('reception-target-table').value;
+  const name = document.getElementById('customer-name-input').value.trim();
+  const pax = parseInt(document.getElementById('customer-pax-input').value)||0;
+  const restTable = document.getElementById('customer-rest-input').value.trim();
+  const payment = document.getElementById('customer-payment-input').value;
+  const focReason = document.getElementById('customer-foc-reason').value.trim();
+  const origPax = parseInt(document.getElementById('customer-original-pax').value)||0;
+  if(!name){ window.showToast("Nhập tên khách!","⚠️"); return; }
+  if(pax<=0){ window.showToast("Pax phải > 0!","⚠️"); return; }
+  if((payment==='FOC'||payment==='TA_UNPAID') && !focReason){ window.showToast("Nhập lý do!","⚠️"); return; }
+  const data = { customerName:name, pax, restaurantTable:restTable, paymentMethod:payment };
+  if(payment==='FOC'||payment==='TA_UNPAID') data.focReason = focReason;
+  if(origPax>0 && pax!==origPax){ window.promptManagerAuth('save',{table,dataToSave:data}); return; }
+  await window.executeSaveCustomerName({table, dataToSave:data});
+};
+window.executeSaveCustomerName = async function({table,dataToSave}){
+  try{ if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave); window.showToast(`Đã lưu bàn ${table}`,'✅'); window.closeCustomerNameModal(); Confetti.spawn(innerWidth/2, innerHeight/2, 40); }
+  catch(e){ window.showToast("Lỗi lưu!","❌"); }
+};
+window.clearCustomerName = function(){ const t = document.getElementById('reception-target-table').value; window.promptManagerAuth('clear',{table:t}); };
+window.executeClearCustomerName = async function(table){
+  try{ if(db) await deleteDoc(doc(db,'lounge_tables',table)); window.showToast(`Xóa khách bàn ${table}`,'🧹'); window.closeCustomerNameModal(); }
+  catch(e){ window.showToast("Lỗi xóa!","❌"); }
+};
+let pendingManagerAction=null, pendingManagerData=null;
+window.promptManagerAuth = function(action, data){
+  pendingManagerAction=action; pendingManagerData=data;
+  document.getElementById('manager-auth-pin').value='';
+  document.getElementById('manager-auth-error').classList.add('hidden');
+  document.getElementById('manager-auth-desc').innerText = action==='clear'?'Xóa bàn cần mật khẩu Quản Lý.':'Thay đổi Pax cần mật khẩu Quản Lý.';
+  document.getElementById('modal-manager-auth').classList.remove('hidden');
+  document.getElementById('manager-auth-pin').focus();
+};
+window.closeManagerAuthModal = function(){ document.getElementById('modal-manager-auth').classList.add('hidden'); pendingManagerAction=null; pendingManagerData=null; };
+window.verifyManagerAuth = async function(){
+  const pin = document.getElementById('manager-auth-pin').value;
+  if(pin!==MANAGER_PIN){ document.getElementById('manager-auth-error').classList.remove('hidden'); document.getElementById('manager-auth-pin').value=''; document.getElementById('manager-auth-pin').focus(); return; }
+  document.getElementById('manager-auth-error').classList.add('hidden');
+  const a = pendingManagerAction, d = pendingManagerData;
+  document.getElementById('modal-manager-auth').classList.add('hidden');
+  pendingManagerAction=null; pendingManagerData=null;
+  if(a==='clear') await window.executeClearCustomerName(d.table);
+  else if(a==='save') await window.executeSaveCustomerName(d);
+};
+window.promptClearAllCustomers = function(){
+  document.getElementById('modal-clear-all').classList.remove('hidden');
+  document.getElementById('clear-all-pin').value='';
+  document.getElementById('clear-all-error').classList.add('hidden');
+  document.getElementById('clear-all-pin').focus();
+};
+window.closeClearAllModal = function(){ document.getElementById('modal-clear-all').classList.add('hidden'); };
+window.verifyClearAllPin = async function(){
+  const pin = document.getElementById('clear-all-pin').value;
+  if(pin!=='1234'){ document.getElementById('clear-all-error').classList.remove('hidden'); return; }
+  window.closeClearAllModal();
+  window.showToast("Đang dọn dẹp...","⏳");
+  try{
+    if(db){
+      const snap = await getDocs(collection(db,'lounge_tables'));
+      await Promise.all(snap.docs.map(d=>deleteDoc(d.ref)));
+      window.showToast("Đã xóa toàn bộ khách!","🧹");
+    }
+  } catch(e){ window.showToast("Lỗi!","❌"); }
+};
+window.handleExcelUpload = async function(e){
+  const file = e.target.files[0]; if(!file) return;
+  window.showToast("Đang đọc Excel...","⏳");
+  const reader = new FileReader();
+  reader.onload = async function(ev){
+    try{
+      const data = new Uint8Array(ev.target.result);
+      const wb = XLSX.read(data,{type:'array'});
+      const ws = wb.Sheets[wb.SheetNames[0]];
+      const json = XLSX.utils.sheet_to_json(ws,{header:1});
+      if(!json.length){ window.showToast("File rỗng!","❌"); return; }
+      let count=0; const promises=[];
+      const parseTables = str=>{
+        const res=[];
+        str.split(',').map(p=>p.trim()).forEach(part=>{
+          if(part.includes('-')){
+            const [s,e] = part.split('-');
+            const ms = s.trim().match(/^(LOUNGE|L)\s*(\d+)$/i);
+            const me = e.trim().match(/^(LOUNGE|L)\s*(\d+)$/i);
+            if(ms && me){ const a=+ms[2], b=+me[2]; for(let n=a;n<=b;n++) res.push('LOUNGE '+n); }
+            else res.push(part.toUpperCase());
+          } else {
+            const m = part.match(/^(LOUNGE|L)\s*(\d+)$/i);
+            if(m) res.push('LOUNGE '+m[2]); else res.push(part.toUpperCase().replace(/\s+/g,' ').trim());
+          }
+        });
+        return res;
+      };
+      json.forEach(row=>{
+        if(!row || row.length<2) return;
+        const name = String(row[0]).trim();
+        const rawTable = String(row[1]).trim().toUpperCase();
+        const pax = parseInt(row[2])||1;
+        if(!name || !rawTable || name==='UNDEFINED' || rawTable==='UNDEFINED') return;
+        parseTables(rawTable).forEach(t=>{
+          if(TABLES_LOUNGE.includes(t)){ if(db) promises.push(setDoc(doc(db,'lounge_tables',t),{customerName:name,pax,paymentMethod:'TM'})); count++; }
+        });
+      });
+      if(promises.length){ await Promise.all(promises); window.showToast(`Import ${count} bàn thành công!`,'✅'); Confetti.spawn(innerWidth/2,innerHeight/2,80); }
+      else window.showToast("Không có dữ liệu hợp lệ!","⚠️");
+    } catch(err){ window.showToast("Lỗi đọc Excel!","❌"); }
+    document.getElementById('excel-file-input').value='';
+  };
+  reader.readAsArrayBuffer(file);
+};
+
+window.promptStaffName = function(){
+  const s = (localStorage.getItem('dolphinStaffName')||'').trim();
+  if(s){ window.showToast(`Đang dùng tên: ${s}`,'📝'); renderAll(); return; }
+  state.pendingAction = {orderId:null,nextStatus:null};
+  document.getElementById('modal-staff-name').classList.remove('hidden');
+  document.getElementById('staff-name-input').value='';
+  document.getElementById('staff-name-input').focus();
+};
+window.openStaffNameModal = function(orderId,nextStatus){
+  const s = (localStorage.getItem('dolphinStaffName')||'').trim();
+  state.pendingAction = {orderId,nextStatus};
+  if(s){ window.executeStaffAction(s); return; }
+  document.getElementById('modal-staff-name').classList.remove('hidden');
+  document.getElementById('staff-name-input').value='';
+  document.getElementById('staff-name-input').focus();
+};
+window.closeStaffNameModal = function(){ document.getElementById('modal-staff-name').classList.add('hidden'); state.pendingAction=null; };
+window.confirmStaffAction = async function(){
+  const name = document.getElementById('staff-name-input').value.trim();
+  if(!name){ window.showToast("Nhập tên!","⚠️"); return; }
+  localStorage.setItem('dolphinStaffName', name);
+  window.closeStaffNameModal();
+  await window.executeStaffAction(name);
+};
+window.executeStaffAction = async function(name){
+  const pa = state.pendingAction;
+  if(pa && pa.orderId && db){
+    const {orderId,nextStatus} = pa;
+    const ref = doc(db,'lounge_orders',orderId);
+    try{
+      await runTransaction(db, async tx=>{
+        const d = await tx.get(ref);
+        if(!d.exists()) throw "Đơn không tồn tại!";
+        const cur = d.data();
+        const upd = { status: nextStatus };
+        if(nextStatus==='preparing'){
+          if(cur.status==='preparing' && cur.preparedBy && !cur.preparedBy.includes(name)){
+            upd.preparedBy = cur.preparedBy+' & '+name;
+            state.lastTransactionWarning = `CẢNH BÁO TRÙNG: ${cur.preparedBy} cũng nhận đơn này!`;
+          } else { upd.preparedBy = name; state.lastTransactionWarning=null; }
+        } else if(nextStatus==='completed'){
+          upd.completedBy = name;
+          upd.completedTime = window.getVNTime().timeString;
+          state.lastTransactionWarning=null;
+        }
+        tx.update(ref, upd);
+      });
+      if(state.lastTransactionWarning){ window.showToast(state.lastTransactionWarning,"⚠️"); playNotificationAlert(); }
+      else {
+        window.showToast(`Đã ghi nhận: ${name}`,'📝');
+        if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100);
+      }
+    } catch(e){ window.showToast("Lỗi cập nhật!","❌"); }
+  } else {
+    window.showToast(`Đã lưu tên: ${name}`,'📝');
+    renderAll();
+  }
+  state.pendingAction=null;
+};
+
+let cancelContext = {orderId:null,itemIndex:null,maxQty:0};
+window.openCancelModal = function(orderId,itemIndex,origQty,already){
+  const max = origQty-already; if(max<=0) return;
+  cancelContext = {orderId,itemIndex,maxQty:max};
+  const inp = document.getElementById('cancel-qty-input'); inp.value=1; inp.max=max;
+  document.getElementById('modal-cancel-qty').classList.remove('hidden');
+};
+window.closeCancelModal = function(){ document.getElementById('modal-cancel-qty').classList.add('hidden'); };
+window.confirmCancelItem = async function(){
+  const qty = parseInt(document.getElementById('cancel-qty-input').value);
+  if(!qty || qty<1 || qty>cancelContext.maxQty){ window.showToast(`SL không hợp lệ! Max: ${cancelContext.maxQty}`,"⚠️"); return; }
+  if(!db) return;
+  const order = state.orders.find(o=>o.id===cancelContext.orderId);
+  if(!order) return;
+  const items = [...order.items];
+  const it = items[cancelContext.itemIndex];
+  it.cancelledQty = (it.cancelledQty||0)+qty;
+  if(it.cancelledQty>=it.qty) it.cancelled=true;
+  try{ await updateDoc(doc(db,'lounge_orders',cancelContext.orderId),{items}); window.showToast(`Đã hủy ${qty} món!`,'✕'); window.closeCancelModal(); }
+  catch(e){ window.showToast("Lỗi hủy!","❌"); }
+};
+window.toggleItemPrepared = async function(orderId,itemIndex){
+  if(!db) return;
+  const o = state.orders.find(x=>x.id===orderId); if(!o) return;
+  const items = [...o.items];
+  items[itemIndex].isPrepared = !items[itemIndex].isPrepared;
+  try{ await updateDoc(doc(db,'lounge_orders',orderId),{items}); } catch(e){ window.showToast("Lỗi!","❌"); }
+};
+
+window.changeRole = function(role){
+  state.currentRole = role;
+  ['customer','reception','bungalow','staff','admin'].forEach(r=>{
+    const btn = document.getElementById(`btn-role-${r}`); if(!btn) return;
+    btn.className = (r===role) ? "px-3 py-2 md:py-1.5 rounded-lg font-black transition-all text-[11px] bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-lg shadow-gold-500/30" : "px-3 py-2 md:py-1.5 rounded-lg font-bold transition-all text-[11px] text-teal-300 hover:text-white hover:bg-teal-800/50";
+  });
+  if(role==='staff'){
+    const s = (localStorage.getItem('dolphinStaffName')||'').trim();
+    if(!s){ setTimeout(()=>{ state.pendingAction = {orderId:null,nextStatus:null}; document.getElementById('modal-staff-name').classList.remove('hidden'); document.getElementById('staff-name-input').focus(); }, 200); }
+  }
+  renderAll();
+};
+window.toggleStaffView = function(mode){ state.staffViewMode = mode; window.renderStaff(); };
+
+window.getTableComboUsage = function(tableName){
+  let drinks=0, pastries=0;
+  state.orders.forEach(o=>{
+    if(o.table===tableName && o.status!=='cancelled'){
+      o.items.forEach(it=>{
+        const cQty = it.cancelledQty||(it.cancelled?it.qty:0);
+        const active = it.qty - cQty;
+        if(active>0){
+          const baseId = it.id.split('_')[0];
+          const def = LOUNGE_ITEMS.find(x=>x.id===baseId);
+          if(def){
+            if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) drinks += active;
+            if(def.category_id==='cat-pastry') pastries += active;
+          }
+        }
+      });
+    }
+  });
+  return {drinks,pastries};
+};
+
+window.updateCart = function(id,delta){
+  const a = state.tableAssignments[state.selectedTable];
+  const pax = a && a.pax ? a.pax : 0;
+  const t = TRANSLATIONS[state.currentLanguage] || TRANSLATIONS['EN'];
+  if(a && a.paymentMethod==='KTOUR'){ window.showToast(t.toastKtourLocked,'🔒'); return; }
+  if(pax<=0){ window.showToast(t.toastNoPax,'🛑'); return; }
+  const usage = window.getTableComboUsage(state.selectedTable);
+  let cD=0,cP=0;
+  for(let cid in state.cart){
+    const base = cid.split('_')[0];
+    const def = LOUNGE_ITEMS.find(x=>x.id===base);
+    if(def){
+      if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) cD += state.cart[cid];
+      if(def.category_id==='cat-pastry') cP += state.cart[cid];
+    }
+  }
+  const baseId = id.split('_')[0];
+  const def = LOUNGE_ITEMS.find(x=>x.id===baseId);
+  if(delta>0 && def){
+    if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id) && (usage.drinks+cD)+delta>pax){ window.showToast(t.toastMaxDrink.replace(/\{pax\}/g,pax),'⚠️'); return; }
+    if(def.category_id==='cat-pastry' && (usage.pastries+cP)+delta>pax){ window.showToast(t.toastMaxPastry.replace(/\{pax\}/g,pax),'⚠️'); return; }
+  }
+  const q = (state.cart[id]||0)+delta;
+  if(q<=0) delete state.cart[id]; else state.cart[id]=q;
+  window.renderCustomer();
+  if(!document.getElementById('modal-cart').classList.contains('hidden')) window.renderCartModalItems();
+};
+
+let currentItemForVariant = null;
+window.pulseCard = function(itemId){
+  const c = document.getElementById('card-'+itemId); if(!c) return;
+  c.classList.remove('animate-card-pop'); void c.offsetWidth; c.classList.add('animate-card-pop');
+};
+window.handleMenuClick = function(itemId,delta){
+  const a = state.tableAssignments[state.selectedTable];
+  if(a && a.paymentMethod==='KTOUR'){ const t=TRANSLATIONS[state.currentLanguage]||TRANSLATIONS['EN']; window.showToast(t.toastKtourLocked,'🔒'); return; }
+  if(delta>0 && HOT_COLD_REQUIRED.includes(itemId)){
+    currentItemForVariant = itemId;
+    const item = LOUNGE_ITEMS.find(x=>x.id===itemId);
+    document.getElementById('hot-cold-title').innerText = item.name[state.currentLanguage] || item.name['EN'];
+    document.getElementById('hot-cold-qty').value = 1;
+    document.getElementById('lbl-btn-hot').innerText = HOT_COLD_TRANS.HOT[state.currentLanguage] || HOT_COLD_TRANS.HOT['EN'];
+    document.getElementById('lbl-btn-cold').innerText = HOT_COLD_TRANS.COLD[state.currentLanguage] || HOT_COLD_TRANS.COLD['EN'];
+    document.getElementById('modal-hot-cold').classList.remove('hidden');
+  } else {
+    if(delta<0){
+      const variants = Object.keys(state.cart).filter(k=>k===itemId || k.startsWith(itemId+'_'));
+      if(variants.length) window.updateCart(variants[0],-1);
+    } else window.updateCart(itemId,delta);
+  }
+};
+window.confirmHotColdSelection = function(variant){
+  if(!currentItemForVariant) return;
+  const qty = parseInt(document.getElementById('hot-cold-qty').value)||1;
+  window.updateCart(`${currentItemForVariant}_${variant}`, qty);
+  document.getElementById('modal-hot-cold').classList.add('hidden');
+  currentItemForVariant=null;
+};
+window.changeCategory = function(catId){ state.activeCategory = catId; window.renderCustomer(); };
+window.toggleCartModal = function(show){
+  const m = document.getElementById('modal-cart');
+  if(show){ m.classList.remove('hidden'); window.renderCartModalItems(); } else m.classList.add('hidden');
+};
+window.renderCartModalItems = function(){
+  const t = TRANSLATIONS[state.currentLanguage] || TRANSLATIONS['EN'];
+  document.getElementById('lbl-confirm-title').innerText = t.confirmOrderTitle;
+  document.getElementById('lbl-btn-clear').innerText = t.clearCartBtn;
+  document.getElementById('send-btn-label').innerText = t.sendToKitchenBtn;
+  document.getElementById('lbl-notes').innerText = t.notesPlaceholder;
+  document.getElementById('cart-items-list').innerHTML = Object.entries(state.cart).map(([id,qty])=>{
+    const base = id.split('_')[0]; const v = id.split('_')[1];
+    const it = LOUNGE_ITEMS.find(x=>x.id===base);
+    let name = it.name[state.currentLanguage] || it.name['EN'];
+    if(v && HOT_COLD_TRANS[v]) name += ` (${HOT_COLD_TRANS[v][state.currentLanguage] || HOT_COLD_TRANS[v]['EN']})`;
+    return `<div class="flex justify-between items-center bg-teal-900/60 p-4 rounded-xl border border-teal-700/50 mb-3 shadow-sm">
+      <span class="text-sm font-bold text-white">${name}</span>
+      <div class="flex items-center gap-1 bg-teal-950/80 rounded-lg p-1 border border-teal-700/50">
+        <button onclick="updateCart('${id}',-1)" class="w-8 h-8 flex items-center justify-center text-teal-400 text-lg hover:text-white transition-colors">➖</button>
+        <span class="text-gold-400 font-black text-sm px-2 w-8 text-center">${qty}</span>
+        <button onclick="updateCart('${id}',1)" class="w-8 h-8 flex items-center justify-center text-gold-400 text-lg hover:text-gold-300 transition-colors">➕</button>
+      </div>
+    </div>`;
+  }).join('');
+};
+window.clearCart = function(){ state.cart={}; window.toggleCartModal(false); window.renderCustomer(); };
+window.sendOrderOnline = async function(btn){
+  const t = TRANSLATIONS[state.currentLanguage] || TRANSLATIONS['EN'];
+  if(state.isSending) return;
+  const a = state.tableAssignments[state.selectedTable];
+  if(a && a.paymentMethod==='KTOUR'){ window.showToast(t.toastKtourLocked,'🔒'); return; }
+  const last = sessionStorage.getItem('lastOrderLoungeTime_'+state.selectedTable);
+  if(last){
+    const elapsed = Date.now() - parseInt(last);
+    const cd = 30*1000;
+    if(elapsed<cd){ window.showToast(t.toastWait.replace('{min}',0).replace('{sec}',Math.ceil((cd-elapsed)/1000)),'⏳'); return; }
+  }
+  const items = Object.entries(state.cart).map(([id,qty])=>{
+    const base = id.split('_')[0]; const v = id.split('_')[1];
+    const it = LOUNGE_ITEMS.find(x=>x.id===base);
+    let nameObj = {...it.name};
+    if(v && HOT_COLD_TRANS[v]){ for(let lang in nameObj){ nameObj[lang] += ` (${HOT_COLD_TRANS[v][lang] || HOT_COLD_TRANS[v]['EN']})`; } }
+    return { id, name:nameObj, qty, cancelled:false, cancelledQty:0, isPrepared:false };
+  });
+  if(!items.length) return;
+  state.isSending = true;
+  document.getElementById('send-btn-spinner').classList.remove('hidden');
+  document.getElementById('send-btn-label').innerText = t.sending;
+  btn.disabled = true;
+  try{
+    if(db){
+      const active = state.orders.find(o=>o.table===state.selectedTable && o.status!=='completed');
+      const notes = document.getElementById('customer-notes-input').value.trim();
+      if(active){
+        const ref = doc(db,'lounge_orders',active.id);
+        await runTransaction(db, async tx=>{
+          const d = await tx.get(ref);
+          if(!d.exists()){
+            tx.set(doc(collection(db,'lounge_orders')),{table:state.selectedTable,time:window.getVNTime().timeString,timestamp:Date.now(),items,status:'pending',notes});
+            return;
+          }
+          const cur = d.data();
+          let merged = [...cur.items];
+          items.forEach(ni=>{
+            const idx = merged.findIndex(i=>i.id===ni.id);
+            if(idx>=0){ merged[idx].qty += ni.qty; merged[idx].isPrepared=false; merged[idx].cancelled=false; }
+            else merged.push(ni);
+          });
+          let newNotes = cur.notes||'';
+          if(notes) newNotes = newNotes ? newNotes+' | '+notes : notes;
+          tx.update(ref,{items:merged,notes:newNotes,time:window.getVNTime().timeString,timestamp:Date.now()});
+        });
+      } else {
+        await addDoc(collection(db,'lounge_orders'),{table:state.selectedTable,time:window.getVNTime().timeString,timestamp:Date.now(),items,status:'pending',notes});
+      }
+    }
+    sessionStorage.setItem('lastOrderLoungeTime_'+state.selectedTable, Date.now());
+    state.cart={};
+    document.getElementById('customer-notes-input').value='';
+    window.toggleCartModal(false);
+    window.showToast(t.toastOrderSuccess,'🚀');
+    const total = items.reduce((s,i)=>s+i.qty,0);
+    Confetti.burstFrom(btn, total>=5?200:100);
+    setTimeout(()=>Confetti.spawn(innerWidth/2, innerHeight*0.3, 80), 250);
+  } catch(e){ console.error(e); }
+  finally{
+    state.isSending=false;
+    document.getElementById('send-btn-spinner').classList.add('hidden');
+    btn.disabled=false;
+    renderAll();
+  }
+};
+window.callStaffOnline = async function(){
+  const t = TRANSLATIONS[state.currentLanguage] || TRANSLATIONS['EN'];
+  if(state.isCallingStaff){ window.showToast(t.toastStaffComing,'🏃'); return; }
+  state.isCallingStaff = true;
+  const time = window.getVNTime().timeString;
+  const btn = document.getElementById('btn-call-staff');
+  btn.classList.add('call-pulse');
+  try{
+    if(db) await addDoc(collection(db,'lounge_calls'),{table:state.selectedTable,time,timestamp:Date.now(),status:'pending'});
+    window.showToast(t.toastCallStaff.replace('{time}',time),'🛎️');
+    setTimeout(()=>{ state.isCallingStaff=false; btn.classList.remove('call-pulse'); }, 30000);
+  } catch(e){ state.isCallingStaff=false; btn.classList.remove('call-pulse'); }
+};
+window.resolveCallOnline = async function(id){ try{ if(db) await updateDoc(doc(db,'lounge_calls',id),{status:'resolved'}); }catch(e){} };
+
+window.confirmResetSystem = function(){
+  const t = window.getVNTime();
+  document.getElementById('archive-date').value = t.fullYear+'-'+String(t.month+1).padStart(2,'0')+'-'+String(t.dateNum).padStart(2,'0');
+  document.getElementById('modal-reset').classList.remove('hidden');
+};
+window.closeResetModal = function(){ document.getElementById('modal-reset').classList.add('hidden'); };
+window.executeSystemReset = async function(){
+  if(!db) return;
+  const date = document.getElementById('archive-date').value;
+  const shift = document.getElementById('archive-shift').value;
+  if(!date){ window.showToast("Chọn ngày!","⚠️"); return; }
+  document.getElementById('modal-reset').classList.add('hidden');
+  window.showToast("Đang lưu trữ...","☁️");
+  try{
+    const oSnap = await getDocs(collection(db,'lounge_orders'));
+    const tSnap = await getDocs(collection(db,'lounge_tables'));
+    const orders=[], tables={};
+    oSnap.forEach(d=>orders.push(d.data()));
+    tSnap.forEach(d=>{ tables[d.id] = d.data(); });
+    if(orders.length || Object.keys(tables).length){
+      await addDoc(collection(db,'lounge_history_sessions'),{date, shift, timestamp:Date.now(), orders, tables});
+    }
+    const del = [];
+    oSnap.forEach(d=>del.push(deleteDoc(d.ref)));
+    const cSnap = await getDocs(collection(db,'lounge_calls'));
+    cSnap.forEach(d=>del.push(deleteDoc(d.ref)));
+    tSnap.forEach(d=>del.push(deleteDoc(d.ref)));
+    await Promise.all(del);
+    window.showToast("Đã đóng ca thành công!",'✨');
+    Confetti.spawn(innerWidth/2,innerHeight/2,150);
+  } catch(e){ window.showToast("Lỗi lưu trữ!","❌"); }
+};
+
+window.fetchHistoryData = async function(){
+  if(!db) return;
+  const date = document.getElementById('history-search-date').value;
+  const shift = document.getElementById('history-search-shift').value;
+  const sTable = (document.getElementById('history-search-table').value||'').trim().toUpperCase();
+  const c = document.getElementById('history-cards-container');
+  if(!date){ window.showToast("Chọn ngày!","⚠️"); return; }
+  c.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4';
+  c.innerHTML = Array.from({length:6}).map(()=>`
+    <div class="glass-card p-5 rounded-2xl border border-teal-700/30">
+      <div class="skeleton h-4 w-24 mb-3"></div>
+      <div class="skeleton h-3 w-full mb-2"></div>
+      <div class="skeleton h-3 w-2/3 mb-4"></div>
+      <div class="skeleton h-8 w-full"></div>
+    </div>`).join('');
+  try{
+    let q = shift==='Cả Ngày'
+      ? query(collection(db,'lounge_history_sessions'), where('date','==',date))
+      : query(collection(db,'lounge_history_sessions'), where('date','==',date), where('shift','==',shift));
+    const snap = await getDocs(q);
+    let hist = {};
+    snap.forEach(d=>{
+      const s = d.data();
+      if(s.orders) s.orders.forEach(o=>{ if(!hist[o.table]) hist[o.table]={orders:[],tableData:{}}; hist[o.table].orders.push({...o,date:s.date,shift:s.shift}); });
+      if(s.tables) Object.keys(s.tables).forEach(t=>{ if(!hist[t]) hist[t]={orders:[],tableData:{}}; hist[t].tableData = s.tables[t]; });
+    });
+    if(sTable){ const f={}; Object.keys(hist).forEach(t=>{ if(t.toUpperCase().includes(sTable)) f[t]=hist[t]; }); hist=f; }
+    window.currentHistoryData = hist;
+    if(!Object.keys(hist).length){
+      c.innerHTML = `<div class="col-span-full text-center py-12 border border-dashed border-teal-800/40 rounded-2xl">
+        <svg viewBox="0 0 120 80" width="120" height="80" class="mx-auto mb-3 opacity-50">
+          <ellipse cx="60" cy="68" rx="50" ry="6" fill="#1e3a5f"/>
+          <path d="M20,40 Q60,60 100,40 Q90,25 60,25 Q30,25 20,40 Z" fill="#5b7fa8" stroke="#3b5a80" stroke-width="1.5"/>
+          <line x1="40" y1="28" x2="40" y2="38" stroke="#3b5a80" stroke-width="1.5"/>
+          <line x1="60" y1="26" x2="60" y2="38" stroke="#3b5a80" stroke-width="1.5"/>
+          <line x1="80" y1="28" x2="80" y2="38" stroke="#3b5a80" stroke-width="1.5"/>
+          <path d="M60,26 L60,10 M60,10 L80,20" stroke="#7a5a30" stroke-width="2" fill="none"/>
+          <text x="60" y="76" text-anchor="middle" fill="#5b7fa8" font-size="7" font-family="sans-serif">Không có dữ liệu</text>
+        </svg>
+        <div class="text-teal-400 font-bold text-sm">Không tìm thấy dữ liệu</div>
+        <div class="text-teal-500 text-[10px] mt-1">Thử đổi ngày hoặc ca khác</div>
+      </div>`;
+      return;
+    }
+    c.innerHTML = Object.keys(hist).map(t=>{
+      const d = hist[t]; const tData = d.tableData; const tOrders = d.orders.sort((a,b)=>a.timestamp-b.timestamp);
+      const name = tData.customerName || 'Khách Vãng Lai';
+      const pax = tData.pax || 0;
+      const payment = tData.paymentMethod || 'TM';
+      const foc = tData.focReason ? `<br><span class="text-[8px] italic text-red-200">Lý do: ${tData.focReason}</span>` : '';
+      const rest = tData.restaurantTable ? `<span class="text-gold-400 block mt-1">Bàn ăn: ${tData.restaurantTable}</span>` : '';
+      let drinks=0, pastries=0, dMap={};
+      let ordersHtml = '';
+      tOrders.forEach(o=>{
+        o.items.forEach(it=>{
+          const active = it.qty-(it.cancelledQty||0);
+          if(active>0){
+            const base = it.id.split('_')[0];
+            const def = LOUNGE_ITEMS.find(x=>x.id===base);
+            if(def){
+              if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) drinks += active;
+              if(def.category_id==='cat-pastry') pastries += active;
+            }
+            const v = it.id.split('_')[1];
+            let nm = it.name['VI'] || it.name['EN'] || it.name;
+            if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+            dMap[nm] = (dMap[nm]||0)+active;
+          }
+        });
+      });
+      let details = '';
+      const keys = Object.keys(dMap);
+      if(keys.length){
+        details = `<div class="mt-3 bg-teal-900/60 p-3 rounded-xl border border-teal-700/50">
+          <span class="text-[9px] text-gold-400 font-bold uppercase mb-2 flex items-center gap-1.5 tracking-wider">📋 CHI TIẾT MÓN:</span>
+          <ul class="text-[11px] text-teal-50 space-y-1.5 pl-2">${keys.map(k=>`<li>• ${k}: <strong class="text-white bg-teal-800/80 px-1.5 rounded ml-1">x${dMap[k]}</strong></li>`).join('')}</ul>
+        </div>`;
+      }
+      if(tOrders.length){
+        ordersHtml = '<div class="mt-3 pt-3 border-t border-teal-700/50 space-y-2">'+
+          tOrders.map(o=>{
+            let timeStr = `📥 ${o.time}`;
+            if(o.status==='completed') timeStr += `<br><span class="text-emerald-400 ml-3">✅ ${o.completedTime||'--:--'}</span>`;
+            const itemsStr = o.items.filter(i=>!(i.cancelledQty>=i.qty)).map(i=>{
+              const cQty = i.cancelledQty||0; const v = i.id.split('_')[1];
+              let n = i.name['VI'] || i.name['EN'];
+              if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+              return `${n} (x${i.qty-cQty})`;
+            }).join(', ');
+            return `<div class="text-[10px] bg-teal-950/50 p-2 rounded-lg border border-teal-800/40">
+              <div class="mb-1.5 pb-1.5 border-b border-teal-800/50 text-teal-300 font-bold leading-tight">${timeStr} <span class="text-teal-500 float-right font-normal">NV: ${o.completedBy||'--'}</span></div>
+              <div class="text-white opacity-90 text-[9.5px] leading-relaxed">${itemsStr}</div>
+            </div>`;
+          }).join('')+'</div>';
+      }
+      let payColor = (payment==='FOC'||payment==='TA_UNPAID') ? 'bg-red-900/80 text-red-100 border-red-500/50' : 'bg-gold-500/20 text-gold-400 border-gold-500/30';
+      if(payment==='KTOUR') payColor = 'bg-red-700/90 text-red-100 border-red-400 font-black';
+      return `
+        <div class="glass-card p-5 rounded-2xl border border-teal-700/50 backdrop-blur-sm flex flex-col relative overflow-hidden shadow-lg hover:border-gold-500/50 transition-colors">
+          <div class="flex justify-between items-start mb-2 relative z-10">
+            <span class="text-sm font-black text-emerald-400 drop-shadow-sm">${t}</span>
+            <span class="text-[10px] bg-teal-800 text-white px-2 py-0.5 rounded font-bold shadow-sm">PAX: ${pax}</span>
+          </div>
+          <div class="text-[13px] font-black text-white leading-tight mb-2 uppercase tracking-wide">${name} ${rest}</div>
+          <div class="text-[9px] font-black uppercase tracking-wider mb-4 ${payColor} px-2.5 py-1.5 rounded inline-block self-start border shadow-inner">TT: ${payment} ${foc}</div>
+          <div class="space-y-2 bg-teal-950/60 p-3 rounded-xl relative z-10 border border-teal-800/50 shadow-inner">
+            <div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Đồ Uống:</span><span class="font-black text-emerald-400">${drinks}/${pax}</span></div>
+            <div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Bánh Ngọt:</span><span class="font-black text-emerald-400">${pastries}/${pax}</span></div>
+          </div>
+          ${details}${ordersHtml}
+        </div>`;
+    }).join('');
+    window.showToast("Tải lịch sử thành công!",'✅');
+  } catch(e){
+    c.innerHTML = `<div class="col-span-full text-center py-10 text-red-400 font-bold border border-red-900/50 bg-red-950/20 rounded-xl">Lỗi tải dữ liệu!</div>`;
+  }
+};
+
+window.exportHistoryToExcel = function(){
+  if(!window.currentHistoryData || !Object.keys(window.currentHistoryData).length){ window.showToast("Chưa có dữ liệu!","⚠️"); return; }
+  const rows=[];
+  Object.keys(window.currentHistoryData).forEach(t=>{
+    const td = window.currentHistoryData[t]; const data = td.tableData; const orders = td.orders;
+    const name = data.customerName || 'Khách Vãng Lai';
+    const pax = data.pax || 0; const rest = data.restaurantTable || '';
+    const pay = data.paymentMethod || 'TM'; const foc = data.focReason || '';
+    if(!orders.length){
+      rows.push({Bàn:t,'Tên Khách':name,'Bàn Nhà Hàng':rest,'Pax':pax,'Thanh Toán':pay,'Lý do FOC':foc,'Chi Tiết Món':'Chưa gọi món','Giờ Gọi':'','Giờ Giao':'','Người Phục Vụ':'','Ghi Chú':''});
+    } else {
+      orders.forEach(o=>{
+        const itemsStr = o.items.map(i=>{
+          const cQty = i.cancelledQty || (i.cancelled?i.qty:0);
+          const v = i.id.split('_')[1];
+          let n = i.name['VI'] || i.name['EN'];
+          if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+          return `${n} (SL:${i.qty-cQty}, Hủy:${cQty})`;
+        }).join('; ');
+        rows.push({Bàn:o.table,'Tên Khách':name,'Bàn Nhà Hàng':rest,'Pax':pax,'Thanh Toán':pay,'Lý do FOC':foc,'Chi Tiết Món':itemsStr,'Giờ Gọi':o.time||'','Giờ Giao':o.completedTime||'','Người Phục Vụ':o.completedBy||'','Ghi Chú':o.notes||''});
+      });
+    }
+  });
+  const ws = XLSX.utils.json_to_sheet(rows);
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, ws, "Lich_Su_Order");
+  XLSX.writeFile(wb, `LichSu_Lounge_${Date.now()}.xlsx`);
+  window.showToast("Xuất Excel thành công!",'✅');
+};
+
+window.renderCustomer = function(){
+  const t = TRANSLATIONS[state.currentLanguage] || TRANSLATIONS['EN'];
+  document.getElementById('lbl-table').innerText = t.tableLabel;
+  document.getElementById('lbl-btn-call').innerText = t.callStaffBtn;
+  document.getElementById('lbl-btn-change-table').innerText = t.changeTableBtn;
+  document.getElementById('lbl-active-orders-title').innerText = t.activeOrdersTitle;
+  document.getElementById('lbl-cart-title').innerText = t.cartTitle;
+  const a = state.tableAssignments[state.selectedTable] || {};
+  const name = a.customerName || null;
+  const pax = a.pax || 0;
+  const isKtour = a.paymentMethod === 'KTOUR';
+  let display = state.selectedTable;
+  if(name) display += ` <span class="text-xs text-white block mt-1 break-words whitespace-normal leading-tight px-1 drop-shadow-sm">${name}</span>`;
+  document.getElementById('current-table-display').innerHTML = display;
+
+  const vipBadge = document.getElementById('table-vip-badge');
+  const existingSparkles = vipBadge.querySelectorAll('.vip-spark');
+  existingSparkles.forEach(s=>s.remove());
+  if(pax >= 10 && name){
+    for(let i=0;i<6;i++){
+      const sp = document.createElement('span');
+      sp.className='vip-spark';
+      sp.innerHTML = '✦';
+      sp.style.color = '#FBBF24';
+      sp.style.fontSize = '14px';
+      sp.style.textShadow = '0 0 8px rgba(245,158,11,.9)';
+      sp.style.left = (5+Math.random()*85)+'%';
+      sp.style.top = (5+Math.random()*85)+'%';
+      sp.style.animationDelay = (i*0.3)+'s';
+      vipBadge.appendChild(sp);
+    }
+  }
+
+  const banner = document.getElementById('pax-alert-banner');
+  if(isKtour){ banner.classList.remove('hidden'); document.getElementById('lbl-pax-warning-title').innerText = t.ktourWarningTitle; document.getElementById('lbl-pax-warning-msg').innerText = t.ktourWarningMsg; }
+  else if(pax<=0){ banner.classList.remove('hidden'); document.getElementById('lbl-pax-warning-title').innerText = t.paxWarningTitle; document.getElementById('lbl-pax-warning-msg').innerText = t.paxWarningMsg; }
+  else banner.classList.add('hidden');
+
+  const usage = window.getTableComboUsage(state.selectedTable);
+  document.getElementById('lbl-combo-title').innerText = t.comboTitle;
+  document.getElementById('lbl-combo-info').innerText = t.comboInfoMax.replace(/\{pax\}/g,pax);
+  document.getElementById('lbl-usage-title').innerText = t.comboUsageTitle;
+  document.getElementById('lbl-usage-info').innerText = t.usageInfo.replace('{drinks}',usage.drinks).replace('{pastries}',usage.pastries).replace(/\{pax\}/g,pax);
+
+  const activeOrders = state.orders.filter(o=>o.table===state.selectedTable && o.status!=='completed');
+  const aSec = document.getElementById('customer-active-orders-section');
+  if(activeOrders.length){
+    aSec.classList.remove('hidden');
+    document.getElementById('customer-active-orders-list').innerHTML = activeOrders.map(o=>{
+      let sText = t.statusPending, sColor='text-gold-400';
+      if(o.status==='preparing'){ sText=t.statusPreparing; sColor='text-red-400 animate-pulse'; }
+      const act = o.items.filter(i=>{ const c=i.cancelledQty||(i.cancelled?i.qty:0); return c<i.qty; });
+      return `<div class="bg-teal-900/40 border border-teal-700/50 p-4 rounded-xl shadow-sm">
+        <div class="flex justify-between items-center mb-2">
+          <span class="text-[10px] text-teal-300 font-mono bg-teal-950/50 px-2 py-1 rounded">${o.time}</span>
+          <span class="text-[10px] font-black uppercase ${sColor} tracking-wider">${sText}</span>
+        </div>
+        <div class="text-[13px] text-white font-bold leading-relaxed">
+          ${act.length ? act.map(it=>{
+            const c = it.cancelledQty||(it.cancelled?it.qty:0);
+            const v = it.id.split('_')[1];
+            let nm = it.name[state.currentLanguage] || it.name['EN'];
+            if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v][state.currentLanguage] || HOT_COLD_TRANS[v]['EN']})`;
+            return `<span class="inline-block mr-3 mb-1">• ${nm} <span class="text-gold-400 opacity-90">x${it.qty-c}</span></span>`;
+          }).join('') : `<span class="text-red-400 line-through opacity-80">${t.statusCancelled}</span>`}
+        </div>
+      </div>`;
+    }).join('');
+  } else aSec.classList.add('hidden');
+
+  const catCont = document.getElementById('categories-container');
+  catCont.innerHTML = `<button onclick="changeCategory('all')" class="px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all duration-300 shadow-sm ${state.activeCategory==='all'?'bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-gold-500/30':'bg-teal-900/60 text-teal-200 border border-teal-700/50 hover:bg-teal-800'}">${t.allCategory}</button>` +
+    LOUNGE_CATEGORIES.map(cat=>{
+      const nm = cat.name[state.currentLanguage] || cat.name['EN'];
+      return `<button onclick="changeCategory('${cat.id}')" class="px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all duration-300 shadow-sm flex flex-col items-center justify-center ${state.activeCategory===cat.id?'bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-gold-500/30':'bg-teal-900/60 text-teal-200 border border-teal-700/50 hover:bg-teal-800'}"><span>${nm}</span></button>`;
+    }).join('');
+
+  const filtered = LOUNGE_ITEMS.filter(i=> state.activeCategory==='all' || i.category_id===state.activeCategory);
+  let cD=0,cP=0;
+  for(let cid in state.cart){
+    const base = cid.split('_')[0];
+    const def = LOUNGE_ITEMS.find(x=>x.id===base);
+    if(def){
+      if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) cD += state.cart[cid];
+      if(def.category_id==='cat-pastry') cP += state.cart[cid];
+    }
+  }
+  document.getElementById('menu-items-grid').innerHTML = filtered.map(item=>{
+    const total = Object.keys(state.cart).filter(k=>k===item.id || k.startsWith(item.id+'_')).reduce((s,k)=>s+state.cart[k],0);
+    const nm = item.name[state.currentLanguage] || item.name['EN'];
+    let isLocked = false;
+    if(isKtour) isLocked = true;
+    else if(pax<=0) isLocked = true;
+    else if(total===0){
+      if(['cat-coffee','cat-tea','cat-juice'].includes(item.category_id) && (usage.drinks+cD)>=pax) isLocked = true;
+      if(item.category_id==='cat-pastry' && (usage.pastries+cP)>=pax) isLocked = true;
+    }
+    return `
+      <div id="card-${item.id}" class="menu-card relative overflow-hidden glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 border-2 group ${total>0?'border-gold-500/60 shadow-[0_0_20px_rgba(245,158,11,.18)]':'border-teal-600/30'}">
+        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+        <div class="pr-1 break-words w-full mb-6">
+          <h3 class="text-white font-bold text-[16px] sm:text-[17px] leading-snug drop-shadow-md group-hover:text-gold-400 transition-colors">${nm}</h3>
+          ${state.currentLanguage!=='EN' ? `<span class="text-[11px] text-teal-300 block mt-1.5 font-medium opacity-80">${item.name['EN']}</span>` : ''}
+        </div>
+        <div class="flex justify-end items-end w-full mt-auto">
+          <div class="shrink-0 z-10">
+            ${isLocked ? (isKtour ? `<span class="text-[10px] text-red-400 font-black bg-red-950/90 px-3 py-2 rounded-xl border border-red-500/60 shadow-inner tracking-wider">🔒 KTOUR</span>` : `<span class="text-[10px] text-red-200 font-bold bg-red-950/80 px-3 py-2 rounded-xl border border-red-800/50 shadow-inner tracking-wider">MAX</span>`)
+            : (total===0 ? `<button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',1)" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-xs font-black px-6 py-2.5 rounded-xl shadow-lg transition-transform active:scale-90 tracking-widest">SELECT</button>`
+            : `<div class="flex items-center bg-teal-950/80 rounded-xl p-1 border border-gold-500/50 shadow-inner">
+                <button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',-1)" class="text-teal-400 hover:text-white hover:bg-teal-800 w-9 h-9 flex items-center justify-center rounded-lg font-bold text-lg transition-colors active:scale-90">➖</button>
+                <span class="text-gold-400 font-black px-4 text-sm">${total}</span>
+                <button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',1)" class="text-gold-400 hover:text-gold-200 hover:bg-teal-800 w-9 h-9 flex items-center justify-center rounded-lg font-bold text-lg transition-colors active:scale-90">➕</button>
+              </div>`)}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  const fc = document.getElementById('floating-cart');
+  const cnt = Object.values(state.cart).reduce((a,b)=>a+b,0);
+  if(cnt>0 && pax>0 && !isKtour){
+    fc.classList.remove('hidden');
+    document.getElementById('cart-summary-text').innerText = t.selectedItems.replace('{count}',cnt);
+    document.getElementById('lbl-view-cart').innerText = t.historyBtn;
+  } else fc.classList.add('hidden');
+};
+
+window.generateOrderGridHtml = function(ordersList){
+  if(!ordersList.length) return `<div class="col-span-full py-8 text-teal-500 text-xs font-bold text-center">Không có đơn hàng.</div>`;
+  return ordersList.map(o=>{
+    const isDelayed = o.status==='pending' && o.timestamp && (Date.now()-o.timestamp)>300000;
+    const itemsList = o.items.map((it,idx)=>{
+      const cQty = it.cancelledQty || (it.cancelled?it.qty:0);
+      const isFull = cQty>=it.qty;
+      const isPrep = it.isPrepared;
+      const v = it.id.split('_')[1];
+      let nm = it.name['VI'] || it.name['EN'] || it.name;
+      if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+      if(isFull) return `<div class="flex justify-between items-center text-[10px] text-red-400 line-through px-3 py-2 bg-red-950/40 rounded-lg border border-red-900/50"><span>${nm}</span><span class="font-bold">(x${it.qty}) ĐÃ HỦY</span></div>`;
+      const active = it.qty-cQty;
+      const cText = cQty>0 ? `<span class="text-red-400 text-[9px] line-through ml-1.5 opacity-80">(Hủy ${cQty})</span>` : '';
+      const pC = isPrep ? 'text-red-400 font-black' : 'text-teal-50';
+      const bC = isPrep ? 'bg-red-950/20 border-red-800/50' : 'bg-teal-950/80 border-teal-700/50';
+      const bPrep = `<button onclick="toggleItemPrepared('${o.id}',${idx})" class="${isPrep?'bg-red-600 hover:bg-red-500 text-white border-red-500':'bg-teal-800 text-teal-200 border-teal-600 hover:bg-teal-700'} text-[10px] font-bold px-3 py-2 rounded-lg border transition-all shadow-sm">${isPrep?'☑ Xong':'☐ Làm'}</button>`;
+      const bCancel = `<button onclick="openCancelModal('${o.id}',${idx},${it.qty},${cQty})" class="text-[10px] bg-red-950/80 text-red-300 font-bold px-2 py-2 rounded-lg border border-red-900/50 hover:bg-red-900 transition-colors">✕ Hủy</button>`;
+      return `<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-xl border ${bC} transition-all shadow-sm">
+        <span class="${pC} text-xs drop-shadow-sm">• ${nm} ${cText}</span>
+        <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
+          <span class="font-black text-gold-400 px-1 text-sm">x${active}</span>${bPrep}${bCancel}
+        </div>
+      </div>`;
+    }).join('<div class="h-2"></div>');
+    let btn = '';
+    if(o.status==='pending'){
+      btn = `<button onclick="openStaffNameModal('${o.id}','preparing')" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Bắt đầu pha chế 🔥</button>`;
+    } else {
+      btn = `<button onclick="openStaffNameModal('${o.id}','completed')" class="bg-gradient-to-r from-emerald-400 to-emerald-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Xác nhận Phục vụ ✅</button>`;
+    }
+    const bCls = (o.status==='preparing') ? 'border-gold-500/60 shadow-[0_5px_20px_rgba(245,158,11,.15)]' : (isDelayed ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,.4)] animate-pulse' : 'border-teal-700/50');
+    return `<div class="glass-card border ${bCls} rounded-2xl p-5 flex flex-col transition-all">
+      <div class="flex justify-between items-start mb-4">
+        <span class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-widest">${o.table}</span>
+        <div class="text-right flex flex-col items-end gap-1.5">
+          <span class="text-[10px] text-teal-300 block font-mono bg-teal-950/50 px-2 py-0.5 rounded">${o.time}</span>
+          <span class="text-[9px] text-teal-400 uppercase tracking-widest font-bold mt-1">${o.status==='pending'?'⏳ Chờ xác nhận': '🔥 Làm: '+(o.preparedBy||'NV')}</span>
+          ${isDelayed?'<span class="bg-red-600 text-white px-2 py-1 rounded text-[9px] font-black animate-bounce mt-1 shadow-md tracking-wider">⚠️ QUÁ 5 PHÚT</span>':''}
+        </div>
+      </div>
+      <div class="mb-5 flex-1">${itemsList}</div>
+      ${o.notes?`<div class="text-[11px] bg-gold-500/10 border border-gold-500/30 p-3 rounded-xl text-gold-200 italic mb-5 leading-relaxed shadow-inner">Lưu ý: ${o.notes}</div>`:''}
+      ${btn}
+    </div>`;
+  }).join('');
+};
+
+window.renderStaff = function(){
+  const curName = (localStorage.getItem('dolphinStaffName')||'').trim();
+  document.getElementById('current-staff-name-display').innerText = curName || 'Chưa đặt';
+  const bt = document.getElementById('btn-view-table'), bb = document.getElementById('btn-view-batch');
+  if(state.staffViewMode==='batch'){
+    bb.className = "px-5 py-2.5 text-[11px] font-black rounded-lg transition-all bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-md tracking-wider";
+    bt.className = "px-5 py-2.5 text-[11px] font-bold rounded-lg transition-all text-teal-300 hover:text-white hover:bg-teal-800/50 tracking-wider";
+    document.getElementById('staff-tables-container').classList.add('hidden');
+    document.getElementById('staff-batch-section').classList.remove('hidden');
+  } else {
+    bt.className = "px-5 py-2.5 text-[11px] font-black rounded-lg transition-all bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-md tracking-wider";
+    bb.className = "px-5 py-2.5 text-[11px] font-bold rounded-lg transition-all text-teal-300 hover:text-white hover:bg-teal-800/50 tracking-wider";
+    document.getElementById('staff-tables-container').classList.remove('hidden');
+    document.getElementById('staff-batch-section').classList.add('hidden');
+  }
+
+  updateHeartbeat();
+
+  const cSec = document.getElementById('staff-calls-section');
+  if(state.activeCalls.length){
+    cSec.classList.remove('hidden');
+    document.getElementById('staff-calls-grid').innerHTML = state.activeCalls.map(c=>`
+      <div class="bg-red-900/40 border border-red-700/50 p-4 rounded-xl flex justify-between items-center shadow-inner">
+        <div><span class="text-xs font-black text-red-200 block drop-shadow-sm">🛎️ BÀN ${c.table}</span><span class="text-[10px] text-red-300 font-mono mt-1.5 block opacity-90">🕒 ${c.time||'--:--'}</span></div>
+        <button onclick="resolveCallOnline('${c.id}')" class="bg-white text-red-800 text-[10px] font-black px-4 py-2.5 rounded-lg shadow-md hover:bg-red-50 transition-colors">Xong</button>
+      </div>
+    `).join('');
+  } else cSec.classList.add('hidden');
+
+  const pending = state.orders.filter(o=>o.status!=='completed');
+  if(state.staffViewMode==='batch'){
+    const batch = {};
+    pending.forEach(o=>{
+      o.items.forEach((it,idx)=>{
+        const active = it.qty-(it.cancelledQty||(it.cancelled?it.qty:0));
+        if(active>0 && !it.isPrepared){
+          const v = it.id.split('_')[1];
+          let nm = it.name['VI'] || it.name['EN'] || it.name;
+          if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+          if(!batch[nm]) batch[nm] = {total:0, tables:[]};
+          batch[nm].total += active;
+          batch[nm].tables.push({table:o.table, qty:active, orderId:o.id, itemIndex:idx});
+        }
+      });
+    });
+    const cont = document.getElementById('staff-batch-grid');
+    const keys = Object.keys(batch);
+    if(!keys.length) cont.innerHTML = `<div class="col-span-full py-10 text-center text-teal-500 font-bold border border-teal-800/50 rounded-xl border-dashed">Không có món nào đang chờ.</div>`;
+    else cont.innerHTML = keys.map(k=>{
+      const d = batch[k];
+      const tHtml = d.tables.map(t=>`
+        <div class="flex justify-between items-center bg-teal-950/80 p-2.5 rounded-lg border border-teal-800/50 mt-2">
+          <span class="text-[11px] font-black text-gold-400 tracking-wider">${t.table} <span class="text-white ml-2 opacity-90">x${t.qty}</span></span>
+          <button onclick="toggleItemPrepared('${t.orderId}',${t.itemIndex})" class="bg-teal-800 hover:bg-teal-700 text-teal-200 text-[10px] font-bold px-3 py-1.5 rounded transition-colors">☐ Xong</button>
+        </div>
+      `).join('');
+      return `<div class="glass-card border border-gold-500/40 rounded-2xl p-5 shadow-lg">
+        <div class="flex justify-between items-center mb-3 border-b border-teal-700/50 pb-3">
+          <h4 class="text-sm font-black text-white drop-shadow-md">${k}</h4>
+          <span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[11px] font-black px-3 py-1.5 rounded-lg shadow-md">Tổng: ${d.total}</span>
+        </div>
+        <div class="space-y-1 mt-3">${tHtml}</div>
+      </div>`;
+    }).join('');
+  } else {
+    const mine = [], others = [];
+    pending.forEach(o=>{
+      if(o.status==='preparing' && curName && o.preparedBy && o.preparedBy.includes(curName)) mine.push(o);
+      else others.push(o);
+    });
+    document.getElementById('staff-my-orders-grid').innerHTML = window.generateOrderGridHtml(mine);
+    document.getElementById('staff-other-orders-grid').innerHTML = window.generateOrderGridHtml(others);
+  }
+};
+
+function updateHeartbeat(){
+  const cnt = state.orders.filter(o=>o.status==='pending').length;
+  const el = document.getElementById('heartbeat-count');
+  const sub = document.getElementById('heartbeat-sub');
+  const prog = document.getElementById('hb-progress');
+  const label = document.getElementById('heartbeat-label');
+  const peak = document.getElementById('peak-alert');
+  if(el) el.innerText = cnt;
+  const ring = document.getElementById('heartbeat-ring');
+  if(ring){
+    const rate = Math.min(1, cnt/8);
+    const period = 2.5 - rate*2;
+    ring.style.animation = `pulse ${period}s ease-in-out infinite`;
+    if(!ring.dataset.animated){
+      ring.dataset.animated='1';
+      const style = document.createElement('style');
+      style.textContent = `@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}`;
+      document.head.appendChild(style);
+    }
+  }
+  if(prog){ const ratio = Math.min(1, cnt/8); prog.setAttribute('stroke-dashoffset', 107 - 107*ratio); }
+  if(sub) sub.innerText = cnt===0 ? 'Đang rảnh rỗi — chờ order mới' : `${cnt} đơn đang chờ xác nhận`;
+  if(label) label.innerText = cnt>6 ? 'CAO ĐIỂM' : cnt>3 ? 'ĐANG BẬN' : 'NHỊP HOẠT ĐỘNG';
+  if(peak) peak.classList.toggle('hidden', cnt<=5);
+  if(cnt>5 && !window._peakAlerted){
+    window._peakAlerted = true;
+    try{ window.playNotificationAlert(); }catch(e){}
+    setTimeout(()=>{ window._peakAlerted=false; }, 60000);
+  }
+}
+
+window.renderBungalowTrack = function(){
+  let totalPax=0, totalTicketPax=0;
+  const cont = document.getElementById('bungalow-track-b2');
+  cont.innerHTML = TABLES_LOUNGE.map(t=>{
+    const a = state.tableAssignments[t] || {};
+    const nm = a.customerName || 'Trống';
+    const pax = a.pax || 0;
+    const pay = a.paymentMethod || 'TM';
+    totalPax += parseInt(pax)||0;
+    if(pay!=='FOC' && pay!=='TA_UNPAID' && pay!=='KTOUR') totalTicketPax += parseInt(pax)||0;
+    const rest = a.restaurantTable ? `<br><span class="text-gold-400 mt-1 block">Bàn Ăn: ${a.restaurantTable}</span>` : '';
+    const foc = a.focReason ? `<br><span class="text-[8px] italic text-red-200">Lý do: ${a.focReason}</span>` : '';
+    const usage = window.getTableComboUsage(t);
+    const isFull = pax>0 && usage.drinks>=pax && usage.pastries>=pax;
+    const tableOrders = state.orders.filter(o=>o.table===t && o.status!=='cancelled');
+    let ordersHtml = '', detailsHtml = '';
+    if(tableOrders.length){
+      let dMap = {};
+      tableOrders.forEach(o=>{
+        o.items.forEach(it=>{
+          const cQty = it.cancelledQty||(it.cancelled?it.qty:0);
+          const act = it.qty-cQty;
+          if(act>0){
+            const v = it.id.split('_')[1];
+            let nm2 = it.name['VI'] || it.name['EN'] || it.name;
+            if(v && HOT_COLD_TRANS[v]) nm2 += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+            dMap[nm2] = (dMap[nm2]||0)+act;
+          }
+        });
+      });
+      const dKeys = Object.keys(dMap);
+      if(dKeys.length){
+        detailsHtml = `<div class="mt-2.5 bg-teal-900/60 p-2.5 rounded-xl border border-teal-700/50">
+          <span class="text-[9px] text-gold-400 font-bold uppercase mb-1.5 block tracking-wider">📋 Chi tiết:</span>
+          <ul class="text-[10px] text-teal-100 space-y-1 pl-1">${dKeys.map(k=>`<li>• ${k}: <strong class="text-white">x${dMap[k]}</strong></li>`).join('')}</ul>
+        </div>`;
+      }
+      ordersHtml = '<div class="mt-3 pt-3 border-t border-teal-700/50 space-y-2">';
+      tableOrders.forEach(o=>{
+        const isDel = o.status==='pending' && o.timestamp && (Date.now()-o.timestamp)>300000;
+        let sC = 'text-gold-400';
+        if(o.status==='preparing') sC='text-red-400';
+        if(o.status==='completed') sC='text-emerald-400';
+        let ts = `📥 ${o.time}`;
+        if(o.status==='completed') ts += `<br><span class="text-emerald-400 ml-3">✅ ${o.completedTime||'--:--'}</span>`;
+        const itemsStr = o.items.filter(i=>!(i.cancelledQty>=i.qty)).map(i=>{
+          const cQty = i.cancelledQty||0; const v = i.id.split('_')[1];
+          let n = i.name['VI'] || i.name['EN'];
+          if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+          return `${n} (x${i.qty-cQty})`;
+        }).join(', ');
+        ordersHtml += `<div class="text-[10px] bg-teal-950/50 p-2 rounded-lg border border-teal-800/40">
+          <div class="flex justify-between items-start mb-1.5 pb-1.5 border-b border-teal-800/50">
+            <div class="${sC} font-bold leading-tight">${ts}</div>
+            ${isDel?'<span class="bg-red-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black animate-pulse">⚠️ Trễ</span>':''}
+          </div>
+          <div class="text-white opacity-90 text-[9.5px] leading-relaxed line-clamp-2">${itemsStr}</div>
+        </div>`;
+      });
+      ordersHtml += '</div>';
+    }
+    let bC = nm!=='Trống' ? (isFull ? 'bg-emerald-950/40 border-emerald-500/50' : 'bg-teal-900/40 border-gold-500/50') : 'bg-teal-950/30 border-teal-800/50 opacity-60';
+    let payC = 'bg-gold-500/20 text-gold-400 border-gold-500/30';
+    if(pay==='FOC'||pay==='TA_UNPAID') payC = 'bg-red-900/80 text-red-100 border-red-500/50';
+    if(pay==='KTOUR') payC = 'bg-red-700/90 text-red-100 border-red-400 font-black';
+    return `<div class="p-4 rounded-2xl border transition-all ${bC} backdrop-blur-sm flex flex-col">
+      <div class="flex justify-between items-start mb-2">
+        <span class="text-sm font-black text-emerald-400 drop-shadow-sm">${t}</span>
+        ${nm!=='Trống'?`<span class="text-[10px] bg-teal-800 text-white px-2 py-0.5 rounded font-bold">PAX: ${pax}</span>`:''}
+      </div>
+      <div class="text-[11px] font-bold text-white leading-tight mb-3 min-h-[24px] break-words whitespace-normal">${nm} ${rest}</div>
+      ${nm!=='Trống'?`<div class="text-[9px] font-black uppercase tracking-wider mb-3 ${payC} px-2 py-1 rounded inline-block self-start border shadow-inner">TT: ${pay} ${foc}</div>`:''}
+      <div class="space-y-1.5 bg-teal-950/50 p-2 rounded-lg">
+        <div class="flex justify-between text-[10px]"><span class="text-teal-300">Đồ Uống:</span><span class="font-bold ${usage.drinks>=pax && pax>0?'text-emerald-400':'text-gold-500'}">${usage.drinks}/${pax}</span></div>
+        <div class="flex justify-between text-[10px]"><span class="text-teal-300">Bánh Ngọt:</span><span class="font-bold ${usage.pastries>=pax && pax>0?'text-emerald-400':'text-gold-500'}">${usage.pastries}/${pax}</span></div>
+      </div>
+      ${detailsHtml}${ordersHtml}
+    </div>`;
+  }).join('');
+  const p = document.getElementById('total-pax-display'); if(p) p.innerText = totalPax;
+  const tp = document.getElementById('total-ticket-pax-display'); if(tp) tp.innerText = totalTicketPax;
+};
+
+window.renderReception = function(){
+  document.getElementById('reception-tables-lounge').innerHTML = TABLES_LOUNGE.map(t=>{
+    const a = state.tableAssignments[t];
+    const nm = a ? a.customerName : null;
+    const pax = a && a.pax ? `<br><span class="text-[9px] font-black uppercase text-white bg-teal-700 px-1 rounded inline-block mt-1 mr-1">PAX: ${a.pax}</span>` : '';
+    let pT = a && a.paymentMethod ? a.paymentMethod : '';
+    let pC = 'bg-gold-400 text-teal-950';
+    if(a && (a.paymentMethod==='FOC'||a.paymentMethod==='TA_UNPAID')) pC = 'bg-red-600 text-white';
+    if(a && a.paymentMethod==='KTOUR') pC = 'bg-red-700 text-white ring-2 ring-red-400 animate-pulse';
+    const p = pT ? `<span class="text-[9px] font-black uppercase ${pC} px-1 rounded inline-block mt-1">PAY: ${pT}</span>` : '';
+    const hasOrders = state.orders.some(o=>o.table===t && o.status!=='completed');
+    let bg = nm ? 'bg-gradient-to-br from-gold-400 to-gold-500 text-black border-transparent shadow-lg hover:scale-105' : 'bg-teal-900/40 border-teal-700/50 text-teal-300 hover:bg-teal-800/60';
+    if(hasOrders && !nm) bg = 'bg-red-950/80 border-red-500/50 text-red-300 shadow-lg hover:bg-red-900/80';
+    return `<button onclick="openCustomerNameModal('${t}')" class="p-3 rounded-2xl border text-center transition-all duration-300 ${bg} flex flex-col justify-center items-center min-h-[80px] backdrop-blur-sm">
+      <span class="block text-sm font-black mb-1.5 drop-shadow-sm">${t}</span>
+      <span class="block text-[9px] font-bold w-full break-words whitespace-normal px-1 leading-tight opacity-90">${nm?nm+pax+p:'Trống'}</span>
+    </button>`;
+  }).join('');
+};
+
+window.renderAdmin = function(){
+  document.getElementById('stat-total').innerText = state.orders.length;
+  document.getElementById('stat-pending').innerText = state.orders.filter(o=>o.status==='pending').length;
+  document.getElementById('stat-prep').innerText = state.orders.filter(o=>o.status==='preparing').length;
+  document.getElementById('stat-done').innerText = state.orders.filter(o=>o.status==='completed').length;
+  const sv = (document.getElementById('admin-search-order')?.value||'').toLowerCase();
+  const tb = document.getElementById('admin-orders-tbody');
+  const filtered = state.orders.filter(o=>{
+    const mI = o.items.some(i=>(i.name['VI']||i.name['EN']).toLowerCase().includes(sv));
+    return !sv || o.table.toLowerCase().includes(sv) || (o.preparedBy||'').toLowerCase().includes(sv) || mI;
+  });
+  if(!filtered.length){
+    tb.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-teal-500/80 font-bold">Danh sách trống.</td></tr>`;
+  } else {
+    tb.innerHTML = filtered.map(o=>{
+      const isDel = o.status==='pending' && o.timestamp && (Date.now()-o.timestamp)>300000;
+      let st = `<span class="text-gold-400 font-bold">Chờ duyệt</span>`;
+      if(o.status==='preparing') st = `<span class="text-red-400 font-bold">Đang pha</span>`;
+      if(o.status==='completed') st = `<span class="text-emerald-400 font-bold">Đã phục vụ</span>`;
+      if(isDel) st += `<br><span class="text-red-500 font-black animate-pulse text-[9px] uppercase mt-1.5 inline-block bg-red-950/50 px-2 py-0.5 rounded border border-red-900/50">⚠️ Quá 5p</span>`;
+      const itemsStr = o.items.map((i,idx)=>{
+        const cQty = i.cancelledQty||(i.cancelled?i.qty:0);
+        const v = i.id.split('_')[1];
+        let nm = i.name['VI'] || i.name['EN'];
+        if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
+        if(cQty>=i.qty) return `<span class="line-through text-teal-600">${nm} (x${i.qty})</span>`;
+        return `<span class="inline-block mr-2 mb-1">${nm} <strong class="text-white">x${i.qty-cQty}</strong> ${cQty>0?`<span class="text-teal-600 line-through ml-1 text-[10px]">(Hủy ${cQty})</span>`:''} <button onclick="openCancelModal('${o.id}',${idx},${i.qty},${cQty})" class="text-[8px] bg-red-950/80 text-red-300 px-2 py-1 rounded ml-1 border border-red-900/50 hover:bg-red-900 uppercase font-bold tracking-wider">Hủy</button></span>`;
+      }).join('<br>');
+      let pn = o.preparedBy ? `Làm: <span class="text-white">${o.preparedBy}</span>` : '--';
+      if(o.completedBy) pn += `<br><span class="text-emerald-400">Giao: <span class="text-white">${o.completedBy}</span></span>`;
+      return `<tr class="${isDel?'bg-red-950/20 hover:bg-red-950/40':'hover:bg-teal-800/30'} transition-colors border-b border-teal-700/30">
+        <td class="py-4 px-4 font-mono text-[10px] ${isDel?'text-red-300':'text-teal-300'} whitespace-nowrap bg-teal-950/20">${o.time}</td>
+        <td class="py-4 px-4 font-black text-gold-400 whitespace-nowrap text-sm">${o.table}</td>
+        <td class="py-4 px-4 text-[11px] leading-relaxed">${itemsStr}<div class="text-[9.5px] text-gold-400/80 mt-2 italic font-medium">${o.notes||''}</div></td>
+        <td class="py-4 px-4 text-[10.5px]">${st}</td>
+        <td class="py-4 px-4 text-[10px] text-teal-200 leading-relaxed">${pn}</td>
+        <td class="py-4 px-4 text-right"><button onclick="openStaffNameModal('${o.id}','completed')" class="bg-teal-900 border border-teal-700 text-teal-200 hover:text-white hover:bg-teal-800 px-3 py-2 rounded-lg text-[9px] font-bold transition-colors uppercase tracking-wider">Đổi TT</button></td>
+      </tr>`;
+    }).join('');
+  }
+};
+
+window.renderAll = function(){
+  ['view-customer','view-staff','view-admin','view-reception','view-bungalow','welcome-screen','main-customer-content'].forEach(id=>document.getElementById(id).classList.add('hidden'));
+  const pending = state.orders.filter(o=>o.status==='pending').length;
+  document.getElementById('pending-count-staff').innerText = pending;
+  if(state.currentRole==='customer'){
+    document.getElementById('view-customer').classList.remove('hidden');
+    if(!state.tableSelected) document.getElementById('welcome-screen').classList.remove('hidden');
+    else { document.getElementById('main-customer-content').classList.remove('hidden'); window.renderCustomer(); }
+  } else if(state.currentRole==='staff'){ document.getElementById('view-staff').classList.remove('hidden'); window.renderStaff(); }
+  else if(state.currentRole==='admin'){ document.getElementById('view-admin').classList.remove('hidden'); window.renderAdmin(); }
+  else if(state.currentRole==='reception'){ document.getElementById('view-reception').classList.remove('hidden'); window.renderReception(); }
+  else if(state.currentRole==='bungalow'){ document.getElementById('view-bungalow').classList.remove('hidden'); window.renderBungalowTrack(); }
+};
+</script>
+</body>
+</html>

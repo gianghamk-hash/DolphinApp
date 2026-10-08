@@ -86,6 +86,53 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="outlet-grid"></div>
   </div>
 
+    <!-- ════════ ANNOUNCEMENT CONTROL ════════ -->
+  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
+    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+      <span>📢</span> BẢNG TIN NỘI BỘ
+    </h2>
+    <p class="text-[11px] text-teal-300 mb-4 leading-relaxed">
+      Nội dung này sẽ <b class="text-gold-400">chạy chữ từ phải sang trái</b> trên màn hình landing của TẤT CẢ nhân viên (PWA + Staff APK).
+    </p>
+
+    <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Nội dung thông báo</label>
+    <textarea id="announcement-input" rows="3" maxlength="500"
+      placeholder="VD: Tối nay đoàn 30 khách bàn J5 — chuẩn bị trước 18:00. Hết khoai tây chiên — báo bếp khi khách hỏi."
+      class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12.5px] text-white focus:outline-none focus:border-gold-500 resize-none"
+      style="font-family:'Nunito',sans-serif"></textarea>
+    <div class="flex items-center justify-between mt-1 mb-4">
+      <span class="text-[10px] text-teal-500" id="announcement-count">0 / 500 ký tự</span>
+    </div>
+
+    <div class="flex items-center justify-between bg-black/30 rounded-xl px-3 py-3 mb-4 border border-teal-700/40">
+      <div class="flex items-center gap-3">
+        <span class="text-lg">👁️</span>
+        <div>
+          <div class="text-[11.5px] font-bold text-white">Hiển thị trên landing</div>
+          <div class="text-[10px] text-teal-400">Tắt để tạm ẩn thông báo</div>
+        </div>
+      </div>
+      <label class="relative inline-block" style="width:52px;height:28px;cursor:pointer">
+        <input type="checkbox" id="announcement-active" class="hidden" onchange="updateAnnouncementToggle()" checked>
+        <span id="toggle-track" class="absolute rounded-full transition-all" style="inset:0;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2)"></span>
+        <span id="toggle-thumb" class="absolute rounded-full transition-all" style="top:3px;left:3px;width:22px;height:22px;background:#98dccb"></span>
+      </label>
+    </div>
+
+    <div id="announcement-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
+
+    <div class="flex gap-2 flex-wrap">
+      <button onclick="saveAnnouncement()" id="announcement-save-btn"
+        class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-3 text-[12px] uppercase tracking-wider">
+        💾 Lưu thông báo
+      </button>
+      <button onclick="clearAnnouncement()"
+        class="bg-red-900/60 border border-red-700/60 text-red-300 font-black rounded-xl px-4 py-3 text-[11.5px] uppercase tracking-wider">
+        🗑️ Xóa
+      </button>
+    </div>
+    <div class="text-[10px] text-teal-500 mt-3 italic" id="announcement-meta"></div>
+  </div>
   <!-- ════════ REALTIME ORDERS ════════ -->
   <div class="glass glass-premium rounded-2xl overflow-hidden">
     <div class="p-3.5 md:p-5 border-b border-white/10">
@@ -153,7 +200,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
 
@@ -201,13 +248,159 @@ try {
     $('conn-text').textContent = 'ONLINE';
     $('conn-text').style.color = '#34d399';
     startListeners(db);
+    startAnnouncementListener(db);
+    setTimeout(startAnnouncementUIBindings, 300);
   }).catch(() => {
     $('conn-text').textContent = 'OFFLINE';
     $('conn-text').style.color = '#ef4444';
   });
 } catch(e) { console.warn(e); }
 
-function startListeners(db) {
+// ═══════════════════════════════════════════════════════════
+// ANNOUNCEMENT MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+let announcementListenStarted = false;
+
+function startAnnouncementListener(db) {
+  if (announcementListenStarted) return;
+  announcementListenStarted = true;
+  try {
+    const ref = doc(db, 'master_config', 'announcement');
+    onSnapshot(ref, (snap) => {
+      const data = snap.exists() ? snap.data() : { text: '', active: false };
+      const input = document.getElementById('announcement-input');
+      const toggle = document.getElementById('announcement-active');
+      const meta = document.getElementById('announcement-meta');
+      if (!input || !toggle) return;
+
+      // Chỉ cập nhật input khi user không đang focus vào nó
+      if (document.activeElement !== input) {
+        input.value = data.text || '';
+        updateAnnouncementCount();
+      }
+      toggle.checked = data.active === true;
+      updateAnnouncementToggle();
+
+      if (meta) {
+        if (data.updatedAt) {
+          const d = new Date(data.updatedAt);
+          const timeStr = d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+          meta.textContent = '✏️ Cập nhật cuối: ' + timeStr + (data.updatedBy ? ' · ' + data.updatedBy : '');
+        } else {
+          meta.textContent = '';
+        }
+      }
+    }, (err) => {
+      console.warn('[Announcement] listen error', err);
+    });
+  } catch(e) {
+    console.warn('[Announcement] init error', e);
+  }
+}
+
+window.updateAnnouncementCount = function() {
+  const input = document.getElementById('announcement-input');
+  const counter = document.getElementById('announcement-count');
+  if (!input || !counter) return;
+  counter.textContent = input.value.length + ' / 500 ký tự';
+};
+
+window.updateAnnouncementToggle = function() {
+  const toggle = document.getElementById('announcement-active');
+  const track = document.getElementById('toggle-track');
+  const thumb = document.getElementById('toggle-thumb');
+  if (!toggle || !track || !thumb) return;
+  if (toggle.checked) {
+    track.style.background = 'linear-gradient(135deg,#FBD77A,#F4B842)';
+    track.style.border = '1px solid rgba(244,184,66,.6)';
+    thumb.style.left = '27px';
+    thumb.style.background = '#123634';
+  } else {
+    track.style.background = 'rgba(255,255,255,.15)';
+    track.style.border = '1px solid rgba(255,255,255,.2)';
+    thumb.style.left = '3px';
+    thumb.style.background = '#98dccb';
+  }
+};
+
+window.saveAnnouncement = async function() {
+  const input = document.getElementById('announcement-input');
+  const toggle = document.getElementById('announcement-active');
+  const status = document.getElementById('announcement-status');
+  const btn = document.getElementById('announcement-save-btn');
+  if (!input || !toggle || !status || !btn || !window.__db) {
+    showAnnouncementStatus('error', '❌ Không tìm thấy Firebase');
+    return;
+  }
+
+  const text = input.value.trim();
+  if (!text) {
+    showAnnouncementStatus('error', '❌ Vui lòng nhập nội dung thông báo');
+    return;
+  }
+
+  btn.disabled = true;
+  btn.style.opacity = '.6';
+  btn.textContent = '⏳ Đang lưu...';
+
+  try {
+    const ref = doc(window.__db, 'master_config', 'announcement');
+    await setDoc(ref, {
+      text: text,
+      active: toggle.checked,
+      updatedAt: Date.now(),
+      updatedBy: 'Manager'
+    }, { merge: true });
+    showAnnouncementStatus('success', '✅ Đã lưu! Nhân viên sẽ thấy trong 1-2 giây');
+    setTimeout(() => { status.classList.add('hidden'); }, 3500);
+  } catch(e) {
+    console.error(e);
+    showAnnouncementStatus('error', '❌ Lỗi: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.textContent = '💾 Lưu thông báo';
+  }
+};
+
+window.clearAnnouncement = async function() {
+  if (!confirm('🗑️ Xóa thông báo hiện tại?\n\nNhân viên sẽ không thấy banner nữa.')) return;
+  const input = document.getElementById('announcement-input');
+  const toggle = document.getElementById('announcement-active');
+  if (input) input.value = '';
+  if (toggle) toggle.checked = false;
+  updateAnnouncementCount();
+  updateAnnouncementToggle();
+  await saveAnnouncement();
+};
+
+function showAnnouncementStatus(type, text) {
+  const status = document.getElementById('announcement-status');
+  if (!status) return;
+  status.classList.remove('hidden');
+  status.textContent = text;
+  if (type === 'error') {
+    status.style.background = 'rgba(239,83,80,.15)';
+    status.style.color = '#ef5350';
+    status.style.border = '1px solid rgba(239,83,80,.4)';
+  } else {
+    status.style.background = 'rgba(16,185,129,.15)';
+    status.style.color = '#10b981';
+    status.style.border = '1px solid rgba(16,185,129,.4)';
+  }
+}
+
+function startAnnouncementUIBindings() {
+  const input = document.getElementById('announcement-input');
+  if (input && !input.__announceBound) {
+    input.__announceBound = true;
+    input.addEventListener('input', updateAnnouncementCount);
+    updateAnnouncementCount();
+  }
+  updateAnnouncementToggle();
+}
+
+  function startListeners(db) {
   // Orders
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     if (cfg.colOrders) {

@@ -1,7 +1,5 @@
 /* ============================================================
-   👑 MASTER DEVICE SYSTEM v7 — One-file, DOM-based
-   Chỉ cần chèn 1 dòng vào mỗi file HTML:
-   <script src="master.js" defer></script>
+   👑 MASTER DEVICE SYSTEM v8 — Fix verifyManagerAuth recursion
    ============================================================ */
 (function(){
   'use strict';
@@ -103,55 +101,52 @@
     }
   }
 
-  // ============ AUTO-FILL PIN QUA DOM ============
-  var filling = {};
-
-  function fillAndSubmit(inputId, btnSelector, pins){
-    if (filling[inputId]) return;
+  // ============ AUTO-FILL PIN ĐÚNG CÁCH ============
+  // Hàm này chỉ set giá trị input + click nút. KHÔNG gọi lại hàm verify.
+  function autoFillAndSubmit(inputId, btnSelector, pin){
     var input = document.getElementById(inputId);
     var btn = document.querySelector(btnSelector);
-    if (!input || !btn) return;
-    filling[inputId] = true;
-
-    var idx = 0;
-    function attempt(){
-      if (idx >= pins.length) { filling[inputId] = false; return; }
-      input.value = pins[idx];
-      input.dispatchEvent(new Event('input', { bubbles: true }));
-      input.dispatchEvent(new Event('change', { bubbles: true }));
-      btn.click();
-      setTimeout(function(){
-        // Nếu input vẫn còn (chưa bị reset) → thử tiếp
-        if (input.value && input.value === pins[idx]) {
-          idx++;
-          attempt();
-        } else {
-          filling[inputId] = false;
-        }
-      }, 120);
-    }
-    attempt();
+    if (!input || !btn) return false;
+    input.value = pin;
+    input.dispatchEvent(new Event('input', { bubbles: true }));
+    input.dispatchEvent(new Event('change', { bubbles: true }));
+    btn.click();
+    return true;
   }
 
-  // ============ HOOK CÁC HÀM ============
+  // ============ HOOK CÁC HÀM VERIFY ============
+  // Nguyên tắc: hàm gốc LUÔN được gọi. Chỉ auto-fill PIN vào input trước.
+  // Cách này tránh đệ quy vô tận.
+
+  // 1. requestPinAccess — entry point, modal sẽ mở. Sau đó auto-fill PIN.
   function hookRequestPinAccess(){
     if (typeof window.requestPinAccess !== 'function' || window.requestPinAccess.__masterHooked) return false;
     var _orig = window.requestPinAccess;
     var newFn = function(role){
-      if (!isMasterDevice()) return _orig.apply(this, arguments);
-      // Gọi hàm gốc để set pendingRoleRequest + mở modal
-      _orig.apply(this, arguments);
-      // Ngay sau đó tự điền PIN theo role
-      setTimeout(function(){
+      _orig.apply(this, arguments);  // mở modal
+      if (isMasterDevice()) {
         var pins = (role === 'reception') ? ['1111', '8888'] : ['8888', '1111'];
-        fillAndSubmit('pin-input', 'button[onclick*="verifyPin"]', pins);
-      }, 80);
+        var attempts = 0;
+        var timer = setInterval(function(){
+          attempts++;
+          var modal = document.getElementById('modal-pin');
+          if (!modal || modal.classList.contains('hidden')) { clearInterval(timer); return; }
+          var input = document.getElementById('pin-input');
+          if (!input) return;
+          var pin = pins[Math.min(attempts-1, pins.length-1)] || pins[pins.length-1];
+          input.value = pin;
+          var btn = document.querySelector('#modal-pin button[onclick*="verifyPin"]');
+          if (btn) btn.click();
+          if (attempts > 30) clearInterval(timer);
+        }, 100);
+      }
     };
     newFn.__masterHooked = true;
     window.requestPinAccess = newFn;
     return true;
   }
 
+  // 2. verifyPin — auto-fill nếu input rỗng, sau đó GỌI HÀM GỐC
   function hookVerifyPin(){
     if (typeof window.verifyPin !== 'function' || window.verifyPin.__masterHooked) return false;
     var _orig = window.verifyPin;
@@ -159,8 +154,12 @@
       if (isMasterDevice()) {
         var input = document.getElementById('pin-input');
         if (input && !input.value) {
-          fillAndSubmit('pin-input', 'button[onclick*="verifyPin"]', ['8888', '1111']);
-          return;
+          // Thử PIN tùy role
+          var modal = document.getElementById('modal-pin');
+          var title = document.getElementById('pin-modal-title');
+          var isReception = title && title.innerText && title.innerText.indexOf('Lễ Tân') >= 0;
+          input.value = isReception ? '1111' : '8888';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
         }
       }
       return _orig.apply(this, arguments);
@@ -170,13 +169,41 @@
     return true;
   }
 
+  // 3. promptManagerAuth — modal sẽ mở. Auto-fill PIN 451994 và click nút.
+  function hookPromptManagerAuth(){
+    if (typeof window.promptManagerAuth !== 'function' || window.promptManagerAuth.__masterHooked) return false;
+    var _orig = window.promptManagerAuth;
+    var newFn = function(){
+      _orig.apply(this, arguments);  // mở modal
+      if (isMasterDevice()) {
+        setTimeout(function(){
+          var input = document.getElementById('manager-auth-pin');
+          if (input) {
+            input.value = '451994';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          var btn = document.querySelector('#modal-manager-auth button[onclick*="verifyManagerAuth"]');
+          if (btn) btn.click();
+        }, 200);
+      }
+    };
+    newFn.__masterHooked = true;
+    window.promptManagerAuth = newFn;
+    return true;
+  }
+
+  // 4. verifyManagerAuth — auto-fill nếu input rỗng, sau đó GỌI HÀM GỐC
   function hookVerifyManagerAuth(){
     if (typeof window.verifyManagerAuth !== 'function' || window.verifyManagerAuth.__masterHooked) return false;
     var _orig = window.verifyManagerAuth;
     var newFn = function(){
       if (isMasterDevice()) {
-        fillAndSubmit('manager-auth-pin', 'button[onclick*="verifyManagerAuth"]', ['451994']);
-        return Promise.resolve();
+        var input = document.getElementById('manager-auth-pin');
+        if (input && input.value !== '451994') {
+          input.value = '451994';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
       return _orig.apply(this, arguments);
     };
@@ -185,13 +212,41 @@
     return true;
   }
 
+  // 5. promptClearAllCustomers — modal mở. Auto-fill PIN 1234 và click.
+  function hookPromptClearAllCustomers(){
+    if (typeof window.promptClearAllCustomers !== 'function' || window.promptClearAllCustomers.__masterHooked) return false;
+    var _orig = window.promptClearAllCustomers;
+    var newFn = function(){
+      _orig.apply(this, arguments);
+      if (isMasterDevice()) {
+        setTimeout(function(){
+          var input = document.getElementById('clear-all-pin');
+          if (input) {
+            input.value = '1234';
+            input.dispatchEvent(new Event('input', { bubbles: true }));
+            input.dispatchEvent(new Event('change', { bubbles: true }));
+          }
+          var btn = document.querySelector('#modal-clear-all button[onclick*="verifyClearAllPin"]');
+          if (btn) btn.click();
+        }, 200);
+      }
+    };
+    newFn.__masterHooked = true;
+    window.promptClearAllCustomers = newFn;
+    return true;
+  }
+
+  // 6. verifyClearAllPin — auto-fill nếu rỗng, sau đó GỌI HÀM GỐC
   function hookVerifyClearAllPin(){
     if (typeof window.verifyClearAllPin !== 'function' || window.verifyClearAllPin.__masterHooked) return false;
     var _orig = window.verifyClearAllPin;
     var newFn = function(){
       if (isMasterDevice()) {
-        fillAndSubmit('clear-all-pin', 'button[onclick*="verifyClearAllPin"]', ['1234']);
-        return Promise.resolve();
+        var input = document.getElementById('clear-all-pin');
+        if (input && input.value !== '1234') {
+          input.value = '1234';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
       }
       return _orig.apply(this, arguments);
     };
@@ -200,24 +255,11 @@
     return true;
   }
 
+  // 7. verifyPass (show) — không bypass được vì dùng hash
   function hookVerifyPass(){
     if (typeof window.verifyPass !== 'function' || window.verifyPass.__masterHooked) return false;
     var _orig = window.verifyPass;
     var newFn = function(){
-      if (isMasterDevice()) {
-        // Mã pass của show cần hash — không bypass
-        // Nhưng có thể tự động mở khóa UI nếu modal đang mở
-        var modal = document.getElementById('m-pass');
-        if (modal && !modal.classList.contains('hidden')) {
-          if (typeof window.closeM === 'function') window.closeM('m-pass');
-          // Thử gọi unlockUI nếu có
-          try {
-            if (typeof window.lockUi === 'function') {
-              // Không thể set svcUnlocked từ ngoài — bỏ qua
-            }
-          } catch(e){}
-        }
-      }
       return _orig.apply(this, arguments);
     };
     newFn.__masterHooked = true;
@@ -261,7 +303,7 @@
     document.body.appendChild(btn);
   }
 
-  // ============ MODAL STYLES ============
+  // ============ MODAL ============
   function modalBase(){
     return 'position:fixed;inset:0;z-index:9999998;background:rgba(10,22,40,.94);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;color:#fff';
   }
@@ -276,7 +318,7 @@
       + '<div style="font-size:44px;margin-bottom:8px">👑</div>'
       + '<h3 style="color:#FBD77A;margin:0 0 8px;font-size:17px;text-transform:uppercase;font-weight:900">Kích Hoạt Máy Chủ</h3>'
       + '<p style="color:#98dccb;font-size:12.5px;margin:0 0 20px;line-height:1.5">Nhập mã chủ để biến thiết bị này thành <b style="color:#FBD77A">MÁY CHỦ</b> — bỏ qua mọi PIN.</p>'
-      + '<input id="masterActivateInput" type="text" placeholder="Nhập mã chủ..." autocomplete="off" style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(251,215,122,.5);border-radius:10px;padding:14px;color:#FBD77A;font-family:monospace;font-size:15px;box-sizing:border-box;margin-bottom:14px;outline:none;text-align:center;font-weight:700">'
+      + '<input id="masterActivateInput" type="text" placeholder="Nhập mã chủ..." autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(251,215,122,.5);border-radius:10px;padding:14px;color:#FBD77A;font-family:monospace;font-size:15px;box-sizing:border-box;margin-bottom:14px;outline:none;text-align:center;font-weight:700">'
       + '<div id="masterActivateMsg" style="font-size:11.5px;margin-bottom:12px;display:none;padding:9px;border-radius:8px;text-align:center;font-weight:700"></div>'
       + '<div style="display:flex;gap:10px">'
       + '<button id="masterActivateCancel" style="flex:1;background:rgba(10,50,45,.9);border:1px solid rgba(152,220,203,.35);color:#98dccb;padding:14px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px">Hủy</button>'
@@ -326,9 +368,9 @@
       + '<div id="masterCodeDisplay" style="color:#FBD77A;font-family:monospace;font-weight:900;font-size:15px;word-break:break-all">••••••••</div>'
       + '</div>'
       + '<label style="display:block;font-size:10px;color:#98dccb;text-transform:uppercase;margin-bottom:6px;font-weight:700">Mã mới</label>'
-      + '<input id="masterNewCode" type="text" placeholder="Ít nhất 6 ký tự..." style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(152,220,203,.35);border-radius:10px;padding:11px;color:#fff;font-family:monospace;font-size:13px;box-sizing:border-box;margin-bottom:12px;outline:none">'
+      + '<input id="masterNewCode" type="text" placeholder="Ít nhất 6 ký tự..." spellcheck="false" autocorrect="off" autocapitalize="off" style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(152,220,203,.35);border-radius:10px;padding:11px;color:#fff;font-family:monospace;font-size:13px;box-sizing:border-box;margin-bottom:12px;outline:none">'
       + '<label style="display:block;font-size:10px;color:#98dccb;text-transform:uppercase;margin-bottom:6px;font-weight:700">Xác nhận</label>'
-      + '<input id="masterNewCodeConfirm" type="text" placeholder="Nhập lại..." style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(152,220,203,.35);border-radius:10px;padding:11px;color:#fff;font-family:monospace;font-size:13px;box-sizing:border-box;margin-bottom:12px;outline:none">'
+      + '<input id="masterNewCodeConfirm" type="text" placeholder="Nhập lại..." spellcheck="false" autocorrect="off" autocapitalize="off" style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(152,220,203,.35);border-radius:10px;padding:11px;color:#fff;font-family:monospace;font-size:13px;box-sizing:border-box;margin-bottom:12px;outline:none">'
       + '<div id="masterManageMsg" style="font-size:11.5px;margin-bottom:12px;display:none;padding:9px;border-radius:8px;text-align:center;font-weight:700"></div>'
       + '<div style="display:flex;gap:8px">'
       + '<button id="masterMCancel" style="flex:1;background:rgba(10,50,45,.9);border:1px solid rgba(152,220,203,.35);color:#98dccb;padding:13px;border-radius:10px;font-weight:700;cursor:pointer;font-size:12px">Hủy</button>'
@@ -418,7 +460,9 @@
       tries++;
       hookRequestPinAccess();
       hookVerifyPin();
+      hookPromptManagerAuth();
       hookVerifyManagerAuth();
+      hookPromptClearAllCustomers();
       hookVerifyClearAllPin();
       hookVerifyPass();
       if (tries > 200) clearInterval(timer);

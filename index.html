@@ -148,6 +148,109 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 @media(prefers-reduced-motion:reduce){
   .announcement-track{animation-duration:60s}
 }
+  /* ==================== UPDATE BANNER ==================== */
+#updateBanner{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  right:0;
+  z-index:9999;
+  background:linear-gradient(135deg,#1a4a45 0%,#123634 100%);
+  border-bottom:3px solid #FBD77A;
+  padding:12px 16px;
+  box-shadow:0 8px 32px rgba(244,184,66,.5);
+  animation:update-slide-down .5s cubic-bezier(.16,1,.3,1);
+  font-family:'Nunito',sans-serif;
+}
+#updateBanner.show{display:block}
+@keyframes update-slide-down{
+  from{transform:translateY(-100%);opacity:0}
+  to{transform:translateY(0);opacity:1}
+}
+.update-content{
+  max-width:900px;
+  margin:0 auto;
+  display:flex;
+  align-items:center;
+  gap:12px;
+  flex-wrap:wrap;
+}
+.update-icon{
+  font-size:32px;
+  animation:update-bounce 1s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(244,184,66,.9));
+}
+@keyframes update-bounce{
+  0%,100%{transform:translateY(0) rotate(-5deg)}
+  50%{transform:translateY(-6px) rotate(5deg)}
+}
+.update-info{flex:1;min-width:180px}
+.update-title{
+  font-size:15px;
+  font-weight:900;
+  color:#FFE58F;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  text-shadow:0 0 8px rgba(0,0,0,.9),0 0 16px rgba(255,229,143,.5);
+  margin-bottom:2px;
+}
+.update-notes{
+  font-size:11.5px;
+  color:#bfe9dc;
+  font-weight:600;
+  line-height:1.4;
+  opacity:.9;
+}
+.update-actions{display:flex;gap:8px;flex-wrap:wrap}
+.update-btn{
+  background:linear-gradient(135deg,#FBD77A,#F4B842);
+  color:#123634;
+  font-weight:900;
+  font-size:13px;
+  text-transform:uppercase;
+  letter-spacing:.05em;
+  padding:12px 22px;
+  border-radius:12px;
+  border:none;
+  cursor:pointer;
+  box-shadow:0 4px 16px rgba(244,184,66,.5);
+  transition:all .2s;
+  font-family:inherit;
+  animation:update-btn-glow 2s ease-in-out infinite;
+  white-space:nowrap;
+}
+@keyframes update-btn-glow{
+  0%,100%{box-shadow:0 4px 16px rgba(244,184,66,.5)}
+  50%{box-shadow:0 4px 24px rgba(244,184,66,.9),0 0 0 3px rgba(244,184,66,.3)}
+}
+.update-btn:active{transform:scale(.96)}
+.update-btn:disabled{opacity:.5;cursor:wait;animation:none}
+.update-skip{
+  background:transparent;
+  color:#98dccb;
+  font-weight:700;
+  font-size:11.5px;
+  padding:12px 14px;
+  border-radius:12px;
+  border:1px solid rgba(152,220,203,.3);
+  cursor:pointer;
+  font-family:inherit;
+  white-space:nowrap;
+}
+.update-skip:active{transform:scale(.96)}
+@media(min-width:768px){
+  .update-title{font-size:17px}
+  .update-notes{font-size:13px}
+  .update-btn{padding:14px 28px;font-size:14px}
+}
+@media(max-width:480px){
+  #updateBanner{padding:10px 12px}
+  .update-icon{font-size:26px}
+  .update-title{font-size:13px}
+  .update-actions{width:100%}
+  .update-btn,.update-skip{flex:1;text-align:center}
+}
   /* ==================== TRANSITIONS ==================== */
 #landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
   position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden}
@@ -347,7 +450,21 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 </head>
 <body>
 
-<!-- ══════════════ LANDING PAGE ══════════════ -->
+<!-- ════════ UPDATE BANNER ════════ -->
+<div id="updateBanner">
+  <div class="update-content">
+    <span class="update-icon">🎉</span>
+    <div class="update-info">
+      <div class="update-title">Có bản cập nhật mới!</div>
+      <div class="update-notes" id="updateNotes">Đang tải...</div>
+    </div>
+    <div class="update-actions">
+      <button class="update-skip" onclick="dismissUpdate()">Để sau</button>
+      <button class="update-btn" id="updateBtn" onclick="performUpdate()">🔄 Cập nhật ngay</button>
+    </div>
+  </div>
+</div>
+  <!-- ══════════════ LANDING PAGE ══════════════ -->
 <div id="landing">
   <svg style="position:fixed;inset:0;width:100%;height:100%;z-index:-1" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
@@ -930,6 +1047,203 @@ try {
 } catch(e) {
   console.warn('[Announcement] Init error:', e);
 }
+</script>
+<!-- ════════ VERSION CHECK + AUTO UPDATE ════════ -->
+<script>
+(function(){
+  'use strict';
+
+  var VERSION_KEY = 'dolphinAppVersion';
+  var DISMISS_KEY = 'dolphinUpdateDismissed';
+  var CHECK_INTERVAL = 5 * 60 * 1000; // 5 phút
+  var UPDATE_URL = '/DolphinApp/version.json';
+
+  var currentRemoteVersion = null;
+
+  // ════════ Lấy version hiện tại của app ════════
+  function getLocalVersion(){
+    try { return localStorage.getItem(VERSION_KEY) || '0.0.0'; }
+    catch(e){ return '0.0.0'; }
+  }
+  function setLocalVersion(v){
+    try { localStorage.setItem(VERSION_KEY, v); } catch(e){}
+  }
+
+  // ════════ Kiểm tra đã dismiss chưa ════════
+  function isDismissed(version){
+    try {
+      var d = JSON.parse(localStorage.getItem(DISMISS_KEY) || 'null');
+      if (!d) return false;
+      // Dismiss trong 6 giờ
+      if (Date.now() - d.time > 6 * 60 * 60 * 1000) return false;
+      return d.version === version;
+    } catch(e){ return false; }
+  }
+  function dismissCurrent(){
+    try {
+      localStorage.setItem(DISMISS_KEY, JSON.stringify({
+        version: currentRemoteVersion,
+        time: Date.now()
+      }));
+    } catch(e){}
+  }
+
+  // ════════ Fetch version.json từ server ════════
+  function checkForUpdate(){
+    var url = UPDATE_URL + '?t=' + Date.now(); // Bypass cache
+    fetch(url, {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    })
+    .then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      return r.json();
+    })
+    .then(function(data){
+      if (!data || !data.version) return;
+
+      var remoteVer = data.version;
+      var localVer = getLocalVersion();
+      currentRemoteVersion = remoteVer;
+
+      console.log('[Update] Local:', localVer, '| Remote:', remoteVer);
+
+      // Lần đầu cài → ghi nhớ version hiện tại, không hiện banner
+      if (localVer === '0.0.0') {
+        setLocalVersion(remoteVer);
+        return;
+      }
+
+      // Version khác → hiện banner
+      if (remoteVer !== localVer) {
+        if (isDismissed(remoteVer) && !data.forceUpdate) {
+          console.log('[Update] Skipped (dismissed)');
+          return;
+        }
+        showUpdateBanner(data);
+      } else {
+        hideUpdateBanner();
+      }
+    })
+    .catch(function(err){
+      console.warn('[Update] Check failed:', err);
+    });
+  }
+
+  // ════════ Hiện banner ════════
+  function showUpdateBanner(data){
+    var banner = document.getElementById('updateBanner');
+    var notesEl = document.getElementById('updateNotes');
+    if (!banner || !notesEl) return;
+
+    var notes = data.notes || 'Phiên bản mới đã sẵn sàng';
+    notesEl.textContent = 'v' + data.version + ' · ' + notes;
+
+    banner.classList.add('show');
+    // Đẩy trang xuống để không bị che
+    document.body.style.paddingTop = banner.offsetHeight + 'px';
+  }
+
+  function hideUpdateBanner(){
+    var banner = document.getElementById('updateBanner');
+    if (!banner) return;
+    banner.classList.remove('show');
+    document.body.style.paddingTop = '0';
+  }
+
+  // ════════ Thực hiện cập nhật ════════
+  window.performUpdate = function(){
+    var btn = document.getElementById('updateBtn');
+    if (btn) {
+      btn.disabled = true;
+      btn.textContent = '⏳ Đang cập nhật...';
+    }
+
+    var actions = [
+      // 1. Xóa toàn bộ cache
+      ('caches' in window) ? caches.keys().then(function(names){
+        return Promise.all(names.map(function(n){
+          if (n.indexOf('dolphin-') === 0 || n.indexOf('workbox') === 0) {
+            console.log('[Update] Deleting cache:', n);
+            return caches.delete(n);
+          }
+        }));
+      }) : Promise.resolve(),
+
+      // 2. Unregister service worker cũ
+      ('serviceWorker' in navigator) ? navigator.serviceWorker.getRegistrations().then(function(regs){
+        return Promise.all(regs.map(function(r){
+          console.log('[Update] Unregistering SW:', r.scope);
+          return r.unregister();
+        }));
+      }) : Promise.resolve(),
+
+      // 3. Xóa localStorage tạm (giữ lại staff name, master key)
+      Promise.resolve().then(function(){
+        try {
+          var keep = ['dolphinStaffName', 'dolphinMasterDevice',
+                      'dolphinMasterCodeCache', 'dolphinMasterAuthToken'];
+          var backup = {};
+          keep.forEach(function(k){
+            var v = localStorage.getItem(k);
+            if (v) backup[k] = v;
+          });
+          // Không xóa hết, chỉ xóa version key
+          localStorage.removeItem(VERSION_KEY);
+          localStorage.removeItem(DISMISS_KEY);
+        } catch(e){}
+      })
+    ];
+
+    Promise.all(actions).then(function(){
+      // Ghi version mới (sẽ được ghi lại khi load)
+      console.log('[Update] Cache cleared — reloading...');
+
+      // Đợi 1 chút để browser hoàn tất
+      setTimeout(function(){
+        // Force reload với cache bypass
+        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
+          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+        }
+        window.location.reload(true);
+      }, 600);
+    }).catch(function(err){
+      console.error('[Update] Error:', err);
+      // Vẫn reload dù có lỗi
+      setTimeout(function(){ window.location.reload(true); }, 500);
+    });
+  };
+
+  // ════════ Dismiss (Để sau) ════════
+  window.dismissUpdate = function(){
+    dismissCurrent();
+    hideUpdateBanner();
+  };
+
+  // ════════ Khởi động ════════
+  function start(){
+    // Check lần đầu sau 2 giây
+    setTimeout(checkForUpdate, 2000);
+    // Check lại mỗi 5 phút
+    setInterval(checkForUpdate, CHECK_INTERVAL);
+    // Check khi quay lại tab
+    document.addEventListener('visibilitychange', function(){
+      if (document.visibilityState === 'visible') {
+        setTimeout(checkForUpdate, 1000);
+      }
+    });
+    // Check khi có mạng lại
+    window.addEventListener('online', function(){
+      setTimeout(checkForUpdate, 500);
+    });
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', start);
+  } else {
+    start();
+  }
+})();
 </script>
 </body>
 </html>

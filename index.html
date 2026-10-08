@@ -158,7 +158,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 #pin-error.show{display:block;animation:shake .35s}
 @keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
 .pin-actions{display:flex;gap:.65rem;margin-top:1.25rem}
-.pin-actions button{flex:1;padding:.9rem .5rem;border-radius:12px;
+.pin-actions {flex:1;padding:.9rem .5rem;border-radius:12px;
   font-weight:900;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
   border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
   -webkit-appearance:none;appearance:none}
@@ -263,6 +263,12 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <span class="area-icon">🎭</span>
           <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
           <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
+        </button>        <!-- 👑 MANAGER ONLY — TỔNG QUAN HỆ THỐNG -->
+        <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
+          <span class="area-badge">CHỈ MANAGER</span>
+          <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
+          <h3 class="area-title-en" style="font-size:.95rem;">SYSTEM DASHBOARD</h3>
+          <p class="area-title-vi">TỔNG QUAN TOÀN BỘ 4 KHU VỰC</p>
         </button>
 
       </div>
@@ -316,7 +322,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     lounge:     'dolphin-lounge.html',
     bungalow:   'dolphin-bungalow.html',
     restaurant: 'dolphin-restaurant.html',
-    show:       'dolphin-show.html'
+    show:       'dolphin-show.html',
+    dashboard:  'manager/dashboard.html'
   };
   var SHOW_PIN = '1111';          // mật khẩu cho Infinity Show
   var SESSION_KEY = 'dolphinShowAuthed';
@@ -342,6 +349,11 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   };
 
   applyHomeBtnState();
+    /* ============ HIỆN DASHBOARD CHO MANAGER ============ */
+  if (navigator.userAgent.indexOf('DolphinManager') >= 0) {
+    var cardDash = document.getElementById('card-dashboard');
+    if (cardDash) cardDash.style.display = 'flex';
+  }
 
   /* ============ PIN MODAL ============ */
   var pinModal = document.getElementById('pin-modal');

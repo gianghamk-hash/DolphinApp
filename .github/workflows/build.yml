@@ -1,4 +1,4 @@
-name: Build Dolphin APK
+name: Build Dolphin APKs (Staff + Manager)
 
 on:
   push:
@@ -12,6 +12,20 @@ jobs:
   build:
     runs-on: ubuntu-latest
     timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - variant: staff
+            app_name: "Dolphin Staff"
+            package_id: "com.dolphin.cruise.staff"
+            ua_extra: "DolphinStaff/1.0"
+            artifact_name: "DolphinStaff-APK"
+          - variant: manager
+            app_name: "Dolphin Manager"
+            package_id: "com.dolphin.cruise.manager"
+            ua_extra: "DolphinManager/1.0"
+            artifact_name: "DolphinManager-APK"
 
     steps:
       - uses: actions/checkout@v4
@@ -31,16 +45,20 @@ jobs:
           gradle-version: '8.2'
 
       - name: Create Android project structure
+        env:
+          APP_NAME: ${{ matrix.app_name }}
+          PKG_ID: ${{ matrix.package_id }}
+          UA_EXTRA: ${{ matrix.ua_extra }}
         run: |
           mkdir -p app/src/main/java/com/dolphin/cruise
           mkdir -p app/src/main/res/layout
           mkdir -p app/src/main/res/values
-          mkdir -p app/src/main/assets
           mkdir -p app/src/main/res/mipmap-mdpi
           mkdir -p app/src/main/res/mipmap-hdpi
           mkdir -p app/src/main/res/mipmap-xhdpi
           mkdir -p app/src/main/res/mipmap-xxhdpi
           mkdir -p app/src/main/res/mipmap-xxxhdpi
+          mkdir -p app/src/main/assets
 
           cat > settings.gradle << 'EOF_SETTINGS'
           pluginManagement {
@@ -75,7 +93,7 @@ jobs:
           org.gradle.parallel=true
           EOF_PROPS
 
-          cat > app/build.gradle << 'EOF_APP'
+          cat > app/build.gradle << EOF_APP
           plugins {
               id 'com.android.application'
           }
@@ -83,15 +101,15 @@ jobs:
               namespace 'com.dolphin.cruise'
               compileSdk 34
               defaultConfig {
-                  applicationId "com.dolphin.cruise"
+                  applicationId "${PKG_ID}"
                   minSdk 24
                   targetSdk 34
-                  versionCode 3
-                  versionName "1.2"
+                  versionCode 1
+                  versionName "1.0"
               }
               signingConfigs {
                   release {
-                      storeFile file("${rootDir}/dolphin.keystore")
+                      storeFile file("\${rootDir}/dolphin.keystore")
                       storePassword "dolphin123"
                       keyAlias "dolphin"
                       keyPassword "dolphin123"
@@ -159,14 +177,14 @@ jobs:
           </FrameLayout>
           EOF_LAYOUT
 
-          cat > app/src/main/res/values/strings.xml << 'EOF_STRINGS'
+          cat > app/src/main/res/values/strings.xml << EOF_STRINGS
           <?xml version="1.0" encoding="utf-8"?>
           <resources>
-              <string name="app_name">Dolphin Cruise</string>
+              <string name="app_name">${APP_NAME}</string>
           </resources>
           EOF_STRINGS
 
-          cat > app/src/main/java/com/dolphin/cruise/MainActivity.java << 'EOF_JAVA'
+          cat > app/src/main/java/com/dolphin/cruise/MainActivity.java << EOF_JAVA
           package com.dolphin.cruise;
 
           import android.annotation.SuppressLint;
@@ -217,6 +235,7 @@ jobs:
                   s.setMediaPlaybackRequiresUserGesture(false);
                   s.setCacheMode(WebSettings.LOAD_DEFAULT);
                   s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
+                  s.setUserAgentString(s.getUserAgentString() + " ${UA_EXTRA}");
 
                   webView.setWebViewClient(new WebViewClient() {
                       @Override
@@ -289,45 +308,27 @@ jobs:
 
           cp index.html dolphin-bungalow.html dolphin-lounge.html dolphin-restaurant.html dolphin-show.html app/src/main/assets/
           cp master.js app/src/main/assets/
-      - name: Generate icons from uploaded PNG
+
+      - name: Generate icons
         run: |
           sudo apt-get install -y imagemagick
-          
-          # Kiểm tra file có tồn tại không
           if [ ! -f "icon-source.png" ]; then
-            echo "LỖI: Không tìm thấy file icon-source.png ở thư mục gốc repo!"
-            echo "Vui lòng upload file icon-source.png lên trước."
+            echo "ERROR: icon-source.png not found!"
             exit 1
           fi
-          
-          echo "Đã tìm thấy icon-source.png"
-          identify icon-source.png
-          
-          # Đảm bảo ảnh vuông 1024x1024, thêm nền trắng nếu cần
           convert icon-source.png -resize 1024x1024^ -gravity center -extent 1024x1024 /tmp/icon_1024.png
-          
-          # Tạo tất cả kích thước mipmap (Android icon)
           convert /tmp/icon_1024.png -resize 48x48 app/src/main/res/mipmap-mdpi/ic_launcher.png
           convert /tmp/icon_1024.png -resize 72x72 app/src/main/res/mipmap-hdpi/ic_launcher.png
           convert /tmp/icon_1024.png -resize 96x96 app/src/main/res/mipmap-xhdpi/ic_launcher.png
           convert /tmp/icon_1024.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher.png
           convert /tmp/icon_1024.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher.png
-          
-          # Round icon (bo tròn) - cùng kích thước
           convert /tmp/icon_1024.png -resize 48x48 app/src/main/res/mipmap-mdpi/ic_launcher_round.png
           convert /tmp/icon_1024.png -resize 72x72 app/src/main/res/mipmap-hdpi/ic_launcher_round.png
           convert /tmp/icon_1024.png -resize 96x96 app/src/main/res/mipmap-xhdpi/ic_launcher_round.png
           convert /tmp/icon_1024.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           convert /tmp/icon_1024.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
-          
-          # Copy 1024 vào drawable làm icon độ nét cao cho màn hình lớn
-          mkdir -p app/src/main/res/drawable-nodpi
-          cp /tmp/icon_1024.png app/src/main/res/drawable-nodpi/ic_launcher_large.png
-          
-          echo "=== Icon files generated ==="
-          find app/src/main/res -name "*.png" -exec ls -lh {} \;
 
-      - name: Generate release keystore
+      - name: Generate keystore
         run: |
           keytool -genkeypair -v -keystore dolphin.keystore -alias dolphin -keyalg RSA -keysize 2048 -validity 10000 -storepass dolphin123 -keypass dolphin123 -dname "CN=Dolphin, O=Dolphin, C=VN"
 
@@ -338,6 +339,6 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: DolphinApp-APK-v3
+          name: ${{ matrix.artifact_name }}
           path: app/build/outputs/apk/release/*.apk
           if-no-files-found: warn

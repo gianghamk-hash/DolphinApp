@@ -86,7 +86,31 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="outlet-grid"></div>
   </div>
 
-    <!-- ════════ ANNOUNCEMENT CONTROL ════════ -->
+  <!-- ════════ VERSION INFO ════════ -->
+  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
+    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+      <span>🔄</span> PHIÊN BẢN HIỆN TẠI
+    </h2>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+      <div class="bg-black/30 rounded-xl p-3 text-center">
+        <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Version</div>
+        <div class="text-lg font-black text-gold-400 tabular" id="ver-current">--</div>
+      </div>
+      <div class="bg-black/30 rounded-xl p-3 text-center">
+        <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Cập nhật lúc</div>
+        <div class="text-[12px] font-bold text-white tabular" id="ver-date">--</div>
+      </div>
+      <div class="bg-black/30 rounded-xl p-3 text-center">
+        <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Commit</div>
+        <div class="text-[12px] font-black text-emerald-400 tabular" id="ver-commit">--</div>
+      </div>
+    </div>
+    <div class="text-[11px] text-teal-300 mt-3 italic" id="ver-notes"></div>
+    <button onclick="checkVersionNow()" class="mt-3 w-full bg-teal-800/60 border border-teal-600/60 text-teal-200 font-bold rounded-xl px-4 py-2.5 text-[11.5px] uppercase tracking-wider">
+      🔄 Kiểm tra bản cập nhật
+    </button>
+  </div>
+  <!-- ════════ ANNOUNCEMENT CONTROL ════════ -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
       <span>📢</span> BẢNG TIN NỘI BỘ
@@ -257,6 +281,36 @@ try {
 } catch(e) { console.warn(e); }
 
 // ═══════════════════════════════════════════════════════════
+// VERSION INFO
+// ═══════════════════════════════════════════════════════════
+function loadVersionInfo() {
+  fetch('/DolphinApp/version.json?t=' + Date.now(), { cache: 'no-store' })
+    .then(r => r.json())
+    .then(data => {
+      document.getElementById('ver-current').textContent = 'v' + (data.version || '?');
+      document.getElementById('ver-commit').textContent = data.commit || '--';
+      document.getElementById('ver-notes').textContent = data.notes ? '📝 ' + data.notes : '';
+      if (data.buildDate) {
+        const d = new Date(data.buildDate);
+        document.getElementById('ver-date').textContent = d.toLocaleString('vi-VN', {
+          hour: '2-digit', minute: '2-digit',
+          day: '2-digit', month: '2-digit', year: 'numeric'
+        });
+      }
+    })
+    .catch(e => console.warn('[Version] load error', e));
+}
+
+window.checkVersionNow = function() {
+  loadVersionInfo();
+  // Trigger update check trong tất cả iframe
+  alert('Đã làm mới thông tin phiên bản.\n\nCác thiết bị nhân viên sẽ tự thấy banner cập nhật trong vòng 5 phút.');
+};
+
+setTimeout(loadVersionInfo, 800);
+setInterval(loadVersionInfo, 60000);
+
+  // ═══════════════════════════════════════════════════════════
 // ANNOUNCEMENT MANAGEMENT
 // ═══════════════════════════════════════════════════════════
 let announcementListenStarted = false;

@@ -1,0 +1,548 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin Manager · Tổng Quan</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.2em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2),0 16px 40px -12px rgba(10,50,60,.5)}
+.glass-premium{position:relative}
+.glass-premium::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.35),transparent 40%,rgba(244,184,66,.25));-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.7}
+.tabular{font-variant-numeric:tabular-nums}
+::-webkit-scrollbar{width:6px;height:6px}
+::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid rgba(55,137,123,.4);background:rgba(25,71,67,.55);color:#bfe9dc;cursor:pointer;white-space:nowrap;transition:all .15s}
+.chip.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
+.chip .count{background:rgba(0,0,0,.25);padding:1px 7px;border-radius:999px;font-size:10px;font-weight:900}
+.chip.active .count{background:rgba(18,54,52,.3);color:#FBD77A}
+.state-chip{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:999px;font-size:9.5px;font-weight:800;text-transform:uppercase;border:1px solid;white-space:nowrap}
+.state-pending{color:#FFA726;background:rgba(255,167,38,.12);border-color:rgba(255,167,38,.4)}
+.state-cooking{color:#FF6B6B;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4)}
+.state-ready{color:#66BB6A;background:rgba(102,187,106,.12);border-color:rgba(102,187,106,.4)}
+.state-alert{color:#EF5350;background:rgba(239,83,80,.12);border-color:rgba(239,83,80,.5)}
+.stat-card{padding:14px;border-radius:16px;position:relative;overflow:hidden}
+.outlet-card{padding:16px;border-radius:18px;cursor:pointer;transition:transform .2s}
+.outlet-card:hover{transform:translateY(-3px)}
+.order-row{border-bottom:1px solid rgba(255,255,255,.06);padding:10px 12px;transition:background .15s}
+.order-row:hover{background:rgba(255,255,255,.03)}
+.dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:pulse-dot 1.6s ease-in-out infinite}
+@keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+</style>
+</head>
+<body class="pb-8">
+
+<!-- ════════ HEADER ════════ -->
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-7xl mx-auto px-3 md:px-6 py-3 flex items-center justify-between gap-2 flex-wrap">
+    <div class="flex items-center gap-3">
+      <span class="text-2xl">🐬</span>
+      <div>
+        <h1 class="brand-title text-base md:text-xl leading-none">DOLPHIN</h1>
+        <p class="text-[9px] md:text-[10px] text-teal-400 uppercase font-bold tracking-widest mt-0.5">Manager Dashboard</p>
+      </div>
+    </div>
+    <div class="flex items-center gap-2 flex-wrap">
+      <span class="chip !cursor-default"><span id="conn-dot" class="dot bg-gold-500"></span><span id="conn-text" class="text-[10px]">ĐANG KẾT NỐI</span></span>
+      <span class="chip !cursor-default tabular" id="clock">--:--:--</span>
+    </div>
+  </div>
+</div>
+
+<main class="max-w-7xl mx-auto px-3 md:px-6 py-4 space-y-5">
+
+  <!-- ════════ TOP STATS ════════ -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+    <div class="glass glass-premium stat-card">
+      <div class="text-[10px] text-teal-300 font-black uppercase tracking-wider mb-1">📋 Đơn hôm nay</div>
+      <div class="text-3xl md:text-4xl font-black text-white tabular" id="s-orders">0</div>
+      <div class="text-[10px] text-teal-400 mt-1" id="s-orders-sub">Tổng số đơn từ mọi outlet</div>
+    </div>
+    <div class="glass glass-premium stat-card">
+      <div class="text-[10px] text-gold-400 font-black uppercase tracking-wider mb-1">⏳ Đang xử lý</div>
+      <div class="text-3xl md:text-4xl font-black text-gold-400 tabular" id="s-pending">0</div>
+      <div class="text-[10px] text-teal-400 mt-1" id="s-pending-sub">Chờ + Đang nấu</div>
+    </div>
+    <div class="glass glass-premium stat-card">
+      <div class="text-[10px] text-emerald-400 font-black uppercase tracking-wider mb-1">🪑 Bàn có khách</div>
+      <div class="text-3xl md:text-4xl font-black text-emerald-400 tabular"><span id="s-occupied">0</span><span class="text-base text-teal-500 font-bold">/<span id="s-total-tables">0</span></span></div>
+      <div class="text-[10px] text-teal-400 mt-1" id="s-occupied-sub">Trên tổng số bàn</div>
+    </div>
+    <div class="glass glass-premium stat-card">
+      <div class="text-[10px] text-red-400 font-black uppercase tracking-wider mb-1">👥 Tổng khách</div>
+      <div class="text-3xl md:text-4xl font-black text-red-400 tabular" id="s-guests">0</div>
+      <div class="text-[10px] text-teal-400 mt-1" id="s-guests-sub">Đang phục vụ</div>
+    </div>
+  </div>
+
+  <!-- ════════ OUTLET OVERVIEW ════════ -->
+  <div>
+    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>🏝️</span> KHU VỰC PHỤC VỤ</h2>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="outlet-grid"></div>
+  </div>
+
+  <!-- ════════ REALTIME ORDERS ════════ -->
+  <div class="glass glass-premium rounded-2xl overflow-hidden">
+    <div class="p-3.5 md:p-5 border-b border-white/10">
+      <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+        <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest flex items-center gap-2"><span>📡</span> ĐƠN HÀNG REALTIME</h2>
+        <div class="relative">
+          <input type="text" id="search-input" placeholder="Tìm bàn, khách, món..." class="bg-black/40 border border-teal-700/50 rounded-xl pl-8 pr-3 py-2 text-[12px] text-white focus:outline-none focus:border-gold-500 w-56">
+          <span class="absolute left-2.5 top-1/2 -translate-y-1/2 text-teal-500 text-sm pointer-events-none">🔍</span>
+        </div>
+      </div>
+      <div class="flex gap-2 overflow-x-auto pb-1" id="filter-chips">
+        <button class="chip active" data-filter="all">📊 Tất cả <span class="count" id="fc-all">0</span></button>
+        <button class="chip" data-filter="pending">⏳ Chờ <span class="count" id="fc-pending">0</span></button>
+        <button class="chip" data-filter="preparing">🔥 Đang làm <span class="count" id="fc-preparing">0</span></button>
+        <button class="chip" data-filter="delayed">⚠️ Trễ >5p <span class="count" id="fc-delayed">0</span></button>
+        <button class="chip" data-filter="completed">✅ Hoàn thành <span class="count" id="fc-completed">0</span></button>
+      </div>
+    </div>
+    <div class="max-h-[500px] overflow-y-auto" id="orders-list"></div>
+  </div>
+
+  <!-- ════════ HISTORY LOOKUP ════════ -->
+  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
+    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>📜</span> TRA CỨU LỊCH SỬ</h2>
+    <div class="grid grid-cols-2 md:flex gap-2 mb-4">
+      <input type="date" id="h-date" class="bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12px] text-white focus:outline-none focus:border-gold-500 [color-scheme:dark]">
+      <select id="h-shift" class="bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12px] text-white focus:outline-none focus:border-gold-500">
+        <option value="">Tất cả ca</option>
+        <option value="Trưa">Ca Trưa</option>
+        <option value="Tối">Ca Tối</option>
+        <option value="Cả Ngày">Cả Ngày</option>
+      </select>
+      <select id="h-outlet" class="bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12px] text-white focus:outline-none focus:border-gold-500">
+        <option value="">Tất cả khu vực</option>
+        <option value="bungalow">🌴 Bungalow</option>
+        <option value="lounge">🍸 Lounge</option>
+        <option value="restaurant">🍽️ Restaurant</option>
+        <option value="show">🎭 Show</option>
+      </select>
+      <input type="text" id="h-search" placeholder="Bàn / tên khách..." class="bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12px] text-white focus:outline-none focus:border-gold-500 col-span-2 md:col-span-1 md:w-48">
+      <button id="h-search-btn" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-2.5 text-[12px] uppercase tracking-wider col-span-2 md:col-span-1">🔍 Tra cứu</button>
+    </div>
+    <div id="h-summary" class="text-[11px] text-gold-400 font-bold mb-3"></div>
+    <div class="overflow-x-auto">
+      <table class="w-full text-left text-[11px] min-w-[800px]">
+        <thead>
+          <tr class="border-b border-teal-700/40 text-teal-300 text-[9.5px] uppercase font-black bg-black/20">
+            <th class="py-2.5 px-3">TG</th>
+            <th class="py-2.5 px-3">Khu vực</th>
+            <th class="py-2.5 px-3">Bàn</th>
+            <th class="py-2.5 px-3">Chi tiết</th>
+            <th class="py-2.5 px-3">NV</th>
+            <th class="py-2.5 px-3">Ca</th>
+          </tr>
+        </thead>
+        <tbody id="h-body" class="divide-y divide-teal-800/30">
+          <tr><td colspan="6" class="text-center py-10 text-teal-500 font-bold">Chọn ngày và bấm Tra cứu</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, getDocs, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
+
+// ──── OUTLETS CONFIG ────
+const OUTLETS = {
+  bungalow:   { name: 'Bungalow',   icon: '🌴', color: 'emerald', accent: '#34d399', colOrders: 'bun_orders',    colCalls: 'bun_calls',    colTables: 'bun_tables',              colHistory: 'bun_history',               totalTables: 16, labelField: 'table' },
+  lounge:     { name: 'Lounge',     icon: '🍸', color: 'amber',   accent: '#FBD77A', colOrders: 'lounge_orders', colCalls: 'lounge_calls', colTables: 'lounge_tables',           colHistory: 'lounge_history_sessions',   totalTables: 20, labelField: 'table' },
+  restaurant: { name: 'Restaurant', icon: '🍽️', color: 'sky',     accent: '#60a5fa', colOrders: 'res_orders',    colCalls: 'res_calls',    colTables: 'res_tables',              colHistory: 'res_history',               totalTables: 38, labelField: 'table' },
+  show:       { name: 'Show',       icon: '🎭', color: 'rose',    accent: '#fb7185', colOrders: null,            colCalls: null,           colTables: 'show_tables',             colHistory: 'show_history',              totalTables: null, labelField: 'label' }
+};
+
+const state = {
+  orders: { bungalow: [], lounge: [], restaurant: [], show: [] },
+  calls:  { bungalow: [], lounge: [], restaurant: [], show: [] },
+  tables: { bungalow: {}, lounge: {}, restaurant: {}, show: {} },
+  filter: 'all',
+  search: ''
+};
+
+const $ = id => document.getElementById(id);
+
+function isToday(ts) {
+  if (!ts) return false;
+  const d = new Date(ts);
+  const n = new Date();
+  return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
+}
+
+// ──── CLOCK ────
+function tick() {
+  const s = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
+  $('clock').textContent = s;
+}
+setInterval(tick, 1000); tick();
+
+// ──── CONNECT ────
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  window.__db = db;
+
+  signInAnonymously(auth).then(() => {
+    $('conn-dot').className = 'dot bg-emerald-500';
+    $('conn-text').textContent = 'ONLINE';
+    $('conn-text').style.color = '#34d399';
+    startListeners(db);
+  }).catch(() => {
+    $('conn-text').textContent = 'OFFLINE';
+    $('conn-text').style.color = '#ef4444';
+  });
+} catch(e) { console.warn(e); }
+
+function startListeners(db) {
+  // Orders
+  Object.entries(OUTLETS).forEach(([key, cfg]) => {
+    if (cfg.colOrders) {
+      onSnapshot(collection(db, cfg.colOrders), snap => {
+        const arr = [];
+        snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
+        arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        state.orders[key] = arr;
+        renderAll();
+      });
+    }
+    if (cfg.colCalls) {
+      onSnapshot(collection(db, cfg.colCalls), snap => {
+        const arr = [];
+        snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
+        state.calls[key] = arr.filter(c => c.status === 'pending');
+        renderAll();
+      });
+    }
+    onSnapshot(collection(db, cfg.colTables), snap => {
+      const obj = {};
+      snap.forEach(d => obj[d.id] = { id: d.id, ...d.data() });
+      state.tables[key] = obj;
+      renderAll();
+    });
+  });
+}
+
+// ──── RENDER ALL ────
+function renderAll() {
+  renderStats();
+  renderOutlets();
+  renderOrders();
+}
+
+// ──── STATS ────
+function renderStats() {
+  let totalOrders = 0, totalPending = 0, totalOccupied = 0, totalTables = 0, totalGuests = 0;
+
+  Object.entries(OUTLETS).forEach(([key, cfg]) => {
+    const orders = state.orders[key] || [];
+    const tables = state.tables[key] || {};
+    const occupiedCount = Object.keys(tables).length;
+
+    // Đơn hôm nay
+    const todayOrders = orders.filter(o => isToday(o.timestamp));
+    totalOrders += todayOrders.length;
+
+    // Pending + preparing
+    const activeOrders = todayOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
+    totalPending += activeOrders.length;
+
+    // Occupied tables
+    totalOccupied += occupiedCount;
+
+    // Total tables (chỉ cộng với outlet có số bàn xác định)
+    if (cfg.totalTables) totalTables += cfg.totalTables;
+
+    // Guests (pax)
+    Object.values(tables).forEach(t => {
+      if (t.pax) totalGuests += parseInt(t.pax) || 0;
+      else if (t.guests) totalGuests += parseInt(t.guests) || 0;
+    });
+  });
+
+  $('s-orders').textContent = totalOrders;
+  $('s-orders-sub').textContent = `Tổng số đơn từ ${Object.keys(OUTLETS).length} outlet`;
+  $('s-pending').textContent = totalPending;
+  $('s-pending-sub').textContent = totalPending > 0 ? `⚠️ Cần xử lý ngay` : 'Không có đơn tồn';
+  $('s-occupied').textContent = totalOccupied;
+  $('s-total-tables').textContent = totalTables || '?';
+  $('s-occupied-sub').textContent = totalTables ? `${Math.round((totalOccupied / totalTables) * 100)}% công suất` : 'Trên tổng số bàn';
+  $('s-guests').textContent = totalGuests;
+  $('s-guests-sub').textContent = 'Đang được phục vụ';
+}
+
+// ──── OUTLETS ────
+function renderOutlets() {
+  const html = Object.entries(OUTLETS).map(([key, cfg]) => {
+    const orders = state.orders[key] || [];
+    const tables = state.tables[key] || {};
+    const calls = state.calls[key] || [];
+
+    const todayOrders = orders.filter(o => isToday(o.timestamp));
+    const pending = todayOrders.filter(o => o.status === 'pending').length;
+    const preparing = todayOrders.filter(o => o.status === 'preparing').length;
+    const completed = todayOrders.filter(o => o.status === 'completed').length;
+    const occupied = Object.keys(tables).length;
+
+    let guests = 0;
+    Object.values(tables).forEach(t => {
+      guests += parseInt(t.pax) || parseInt(t.guests) || 0;
+    });
+
+    const tableInfo = cfg.totalTables ? `${occupied}/${cfg.totalTables}` : occupied;
+
+    return `
+      <div class="glass outlet-card" style="border-left:4px solid ${cfg.accent}">
+        <div class="flex items-center justify-between mb-3">
+          <div class="flex items-center gap-2">
+            <span class="text-2xl">${cfg.icon}</span>
+            <div>
+              <div class="font-black text-white text-[13px] uppercase tracking-wide">${cfg.name}</div>
+              <div class="text-[10px]" style="color:${cfg.accent}">${guests} khách · ${calls.length} cuộc gọi</div>
+            </div>
+          </div>
+          ${calls.length > 0 ? `<span class="state-chip state-alert animate-pulse"><span class="dot"></span>${calls.length} GỌI</span>` : ''}
+        </div>
+        <div class="grid grid-cols-3 gap-2">
+          <div class="bg-black/30 rounded-lg p-2 text-center">
+            <div class="text-[9px] text-teal-400 font-bold uppercase">Bàn</div>
+            <div class="text-base font-black tabular" style="color:${cfg.accent}">${tableInfo}</div>
+          </div>
+          <div class="bg-black/30 rounded-lg p-2 text-center">
+            <div class="text-[9px] text-gold-400 font-bold uppercase">Chờ</div>
+            <div class="text-base font-black text-gold-400 tabular">${pending}</div>
+          </div>
+          <div class="bg-black/30 rounded-lg p-2 text-center">
+            <div class="text-[9px] text-emerald-400 font-bold uppercase">Xong</div>
+            <div class="text-base font-black text-emerald-400 tabular">${completed}</div>
+          </div>
+        </div>
+        ${preparing > 0 ? `<div class="mt-2 text-[10px] text-red-400 font-bold"><span class="dot inline-block mr-1"></span>${preparing} đơn đang chế biến</div>` : ''}
+      </div>`;
+  }).join('');
+  $('outlet-grid').innerHTML = html;
+}
+
+// ──── ORDERS LIST ────
+function renderOrders() {
+  // Merge all orders
+  const all = [];
+  Object.entries(state.orders).forEach(([key, arr]) => {
+    arr.forEach(o => all.push({ ...o, _outlet: key }));
+  });
+  // Show tables as "orders" too (each booking is a "request")
+  Object.entries(state.tables.show || {}).forEach(([id, t]) => {
+    all.push({
+      _outlet: 'show',
+      _isShow: true,
+      id: 'show-' + id,
+      table: t.label || id.replace(/-/g, ' '),
+      time: t.service?.savedAt ? new Date(t.service.savedAt).toLocaleTimeString('en-US', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit' }) : '--',
+      timestamp: t.service?.savedAt || t.updatedAt || 0,
+      items: Object.entries(t.service?.drinks || {}).map(([k, v]) => ({ name: { VI: k }, qty: v }))
+             .concat(Object.entries(t.service?.foods || {}).map(([k, v]) => ({ name: { VI: k }, qty: v }))),
+      status: t.service ? 'completed' : 'pending',
+      notes: `${t.leader || ''} • ${t.guests || 0} khách`
+    });
+  });
+  all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  // Count chips
+  const today = all.filter(o => isToday(o.timestamp));
+  const delayed = today.filter(o => o.status === 'pending' && (Date.now() - o.timestamp) > 300000);
+  $('fc-all').textContent = today.length;
+  $('fc-pending').textContent = today.filter(o => o.status === 'pending').length;
+  $('fc-preparing').textContent = today.filter(o => o.status === 'preparing').length;
+  $('fc-delayed').textContent = delayed.length;
+  $('fc-completed').textContent = today.filter(o => o.status === 'completed').length;
+
+  // Filter
+  let filtered = today;
+  const f = state.filter;
+  if (f === 'pending') filtered = filtered.filter(o => o.status === 'pending');
+  else if (f === 'preparing') filtered = filtered.filter(o => o.status === 'preparing');
+  else if (f === 'completed') filtered = filtered.filter(o => o.status === 'completed');
+  else if (f === 'delayed') filtered = filtered.filter(o => o.status === 'pending' && (Date.now() - o.timestamp) > 300000);
+
+  // Search
+  const s = state.search.toLowerCase().trim();
+  if (s) {
+    filtered = filtered.filter(o => {
+      const txt = ((o.table || '') + ' ' + (o.notes || '') + ' ' + (o.preparedBy || '') + ' ' + (o.completedBy || '') + ' ' +
+        (o.items || []).map(i => (i.name && (i.name.VI || i.name.EN)) || '').join(' ')).toLowerCase();
+      return txt.includes(s);
+    });
+  }
+
+  if (!filtered.length) {
+    $('orders-list').innerHTML = `<div class="text-center py-12 text-teal-500 font-bold text-[12px]">Không có đơn hàng nào</div>`;
+    return;
+  }
+
+  const html = filtered.slice(0, 100).map(o => {
+    const cfg = OUTLETS[o._outlet] || {};
+    const isDelayed = o.status === 'pending' && o.timestamp && (Date.now() - o.timestamp) > 300000;
+
+    let stateChip = '';
+    if (o.status === 'pending') stateChip = '<span class="state-chip state-pending"><span class="dot"></span>Chờ</span>';
+    else if (o.status === 'preparing') stateChip = '<span class="state-chip state-cooking"><span class="dot"></span>Đang làm</span>';
+    else if (o.status === 'completed') stateChip = '<span class="state-chip state-ready">✅ Xong</span>';
+
+    const itemsHtml = (o.items || []).filter(it => (it.qty - (it.cancelledQty || 0)) > 0).map(it => {
+      const nm = (it.name && (it.name.VI || it.name.EN)) || 'Món';
+      const qty = it.qty - (it.cancelledQty || 0);
+      return `${nm} <span class="text-gold-400 font-black">x${qty}</span>`;
+    }).join(' · ') || '<span class="text-teal-500 italic">Chưa có món</span>';
+
+    return `
+      <div class="order-row">
+        <div class="flex items-start gap-3 flex-wrap">
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-lg">${cfg.icon || '📦'}</span>
+            <div>
+              <div class="text-[10px] text-teal-400 font-bold uppercase" style="color:${cfg.accent || '#98dccb'}">${cfg.name || o._outlet}</div>
+              <div class="text-[13px] font-black text-white tabular">${o.table || '--'}</div>
+            </div>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <div class="text-[11.5px] text-white/90 leading-snug">${itemsHtml}</div>
+            ${o.notes ? `<div class="text-[10px] text-gold-400/80 mt-1 italic">📝 ${o.notes}</div>` : ''}
+          </div>
+          <div class="flex flex-col items-end gap-1 shrink-0">
+            <div class="text-[10px] text-teal-300 tabular">${o.time || '--:--'}</div>
+            ${stateChip}
+            ${isDelayed ? '<span class="state-chip state-alert animate-pulse">⚠️ TRỄ</span>' : ''}
+            ${o.preparedBy ? `<div class="text-[9px] text-teal-400">🔥 ${o.preparedBy}</div>` : ''}
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  $('orders-list').innerHTML = html;
+}
+
+// ──── FILTER CHIPS ────
+document.querySelectorAll('#filter-chips .chip').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('#filter-chips .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.filter = btn.dataset.filter;
+    renderOrders();
+  };
+});
+
+// ──── SEARCH ────
+$('search-input').addEventListener('input', e => {
+  state.search = e.target.value;
+  renderOrders();
+});
+
+// ──── HISTORY LOOKUP ────
+$('h-search-btn').onclick = async () => {
+  const db = window.__db;
+  if (!db) return;
+  const date = $('h-date').value;
+  const shift = $('h-shift').value;
+  const outlet = $('h-outlet').value;
+  const search = ($('h-search').value || '').toLowerCase().trim();
+
+  if (!date) { alert('Chọn ngày!'); return; }
+
+  $('h-body').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gold-400 font-bold animate-pulse">Đang tải...</td></tr>`;
+  $('h-summary').textContent = '';
+
+  const targets = outlet ? [outlet] : Object.keys(OUTLETS);
+  const allRows = [];
+
+  for (const key of targets) {
+    const cfg = OUTLETS[key];
+    if (!cfg.colHistory) continue;
+    try {
+      let q = query(collection(db, cfg.colHistory), where('date', '==', date));
+      const snap = await getDocs(q);
+      snap.forEach(d => {
+        const data = d.data();
+        if (shift && data.shift && data.shift !== shift && shift !== 'Cả Ngày') return;
+
+        if (data.orders && Array.isArray(data.orders)) {
+          data.orders.forEach(o => allRows.push({ _outlet: key, ...o, _shift: data.shift }));
+        }
+        if (data.bookings && Array.isArray(data.bookings)) {
+          // Show history
+          data.bookings.forEach(b => {
+            const items = Object.entries(b.service?.drinks || {}).map(([k, v]) => `${k} x${v}`)
+              .concat(Object.entries(b.service?.foods || {}).map(([k, v]) => `${k} x${v}`));
+            allRows.push({
+              _outlet: key,
+              _shift: data.shift,
+              table: b.label,
+              time: '--',
+              items: items.map(t => ({ name: { VI: t }, qty: 1 })),
+              preparedBy: b.seller,
+              completedBy: b.leader,
+              status: b.service ? 'completed' : 'pending'
+            });
+          });
+        }
+      });
+    } catch(e) { console.warn('History query failed for', key, e); }
+  }
+
+  let filtered = allRows;
+  if (search) {
+    filtered = filtered.filter(r => {
+      const txt = ((r.table || '') + ' ' + (r.preparedBy || '') + ' ' + (r.completedBy || '')).toLowerCase();
+      return txt.includes(search);
+    });
+  }
+
+  if (!filtered.length) {
+    $('h-body').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-teal-500 font-bold">Không có dữ liệu</td></tr>`;
+    return;
+  }
+
+  filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+
+  $('h-summary').textContent = `Tìm thấy ${filtered.length} bản ghi`;
+
+  $('h-body').innerHTML = filtered.map(r => {
+    const cfg = OUTLETS[r._outlet];
+    const items = (r.items || []).map(it => {
+      const nm = (it.name && (it.name.VI || it.name.EN)) || 'Món';
+      const cq = it.cancelledQty || 0;
+      const qty = it.qty || 1;
+      if (cq >= qty) return `<span class="line-through text-teal-600">${nm} (x${qty})</span>`;
+      return `${nm} <strong class="text-gold-400">x${qty - cq}</strong>`;
+    }).join('<br>');
+    let nv = r.preparedBy ? `Nấu: ${r.preparedBy}` : '';
+    if (r.completedBy) nv += `${nv ? '<br>' : ''}Giao: ${r.completedBy}`;
+
+    return `<tr class="hover:bg-white/5">
+      <td class="py-2.5 px-3 font-mono text-teal-300 tabular">${r.time || '--'}</td>
+      <td class="py-2.5 px-3 font-black" style="color:${cfg.accent}">${cfg.icon} ${cfg.name}</td>
+      <td class="py-2.5 px-3 font-black text-white">${r.table || '--'}</td>
+      <td class="py-2.5 px-3 text-[10px]">${items}</td>
+      <td class="py-2.5 px-3 text-teal-200 text-[10px]">${nv || '--'}</td>
+      <td class="py-2.5 px-3 text-teal-400 text-[10px]">${r._shift || '--'}</td>
+    </tr>`;
+  }).join('');
+};
+
+// ──── CLEANUP OLD UI (rotate every 30s for accuracy) ────
+setInterval(renderOrders, 30000);
+</script>
+</body>
+</html>

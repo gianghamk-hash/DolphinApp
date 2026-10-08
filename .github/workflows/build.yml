@@ -269,7 +269,8 @@ jobs:
                       }
                   });
 
-                  webView.loadUrl("https://appassets.androidplatform.net/assets/index.html");
+                  // 🌐 Load từ GitHub Pages → OTA update tự động
+                  webView.loadUrl("https://gianghamk-hash.github.io/DolphinApp/index.html");
               }
 
               private static String guessMime(String path) {

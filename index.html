@@ -441,7 +441,160 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     ctrl.classList.toggle('minimized', nowHidden);
   };
 
+    /* ═══════════════════════════════════════════════════════════
+     DRAGGABLE HOME BUTTON — Kéo thả tự do + Snap vào cạnh
+     ═══════════════════════════════════════════════════════════ */
+  var DRAG_POS_KEY = 'dolphinHomeBtnPos';
+  var ctrl = null;
+
+  function saveHomePos(x, y){
+    try { localStorage.setItem(DRAG_POS_KEY, JSON.stringify({ x: x, y: y })); } catch(e){}
+  }
+  function loadHomePos(){
+    try {
+      var s = localStorage.getItem(DRAG_POS_KEY);
+      return s ? JSON.parse(s) : null;
+    } catch(e){ return null; }
+  }
+  function applyHomePos(x, y){
+    if (!ctrl) return;
+    ctrl.style.left = x + 'px';
+    ctrl.style.top = y + 'px';
+    ctrl.style.right = 'auto';
+    ctrl.style.bottom = 'auto';
+  }
+  function clampPos(x, y){
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var w = ctrl.offsetWidth || 60;
+    var h = ctrl.offsetHeight || 100;
+    x = Math.max(4, Math.min(x, vw - w - 4));
+    y = Math.max(4, Math.min(y, vh - h - 4));
+    return { x: x, y: y };
+  }
+  function snapToEdge(){
+    if (!ctrl) return;
+    var vw = window.innerWidth;
+    var w = ctrl.offsetWidth || 60;
+    var cur = { x: ctrl.offsetLeft, y: ctrl.offsetTop };
+    var snapLeft = cur.x < (vw - w) / 2;
+    var nx = snapLeft ? 12 : (vw - w - 12);
+    var ny = clampPos(nx, cur.y).y;
+    // Animate sang vị trí mới
+    ctrl.style.transition = 'left .3s cubic-bezier(.16,1,.3,1), top .3s cubic-bezier(.16,1,.3,1)';
+    applyHomePos(nx, ny);
+    setTimeout(function(){ ctrl.style.transition = ''; }, 320);
+    saveHomePos(nx, ny);
+  }
+  function clampOnResize(){
+    if (!ctrl) return;
+    var pos = loadHomePos();
+    if (!pos) return;
+    var c = clampPos(pos.x, pos.y);
+    applyHomePos(c.x, c.y);
+  }
+
+  function initDraggableHome(){
+    ctrl = document.getElementById('home-controls');
+    if (!ctrl) return;
+
+    // Áp dụng vị trí đã lưu
+    var saved = loadHomePos();
+    if (saved) {
+      var c = clampPos(saved.x, saved.y);
+      applyHomePos(c.x, c.y);
+    }
+
+    var btnHome = document.getElementById('btn-home');
+    if (!btnHome) return;
+
+    // Nếu là minimized, vẫn cho drag nút nhỏ
+    var drag = { active: false, startX: 0, startY: 0, origX: 0, origY: 0, moved: false, startTime: 0 };
+
+    function getPoint(e){
+      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function onStart(e){
+      if (e.target.closest('#btn-toggle')) return;   // không drag nút toggle
+      var pt = getPoint(e);
+      drag.active = true;
+      drag.moved = false;
+      drag.startX = pt.x;
+      drag.startY = pt.y;
+      drag.origX = ctrl.offsetLeft;
+      drag.origY = ctrl.offsetTop;
+      drag.startTime = Date.now();
+      ctrl.classList.add('dragging');
+      ctrl.style.transition = '';
+    }
+
+    function onMove(e){
+      if (!drag.active) return;
+      var pt = getPoint(e);
+      var dx = pt.x - drag.startX;
+      var dy = pt.y - drag.startY;
+
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 8) return; // ngưỡng 8px mới coi là drag
+
+      drag.moved = true;
+      if (e.cancelable) e.preventDefault();
+
+      var nx = drag.origX + dx;
+      var ny = drag.origY + dy;
+      var c = clampPos(nx, ny);
+      applyHomePos(c.x, c.y);
+    }
+
+    function onEnd(e){
+      if (!drag.active) return;
+      drag.active = false;
+      ctrl.classList.remove('dragging');
+
+      // Nếu chỉ tap (không di chuyển) → xử lý tap
+      if (!drag.moved) {
+        // Để button onclick tự chạy, không can thiệp
+        return;
+      }
+
+      // Nếu có di chuyển → snap vào cạnh
+      snapToEdge();
+    }
+
+    // Touch events
+    btnHome.addEventListener('touchstart', onStart, { passive: true });
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchcancel', onEnd);
+
+    // Mouse events (desktop)
+    btnHome.addEventListener('mousedown', function(e){
+      onStart(e);
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+
+    // Xử lý resize
+    window.addEventListener('resize', clampOnResize);
+    window.addEventListener('orientationchange', function(){
+      setTimeout(clampOnResize, 300);
+    });
+
+    // Ngăn click khi vừa drag xong
+    btnHome.addEventListener('click', function(e){
+      if (drag.moved) {
+        e.preventDefault();
+        e.stopPropagation();
+        drag.moved = false;
+      }
+    }, true);
+  }
+
   applyHomeBtnState();
+  setTimeout(initDraggableHome, 100);
     /* ============ HIỆN DASHBOARD CHO MANAGER ============ */
   if (navigator.userAgent.indexOf('DolphinManager') >= 0) {
     var cardDash = document.getElementById('card-dashboard');

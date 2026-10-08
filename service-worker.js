@@ -3,7 +3,7 @@
    Dành cho GitHub Pages — subfolder /DolphinApp/
    ============================================================ */
 
-const CACHE_NAME = 'dolphin-v1.0.0';
+const CACHE_NAME = 'dolphin-v1.1.0';
 const BASE = '/DolphinApp';
 const CACHE_URLS = [
   BASE + '/',
@@ -32,12 +32,12 @@ self.addEventListener('install', (event) => {
 self.addEventListener('activate', (event) => {
   console.log('[SW] Activating...');
   event.waitUntil(
-    caches.keys().then(keys => {
+    s.keys().then(keys => {
       return Promise.all(
         keys.map(key => {
-          if (key !== CACHE_NAME) {
-            console.log('[SW] Removing old cache:', key);
-            return caches.delete(key);
+          if (key !== _NAME) {
+            console.log('[SW] Removing old :', key);
+            return s.delete(key);
           }
         })
       );
@@ -73,6 +73,8 @@ self.addEventListener('fetch', (event) => {
 
   // Chỉ cache các file trong /DolphinApp/
   if (!url.pathname.startsWith(BASE)) return;
+     // KHÔNG cache version.json — luôn lấy bản mới
+  if (url.pathname.indexOf('version.json') >= 0) return;
 
   const isHTML = request.headers.get('accept')?.includes('text/html');
 

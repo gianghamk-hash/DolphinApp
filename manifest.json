@@ -1,0 +1,58 @@
+{
+  "name": "Dolphin Staff",
+  "short_name": "Dolphin",
+  "description": "Hệ thống quản lý du thuyền Dolphin Ha Long",
+  "start_url": "/DolphinApp/",
+  "scope": "/DolphinApp/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#123634",
+  "theme_color": "#123634",
+  "lang": "vi",
+  "dir": "ltr",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "/DolphinApp/pwa-icons/icon-72.png",
+      "sizes": "72x72",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/DolphinApp/pwa-icons/icon-96.png",
+      "sizes": "96x96",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/DolphinApp/pwa-icons/icon-144.png",
+      "sizes": "144x144",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/DolphinApp/pwa-icons/icon-152.png",
+      "sizes": "152x152",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/DolphinApp/pwa-icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/DolphinApp/pwa-icons/icon-384.png",
+      "sizes": "384x384",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/DolphinApp/pwa-icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}

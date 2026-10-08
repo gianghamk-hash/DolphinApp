@@ -80,7 +80,81 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 .fade-up{animation:float-up .85s cubic-bezier(.16,1,.3,1) both}
 .d-1{animation-delay:.08s}.d-2{animation-delay:.22s}
 
-/* ==================== TRANSITIONS ==================== */
+/* ==================== ANNOUNCEMENT TICKER ==================== */
+#announcementBar{
+  display:none;
+  max-width:900px;
+  margin:0 auto 1.5rem;
+  background:linear-gradient(135deg,rgba(244,184,66,.18),rgba(244,184,66,.06));
+  border:1px solid rgba(244,184,66,.5);
+  border-radius:14px;
+  padding:12px 0;
+  position:relative;
+  overflow:hidden;
+  box-shadow:0 4px 24px rgba(244,184,66,.2),inset 0 0 20px rgba(244,184,66,.05);
+}
+#announcementBar.show{display:block;animation:announce-fade-in .6s ease-out}
+@keyframes announce-fade-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.announcement-icon{
+  position:absolute;
+  left:14px;
+  top:50%;
+  transform:translateY(-50%);
+  font-size:20px;
+  z-index:5;
+  animation:announce-icon-pulse 1.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 8px rgba(244,184,66,.8));
+}
+@keyframes announce-icon-pulse{
+  0%,100%{transform:translateY(-50%) scale(1)}
+  50%{transform:translateY(-50%) scale(1.18)}
+}
+.announcement-viewport{
+  overflow:hidden;
+  padding-left:44px;
+  padding-right:20px;
+  position:relative;
+}
+.announcement-viewport::before,
+.announcement-viewport::after{
+  content:'';
+  position:absolute;
+  top:-12px;
+  bottom:-12px;
+  width:24px;
+  z-index:3;
+  pointer-events:none;
+}
+.announcement-viewport::before{left:44px;background:linear-gradient(90deg,#0a2622 0%,transparent 100%)}
+.announcement-viewport::after{right:0;background:linear-gradient(-90deg,#0a2622 0%,transparent 100%)}
+.announcement-track{
+  display:inline-flex;
+  white-space:nowrap;
+  animation:announce-marquee 25s linear infinite;
+  will-change:transform;
+}
+.announcement-text{
+  padding-right:100px;
+  color:#FBD77A;
+  font-weight:800;
+  font-size:13px;
+  letter-spacing:.03em;
+  text-shadow:0 0 12px rgba(244,184,66,.4);
+  font-family:'Nunito',sans-serif;
+}
+@keyframes announce-marquee{
+  0%{transform:translateX(0)}
+  100%{transform:translateX(-50%)}
+}
+@media(min-width:768px){
+  .announcement-text{font-size:16px;padding-right:160px}
+  .announcement-icon{font-size:24px;left:18px}
+  .announcement-viewport{padding-left:56px}
+}
+@media(prefers-reduced-motion:reduce){
+  .announcement-track{animation-duration:60s}
+}
+  /* ==================== TRANSITIONS ==================== */
 #landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
   position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden}
 #landing.fade-out{opacity:0;transform:scale(1.06);pointer-events:none}
@@ -324,6 +398,16 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
         <p class="brand-sub">Ha Long Cruise</p>
       </div>
 
+      <!-- ════════ ANNOUNCEMENT TICKER ════════ -->
+<div id="announcementBar" class="fade-up">
+  <span class="announcement-icon">📢</span>
+  <div class="announcement-viewport">
+    <div class="announcement-track" id="announcementTrack">
+      <span class="announcement-text" id="announcementText">Đang tải thông báo...</span>
+      <span class="announcement-text" id="announcementText2">Đang tải thông báo...</span>
+    </div>
+  </div>
+</div>
       <p class="fade-up d-1 welcome-lbl">
         <span class="wlc-vi">Vui lòng chọn khu vực của quý khách</span>
         <span class="wlc-en">Please select your area</span>
@@ -787,6 +871,70 @@ if ('serviceWorker' in navigator) {
       console.warn('❌ Service Worker failed:', err);
     });
   });
+}
+</script>
+  <!-- ════════ ANNOUNCEMENT TICKER — FIREBASE REALTIME ════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  signInAnonymously(auth).then(() => {
+    const ref = doc(db, 'master_config', 'announcement');
+    onSnapshot(ref, (snap) => {
+      updateAnnouncement(snap.exists() ? snap.data() : null);
+    }, (err) => {
+      console.warn('[Announcement] Listen error:', err);
+    });
+  }).catch(err => {
+    console.warn('[Announcement] Auth error:', err);
+  });
+
+  function updateAnnouncement(data) {
+    const bar = document.getElementById('announcementBar');
+    const t1 = document.getElementById('announcementText');
+    const t2 = document.getElementById('announcementText2');
+    const track = document.getElementById('announcementTrack');
+    if (!bar || !t1 || !t2 || !track) return;
+
+    const active = data && data.active === true;
+    const text = data && data.text ? String(data.text).trim() : '';
+
+    if (!active || !text) {
+      bar.classList.remove('show');
+      return;
+    }
+
+    const fullText = '📢 ' + text + '   •   📢 ' + text + '   •   ';
+    t1.textContent = fullText;
+    t2.textContent = fullText;
+    bar.classList.add('show');
+
+    // Adaptive speed: text càng dài → scroll càng lâu
+    requestAnimationFrame(() => {
+      const w = t1.offsetWidth;
+      if (w > 0) {
+        const speed = 80; // pixels per second
+        const duration = Math.max(15, Math.min(120, w / speed));
+        track.style.animation = 'none';
+        void track.offsetWidth;
+        track.style.animation = 'announce-marquee ' + duration + 's linear infinite';
+      }
+    });
+  }
+} catch(e) {
+  console.warn('[Announcement] Init error:', e);
 }
 </script>
 </body>

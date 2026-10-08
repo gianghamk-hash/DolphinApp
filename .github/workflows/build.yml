@@ -330,6 +330,51 @@ jobs:
           convert /tmp/icon_1024.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           convert /tmp/icon_1024.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
+      - name: Auto-update version.json
+        run: |
+          # Lấy commit hash (7 ký tự)
+          COMMIT_HASH=$(git rev-parse --short HEAD)
+          
+          # Lấy ngày giờ ISO
+          BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
+          
+          # Lấy commit message (1 dòng đầu, escape dấu ")
+          COMMIT_MSG=$(git log -1 --pretty=%s | sed 's/"/\\"/g' | head -c 200)
+          
+          # Đọc version cũ từ version.json
+          OLD_VERSION=$(python3 -c "import json; print(json.load(open('version.json'))['version'])" 2>/dev/null || echo "1.0.0")
+          
+          # Tách major.minor.patch
+          MAJOR=$(echo $OLD_VERSION | cut -d. -f1)
+          MINOR=$(echo $OLD_VERSION | cut -d. -f2)
+          PATCH=$(echo $OLD_VERSION | cut -d. -f3)
+          
+          # Tăng patch +1
+          NEW_PATCH=$((PATCH + 1))
+          NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
+          
+          # Tạo version.json mới
+          cat > version.json << EOF_VERSION
+          {
+            "version": "${NEW_VERSION}",
+            "buildDate": "${BUILD_TIME}",
+            "commit": "${COMMIT_HASH}",
+            "notes": "${COMMIT_MSG}",
+            "forceUpdate": false
+          }
+          EOF_VERSION
+          
+          echo "=== Version updated ==="
+          cat version.json
+
+      - name: Commit version.json
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add version.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: auto-update version [skip ci]"
+          git push || true
+
       - name: Generate keystore
         run: |
           keytool -genkeypair -v -keystore dolphin.keystore -alias dolphin -keyalg RSA -keysize 2048 -validity 10000 -storepass dolphin123 -keypass dolphin123 -dname "CN=Dolphin, O=Dolphin, C=VN"

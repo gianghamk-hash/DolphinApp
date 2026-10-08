@@ -1,5 +1,8 @@
 /* ============================================================
-   👑 MASTER DEVICE SYSTEM v8 — Fix verifyManagerAuth recursion
+   👑 MASTER DEVICE SYSTEM v9
+   - Nhân viên: bỏ qua PIN thường (1111/8888)
+   - Manager actions: VẪN yêu cầu PIN Manager (451994)
+   - Máy Master: bỏ qua TẤT CẢ
    ============================================================ */
 (function(){
   'use strict';
@@ -101,44 +104,26 @@
     }
   }
 
-  // ============ AUTO-FILL PIN ĐÚNG CÁCH ============
-  // Hàm này chỉ set giá trị input + click nút. KHÔNG gọi lại hàm verify.
-  function autoFillAndSubmit(inputId, btnSelector, pin){
-    var input = document.getElementById(inputId);
-    var btn = document.querySelector(btnSelector);
-    if (!input || !btn) return false;
-    input.value = pin;
-    input.dispatchEvent(new Event('input', { bubbles: true }));
-    input.dispatchEvent(new Event('change', { bubbles: true }));
-    btn.click();
-    return true;
-  }
+  // ============================================================
+  // 🔓 HOOK — BỎ QUA PIN NHÂN VIÊN (1111, 8888)
+  // Nhân viên vào Lễ Tân/Admin/QL/Bếp KHÔNG cần PIN
+  // ============================================================
 
-  // ============ HOOK CÁC HÀM VERIFY ============
-  // Nguyên tắc: hàm gốc LUÔN được gọi. Chỉ auto-fill PIN vào input trước.
-  // Cách này tránh đệ quy vô tận.
-
-  // 1. requestPinAccess — entry point, modal sẽ mở. Sau đó auto-fill PIN.
+  // 1. requestPinAccess — bỏ qua HOÀN TOÀN
   function hookRequestPinAccess(){
     if (typeof window.requestPinAccess !== 'function' || window.requestPinAccess.__masterHooked) return false;
     var _orig = window.requestPinAccess;
     var newFn = function(role){
-      _orig.apply(this, arguments);  // mở modal
-      if (isMasterDevice()) {
-        var pins = (role === 'reception') ? ['1111', '8888'] : ['8888', '1111'];
-        var attempts = 0;
-        var timer = setInterval(function(){
-          attempts++;
-          var modal = document.getElementById('modal-pin');
-          if (!modal || modal.classList.contains('hidden')) { clearInterval(timer); return; }
-          var input = document.getElementById('pin-input');
-          if (!input) return;
-          var pin = pins[Math.min(attempts-1, pins.length-1)] || pins[pins.length-1];
-          input.value = pin;
-          var btn = document.querySelector('#modal-pin button[onclick*="verifyPin"]');
-          if (btn) btn.click();
-          if (attempts > 30) clearInterval(timer);
-        }, 100);
+      // Mọi máy đều bỏ qua PIN nhân viên → vào thẳng role
+      try {
+        if (typeof window.hasStaffName === 'function' && !window.hasStaffName() &&
+            typeof window.requireStaffName === 'function') {
+          window.requireStaffName(role);
+        } else if (typeof window.changeRole === 'function') {
+          window.changeRole(role);
+        }
+      } catch(e) {
+        console.warn('[Bypass] requestPinAccess:', e);
       }
     };
     newFn.__masterHooked = true;
@@ -146,65 +131,38 @@
     return true;
   }
 
-  // 2. verifyPin — auto-fill nếu input rỗng, sau đó GỌI HÀM GỐC
+  // 2. verifyPin — bỏ qua (dự phòng, không dùng nữa)
   function hookVerifyPin(){
     if (typeof window.verifyPin !== 'function' || window.verifyPin.__masterHooked) return false;
-    var _orig = window.verifyPin;
     var newFn = function(){
-      if (isMasterDevice()) {
-        var input = document.getElementById('pin-input');
-        if (input && !input.value) {
-          // Thử PIN tùy role
-          var modal = document.getElementById('modal-pin');
-          var title = document.getElementById('pin-modal-title');
-          var isReception = title && title.innerText && title.innerText.indexOf('Lễ Tân') >= 0;
-          input.value = isReception ? '1111' : '8888';
-          input.dispatchEvent(new Event('input', { bubbles: true }));
-        }
-      }
-      return _orig.apply(this, arguments);
+      // Không làm gì — không cần xác thực
+      if (typeof window.closePinModal === 'function') window.closePinModal();
     };
     newFn.__masterHooked = true;
     window.verifyPin = newFn;
     return true;
   }
 
-  // 3. promptManagerAuth — modal sẽ mở. Auto-fill PIN 451994 và click nút.
-  function hookPromptManagerAuth(){
-    if (typeof window.promptManagerAuth !== 'function' || window.promptManagerAuth.__masterHooked) return false;
-    var _orig = window.promptManagerAuth;
-    var newFn = function(){
-      _orig.apply(this, arguments);  // mở modal
-      if (isMasterDevice()) {
-        setTimeout(function(){
-          var input = document.getElementById('manager-auth-pin');
-          if (input) {
-            input.value = '451994';
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-          var btn = document.querySelector('#modal-manager-auth button[onclick*="verifyManagerAuth"]');
-          if (btn) btn.click();
-        }, 200);
-      }
-    };
-    newFn.__masterHooked = true;
-    window.promptManagerAuth = newFn;
-    return true;
-  }
+  // ============================================================
+  // 🔐 KHÔNG HOOK verifyManagerAuth / verifyClearAllPin
+  // Máy Master thì mới auto-fill, máy Staff PHẢI TỰ NHẬP
+  // ============================================================
 
-  // 4. verifyManagerAuth — auto-fill nếu input rỗng, sau đó GỌI HÀM GỐC
+  // 3. verifyManagerAuth — chỉ auto-fill nếu là Master
   function hookVerifyManagerAuth(){
     if (typeof window.verifyManagerAuth !== 'function' || window.verifyManagerAuth.__masterHooked) return false;
     var _orig = window.verifyManagerAuth;
     var newFn = function(){
       if (isMasterDevice()) {
+        // Máy Master → tự điền PIN Manager
         var input = document.getElementById('manager-auth-pin');
-        if (input && input.value !== '451994') {
+        if (input) {
           input.value = '451994';
           input.dispatchEvent(new Event('input', { bubbles: true }));
         }
       }
+      // Dù Master hay Staff → gọi hàm gốc
+      // Staff không có PIN đúng → hàm gốc báo lỗi
       return _orig.apply(this, arguments);
     };
     newFn.__masterHooked = true;
@@ -212,38 +170,14 @@
     return true;
   }
 
-  // 5. promptClearAllCustomers — modal mở. Auto-fill PIN 1234 và click.
-  function hookPromptClearAllCustomers(){
-    if (typeof window.promptClearAllCustomers !== 'function' || window.promptClearAllCustomers.__masterHooked) return false;
-    var _orig = window.promptClearAllCustomers;
-    var newFn = function(){
-      _orig.apply(this, arguments);
-      if (isMasterDevice()) {
-        setTimeout(function(){
-          var input = document.getElementById('clear-all-pin');
-          if (input) {
-            input.value = '1234';
-            input.dispatchEvent(new Event('input', { bubbles: true }));
-            input.dispatchEvent(new Event('change', { bubbles: true }));
-          }
-          var btn = document.querySelector('#modal-clear-all button[onclick*="verifyClearAllPin"]');
-          if (btn) btn.click();
-        }, 200);
-      }
-    };
-    newFn.__masterHooked = true;
-    window.promptClearAllCustomers = newFn;
-    return true;
-  }
-
-  // 6. verifyClearAllPin — auto-fill nếu rỗng, sau đó GỌI HÀM GỐC
+  // 4. verifyClearAllPin — chỉ auto-fill nếu là Master
   function hookVerifyClearAllPin(){
     if (typeof window.verifyClearAllPin !== 'function' || window.verifyClearAllPin.__masterHooked) return false;
     var _orig = window.verifyClearAllPin;
     var newFn = function(){
       if (isMasterDevice()) {
         var input = document.getElementById('clear-all-pin');
-        if (input && input.value !== '1234') {
+        if (input) {
           input.value = '1234';
           input.dispatchEvent(new Event('input', { bubbles: true }));
         }
@@ -255,19 +189,12 @@
     return true;
   }
 
-  // 7. verifyPass (show) — không bypass được vì dùng hash
-  function hookVerifyPass(){
-    if (typeof window.verifyPass !== 'function' || window.verifyPass.__masterHooked) return false;
-    var _orig = window.verifyPass;
-    var newFn = function(){
-      return _orig.apply(this, arguments);
-    };
-    newFn.__masterHooked = true;
-    window.verifyPass = newFn;
-    return true;
-  }
+  // 5. verifyCustomerPwd — KHÔNG hook (bảo mật bàn khách)
+  // 6. verifyPass — KHÔNG hook (bảo mật show)
 
-  // ============ BADGE VƯƠNG MIỆN ============
+  // ============================================================
+  // BADGE + NÚT KÍCH HOẠT
+  // ============================================================
   function injectCrownBadge(){
     if (!isMasterDevice()) return;
     if (document.getElementById('masterCrownBadge')) return;
@@ -287,7 +214,6 @@
     }
   }
 
-  // ============ NÚT FLOATING KÍCH HOẠT ============
   function injectActivateButton(){
     if (isMasterDevice()) return;
     if (document.getElementById('masterActivateBtn')) return;
@@ -296,14 +222,16 @@
     btn.id = 'masterActivateBtn';
     btn.textContent = '👑';
     btn.title = 'Bấm để kích hoạt Máy Chủ';
-    btn.style.cssText = 'position:fixed;bottom:20px;right:20px;z-index:99998;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(18,54,52,.55);border:1px solid rgba(244,184,66,.35);border-radius:50%;font-size:20px;cursor:pointer;opacity:.5;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:opacity .3s,transform .3s;user-select:none';
+    btn.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:99998;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(18,54,52,.55);border:1px solid rgba(244,184,66,.35);border-radius:50%;font-size:20px;cursor:pointer;opacity:.5;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:opacity .3s,transform .3s;user-select:none';
     btn.onclick = function(){ showActivateModal(); };
     btn.addEventListener('mouseenter', function(){ btn.style.opacity = '1'; btn.style.transform = 'scale(1.1)'; });
     btn.addEventListener('mouseleave', function(){ btn.style.opacity = '.5'; btn.style.transform = 'scale(1)'; });
     document.body.appendChild(btn);
   }
 
-  // ============ MODAL ============
+  // ============================================================
+  // MODAL KÍCH HOẠT + QUẢN LÝ
+  // ============================================================
   function modalBase(){
     return 'position:fixed;inset:0;z-index:9999998;background:rgba(10,22,40,.94);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;color:#fff';
   }
@@ -317,7 +245,7 @@
     modal.innerHTML = '<div style="background:linear-gradient(135deg,#1a4a45,#123634);border:1px solid #FBD77A;border-radius:18px;max-width:420px;width:100%;padding:26px;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7)">'
       + '<div style="font-size:44px;margin-bottom:8px">👑</div>'
       + '<h3 style="color:#FBD77A;margin:0 0 8px;font-size:17px;text-transform:uppercase;font-weight:900">Kích Hoạt Máy Chủ</h3>'
-      + '<p style="color:#98dccb;font-size:12.5px;margin:0 0 20px;line-height:1.5">Nhập mã chủ để biến thiết bị này thành <b style="color:#FBD77A">MÁY CHỦ</b> — bỏ qua mọi PIN.</p>'
+      + '<p style="color:#98dccb;font-size:12.5px;margin:0 0 20px;line-height:1.5">Nhập mã chủ để biến thiết bị này thành <b style="color:#FBD77A">MÁY CHỦ</b> — có toàn quyền.</p>'
       + '<input id="masterActivateInput" type="text" placeholder="Nhập mã chủ..." autocomplete="off" spellcheck="false" autocorrect="off" autocapitalize="off" style="width:100%;background:rgba(10,50,45,.8);border:1px solid rgba(251,215,122,.5);border-radius:10px;padding:14px;color:#FBD77A;font-family:monospace;font-size:15px;box-sizing:border-box;margin-bottom:14px;outline:none;text-align:center;font-weight:700">'
       + '<div id="masterActivateMsg" style="font-size:11.5px;margin-bottom:12px;display:none;padding:9px;border-radius:8px;text-align:center;font-weight:700"></div>'
       + '<div style="display:flex;gap:10px">'
@@ -420,12 +348,14 @@
   }
 
   function deactivate(){
-    if (!confirm('❌ TẮT MÁY CHỦ TRÊN THIẾT BỊ NÀY?\n\nSau khi tắt, máy này phải nhập PIN bình thường.')) return;
+    if (!confirm('❌ TẮT MÁY CHỦ TRÊN THIẾT BỊ NÀY?\n\nSau khi tắt, máy này không còn toàn quyền.')) return;
     try { localStorage.removeItem(MASTER_KEY); } catch(e){}
     location.reload();
   }
 
-  // ============ BẤM 5 LẦN VÀO LOGO ============
+  // ============================================================
+  // BẤM 5 LẦN VÀO LOGO
+  // ============================================================
   var tapCount = 0, tapTimer = null;
   function handleLogoTap(){
     tapCount++;
@@ -453,18 +383,17 @@
     if (inBrand || isDolphinText || inTopZone) handleLogoTap();
   }, true);
 
-  // ============ KHỞI TẠO ============
+  // ============================================================
+  // KHỞI TẠO
+  // ============================================================
   function startHooking(){
     var tries = 0;
     var timer = setInterval(function(){
       tries++;
       hookRequestPinAccess();
       hookVerifyPin();
-      hookPromptManagerAuth();
       hookVerifyManagerAuth();
-      hookPromptClearAllCustomers();
       hookVerifyClearAllPin();
-      hookVerifyPass();
       if (tries > 200) clearInterval(timer);
     }, 150);
   }

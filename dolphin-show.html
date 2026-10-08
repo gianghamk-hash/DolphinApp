@@ -25,6 +25,27 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 .btn-gold{background:linear-gradient(135deg,#F6D27A,#C58F2E);color:#000;font-weight:900}
 </style>
 <script src="master.js" defer></script>
+<!-- ════════ PWA MANIFEST ════════ -->
+<link rel="manifest" href="/DolphinApp/manifest.json">
+
+<!-- ════════ PWA THEME ════════ -->
+<meta name="theme-color" content="#123634">
+<meta name="color-scheme" content="dark">
+
+<!-- ════════ iOS SPECIFIC ════════ -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Dolphin">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- ════════ iOS ICONS ════════ -->
+<link rel="apple-touch-icon" sizes="152x152" href="/DolphinApp/pwa-icons/icon-152.png">
+<link rel="apple-touch-icon" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
+<link rel="apple-touch-icon" href="/DolphinApp/pwa-icons/icon-192.png">
+
+<!-- ════════ ANDROID / CHROME ════════ -->
+<link rel="icon" type="image/png" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/DolphinApp/pwa-icons/icon-512.png">
 </head>
 <body class="min-h-screen flex flex-col">
 <canvas id="fw" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index:0"></canvas>

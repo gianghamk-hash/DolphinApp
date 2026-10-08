@@ -97,39 +97,111 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader-text{color:#FBD77A;font-weight:800;font-size:.85rem;letter-spacing:.15em;text-transform:uppercase}
 
-/* ==================== FLOATING HOME CONTROLS (NHỎ GỌN) ==================== */
-#home-controls{position:fixed;top:10px;left:10px;z-index:1000;
-  display:flex;gap:6px;align-items:center;transition:all .3s cubic-bezier(.16,1,.3,1);
-  user-select:none;-webkit-user-select:none}
-#btn-home{width:38px;height:38px;border-radius:50%;
-  background:rgba(18,54,52,.72);border:1px solid rgba(244,184,66,.5);
-  color:#FBD77A;display:flex;align-items:center;justify-content:center;
-  cursor:pointer;backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  box-shadow:0 4px 14px rgba(0,0,0,.4);transition:all .25s;
-  -webkit-appearance:none;appearance:none;padding:0}
-#btn-home:hover{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
-  transform:scale(1.08);box-shadow:0 6px 18px rgba(244,184,66,.5)}
-#btn-home:active{transform:scale(.95)}
-#btn-home svg{width:18px;height:18px;pointer-events:none}
+/* ============ FLOATING HOME CONTROLS — DRAGGABLE ============ */
+#home-controls{
+  position:fixed;
+  bottom:20px;
+  right:15px;
+  z-index:1000;
+  display:flex;
+  flex-direction:column-reverse;
+  gap:8px;
+  align-items:center;
+  user-select:none;
+  -webkit-user-select:none;
+  touch-action:none;
+  transition:opacity .2s;
+}
+#home-controls.dragging{
+  transition:none;
+  opacity:.85;
+}
+#home-controls.dragging #btn-home{
+  transform:scale(1.08);
+  box-shadow:0 10px 30px rgba(0,0,0,.7), 0 0 0 4px rgba(244,184,66,.35);
+}
+#btn-home{
+  width:52px;
+  height:52px;
+  border-radius:50%;
+  background:rgba(18,54,52,.9);
+  border:2px solid rgba(244,184,66,.7);
+  color:#FBD77A;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:grab;
+  backdrop-filter:blur(12px);
+  -webkit-backdrop-filter:blur(12px);
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+  transition:transform .15s,box-shadow .15s;
+  -webkit-appearance:none;
+  appearance:none;
+  padding:0;
+  touch-action:none;
+  -webkit-tap-highlight-color:transparent;
+}
+#btn-home:active{
+  cursor:grabbing;
+}
+#btn-home svg{
+  width:24px;
+  height:24px;
+  pointer-events:none;
+}
+#btn-toggle{
+  width:34px;
+  height:34px;
+  border-radius:50%;
+  background:rgba(18,54,52,.8);
+  border:1px solid rgba(244,184,66,.4);
+  color:rgba(251,215,122,.95);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  cursor:pointer;
+  backdrop-filter:blur(8px);
+  -webkit-backdrop-filter:blur(8px);
+  box-shadow:0 3px 10px rgba(0,0,0,.3);
+  transition:transform .15s;
+  font-size:14px;
+  -webkit-appearance:none;
+  appearance:none;
+  padding:0;
+  line-height:1;
+  touch-action:manipulation;
+  -webkit-tap-highlight-color:transparent;
+}
+#btn-toggle:active{
+  transform:scale(.92);
+  background:rgba(18,54,52,.95);
+}
 
-#btn-toggle{width:26px;height:26px;border-radius:50%;
-  background:rgba(18,54,52,.55);border:1px solid rgba(244,184,66,.3);
-  color:rgba(251,215,122,.85);display:flex;align-items:center;justify-content:center;
-  cursor:pointer;backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
-  box-shadow:0 3px 10px rgba(0,0,0,.3);transition:all .25s;
-  font-size:12px;-webkit-appearance:none;appearance:none;padding:0;line-height:1}
-#btn-toggle:hover{background:rgba(18,54,52,.85);color:#FBD77A;transform:scale(1.1)}
-
-/* Trạng thái ẩn: thu nhỏ thành chấm mờ */
-#home-controls.minimized #btn-home{width:14px;height:14px;opacity:.35;border-color:rgba(244,184,66,.4)}
+/* Trạng thái thu gọn */
+#home-controls.minimized #btn-home{
+  width:18px;
+  height:18px;
+  opacity:.5;
+  border-color:rgba(244,184,66,.5);
+  box-shadow:0 3px 10px rgba(0,0,0,.4);
+}
 #home-controls.minimized #btn-home svg{display:none}
 #home-controls.minimized #btn-toggle{display:none}
-#home-controls.minimized #btn-home::after{content:'';width:6px;height:6px;border-radius:50%;
-  background:#FBD77A;box-shadow:0 0 6px rgba(244,184,66,.8)}
-#home-controls.minimized #btn-home:hover{width:38px;height:38px;opacity:1}
-#home-controls.minimized #btn-home:hover::after{display:none}
-#home-controls.minimized #btn-home:hover svg{display:block}
-
+#home-controls.minimized #btn-home::after{
+  content:'';
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:#FBD77A;
+  box-shadow:0 0 10px rgba(244,184,66,.9);
+}
+#home-controls.minimized #btn-home:active{
+  width:52px;
+  height:52px;
+  opacity:1;
+}
+#home-controls.minimized #btn-home:active::after{display:none}
+#home-controls.minimized #btn-home:active svg{display:block}
 /* ==================== PIN MODAL (SHOW) ==================== */
 #pin-modal{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
   background:rgba(10,22,40,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);

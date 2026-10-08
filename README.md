@@ -87,3 +87,77 @@ Toàn bộ hệ thống sử dụng **Firebase Firestore realtime** — mọi th
 ---
 
 ## 🏗️ Kiến trúc hệ thống
+
+---┌─────────────────────────────────────────────────────────────┐
+│ NGƯỜI DÙNG │
+│ ┌──────────────┐ ┌──────────────┐ ┌──────────────────┐ │
+│ │ 📱 Khách │ │ 👨‍💼 Nhân viên│ │ 👑 Quản lý │ │
+│ │ (Web/QR) │ │ (Staff App) │ │ (Manager App) │ │
+│ └──────┬───────┘ └──────┬───────┘ └────────┬─────────┘ │
+└─────────┼─────────────────┼───────────────────┼─────────────┘
+│ │ │
+▼ ▼ ▼
+┌─────────────────────────────────────────────────────────────┐
+│ 🌐 FIREBASE FIRESTORE (Realtime) │
+│ ┌────────────┐ ┌────────────┐ ┌────────────┐ ┌──────────┐ │
+│ │ bun_orders │ │lounge_order│ │ res_orders │ │show_table│ │
+│ │ bun_calls │ │lounge_call │ │ res_calls │ │show_hist │ │
+│ │ bun_tables │ │lounge_table│ │ res_tables │ │ │ │
+│ └────────────┘ └────────────┘ └────────────┘ └──────────┘ │
+│ ┌────────────────────────────────────────────────────────┐ │
+│ │ 👑 master_config (Quản lý mã chủ) │ │
+│ └────────────────────────────────────────────────────────┘ │
+└─────────────────────────────────────────────────────────────┘
+
+text
+
+
+## 📁 Cấu trúc thư mục
+DolphinApp/
+├── 📄 index.html # Landing page — chọn phân hệ
+├── 🍸 dolphin-lounge.html # Premium Lounge
+├── 🌴 dolphin-bungalow.html # Bungalow
+├── 🍽️ dolphin-restaurant.html # Nhà hàng tầng 2
+├── 🎭 dolphin-show.html # Infinity Show
+├── 👑 master.js # Hệ thống Máy Chủ (bypass PIN)
+├── 🖼️ icon-source.png # Icon gốc 1024x1024
+├── 📁 .github/
+│ └── 📁 workflows/
+│ └── ⚙️ build.yml # Tự động build APK
+└── 📖 README.md # File này
+
+---
+
+## 🚀 Cài đặt & Build
+
+### Cách 1: Tải APK có sẵn (Dễ nhất)
+
+**1.** Vào tab [**Actions**](https://github.com/gianghamk-hash/DolphinApp/actions)
+
+**2.** Chọn workflow run **mới nhất** (có dấu ✅ xanh)
+
+**3.** Kéo xuống cuối trang → mục **Artifacts**:
+
+| Artifact | Dành cho | Ghi chú |
+|----------|----------|---------|
+| 📦 `DolphinStaff-APK` | Nhân viên | **Cần PIN** khi vào khu vực nội bộ |
+| 👑 `DolphinManager-APK` | Quản lý | **Bỏ qua mọi PIN** — không chia sẻ |
+
+**4.** Giải nén file `.zip` → cài APK lên điện thoại Android.
+
+### Cách 2: Build lại từ đầu
+
+Repo này tự động build APK qua **GitHub Actions** mỗi khi có commit mới:
+
+```bash
+# Clone repo
+git clone https://github.com/gianghamk-hash/DolphinApp.git
+cd DolphinApp
+
+# Sửa file HTML tùy ý → commit → push
+git add .
+git commit -m "Update features"
+git push
+
+# → Vào tab Actions xem build → tải APK ở Artifacts
+

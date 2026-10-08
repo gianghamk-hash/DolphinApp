@@ -1,0 +1,20 @@
+cff-version: 1.2.0
+message: "Nếu sử dụng hệ thống này, vui lòng trích dẫn như sau:"
+title: "Dolphin Ha Long Cruise Management System"
+abstract: "Hệ thống quản lý du thuyền đa nền tảng với Firebase realtime"
+authors:
+  - family-names: "Giang"
+    given-names: "Doan"
+    alias: "gianghamk-hash"
+    affiliation: "Dolphin Ha Long Cruise"
+version: "1.0.0"
+date-released: "2026-10-08"
+license: MIT
+keywords:
+  - cruise
+  - management
+  - firebase
+  - android
+  - webview
+  - halong
+  - vietnam

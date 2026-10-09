@@ -526,6 +526,49 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
       </p>
 
 
+      <!-- ══════════════════ AREA CARDS ══════════════════ -->
+      <div class="fade-up d-2 area-grid">
+
+        <!-- ════════ BẢNG XẾP HẠNG ════════ -->
+        <button type="button" class="area-card" onclick="openApp('ranking')" aria-label="Bảng xếp hạng">
+          <span class="area-badge">VINH DANH</span>
+          <span class="area-icon">🏆</span>
+          <h3 class="area-title-en">BẢNG XẾP HẠNG</h3>
+          <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
+        </button>
+
+        <!-- ════════ LOUNGE ════════ -->
+        <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
+          <span class="area-badge">VIP</span>
+          <span class="area-icon">🍸</span>
+          <h3 class="area-title-en">PREMIUM LOUNGE ACCESS</h3>
+          <p class="area-title-vi">Phòng LOUNGE</p>
+        </button>
+
+        <!-- ════════ BUNGALOW ════════ -->
+        <button type="button" class="area-card" onclick="openApp('bungalow')" aria-label="Bungalow">
+          <span class="area-icon">🌴</span>
+          <h3 class="area-title-en">BUNGALOW</h3>
+          <p class="area-title-vi">KHU VỰC CHÒI BUNGALOW</p>
+        </button>
+
+        <!-- ════════ RESTAURANT ════════ -->
+        <button type="button" class="area-card" onclick="openApp('restaurant')" aria-label="Restaurant">
+          <span class="area-badge">BUFFET ALACARTE</span>
+          <span class="area-icon">🍽️</span>
+          <h3 class="area-title-en">SUN VIEW RESTAURANT</h3>
+          <p class="area-title-vi">Nhà Hàng Tầng 2</p>
+        </button>
+
+        <!-- ════════ SHOW ════════ -->
+        <button type="button" class="area-card" onclick="openApp('show')" aria-label="Infinity Show">
+          <span class="area-icon">🎭</span>
+          <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
+          <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
+        </button>
+
+      </div>
+
 <!-- ══════════════ APP VIEW (IFRAME) ══════════════ -->
 <div id="app-view" class="hidden">
   <!-- Floating home controls (nhỏ gọn, có thể ẩn/hiện) -->
@@ -558,7 +601,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     bungalow:   'dolphin-bungalow.html',
     restaurant: 'dolphin-restaurant.html',
     show:       'dolphin-show.html',
-    dashboard:  'manager/dashboard.html'
+    dashboard:  'manager/dashboard.html',
+    ranking:    'ranking/index.html'
   };
 
   var currentApp = null;
@@ -879,15 +923,6 @@ if ('serviceWorker' in navigator) {
 }
 </script>
 
-// ════════ TAB SWITCHING ════════
-window.switchRevTab = function(tab) {
-  currentRevTab = tab;
-  document.querySelectorAll('.rev-tab').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === tab);
-  });
-  renderRevenue();
-};
-</script>
 
   <!-- ════════ ANNOUNCEMENT TICKER — FIREBASE REALTIME ════════ -->
 <script type="module">

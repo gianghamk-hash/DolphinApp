@@ -547,7 +547,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
         </button>
 
         <button type="button" class="area-card" onclick="openApp('show')" aria-label="Infinity Show">
-          <span class="area-badge">🔒 PIN</span>
           <span class="area-icon">🎭</span>
           <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
           <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
@@ -586,20 +585,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   <iframe id="app-frame" allow="microphone; camera; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen" title="Dolphin App"></iframe>
 </div>
 
-<!-- ══════════════ PIN MODAL (INFINITY SHOW) ══════════════ -->
-<div id="pin-modal">
-  <div class="pin-card">
-    <div class="pin-icon">🔒</div>
-    <h3 class="pin-title">Infinity Show</h3>
-    <p class="pin-sub">Khu vực nội bộ —<br>Vui lòng nhập mật khẩu để tiếp tục</p>
-    <input type="password" id="pin-input" maxlength="4" inputmode="numeric" autocomplete="off" placeholder="••••" aria-label="Mật khẩu">
-    <p id="pin-error">❌ Mật khẩu không đúng. Vui lòng thử lại!</p>
-    <div class="pin-actions">
-      <button type="button" class="btn-pin-cancel" onclick="closePinModal()">Hủy</button>
-      <button type="button" class="btn-pin-ok" onclick="verifyPin()">Xác nhận</button>
-    </div>
-  </div>
-</div>
 
 <script>
 (function(){
@@ -613,8 +598,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     show:       'dolphin-show.html',
     dashboard:  'manager/dashboard.html'
   };
-  var SHOW_PIN = '1111';          // mật khẩu cho Infinity Show
-  var SESSION_KEY = 'dolphinShowAuthed';
 
   var currentApp = null;
   var transitionLock = false;
@@ -796,63 +779,12 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     if (cardDash) cardDash.style.display = 'flex';
   }
 
-  /* ============ PIN MODAL ============ */
-  var pinModal = document.getElementById('pin-modal');
-  var pinInput = document.getElementById('pin-input');
-  var pinError = document.getElementById('pin-error');
-
-  window.openPinModal = function(){
-    pinInput.value = '';
-    pinError.classList.remove('show');
-    pinModal.classList.add('show');
-    setTimeout(function(){ pinInput.focus(); }, 250);
-  };
-
-  window.closePinModal = function(){
-    pinModal.classList.remove('show');
-    pendingShowOpen = false;
-  };
-
-  window.verifyPin = function(){
-    var val = (pinInput.value || '').trim();
-    if (val === SHOW_PIN) {
-      try { sessionStorage.setItem(SESSION_KEY, '1'); } catch(e){}
-      // 👑 MASTER: bỏ qua PIN
-try { if (localStorage.getItem('dolphinMasterDevice') === 'true') authed = true; } catch(e){}
-      pinModal.classList.remove('show');
-      var shouldOpen = pendingShowOpen;
-      pendingShowOpen = false;
-      if (shouldOpen) doOpenApp('show');
-    } else {
-      pinError.classList.remove('show');
-      void pinError.offsetWidth;
-      pinError.classList.add('show');
-      pinInput.value = '';
-      pinInput.focus();
-    }
-  };
-
-  // Enter để xác nhận
-  pinInput.addEventListener('keydown', function(e){
-    if (e.key === 'Enter') { e.preventDefault(); window.verifyPin(); }
-    if (e.key === 'Escape') { e.preventDefault(); window.closePinModal(); }
-  });
-
   /* ============ OPEN APP ============ */
   window.openApp = function(area){
     if (transitionLock) return;
     if (!APP_MAP[area]) return;
 
-    // Infinity Show cần PIN
-    if (area === 'show') {
-      var authed = false;
-      try { authed = sessionStorage.getItem(SESSION_KEY) === '1'; } catch(e){}
-      if (!authed) {
-        pendingShowOpen = true;
-        window.openPinModal();
-        return;
-      }
-    }
+  
 
     doOpenApp(area);
   };

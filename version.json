@@ -1,6 +1,7 @@
 {
-  "version": "1.0.0",
-  "buildDate": "2026-10-08T15:00:00Z",
-  "notes": "Phiên bản đầu tiên",
-  "forceUpdate": true
+  "version": "1.0.99",
+  "buildDate": "2026-10-09T15:00:00Z",
+  "commit": "test",
+  "notes": "Bản test — có gì mới",
+  "forceUpdate": false
 }

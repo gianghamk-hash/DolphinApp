@@ -678,13 +678,6 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
         <div class="flex-1"><label class="block text-[10px] font-bold text-gold-400 uppercase tracking-widest mb-1.5">PAX</label><input type="number" id="customer-pax-input" min="1" value="1" class="w-full bg-teal-950/80 border border-gold-500/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-400 text-white font-black shadow-inner"></div>
         <div class="flex-1"><label class="block text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5">Bàn Ăn</label><input type="text" id="customer-rest-input" placeholder="VD: BÀN 1..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner uppercase"></div>
       </div>
-      <div>
-  <label class="block text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1.5">NV Mở Bàn</label>
-  <input type="text" id="customer-staff-opener" placeholder="Tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner disabled:opacity-60 disabled:cursor-not-allowed">
-  <div id="staff-opener-lock" class="hidden mt-1.5 text-[10px] text-amber-400 font-bold flex items-center gap-1.5 bg-amber-950/30 border border-amber-700/40 rounded-lg px-2.5 py-1.5">
-    🔒 Đã khóa — bàn đã được mở bởi <strong id="staff-opener-name-lock" class="text-gold-400"></strong>
-  </div>
-</div>
       <div><label class="block text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5">Thanh Toán</label>
         <select id="customer-payment-input" onchange="toggleFocReason()" class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner">
           <option value="TM">Tiền Mặt</option><option value="CK">Chuyển Khoản</option><option value="VISA">Visa</option>
@@ -1960,26 +1953,9 @@ window.openCustomerNameModal = function(table){
   document.getElementById('customer-rest-input').value = a.restaurantTable || '';
   document.getElementById('customer-payment-input').value = a.paymentMethod || 'TM';
   document.getElementById('customer-foc-reason').value = a.focReason || '';
-
-  // 🔒 Khóa NV mở bàn nếu đã có
-  const openerInput = document.getElementById('customer-staff-opener');
-  const lockHint = document.getElementById('staff-opener-lock');
-  const lockName = document.getElementById('staff-opener-name-lock');
-  if (a.openedByStaff && a.openedByStaff.trim()) {
-    openerInput.value = a.openedByStaff;
-    openerInput.disabled = true;
-    lockHint.classList.remove('hidden');
-    lockName.textContent = a.openedByStaff;
-  } else {
-    openerInput.value = window.getStaffName() || '';
-    openerInput.disabled = false;
-    lockHint.classList.add('hidden');
-  }
-
   window.toggleFocReason();
   document.getElementById('modal-customer-name').classList.remove('hidden');
   document.getElementById('customer-name-input').focus();
-};
 };
 window.toggleFocReason = function(){
   const m = document.getElementById('customer-payment-input').value;
@@ -1996,33 +1972,16 @@ window.saveCustomerName = async function(){
   const payment = document.getElementById('customer-payment-input').value;
   const focReason = document.getElementById('customer-foc-reason').value.trim();
   const origPax = parseInt(document.getElementById('customer-original-pax').value)||0;
-  const openerInput = document.getElementById('customer-staff-opener');
-  const staffOpener = (openerInput.value || '').trim();
-
   if(!name){ window.showToast("Nhập tên khách!","⚠️"); return; }
   if(pax<=0){ window.showToast("Pax phải > 0!","⚠️"); return; }
   if((payment==='FOC'||payment==='TA_UNPAID') && !focReason){ window.showToast("Nhập lý do!","⚠️"); return; }
-  if(!staffOpener){ window.showToast("Nhập tên NV mở bàn!","⚠️"); return; }
-
-  // 🔒 Nếu bàn đã có openedByStaff → giữ nguyên, không cho đổi
-  const existing = state.tableAssignments[table] || {};
-  const finalOpener = (existing.openedByStaff && existing.openedByStaff.trim())
-    ? existing.openedByStaff
-    : staffOpener;
-
-  const data = { customerName:name, pax, restaurantTable:restTable, paymentMethod:payment, openedByStaff: finalOpener };
+  const data = { customerName:name, pax, restaurantTable:restTable, paymentMethod:payment };
   if(payment==='FOC'||payment==='TA_UNPAID') data.focReason = focReason;
-
   if(origPax>0 && pax!==origPax){ window.promptManagerAuth('save',{table,dataToSave:data}); return; }
   await window.executeSaveCustomerName({table, dataToSave:data});
 };
 window.executeSaveCustomerName = async function({table,dataToSave}){
-  try{ 
-    if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave, { merge: true }); 
-    window.showToast(`Đã lưu bàn ${table}`,'✅'); 
-    window.closeCustomerNameModal(); 
-    Confetti.spawn(innerWidth/2, innerHeight/2, 40); 
-  }
+  try{ if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave); window.showToast(`Đã lưu bàn ${table}`,'✅'); window.closeCustomerNameModal(); Confetti.spawn(innerWidth/2, innerHeight/2, 40); }
   catch(e){ window.showToast("Lỗi lưu!","❌"); }
 };
 window.clearCustomerName = function(){ const t = document.getElementById('reception-target-table').value; window.promptManagerAuth('clear',{table:t}); };

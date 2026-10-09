@@ -79,13 +79,16 @@
     var s = document.createElement('style');
     s.id = 'chat-styles';
     s.textContent = `
-      #chatFab{position:fixed;bottom:20px;left:15px;z-index:1100;width:54px;height:54px;border-radius:50%;
+            #chatFab{position:fixed;bottom:20px;left:15px;z-index:1100;width:54px;height:54px;border-radius:50%;
         background:linear-gradient(135deg,#FBD77A 0%,#F4B842 100%);border:2px solid #123634;color:#123634;
-        font-size:24px;display:flex;align-items:center;justify-content:center;cursor:pointer;
+        font-size:24px;display:flex;align-items:center;justify-content:center;cursor:grab;
         box-shadow:0 6px 20px rgba(244,184,66,.5),0 2px 8px rgba(0,0,0,.3);
-        transition:transform .2s,box-shadow .2s;user-select:none;-webkit-user-select:none;
-        -webkit-tap-highlight-color:transparent}
-      #chatFab:active{transform:scale(.92)}
+        transition:transform .15s,box-shadow .15s;user-select:none;-webkit-user-select:none;
+        -webkit-tap-highlight-color:transparent;touch-action:none}
+      #chatFab:active{cursor:grabbing}
+      #chatFab.dragging{transform:scale(1.08);
+        box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 4px rgba(244,184,66,.35);
+        transition:none}
       #chatFab .chat-badge{position:absolute;top:-4px;right:-4px;min-width:22px;height:22px;padding:0 6px;
         border-radius:11px;background:#dc2626;color:#fff;font-size:11px;font-weight:900;
         display:flex;align-items:center;justify-content:center;font-family:'Nunito',sans-serif;

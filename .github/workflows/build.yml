@@ -309,6 +309,8 @@ jobs:
 
           cp index.html dolphin-bungalow.html dolphin-lounge.html dolphin-restaurant.html dolphin-show.html app/src/main/assets/
           cp master.js app/src/main/assets/
+          cp staff-sync.js app/src/main/assets/
+          cp community-chat.js app/src/main/assets/
           mkdir -p app/src/main/assets/manager
           cp manager/dashboard.html app/src/main/assets/manager/
 

@@ -170,8 +170,10 @@
     fab.id = 'chatFab';
     fab.innerHTML = '💬<span class="chat-badge hidden" id="chatBadge">0</span>';
     fab.title = 'Chat nội bộ';
-    fab.onclick = openChat;
     document.body.appendChild(fab);
+
+    // ═══════ DRAG & SNAP cho FAB ═══════
+    setupChatFabDrag(fab);
 
     var panel = document.createElement('div');
     panel.id = 'chatPanel';
@@ -208,7 +210,138 @@
     }
   }
 
-  function openChat(){
+  // ═══════ DRAG & SNAP CHO CHAT FAB ═══════
+  var CHAT_POS_KEY = 'dolphinChatFabPos';
+
+  function saveChatFabPos(x, y){
+    try { localStorage.setItem(CHAT_POS_KEY, JSON.stringify({ x: x, y: y })); } catch(e){}
+  }
+  function loadChatFabPos(){
+    try {
+      var s = localStorage.getItem(CHAT_POS_KEY);
+      return s ? JSON.parse(s) : null;
+    } catch(e){ return null; }
+  }
+  function applyChatFabPos(el, x, y){
+    if (!el) return;
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+    el.style.bottom = 'auto';
+    el.style.right = 'auto';
+  }
+  function clampChatFabPos(el, x, y){
+    var vw = window.innerWidth;
+    var vh = window.innerHeight;
+    var w = el.offsetWidth || 54;
+    var h = el.offsetHeight || 54;
+    x = Math.max(4, Math.min(x, vw - w - 4));
+    y = Math.max(4, Math.min(y, vh - h - 4));
+    return { x: x, y: y };
+  }
+  function snapChatFabToEdge(el){
+    var vw = window.innerWidth;
+    var w = el.offsetWidth || 54;
+    var cur = { x: el.offsetLeft, y: el.offsetTop };
+    var snapLeft = cur.x < (vw - w) / 2;
+    var nx = snapLeft ? 12 : (vw - w - 12);
+    var ny = clampChatFabPos(el, nx, cur.y).y;
+    el.style.transition = 'left .3s cubic-bezier(.16,1,.3,1), top .3s cubic-bezier(.16,1,.3,1)';
+    applyChatFabPos(el, nx, ny);
+    setTimeout(function(){ el.style.transition = ''; }, 320);
+    saveChatFabPos(nx, ny);
+  }
+
+  function setupChatFabDrag(fab){
+    // Áp dụng vị trí đã lưu
+    var saved = loadChatFabPos();
+    if (saved){
+      var c = clampChatFabPos(fab, saved.x, saved.y);
+      applyChatFabPos(fab, c.x, c.y);
+    }
+
+    var drag = {
+      active: false,
+      moved: false,
+      startX: 0, startY: 0,
+      origX: 0, origY: 0,
+      startTime: 0
+    };
+
+    function getPoint(e){
+      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
+      if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
+      return { x: e.clientX, y: e.clientY };
+    }
+
+    function onStart(e){
+      var pt = getPoint(e);
+      drag.active = true;
+      drag.moved = false;
+      drag.startX = pt.x;
+      drag.startY = pt.y;
+      drag.origX = fab.offsetLeft;
+      drag.origY = fab.offsetTop;
+      drag.startTime = Date.now();
+      fab.classList.add('dragging');
+      fab.style.transition = '';
+    }
+
+    function onMove(e){
+      if (!drag.active) return;
+      var pt = getPoint(e);
+      var dx = pt.x - drag.startX;
+      var dy = pt.y - drag.startY;
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 8) return;
+      drag.moved = true;
+      if (e.cancelable) e.preventDefault();
+      var nx = drag.origX + dx;
+      var ny = drag.origY + dy;
+      var c = clampChatFabPos(fab, nx, ny);
+      applyChatFabPos(fab, c.x, c.y);
+    }
+
+    function onEnd(e){
+      if (!drag.active) return;
+      drag.active = false;
+      fab.classList.remove('dragging');
+
+      // Tap (không di chuyển) → mở chat
+      if (!drag.moved){
+        var elapsed = Date.now() - drag.startTime;
+        if (elapsed < 500){
+          openChat();
+        }
+        return;
+      }
+
+      // Drag → snap vào cạnh
+      snapChatFabToEdge(fab);
+    }
+
+    // Touch
+    fab.addEventListener('touchstart', onStart, { passive: true });
+    document.addEventListener('touchmove', onMove, { passive: false });
+    document.addEventListener('touchend', onEnd);
+    document.addEventListener('touchcancel', onEnd);
+
+    // Mouse
+    fab.addEventListener('mousedown', function(e){
+      onStart(e);
+      e.preventDefault();
+    });
+    document.addEventListener('mousemove', onMove);
+    document.addEventListener('mouseup', onEnd);
+
+    // Clamp khi resize
+    window.addEventListener('resize', function(){
+      var pos = loadChatFabPos();
+      if (!pos) return;
+      var c = clampChatFabPos(fab, pos.x, pos.y);
+      applyChatFabPos(fab, c.x, c.y);
+    });
+  }
+
+   function openChat(){
     var panel = document.getElementById('chatPanel');
     if (!panel) return;
     panel.classList.add('open');

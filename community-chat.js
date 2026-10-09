@@ -321,7 +321,6 @@
     var q = m.db.query(
       m.db.collection(db, CHAT_COLLECTION),
       m.db.where('dateVN', '==', today),
-      m.db.orderBy('timestamp', 'asc'),
       m.db.limit(MAX_MESSAGES)
     );
 

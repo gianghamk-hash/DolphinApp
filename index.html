@@ -891,12 +891,19 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <h3 class="area-title-en">SUN VIEW RESTAURANT</h3>
           <p class="area-title-vi">Nhà Hàng Tầng 2</p>
         </button>
-
-        <button type="button" class="area-card" onclick="openApp('show')" aria-label="Infinity Show">
-          <span class="area-icon">🎭</span>
+        
           <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
           <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
-        </button>        <!-- 👑 MANAGER ONLY — TỔNG QUAN HỆ THỐNG -->
+        </button>
+        
+        <!-- ════════ BẢNG XẾP HẠNG ════════ -->
+        <button type="button" class="area-card" onclick="openApp('ranking')" aria-label="Bảng xếp hạng">
+          <span class="area-badge">VINH DANH</span>
+          <span class="area-icon">🏆</span>
+          <h3 class="area-title-en">BẢNG XẾP HẠNG</h3>
+          <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
+        </button>
+        <!-- 👑 MANAGER ONLY — TỔNG QUAN HỆ THỐNG -->
         <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
           <span class="area-badge">CHỈ MANAGER</span>
           <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
@@ -943,6 +950,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     restaurant: 'dolphin-restaurant.html',
     show:       'dolphin-show.html',
     dashboard:  'manager/dashboard.html'
+    ranking:    'ranking/index.html'
   };
 
   var currentApp = null;

@@ -1086,6 +1086,170 @@ if ('serviceWorker' in navigator) {
   });
 }
 </script>
+<!-- ════════ LEADERBOARD — FIREBASE REALTIME ════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+
+// ════════ CONFIG ════════
+const COLLECTIONS = ['bun_orders', 'lounge_orders', 'res_orders'];
+const DAYS_BACK = 7;              // Chỉ tính 7 ngày gần nhất
+const MIN_ORDERS = 3;             // Nhân viên phải có ít nhất 3 đơn
+const MIN_SECONDS = 10;           // Bỏ đơn quá nhanh (< 10s)
+const MAX_SECONDS = 30 * 60;      // Bỏ đơn quá chậm (> 30 phút)
+const TOP_N = 5;                  // Lấy top 5
+
+let allOrders = [];
+let listeners = {};
+
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  signInAnonymously(auth).then(() => {
+    COLLECTIONS.forEach(colName => {
+      const ref = collection(db, colName);
+      listeners[colName] = onSnapshot(ref, (snap) => {
+        const arr = [];
+        snap.forEach(d => {
+          const data = d.data();
+          arr.push({ id: d.id, _col: colName, ...data });
+        });
+        // Merge: xóa đơn cũ của collection này, thêm mới
+        allOrders = allOrders.filter(o => o._col !== colName).concat(arr);
+        renderLeaderboard();
+      }, (err) => {
+        console.warn('[Leaderboard] ' + colName + ' listen error:', err);
+      });
+    });
+  }).catch(err => {
+    console.warn('[Leaderboard] Auth error:', err);
+    showLeaderboardError();
+  });
+} catch(e) {
+  console.warn('[Leaderboard] Init error:', e);
+  showLeaderboardError();
+}
+
+// ════════ TÍNH TOÁN ════════
+function calculateLeaderboard() {
+  const now = Date.now();
+  const cutoff = now - (DAYS_BACK * 24 * 60 * 60 * 1000);
+
+  // Lọc đơn completed trong 7 ngày
+  const validOrders = allOrders.filter(o => {
+    if (!o.timestamp || !o.completedAt) return false;
+    if (o.status !== 'completed') return false;
+    if (o.timestamp < cutoff) return false;
+    const duration = (o.completedAt - o.timestamp) / 1000;
+    if (duration < MIN_SECONDS) return false;
+    if (duration > MAX_SECONDS) return false;
+    return true;
+  });
+
+  // Group theo nhân viên
+  const employees = {};
+  validOrders.forEach(o => {
+    // Ưu tiên completedBy, fallback preparedBy
+    const name = (o.completedBy || o.preparedBy || '').trim();
+    if (!name) return;
+
+    if (!employees[name]) {
+      employees[name] = { name, count: 0, totalSeconds: 0, orders: [] };
+    }
+    const dur = (o.completedAt - o.timestamp) / 1000;
+    employees[name].count += 1;
+    employees[name].totalSeconds += dur;
+    employees[name].orders.push(dur);
+  });
+
+  // Lọc nhân viên đủ điều kiện
+  const list = Object.values(employees)
+    .filter(e => e.count >= MIN_ORDERS)
+    .map(e => ({
+      name: e.name,
+      count: e.count,
+      avgSeconds: e.totalSeconds / e.count
+    }))
+    .sort((a, b) => a.avgSeconds - b.avgSeconds)
+    .slice(0, TOP_N);
+
+  return list;
+}
+
+// ════════ FORMAT THỜI GIAN ════════
+function formatDuration(seconds) {
+  if (seconds < 60) return Math.round(seconds) + 's';
+  const m = Math.floor(seconds / 60);
+  const s = Math.round(seconds % 60);
+  return m + 'p' + (s > 0 ? s + 's' : '');
+}
+
+function getSpeedClass(seconds) {
+  if (seconds < 60) return 'fast';
+  if (seconds < 120) return 'slow';
+  return '';
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// ════════ RENDER ════════
+function renderLeaderboard() {
+  const section = document.getElementById('leaderboardSection');
+  const list = document.getElementById('lb-list');
+  if (!section || !list) return;
+
+  const data = calculateLeaderboard();
+
+  if (data.length === 0) {
+    section.classList.remove('show');
+    return;
+  }
+
+  const medals = ['🥇', '🥈', '🥉', '4', '5'];
+
+  list.innerHTML = data.map((emp, idx) => {
+    const rank = idx + 1;
+    const medal = rank <= 3 ? medals[rank - 1] : rank;
+    const speedClass = getSpeedClass(emp.avgSeconds);
+
+    return `
+      <div class="lb-row rank-${rank}">
+        <div class="lb-rank">${medal}</div>
+        <div class="lb-name">${escapeHtml(emp.name)}</div>
+        <div class="lb-stats">
+          <div class="lb-stat">
+            <div class="lb-stat-val">${emp.count}</div>
+            <div class="lb-stat-label">Đơn</div>
+          </div>
+          <div class="lb-stat">
+            <div class="lb-stat-val ${speedClass}">${formatDuration(emp.avgSeconds)}</div>
+            <div class="lb-stat-label">TB</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+
+  section.classList.add('show');
+}
+
+function showLeaderboardError() {
+  const list = document.getElementById('lb-list');
+  if (list) list.innerHTML = '<div class="lb-empty">Không thể tải bảng xếp hạng</div>';
+}
+</script>
   <!-- ════════ ANNOUNCEMENT TICKER — FIREBASE REALTIME ════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";

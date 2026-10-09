@@ -12,7 +12,8 @@ const CACHE_URLS = [
   BASE + '/dolphin-lounge.html',
   BASE + '/dolphin-restaurant.html',
   BASE + '/dolphin-show.html',
-  BASE + '/manifest.json'
+  BASE + '/manifest.json',
+   BASE + '/logo-dolphin.png',
 ];
 
 self.addEventListener('install', (event) => {

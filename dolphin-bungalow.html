@@ -683,7 +683,25 @@ window.saveCustomerName=async function(){
     window.closeCustomerNameModal();
   }catch(e){window.showToast('Lỗi lưu!','❌');}
 };
-
+window.clearCustomerName = async function(){
+  const t = document.getElementById('reception-target-table').value;
+  
+  // 👑 MASTER BYPASS — xóa trực tiếp, không hỏi PIN
+  if (localStorage.getItem('dolphinMasterDevice') === 'true') {
+    try {
+      if (db) await deleteDoc(doc(db, COL_TABLES, t));
+      window.showToast('Đã xóa P.' + t, '🧹');
+      window.closeCustomerNameModal();
+    } catch(e) {
+      window.showToast('Lỗi xóa: ' + e.message, '❌');
+      console.error('Clear error:', e);
+    }
+    return;
+  }
+  
+  // Nhân viên thường — cần PIN Manager
+  window.promptManagerAuth('clear', { table: t });
+};
 let cancelCtx={orderId:null,itemIndex:null,maxQty:0};
 window.openCancelModal=(id,i,oq,ac)=>{const m=oq-ac;if(m<=0)return;cancelCtx={orderId:id,itemIndex:i,maxQty:m};const inp=document.getElementById('cancel-qty-input');inp.value=1;inp.max=m;document.getElementById('modal-cancel-qty').classList.remove('hidden');};
 window.closeCancelModal=()=>document.getElementById('modal-cancel-qty').classList.add('hidden');

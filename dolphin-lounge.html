@@ -94,11 +94,9 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
 
 #scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#FBBF24,#22d3ee,#FBBF24);background-size:200% 100%;z-index:999;width:0;box-shadow:0 0 10px rgba(245,158,11,.7);transition:width .1s linear;animation:shimmer 4s linear infinite}
 
-/* === Celestial — Sun là điểm nhấn chính === */
 #celestial-core { will-change: left, top, width, height, opacity, box-shadow, background; transition: left 1.2s linear, top 1.2s linear, width 1.2s ease, height 1.2s ease, box-shadow 1.2s ease, background 1.2s ease; }
 #celestial-glow { will-change: left, top, width, height, opacity; }
 
-/* === Sound toggle with mode popover === */
 .sound-toggle{position:relative;transition:all .3s}
 .sound-toggle.active{color:#FBBF24;text-shadow:0 0 12px rgba(245,158,11,.9);border-color:rgba(245,158,11,.6)!important}
 .sound-toggle.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(245,158,11,.7);animation:callRing 2s ease-out infinite}
@@ -259,7 +257,6 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
   <div id="weather-overlay" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0;background:rgba(0,0,20,.35)"></div>
   <div class="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-b from-transparent to-[#0A3350]/70"></div>
 </div>
-
 <div class="bg-teal-950/80 backdrop-blur-md border-b border-teal-800/50 px-4 py-2 text-xs flex flex-wrap justify-between items-center gap-3 z-50">
   <div class="flex items-center gap-3 flex-wrap">
     <div class="flex items-center gap-2">
@@ -658,6 +655,13 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
         <div class="flex-1"><label class="block text-[10px] font-bold text-gold-400 uppercase tracking-widest mb-1.5">PAX</label><input type="number" id="customer-pax-input" min="1" value="1" class="w-full bg-teal-950/80 border border-gold-500/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-400 text-white font-black shadow-inner"></div>
         <div class="flex-1"><label class="block text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5">Bàn Ăn</label><input type="text" id="customer-rest-input" placeholder="VD: BÀN 1..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner uppercase"></div>
       </div>
+      <div>
+        <label class="block text-[10px] font-bold text-emerald-400 uppercase tracking-widest mb-1.5">NV Mở Bàn</label>
+        <input type="text" id="customer-staff-opener" placeholder="Tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-emerald-500 text-white shadow-inner disabled:opacity-60 disabled:cursor-not-allowed">
+        <div id="staff-opener-lock" class="hidden mt-1.5 text-[10px] text-amber-400 font-bold flex items-center gap-1.5 bg-amber-950/30 border border-amber-700/40 rounded-lg px-2.5 py-1.5">
+          🔒 Đã khóa — bàn đã được mở bởi <strong id="staff-opener-name-lock" class="text-gold-400"></strong>
+        </div>
+      </div>
       <div><label class="block text-[10px] font-bold text-teal-400 uppercase tracking-widest mb-1.5">Thanh Toán</label>
         <select id="customer-payment-input" onchange="toggleFocReason()" class="w-full bg-teal-950/80 border border-teal-600/50 p-3 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner">
           <option value="TM">Tiền Mặt</option><option value="CK">Chuyển Khoản</option><option value="VISA">Visa</option>
@@ -677,7 +681,6 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
     <button onclick="clearCustomerName()" class="w-full border border-red-500/40 text-red-400 py-2.5 rounded-xl text-[10px] font-bold uppercase hover:bg-red-950/50 transition-all relative z-10">✕ Xóa bàn này</button>
   </div>
 </div>
-
 <div id="modal-cancel-qty" class="fixed inset-0 z-[170] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
   <div class="bg-red-950/90 border border-red-700/50 w-full max-w-xs rounded-[2rem] overflow-hidden p-6 shadow-2xl text-center">
     <h3 class="font-black text-red-400 text-sm uppercase mb-2 tracking-widest">Hủy Món</h3>
@@ -860,9 +863,6 @@ window.unlockAudio = function() {
 };
 ['click','touchstart','touchend','keydown','scroll'].forEach(e=>document.addEventListener(e,window.unlockAudio,{capture:true,passive:true}));
 
-/* ============================================================
-   🔔 NOTIFICATION BELL — Hotel reception style, loud & long
-   ============================================================ */
 window.playNotificationAlert = function() {
   if(navigator.vibrate){ try{ navigator.vibrate([500,120,500,120,500,120,500,120,800]); }catch(e){} }
   try {
@@ -926,16 +926,6 @@ window.playNotificationAlert = function() {
   } catch(e){ console.log('Bell error:', e); }
 };
 
-/* ============================================================
-   🎹 DOLPHIN LOUNGE — ROMANTIC BALLAD ENGINE
-   ------------------------------------------------------------
-   Lấy cảm hứng từ dòng ballad tình cảm cuối thập niên 80
-   (tone ấm, progression I-vi-IV-V, tempo 62-72 BPM).
-   Giai điệu là ORIGINAL — không sao chép bất kỳ tác phẩm
-   có bản quyền nào. Chỉ mô phỏng đúng "chất" âm nhạc, tiết tấu
-   và màu sắc hòa âm của dòng nhạc này.
-   ============================================================ */
-
 const AMB_NOTES = {
   Bb1: 58.27, C2: 65.41, D2: 73.42, Eb2: 77.78, F2: 87.31, G2: 98.00, A2: 110.00,
   Bb2: 116.54, C3: 130.81, D3: 146.83, Eb3: 155.56, F3: 174.61, G3: 196.00, A3: 220.00,
@@ -944,7 +934,6 @@ const AMB_NOTES = {
   Bb5: 932.33, C6: 1046.50
 };
 
-// Progression I–vi–IV–V (Bb–Gm7–Eb–F) — 8 bars
 const BALLAD_LOOP = [
   { chord:[AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4, AMB_NOTES.A4], bass: AMB_NOTES.Bb2,
     melody:[[AMB_NOTES.F5,1.5],[AMB_NOTES.Eb5,0.5],[AMB_NOTES.D5,2]] },
@@ -970,7 +959,6 @@ const Ambient = {
   bpm: 68,
   seqState: { barIdx: 0, nextBarTime: 0, timer: null },
   variant: 'full',
-
   init() {
     if (this.ctx) return;
     this.ctx = new (window.AudioContext||window.webkitAudioContext)();
@@ -984,16 +972,13 @@ const Ambient = {
     this.tracksGain = this.ctx.createGain();
     this.tracksGain.gain.value = 1.0;
     this.tracksGain.connect(this.master);
-
     const conv = this.ctx.createConvolver();
     const rate = this.ctx.sampleRate;
     const len = Math.floor(rate * 2.4);
     const buf = this.ctx.createBuffer(2, len, rate);
     for (let ch = 0; ch < 2; ch++) {
       const d = buf.getChannelData(ch);
-      for (let i = 0; i < len; i++) {
-        d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.6);
-      }
+      for (let i = 0; i < len; i++) { d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.6); }
     }
     conv.buffer = buf;
     const revGain = this.ctx.createGain();
@@ -1002,7 +987,6 @@ const Ambient = {
     revGain.connect(this.master);
     this.reverb = conv;
   },
-
   _route(node, wetAmount = 0.25) {
     node.connect(this.tracksGain);
     if (this.reverb && wetAmount > 0) {
@@ -1012,7 +996,6 @@ const Ambient = {
       g.connect(this.reverb);
     }
   },
-
   playLead(freq, t, dur, gain = 1.0) {
     const o1 = this.ctx.createOscillator();
     const o2 = this.ctx.createOscillator();
@@ -1022,37 +1005,28 @@ const Ambient = {
     const g3 = this.ctx.createGain();
     const filt = this.ctx.createBiquadFilter();
     const out = this.ctx.createGain();
-
     o1.type = 'sine';       o1.frequency.value = freq;
     o2.type = 'triangle';   o2.frequency.value = freq * 2;
     o3.type = 'sine';       o3.frequency.value = freq * 0.5;
-
     g2.gain.setValueAtTime(0.0001, t);
     g2.gain.exponentialRampToValueAtTime(0.42, t + 0.006);
     g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
     g3.gain.value = 0.16;
-
     const peak = 0.155 * gain;
     g1.gain.setValueAtTime(0.0001, t);
     g1.gain.exponentialRampToValueAtTime(peak, t + 0.055);
     g1.gain.exponentialRampToValueAtTime(peak * 0.72, t + 0.20);
     g1.gain.setValueAtTime(peak * 0.68, t + Math.max(0.20, dur * 0.82));
     g1.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.38);
-
-    filt.type = 'lowpass';
-    filt.frequency.value = 2200;
-    filt.Q.value = 0.7;
-
+    filt.type = 'lowpass'; filt.frequency.value = 2200; filt.Q.value = 0.7;
     o1.connect(g1); o2.connect(g2); o3.connect(g3);
     g1.connect(filt); g2.connect(filt); g3.connect(filt);
     filt.connect(out);
     this._route(out, 0.38);
-
     o1.start(t); o1.stop(t + dur + 0.5);
     o2.start(t); o2.stop(t + dur + 0.5);
     o3.start(t); o3.stop(t + dur + 0.5);
   },
-
   playPad(freqs, t, dur, gain = 1.0) {
     const peak = 0.024 * gain;
     freqs.forEach((f, i) => {
@@ -1076,7 +1050,6 @@ const Ambient = {
       });
     });
   },
-
   playBass(freq, t, dur, gain = 1.0) {
     const o1 = this.ctx.createOscillator();
     const o2 = this.ctx.createOscillator();
@@ -1099,67 +1072,47 @@ const Ambient = {
     o1.start(t); o1.stop(t + dur + 0.4);
     o2.start(t); o2.stop(t + dur + 0.4);
   },
-
   playChord(freqs, t, dur, gain = 1.0) {
     freqs.forEach((f, i) => {
       const delay = i * 0.014;
       this.playLead(f, t + delay, dur, gain * 0.52);
     });
   },
-
   scheduleBars() {
     if (!this.enabled) return;
     const beatDur = 60 / this.bpm;
     const barDur = beatDur * 4;
     const lookAhead = 3.5;
-
     while (this.seqState.nextBarTime < this.ctx.currentTime + lookAhead) {
       const idx = this.seqState.barIdx % BALLAD_LOOP.length;
       const bar = BALLAD_LOOP[idx];
       const t = this.seqState.nextBarTime;
       const v = this.variant;
-
       const padGain = (v === 'piano') ? 0.35 : (v === 'ambient') ? 1.4 : 1.0;
       this.playPad(bar.chord, t, barDur * 0.98, padGain);
-
       if (v === 'full' || v === 'night') {
         this.playChord(bar.chord, t + 0.02, barDur * 0.48, 1.0);
         if (idx % 2 === 1) this.playChord(bar.chord, t + beatDur*2 + 0.02, barDur * 0.42, 0.72);
-      } else if (v === 'piano') {
-        this.playChord(bar.chord, t + 0.02, barDur * 0.85, 1.1);
-      } else if (v === 'ambient') {
-        this.playChord(bar.chord, t + 0.05, barDur * 0.98, 0.45);
-      } else if (v === 'guitar') {
-        this.playChord(bar.chord, t + 0.02, barDur * 0.5, 0.55);
-      }
-
+      } else if (v === 'piano') { this.playChord(bar.chord, t + 0.02, barDur * 0.85, 1.1); }
+      else if (v === 'ambient') { this.playChord(bar.chord, t + 0.05, barDur * 0.98, 0.45); }
+      else if (v === 'guitar') { this.playChord(bar.chord, t + 0.02, barDur * 0.5, 0.55); }
       if (v === 'full' || v === 'guitar' || v === 'night') {
         const bassGain = (v === 'night') ? 1.15 : 1.0;
         this.playBass(bar.bass, t + 0.03, barDur * 0.9, bassGain);
-        if (idx % 2 === 0) {
-          this.playBass(bar.bass * 1.5, t + beatDur*2, barDur * 0.4, 0.62);
-        }
+        if (idx % 2 === 0) { this.playBass(bar.bass * 1.5, t + beatDur*2, barDur * 0.4, 0.62); }
       }
-
       const melGain = (v === 'ambient') ? 0.72 : 1.0;
       let mtime = t;
       bar.melody.forEach(([note, dur]) => {
-        if (note > 0 && dur > 0) {
-          this.playLead(note, mtime + 0.045, beatDur * dur * 0.92, melGain);
-        }
+        if (note > 0 && dur > 0) { this.playLead(note, mtime + 0.045, beatDur * dur * 0.92, melGain); }
         mtime += beatDur * dur;
       });
-
       this.seqState.nextBarTime += barDur;
       this.seqState.barIdx++;
     }
     this.seqState.timer = setTimeout(() => this.scheduleBars(), 800);
   },
-
-  stopSchedule() {
-    if (this.seqState.timer) { clearTimeout(this.seqState.timer); this.seqState.timer = null; }
-  },
-
+  stopSchedule() { if (this.seqState.timer) { clearTimeout(this.seqState.timer); this.seqState.timer = null; } },
   fadeIn(sec = 1.2) {
     const now = this.ctx.currentTime;
     this.master.gain.cancelScheduledValues(now);
@@ -1172,33 +1125,23 @@ const Ambient = {
     this.master.gain.setValueAtTime(Math.max(0.0001, this.master.gain.value), now);
     this.master.gain.linearRampToValueAtTime(0.0001, now + sec);
   },
-
   setMode(mode) {
     this.init();
     if (this.ctx.state === 'suspended') this.ctx.resume();
     const prevEnabled = this.enabled;
-
     if (mode === 'off') {
       this.fadeOut(0.7);
       this.stopSchedule();
       setTimeout(()=>{ try{ this.ctx.suspend(); }catch(e){} }, 800);
-      this.enabled = false;
-      this.mode = 'off';
+      this.enabled = false; this.mode = 'off';
       return;
     }
-
     const cfg = {
-      t1:   { variant: 'full',    bpm: 68 },
-      t2:   { variant: 'piano',   bpm: 70 },
-      t3:   { variant: 'ambient', bpm: 64 },
-      t4:   { variant: 'guitar',  bpm: 72 },
-      t5:   { variant: 'night',   bpm: 62 },
-      loop: { variant: 'full',    bpm: 68 }
+      t1: { variant: 'full', bpm: 68 }, t2: { variant: 'piano', bpm: 70 },
+      t3: { variant: 'ambient', bpm: 64 }, t4: { variant: 'guitar', bpm: 72 },
+      t5: { variant: 'night', bpm: 62 }, loop: { variant: 'full', bpm: 68 }
     }[mode] || { variant: 'full', bpm: 68 };
-
-    this.variant = cfg.variant;
-    this.bpm = cfg.bpm;
-
+    this.variant = cfg.variant; this.bpm = cfg.bpm;
     if (!prevEnabled) {
       this.seqState.nextBarTime = this.ctx.currentTime + 0.15;
       this.seqState.barIdx = 0;
@@ -1218,10 +1161,8 @@ const Ambient = {
         this.fadeIn(1.1);
       }, 600);
     }
-    this.mode = mode;
-    this.enabled = true;
+    this.mode = mode; this.enabled = true;
   },
-
   setVolume(v) {
     this.volume = v;
     if (this.master && this.enabled) {
@@ -1239,12 +1180,12 @@ window.toggleSoundMenu = function(e) {
 };
 
 const SOUND_META = {
-  off:  { icon:'🔇', label:'Đã tắt nhạc nền Lounge' },
-  t1:   { icon:'🎹', label:'🎹 Rhodes & Strings — Full Ballad 68 BPM' },
-  t2:   { icon:'🎼', label:'🎼 Piano Solo — Pure 70 BPM' },
-  t3:   { icon:'🌫️', label:'🌫️ Ambient Wash — Ethereal 64 BPM' },
-  t4:   { icon:'🎸', label:'🎸 Soft Guitar — Mellow 72 BPM' },
-  t5:   { icon:'🌙', label:'🌙 Late Night — Slow & Deep 62 BPM' },
+  off: { icon:'🔇', label:'Đã tắt nhạc nền Lounge' },
+  t1: { icon:'🎹', label:'🎹 Rhodes & Strings — Full Ballad 68 BPM' },
+  t2: { icon:'🎼', label:'🎼 Piano Solo — Pure 70 BPM' },
+  t3: { icon:'🌫️', label:'🌫️ Ambient Wash — Ethereal 64 BPM' },
+  t4: { icon:'🎸', label:'🎸 Soft Guitar — Mellow 72 BPM' },
+  t5: { icon:'🌙', label:'🌙 Late Night — Slow & Deep 62 BPM' },
   loop: { icon:'🔁', label:'🔁 Auto Loop — Dolphin Ballad Theme' }
 };
 
@@ -1275,9 +1216,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-/* ============================================================
-   SCENE — Weather + Sun / Moon (Sun = FOCAL POINT)
-   ============================================================ */
 const HLB_LAT = 20.9101, HLB_LNG = 107.1839;
 const sceneState = { weatherCode:0, cloudCover:30, windSpeed:5, isDay:1, temperature:25, condition:'clear', lastFetch:0 };
 
@@ -1344,42 +1282,28 @@ function updateSkyScene(){
     const stops = [{p:0,c:'#ff6b35'},{p:.15,c:'#ffa34f'},{p:.35,c:'#ffd36b'},{p:.5,c:'#fff4b8'},{p:.65,c:'#ffd36b'},{p:.85,c:'#ffa34f'},{p:1,c:'#ff6b35'}];
     let color='#ffd36b';
     for(let i=0;i<stops.length-1;i++){ if(sunProgress>=stops[i].p && sunProgress<=stops[i+1].p){ const tt=(sunProgress-stops[i].p)/(stops[i+1].p-stops[i].p); color=mixColor(stops[i].c,stops[i+1].c,tt); break; } }
-
-    // === SUN SIZE — điểm nhấn chính của giao diện ===
     const _isMobile = innerWidth < 768;
     const _sunBase = _isMobile ? 200 : 280;
     const _sunExtra = _isMobile ? 100 : 140;
     size = _sunBase + (1-arcY)*_sunExtra;
-
     wrap.style.opacity='1';
     core.style.left=cx+'%'; core.style.top=cy+'%';
     core.style.width=size+'px'; core.style.height=size+'px';
     core.style.background = `radial-gradient(circle at 35% 35%, #ffffff 0%, #fff8d8 18%, ${color} 55%, ${color} 100%)`;
     core.style.boxShadow = `0 0 ${size*0.5}px ${color}, 0 0 ${size*1.4}px ${color}cc, 0 0 ${size*2.8}px ${color}80, 0 0 ${size*4.5}px ${color}40`;
     core.style.opacity = String(Math.max(0.75, dim));
-
     glow.style.left=cx+'%'; glow.style.top=cy+'%';
     glow.style.width=(size*2.8)+'px'; glow.style.height=(size*2.8)+'px';
     glow.style.background = `radial-gradient(circle, ${color} 0%, ${color}80 25%, transparent 70%)`;
     glow.style.opacity = String(0.65*dim);
-
     const col = document.getElementById('glitter-col');
     col.style.left = (cx-4)+'%';
     col.style.opacity = String(0.9*dim);
     if(col.dataset.built!=='1'){
       col.dataset.built='1'; col.innerHTML='';
-      for(let i=0;i<16;i++){
-        const s = document.createElement('div');
-        s.className='shard';
-        s.style.left = (Math.random()*100)+'%';
-        s.style.top = (i/16*100)+'%';
-        s.style.width = (12+Math.random()*40)+'px';
-        s.style.animationDelay = (Math.random()*2.8)+'s';
-        col.appendChild(s);
-      }
+      for(let i=0;i<16;i++){ const s = document.createElement('div'); s.className='shard'; s.style.left = (Math.random()*100)+'%'; s.style.top = (i/16*100)+'%'; s.style.width = (12+Math.random()*40)+'px'; s.style.animationDelay = (Math.random()*2.8)+'s'; col.appendChild(s); }
     }
   } else {
-    // MOON — giữ nguyên kích thước vừa phải để sun là điểm nhấn chính
     let moonProgress;
     const nightDur = (24-sunset)+sunrise;
     if(h>sunset) moonProgress = (h-sunset)/nightDur;
@@ -1402,16 +1326,7 @@ function updateSkyScene(){
     col.style.opacity=String(0.4*dim);
     if(col.dataset.built!=='moon'){
       col.dataset.built='moon'; col.innerHTML='';
-      for(let i=0;i<14;i++){
-        const s = document.createElement('div');
-        s.className='shard';
-        s.style.left=(Math.random()*100)+'%';
-        s.style.top=(i/14*100)+'%';
-        s.style.width=(8+Math.random()*28)+'px';
-        s.style.animationDelay=(Math.random()*2.8)+'s';
-        s.style.background='linear-gradient(90deg,transparent,#dbeafe,transparent)';
-        col.appendChild(s);
-      }
+      for(let i=0;i<14;i++){ const s = document.createElement('div'); s.className='shard'; s.style.left=(Math.random()*100)+'%'; s.style.top=(i/14*100)+'%'; s.style.width=(8+Math.random()*28)+'px'; s.style.animationDelay=(Math.random()*2.8)+'s'; s.style.background='linear-gradient(90deg,transparent,#dbeafe,transparent)'; col.appendChild(s); }
     }
   }
 
@@ -1419,22 +1334,12 @@ function updateSkyScene(){
   bio.style.opacity = sceneState.isDay ? '0' : '1';
   if(!sceneState.isDay && bio.dataset.built!=='1'){
     bio.dataset.built='1'; bio.innerHTML='';
-    for(let i=0;i<24;i++){
-      const d = document.createElement('div');
-      d.className='bio-dot';
-      d.style.left = (Math.random()*100)+'%';
-      d.style.top = (55+Math.random()*20)+'%';
-      d.style.animationDelay = (Math.random()*12)+'s';
-      d.style.animationDuration = (8+Math.random()*6)+'s';
-      bio.appendChild(d);
-    }
+    for(let i=0;i<24;i++){ const d = document.createElement('div'); d.className='bio-dot'; d.style.left = (Math.random()*100)+'%'; d.style.top = (55+Math.random()*20)+'%'; d.style.animationDelay = (Math.random()*12)+'s'; d.style.animationDuration = (8+Math.random()*6)+'s'; bio.appendChild(d); }
   }
 
   const isMorning = h>=4 && h<9;
   const isFoggy = ['overcast','fog','drizzle','rain'].includes(sceneState.condition);
-  document.querySelectorAll('.mist').forEach(el=>{
-    el.style.opacity = (isMorning || isFoggy) ? '0.85' : '0';
-  });
+  document.querySelectorAll('.mist').forEach(el=>{ el.style.opacity = (isMorning || isFoggy) ? '0.85' : '0'; });
 
   updateSkyGradient(sunProgress);
   updateClouds();
@@ -1503,10 +1408,7 @@ function updateWeatherEffects(){
       rain.dataset.sig = sig;
       const n = sig==='storm'?140:sig==='rain'?80:40;
       let html='';
-      for(let i=0;i<n;i++){
-        const left=Math.random()*100, delay=Math.random()*1.5, dur=.5+Math.random()*.6, len=10+Math.random()*20;
-        html += `<div style="position:absolute;left:${left}%;top:-10%;width:1.5px;height:${len}px;background:linear-gradient(180deg,transparent,rgba(200,220,255,.75));animation:rainFall ${dur}s linear ${delay}s infinite"></div>`;
-      }
+      for(let i=0;i<n;i++){ const left=Math.random()*100, delay=Math.random()*1.5, dur=.5+Math.random()*.6, len=10+Math.random()*20; html += `<div style="position:absolute;left:${left}%;top:-10%;width:1.5px;height:${len}px;background:linear-gradient(180deg,transparent,rgba(200,220,255,.75));animation:rainFall ${dur}s linear ${delay}s infinite"></div>`; }
       rain.innerHTML = html;
     }
   } else if(rain.dataset.sig){ rain.dataset.sig=''; rain.innerHTML=''; }
@@ -1516,10 +1418,7 @@ function updateWeatherEffects(){
       wind.dataset.sig = sig;
       const n = sig==='storm'?20:10;
       let html='';
-      for(let i=0;i<n;i++){
-        const top=Math.random()*60, delay=Math.random()*3, dur=2+Math.random()*2;
-        html += `<div style="position:absolute;left:-15%;top:${top}%;width:${120+Math.random()*80}px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:windBlow ${dur}s linear ${delay}s infinite"></div>`;
-      }
+      for(let i=0;i<n;i++){ const top=Math.random()*60, delay=Math.random()*3, dur=2+Math.random()*2; html += `<div style="position:absolute;left:-15%;top:${top}%;width:${120+Math.random()*80}px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:windBlow ${dur}s linear ${delay}s infinite"></div>`; }
       wind.innerHTML = html;
     }
   } else if(wind.dataset.sig){ wind.dataset.sig=''; wind.innerHTML=''; }
@@ -1567,38 +1466,17 @@ const Confetti = (()=>{
   addEventListener('resize', resize); resize();
   function spawn(x,y,count=120){
     const colors = ['#FBBF24','#F59E0B','#22d3ee','#34d399','#f472b6','#ffffff','#a78bfa'];
-    for(let i=0;i<count;i++){
-      const a = Math.random()*Math.PI*2;
-      const v = 6+Math.random()*10;
-      parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,life:0,max:90+Math.random()*40,color:colors[Math.floor(Math.random()*colors.length)],size:5+Math.random()*6,rot:Math.random()*Math.PI,vr:(Math.random()-.5)*0.3,shape:Math.random()<.5?'rect':'circle'});
-    }
+    for(let i=0;i<count;i++){ const a = Math.random()*Math.PI*2; const v = 6+Math.random()*10; parts.push({x,y,vx:Math.cos(a)*v,vy:Math.sin(a)*v-4,life:0,max:90+Math.random()*40,color:colors[Math.floor(Math.random()*colors.length)],size:5+Math.random()*6,rot:Math.random()*Math.PI,vr:(Math.random()-.5)*0.3,shape:Math.random()<.5?'rect':'circle'}); }
     if(!running){ running=true; loop(); }
   }
   function loop(){
     ctx.clearRect(0,0,canvas.width,canvas.height);
-    parts.forEach(p=>{
-      p.life++;
-      p.vy += 0.32;
-      p.vx *= 0.99;
-      p.x += p.vx; p.y += p.vy;
-      p.rot += p.vr;
-      const alpha = Math.max(0, 1 - p.life/p.max);
-      ctx.save();
-      ctx.globalAlpha = alpha;
-      ctx.fillStyle = p.color;
-      ctx.translate(p.x,p.y); ctx.rotate(p.rot);
-      if(p.shape==='rect') ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2);
-      else { ctx.beginPath(); ctx.arc(0,0,p.size/2,0,Math.PI*2); ctx.fill(); }
-      ctx.restore();
-    });
+    parts.forEach(p=>{ p.life++; p.vy += 0.32; p.vx *= 0.99; p.x += p.vx; p.y += p.vy; p.rot += p.vr; const alpha = Math.max(0, 1 - p.life/p.max); ctx.save(); ctx.globalAlpha = alpha; ctx.fillStyle = p.color; ctx.translate(p.x,p.y); ctx.rotate(p.rot); if(p.shape==='rect') ctx.fillRect(-p.size/2,-p.size/4,p.size,p.size/2); else { ctx.beginPath(); ctx.arc(0,0,p.size/2,0,Math.PI*2); ctx.fill(); } ctx.restore(); });
     parts = parts.filter(p=>p.life<p.max);
     if(parts.length===0){ running=false; ctx.clearRect(0,0,canvas.width,canvas.height); }
     else requestAnimationFrame(loop);
   }
-  function burstFrom(el, count=120){
-    const r = el.getBoundingClientRect();
-    spawn(r.left+r.width/2, r.top+r.height/2, count);
-  }
+  function burstFrom(el, count=120){ const r = el.getBoundingClientRect(); spawn(r.left+r.width/2, r.top+r.height/2, count); }
   return {spawn, burstFrom};
 })();
 
@@ -1609,22 +1487,10 @@ const Confetti = (()=>{
   function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
   addEventListener('resize', resize); resize();
   const N = innerWidth<768?28:55;
-  for(let i=0;i<N;i++){
-    parts.push({x:Math.random()*W,y:Math.random()*H,r:0.6+Math.random()*1.6,vy:-0.08-Math.random()*0.25,vx:(Math.random()-.5)*0.15,ph:Math.random()*Math.PI*2});
-  }
+  for(let i=0;i<N;i++){ parts.push({x:Math.random()*W,y:Math.random()*H,r:0.6+Math.random()*1.6,vy:-0.08-Math.random()*0.25,vx:(Math.random()-.5)*0.15,ph:Math.random()*Math.PI*2}); }
   function draw(){
     ctx.clearRect(0,0,W,H);
-    parts.forEach(p=>{
-      p.y += p.vy; p.x += p.vx; p.ph += 0.015;
-      if(p.y< -5){ p.y = H+5; p.x = Math.random()*W; }
-      if(p.x< -5) p.x = W+5; if(p.x>W+5) p.x=-5;
-      const tw = 0.4 + 0.6*Math.abs(Math.sin(p.ph));
-      ctx.beginPath();
-      ctx.fillStyle = `rgba(251,191,36,${0.55*tw})`;
-      ctx.shadowColor = 'rgba(245,158,11,.9)';
-      ctx.shadowBlur = 8;
-      ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill();
-    });
+    parts.forEach(p=>{ p.y += p.vy; p.x += p.vx; p.ph += 0.015; if(p.y< -5){ p.y = H+5; p.x = Math.random()*W; } if(p.x< -5) p.x = W+5; if(p.x>W+5) p.x=-5; const tw = 0.4 + 0.6*Math.abs(Math.sin(p.ph)); ctx.beginPath(); ctx.fillStyle = `rgba(251,191,36,${0.55*tw})`; ctx.shadowColor = 'rgba(245,158,11,.9)'; ctx.shadowBlur = 8; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); });
     requestAnimationFrame(draw);
   }
   draw();
@@ -1635,19 +1501,7 @@ function spawnGulls(){
   if(!layer || layer.dataset.built==='1') return;
   layer.dataset.built='1';
   const N = 3;
-  for(let i=0;i<N;i++){
-    const g = document.createElement('div');
-    const dur = 16+Math.random()*14;
-    const top = 12+Math.random()*20;
-    const scl = 0.6+Math.random()*0.6;
-    g.style.cssText = `position:absolute;top:${top}%;left:-10vw;animation:fly ${dur}s linear -${Math.random()*dur}s infinite;transform:scale(${scl});`;
-    g.innerHTML = `
-      <svg viewBox="0 0 60 24" width="60" height="24" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))">
-        <path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/>
-        <path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#0A3350" stroke-width="1" stroke-linecap="round" opacity=".5"/>
-      </svg>`;
-    layer.appendChild(g);
-  }
+  for(let i=0;i<N;i++){ const g = document.createElement('div'); const dur = 16+Math.random()*14; const top = 12+Math.random()*20; const scl = 0.6+Math.random()*0.6; g.style.cssText = `position:absolute;top:${top}%;left:-10vw;animation:fly ${dur}s linear -${Math.random()*dur}s infinite;transform:scale(${scl});`; g.innerHTML = `<svg viewBox="0 0 60 24" width="60" height="24" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))"><path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/><path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#0A3350" stroke-width="1" stroke-linecap="round" opacity=".5"/></svg>`; layer.appendChild(g); }
 }
 function updateGullsVisibility(){
   const layer = document.getElementById('gulls-layer');
@@ -1701,22 +1555,13 @@ document.addEventListener('click', function(e){
 
 (function(){
   const cursor = document.getElementById('cocktail-cursor');
-  document.addEventListener('mousemove', e=>{
-    cursor.style.left = e.clientX+'px';
-    cursor.style.top = e.clientY+'px';
-  });
-  document.addEventListener('mouseover', e=>{
-    const inMenu = e.target.closest('#menu-items-grid, #categories-container, .menu-card');
-    document.body.classList.toggle('cocktail-zone', !!inMenu);
-  });
+  document.addEventListener('mousemove', e=>{ cursor.style.left = e.clientX+'px'; cursor.style.top = e.clientY+'px'; });
+  document.addEventListener('mouseover', e=>{ const inMenu = e.target.closest('#menu-items-grid, #categories-container, .menu-card'); document.body.classList.toggle('cocktail-zone', !!inMenu); });
 })();
 
 document.addEventListener('mousemove', e=>{
   const card = e.target.closest('.menu-card');
-  if(!card || innerWidth<1024){
-    document.querySelectorAll('.menu-card').forEach(c=>{ if(c.style.transform) c.style.transform=''; });
-    return;
-  }
+  if(!card || innerWidth<1024){ document.querySelectorAll('.menu-card').forEach(c=>{ if(c.style.transform) c.style.transform=''; }); return; }
   const r = card.getBoundingClientRect();
   const cx = r.left + r.width/2;
   const cy = r.top + r.height/2;
@@ -1727,17 +1572,9 @@ document.addEventListener('mousemove', e=>{
   card.style.transform = `translateY(-6px) rotateX(${rx}deg) rotateY(${ry}deg) scale(1.02)`;
   card.style.boxShadow = '0 25px 45px -15px rgba(28,121,189,.5), 0 0 0 2px rgba(56,189,248,.35)';
 });
-document.addEventListener('mouseout', e=>{
-  const card = e.target.closest('.menu-card');
-  if(card){ card.style.transform=''; card.style.boxShadow=''; }
-});
+document.addEventListener('mouseout', e=>{ const card = e.target.closest('.menu-card'); if(card){ card.style.transform=''; card.style.boxShadow=''; } });
 
-addEventListener('scroll', ()=>{
-  const h = document.documentElement.scrollHeight - innerHeight;
-  const p = h>0 ? (scrollY/h)*100 : 0;
-  const bar = document.getElementById('scroll-progress');
-  if(bar) bar.style.width = p+'%';
-});
+addEventListener('scroll', ()=>{ const h = document.documentElement.scrollHeight - innerHeight; const p = h>0 ? (scrollY/h)*100 : 0; const bar = document.getElementById('scroll-progress'); if(bar) bar.style.width = p+'%'; });
 
 function setupRealtimeListeners(){
   if(!db) return;
@@ -1748,11 +1585,7 @@ function setupRealtimeListeners(){
     const arr=[]; snap.forEach(d=>arr.push({id:d.id,...d.data()}));
     arr.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     state.orders = arr;
-    if(hasNew && ['staff','admin','bungalow'].includes(state.currentRole)){
-      playNotificationAlert();
-      window.showToast("🚨 CÓ YÊU CẦU MỚI TỪ LOUNGE!","🔔");
-      triggerDolphinCelebration();
-    }
+    if(hasNew && ['staff','admin','bungalow'].includes(state.currentRole)){ playNotificationAlert(); window.showToast("🚨 CÓ YÊU CẦU MỚI TỪ LOUNGE!","🔔"); triggerDolphinCelebration(); }
     renderAll();
   });
   onSnapshot(collection(db,'lounge_calls'), snap=>{
@@ -1766,7 +1599,7 @@ function setupRealtimeListeners(){
   });
   onSnapshot(collection(db,'lounge_tables'), snap=>{
     const a={};
-    snap.forEach(d=>{ a[d.id] = { customerName:d.data().customerName, restaurantTable:d.data().restaurantTable||'', pax:parseInt(d.data().pax)||0, paymentMethod:d.data().paymentMethod||'TM', focReason:d.data().focReason||'' }; });
+    snap.forEach(d=>{ a[d.id] = { customerName:d.data().customerName, restaurantTable:d.data().restaurantTable||'', pax:parseInt(d.data().pax)||0, paymentMethod:d.data().paymentMethod||'TM', focReason:d.data().focReason||'', openedByStaff:d.data().openedByStaff||'' }; });
     state.tableAssignments = a;
     window.updateWelcomeLabels();
     renderAll();
@@ -1776,11 +1609,7 @@ function setupRealtimeListeners(){
 function triggerDolphinCelebration(){
   const d1 = document.getElementById('dolphin-1');
   const d2 = document.getElementById('dolphin-2');
-  [d1,d2].forEach(d=>{
-    if(!d) return;
-    d.style.animation = 'dolphinJump 3.5s ease-in-out 1';
-    setTimeout(()=>{ d.style.animation = d.id==='dolphin-1'?'dolphinJump 7s ease-in-out infinite':'dolphinJump 9s ease-in-out -3s infinite'; }, 3600);
-  });
+  [d1,d2].forEach(d=>{ if(!d) return; d.style.animation = 'dolphinJump 3.5s ease-in-out 1'; setTimeout(()=>{ d.style.animation = d.id==='dolphin-1'?'dolphinJump 7s ease-in-out infinite':'dolphinJump 9s ease-in-out -3s infinite'; }, 3600); });
 }
 
 window.onload = function() {
@@ -1788,12 +1617,7 @@ window.onload = function() {
   document.getElementById('welcome-tables-lounge').innerHTML = makeRadios(TABLES_LOUNGE,'l');
 
   const saved = sessionStorage.getItem('dolphinLoungeSetup');
-  if(saved){
-    const p = JSON.parse(saved);
-    state.selectedTable = p.table;
-    state.currentLanguage = p.lang;
-    state.tableSelected = true;
-  }
+  if(saved){ const p = JSON.parse(saved); state.selectedTable = p.table; state.currentLanguage = p.lang; state.tableSelected = true; }
 
   const savedMode = localStorage.getItem('dolphinSoundMode') || 'off';
   const savedVol = localStorage.getItem('dolphinSoundVolume') || '30';
@@ -1828,12 +1652,7 @@ window.onload = function() {
 window.updateWelcomeLabels = function() {
   TABLES_LOUNGE.forEach(t=>{
     const label = document.querySelector(`label[for="w-t-l-${t.replace(' ','')}"]`);
-    if(label){
-      const a = state.tableAssignments[t];
-      const name = a && a.customerName ? a.customerName : null;
-      if(name) label.innerHTML = `<span class="block text-base whitespace-nowrap">${t}</span><span class="block text-[10px] text-gold-400 font-black mt-1 break-words whitespace-normal leading-tight w-full px-1 drop-shadow-md">${name}</span>`;
-      else label.innerHTML = `<span class="block text-base whitespace-nowrap">${t}</span>`;
-    }
+    if(label){ const a = state.tableAssignments[t]; const name = a && a.customerName ? a.customerName : null; if(name) label.innerHTML = `<span class="block text-base whitespace-nowrap">${t}</span><span class="block text-[10px] text-gold-400 font-black mt-1 break-words whitespace-normal leading-tight w-full px-1 drop-shadow-md">${name}</span>`; else label.innerHTML = `<span class="block text-base whitespace-nowrap">${t}</span>`; }
   });
 };
 
@@ -1841,18 +1660,8 @@ window.checkWelcomeForm = function() {
   const lc = document.querySelector('input[name="lang"]:checked');
   const tc = document.querySelector('input[name="table"]:checked');
   const btn = document.getElementById('btn-start-order');
-  if(lc){
-    const wt = WELCOME_TRANS[lc.value] || WELCOME_TRANS['EN'];
-    document.getElementById('welcome-title').innerHTML = `${wt.title}<br><span class="text-[11px] md:text-xs text-gold-400 font-medium normal-case mt-1.5 block opacity-90">${wt.sub}</span>`;
-    document.getElementById('welcome-step-1').innerHTML = `<span class="w-4 h-px bg-teal-600"></span>${wt.step1}<span class="flex-1 h-px bg-teal-800/50"></span>`;
-    document.getElementById('welcome-step-2').innerHTML = `<span class="w-4 h-px bg-teal-600"></span>${wt.step2}<span class="flex-1 h-px bg-teal-800/50"></span>`;
-    btn.innerText = wt.btn;
-  }
-  if(lc && tc){
-    btn.disabled=false;
-    btn.classList.remove('opacity-50','cursor-not-allowed','bg-gradient-to-r','from-teal-800','to-teal-900','text-teal-500','border-teal-800/50');
-    btn.classList.add('bg-gradient-to-r','from-gold-400','to-gold-500','text-black','shadow-[0_10px_30px_rgba(245,158,11,.4)]','hover:from-gold-300','hover:to-gold-400','active:scale-95');
-  }
+  if(lc){ const wt = WELCOME_TRANS[lc.value] || WELCOME_TRANS['EN']; document.getElementById('welcome-title').innerHTML = `${wt.title}<br><span class="text-[11px] md:text-xs text-gold-400 font-medium normal-case mt-1.5 block opacity-90">${wt.sub}</span>`; document.getElementById('welcome-step-1').innerHTML = `<span class="w-4 h-px bg-teal-600"></span>${wt.step1}<span class="flex-1 h-px bg-teal-800/50"></span>`; document.getElementById('welcome-step-2').innerHTML = `<span class="w-4 h-px bg-teal-600"></span>${wt.step2}<span class="flex-1 h-px bg-teal-800/50"></span>`; btn.innerText = wt.btn; }
+  if(lc && tc){ btn.disabled=false; btn.classList.remove('opacity-50','cursor-not-allowed','bg-gradient-to-r','from-teal-800','to-teal-900','text-teal-500','border-teal-800/50'); btn.classList.add('bg-gradient-to-r','from-gold-400','to-gold-500','text-black','shadow-[0_10px_30px_rgba(245,158,11,.4)]','hover:from-gold-300','hover:to-gold-400','active:scale-95'); }
 };
 
 window.promptCustomerPassword = function() {
@@ -1902,14 +1711,7 @@ let pendingRoleRequest = null;
 window.requestPinAccess = function(role){
   const key = role==='reception'?'dolphinReceptionAuth':'dolphinAdminAuth';
   if(sessionStorage.getItem(key)==='true'){ window.changeRole(role); }
-  else {
-    pendingRoleRequest = role;
-    document.getElementById('pin-modal-title').innerText = role==='reception'?'Lễ Tân - Đăng Nhập':'Nội Bộ - Đăng Nhập';
-    document.getElementById('modal-pin').classList.remove('hidden');
-    document.getElementById('pin-input').value='';
-    document.getElementById('pin-input').focus();
-    document.getElementById('pin-error').classList.add('hidden');
-  }
+  else { pendingRoleRequest = role; document.getElementById('pin-modal-title').innerText = role==='reception'?'Lễ Tân - Đăng Nhập':'Nội Bộ - Đăng Nhập'; document.getElementById('modal-pin').classList.remove('hidden'); document.getElementById('pin-input').value=''; document.getElementById('pin-input').focus(); document.getElementById('pin-error').classList.add('hidden'); }
 };
 window.verifyPin = function(){
   const pin = document.getElementById('pin-input').value;
@@ -1923,6 +1725,7 @@ window.verifyPin = function(){
 };
 window.closePinModal = function(){ document.getElementById('modal-pin').classList.add('hidden'); pendingRoleRequest=null; };
 
+/* ═══════════ SỬA 1: openCustomerNameModal với auto-fill ═══════════ */
 window.openCustomerNameModal = function(table){
   document.getElementById('reception-target-table').value = table;
   document.getElementById('lbl-reception-table').innerText = `${table}`;
@@ -1933,6 +1736,28 @@ window.openCustomerNameModal = function(table){
   document.getElementById('customer-rest-input').value = a.restaurantTable || '';
   document.getElementById('customer-payment-input').value = a.paymentMethod || 'TM';
   document.getElementById('customer-foc-reason').value = a.focReason || '';
+
+  // 👑 Auto-fill + khóa tên NV mở bàn
+  const openerEl = document.getElementById('customer-staff-opener');
+  const lockHint = document.getElementById('staff-opener-lock');
+  const lockName = document.getElementById('staff-opener-name-lock');
+  if (openerEl) {
+    if (a.openedByStaff && String(a.openedByStaff).trim()) {
+      openerEl.value = a.openedByStaff;
+      openerEl.disabled = true;
+      if (lockHint) lockHint.classList.remove('hidden');
+      if (lockName) lockName.textContent = a.openedByStaff;
+    } else {
+      const name = (typeof window.getSyncedStaffName === 'function' && window.getSyncedStaffName())
+                || (typeof window.getStaffName === 'function' && window.getStaffName())
+                || localStorage.getItem('dolphinStaffName')
+                || '';
+      openerEl.value = String(name).trim();
+      openerEl.disabled = false;
+      if (lockHint) lockHint.classList.add('hidden');
+    }
+  }
+
   window.toggleFocReason();
   document.getElementById('modal-customer-name').classList.remove('hidden');
   document.getElementById('customer-name-input').focus();
@@ -1944,6 +1769,8 @@ window.toggleFocReason = function(){
   if(k) k.classList.toggle('hidden', m!=='KTOUR');
 };
 window.closeCustomerNameModal = function(){ document.getElementById('modal-customer-name').classList.add('hidden'); };
+
+/* ═══════════ SỬA 2: saveCustomerName lưu openedByStaff ═══════════ */
 window.saveCustomerName = async function(){
   const table = document.getElementById('reception-target-table').value;
   const name = document.getElementById('customer-name-input').value.trim();
@@ -1952,30 +1779,57 @@ window.saveCustomerName = async function(){
   const payment = document.getElementById('customer-payment-input').value;
   const focReason = document.getElementById('customer-foc-reason').value.trim();
   const origPax = parseInt(document.getElementById('customer-original-pax').value)||0;
+
   if(!name){ window.showToast("Nhập tên khách!","⚠️"); return; }
   if(pax<=0){ window.showToast("Pax phải > 0!","⚠️"); return; }
   if((payment==='FOC'||payment==='TA_UNPAID') && !focReason){ window.showToast("Nhập lý do!","⚠️"); return; }
-  const data = { customerName:name, pax, restaurantTable:restTable, paymentMethod:payment };
+
+  // 👑 Lấy tên NV mở bàn
+  let staffOpener = '';
+  const openerEl = document.getElementById('customer-staff-opener');
+  if (openerEl && openerEl.value) staffOpener = String(openerEl.value).trim();
+  if (!staffOpener) {
+    staffOpener = (typeof window.getSyncedStaffName === 'function' && window.getSyncedStaffName())
+               || (typeof window.getStaffName === 'function' && window.getStaffName())
+               || localStorage.getItem('dolphinStaffName') || '';
+    staffOpener = String(staffOpener).trim();
+  }
+  if (!staffOpener) { window.showToast("Chưa có tên NV mở bàn!", "⚠️"); return; }
+
+  const existing = state.tableAssignments[table] || {};
+  const finalOpener = (existing.openedByStaff && String(existing.openedByStaff).trim())
+    ? existing.openedByStaff
+    : staffOpener;
+
+  const data = {
+    customerName: name,
+    pax: pax,
+    restaurantTable: restTable,
+    paymentMethod: payment,
+    openedByStaff: finalOpener,
+    updatedBy: finalOpener,
+    updatedAt: Date.now()
+  };
   if(payment==='FOC'||payment==='TA_UNPAID') data.focReason = focReason;
+
   if(origPax>0 && pax!==origPax){ window.promptManagerAuth('save',{table,dataToSave:data}); return; }
   await window.executeSaveCustomerName({table, dataToSave:data});
 };
+
+/* ═══════════ SỬA 3: executeSaveCustomerName với merge ═══════════ */
 window.executeSaveCustomerName = async function({table,dataToSave}){
   try{ 
-    if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave); 
+    if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave, { merge: true }); 
     window.showToast(`Đã lưu bàn ${table}`,'✅'); 
     window.closeCustomerNameModal(); 
     Confetti.spawn(innerWidth/2, innerHeight/2, 40); 
   }
-  catch(e){ window.showToast("Lỗi lưu!","❌"); }
+  catch(e){ console.error('[Lounge] Save error:', e); window.showToast("Lỗi lưu: " + (e.message || ''),'❌'); }
 };
+
 window.clearCustomerName = function(){
   const t = document.getElementById('reception-target-table').value;
-  // 👑 Master bypass — xóa trực tiếp không cần PIN
-  if (localStorage.getItem('dolphinMasterDevice') === 'true') {
-    window.executeClearCustomerName(t);
-    return;
-  }
+  if (localStorage.getItem('dolphinMasterDevice') === 'true') { window.executeClearCustomerName(t); return; }
   window.promptManagerAuth('clear',{table:t});
 };
 window.executeClearCustomerName = async function(table){
@@ -2014,13 +1868,8 @@ window.verifyClearAllPin = async function(){
   if(pin!=='1234'){ document.getElementById('clear-all-error').classList.remove('hidden'); return; }
   window.closeClearAllModal();
   window.showToast("Đang dọn dẹp...","⏳");
-  try{
-    if(db){
-      const snap = await getDocs(collection(db,'lounge_tables'));
-      await Promise.all(snap.docs.map(d=>deleteDoc(d.ref)));
-      window.showToast("Đã xóa toàn bộ khách!","🧹");
-    }
-  } catch(e){ window.showToast("Lỗi!","❌"); }
+  try{ if(db){ const snap = await getDocs(collection(db,'lounge_tables')); await Promise.all(snap.docs.map(d=>deleteDoc(d.ref))); window.showToast("Đã xóa toàn bộ khách!","🧹"); } }
+  catch(e){ window.showToast("Lỗi!","❌"); }
 };
 window.handleExcelUpload = async function(e){
   const file = e.target.files[0]; if(!file) return;
@@ -2089,6 +1938,7 @@ window.confirmStaffAction = async function(){
   const name = document.getElementById('staff-name-input').value.trim();
   if(!name){ window.showToast("Nhập tên!","⚠️"); return; }
   localStorage.setItem('dolphinStaffName', name);
+  if (typeof window.setSyncedStaffName === 'function') window.setSyncedStaffName(name);
   window.closeStaffNameModal();
   await window.executeStaffAction(name);
 };
@@ -2116,15 +1966,9 @@ window.executeStaffAction = async function(name){
         tx.update(ref, upd);
       });
       if(state.lastTransactionWarning){ window.showToast(state.lastTransactionWarning,"⚠️"); playNotificationAlert(); }
-      else {
-        window.showToast(`Đã ghi nhận: ${name}`,'📝');
-        if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100);
-      }
+      else { window.showToast(`Đã ghi nhận: ${name}`,'📝'); if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100); }
     } catch(e){ window.showToast("Lỗi cập nhật!","❌"); }
-  } else {
-    window.showToast(`Đã lưu tên: ${name}`,'📝');
-    renderAll();
-  }
+  } else { window.showToast(`Đã lưu tên: ${name}`,'📝'); renderAll(); }
   state.pendingAction=null;
 };
 
@@ -2283,11 +2127,7 @@ window.sendOrderOnline = async function(btn){
   const a = state.tableAssignments[state.selectedTable];
   if(a && a.paymentMethod==='KTOUR'){ window.showToast(t.toastKtourLocked,'🔒'); return; }
   const last = sessionStorage.getItem('lastOrderLoungeTime_'+state.selectedTable);
-  if(last){
-    const elapsed = Date.now() - parseInt(last);
-    const cd = 30*1000;
-    if(elapsed<cd){ window.showToast(t.toastWait.replace('{min}',0).replace('{sec}',Math.ceil((cd-elapsed)/1000)),'⏳'); return; }
-  }
+  if(last){ const elapsed = Date.now() - parseInt(last); const cd = 30*1000; if(elapsed<cd){ window.showToast(t.toastWait.replace('{min}',0).replace('{sec}',Math.ceil((cd-elapsed)/1000)),'⏳'); return; } }
   const items = Object.entries(state.cart).map(([id,qty])=>{
     const base = id.split('_')[0]; const v = id.split('_')[1];
     const it = LOUNGE_ITEMS.find(x=>x.id===base);
@@ -2308,17 +2148,10 @@ window.sendOrderOnline = async function(btn){
         const ref = doc(db,'lounge_orders',active.id);
         await runTransaction(db, async tx=>{
           const d = await tx.get(ref);
-          if(!d.exists()){
-            tx.set(doc(collection(db,'lounge_orders')),{table:state.selectedTable,time:window.getVNTime().timeString,timestamp:Date.now(),items,status:'pending',notes});
-            return;
-          }
+          if(!d.exists()){ tx.set(doc(collection(db,'lounge_orders')),{table:state.selectedTable,time:window.getVNTime().timeString,timestamp:Date.now(),items,status:'pending',notes}); return; }
           const cur = d.data();
           let merged = [...cur.items];
-          items.forEach(ni=>{
-            const idx = merged.findIndex(i=>i.id===ni.id);
-            if(idx>=0){ merged[idx].qty += ni.qty; merged[idx].isPrepared=false; merged[idx].cancelled=false; }
-            else merged.push(ni);
-          });
+          items.forEach(ni=>{ const idx = merged.findIndex(i=>i.id===ni.id); if(idx>=0){ merged[idx].qty += ni.qty; merged[idx].isPrepared=false; merged[idx].cancelled=false; } else merged.push(ni); });
           let newNotes = cur.notes||'';
           if(notes) newNotes = newNotes ? newNotes+' | '+notes : notes;
           tx.update(ref,{items:merged,notes:newNotes,time:window.getVNTime().timeString,timestamp:Date.now()});
@@ -2336,12 +2169,7 @@ window.sendOrderOnline = async function(btn){
     Confetti.burstFrom(btn, total>=5?200:100);
     setTimeout(()=>Confetti.spawn(innerWidth/2, innerHeight*0.3, 80), 250);
   } catch(e){ console.error(e); }
-  finally{
-    state.isSending=false;
-    document.getElementById('send-btn-spinner').classList.add('hidden');
-    btn.disabled=false;
-    renderAll();
-  }
+  finally{ state.isSending=false; document.getElementById('send-btn-spinner').classList.add('hidden'); btn.disabled=false; renderAll(); }
 };
 window.callStaffOnline = async function(){
   const t = TRANSLATIONS[state.currentLanguage] || TRANSLATIONS['EN'];
@@ -2377,9 +2205,7 @@ window.executeSystemReset = async function(){
     const orders=[], tables={};
     oSnap.forEach(d=>orders.push(d.data()));
     tSnap.forEach(d=>{ tables[d.id] = d.data(); });
-    if(orders.length || Object.keys(tables).length){
-      await addDoc(collection(db,'lounge_history_sessions'),{date, shift, timestamp:Date.now(), orders, tables});
-    }
+    if(orders.length || Object.keys(tables).length){ await addDoc(collection(db,'lounge_history_sessions'),{date, shift, timestamp:Date.now(), orders, tables}); }
     const del = [];
     oSnap.forEach(d=>del.push(deleteDoc(d.ref)));
     const cSnap = await getDocs(collection(db,'lounge_calls'));
@@ -2399,40 +2225,16 @@ window.fetchHistoryData = async function(){
   const c = document.getElementById('history-cards-container');
   if(!date){ window.showToast("Chọn ngày!","⚠️"); return; }
   c.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4';
-  c.innerHTML = Array.from({length:6}).map(()=>`
-    <div class="glass-card p-5 rounded-2xl border border-teal-700/30">
-      <div class="skeleton h-4 w-24 mb-3"></div>
-      <div class="skeleton h-3 w-full mb-2"></div>
-      <div class="skeleton h-3 w-2/3 mb-4"></div>
-      <div class="skeleton h-8 w-full"></div>
-    </div>`).join('');
+  c.innerHTML = Array.from({length:6}).map(()=>`<div class="glass-card p-5 rounded-2xl border border-teal-700/30"><div class="skeleton h-4 w-24 mb-3"></div><div class="skeleton h-3 w-full mb-2"></div><div class="skeleton h-3 w-2/3 mb-4"></div><div class="skeleton h-8 w-full"></div></div>`).join('');
   try{
-    let q = shift==='Cả Ngày'
-      ? query(collection(db,'lounge_history_sessions'), where('date','==',date))
-      : query(collection(db,'lounge_history_sessions'), where('date','==',date), where('shift','==',shift));
+    let q = shift==='Cả Ngày' ? query(collection(db,'lounge_history_sessions'), where('date','==',date)) : query(collection(db,'lounge_history_sessions'), where('date','==',date), where('shift','==',shift));
     const snap = await getDocs(q);
     let hist = {};
-    snap.forEach(d=>{
-      const s = d.data();
-      if(s.orders) s.orders.forEach(o=>{ if(!hist[o.table]) hist[o.table]={orders:[],tableData:{}}; hist[o.table].orders.push({...o,date:s.date,shift:s.shift}); });
-      if(s.tables) Object.keys(s.tables).forEach(t=>{ if(!hist[t]) hist[t]={orders:[],tableData:{}}; hist[t].tableData = s.tables[t]; });
-    });
+    snap.forEach(d=>{ const s = d.data(); if(s.orders) s.orders.forEach(o=>{ if(!hist[o.table]) hist[o.table]={orders:[],tableData:{}}; hist[o.table].orders.push({...o,date:s.date,shift:s.shift}); }); if(s.tables) Object.keys(s.tables).forEach(t=>{ if(!hist[t]) hist[t]={orders:[],tableData:{}}; hist[t].tableData = s.tables[t]; }); });
     if(sTable){ const f={}; Object.keys(hist).forEach(t=>{ if(t.toUpperCase().includes(sTable)) f[t]=hist[t]; }); hist=f; }
     window.currentHistoryData = hist;
     if(!Object.keys(hist).length){
-      c.innerHTML = `<div class="col-span-full text-center py-12 border border-dashed border-teal-800/40 rounded-2xl">
-        <svg viewBox="0 0 120 80" width="120" height="80" class="mx-auto mb-3 opacity-50">
-          <ellipse cx="60" cy="68" rx="50" ry="6" fill="#1e3a5f"/>
-          <path d="M20,40 Q60,60 100,40 Q90,25 60,25 Q30,25 20,40 Z" fill="#5b7fa8" stroke="#3b5a80" stroke-width="1.5"/>
-          <line x1="40" y1="28" x2="40" y2="38" stroke="#3b5a80" stroke-width="1.5"/>
-          <line x1="60" y1="26" x2="60" y2="38" stroke="#3b5a80" stroke-width="1.5"/>
-          <line x1="80" y1="28" x2="80" y2="38" stroke="#3b5a80" stroke-width="1.5"/>
-          <path d="M60,26 L60,10 M60,10 L80,20" stroke="#7a5a30" stroke-width="2" fill="none"/>
-          <text x="60" y="76" text-anchor="middle" fill="#5b7fa8" font-size="7" font-family="sans-serif">Không có dữ liệu</text>
-        </svg>
-        <div class="text-teal-400 font-bold text-sm">Không tìm thấy dữ liệu</div>
-        <div class="text-teal-500 text-[10px] mt-1">Thử đổi ngày hoặc ca khác</div>
-      </div>`;
+      c.innerHTML = `<div class="col-span-full text-center py-12 border border-dashed border-teal-800/40 rounded-2xl"><svg viewBox="0 0 120 80" width="120" height="80" class="mx-auto mb-3 opacity-50"><ellipse cx="60" cy="68" rx="50" ry="6" fill="#1e3a5f"/><path d="M20,40 Q60,60 100,40 Q90,25 60,25 Q30,25 20,40 Z" fill="#5b7fa8" stroke="#3b5a80" stroke-width="1.5"/><line x1="40" y1="28" x2="40" y2="38" stroke="#3b5a80" stroke-width="1.5"/><line x1="60" y1="26" x2="60" y2="38" stroke="#3b5a80" stroke-width="1.5"/><line x1="80" y1="28" x2="80" y2="38" stroke="#3b5a80" stroke-width="1.5"/><path d="M60,26 L60,10 M60,10 L80,20" stroke="#7a5a30" stroke-width="2" fill="none"/><text x="60" y="76" text-anchor="middle" fill="#5b7fa8" font-size="7" font-family="sans-serif">Không có dữ liệu</text></svg><div class="text-teal-400 font-bold text-sm">Không tìm thấy dữ liệu</div><div class="text-teal-500 text-[10px] mt-1">Thử đổi ngày hoặc ca khác</div></div>`;
       return;
     }
     c.innerHTML = Object.keys(hist).map(t=>{
@@ -2450,10 +2252,7 @@ window.fetchHistoryData = async function(){
           if(active>0){
             const base = it.id.split('_')[0];
             const def = LOUNGE_ITEMS.find(x=>x.id===base);
-            if(def){
-              if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) drinks += active;
-              if(def.category_id==='cat-pastry') pastries += active;
-            }
+            if(def){ if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) drinks += active; if(def.category_id==='cat-pastry') pastries += active; }
             const v = it.id.split('_')[1];
             let nm = it.name['VI'] || it.name['EN'] || it.name;
             if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
@@ -2463,50 +2262,14 @@ window.fetchHistoryData = async function(){
       });
       let details = '';
       const keys = Object.keys(dMap);
-      if(keys.length){
-        details = `<div class="mt-3 bg-teal-900/60 p-3 rounded-xl border border-teal-700/50">
-          <span class="text-[9px] text-gold-400 font-bold uppercase mb-2 flex items-center gap-1.5 tracking-wider">📋 CHI TIẾT MÓN:</span>
-          <ul class="text-[11px] text-teal-50 space-y-1.5 pl-2">${keys.map(k=>`<li>• ${k}: <strong class="text-white bg-teal-800/80 px-1.5 rounded ml-1">x${dMap[k]}</strong></li>`).join('')}</ul>
-        </div>`;
-      }
-      if(tOrders.length){
-        ordersHtml = '<div class="mt-3 pt-3 border-t border-teal-700/50 space-y-2">'+
-          tOrders.map(o=>{
-            let timeStr = `📥 ${o.time}`;
-            if(o.status==='completed') timeStr += `<br><span class="text-emerald-400 ml-3">✅ ${o.completedTime||'--:--'}</span>`;
-            const itemsStr = o.items.filter(i=>!(i.cancelledQty>=i.qty)).map(i=>{
-              const cQty = i.cancelledQty||0; const v = i.id.split('_')[1];
-              let n = i.name['VI'] || i.name['EN'];
-              if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
-              return `${n} (x${i.qty-cQty})`;
-            }).join(', ');
-            return `<div class="text-[10px] bg-teal-950/50 p-2 rounded-lg border border-teal-800/40">
-              <div class="mb-1.5 pb-1.5 border-b border-teal-800/50 text-teal-300 font-bold leading-tight">${timeStr} <span class="text-teal-500 float-right font-normal">NV: ${o.completedBy||'--'}</span></div>
-              <div class="text-white opacity-90 text-[9.5px] leading-relaxed">${itemsStr}</div>
-            </div>`;
-          }).join('')+'</div>';
-      }
+      if(keys.length){ details = `<div class="mt-3 bg-teal-900/60 p-3 rounded-xl border border-teal-700/50"><span class="text-[9px] text-gold-400 font-bold uppercase mb-2 flex items-center gap-1.5 tracking-wider">📋 CHI TIẾT MÓN:</span><ul class="text-[11px] text-teal-50 space-y-1.5 pl-2">${keys.map(k=>`<li>• ${k}: <strong class="text-white bg-teal-800/80 px-1.5 rounded ml-1">x${dMap[k]}</strong></li>`).join('')}</ul></div>`; }
+      if(tOrders.length){ ordersHtml = '<div class="mt-3 pt-3 border-t border-teal-700/50 space-y-2">'+tOrders.map(o=>{ let timeStr = `📥 ${o.time}`; if(o.status==='completed') timeStr += `<br><span class="text-emerald-400 ml-3">✅ ${o.completedTime||'--:--'}</span>`; const itemsStr = o.items.filter(i=>!(i.cancelledQty>=i.qty)).map(i=>{ const cQty = i.cancelledQty||0; const v = i.id.split('_')[1]; let n = i.name['VI'] || i.name['EN']; if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`; return `${n} (x${i.qty-cQty})`; }).join(', '); return `<div class="text-[10px] bg-teal-950/50 p-2 rounded-lg border border-teal-800/40"><div class="mb-1.5 pb-1.5 border-b border-teal-800/50 text-teal-300 font-bold leading-tight">${timeStr} <span class="text-teal-500 float-right font-normal">NV: ${o.completedBy||'--'}</span></div><div class="text-white opacity-90 text-[9.5px] leading-relaxed">${itemsStr}</div></div>`; }).join('')+'</div>'; }
       let payColor = (payment==='FOC'||payment==='TA_UNPAID') ? 'bg-red-900/80 text-red-100 border-red-500/50' : 'bg-gold-500/20 text-gold-400 border-gold-500/30';
       if(payment==='KTOUR') payColor = 'bg-red-700/90 text-red-100 border-red-400 font-black';
-      return `
-        <div class="glass-card p-5 rounded-2xl border border-teal-700/50 backdrop-blur-sm flex flex-col relative overflow-hidden shadow-lg hover:border-gold-500/50 transition-colors">
-          <div class="flex justify-between items-start mb-2 relative z-10">
-            <span class="text-sm font-black text-emerald-400 drop-shadow-sm">${t}</span>
-            <span class="text-[10px] bg-teal-800 text-white px-2 py-0.5 rounded font-bold shadow-sm">PAX: ${pax}</span>
-          </div>
-          <div class="text-[13px] font-black text-white leading-tight mb-2 uppercase tracking-wide">${name} ${rest}</div>
-          <div class="text-[9px] font-black uppercase tracking-wider mb-4 ${payColor} px-2.5 py-1.5 rounded inline-block self-start border shadow-inner">TT: ${payment} ${foc}</div>
-          <div class="space-y-2 bg-teal-950/60 p-3 rounded-xl relative z-10 border border-teal-800/50 shadow-inner">
-            <div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Đồ Uống:</span><span class="font-black text-emerald-400">${drinks}/${pax}</span></div>
-            <div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Bánh Ngọt:</span><span class="font-black text-emerald-400">${pastries}/${pax}</span></div>
-          </div>
-          ${details}${ordersHtml}
-        </div>`;
+      return `<div class="glass-card p-5 rounded-2xl border border-teal-700/50 backdrop-blur-sm flex flex-col relative overflow-hidden shadow-lg hover:border-gold-500/50 transition-colors"><div class="flex justify-between items-start mb-2 relative z-10"><span class="text-sm font-black text-emerald-400 drop-shadow-sm">${t}</span><span class="text-[10px] bg-teal-800 text-white px-2 py-0.5 rounded font-bold shadow-sm">PAX: ${pax}</span></div><div class="text-[13px] font-black text-white leading-tight mb-2 uppercase tracking-wide">${name} ${rest}</div><div class="text-[9px] font-black uppercase tracking-wider mb-4 ${payColor} px-2.5 py-1.5 rounded inline-block self-start border shadow-inner">TT: ${payment} ${foc}</div><div class="space-y-2 bg-teal-950/60 p-3 rounded-xl relative z-10 border border-teal-800/50 shadow-inner"><div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Đồ Uống:</span><span class="font-black text-emerald-400">${drinks}/${pax}</span></div><div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Bánh Ngọt:</span><span class="font-black text-emerald-400">${pastries}/${pax}</span></div></div>${details}${ordersHtml}</div>`;
     }).join('');
     window.showToast("Tải lịch sử thành công!",'✅');
-  } catch(e){
-    c.innerHTML = `<div class="col-span-full text-center py-10 text-red-400 font-bold border border-red-900/50 bg-red-950/20 rounded-xl">Lỗi tải dữ liệu!</div>`;
-  }
+  } catch(e){ c.innerHTML = `<div class="col-span-full text-center py-10 text-red-400 font-bold border border-red-900/50 bg-red-950/20 rounded-xl">Lỗi tải dữ liệu!</div>`; }
 };
 
 window.exportHistoryToExcel = function(){
@@ -2517,20 +2280,8 @@ window.exportHistoryToExcel = function(){
     const name = data.customerName || 'Khách Vãng Lai';
     const pax = data.pax || 0; const rest = data.restaurantTable || '';
     const pay = data.paymentMethod || 'TM'; const foc = data.focReason || '';
-    if(!orders.length){
-      rows.push({Bàn:t,'Tên Khách':name,'Bàn Nhà Hàng':rest,'Pax':pax,'Thanh Toán':pay,'Lý do FOC':foc,'Chi Tiết Món':'Chưa gọi món','Giờ Gọi':'','Giờ Giao':'','Người Phục Vụ':'','Ghi Chú':''});
-    } else {
-      orders.forEach(o=>{
-        const itemsStr = o.items.map(i=>{
-          const cQty = i.cancelledQty || (i.cancelled?i.qty:0);
-          const v = i.id.split('_')[1];
-          let n = i.name['VI'] || i.name['EN'];
-          if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
-          return `${n} (SL:${i.qty-cQty}, Hủy:${cQty})`;
-        }).join('; ');
-        rows.push({Bàn:o.table,'Tên Khách':name,'Bàn Nhà Hàng':rest,'Pax':pax,'Thanh Toán':pay,'Lý do FOC':foc,'Chi Tiết Món':itemsStr,'Giờ Gọi':o.time||'','Giờ Giao':o.completedTime||'','Người Phục Vụ':o.completedBy||'','Ghi Chú':o.notes||''});
-      });
-    }
+    if(!orders.length){ rows.push({Bàn:t,'Tên Khách':name,'Bàn Nhà Hàng':rest,'Pax':pax,'Thanh Toán':pay,'Lý do FOC':foc,'Chi Tiết Món':'Chưa gọi món','Giờ Gọi':'','Giờ Giao':'','Người Phục Vụ':'','Ghi Chú':''}); }
+    else { orders.forEach(o=>{ const itemsStr = o.items.map(i=>{ const cQty = i.cancelledQty || (i.cancelled?i.qty:0); const v = i.id.split('_')[1]; let n = i.name['VI'] || i.name['EN']; if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`; return `${n} (SL:${i.qty-cQty}, Hủy:${cQty})`; }).join('; '); rows.push({Bàn:o.table,'Tên Khách':name,'Bàn Nhà Hàng':rest,'Pax':pax,'Thanh Toán':pay,'Lý do FOC':foc,'Chi Tiết Món':itemsStr,'Giờ Gọi':o.time||'','Giờ Giao':o.completedTime||'','Người Phục Vụ':o.completedBy||'','Ghi Chú':o.notes||''}); }); }
   });
   const ws = XLSX.utils.json_to_sheet(rows);
   const wb = XLSX.utils.book_new();
@@ -2557,20 +2308,7 @@ window.renderCustomer = function(){
   const vipBadge = document.getElementById('table-vip-badge');
   const existingSparkles = vipBadge.querySelectorAll('.vip-spark');
   existingSparkles.forEach(s=>s.remove());
-  if(pax >= 10 && name){
-    for(let i=0;i<6;i++){
-      const sp = document.createElement('span');
-      sp.className='vip-spark';
-      sp.innerHTML = '✦';
-      sp.style.color = '#FBBF24';
-      sp.style.fontSize = '14px';
-      sp.style.textShadow = '0 0 8px rgba(245,158,11,.9)';
-      sp.style.left = (5+Math.random()*85)+'%';
-      sp.style.top = (5+Math.random()*85)+'%';
-      sp.style.animationDelay = (i*0.3)+'s';
-      vipBadge.appendChild(sp);
-    }
-  }
+  if(pax >= 10 && name){ for(let i=0;i<6;i++){ const sp = document.createElement('span'); sp.className='vip-spark'; sp.innerHTML = '✦'; sp.style.color = '#FBBF24'; sp.style.fontSize = '14px'; sp.style.textShadow = '0 0 8px rgba(245,158,11,.9)'; sp.style.left = (5+Math.random()*85)+'%'; sp.style.top = (5+Math.random()*85)+'%'; sp.style.animationDelay = (i*0.3)+'s'; vipBadge.appendChild(sp); } }
 
   const banner = document.getElementById('pax-alert-banner');
   if(isKtour){ banner.classList.remove('hidden'); document.getElementById('lbl-pax-warning-title').innerText = t.ktourWarningTitle; document.getElementById('lbl-pax-warning-msg').innerText = t.ktourWarningMsg; }
@@ -2591,79 +2329,30 @@ window.renderCustomer = function(){
       let sText = t.statusPending, sColor='text-gold-400';
       if(o.status==='preparing'){ sText=t.statusPreparing; sColor='text-red-400 animate-pulse'; }
       const act = o.items.filter(i=>{ const c=i.cancelledQty||(i.cancelled?i.qty:0); return c<i.qty; });
-      return `<div class="bg-teal-900/40 border border-teal-700/50 p-4 rounded-xl shadow-sm">
-        <div class="flex justify-between items-center mb-2">
-          <span class="text-[10px] text-teal-300 font-mono bg-teal-950/50 px-2 py-1 rounded">${o.time}</span>
-          <span class="text-[10px] font-black uppercase ${sColor} tracking-wider">${sText}</span>
-        </div>
-        <div class="text-[13px] text-white font-bold leading-relaxed">
-          ${act.length ? act.map(it=>{
-            const c = it.cancelledQty||(it.cancelled?it.qty:0);
-            const v = it.id.split('_')[1];
-            let nm = it.name[state.currentLanguage] || it.name['EN'];
-            if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v][state.currentLanguage] || HOT_COLD_TRANS[v]['EN']})`;
-            return `<span class="inline-block mr-3 mb-1">• ${nm} <span class="text-gold-400 opacity-90">x${it.qty-c}</span></span>`;
-          }).join('') : `<span class="text-red-400 line-through opacity-80">${t.statusCancelled}</span>`}
-        </div>
-      </div>`;
+      return `<div class="bg-teal-900/40 border border-teal-700/50 p-4 rounded-xl shadow-sm"><div class="flex justify-between items-center mb-2"><span class="text-[10px] text-teal-300 font-mono bg-teal-950/50 px-2 py-1 rounded">${o.time}</span><span class="text-[10px] font-black uppercase ${sColor} tracking-wider">${sText}</span></div><div class="text-[13px] text-white font-bold leading-relaxed">${act.length ? act.map(it=>{ const c = it.cancelledQty||(it.cancelled?it.qty:0); const v = it.id.split('_')[1]; let nm = it.name[state.currentLanguage] || it.name['EN']; if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v][state.currentLanguage] || HOT_COLD_TRANS[v]['EN']})`; return `<span class="inline-block mr-3 mb-1">• ${nm} <span class="text-gold-400 opacity-90">x${it.qty-c}</span></span>`; }).join('') : `<span class="text-red-400 line-through opacity-80">${t.statusCancelled}</span>`}</div></div>`;
     }).join('');
   } else aSec.classList.add('hidden');
 
   const catCont = document.getElementById('categories-container');
-  catCont.innerHTML = `<button onclick="changeCategory('all')" class="px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all duration-300 shadow-sm ${state.activeCategory==='all'?'bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-gold-500/30':'bg-teal-900/60 text-teal-200 border border-teal-700/50 hover:bg-teal-800'}">${t.allCategory}</button>` +
-    LOUNGE_CATEGORIES.map(cat=>{
-      const nm = cat.name[state.currentLanguage] || cat.name['EN'];
-      return `<button onclick="changeCategory('${cat.id}')" class="px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all duration-300 shadow-sm flex flex-col items-center justify-center ${state.activeCategory===cat.id?'bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-gold-500/30':'bg-teal-900/60 text-teal-200 border border-teal-700/50 hover:bg-teal-800'}"><span>${nm}</span></button>`;
-    }).join('');
+  catCont.innerHTML = `<button onclick="changeCategory('all')" class="px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all duration-300 shadow-sm ${state.activeCategory==='all'?'bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-gold-500/30':'bg-teal-900/60 text-teal-200 border border-teal-700/50 hover:bg-teal-800'}">${t.allCategory}</button>` + LOUNGE_CATEGORIES.map(cat=>{ const nm = cat.name[state.currentLanguage] || cat.name['EN']; return `<button onclick="changeCategory('${cat.id}')" class="px-5 py-2.5 rounded-full font-bold text-xs whitespace-nowrap transition-all duration-300 shadow-sm flex flex-col items-center justify-center ${state.activeCategory===cat.id?'bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-gold-500/30':'bg-teal-900/60 text-teal-200 border border-teal-700/50 hover:bg-teal-800'}"><span>${nm}</span></button>`; }).join('');
 
   const filtered = LOUNGE_ITEMS.filter(i=> state.activeCategory==='all' || i.category_id===state.activeCategory);
   let cD=0,cP=0;
-  for(let cid in state.cart){
-    const base = cid.split('_')[0];
-    const def = LOUNGE_ITEMS.find(x=>x.id===base);
-    if(def){
-      if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) cD += state.cart[cid];
-      if(def.category_id==='cat-pastry') cP += state.cart[cid];
-    }
-  }
+  for(let cid in state.cart){ const base = cid.split('_')[0]; const def = LOUNGE_ITEMS.find(x=>x.id===base); if(def){ if(['cat-coffee','cat-tea','cat-juice'].includes(def.category_id)) cD += state.cart[cid]; if(def.category_id==='cat-pastry') cP += state.cart[cid]; } }
   document.getElementById('menu-items-grid').innerHTML = filtered.map(item=>{
     const total = Object.keys(state.cart).filter(k=>k===item.id || k.startsWith(item.id+'_')).reduce((s,k)=>s+state.cart[k],0);
     const nm = item.name[state.currentLanguage] || item.name['EN'];
     let isLocked = false;
     if(isKtour) isLocked = true;
     else if(pax<=0) isLocked = true;
-    else if(total===0){
-      if(['cat-coffee','cat-tea','cat-juice'].includes(item.category_id) && (usage.drinks+cD)>=pax) isLocked = true;
-      if(item.category_id==='cat-pastry' && (usage.pastries+cP)>=pax) isLocked = true;
-    }
-    return `
-      <div id="card-${item.id}" class="menu-card relative overflow-hidden glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 border-2 group ${total>0?'border-gold-500/60 shadow-[0_0_20px_rgba(245,158,11,.18)]':'border-teal-600/30'}">
-        <div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
-        <div class="pr-1 break-words w-full mb-6">
-          <h3 class="text-white font-bold text-[16px] sm:text-[17px] leading-snug drop-shadow-md group-hover:text-gold-400 transition-colors">${nm}</h3>
-          ${state.currentLanguage!=='EN' ? `<span class="text-[11px] text-teal-300 block mt-1.5 font-medium opacity-80">${item.name['EN']}</span>` : ''}
-        </div>
-        <div class="flex justify-end items-end w-full mt-auto">
-          <div class="shrink-0 z-10">
-            ${isLocked ? (isKtour ? `<span class="text-[10px] text-red-400 font-black bg-red-950/90 px-3 py-2 rounded-xl border border-red-500/60 shadow-inner tracking-wider">🔒 KTOUR</span>` : `<span class="text-[10px] text-red-200 font-bold bg-red-950/80 px-3 py-2 rounded-xl border border-red-800/50 shadow-inner tracking-wider">MAX</span>`)
-            : (total===0 ? `<button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',1)" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-xs font-black px-6 py-2.5 rounded-xl shadow-lg transition-transform active:scale-90 tracking-widest">SELECT</button>`
-            : `<div class="flex items-center bg-teal-950/80 rounded-xl p-1 border border-gold-500/50 shadow-inner">
-                <button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',-1)" class="text-teal-400 hover:text-white hover:bg-teal-800 w-9 h-9 flex items-center justify-center rounded-lg font-bold text-lg transition-colors active:scale-90">➖</button>
-                <span class="text-gold-400 font-black px-4 text-sm">${total}</span>
-                <button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',1)" class="text-gold-400 hover:text-gold-200 hover:bg-teal-800 w-9 h-9 flex items-center justify-center rounded-lg font-bold text-lg transition-colors active:scale-90">➕</button>
-              </div>`)}
-          </div>
-        </div>
-      </div>`;
+    else if(total===0){ if(['cat-coffee','cat-tea','cat-juice'].includes(item.category_id) && (usage.drinks+cD)>=pax) isLocked = true; if(item.category_id==='cat-pastry' && (usage.pastries+cP)>=pax) isLocked = true; }
+    return `<div id="card-${item.id}" class="menu-card relative overflow-hidden glass-card p-5 rounded-2xl flex flex-col justify-between transition-all duration-300 border-2 group ${total>0?'border-gold-500/60 shadow-[0_0_20px_rgba(245,158,11,.18)]':'border-teal-600/30'}"><div class="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-transparent via-gold-500 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div><div class="pr-1 break-words w-full mb-6"><h3 class="text-white font-bold text-[16px] sm:text-[17px] leading-snug drop-shadow-md group-hover:text-gold-400 transition-colors">${nm}</h3>${state.currentLanguage!=='EN' ? `<span class="text-[11px] text-teal-300 block mt-1.5 font-medium opacity-80">${item.name['EN']}</span>` : ''}</div><div class="flex justify-end items-end w-full mt-auto"><div class="shrink-0 z-10">${isLocked ? (isKtour ? `<span class="text-[10px] text-red-400 font-black bg-red-950/90 px-3 py-2 rounded-xl border border-red-500/60 shadow-inner tracking-wider">🔒 KTOUR</span>` : `<span class="text-[10px] text-red-200 font-bold bg-red-950/80 px-3 py-2 rounded-xl border border-red-800/50 shadow-inner tracking-wider">MAX</span>`) : (total===0 ? `<button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',1)" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-xs font-black px-6 py-2.5 rounded-xl shadow-lg transition-transform active:scale-90 tracking-widest">SELECT</button>` : `<div class="flex items-center bg-teal-950/80 rounded-xl p-1 border border-gold-500/50 shadow-inner"><button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',-1)" class="text-teal-400 hover:text-white hover:bg-teal-800 w-9 h-9 flex items-center justify-center rounded-lg font-bold text-lg transition-colors active:scale-90">➖</button><span class="text-gold-400 font-black px-4 text-sm">${total}</span><button onclick="pulseCard('${item.id}'); handleMenuClick('${item.id}',1)" class="text-gold-400 hover:text-gold-200 hover:bg-teal-800 w-9 h-9 flex items-center justify-center rounded-lg font-bold text-lg transition-colors active:scale-90">➕</button></div>`)}</div></div></div>`;
   }).join('');
 
   const fc = document.getElementById('floating-cart');
   const cnt = Object.values(state.cart).reduce((a,b)=>a+b,0);
-  if(cnt>0 && pax>0 && !isKtour){
-    fc.classList.remove('hidden');
-    document.getElementById('cart-summary-text').innerText = t.selectedItems.replace('{count}',cnt);
-    document.getElementById('lbl-view-cart').innerText = t.historyBtn;
-  } else fc.classList.add('hidden');
+  if(cnt>0 && pax>0 && !isKtour){ fc.classList.remove('hidden'); document.getElementById('cart-summary-text').innerText = t.selectedItems.replace('{count}',cnt); document.getElementById('lbl-view-cart').innerText = t.historyBtn; }
+  else fc.classList.add('hidden');
 };
 
 window.generateOrderGridHtml = function(ordersList){
@@ -2684,33 +2373,13 @@ window.generateOrderGridHtml = function(ordersList){
       const bC = isPrep ? 'bg-red-950/20 border-red-800/50' : 'bg-teal-950/80 border-teal-700/50';
       const bPrep = `<button onclick="toggleItemPrepared('${o.id}',${idx})" class="${isPrep?'bg-red-600 hover:bg-red-500 text-white border-red-500':'bg-teal-800 text-teal-200 border-teal-600 hover:bg-teal-700'} text-[10px] font-bold px-3 py-2 rounded-lg border transition-all shadow-sm">${isPrep?'☑ Xong':'☐ Làm'}</button>`;
       const bCancel = `<button onclick="openCancelModal('${o.id}',${idx},${it.qty},${cQty})" class="text-[10px] bg-red-950/80 text-red-300 font-bold px-2 py-2 rounded-lg border border-red-900/50 hover:bg-red-900 transition-colors">✕ Hủy</button>`;
-      return `<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-xl border ${bC} transition-all shadow-sm">
-        <span class="${pC} text-xs drop-shadow-sm">• ${nm} ${cText}</span>
-        <div class="flex items-center gap-2 shrink-0 self-end sm:self-auto">
-          <span class="font-black text-gold-400 px-1 text-sm">x${active}</span>${bPrep}${bCancel}
-        </div>
-      </div>`;
+      return `<div class="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2 p-3 rounded-xl border ${bC} transition-all shadow-sm"><span class="${pC} text-xs drop-shadow-sm">• ${nm} ${cText}</span><div class="flex items-center gap-2 shrink-0 self-end sm:self-auto"><span class="font-black text-gold-400 px-1 text-sm">x${active}</span>${bPrep}${bCancel}</div></div>`;
     }).join('<div class="h-2"></div>');
     let btn = '';
-    if(o.status==='pending'){
-      btn = `<button onclick="openStaffNameModal('${o.id}','preparing')" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Bắt đầu pha chế 🔥</button>`;
-    } else {
-      btn = `<button onclick="openStaffNameModal('${o.id}','completed')" class="bg-gradient-to-r from-emerald-400 to-emerald-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Xác nhận Phục vụ ✅</button>`;
-    }
+    if(o.status==='pending'){ btn = `<button onclick="openStaffNameModal('${o.id}','preparing')" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Bắt đầu pha chế 🔥</button>`; }
+    else { btn = `<button onclick="openStaffNameModal('${o.id}','completed')" class="bg-gradient-to-r from-emerald-400 to-emerald-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Xác nhận Phục vụ ✅</button>`; }
     const bCls = (o.status==='preparing') ? 'border-gold-500/60 shadow-[0_5px_20px_rgba(245,158,11,.15)]' : (isDelayed ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,.4)] animate-pulse' : 'border-teal-700/50');
-    return `<div class="glass-card border ${bCls} rounded-2xl p-5 flex flex-col transition-all">
-      <div class="flex justify-between items-start mb-4">
-        <span class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-widest">${o.table}</span>
-        <div class="text-right flex flex-col items-end gap-1.5">
-          <span class="text-[10px] text-teal-300 block font-mono bg-teal-950/50 px-2 py-0.5 rounded">${o.time}</span>
-          <span class="text-[9px] text-teal-400 uppercase tracking-widest font-bold mt-1">${o.status==='pending'?'⏳ Chờ xác nhận': '🔥 Làm: '+(o.preparedBy||'NV')}</span>
-          ${isDelayed?'<span class="bg-red-600 text-white px-2 py-1 rounded text-[9px] font-black animate-bounce mt-1 shadow-md tracking-wider">⚠️ QUÁ 5 PHÚT</span>':''}
-        </div>
-      </div>
-      <div class="mb-5 flex-1">${itemsList}</div>
-      ${o.notes?`<div class="text-[11px] bg-gold-500/10 border border-gold-500/30 p-3 rounded-xl text-gold-200 italic mb-5 leading-relaxed shadow-inner">Lưu ý: ${o.notes}</div>`:''}
-      ${btn}
-    </div>`;
+    return `<div class="glass-card border ${bCls} rounded-2xl p-5 flex flex-col transition-all"><div class="flex justify-between items-start mb-4"><span class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-widest">${o.table}</span><div class="text-right flex flex-col items-end gap-1.5"><span class="text-[10px] text-teal-300 block font-mono bg-teal-950/50 px-2 py-0.5 rounded">${o.time}</span><span class="text-[9px] text-teal-400 uppercase tracking-widest font-bold mt-1">${o.status==='pending'?'⏳ Chờ xác nhận': '🔥 Làm: '+(o.preparedBy||'NV')}</span>${isDelayed?'<span class="bg-red-600 text-white px-2 py-1 rounded text-[9px] font-black animate-bounce mt-1 shadow-md tracking-wider">⚠️ QUÁ 5 PHÚT</span>':''}</div></div><div class="mb-5 flex-1">${itemsList}</div>${o.notes?`<div class="text-[11px] bg-gold-500/10 border border-gold-500/30 p-3 rounded-xl text-gold-200 italic mb-5 leading-relaxed shadow-inner">Lưu ý: ${o.notes}</div>`:''}${btn}</div>`;
   }).join('');
 };
 
@@ -2735,55 +2404,20 @@ window.renderStaff = function(){
   const cSec = document.getElementById('staff-calls-section');
   if(state.activeCalls.length){
     cSec.classList.remove('hidden');
-    document.getElementById('staff-calls-grid').innerHTML = state.activeCalls.map(c=>`
-      <div class="bg-red-900/40 border border-red-700/50 p-4 rounded-xl flex justify-between items-center shadow-inner">
-        <div><span class="text-xs font-black text-red-200 block drop-shadow-sm">🛎️ BÀN ${c.table}</span><span class="text-[10px] text-red-300 font-mono mt-1.5 block opacity-90">🕒 ${c.time||'--:--'}</span></div>
-        <button onclick="resolveCallOnline('${c.id}')" class="bg-white text-red-800 text-[10px] font-black px-4 py-2.5 rounded-lg shadow-md hover:bg-red-50 transition-colors">Xong</button>
-      </div>
-    `).join('');
+    document.getElementById('staff-calls-grid').innerHTML = state.activeCalls.map(c=>`<div class="bg-red-900/40 border border-red-700/50 p-4 rounded-xl flex justify-between items-center shadow-inner"><div><span class="text-xs font-black text-red-200 block drop-shadow-sm">🛎️ BÀN ${c.table}</span><span class="text-[10px] text-red-300 font-mono mt-1.5 block opacity-90">🕒 ${c.time||'--:--'}</span></div><button onclick="resolveCallOnline('${c.id}')" class="bg-white text-red-800 text-[10px] font-black px-4 py-2.5 rounded-lg shadow-md hover:bg-red-50 transition-colors">Xong</button></div>`).join('');
   } else cSec.classList.add('hidden');
 
   const pending = state.orders.filter(o=>o.status!=='completed');
   if(state.staffViewMode==='batch'){
     const batch = {};
-    pending.forEach(o=>{
-      o.items.forEach((it,idx)=>{
-        const active = it.qty-(it.cancelledQty||(it.cancelled?it.qty:0));
-        if(active>0 && !it.isPrepared){
-          const v = it.id.split('_')[1];
-          let nm = it.name['VI'] || it.name['EN'] || it.name;
-          if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
-          if(!batch[nm]) batch[nm] = {total:0, tables:[]};
-          batch[nm].total += active;
-          batch[nm].tables.push({table:o.table, qty:active, orderId:o.id, itemIndex:idx});
-        }
-      });
-    });
+    pending.forEach(o=>{ o.items.forEach((it,idx)=>{ const active = it.qty-(it.cancelledQty||(it.cancelled?it.qty:0)); if(active>0 && !it.isPrepared){ const v = it.id.split('_')[1]; let nm = it.name['VI'] || it.name['EN'] || it.name; if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`; if(!batch[nm]) batch[nm] = {total:0, tables:[]}; batch[nm].total += active; batch[nm].tables.push({table:o.table, qty:active, orderId:o.id, itemIndex:idx}); } }); });
     const cont = document.getElementById('staff-batch-grid');
     const keys = Object.keys(batch);
     if(!keys.length) cont.innerHTML = `<div class="col-span-full py-10 text-center text-teal-500 font-bold border border-teal-800/50 rounded-xl border-dashed">Không có món nào đang chờ.</div>`;
-    else cont.innerHTML = keys.map(k=>{
-      const d = batch[k];
-      const tHtml = d.tables.map(t=>`
-        <div class="flex justify-between items-center bg-teal-950/80 p-2.5 rounded-lg border border-teal-800/50 mt-2">
-          <span class="text-[11px] font-black text-gold-400 tracking-wider">${t.table} <span class="text-white ml-2 opacity-90">x${t.qty}</span></span>
-          <button onclick="toggleItemPrepared('${t.orderId}',${t.itemIndex})" class="bg-teal-800 hover:bg-teal-700 text-teal-200 text-[10px] font-bold px-3 py-1.5 rounded transition-colors">☐ Xong</button>
-        </div>
-      `).join('');
-      return `<div class="glass-card border border-gold-500/40 rounded-2xl p-5 shadow-lg">
-        <div class="flex justify-between items-center mb-3 border-b border-teal-700/50 pb-3">
-          <h4 class="text-sm font-black text-white drop-shadow-md">${k}</h4>
-          <span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[11px] font-black px-3 py-1.5 rounded-lg shadow-md">Tổng: ${d.total}</span>
-        </div>
-        <div class="space-y-1 mt-3">${tHtml}</div>
-      </div>`;
-    }).join('');
+    else cont.innerHTML = keys.map(k=>{ const d = batch[k]; const tHtml = d.tables.map(t=>`<div class="flex justify-between items-center bg-teal-950/80 p-2.5 rounded-lg border border-teal-800/50 mt-2"><span class="text-[11px] font-black text-gold-400 tracking-wider">${t.table} <span class="text-white ml-2 opacity-90">x${t.qty}</span></span><button onclick="toggleItemPrepared('${t.orderId}',${t.itemIndex})" class="bg-teal-800 hover:bg-teal-700 text-teal-200 text-[10px] font-bold px-3 py-1.5 rounded transition-colors">☐ Xong</button></div>`).join(''); return `<div class="glass-card border border-gold-500/40 rounded-2xl p-5 shadow-lg"><div class="flex justify-between items-center mb-3 border-b border-teal-700/50 pb-3"><h4 class="text-sm font-black text-white drop-shadow-md">${k}</h4><span class="bg-gradient-to-r from-red-500 to-red-600 text-white text-[11px] font-black px-3 py-1.5 rounded-lg shadow-md">Tổng: ${d.total}</span></div><div class="space-y-1 mt-3">${tHtml}</div></div>`; }).join('');
   } else {
     const mine = [], others = [];
-    pending.forEach(o=>{
-      if(o.status==='preparing' && curName && o.preparedBy && o.preparedBy.includes(curName)) mine.push(o);
-      else others.push(o);
-    });
+    pending.forEach(o=>{ if(o.status==='preparing' && curName && o.preparedBy && o.preparedBy.includes(curName)) mine.push(o); else others.push(o); });
     document.getElementById('staff-my-orders-grid').innerHTML = window.generateOrderGridHtml(mine);
     document.getElementById('staff-other-orders-grid').innerHTML = window.generateOrderGridHtml(others);
   }
@@ -2798,26 +2432,12 @@ function updateHeartbeat(){
   const peak = document.getElementById('peak-alert');
   if(el) el.innerText = cnt;
   const ring = document.getElementById('heartbeat-ring');
-  if(ring){
-    const rate = Math.min(1, cnt/8);
-    const period = 2.5 - rate*2;
-    ring.style.animation = `pulse ${period}s ease-in-out infinite`;
-    if(!ring.dataset.animated){
-      ring.dataset.animated='1';
-      const style = document.createElement('style');
-      style.textContent = `@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}`;
-      document.head.appendChild(style);
-    }
-  }
+  if(ring){ const rate = Math.min(1, cnt/8); const period = 2.5 - rate*2; ring.style.animation = `pulse ${period}s ease-in-out infinite`; if(!ring.dataset.animated){ ring.dataset.animated='1'; const style = document.createElement('style'); style.textContent = `@keyframes pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.06)}}`; document.head.appendChild(style); } }
   if(prog){ const ratio = Math.min(1, cnt/8); prog.setAttribute('stroke-dashoffset', 107 - 107*ratio); }
   if(sub) sub.innerText = cnt===0 ? 'Đang rảnh rỗi — chờ order mới' : `${cnt} đơn đang chờ xác nhận`;
   if(label) label.innerText = cnt>6 ? 'CAO ĐIỂM' : cnt>3 ? 'ĐANG BẬN' : 'NHỊP HOẠT ĐỘNG';
   if(peak) peak.classList.toggle('hidden', cnt<=5);
-  if(cnt>5 && !window._peakAlerted){
-    window._peakAlerted = true;
-    try{ window.playNotificationAlert(); }catch(e){}
-    setTimeout(()=>{ window._peakAlerted=false; }, 60000);
-  }
+  if(cnt>5 && !window._peakAlerted){ window._peakAlerted = true; try{ window.playNotificationAlert(); }catch(e){} setTimeout(()=>{ window._peakAlerted=false; }, 60000); }
 }
 
 window.renderBungalowTrack = function(){
@@ -2838,66 +2458,18 @@ window.renderBungalowTrack = function(){
     let ordersHtml = '', detailsHtml = '';
     if(tableOrders.length){
       let dMap = {};
-      tableOrders.forEach(o=>{
-        o.items.forEach(it=>{
-          const cQty = it.cancelledQty||(it.cancelled?it.qty:0);
-          const act = it.qty-cQty;
-          if(act>0){
-            const v = it.id.split('_')[1];
-            let nm2 = it.name['VI'] || it.name['EN'] || it.name;
-            if(v && HOT_COLD_TRANS[v]) nm2 += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
-            dMap[nm2] = (dMap[nm2]||0)+act;
-          }
-        });
-      });
+      tableOrders.forEach(o=>{ o.items.forEach(it=>{ const cQty = it.cancelledQty||(it.cancelled?it.qty:0); const act = it.qty-cQty; if(act>0){ const v = it.id.split('_')[1]; let nm2 = it.name['VI'] || it.name['EN'] || it.name; if(v && HOT_COLD_TRANS[v]) nm2 += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`; dMap[nm2] = (dMap[nm2]||0)+act; } }); });
       const dKeys = Object.keys(dMap);
-      if(dKeys.length){
-        detailsHtml = `<div class="mt-2.5 bg-teal-900/60 p-2.5 rounded-xl border border-teal-700/50">
-          <span class="text-[9px] text-gold-400 font-bold uppercase mb-1.5 block tracking-wider">📋 Chi tiết:</span>
-          <ul class="text-[10px] text-teal-100 space-y-1 pl-1">${dKeys.map(k=>`<li>• ${k}: <strong class="text-white">x${dMap[k]}</strong></li>`).join('')}</ul>
-        </div>`;
-      }
+      if(dKeys.length){ detailsHtml = `<div class="mt-2.5 bg-teal-900/60 p-2.5 rounded-xl border border-teal-700/50"><span class="text-[9px] text-gold-400 font-bold uppercase mb-1.5 block tracking-wider">📋 Chi tiết:</span><ul class="text-[10px] text-teal-100 space-y-1 pl-1">${dKeys.map(k=>`<li>• ${k}: <strong class="text-white">x${dMap[k]}</strong></li>`).join('')}</ul></div>`; }
       ordersHtml = '<div class="mt-3 pt-3 border-t border-teal-700/50 space-y-2">';
-      tableOrders.forEach(o=>{
-        const isDel = o.status==='pending' && o.timestamp && (Date.now()-o.timestamp)>300000;
-        let sC = 'text-gold-400';
-        if(o.status==='preparing') sC='text-red-400';
-        if(o.status==='completed') sC='text-emerald-400';
-        let ts = `📥 ${o.time}`;
-        if(o.status==='completed') ts += `<br><span class="text-emerald-400 ml-3">✅ ${o.completedTime||'--:--'}</span>`;
-        const itemsStr = o.items.filter(i=>!(i.cancelledQty>=i.qty)).map(i=>{
-          const cQty = i.cancelledQty||0; const v = i.id.split('_')[1];
-          let n = i.name['VI'] || i.name['EN'];
-          if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
-          return `${n} (x${i.qty-cQty})`;
-        }).join(', ');
-        ordersHtml += `<div class="text-[10px] bg-teal-950/50 p-2 rounded-lg border border-teal-800/40">
-          <div class="flex justify-between items-start mb-1.5 pb-1.5 border-b border-teal-800/50">
-            <div class="${sC} font-bold leading-tight">${ts}</div>
-            ${isDel?'<span class="bg-red-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black animate-pulse">⚠️ Trễ</span>':''}
-          </div>
-          <div class="text-white opacity-90 text-[9.5px] leading-relaxed line-clamp-2">${itemsStr}</div>
-        </div>`;
-      });
+      tableOrders.forEach(o=>{ const isDel = o.status==='pending' && o.timestamp && (Date.now()-o.timestamp)>300000; let sC = 'text-gold-400'; if(o.status==='preparing') sC='text-red-400'; if(o.status==='completed') sC='text-emerald-400'; let ts = `📥 ${o.time}`; if(o.status==='completed') ts += `<br><span class="text-emerald-400 ml-3">✅ ${o.completedTime||'--:--'}</span>`; const itemsStr = o.items.filter(i=>!(i.cancelledQty>=i.qty)).map(i=>{ const cQty = i.cancelledQty||0; const v = i.id.split('_')[1]; let n = i.name['VI'] || i.name['EN']; if(v && HOT_COLD_TRANS[v]) n += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`; return `${n} (x${i.qty-cQty})`; }).join(', '); ordersHtml += `<div class="text-[10px] bg-teal-950/50 p-2 rounded-lg border border-teal-800/40"><div class="flex justify-between items-start mb-1.5 pb-1.5 border-b border-teal-800/50"><div class="${sC} font-bold leading-tight">${ts}</div>${isDel?'<span class="bg-red-600 text-white px-1.5 py-0.5 rounded text-[8px] font-black animate-pulse">⚠️ Trễ</span>':''}</div><div class="text-white opacity-90 text-[9.5px] leading-relaxed line-clamp-2">${itemsStr}</div></div>`; });
       ordersHtml += '</div>';
     }
     let bC = nm!=='Trống' ? (isFull ? 'bg-emerald-950/40 border-emerald-500/50' : 'bg-teal-900/40 border-gold-500/50') : 'bg-teal-950/30 border-teal-800/50 opacity-60';
     let payC = 'bg-gold-500/20 text-gold-400 border-gold-500/30';
     if(pay==='FOC'||pay==='TA_UNPAID') payC = 'bg-red-900/80 text-red-100 border-red-500/50';
     if(pay==='KTOUR') payC = 'bg-red-700/90 text-red-100 border-red-400 font-black';
-    return `<div class="p-4 rounded-2xl border transition-all ${bC} backdrop-blur-sm flex flex-col">
-      <div class="flex justify-between items-start mb-2">
-        <span class="text-sm font-black text-emerald-400 drop-shadow-sm">${t}</span>
-        ${nm!=='Trống'?`<span class="text-[10px] bg-teal-800 text-white px-2 py-0.5 rounded font-bold">PAX: ${pax}</span>`:''}
-      </div>
-      <div class="text-[11px] font-bold text-white leading-tight mb-3 min-h-[24px] break-words whitespace-normal">${nm} ${rest}</div>
-      ${nm!=='Trống'?`<div class="text-[9px] font-black uppercase tracking-wider mb-3 ${payC} px-2 py-1 rounded inline-block self-start border shadow-inner">TT: ${pay} ${foc}</div>`:''}
-      <div class="space-y-1.5 bg-teal-950/50 p-2 rounded-lg">
-        <div class="flex justify-between text-[10px]"><span class="text-teal-300">Đồ Uống:</span><span class="font-bold ${usage.drinks>=pax && pax>0?'text-emerald-400':'text-gold-500'}">${usage.drinks}/${pax}</span></div>
-        <div class="flex justify-between text-[10px]"><span class="text-teal-300">Bánh Ngọt:</span><span class="font-bold ${usage.pastries>=pax && pax>0?'text-emerald-400':'text-gold-500'}">${usage.pastries}/${pax}</span></div>
-      </div>
-      ${detailsHtml}${ordersHtml}
-    </div>`;
+    return `<div class="p-4 rounded-2xl border transition-all ${bC} backdrop-blur-sm flex flex-col"><div class="flex justify-between items-start mb-2"><span class="text-sm font-black text-emerald-400 drop-shadow-sm">${t}</span>${nm!=='Trống'?`<span class="text-[10px] bg-teal-800 text-white px-2 py-0.5 rounded font-bold">PAX: ${pax}</span>`:''}</div><div class="text-[11px] font-bold text-white leading-tight mb-3 min-h-[24px] break-words whitespace-normal">${nm} ${rest}</div>${nm!=='Trống'?`<div class="text-[9px] font-black uppercase tracking-wider mb-3 ${payC} px-2 py-1 rounded inline-block self-start border shadow-inner">TT: ${pay} ${foc}</div>`:''}<div class="space-y-1.5 bg-teal-950/50 p-2 rounded-lg"><div class="flex justify-between text-[10px]"><span class="text-teal-300">Đồ Uống:</span><span class="font-bold ${usage.drinks>=pax && pax>0?'text-emerald-400':'text-gold-500'}">${usage.drinks}/${pax}</span></div><div class="flex justify-between text-[10px]"><span class="text-teal-300">Bánh Ngọt:</span><span class="font-bold ${usage.pastries>=pax && pax>0?'text-emerald-400':'text-gold-500'}">${usage.pastries}/${pax}</span></div></div>${detailsHtml}${ordersHtml}</div>`;
   }).join('');
   const p = document.getElementById('total-pax-display'); if(p) p.innerText = totalPax;
   const tp = document.getElementById('total-ticket-pax-display'); if(tp) tp.innerText = totalTicketPax;
@@ -2916,10 +2488,7 @@ window.renderReception = function(){
     const hasOrders = state.orders.some(o=>o.table===t && o.status!=='completed');
     let bg = nm ? 'bg-gradient-to-br from-gold-400 to-gold-500 text-black border-transparent shadow-lg hover:scale-105' : 'bg-teal-900/40 border-teal-700/50 text-teal-300 hover:bg-teal-800/60';
     if(hasOrders && !nm) bg = 'bg-red-950/80 border-red-500/50 text-red-300 shadow-lg hover:bg-red-900/80';
-    return `<button onclick="openCustomerNameModal('${t}')" class="p-3 rounded-2xl border text-center transition-all duration-300 ${bg} flex flex-col justify-center items-center min-h-[80px] backdrop-blur-sm">
-      <span class="block text-sm font-black mb-1.5 drop-shadow-sm">${t}</span>
-      <span class="block text-[9px] font-bold w-full break-words whitespace-normal px-1 leading-tight opacity-90">${nm?nm+pax+p:'Trống'}</span>
-    </button>`;
+    return `<button onclick="openCustomerNameModal('${t}')" class="p-3 rounded-2xl border text-center transition-all duration-300 ${bg} flex flex-col justify-center items-center min-h-[80px] backdrop-blur-sm"><span class="block text-sm font-black mb-1.5 drop-shadow-sm">${t}</span><span class="block text-[9px] font-bold w-full break-words whitespace-normal px-1 leading-tight opacity-90">${nm?nm+pax+p:'Trống'}</span></button>`;
   }).join('');
 };
 
@@ -2930,37 +2499,19 @@ window.renderAdmin = function(){
   document.getElementById('stat-done').innerText = state.orders.filter(o=>o.status==='completed').length;
   const sv = (document.getElementById('admin-search-order')?.value||'').toLowerCase();
   const tb = document.getElementById('admin-orders-tbody');
-  const filtered = state.orders.filter(o=>{
-    const mI = o.items.some(i=>(i.name['VI']||i.name['EN']).toLowerCase().includes(sv));
-    return !sv || o.table.toLowerCase().includes(sv) || (o.preparedBy||'').toLowerCase().includes(sv) || mI;
-  });
-  if(!filtered.length){
-    tb.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-teal-500/80 font-bold">Danh sách trống.</td></tr>`;
-  } else {
+  const filtered = state.orders.filter(o=>{ const mI = o.items.some(i=>(i.name['VI']||i.name['EN']).toLowerCase().includes(sv)); return !sv || o.table.toLowerCase().includes(sv) || (o.preparedBy||'').toLowerCase().includes(sv) || mI; });
+  if(!filtered.length){ tb.innerHTML = `<tr><td colspan="6" class="text-center py-10 text-teal-500/80 font-bold">Danh sách trống.</td></tr>`; }
+  else {
     tb.innerHTML = filtered.map(o=>{
       const isDel = o.status==='pending' && o.timestamp && (Date.now()-o.timestamp)>300000;
       let st = `<span class="text-gold-400 font-bold">Chờ duyệt</span>`;
       if(o.status==='preparing') st = `<span class="text-red-400 font-bold">Đang pha</span>`;
       if(o.status==='completed') st = `<span class="text-emerald-400 font-bold">Đã phục vụ</span>`;
       if(isDel) st += `<br><span class="text-red-500 font-black animate-pulse text-[9px] uppercase mt-1.5 inline-block bg-red-950/50 px-2 py-0.5 rounded border border-red-900/50">⚠️ Quá 5p</span>`;
-      const itemsStr = o.items.map((i,idx)=>{
-        const cQty = i.cancelledQty||(i.cancelled?i.qty:0);
-        const v = i.id.split('_')[1];
-        let nm = i.name['VI'] || i.name['EN'];
-        if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`;
-        if(cQty>=i.qty) return `<span class="line-through text-teal-600">${nm} (x${i.qty})</span>`;
-        return `<span class="inline-block mr-2 mb-1">${nm} <strong class="text-white">x${i.qty-cQty}</strong> ${cQty>0?`<span class="text-teal-600 line-through ml-1 text-[10px]">(Hủy ${cQty})</span>`:''} <button onclick="openCancelModal('${o.id}',${idx},${i.qty},${cQty})" class="text-[8px] bg-red-950/80 text-red-300 px-2 py-1 rounded ml-1 border border-red-900/50 hover:bg-red-900 uppercase font-bold tracking-wider">Hủy</button></span>`;
-      }).join('<br>');
+      const itemsStr = o.items.map((i,idx)=>{ const cQty = i.cancelledQty||(i.cancelled?i.qty:0); const v = i.id.split('_')[1]; let nm = i.name['VI'] || i.name['EN']; if(v && HOT_COLD_TRANS[v]) nm += ` (${HOT_COLD_TRANS[v]['VI'] || HOT_COLD_TRANS[v]['EN']})`; if(cQty>=i.qty) return `<span class="line-through text-teal-600">${nm} (x${i.qty})</span>`; return `<span class="inline-block mr-2 mb-1">${nm} <strong class="text-white">x${i.qty-cQty}</strong> ${cQty>0?`<span class="text-teal-600 line-through ml-1 text-[10px]">(Hủy ${cQty})</span>`:''} <button onclick="openCancelModal('${o.id}',${idx},${i.qty},${cQty})" class="text-[8px] bg-red-950/80 text-red-300 px-2 py-1 rounded ml-1 border border-red-900/50 hover:bg-red-900 uppercase font-bold tracking-wider">Hủy</button></span>`; }).join('<br>');
       let pn = o.preparedBy ? `Làm: <span class="text-white">${o.preparedBy}</span>` : '--';
       if(o.completedBy) pn += `<br><span class="text-emerald-400">Giao: <span class="text-white">${o.completedBy}</span></span>`;
-      return `<tr class="${isDel?'bg-red-950/20 hover:bg-red-950/40':'hover:bg-teal-800/30'} transition-colors border-b border-teal-700/30">
-        <td class="py-4 px-4 font-mono text-[10px] ${isDel?'text-red-300':'text-teal-300'} whitespace-nowrap bg-teal-950/20">${o.time}</td>
-        <td class="py-4 px-4 font-black text-gold-400 whitespace-nowrap text-sm">${o.table}</td>
-        <td class="py-4 px-4 text-[11px] leading-relaxed">${itemsStr}<div class="text-[9.5px] text-gold-400/80 mt-2 italic font-medium">${o.notes||''}</div></td>
-        <td class="py-4 px-4 text-[10.5px]">${st}</td>
-        <td class="py-4 px-4 text-[10px] text-teal-200 leading-relaxed">${pn}</td>
-        <td class="py-4 px-4 text-right"><button onclick="openStaffNameModal('${o.id}','completed')" class="bg-teal-900 border border-teal-700 text-teal-200 hover:text-white hover:bg-teal-800 px-3 py-2 rounded-lg text-[9px] font-bold transition-colors uppercase tracking-wider">Đổi TT</button></td>
-      </tr>`;
+      return `<tr class="${isDel?'bg-red-950/20 hover:bg-red-950/40':'hover:bg-teal-800/30'} transition-colors border-b border-teal-700/30"><td class="py-4 px-4 font-mono text-[10px] ${isDel?'text-red-300':'text-teal-300'} whitespace-nowrap bg-teal-950/20">${o.time}</td><td class="py-4 px-4 font-black text-gold-400 whitespace-nowrap text-sm">${o.table}</td><td class="py-4 px-4 text-[11px] leading-relaxed">${itemsStr}<div class="text-[9.5px] text-gold-400/80 mt-2 italic font-medium">${o.notes||''}</div></td><td class="py-4 px-4 text-[10.5px]">${st}</td><td class="py-4 px-4 text-[10px] text-teal-200 leading-relaxed">${pn}</td><td class="py-4 px-4 text-right"><button onclick="openStaffNameModal('${o.id}','completed')" class="bg-teal-900 border border-teal-700 text-teal-200 hover:text-white hover:bg-teal-800 px-3 py-2 rounded-lg text-[9px] font-bold transition-colors uppercase tracking-wider">Đổi TT</button></td></tr>`;
     }).join('');
   }
 };
@@ -2969,49 +2520,29 @@ window.renderAll = function(){
   ['view-customer','view-staff','view-admin','view-reception','view-bungalow','welcome-screen','main-customer-content'].forEach(id=>document.getElementById(id).classList.add('hidden'));
   const pending = state.orders.filter(o=>o.status==='pending').length;
   document.getElementById('pending-count-staff').innerText = pending;
-  if(state.currentRole==='customer'){
-    document.getElementById('view-customer').classList.remove('hidden');
-    if(!state.tableSelected) document.getElementById('welcome-screen').classList.remove('hidden');
-    else { document.getElementById('main-customer-content').classList.remove('hidden'); window.renderCustomer(); }
-  } else if(state.currentRole==='staff'){ document.getElementById('view-staff').classList.remove('hidden'); window.renderStaff(); }
+  if(state.currentRole==='customer'){ document.getElementById('view-customer').classList.remove('hidden'); if(!state.tableSelected) document.getElementById('welcome-screen').classList.remove('hidden'); else { document.getElementById('main-customer-content').classList.remove('hidden'); window.renderCustomer(); } }
+  else if(state.currentRole==='staff'){ document.getElementById('view-staff').classList.remove('hidden'); window.renderStaff(); }
   else if(state.currentRole==='admin'){ document.getElementById('view-admin').classList.remove('hidden'); window.renderAdmin(); }
   else if(state.currentRole==='reception'){ document.getElementById('view-reception').classList.remove('hidden'); window.renderReception(); }
   else if(state.currentRole==='bungalow'){ document.getElementById('view-bungalow').classList.remove('hidden'); window.renderBungalowTrack(); }
 };
-  /* ===== MASTER HOOK ===== */
-window.__masterGetPendingRole = function(){ 
-  try { return pendingRoleRequest; } catch(e){ return null; } 
-};
+
+window.__masterGetPendingRole = function(){ try { return pendingRoleRequest; } catch(e){ return null; } };
 window.__masterExecuteManagerAction = async function(){
   try {
     if (typeof pendingManagerAction !== 'undefined' && pendingManagerData) {
-      if (pendingManagerAction === 'clear' && window.executeClearCustomerName)
-        await window.executeClearCustomerName(pendingManagerData.table);
-      else if (pendingManagerAction === 'save' && window.executeSaveCustomerName)
-        await window.executeSaveCustomerName(pendingManagerData);
+      if (pendingManagerAction === 'clear' && window.executeClearCustomerName) await window.executeClearCustomerName(pendingManagerData.table);
+      else if (pendingManagerAction === 'save' && window.executeSaveCustomerName) await window.executeSaveCustomerName(pendingManagerData);
     }
   } catch(e){ console.warn('masterHook mgr:', e); }
 };
 window.__masterExecuteClearAll = async function(){
-  try {
-    var coll = (window.location.pathname.indexOf('restaurant') >= 0) ? 'res_tables' : 'lounge_tables';
-    var snap = await getDocs(collection(db, coll));
-    await Promise.all(snap.docs.map(function(d){ return deleteDoc(d.ref); }));
-    window.showToast && window.showToast('Đã xóa toàn bộ khách!', '🧹');
-  } catch(e){ console.warn('masterHook clear:', e); }
+  try { var coll = 'lounge_tables'; var snap = await getDocs(collection(db, coll)); await Promise.all(snap.docs.map(function(d){ return deleteDoc(d.ref); })); window.showToast && window.showToast('Đã xóa toàn bộ khách!', '🧹'); }
+  catch(e){ console.warn('masterHook clear:', e); }
 };
 window.__masterExecutePass = function(){
-  try {
-    if (typeof passMode !== 'undefined') {
-      if (passMode === 'delete' && window.doDelete) window.doDelete();
-      else if (passMode === 'deleteShow' && window.doDeleteShow) window.doDeleteShow();
-      else {
-        // Unlock editor
-        svcUnlocked = true;
-        if (window.lockUi) window.lockUi(false);
-      }
-    }
-  } catch(e){ console.warn('masterHook pass:', e); }
+  try { if (typeof passMode !== 'undefined') { if (passMode === 'delete' && window.doDelete) window.doDelete(); else if (passMode === 'deleteShow' && window.doDeleteShow) window.doDeleteShow(); else { svcUnlocked = true; if (window.lockUi) window.lockUi(false); } } }
+  catch(e){ console.warn('masterHook pass:', e); }
 };
 </script>
 </body>

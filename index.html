@@ -281,6 +281,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   .area-icon{font-size:2rem;margin-bottom:.4rem}
 }
 </style>
+<script src="staff-sync.js" defer></script>
+<script src="community-chat.js" defer></script>
 <script src="master.js" defer></script>
 <link rel="manifest" href="/DolphinApp/manifest.json">
 <meta name="theme-color" content="#123634">
@@ -769,7 +771,7 @@ try {
 } catch(e) { console.warn('[Announcement] Init error:', e); }
 </script>
 
-<!-- ════════ ORDER NOTIFICATION ════════ -->
+<!-- ════════ ORDER + CALL NOTIFICATION — với push CHAT ════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -781,10 +783,15 @@ const notifFirebaseConfig = {
   projectId: "dolphin-f6d67"
 };
 
-const WATCH_COLLECTIONS = [
-  { name: 'bun_orders',    label: 'Bungalow',  icon: '🌴' },
-  { name: 'lounge_orders', label: 'Lounge',    icon: '🍸' },
+const WATCH_ORDERS = [
+  { name: 'bun_orders',    label: 'Bungalow',   icon: '🌴' },
+  { name: 'lounge_orders', label: 'Lounge',     icon: '🍸' },
   { name: 'res_orders',    label: 'Restaurant', icon: '🍽️' }
+];
+const WATCH_CALLS = [
+  { name: 'bun_calls',    label: 'Bungalow',   icon: '🌴' },
+  { name: 'lounge_calls', label: 'Lounge',     icon: '🍸' },
+  { name: 'res_calls',    label: 'Restaurant', icon: '🍽️' }
 ];
 
 let notifAudioCtx = null;
@@ -819,12 +826,9 @@ function playOrderBell(){
     delayGain.gain.value = 0.3;
     delay.connect(delayGain);
     delayGain.connect(master);
+
     function strike(freq, time, gainVal, decay){
-      const partials = [
-        {r:1.00, g:1.00, d:1.0},{r:2.00, g:0.6,  d:0.85},
-        {r:2.76, g:0.4,  d:0.7},{r:4.07, g:0.25, d:0.55},{r:5.43, g:0.15, d:0.4}
-      ];
-      partials.forEach(p => {
+      [{r:1.00,g:1.00,d:1.0},{r:2.00,g:0.6,d:0.85},{r:2.76,g:0.4,d:0.7},{r:4.07,g:0.25,d:0.55},{r:5.43,g:0.15,d:0.4}].forEach(p => {
         const osc = ctx.createOscillator();
         const g = ctx.createGain();
         osc.type = 'sine';
@@ -839,31 +843,42 @@ function playOrderBell(){
         osc.start(time); osc.stop(time + dec + 0.05);
       });
     }
+
     const baseFreq = 1046.50;
     strike(baseFreq, now + 0.0, 0.5, 1.2);
     strike(baseFreq, now + 0.35, 0.5, 1.2);
     strike(baseFreq, now + 0.70, 0.5, 2.5);
     strike(baseFreq * 0.75, now + 0.70, 0.35, 2.5);
     strike(baseFreq * 0.5,  now + 0.72, 0.25, 2.5);
-    if (navigator.vibrate) { try { navigator.vibrate([200,100,200,100,400]); } catch(e){} }
+
+    if (navigator.vibrate) {
+      try { navigator.vibrate([200,100,200,100,400]); } catch(e){}
+    }
   } catch(e){ console.warn('[Notif] Bell error:', e); }
 }
 
-function showOrderNotif(collection, orderData){
+function showOrderNotif(cfg, data, type){
   const notif = document.getElementById('orderNotif');
   const title = document.getElementById('orderNotifTitle');
   const sub = document.getElementById('orderNotifSub');
   if (!notif || !title || !sub) return;
-  const col = WATCH_COLLECTIONS.find(c => c.name === collection);
-  const colLabel = col ? (col.icon + ' ' + col.label) : collection;
-  const table = orderData.table || '--';
-  const itemCount = Array.isArray(orderData.items) ? orderData.items.length : 0;
-  const customer = orderData.customerName || '';
-  title.textContent = '🔔 CÓ ĐƠN MỚI!';
-  sub.innerHTML = colLabel + ' · Bàn <span class="table-hl">' + table + '</span> · ' +
-                  (itemCount > 0 ? itemCount + ' món' : 'đơn mới') +
-                  (customer ? ' · ' + customer : '');
-  notif.dataset.collection = collection;
+
+  const colLabel = cfg.icon + ' ' + cfg.label;
+  const table = data.table || '--';
+  const customer = data.customerName || '';
+
+  if (type === 'call'){
+    title.textContent = '🛎️ KHÁCH GỌI PHỤC VỤ!';
+    sub.innerHTML = colLabel + ' · Bàn <span class="table-hl">' + table + '</span>' + (customer ? ' · ' + customer : '');
+  } else {
+    const itemCount = Array.isArray(data.items) ? data.items.length : 0;
+    title.textContent = '🔔 CÓ ĐƠN MỚI!';
+    sub.innerHTML = colLabel + ' · Bàn <span class="table-hl">' + table + '</span> · ' +
+                    (itemCount > 0 ? itemCount + ' món' : 'đơn mới') +
+                    (customer ? ' · ' + customer : '');
+  }
+
+  notif.dataset.collection = cfg.name;
   notif.dataset.table = table;
   notif.classList.add('show');
   if (notifHideTimer) clearTimeout(notifHideTimer);
@@ -879,31 +894,69 @@ window.openOrderFromNotif = function(){
   const notif = document.getElementById('orderNotif');
   if (!notif) return;
   const collection = notif.dataset.collection;
-  const map = { 'bun_orders':'bungalow','lounge_orders':'lounge','res_orders':'restaurant' };
+  const map = {
+    'bun_orders': 'bungalow', 'lounge_orders': 'lounge', 'res_orders': 'restaurant',
+    'bun_calls': 'bungalow', 'lounge_calls': 'lounge', 'res_calls': 'restaurant'
+  };
   const appKey = map[collection];
   if (appKey && window.openApp) window.openApp(appKey);
   closeOrderNotif();
 };
 
+function pushToChat(text, icon){
+  if (window.ChatSystem && window.ChatSystem.pushSystemMessage){
+    window.ChatSystem.pushSystemMessage(text, icon);
+  }
+}
+
 try {
   const app = initializeApp(notifFirebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+
   signInAnonymously(auth).then(() => {
-    WATCH_COLLECTIONS.forEach(cfg => {
+    WATCH_ORDERS.forEach(cfg => {
       const isInitial = { flag: true };
       onSnapshot(collection(db, cfg.name), snap => {
         if (isInitial.flag) { isInitial.flag = false; return; }
         snap.docChanges().forEach(ch => {
-          if (ch.type === 'added') {
+          if (ch.type === 'added'){
             const data = ch.doc.data();
-            if (data.status === 'pending') {
+            if (data.status === 'pending'){
               playOrderBell();
-              showOrderNotif(cfg.name, data);
+              showOrderNotif(cfg, data, 'order');
+              const itemCount = Array.isArray(data.items) ? data.items.length : 0;
+              pushToChat(
+                cfg.label + ' · Bàn ' + (data.table || '--') + ' · ' +
+                (itemCount > 0 ? itemCount + ' món' : 'đơn mới') +
+                (data.customerName ? ' · ' + data.customerName : ''),
+                '🔔'
+              );
             }
           }
         });
-      }, err => console.warn('[Notif] Listen error ' + cfg.name, err));
+      }, err => console.warn('[Notif] Order listen error', cfg.name, err));
+    });
+
+    WATCH_CALLS.forEach(cfg => {
+      const isInitial = { flag: true };
+      onSnapshot(collection(db, cfg.name), snap => {
+        if (isInitial.flag) { isInitial.flag = false; return; }
+        snap.docChanges().forEach(ch => {
+          if (ch.type === 'added'){
+            const data = ch.doc.data();
+            if (data.status === 'pending'){
+              playOrderBell();
+              showOrderNotif(cfg, data, 'call');
+              pushToChat(
+                cfg.label + ' · Bàn ' + (data.table || '--') + ' gọi phục vụ' +
+                (data.customerName ? ' · ' + data.customerName : ''),
+                '🛎️'
+              );
+            }
+          }
+        });
+      }, err => console.warn('[Notif] Call listen error', cfg.name, err));
     });
   }).catch(err => console.warn('[Notif] Auth error:', err));
 } catch(e){ console.warn('[Notif] Init error:', e); }

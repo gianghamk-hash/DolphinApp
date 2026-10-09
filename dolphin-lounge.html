@@ -1960,7 +1960,12 @@ window.saveCustomerName = async function(){
   await window.executeSaveCustomerName({table, dataToSave:data});
 };
 window.executeSaveCustomerName = async function({table,dataToSave}){
-  try{ if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave); window.showToast(`Đã lưu bàn ${table}`,'✅'); window.closeCustomerNameModal(); Confetti.spawn(innerWidth/2, innerHeight/2, 40); }
+  try{ 
+    if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave); 
+    window.showToast(`Đã lưu bàn ${table}`,'✅'); 
+    window.closeCustomerNameModal(); 
+    Confetti.spawn(innerWidth/2, innerHeight/2, 40); 
+  }
   catch(e){ window.showToast("Lỗi lưu!","❌"); }
 };
 window.clearCustomerName = function(){ const t = document.getElementById('reception-target-table').value; window.promptManagerAuth('clear',{table:t}); };

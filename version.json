@@ -1,7 +1,7 @@
 {
-  "version": "2.5.0",
+  "version": "2.5.2",
   "buildDate": "2026-10-09T15:00:00Z",
   "commit": "test",
-  "notes": "PHIÊN BẢN 1.5.1 - CẬP NHẬT CHUÔNG THÔNG BÁO CHO IOS, Cập nhật giao diện hệ thống",
+  "notes": "PHIÊN BẢN 1.5.1 - BỔ SUNG CHỨC NĂNG CHAT",
   "forceUpdate": false
 }

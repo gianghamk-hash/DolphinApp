@@ -652,8 +652,37 @@ window.openCustomerNameModal=function(t){
   document.getElementById('customer-name-input').focus();
 };
 window.closeCustomerNameModal=()=>document.getElementById('modal-customer-name').classList.add('hidden');
-window.saveCustomerName=async function(){const t=document.getElementById('reception-target-table').value;const n=document.getElementById('customer-name-input').value.trim();const rt=document.getElementById('bungalow-restaurant-table-input').value.trim();const pm=document.getElementById('bungalow-payment-method').value;const sn=document.getElementById('bungalow-staff-opener').value.trim();if(!n){window.showToast('Nhập tên khách!','⚠️');return;}if(!rt){window.showToast('Nhập số bàn NH!','⚠️');return;}try{if(db)await setDoc(doc(db,COL_TABLES,t),{customerName:n,restaurantTable:rt,paymentMethod:pm,openedByStaff:sn||window.getStaffName(),updatedBy:window.getStaffName()||'N/A',updatedAt:Date.now()});window.showToast(`Đã lưu P.${t}`,'✅');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi lưu!','❌');}};
-window.clearCustomerName=async function(){const t=document.getElementById('reception-target-table').value;try{if(db)await deleteDoc(doc(db,COL_TABLES,t));window.showToast(`Đã xóa P.${t}`,'🧹');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi xóa!','❌');}};
+window.saveCustomerName=async function(){
+  const t=document.getElementById('reception-target-table').value;
+  const n=document.getElementById('customer-name-input').value.trim();
+  const rt=document.getElementById('bungalow-restaurant-table-input').value.trim();
+  const pm=document.getElementById('bungalow-payment-method').value;
+  const openerInput=document.getElementById('bungalow-staff-opener');
+  const sn=(openerInput.value||'').trim();
+  
+  if(!n){window.showToast('Nhập tên khách!','⚠️');return;}
+  if(!rt){window.showToast('Nhập số bàn NH!','⚠️');return;}
+  if(!sn){window.showToast('Nhập tên NV mở phòng!','⚠️');return;}
+  
+  // 🔒 Nếu phòng đã có openedByStaff → giữ nguyên
+  const existing=state.tableAssignments[t]||{};
+  const finalOpener=(existing.openedByStaff && existing.openedByStaff.trim())
+    ? existing.openedByStaff
+    : sn;
+  
+  try{
+    if(db)await setDoc(doc(db,COL_TABLES,t),{
+      customerName:n,
+      restaurantTable:rt,
+      paymentMethod:pm,
+      openedByStaff:finalOpener,
+      updatedBy:window.getStaffName()||'N/A',
+      updatedAt:Date.now()
+    },{merge:true});
+    window.showToast(`Đã lưu P.${t}`,'✅');
+    window.closeCustomerNameModal();
+  }catch(e){window.showToast('Lỗi lưu!','❌');}
+};
 
 let cancelCtx={orderId:null,itemIndex:null,maxQty:0};
 window.openCancelModal=(id,i,oq,ac)=>{const m=oq-ac;if(m<=0)return;cancelCtx={orderId:id,itemIndex:i,maxQty:m};const inp=document.getElementById('cancel-qty-input');inp.value=1;inp.max=m;document.getElementById('modal-cancel-qty').classList.remove('hidden');};

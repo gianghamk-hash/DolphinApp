@@ -625,7 +625,32 @@ window.executeStaffOrderAction=async(id,ns,name)=>{if(!db)return;const r=doc(db,
 window.closeStaffNameModal=()=>{document.getElementById('modal-staff-name').classList.add('hidden');state.pendingAction=null;};
 window.confirmStaffAction=async function(){const n=document.getElementById('staff-name-input').value.trim();if(!n){window.showToast('Vui lòng nhập tên!','⚠️');return;}window.setStaffName(n);const pa=state.pendingAction;document.getElementById('modal-staff-name').classList.add('hidden');state.pendingAction=null;if(pa&&pa.type==='gate'){window.showToast(`Xin chào ${n}!`,'👋');if(pa.roleToEnter)window.changeRole(pa.roleToEnter);renderAll();return;}if(pa&&pa.type==='changeName'){window.showToast(`Đổi tên: ${n}`,'📝');renderAll();return;}if(pa&&pa.type==='orderGate'){window.showToast(`Xin chào ${n}!`,'👋');await window.executeStaffOrderAction(pa.orderId,pa.nextStatus,n);renderAll();return;}renderAll();};
 
-window.openCustomerNameModal=function(t){document.getElementById('reception-target-table').value=t;document.getElementById('lbl-reception-table').innerText=`P.${t}`;const a=state.tableAssignments[t]||{};document.getElementById('customer-name-input').value=a.customerName||'';document.getElementById('bungalow-restaurant-table-input').value=a.restaurantTable||'';document.getElementById('bungalow-payment-method').value=a.paymentMethod||'';document.getElementById('bungalow-staff-opener').value=a.openedByStaff||window.getStaffName();document.getElementById('modal-customer-name').classList.remove('hidden');document.getElementById('customer-name-input').focus();};
+window.openCustomerNameModal=function(t){
+  document.getElementById('reception-target-table').value=t;
+  document.getElementById('lbl-reception-table').innerText=`P.${t}`;
+  const a=state.tableAssignments[t]||{};
+  document.getElementById('customer-name-input').value=a.customerName||'';
+  document.getElementById('bungalow-restaurant-table-input').value=a.restaurantTable||'';
+  document.getElementById('bungalow-payment-method').value=a.paymentMethod||'';
+  
+  // 🔒 Khóa NV mở phòng nếu đã có
+  const openerInput=document.getElementById('bungalow-staff-opener');
+  const lockHint=document.getElementById('bungalow-staff-opener-lock');
+  const lockName=document.getElementById('bungalow-staff-opener-name-lock');
+  if(a.openedByStaff && a.openedByStaff.trim()){
+    openerInput.value=a.openedByStaff;
+    openerInput.disabled=true;
+    lockHint.classList.remove('hidden');
+    lockName.textContent=a.openedByStaff;
+  }else{
+    openerInput.value=window.getStaffName()||'';
+    openerInput.disabled=false;
+    lockHint.classList.add('hidden');
+  }
+  
+  document.getElementById('modal-customer-name').classList.remove('hidden');
+  document.getElementById('customer-name-input').focus();
+};
 window.closeCustomerNameModal=()=>document.getElementById('modal-customer-name').classList.add('hidden');
 window.saveCustomerName=async function(){const t=document.getElementById('reception-target-table').value;const n=document.getElementById('customer-name-input').value.trim();const rt=document.getElementById('bungalow-restaurant-table-input').value.trim();const pm=document.getElementById('bungalow-payment-method').value;const sn=document.getElementById('bungalow-staff-opener').value.trim();if(!n){window.showToast('Nhập tên khách!','⚠️');return;}if(!rt){window.showToast('Nhập số bàn NH!','⚠️');return;}try{if(db)await setDoc(doc(db,COL_TABLES,t),{customerName:n,restaurantTable:rt,paymentMethod:pm,openedByStaff:sn||window.getStaffName(),updatedBy:window.getStaffName()||'N/A',updatedAt:Date.now()});window.showToast(`Đã lưu P.${t}`,'✅');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi lưu!','❌');}};
 window.clearCustomerName=async function(){const t=document.getElementById('reception-target-table').value;try{if(db)await deleteDoc(doc(db,COL_TABLES,t));window.showToast(`Đã xóa P.${t}`,'🧹');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi xóa!','❌');}};

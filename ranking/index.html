@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · Bảng Xếp Hạng</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:100vh;overflow-x:hidden;margin:0;padding-bottom:40px}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2),0 16px 40px -12px rgba(10,50,60,.5)}
+::-webkit-scrollbar{width:6px}::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
+.tab-btn{padding:10px 16px;border-radius:12px;border:1px solid rgba(55,137,123,.4);background:rgba(25,71,67,.55);color:#bfe9dc;font-weight:800;font-size:12px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;transition:all .2s;white-space:nowrap;font-family:inherit}
+.tab-btn.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent;box-shadow:0 4px 16px rgba(244,184,66,.4)}
+.sub-tab{padding:7px 12px;border-radius:9px;border:none;background:transparent;color:#98dccb;font-weight:800;font-size:11px;text-transform:uppercase;letter-spacing:.04em;cursor:pointer;white-space:nowrap;font-family:inherit;transition:all .15s}
+.sub-tab.active{background:linear-gradient(135deg,#4ade80,#16a34a);color:#0a1f1d;box-shadow:0 2px 10px rgba(74,222,128,.4)}
+.row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(10,30,28,.5);border-radius:12px;border:1px solid transparent;transition:all .25s;margin-bottom:6px}
+.row:hover{background:rgba(10,30,28,.85);transform:translateX(2px)}
+.row.r1{background:linear-gradient(135deg,rgba(251,215,122,.15) 0%,rgba(244,184,66,.05) 100%);border-color:rgba(251,215,122,.5);box-shadow:0 2px 16px rgba(251,215,122,.15)}
+.row.r2{background:linear-gradient(135deg,rgba(200,220,230,.12) 0%,transparent 100%);border-color:rgba(200,220,230,.35)}
+.row.r3{background:linear-gradient(135deg,rgba(205,127,50,.12) 0%,transparent 100%);border-color:rgba(205,127,50,.35)}
+.rank{width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;background:rgba(255,255,255,.08);color:#98dccb;font-family:'JetBrains Mono',monospace}
+.row.r1 .rank{background:linear-gradient(135deg,#FFE58F,#F4B842);color:#123634;font-size:15px;box-shadow:0 0 14px rgba(251,215,122,.6)}
+.row.r2 .rank{background:linear-gradient(135deg,#E8EEF5,#B8C4D1);color:#123634}
+.row.r3 .rank{background:linear-gradient(135deg,#E5A55C,#B87020);color:#fff}
+.name{flex:1;font-size:14px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.row.r1 .name{color:#FFE58F;text-shadow:0 0 8px rgba(255,229,143,.4)}
+.val{font-size:15px;font-weight:900;color:#4ade80;font-family:'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;white-space:nowrap;text-shadow:0 0 8px rgba(74,222,128,.3)}
+.val.time{color:#FBD77A;text-shadow:0 0 8px rgba(251,215,122,.3)}
+.val .unit{font-size:10px;opacity:.8;margin-left:2px}
+.sub-count{font-size:9.5px;color:#98dccb;font-weight:700;text-align:right;margin-top:1px;opacity:.8}
+.loading{text-align:center;padding:30px 10px;color:#FBD77A;font-size:13px;font-weight:700;animation:pulse 1.4s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:.5}50%{opacity:1}}
+.empty{text-align:center;padding:30px 10px;color:#98dccb;font-size:13px;font-weight:700;opacity:.7}
+</style>
+</head>
+<body>
+
+<!-- ════════ HEADER ════════ -->
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <div class="text-center flex-1">
+      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
+      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Bảng Xếp Hạng</p>
+    </div>
+    <div class="w-10"></div>
+  </div>
+</div>
+
+<main class="max-w-3xl mx-auto px-4 pt-5">
+
+  <!-- ════════ MAIN TABS ════════ -->
+  <div class="flex gap-2 mb-4 overflow-x-auto pb-1">
+    <button class="tab-btn active" data-main="speed" onclick="switchMain('speed')">⚡ Phục vụ nhanh</button>
+    <button class="tab-btn" data-main="revenue" onclick="switchMain('revenue')">💰 Doanh thu</button>
+  </div>
+
+  <!-- ════════ SPEED SECTION ════════ -->
+  <div id="section-speed" class="glass rounded-2xl p-4">
+    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">🏆</span>
+        <span class="text-[13px] font-black text-gold-400 uppercase tracking-widest">TOP 5 NHANH NHẤT</span>
+      </div>
+      <span class="text-[10px] text-teal-400 font-bold uppercase tracking-wider">7 ngày</span>
+    </div>
+    <div id="speed-list">
+      <div class="loading">⏳ Đang tải...</div>
+    </div>
+  </div>
+
+  <!-- ════════ REVENUE SECTION ════════ -->
+  <div id="section-revenue" class="glass rounded-2xl p-4" style="display:none">
+    <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
+      <div class="flex items-center gap-2">
+        <span class="text-2xl">💰</span>
+        <span class="text-[13px] font-black text-emerald-400 uppercase tracking-widest">TOP DOANH THU</span>
+      </div>
+      <span class="text-[10px] text-teal-400 font-bold uppercase tracking-wider">7 ngày</span>
+    </div>
+    <div class="flex gap-1.5 bg-black/40 p-1.5 rounded-xl border border-emerald-700/30 mb-4 overflow-x-auto">
+      <button class="sub-tab active" data-sub="open" onclick="switchSub('open')">🏠 Mở bàn</button>
+      <button class="sub-tab" data-sub="prepare" onclick="switchSub('prepare')">📝 Nhận order</button>
+      <button class="sub-tab" data-sub="complete" onclick="switchSub('complete')">✅ Hoàn thành</button>
+    </div>
+    <div id="revenue-list">
+      <div class="loading">⏳ Đang tải...</div>
+    </div>
+    <div class="mt-4 pt-3 border-t border-white/10 text-[10.5px] text-teal-400 leading-relaxed">
+      💡 <b class="text-teal-300">Cách tính:</b> Lounge = PAX × 250K · Bungalow = 2M/căn.
+      Doanh thu được chia đều cho số order của bàn.
+    </div>
+  </div>
+
+</main>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+
+// ════════ CẤU HÌNH ════════
+const PRICE_LOUNGE_PAX = 250000;
+const PRICE_BUNGALOW = 2000000;
+const DAYS_BACK = 7;
+const MIN_ORDERS_SPEED = 3;
+const MIN_SECONDS_SPEED = 10;
+const MAX_SECONDS_SPEED = 30 * 60;
+const MIN_REVENUE = 100000;
+const TOP_N = 5;
+const MAX_ORDERS_PER_TABLE = 20;
+
+// ════════ STATE ════════
+const state = {
+  speedOrders: [],
+  loungeTables: {},
+  bunTables: {},
+  loungeOrders: [],
+  bunOrders: [],
+  mainTab: 'speed',
+  subTab: 'open'
+};
+
+// ════════ HELPERS ════════
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function formatDuration(sec){
+  if (sec < 60) return Math.round(sec) + 's';
+  const m = Math.floor(sec / 60);
+  const s = Math.round(sec % 60);
+  return m + 'p' + (s > 0 ? s + 's' : '');
+}
+
+function formatMoney(amount){
+  if (amount >= 1000000000) return (amount / 1000000000).toFixed(1) + 'B';
+  if (amount >= 1000000) {
+    const m = amount / 1000000;
+    return (m >= 10 ? Math.round(m) : m.toFixed(1)) + 'M';
+  }
+  if (amount >= 1000) return Math.round(amount / 1000) + 'K';
+  return Math.round(amount) + 'đ';
+}
+
+// ════════ CONNECT FIREBASE ════════
+try {
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  signInAnonymously(auth).then(() => {
+    // Speed orders (3 collections)
+    ['bun_orders', 'lounge_orders', 'res_orders'].forEach(col => {
+      onSnapshot(collection(db, col), snap => {
+        const arr = [];
+        snap.forEach(d => arr.push({ id: d.id, _col: col, ...d.data() }));
+        state.speedOrders = state.speedOrders.filter(o => o._col !== col).concat(arr);
+        renderSpeed();
+      });
+    });
+
+    // Lounge tables
+    onSnapshot(collection(db, 'lounge_tables'), snap => {
+      const obj = {};
+      snap.forEach(d => obj[d.id] = d.data());
+      state.loungeTables = obj;
+      renderRevenue();
+    });
+
+    // Bun tables
+    onSnapshot(collection(db, 'bun_tables'), snap => {
+      const obj = {};
+      snap.forEach(d => obj[d.id] = d.data());
+      state.bunTables = obj;
+      renderRevenue();
+    });
+
+    // Lounge orders
+    onSnapshot(collection(db, 'lounge_orders'), snap => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      state.loungeOrders = arr;
+      renderRevenue();
+    });
+
+    // Bun orders
+    onSnapshot(collection(db, 'bun_orders'), snap => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      state.bunOrders = arr;
+      renderRevenue();
+    });
+  }).catch(e => console.warn('Auth error:', e));
+} catch(e){ console.warn(e); }
+
+// ════════ SPEED LEADERBOARD ════════
+function calcSpeed(){
+  const now = Date.now();
+  const cutoff = now - DAYS_BACK * 24 * 60 * 60 * 1000;
+  const emp = {};
+
+  state.speedOrders.forEach(o => {
+    if (!o.timestamp || !o.completedAt) return;
+    if (o.status !== 'completed') return;
+    if (o.timestamp < cutoff) return;
+    const dur = (o.completedAt - o.timestamp) / 1000;
+    if (dur < MIN_SECONDS_SPEED || dur > MAX_SECONDS_SPEED) return;
+    const name = (o.completedBy || o.preparedBy || '').trim();
+    if (!name) return;
+    if (!emp[name]) emp[name] = { name, count: 0, total: 0 };
+    emp[name].count += 1;
+    emp[name].total += dur;
+  });
+
+  return Object.values(emp)
+    .filter(e => e.count >= MIN_ORDERS_SPEED)
+    .map(e => ({ name: e.name, count: e.count, avg: e.total / e.count }))
+    .sort((a, b) => a.avg - b.avg)
+    .slice(0, TOP_N);
+}
+
+function renderSpeed(){
+  const list = $('speed-list');
+  if (!list) return;
+  const data = calcSpeed();
+  if (!data.length){
+    list.innerHTML = '<div class="empty">Chưa có đủ dữ liệu (cần ≥ 3 đơn/nhân viên trong 7 ngày)</div>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉','4','5'];
+  list.innerHTML = data.map((e, i) => {
+    const r = i + 1;
+    const m = r <= 3 ? medals[r - 1] : r;
+    const cls = e.avg < 60 ? 'time' : 'time';
+    return `<div class="row r${r <= 3 ? r : ''}">
+      <div class="rank">${m}</div>
+      <div class="name">${esc(e.name)}</div>
+      <div style="text-align:right">
+        <div class="val ${cls}">${formatDuration(e.avg)}</div>
+        <div class="sub-count">${e.count} đơn · TB</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════ REVENUE LEADERBOARD ════════
+function getTableRevenue(type, tableId){
+  if (type === 'lounge'){
+    const t = state.loungeTables[tableId];
+    if (!t) return 0;
+    return (parseInt(t.pax) || 0) * PRICE_LOUNGE_PAX;
+  }
+  if (type === 'bun'){
+    const t = state.bunTables[tableId];
+    if (!t) return 0;
+    return PRICE_BUNGALOW;
+  }
+  return 0;
+}
+
+function calcRevenue(mode){
+  const emp = {};
+
+  // MODE 1: MỞ BÀN — cộng pax/căn cho openedByStaff
+  if (mode === 'open'){
+    Object.values(state.loungeTables).forEach(t => {
+      const staff = (t.openedByStaff || '').trim();
+      if (!staff) return;
+      const pax = parseInt(t.pax) || 0;
+      if (pax <= 0) return;
+      const rev = pax * PRICE_LOUNGE_PAX;
+      if (!emp[staff]) emp[staff] = { name: staff, rev: 0, cnt: 0 };
+      emp[staff].rev += rev;
+      emp[staff].cnt += 1;
+    });
+    Object.values(state.bunTables).forEach(t => {
+      const staff = (t.openedByStaff || '').trim();
+      if (!staff) return;
+      if (!emp[staff]) emp[staff] = { name: staff, rev: 0, cnt: 0 };
+      emp[staff].rev += PRICE_BUNGALOW;
+      emp[staff].cnt += 1;
+    });
+  }
+
+  // MODE 2 & 3: NHẬN ORDER / HOÀN THÀNH — chia đều cho order của bàn
+  if (mode === 'prepare' || mode === 'complete'){
+    ['lounge', 'bun'].forEach(type => {
+      const orders = type === 'lounge' ? state.loungeOrders : state.bunOrders;
+
+      // Group theo bàn
+      const byTable = {};
+      orders.forEach(o => {
+        const t = o.table;
+        if (!t) return;
+        if (!byTable[t]) byTable[t] = [];
+        byTable[t].push(o);
+      });
+
+      Object.keys(byTable).forEach(tableId => {
+        const tableRev = getTableRevenue(type, tableId);
+        if (tableRev <= 0) return;
+
+        const tOrders = byTable[tableId].filter(o => {
+          if (mode === 'prepare') return !!(o.preparedBy || '').trim();
+          if (mode === 'complete') return !!(o.completedBy || '').trim() && o.completedAt;
+          return false;
+        });
+
+        if (tOrders.length === 0) return;
+        if (tOrders.length > MAX_ORDERS_PER_TABLE) return;
+
+        const share = tableRev / tOrders.length;
+
+        tOrders.forEach(o => {
+          const staff = mode === 'prepare'
+            ? (o.preparedBy || '').trim()
+            : (o.completedBy || '').trim();
+          if (!staff) return;
+          const names = staff.split(' & ').map(s => s.trim()).filter(Boolean);
+          const perPerson = share / names.length;
+          names.forEach(n => {
+            if (!emp[n]) emp[n] = { name: n, rev: 0, cnt: 0 };
+            emp[n].rev += perPerson;
+            emp[n].cnt += 1;
+          });
+        });
+      });
+    });
+  }
+
+  return Object.values(emp)
+    .filter(e => e.rev >= MIN_REVENUE)
+    .sort((a, b) => b.rev - a.rev)
+    .slice(0, TOP_N);
+}
+
+function renderRevenue(){
+  const list = $('revenue-list');
+  if (!list) return;
+  const data = calcRevenue(state.subTab);
+  if (!data.length){
+    list.innerHTML = '<div class="empty">Chưa có dữ liệu trong 7 ngày</div>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉','4','5'];
+  const labels = { open: 'bàn đã mở', prepare: 'order đã nhận', complete: 'order hoàn thành' };
+  list.innerHTML = data.map((e, i) => {
+    const r = i + 1;
+    const m = r <= 3 ? medals[r - 1] : r;
+    return `<div class="row r${r <= 3 ? r : ''}">
+      <div class="rank">${m}</div>
+      <div class="name">${esc(e.name)}</div>
+      <div style="text-align:right">
+        <div class="val">${formatMoney(e.rev)}<span class="unit">đ</span></div>
+        <div class="sub-count">${e.cnt} ${labels[state.subTab] || ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+// ════════ TAB SWITCHING ════════
+window.switchMain = function(tab){
+  state.mainTab = tab;
+  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.main === tab));
+  $('section-speed').style.display = tab === 'speed' ? 'block' : 'none';
+  $('section-revenue').style.display = tab === 'revenue' ? 'block' : 'none';
+};
+
+window.switchSub = function(tab){
+  state.subTab = tab;
+  document.querySelectorAll('.sub-tab').forEach(b => b.classList.toggle('active', b.dataset.sub === tab));
+  renderRevenue();
+};
+
+window.goBack = function(){
+  window.location.href = '/DolphinApp/';
+};
+</script>
+</body>
+</html>

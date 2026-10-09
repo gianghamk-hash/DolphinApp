@@ -1,8 +1,8 @@
 /* ============================================================
-   👑 MASTER DEVICE SYSTEM v9
-   - Nhân viên: bỏ qua PIN thường (1111/8888)
-   - Manager actions: VẪN yêu cầu PIN Manager (451994)
-   - Máy Master: bỏ qua TẤT CẢ
+   👑 MASTER DEVICE SYSTEM v11
+   - Bỏ session timeout — Master luôn bypass
+   - Hook chuẩn cho verifyManagerAuth + promptManagerAuth
+   - Debug log để dễ kiểm tra
    ============================================================ */
 (function(){
   'use strict';
@@ -13,6 +13,8 @@
   var FIREBASE_PROJECT = 'dolphin-f6d67';
   var FIREBASE_API_KEY = 'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ';
   var AUTH_TOKEN_KEY = 'dolphinMasterAuthToken';
+  var MANAGER_PIN = '451994';
+  var CLEAR_PIN = '1234';
 
   var masterCodeCache = null;
   var authToken = null;
@@ -31,12 +33,12 @@
     return input === expected;
   }
 
+  // ═══════════ FIREBASE — đổi mã chủ ═══════════
   async function signInAnonymous(){
     try {
       var saved = JSON.parse(localStorage.getItem(AUTH_TOKEN_KEY) || 'null');
       if (saved && saved.expiresAt > Date.now() && saved.idToken) {
-        authToken = saved.idToken;
-        return saved.idToken;
+        authToken = saved.idToken; return saved.idToken;
       }
     } catch(e){}
     var res = await fetch(
@@ -62,11 +64,7 @@
       var url = 'https://firestore.googleapis.com/v1/projects/' + FIREBASE_PROJECT +
                 '/databases/(default)/documents/master_config/dolphin';
       var res = await fetch(url, { headers: { 'Authorization': 'Bearer ' + token } });
-      if (res.status === 404) {
-        masterCodeCache = DEFAULT_MASTER_CODE;
-        cacheCode(DEFAULT_MASTER_CODE);
-        return;
-      }
+      if (res.status === 404) { masterCodeCache = DEFAULT_MASTER_CODE; cacheCode(DEFAULT_MASTER_CODE); return; }
       var data = await res.json();
       var code = (data && data.fields && data.fields.masterCode && data.fields.masterCode.stringValue) || DEFAULT_MASTER_CODE;
       masterCodeCache = code;
@@ -104,17 +102,13 @@
     }
   }
 
-  // ============================================================
-  // 🔓 HOOK — BỎ QUA PIN NHÂN VIÊN (1111, 8888)
-  // Nhân viên vào Lễ Tân/Admin/QL/Bếp KHÔNG cần PIN
-  // ============================================================
-
-  // 1. requestPinAccess — bỏ qua HOÀN TOÀN
+  // ═══════════════════════════════════════════════════════════
+  // 🔓 BYPASS PIN — Tất cả máy đều bỏ qua PIN nhân viên
+  // ═══════════════════════════════════════════════════════════
   function hookRequestPinAccess(){
-    if (typeof window.requestPinAccess !== 'function' || window.requestPinAccess.__masterHooked) return false;
-    var _orig = window.requestPinAccess;
+    if (typeof window.requestPinAccess !== 'function' || window.requestPinAccess.__hooked_v11) return false;
     var newFn = function(role){
-      // Mọi máy đều bỏ qua PIN nhân viên → vào thẳng role
+      // Bỏ qua modal PIN nhân viên — vào thẳng
       try {
         if (typeof window.hasStaffName === 'function' && !window.hasStaffName() &&
             typeof window.requireStaffName === 'function') {
@@ -122,79 +116,148 @@
         } else if (typeof window.changeRole === 'function') {
           window.changeRole(role);
         }
-      } catch(e) {
-        console.warn('[Bypass] requestPinAccess:', e);
-      }
+      } catch(e) { console.warn('[Master v11] requestPinAccess error:', e); }
     };
-    newFn.__masterHooked = true;
+    newFn.__hooked_v11 = true;
     window.requestPinAccess = newFn;
     return true;
   }
 
-  // 2. verifyPin — bỏ qua (dự phòng, không dùng nữa)
-  function hookVerifyPin(){
-    if (typeof window.verifyPin !== 'function' || window.verifyPin.__masterHooked) return false;
-    var newFn = function(){
-      // Không làm gì — không cần xác thực
-      if (typeof window.closePinModal === 'function') window.closePinModal();
+  // ═══════════════════════════════════════════════════════════
+  // 🔐 PIN MANAGER — Chỉ Master auto-fill, máy khác phải nhập
+  // ═══════════════════════════════════════════════════════════
+
+  // Hook 1: promptManagerAuth — khi modal mở, tự điền PIN
+  function hookPromptManagerAuth(){
+    if (typeof window.promptManagerAuth !== 'function' || window.promptManagerAuth.__hooked_v11) return false;
+    var _orig = window.promptManagerAuth;
+    var newFn = function(action, data){
+      var result = _orig.apply(this, arguments);
+      if (isMasterDevice()) {
+        // Đợi modal render xong rồi auto-fill + click
+        var tries = 0;
+        var timer = setInterval(function(){
+          tries++;
+          var modal = document.getElementById('modal-manager-auth');
+          if (!modal || modal.classList.contains('hidden')) {
+            clearInterval(timer);
+            return;
+          }
+          var input = document.getElementById('manager-auth-pin');
+          if (!input) return;
+          // Điền PIN Manager
+          input.value = MANAGER_PIN;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+
+          // Tìm nút Xác Nhận và click
+          var btn = modal.querySelector('button[onclick*="verifyManagerAuth"]');
+          if (btn) {
+            btn.click();
+            clearInterval(timer);
+          }
+          if (tries > 30) clearInterval(timer);
+        }, 100);
+      }
+      return result;
     };
-    newFn.__masterHooked = true;
-    window.verifyPin = newFn;
+    newFn.__hooked_v11 = true;
+    window.promptManagerAuth = newFn;
     return true;
   }
 
-  // ============================================================
-  // 🔐 KHÔNG HOOK verifyManagerAuth / verifyClearAllPin
-  // Máy Master thì mới auto-fill, máy Staff PHẢI TỰ NHẬP
-  // ============================================================
-
-  // 3. verifyManagerAuth — chỉ auto-fill nếu là Master
+  // Hook 2: verifyManagerAuth — auto-fill nếu là Master
   function hookVerifyManagerAuth(){
-    if (typeof window.verifyManagerAuth !== 'function' || window.verifyManagerAuth.__masterHooked) return false;
+    if (typeof window.verifyManagerAuth !== 'function' || window.verifyManagerAuth.__hooked_v11) return false;
     var _orig = window.verifyManagerAuth;
     var newFn = function(){
       if (isMasterDevice()) {
-        // Máy Master → tự điền PIN Manager
         var input = document.getElementById('manager-auth-pin');
-        if (input) {
-          input.value = '451994';
+        if (input && input.value !== MANAGER_PIN) {
+          input.value = MANAGER_PIN;
           input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
         }
       }
-      // Dù Master hay Staff → gọi hàm gốc
-      // Staff không có PIN đúng → hàm gốc báo lỗi
       return _orig.apply(this, arguments);
     };
-    newFn.__masterHooked = true;
+    newFn.__hooked_v11 = true;
     window.verifyManagerAuth = newFn;
     return true;
   }
 
-  // 4. verifyClearAllPin — chỉ auto-fill nếu là Master
+  // Hook 3: promptClearAllCustomers — khi mở modal xóa tất cả
+  function hookPromptClearAll(){
+    if (typeof window.promptClearAllCustomers !== 'function' || window.promptClearAllCustomers.__hooked_v11) return false;
+    var _orig = window.promptClearAllCustomers;
+    var newFn = function(){
+      var result = _orig.apply(this, arguments);
+      if (isMasterDevice()) {
+        var tries = 0;
+        var timer = setInterval(function(){
+          tries++;
+          var modal = document.getElementById('modal-clear-all');
+          if (!modal || modal.classList.contains('hidden')) { clearInterval(timer); return; }
+          var input = document.getElementById('clear-all-pin');
+          if (!input) return;
+          input.value = CLEAR_PIN;
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+          input.dispatchEvent(new Event('change', { bubbles: true }));
+          var btn = modal.querySelector('button[onclick*="verifyClearAllPin"]');
+          if (btn) { btn.click(); clearInterval(timer); }
+          if (tries > 30) clearInterval(timer);
+        }, 100);
+      }
+      return result;
+    };
+    newFn.__hooked_v11 = true;
+    window.promptClearAllCustomers = newFn;
+    return true;
+  }
+
+  // Hook 4: verifyClearAllPin — auto-fill
   function hookVerifyClearAllPin(){
-    if (typeof window.verifyClearAllPin !== 'function' || window.verifyClearAllPin.__masterHooked) return false;
+    if (typeof window.verifyClearAllPin !== 'function' || window.verifyClearAllPin.__hooked_v11) return false;
     var _orig = window.verifyClearAllPin;
     var newFn = function(){
       if (isMasterDevice()) {
         var input = document.getElementById('clear-all-pin');
-        if (input) {
-          input.value = '1234';
+        if (input && input.value !== CLEAR_PIN) {
+          input.value = CLEAR_PIN;
           input.dispatchEvent(new Event('input', { bubbles: true }));
         }
       }
       return _orig.apply(this, arguments);
     };
-    newFn.__masterHooked = true;
+    newFn.__hooked_v11 = true;
     window.verifyClearAllPin = newFn;
     return true;
   }
 
-  // 5. verifyCustomerPwd — KHÔNG hook (bảo mật bàn khách)
-  // 6. verifyPass — KHÔNG hook (bảo mật show)
+  // Hook 5: verifyPin — bỏ qua (cho PIN nhân viên cũ)
+  function hookVerifyPin(){
+    if (typeof window.verifyPin !== 'function' || window.verifyPin.__hooked_v11) return false;
+    var _orig = window.verifyPin;
+    var newFn = function(){
+      if (isMasterDevice()) {
+        var input = document.getElementById('pin-input');
+        if (input && !input.value) {
+          var title = document.getElementById('pin-modal-title');
+          var isReception = title && title.innerText && title.innerText.indexOf('Lễ Tân') >= 0;
+          input.value = isReception ? '1111' : '8888';
+          input.dispatchEvent(new Event('input', { bubbles: true }));
+        }
+      }
+      return _orig.apply(this, arguments);
+    };
+    newFn.__hooked_v11 = true;
+    window.verifyPin = newFn;
+    return true;
+  }
 
-  // ============================================================
-  // BADGE + NÚT KÍCH HOẠT
-  // ============================================================
+  // ═══════════════════════════════════════════════════════════
+  // BADGE + MODAL QUẢN LÝ
+  // ═══════════════════════════════════════════════════════════
   function injectCrownBadge(){
     if (!isMasterDevice()) return;
     if (document.getElementById('masterCrownBadge')) return;
@@ -221,7 +284,7 @@
     var btn = document.createElement('div');
     btn.id = 'masterActivateBtn';
     btn.textContent = '👑';
-    btn.title = 'Bấm để kích hoạt Máy Chủ';
+    btn.title = 'Kích hoạt Máy Chủ';
     btn.style.cssText = 'position:fixed;bottom:20px;left:20px;z-index:99998;width:44px;height:44px;display:flex;align-items:center;justify-content:center;background:rgba(18,54,52,.55);border:1px solid rgba(244,184,66,.35);border-radius:50%;font-size:20px;cursor:pointer;opacity:.5;box-shadow:0 4px 14px rgba(0,0,0,.35);transition:opacity .3s,transform .3s;user-select:none';
     btn.onclick = function(){ showActivateModal(); };
     btn.addEventListener('mouseenter', function(){ btn.style.opacity = '1'; btn.style.transform = 'scale(1.1)'; });
@@ -229,9 +292,6 @@
     document.body.appendChild(btn);
   }
 
-  // ============================================================
-  // MODAL KÍCH HOẠT + QUẢN LÝ
-  // ============================================================
   function modalBase(){
     return 'position:fixed;inset:0;z-index:9999998;background:rgba(10,22,40,.94);backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px;font-family:system-ui,-apple-system,sans-serif;color:#fff';
   }
@@ -353,9 +413,7 @@
     location.reload();
   }
 
-  // ============================================================
-  // BẤM 5 LẦN VÀO LOGO
-  // ============================================================
+  // Bấm 5 lần vào logo
   var tapCount = 0, tapTimer = null;
   function handleLogoTap(){
     tapCount++;
@@ -367,14 +425,11 @@
       else showActivateModal();
     }
   }
-
   document.addEventListener('click', function(e){
     var t = e.target;
     if (!t) return;
     var cls = (typeof t.className === 'string') ? t.className : '';
-    var inBrand = cls.indexOf('brand-title') >= 0
-              || cls.indexOf('brand-sub') >= 0
-              || cls.indexOf('logo-shimmer') >= 0
+    var inBrand = cls.indexOf('brand-title') >= 0 || cls.indexOf('brand-sub') >= 0 || cls.indexOf('logo-shimmer') >= 0
               || (t.closest && (t.closest('.brand-title') || t.closest('.brand-sub') || t.closest('.logo-shimmer') || t.closest('#landing h1')));
     var txt = (t.textContent || '').toUpperCase();
     var isDolphinText = txt.indexOf('DOLPHIN') >= 0 && txt.length < 50;
@@ -383,23 +438,26 @@
     if (inBrand || isDolphinText || inTopZone) handleLogoTap();
   }, true);
 
-  // ============================================================
-  // KHỞI TẠO
-  // ============================================================
+  // ═══════════════════════════════════════════════════════════
+  // KHỞI TẠO — Retry hook liên tục để bắt kịp khi script load
+  // ═══════════════════════════════════════════════════════════
   function startHooking(){
     var tries = 0;
     var timer = setInterval(function(){
       tries++;
-      hookRequestPinAccess();
-      hookVerifyPin();
-      hookVerifyManagerAuth();
-      hookVerifyClearAllPin();
+      var ok = false;
+      if (hookRequestPinAccess()) ok = true;
+      if (hookVerifyPin()) ok = true;
+      if (hookPromptManagerAuth()) ok = true;
+      if (hookVerifyManagerAuth()) ok = true;
+      if (hookPromptClearAll()) ok = true;
+      if (hookVerifyClearAllPin()) ok = true;
       if (tries > 200) clearInterval(timer);
-    }, 150);
+    }, 100);
   }
 
   function init(){
-    fetchMasterCode().catch(function(e){ console.warn('[Master]', e); });
+    fetchMasterCode().catch(function(e){ console.warn('[Master v11]', e); });
     startHooking();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function(){
@@ -418,8 +476,12 @@
     openModal: openMasterModal,
     activate: showActivateModal,
     changeCode: updateMasterCodeInFirebase,
-    syncFromCloud: fetchMasterCode
+    syncFromCloud: fetchMasterCode,
+    version: 'v11'
   };
+
+  // Log để debug
+  console.log('%c👑 MASTER SYSTEM v11 LOADED', 'background:#FBD77A;color:#123634;font-size:13px;padding:4px 8px;border-radius:4px;font-weight:900');
 
   init();
 })();

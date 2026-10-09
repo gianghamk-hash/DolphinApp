@@ -566,6 +566,103 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   .rev-rank{width:32px;height:32px;font-size:15px}
   .rev-tab{font-size:12px;padding:9px 14px}
 }
+  /* ==================== ORDER NOTIFICATION ==================== */
+#orderNotif{
+  display:none;
+  position:fixed;
+  top:20px;
+  left:50%;
+  transform:translateX(-50%) translateY(-120%);
+  z-index:9998;
+  background:linear-gradient(135deg,#B91C1C 0%,#7F1D1D 100%);
+  border:2px solid #FBD77A;
+  border-radius:16px;
+  padding:14px 18px;
+  min-width:280px;
+  max-width:90vw;
+  box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3);
+  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s;
+  font-family:'Nunito',sans-serif;
+}
+#orderNotif.show{
+  display:block;
+  transform:translateX(-50%) translateY(0);
+  animation:order-pulse 1.2s ease-in-out infinite;
+}
+@keyframes order-pulse{
+  0%,100%{box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3)}
+  50%{box-shadow:0 12px 40px rgba(185,28,28,.9),0 0 80px rgba(244,184,66,.6)}
+}
+.order-notif-content{
+  display:flex;
+  align-items:center;
+  gap:12px;
+}
+.order-notif-icon{
+  font-size:32px;
+  animation:bell-shake 0.8s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(251,215,122,.9));
+}
+@keyframes bell-shake{
+  0%,100%{transform:rotate(-8deg)}
+  50%{transform:rotate(8deg)}
+}
+.order-notif-info{flex:1;min-width:0}
+.order-notif-title{
+  color:#FFE58F;
+  font-size:15px;
+  font-weight:900;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  text-shadow:0 0 8px rgba(0,0,0,.9);
+  margin-bottom:3px;
+}
+.order-notif-sub{
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+  opacity:.95;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.order-notif-sub .table-hl{
+  background:rgba(255,229,143,.2);
+  color:#FFE58F;
+  padding:1px 6px;
+  border-radius:6px;
+  font-weight:900;
+}
+.order-notif-actions{display:flex;gap:6px;flex-direction:column}
+.order-notif-btn{
+  background:linear-gradient(135deg,#FBD77A,#F4B842);
+  color:#123634;
+  font-weight:900;
+  font-size:11px;
+  padding:8px 12px;
+  border-radius:9px;
+  border:none;
+  cursor:pointer;
+  font-family:inherit;
+  white-space:nowrap;
+}
+.order-notif-btn:active{transform:scale(.95)}
+.order-notif-close{
+  background:transparent;
+  color:#FFE58F;
+  font-size:11px;
+  font-weight:700;
+  border:none;
+  cursor:pointer;
+  padding:4px;
+  font-family:inherit;
+}
+@media(min-width:768px){
+  #orderNotif{min-width:360px;padding:16px 22px}
+  .order-notif-icon{font-size:38px}
+  .order-notif-title{font-size:17px}
+  .order-notif-sub{font-size:13.5px}
+}
   /* ==================== TRANSITIONS ==================== */
 #landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
   position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden}
@@ -765,7 +862,22 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 </head>
 <body>
 
-<!-- ════════ UPDATE BANNER ════════ -->
+<!-- ════════ ORDER NOTIFICATION BELL ════════ -->
+<div id="orderNotif">
+  <div class="order-notif-content">
+    <span class="order-notif-icon">🔔</span>
+    <div class="order-notif-info">
+      <div class="order-notif-title" id="orderNotifTitle">ĐƠN MỚI!</div>
+      <div class="order-notif-sub" id="orderNotifSub">Bàn ... vừa đặt</div>
+    </div>
+    <div class="order-notif-actions">
+      <button class="order-notif-btn" onclick="openOrderFromNotif()">Xem</button>
+      <button class="order-notif-close" onclick="closeOrderNotif()">✕</button>
+    </div>
+  </div>
+</div>
+
+  <!-- ════════ UPDATE BANNER ════════ -->
 <div id="updateBanner">
   <div class="update-content">
     <span class="update-icon">🎉</span>
@@ -1732,7 +1844,191 @@ try {
   console.warn('[Announcement] Init error:', e);
 }
 </script>
-<!-- ════════ VERSION CHECK + AUTO UPDATE ════════ -->
+<!-- ════════ ORDER NOTIFICATION LISTENER ════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const notifFirebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+
+// Collections theo dõi
+const WATCH_COLLECTIONS = [
+  { name: 'bun_orders',    label: 'Bungalow',  icon: '🌴' },
+  { name: 'lounge_orders', label: 'Lounge',    icon: '🍸' },
+  { name: 'res_orders',    label: 'Restaurant', icon: '🍽️' }
+];
+
+let notifAudioCtx = null;
+let notifLastOrderId = null;
+let notifHideTimer = null;
+
+// Unlock audio khi user tương tác lần đầu
+function unlockNotifAudio(){
+  try {
+    if (!notifAudioCtx) notifAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (notifAudioCtx.state === 'suspended') notifAudioCtx.resume();
+  } catch(e){}
+}
+['click','touchstart','keydown'].forEach(ev => {
+  document.addEventListener(ev, unlockNotifAudio, { once: false, passive: true });
+});
+
+// Âm thanh chuông — 3 tiếng "ting ting ting" dài
+function playOrderBell(){
+  try {
+    if (!notifAudioCtx) notifAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (notifAudioCtx.state === 'suspended') notifAudioCtx.resume();
+
+    const ctx = notifAudioCtx;
+    const now = ctx.currentTime;
+    const master = ctx.createGain();
+    master.gain.value = 0.8;
+    master.connect(ctx.destination);
+
+    // Compressor để tránh vỡ tiếng
+    const comp = ctx.createDynamicsCompressor();
+    comp.threshold.value = -18;
+    comp.ratio.value = 4;
+    comp.connect(master);
+
+    // Delay tạo không gian
+    const delay = ctx.createDelay();
+    delay.delayTime.value = 0.02;
+    const delayGain = ctx.createGain();
+    delayGain.gain.value = 0.3;
+    delay.connect(delayGain);
+    delayGain.connect(master);
+
+    function strike(freq, time, gainVal, decay){
+      const partials = [
+        {r:1.00, g:1.00, d:1.0},
+        {r:2.00, g:0.6,  d:0.85},
+        {r:2.76, g:0.4,  d:0.7},
+        {r:4.07, g:0.25, d:0.55},
+        {r:5.43, g:0.15, d:0.4}
+      ];
+      partials.forEach(p => {
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = freq * p.r;
+        osc.detune.value = (Math.random() - 0.5) * 4;
+        const peak = gainVal * p.g;
+        const dec = decay * p.d;
+        g.gain.setValueAtTime(0.0001, time);
+        g.gain.exponentialRampToValueAtTime(peak, time + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, time + dec);
+        osc.connect(g);
+        g.connect(comp);
+        g.connect(delay);
+        osc.start(time);
+        osc.stop(time + dec + 0.05);
+      });
+    }
+
+    // 3 tiếng ting liên tiếp
+    const baseFreq = 1046.50; // C6
+    strike(baseFreq, now + 0.0, 0.5, 1.2);
+    strike(baseFreq, now + 0.35, 0.5, 1.2);
+    strike(baseFreq, now + 0.70, 0.5, 2.5);
+    // Tiếng hài trầm
+    strike(baseFreq * 0.75, now + 0.70, 0.35, 2.5);
+    strike(baseFreq * 0.5,  now + 0.72, 0.25, 2.5);
+
+    // Vibration
+    if (navigator.vibrate) {
+      try { navigator.vibrate([200,100,200,100,400]); } catch(e){}
+    }
+  } catch(e){
+    console.warn('[Notif] Bell error:', e);
+  }
+}
+
+// Hiện banner thông báo
+function showOrderNotif(collection, orderData){
+  const notif = document.getElementById('orderNotif');
+  const title = document.getElementById('orderNotifTitle');
+  const sub = document.getElementById('orderNotifSub');
+  if (!notif || !title || !sub) return;
+
+  const col = WATCH_COLLECTIONS.find(c => c.name === collection);
+  const colLabel = col ? (col.icon + ' ' + col.label) : collection;
+  const table = orderData.table || '--';
+  const itemCount = Array.isArray(orderData.items) ? orderData.items.length : 0;
+  const customer = orderData.customerName || '';
+
+  title.textContent = '🔔 CÓ ĐƠN MỚI!';
+  sub.innerHTML = colLabel + ' · Bàn <span class="table-hl">' + table + '</span> · ' +
+                  (itemCount > 0 ? itemCount + ' món' : 'đơn mới') +
+                  (customer ? ' · ' + customer : '');
+
+  notif.dataset.collection = collection;
+  notif.dataset.table = table;
+
+  notif.classList.add('show');
+  if (notifHideTimer) clearTimeout(notifHideTimer);
+  notifHideTimer = setTimeout(() => { closeOrderNotif(); }, 12000);
+}
+
+window.closeOrderNotif = function(){
+  const notif = document.getElementById('orderNotif');
+  if (notif) notif.classList.remove('show');
+};
+
+window.openOrderFromNotif = function(){
+  const notif = document.getElementById('orderNotif');
+  if (!notif) return;
+  const collection = notif.dataset.collection;
+  // Map collection → app key
+  const map = {
+    'bun_orders': 'bungalow',
+    'lounge_orders': 'lounge',
+    'res_orders': 'restaurant'
+  };
+  const appKey = map[collection];
+  if (appKey && window.openApp) window.openApp(appKey);
+  closeOrderNotif();
+};
+
+try {
+  const app = initializeApp(notifFirebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  signInAnonymously(auth).then(() => {
+    WATCH_COLLECTIONS.forEach(cfg => {
+      const isInitial = { flag: true };
+      onSnapshot(collection(db, cfg.name), snap => {
+        if (isInitial.flag) {
+          // Bỏ qua lần load đầu
+          isInitial.flag = false;
+          return;
+        }
+        snap.docChanges().forEach(ch => {
+          if (ch.type === 'added') {
+            const data = ch.doc.data();
+            // Chỉ báo đơn "pending" (mới tạo)
+            if (data.status === 'pending') {
+              notifLastOrderId = ch.doc.id;
+              playOrderBell();
+              showOrderNotif(cfg.name, data);
+            }
+          }
+        });
+      }, err => console.warn('[Notif] Listen error ' + cfg.name, err));
+    });
+  }).catch(err => console.warn('[Notif] Auth error:', err));
+} catch(e){
+  console.warn('[Notif] Init error:', e);
+}
+</script>
+
+  <!-- ════════ VERSION CHECK + AUTO UPDATE ════════ -->
 <script>
 (function(){
   'use strict';

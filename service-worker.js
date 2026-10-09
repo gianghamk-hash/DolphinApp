@@ -3,7 +3,7 @@
    Dành cho GitHub Pages — subfolder /DolphinApp/
    ============================================================ */
 
-const CACHE_NAME = 'dolphin-v2.0.0';
+const CACHE_NAME = 'dolphin-v2.0.1';
 const BASE = '/DolphinApp';
 const CACHE_URLS = [
   BASE + '/',

@@ -408,6 +408,164 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   .lb-stat-val{font-size:15px}
   .lb-rank{width:32px;height:32px;font-size:15px}
 }
+  /* ==================== REVENUE LEADERBOARD ==================== */
+#revenueSection{
+  display:none;
+  max-width:900px;
+  margin:0 auto 1.5rem;
+  background:linear-gradient(135deg,rgba(18,54,52,.88) 0%,rgba(10,30,28,.92) 100%);
+  border:1.5px solid rgba(16,185,129,.4);
+  border-radius:16px;
+  padding:14px 16px;
+  box-shadow:0 6px 28px rgba(0,0,0,.4),inset 0 0 40px rgba(16,185,129,.05);
+  animation:lb-fade-in .6s ease-out;
+}
+#revenueSection.show{display:block}
+.rev-header{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  margin-bottom:12px;
+  padding-bottom:10px;
+  border-bottom:1px dashed rgba(16,185,129,.3);
+  flex-wrap:wrap;
+  gap:8px;
+}
+.rev-title{
+  font-size:13px;
+  font-weight:900;
+  color:#4ade80;
+  text-transform:uppercase;
+  letter-spacing:.06em;
+  display:flex;
+  align-items:center;
+  gap:8px;
+  text-shadow:0 0 12px rgba(74,222,128,.4);
+}
+.rev-title .rev-icon{
+  font-size:20px;
+  animation:lb-trophy-bounce 2s ease-in-out infinite;
+  filter:drop-shadow(0 0 10px rgba(74,222,128,.8));
+}
+.rev-subtitle{
+  font-size:9.5px;
+  color:#98dccb;
+  font-weight:700;
+  text-transform:uppercase;
+  letter-spacing:.08em;
+  opacity:.75;
+}
+.rev-tabs{
+  display:flex;
+  gap:4px;
+  background:rgba(10,30,28,.6);
+  padding:4px;
+  border-radius:12px;
+  border:1px solid rgba(16,185,129,.2);
+  margin-bottom:12px;
+  overflow-x:auto;
+}
+.rev-tab{
+  flex:1;
+  min-width:80px;
+  padding:8px 10px;
+  border-radius:8px;
+  border:none;
+  background:transparent;
+  color:#98dccb;
+  font-family:inherit;
+  font-weight:800;
+  font-size:11px;
+  text-transform:uppercase;
+  letter-spacing:.04em;
+  cursor:pointer;
+  transition:all .2s;
+  white-space:nowrap;
+}
+.rev-tab.active{
+  background:linear-gradient(135deg,#4ade80,#16a34a);
+  color:#0a1f1d;
+  box-shadow:0 2px 10px rgba(74,222,128,.4);
+}
+.rev-list{display:flex;flex-direction:column;gap:6px}
+.rev-row{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 10px;
+  background:rgba(10,30,28,.5);
+  border-radius:10px;
+  border:1px solid transparent;
+  transition:all .25s;
+}
+.rev-row:hover{background:rgba(10,30,28,.8);transform:translateX(2px)}
+.rev-row.rank-1{
+  background:linear-gradient(135deg,rgba(74,222,128,.15) 0%,rgba(16,185,129,.05) 100%);
+  border-color:rgba(74,222,128,.5);
+  box-shadow:0 2px 16px rgba(74,222,128,.15);
+}
+.rev-row.rank-2{
+  background:linear-gradient(135deg,rgba(200,220,230,.12) 0%,transparent 100%);
+  border-color:rgba(200,220,230,.35);
+}
+.rev-row.rank-3{
+  background:linear-gradient(135deg,rgba(205,127,50,.12) 0%,transparent 100%);
+  border-color:rgba(205,127,50,.35);
+}
+.rev-rank{
+  width:28px;
+  height:28px;
+  border-radius:50%;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:13px;
+  font-weight:900;
+  flex-shrink:0;
+  background:rgba(255,255,255,.08);
+  color:#98dccb;
+  font-family:'JetBrains Mono',monospace;
+}
+.rev-row.rank-1 .rev-rank{background:linear-gradient(135deg,#4ade80,#16a34a);color:#0a1f1d;box-shadow:0 0 14px rgba(74,222,128,.6);font-size:14px}
+.rev-row.rank-2 .rev-rank{background:linear-gradient(135deg,#E8EEF5,#B8C4D1);color:#123634}
+.rev-row.rank-3 .rev-rank{background:linear-gradient(135deg,#E5A55C,#B87020);color:#fff}
+.rev-name{
+  flex:1;
+  font-size:13px;
+  font-weight:800;
+  color:#fff;
+  white-space:nowrap;
+  overflow:hidden;
+  text-overflow:ellipsis;
+}
+.rev-row.rank-1 .rev-name{color:#86efac;text-shadow:0 0 8px rgba(134,239,172,.4)}
+.rev-money{
+  font-size:13.5px;
+  font-weight:900;
+  color:#4ade80;
+  font-family:'JetBrains Mono',monospace;
+  font-variant-numeric:tabular-nums;
+  white-space:nowrap;
+  text-shadow:0 0 8px rgba(74,222,128,.3);
+}
+.rev-money .unit{font-size:9px;color:#86efac;opacity:.8;margin-left:2px}
+.rev-sub-count{
+  font-size:9.5px;
+  color:#98dccb;
+  font-weight:700;
+  text-align:right;
+  margin-top:1px;
+  opacity:.8;
+}
+@media(min-width:768px){
+  #revenueSection{padding:18px 22px}
+  .rev-title{font-size:15px}
+  .rev-title .rev-icon{font-size:24px}
+  .rev-name{font-size:15px}
+  .rev-money{font-size:15px}
+  .rev-rank{width:32px;height:32px;font-size:15px}
+  .rev-tab{font-size:12px;padding:9px 14px}
+}
   /* ==================== TRANSITIONS ==================== */
 #landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
   position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden}
@@ -691,6 +849,24 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     <div class="lb-subtitle">7 ngày gần nhất</div>
   </div>
   <div class="lb-list" id="lb-list">
+    <div class="lb-loading">⏳ Đang tải bảng xếp hạng...</div>
+  </div>
+</div>
+      <!-- ════════ REVENUE LEADERBOARD ════════ -->
+<div id="revenueSection" class="fade-up">
+  <div class="rev-header">
+    <div class="rev-title">
+      <span class="rev-icon">💰</span>
+      <span>BẢNG XẾP HẠNG DOANH THU</span>
+    </div>
+    <div class="rev-subtitle">7 ngày gần nhất</div>
+  </div>
+  <div class="rev-tabs">
+    <button class="rev-tab active" data-tab="open" onclick="switchRevTab('open')">🏠 Mở bàn</button>
+    <button class="rev-tab" data-tab="prepare" onclick="switchRevTab('prepare')">📝 Nhận order</button>
+    <button class="rev-tab" data-tab="complete" onclick="switchRevTab('complete')">✅ Hoàn thành</button>
+  </div>
+  <div class="rev-list" id="rev-list">
     <div class="lb-loading">⏳ Đang tải bảng xếp hạng...</div>
   </div>
 </div>
@@ -1085,6 +1261,248 @@ if ('serviceWorker' in navigator) {
     });
   });
 }
+</script>
+  <!-- ════════ REVENUE LEADERBOARD ════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const revFirebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+
+// ════════ CẤU HÌNH GIÁ ════════
+const PRICE_LOUNGE_PAX = 250000;      // 1 PAX Lounge = 250k
+const PRICE_BUNGALOW = 2000000;       // 1 căn Bungalow = 2M
+const DAYS_BACK = 7;
+const MIN_REVENUE = 100000;           // Tối thiểu 100k mới hiện
+const TOP_N = 5;
+const MAX_ORDERS_PER_TABLE = 20;      // Bỏ bàn có quá nhiều order (nghi lỗi)
+
+let revTables = { lounge: {}, bun: {} };
+let revOrders = { lounge: [], bun: [] };
+let currentRevTab = 'open';
+let revListenersReady = 0;
+const REV_TOTAL_LISTENERS = 4;
+
+try {
+  const app = initializeApp(revFirebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  signInAnonymously(auth).then(() => {
+    // 1. Lounge tables
+    onSnapshot(collection(db, 'lounge_tables'), (snap) => {
+      const obj = {};
+      snap.forEach(d => obj[d.id] = d.data());
+      revTables.lounge = obj;
+      checkAndRender();
+    });
+
+    // 2. Bungalow tables
+    onSnapshot(collection(db, 'bun_tables'), (snap) => {
+      const obj = {};
+      snap.forEach(d => obj[d.id] = d.data());
+      revTables.bun = obj;
+      checkAndRender();
+    });
+
+    // 3. Lounge orders
+    onSnapshot(collection(db, 'lounge_orders'), (snap) => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      revOrders.lounge = arr;
+      checkAndRender();
+    });
+
+    // 4. Bungalow orders
+    onSnapshot(collection(db, 'bun_orders'), (snap) => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      revOrders.bun = arr;
+      checkAndRender();
+    });
+  }).catch(err => {
+    console.warn('[Rev] Auth error:', err);
+  });
+} catch(e) {
+  console.warn('[Rev] Init error:', e);
+}
+
+function checkAndRender() {
+  revListenersReady++;
+  renderRevenue();
+}
+
+// ════════ TÍNH DOANH THU BÀN ════════
+function getTableRevenue(type, tableId) {
+  if (type === 'lounge') {
+    const t = revTables.lounge[tableId];
+    if (!t) return 0;
+    const pax = parseInt(t.pax) || 0;
+    return pax * PRICE_LOUNGE_PAX;
+  }
+  if (type === 'bun') {
+    const t = revTables.bun[tableId];
+    if (!t) return 0;
+    return PRICE_BUNGALOW;
+  }
+  return 0;
+}
+
+// ════════ TÍNH XẾP HẠNG ════════
+function calculateRevenue(mode) {
+  const now = Date.now();
+  const cutoff = now - (DAYS_BACK * 24 * 60 * 60 * 1000);
+  const employees = {};
+
+  // ─── MODE 1: MỞ BÀN ───
+  if (mode === 'open') {
+    // Lounge: cộng pax × 250k cho openedByStaff
+    Object.values(revTables.lounge).forEach(t => {
+      const staff = (t.openedByStaff || '').trim();
+      if (!staff) return;
+      const pax = parseInt(t.pax) || 0;
+      if (pax <= 0) return;
+      const rev = pax * PRICE_LOUNGE_PAX;
+      if (!employees[staff]) employees[staff] = { name: staff, revenue: 0, count: 0 };
+      employees[staff].revenue += rev;
+      employees[staff].count += 1;
+    });
+
+    // Bungalow: cộng 2M cho openedByStaff
+    Object.values(revTables.bun).forEach(t => {
+      const staff = (t.openedByStaff || '').trim();
+      if (!staff) return;
+      if (!employees[staff]) employees[staff] = { name: staff, revenue: 0, count: 0 };
+      employees[staff].revenue += PRICE_BUNGALOW;
+      employees[staff].count += 1;
+    });
+  }
+
+  // ─── MODE 2 & 3: NHẬN ORDER / HOÀN THÀNH ───
+  if (mode === 'prepare' || mode === 'complete') {
+    // Xử lý từng loại
+    ['lounge', 'bun'].forEach(type => {
+      const orders = revOrders[type] || [];
+
+      // Group orders theo bàn
+      const byTable = {};
+      orders.forEach(o => {
+        const t = o.table;
+        if (!t) return;
+        if (!byTable[t]) byTable[t] = [];
+        byTable[t].push(o);
+      });
+
+      // Với mỗi bàn, chia doanh thu cho số order
+      Object.keys(byTable).forEach(tableId => {
+        const tableRev = getTableRevenue(type, tableId);
+        if (tableRev <= 0) return;
+
+        const tableOrders = byTable[tableId];
+        // Lọc order hợp lệ
+        const validOrders = tableOrders.filter(o => {
+          if (mode === 'prepare') return !!(o.preparedBy || '').trim();
+          if (mode === 'complete') return !!(o.completedBy || '').trim() && o.completedAt;
+          return false;
+        });
+
+        if (validOrders.length === 0) return;
+        if (validOrders.length > MAX_ORDERS_PER_TABLE) return;
+
+        const share = tableRev / validOrders.length;
+
+        validOrders.forEach(o => {
+          const staff = mode === 'prepare'
+            ? (o.preparedBy || '').trim()
+            : (o.completedBy || '').trim();
+          if (!staff) return;
+
+          // Nếu có " & " (nhiều người cùng nhận) → chia đều
+          const names = staff.split(' & ').map(s => s.trim()).filter(Boolean);
+          const perPerson = share / names.length;
+
+          names.forEach(name => {
+            if (!employees[name]) employees[name] = { name, revenue: 0, count: 0 };
+            employees[name].revenue += perPerson;
+            employees[name].count += 1;
+          });
+        });
+      });
+    });
+  }
+
+  // Lọc và sắp xếp
+  const list = Object.values(employees)
+    .filter(e => e.revenue >= MIN_REVENUE)
+    .sort((a, b) => b.revenue - a.revenue)
+    .slice(0, TOP_N);
+
+  return list;
+}
+
+// ════════ FORMAT ════════
+function formatMoney(amount) {
+  if (amount >= 1000000000) return (amount / 1000000000).toFixed(1) + 'B';
+  if (amount >= 1000000) {
+    const m = amount / 1000000;
+    return (m >= 10 ? Math.round(m) : m.toFixed(1)) + 'M';
+  }
+  if (amount >= 1000) return Math.round(amount / 1000) + 'K';
+  return Math.round(amount) + 'đ';
+}
+
+function escapeRevHtml(str) {
+  return String(str).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+// ════════ RENDER ════════
+function renderRevenue() {
+  const section = document.getElementById('revenueSection');
+  const list = document.getElementById('rev-list');
+  if (!section || !list) return;
+
+  const data = calculateRevenue(currentRevTab);
+
+  if (data.length === 0) {
+    section.classList.remove('show');
+    return;
+  }
+
+  const medals = ['🥇', '🥈', '🥉', '4', '5'];
+  const labels = { open: 'Bàn đã mở', prepare: 'Order đã nhận', complete: 'Order hoàn thành' };
+
+  list.innerHTML = data.map((emp, idx) => {
+    const rank = idx + 1;
+    const medal = rank <= 3 ? medals[rank - 1] : rank;
+    return `
+      <div class="rev-row rank-${rank}">
+        <div class="rev-rank">${medal}</div>
+        <div class="rev-name">${escapeRevHtml(emp.name)}</div>
+        <div style="text-align:right">
+          <div class="rev-money">${formatMoney(emp.revenue)}<span class="unit">đ</span></div>
+          <div class="rev-sub-count">${emp.count} ${labels[currentRevTab] || ''}</div>
+        </div>
+      </div>`;
+  }).join('');
+
+  section.classList.add('show');
+}
+
+// ════════ TAB SWITCHING ════════
+window.switchRevTab = function(tab) {
+  currentRevTab = tab;
+  document.querySelectorAll('.rev-tab').forEach(b => {
+    b.classList.toggle('active', b.dataset.tab === tab);
+  });
+  renderRevenue();
+};
 </script>
 <!-- ════════ LEADERBOARD — FIREBASE REALTIME ════════ -->
 <script type="module">

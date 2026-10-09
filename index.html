@@ -44,8 +44,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   background:linear-gradient(135deg,rgba(244,184,66,.55),transparent 45%,rgba(244,184,66,.35));
   -webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);
   -webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.75;transition:opacity .4s}
-.area-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(244,184,66,.85);
-  box-shadow:0 28px 56px -16px rgba(0,0,0,.7),0 0 50px -10px rgba(244,184,66,.55)}
+.area-card:hover{transform:translateY(-8px) scale(1.03);border-color:rgba(244,184,66,.85)}
 .area-card:hover::before{opacity:1}
 .area-card:hover .area-icon{transform:scale(1.2) rotate(-8deg)}
 .area-card:hover .area-title-en{color:#FBD77A;text-shadow:0 0 20px rgba(244,184,66,.7)}
@@ -61,15 +60,10 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   font-size:.55rem;font-weight:900;letter-spacing:.12em;
   padding:3px 8px;border-radius:99px;text-transform:uppercase;box-shadow:0 3px 10px rgba(244,184,66,.5)}
 
-/* ==================== ENHANCED SCENE — QUICK UPGRADE ==================== */
-/* Mặt trời phát sáng nhiều tầng */
+/* ==================== ENHANCED SCENE ==================== */
 .sun-halo-2{animation:sun-pulse-2 7s ease-in-out infinite;transform-origin:center}
 @keyframes sun-pulse-2{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.5;transform:scale(1.08)}}
-
-/* Sóng có gradient */
 .wave-anim path{filter:drop-shadow(0 2px 4px rgba(255,255,255,.3))}
-
-/* Particle lấp lánh */
 .particle{position:absolute;border-radius:50%;pointer-events:none;
   background:radial-gradient(circle,#FFF8C2 0%,rgba(251,215,122,0) 70%);
   animation:particle-float linear infinite;will-change:transform,opacity}
@@ -79,8 +73,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   85%{opacity:.7}
   100%{transform:translateY(-100vh) scale(.4);opacity:0}
 }
-
-/* Card phát sáng khi hover */
 .area-card:hover{
   box-shadow:0 28px 56px -16px rgba(0,0,0,.7),
              0 0 60px -8px rgba(244,184,66,.7),
@@ -89,15 +81,14 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 .area-card:hover .area-icon{
   filter:drop-shadow(0 8px 16px rgba(0,0,0,.5)) drop-shadow(0 0 20px rgba(244,184,66,.9));
 }
-
-/* Nền đổi màu theo giờ */
 #landing::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
   background:transparent;transition:background 3s ease-out}
 #landing.time-morning::before{background:linear-gradient(180deg,rgba(255,180,100,.15) 0%,transparent 60%)}
 #landing.time-day::before{background:transparent}
 #landing.time-evening::before{background:linear-gradient(180deg,rgba(255,120,60,.2) 0%,transparent 60%)}
 #landing.time-night::before{background:linear-gradient(180deg,rgba(10,20,60,.4) 0%,rgba(10,20,60,.15) 60%,transparent)}
-  /* ==================== SCENE ANIM ==================== */
+
+/* ==================== SCENE ANIM ==================== */
 @keyframes wave-flow{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .wave-anim{animation:wave-flow 14s linear infinite}
 .wave-anim-2{animation:wave-flow 22s linear infinite reverse}
@@ -116,164 +107,65 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 .fade-up{animation:float-up .85s cubic-bezier(.16,1,.3,1) both}
 .d-1{animation-delay:.08s}.d-2{animation-delay:.22s}
 
-/* ==================== ANNOUNCEMENT TICKER — HIGH CONTRAST ==================== */
-#announcementBar{
-  display:none;
-  max-width:900px;
-  margin:0 auto 1.5rem;
+/* ==================== ANNOUNCEMENT TICKER ==================== */
+#announcementBar{display:none;max-width:900px;margin:0 auto 1.5rem;
   background:linear-gradient(135deg,#0f3d38 0%,#0a2b28 100%);
-  border:2px solid #FBD77A;
-  border-radius:14px;
-  padding:14px 0;
-  position:relative;
-  overflow:hidden;
-  box-shadow:0 6px 28px rgba(244,184,66,.45),inset 0 0 30px rgba(244,184,66,.08);
-}
+  border:2px solid #FBD77A;border-radius:14px;padding:14px 0;
+  position:relative;overflow:hidden;
+  box-shadow:0 6px 28px rgba(244,184,66,.45),inset 0 0 30px rgba(244,184,66,.08)}
 #announcementBar.show{display:block;animation:announce-fade-in .6s ease-out}
 @keyframes announce-fade-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.announcement-icon{
-  position:absolute;
-  left:14px;
-  top:50%;
-  transform:translateY(-50%);
-  font-size:22px;
-  z-index:5;
-  animation:announce-icon-pulse 1.5s ease-in-out infinite;
-  filter:drop-shadow(0 0 10px rgba(244,184,66,1));
-}
-@keyframes announce-icon-pulse{
-  0%,100%{transform:translateY(-50%) scale(1)}
-  50%{transform:translateY(-50%) scale(1.2)}
-}
-.announcement-viewport{
-  overflow:hidden;
-  padding-left:48px;
-  padding-right:20px;
-  position:relative;
-}
-.announcement-track{
-  display:inline-flex;
-  white-space:nowrap;
-  animation:announce-marquee 25s linear infinite;
-  will-change:transform;
-}
-.announcement-text{
-  padding-right:100px;
-  color:#FFE58F;
-  font-weight:900;
-  font-size:14px;
+.announcement-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:22px;z-index:5;animation:announce-icon-pulse 1.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 10px rgba(244,184,66,1))}
+@keyframes announce-icon-pulse{0%,100%{transform:translateY(-50%) scale(1)}50%{transform:translateY(-50%) scale(1.2)}}
+.announcement-viewport{overflow:hidden;padding-left:48px;padding-right:20px;position:relative}
+.announcement-track{display:inline-flex;white-space:nowrap;
+  animation:announce-marquee 25s linear infinite;will-change:transform}
+.announcement-text{padding-right:100px;color:#FFE58F;font-weight:900;font-size:14px;
   letter-spacing:.04em;
-  text-shadow:
-    0 0 4px rgba(0,0,0,.9),
-    0 0 8px rgba(0,0,0,.7),
-    0 0 16px rgba(255,229,143,.6),
-    0 0 24px rgba(244,184,66,.4);
-  font-family:'Nunito',sans-serif;
-  -webkit-text-stroke:0.3px rgba(0,0,0,.3);
-}
-@keyframes announce-marquee{
-  0%{transform:translateX(0)}
-  100%{transform:translateX(-50%)}
-}
+  text-shadow:0 0 4px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.7),0 0 16px rgba(255,229,143,.6),0 0 24px rgba(244,184,66,.4);
+  font-family:'Nunito',sans-serif;-webkit-text-stroke:0.3px rgba(0,0,0,.3)}
+@keyframes announce-marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @media(min-width:768px){
   .announcement-text{font-size:17px;padding-right:160px}
   .announcement-icon{font-size:26px;left:18px}
   .announcement-viewport{padding-left:60px}
   #announcementBar{padding:16px 0}
 }
-@media(prefers-reduced-motion:reduce){
-  .announcement-track{animation-duration:60s}
-}
-  /* ==================== UPDATE BANNER ==================== */
-#updateBanner{
-  display:none;
-  position:fixed;
-  top:0;
-  left:0;
-  right:0;
-  z-index:9999;
+@media(prefers-reduced-motion:reduce){.announcement-track{animation-duration:60s}}
+
+/* ==================== UPDATE BANNER ==================== */
+#updateBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;
   background:linear-gradient(135deg,#1a4a45 0%,#123634 100%);
-  border-bottom:3px solid #FBD77A;
-  padding:12px 16px;
+  border-bottom:3px solid #FBD77A;padding:12px 16px;
   box-shadow:0 8px 32px rgba(244,184,66,.5);
-  animation:update-slide-down .5s cubic-bezier(.16,1,.3,1);
-  font-family:'Nunito',sans-serif;
-}
+  animation:update-slide-down .5s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif}
 #updateBanner.show{display:block}
-@keyframes update-slide-down{
-  from{transform:translateY(-100%);opacity:0}
-  to{transform:translateY(0);opacity:1}
-}
-.update-content{
-  max-width:900px;
-  margin:0 auto;
-  display:flex;
-  align-items:center;
-  gap:12px;
-  flex-wrap:wrap;
-}
-.update-icon{
-  font-size:32px;
-  animation:update-bounce 1s ease-in-out infinite;
-  filter:drop-shadow(0 0 12px rgba(244,184,66,.9));
-}
-@keyframes update-bounce{
-  0%,100%{transform:translateY(0) rotate(-5deg)}
-  50%{transform:translateY(-6px) rotate(5deg)}
-}
+@keyframes update-slide-down{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
+.update-content{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.update-icon{font-size:32px;animation:update-bounce 1s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(244,184,66,.9))}
+@keyframes update-bounce{0%,100%{transform:translateY(0) rotate(-5deg)}50%{transform:translateY(-6px) rotate(5deg)}}
 .update-info{flex:1;min-width:180px}
-.update-title{
-  font-size:15px;
-  font-weight:900;
-  color:#FFE58F;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  text-shadow:0 0 8px rgba(0,0,0,.9),0 0 16px rgba(255,229,143,.5);
-  margin-bottom:2px;
-}
-.update-notes{
-  font-size:11.5px;
-  color:#bfe9dc;
-  font-weight:600;
-  line-height:1.4;
-  opacity:.9;
-}
+.update-title{font-size:15px;font-weight:900;color:#FFE58F;text-transform:uppercase;
+  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9),0 0 16px rgba(255,229,143,.5);margin-bottom:2px}
+.update-notes{font-size:11.5px;color:#bfe9dc;font-weight:600;line-height:1.4;opacity:.9}
 .update-actions{display:flex;gap:8px;flex-wrap:wrap}
-.update-btn{
-  background:linear-gradient(135deg,#FBD77A,#F4B842);
-  color:#123634;
-  font-weight:900;
-  font-size:13px;
-  text-transform:uppercase;
-  letter-spacing:.05em;
-  padding:12px 22px;
-  border-radius:12px;
-  border:none;
-  cursor:pointer;
-  box-shadow:0 4px 16px rgba(244,184,66,.5);
-  transition:all .2s;
-  font-family:inherit;
-  animation:update-btn-glow 2s ease-in-out infinite;
-  white-space:nowrap;
-}
+.update-btn{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;
+  font-size:13px;text-transform:uppercase;letter-spacing:.05em;padding:12px 22px;
+  border-radius:12px;border:none;cursor:pointer;
+  box-shadow:0 4px 16px rgba(244,184,66,.5);transition:all .2s;font-family:inherit;
+  animation:update-btn-glow 2s ease-in-out infinite;white-space:nowrap}
 @keyframes update-btn-glow{
   0%,100%{box-shadow:0 4px 16px rgba(244,184,66,.5)}
   50%{box-shadow:0 4px 24px rgba(244,184,66,.9),0 0 0 3px rgba(244,184,66,.3)}
 }
 .update-btn:active{transform:scale(.96)}
 .update-btn:disabled{opacity:.5;cursor:wait;animation:none}
-.update-skip{
-  background:transparent;
-  color:#98dccb;
-  font-weight:700;
-  font-size:11.5px;
-  padding:12px 14px;
-  border-radius:12px;
-  border:1px solid rgba(152,220,203,.3);
-  cursor:pointer;
-  font-family:inherit;
-  white-space:nowrap;
-}
+.update-skip{background:transparent;color:#98dccb;font-weight:700;font-size:11.5px;
+  padding:12px 14px;border-radius:12px;border:1px solid rgba(152,220,203,.3);
+  cursor:pointer;font-family:inherit;white-space:nowrap}
 .update-skip:active{transform:scale(.96)}
 @media(min-width:768px){
   .update-title{font-size:17px}
@@ -287,419 +179,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   .update-actions{width:100%}
   .update-btn,.update-skip{flex:1;text-align:center}
 }
- /* ==================== LEADERBOARD ==================== */
-#leaderboardSection{
-  display:none;
-  max-width:900px;
-  margin:0 auto 1.5rem;
-  background:linear-gradient(135deg,rgba(18,54,52,.85) 0%,rgba(10,30,28,.9) 100%);
-  border:1.5px solid rgba(244,184,66,.4);
-  border-radius:16px;
-  padding:14px 16px;
-  box-shadow:0 6px 28px rgba(0,0,0,.4);
-  animation:lb-fade-in .6s ease-out;
-}
-#leaderboardSection.show{display:block}
-@keyframes lb-fade-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.lb-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:12px;
-  padding-bottom:10px;
-  border-bottom:1px dashed rgba(244,184,66,.3);
-}
-.lb-title{
-  font-size:13px;
-  font-weight:900;
-  color:#FBD77A;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  text-shadow:0 0 12px rgba(244,184,66,.4);
-}
-.lb-title .lb-trophy{
-  font-size:20px;
-  animation:lb-trophy-bounce 2s ease-in-out infinite;
-  filter:drop-shadow(0 0 10px rgba(244,184,66,.8));
-}
-@keyframes lb-trophy-bounce{
-  0%,100%{transform:translateY(0) rotate(-3deg)}
-  50%{transform:translateY(-4px) rotate(3deg)}
-}
-.lb-subtitle{
-  font-size:9.5px;
-  color:#98dccb;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  opacity:.75;
-}
-.lb-list{display:flex;flex-direction:column;gap:6px}
-.lb-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 10px;
-  background:rgba(10,30,28,.5);
-  border-radius:10px;
-  border:1px solid transparent;
-  transition:all .25s;
-}
-.lb-row:hover{background:rgba(10,30,28,.8);transform:translateX(2px)}
-.lb-row.rank-1{
-  background:linear-gradient(135deg,rgba(251,215,122,.15) 0%,rgba(244,184,66,.05) 100%);
-  border-color:rgba(251,215,122,.5);
-  box-shadow:0 2px 16px rgba(251,215,122,.15);
-}
-.lb-row.rank-2{
-  background:linear-gradient(135deg,rgba(200,220,230,.12) 0%,transparent 100%);
-  border-color:rgba(200,220,230,.35);
-}
-.lb-row.rank-3{
-  background:linear-gradient(135deg,rgba(205,127,50,.12) 0%,transparent 100%);
-  border-color:rgba(205,127,50,.35);
-}
-.lb-rank{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:13px;
-  font-weight:900;
-  flex-shrink:0;
-  background:rgba(255,255,255,.08);
-  color:#98dccb;
-  font-family:'JetBrains Mono',monospace;
-}
-.lb-row.rank-1 .lb-rank{
-  background:linear-gradient(135deg,#FFE58F,#F4B842);
-  color:#123634;
-  font-size:14px;
-  box-shadow:0 0 14px rgba(251,215,122,.6);
-}
-.lb-row.rank-2 .lb-rank{background:linear-gradient(135deg,#E8EEF5,#B8C4D1);color:#123634}
-.lb-row.rank-3 .lb-rank{background:linear-gradient(135deg,#E5A55C,#B87020);color:#fff}
-.lb-name{
-  flex:1;
-  font-size:13px;
-  font-weight:800;
-  color:#fff;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-  letter-spacing:.02em;
-}
-.lb-row.rank-1 .lb-name{color:#FFE58F;text-shadow:0 0 8px rgba(255,229,143,.4)}
-.lb-stats{display:flex;gap:12px;align-items:center;flex-shrink:0}
-.lb-stat{
-  display:flex;
-  flex-direction:column;
-  align-items:flex-end;
-  gap:1px;
-}
-.lb-stat-val{
-  font-size:13px;
-  font-weight:900;
-  color:#FBD77A;
-  font-family:'JetBrains Mono',monospace;
-  font-variant-numeric:tabular-nums;
-}
-.lb-stat-val.fast{color:#4ade80}
-.lb-stat-val.slow{color:#fbbf24}
-.lb-stat-label{
-  font-size:8.5px;
-  color:#98dccb;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  opacity:.7;
-}
-.lb-empty{
-  text-align:center;
-  padding:20px 10px;
-  color:#98dccb;
-  font-size:11.5px;
-  font-weight:700;
-  opacity:.7;
-}
-.lb-loading{
-  text-align:center;
-  padding:20px 10px;
-  color:#FBD77A;
-  font-size:12px;
-  font-weight:700;
-  animation:lb-pulse 1.4s ease-in-out infinite;
-}
-@keyframes lb-pulse{0%,100%{opacity:.5}50%{opacity:1}}
-@media(min-width:768px){
-  #leaderboardSection{padding:18px 22px}
-  .lb-title{font-size:15px}
-  .lb-title .lb-trophy{font-size:24px}
-  .lb-name{font-size:15px}
-  .lb-stat-val{font-size:15px}
-  .lb-rank{width:32px;height:32px;font-size:15px}
-}
-  /* ==================== REVENUE LEADERBOARD ==================== */
-#revenueSection{
-  display:none;
-  max-width:900px;
-  margin:0 auto 1.5rem;
-  background:linear-gradient(135deg,rgba(18,54,52,.88) 0%,rgba(10,30,28,.92) 100%);
-  border:1.5px solid rgba(16,185,129,.4);
-  border-radius:16px;
-  padding:14px 16px;
-  box-shadow:0 6px 28px rgba(0,0,0,.4),inset 0 0 40px rgba(16,185,129,.05);
-  animation:lb-fade-in .6s ease-out;
-}
-#revenueSection.show{display:block}
-.rev-header{
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  margin-bottom:12px;
-  padding-bottom:10px;
-  border-bottom:1px dashed rgba(16,185,129,.3);
-  flex-wrap:wrap;
-  gap:8px;
-}
-.rev-title{
-  font-size:13px;
-  font-weight:900;
-  color:#4ade80;
-  text-transform:uppercase;
-  letter-spacing:.06em;
-  display:flex;
-  align-items:center;
-  gap:8px;
-  text-shadow:0 0 12px rgba(74,222,128,.4);
-}
-.rev-title .rev-icon{
-  font-size:20px;
-  animation:lb-trophy-bounce 2s ease-in-out infinite;
-  filter:drop-shadow(0 0 10px rgba(74,222,128,.8));
-}
-.rev-subtitle{
-  font-size:9.5px;
-  color:#98dccb;
-  font-weight:700;
-  text-transform:uppercase;
-  letter-spacing:.08em;
-  opacity:.75;
-}
-.rev-tabs{
-  display:flex;
-  gap:4px;
-  background:rgba(10,30,28,.6);
-  padding:4px;
-  border-radius:12px;
-  border:1px solid rgba(16,185,129,.2);
-  margin-bottom:12px;
-  overflow-x:auto;
-}
-.rev-tab{
-  flex:1;
-  min-width:80px;
-  padding:8px 10px;
-  border-radius:8px;
-  border:none;
-  background:transparent;
-  color:#98dccb;
-  font-family:inherit;
-  font-weight:800;
-  font-size:11px;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  cursor:pointer;
-  transition:all .2s;
-  white-space:nowrap;
-}
-.rev-tab.active{
-  background:linear-gradient(135deg,#4ade80,#16a34a);
-  color:#0a1f1d;
-  box-shadow:0 2px 10px rgba(74,222,128,.4);
-}
-.rev-list{display:flex;flex-direction:column;gap:6px}
-.rev-row{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  padding:8px 10px;
-  background:rgba(10,30,28,.5);
-  border-radius:10px;
-  border:1px solid transparent;
-  transition:all .25s;
-}
-.rev-row:hover{background:rgba(10,30,28,.8);transform:translateX(2px)}
-.rev-row.rank-1{
-  background:linear-gradient(135deg,rgba(74,222,128,.15) 0%,rgba(16,185,129,.05) 100%);
-  border-color:rgba(74,222,128,.5);
-  box-shadow:0 2px 16px rgba(74,222,128,.15);
-}
-.rev-row.rank-2{
-  background:linear-gradient(135deg,rgba(200,220,230,.12) 0%,transparent 100%);
-  border-color:rgba(200,220,230,.35);
-}
-.rev-row.rank-3{
-  background:linear-gradient(135deg,rgba(205,127,50,.12) 0%,transparent 100%);
-  border-color:rgba(205,127,50,.35);
-}
-.rev-rank{
-  width:28px;
-  height:28px;
-  border-radius:50%;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  font-size:13px;
-  font-weight:900;
-  flex-shrink:0;
-  background:rgba(255,255,255,.08);
-  color:#98dccb;
-  font-family:'JetBrains Mono',monospace;
-}
-.rev-row.rank-1 .rev-rank{background:linear-gradient(135deg,#4ade80,#16a34a);color:#0a1f1d;box-shadow:0 0 14px rgba(74,222,128,.6);font-size:14px}
-.rev-row.rank-2 .rev-rank{background:linear-gradient(135deg,#E8EEF5,#B8C4D1);color:#123634}
-.rev-row.rank-3 .rev-rank{background:linear-gradient(135deg,#E5A55C,#B87020);color:#fff}
-.rev-name{
-  flex:1;
-  font-size:13px;
-  font-weight:800;
-  color:#fff;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.rev-row.rank-1 .rev-name{color:#86efac;text-shadow:0 0 8px rgba(134,239,172,.4)}
-.rev-money{
-  font-size:13.5px;
-  font-weight:900;
-  color:#4ade80;
-  font-family:'JetBrains Mono',monospace;
-  font-variant-numeric:tabular-nums;
-  white-space:nowrap;
-  text-shadow:0 0 8px rgba(74,222,128,.3);
-}
-.rev-money .unit{font-size:9px;color:#86efac;opacity:.8;margin-left:2px}
-.rev-sub-count{
-  font-size:9.5px;
-  color:#98dccb;
-  font-weight:700;
-  text-align:right;
-  margin-top:1px;
-  opacity:.8;
-}
-@media(min-width:768px){
-  #revenueSection{padding:18px 22px}
-  .rev-title{font-size:15px}
-  .rev-title .rev-icon{font-size:24px}
-  .rev-name{font-size:15px}
-  .rev-money{font-size:15px}
-  .rev-rank{width:32px;height:32px;font-size:15px}
-  .rev-tab{font-size:12px;padding:9px 14px}
-}
-  /* ==================== ORDER NOTIFICATION ==================== */
-#orderNotif{
-  display:none;
-  position:fixed;
-  top:20px;
-  left:50%;
-  transform:translateX(-50%) translateY(-120%);
-  z-index:9998;
-  background:linear-gradient(135deg,#B91C1C 0%,#7F1D1D 100%);
-  border:2px solid #FBD77A;
-  border-radius:16px;
-  padding:14px 18px;
-  min-width:280px;
-  max-width:90vw;
-  box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3);
-  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s;
-  font-family:'Nunito',sans-serif;
-}
-#orderNotif.show{
-  display:block;
-  transform:translateX(-50%) translateY(0);
-  animation:order-pulse 1.2s ease-in-out infinite;
-}
-@keyframes order-pulse{
-  0%,100%{box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3)}
-  50%{box-shadow:0 12px 40px rgba(185,28,28,.9),0 0 80px rgba(244,184,66,.6)}
-}
-.order-notif-content{
-  display:flex;
-  align-items:center;
-  gap:12px;
-}
-.order-notif-icon{
-  font-size:32px;
-  animation:bell-shake 0.8s ease-in-out infinite;
-  filter:drop-shadow(0 0 12px rgba(251,215,122,.9));
-}
-@keyframes bell-shake{
-  0%,100%{transform:rotate(-8deg)}
-  50%{transform:rotate(8deg)}
-}
-.order-notif-info{flex:1;min-width:0}
-.order-notif-title{
-  color:#FFE58F;
-  font-size:15px;
-  font-weight:900;
-  text-transform:uppercase;
-  letter-spacing:.04em;
-  text-shadow:0 0 8px rgba(0,0,0,.9);
-  margin-bottom:3px;
-}
-.order-notif-sub{
-  color:#fff;
-  font-size:12px;
-  font-weight:700;
-  opacity:.95;
-  white-space:nowrap;
-  overflow:hidden;
-  text-overflow:ellipsis;
-}
-.order-notif-sub .table-hl{
-  background:rgba(255,229,143,.2);
-  color:#FFE58F;
-  padding:1px 6px;
-  border-radius:6px;
-  font-weight:900;
-}
-.order-notif-actions{display:flex;gap:6px;flex-direction:column}
-.order-notif-btn{
-  background:linear-gradient(135deg,#FBD77A,#F4B842);
-  color:#123634;
-  font-weight:900;
-  font-size:11px;
-  padding:8px 12px;
-  border-radius:9px;
-  border:none;
-  cursor:pointer;
-  font-family:inherit;
-  white-space:nowrap;
-}
-.order-notif-btn:active{transform:scale(.95)}
-.order-notif-close{
-  background:transparent;
-  color:#FFE58F;
-  font-size:11px;
-  font-weight:700;
-  border:none;
-  cursor:pointer;
-  padding:4px;
-  font-family:inherit;
-}
-@media(min-width:768px){
-  #orderNotif{min-width:360px;padding:16px 22px}
-  .order-notif-icon{font-size:38px}
-  .order-notif-title{font-size:17px}
-  .order-notif-sub{font-size:13.5px}
-}
-  /* ==================== TRANSITIONS ==================== */
+
+/* ==================== TRANSITIONS ==================== */
 #landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
   position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden}
 #landing.fade-out{opacity:0;transform:scale(1.06);pointer-events:none}
@@ -716,149 +197,76 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader-text{color:#FBD77A;font-weight:800;font-size:.85rem;letter-spacing:.15em;text-transform:uppercase}
 
-/* ============ FLOATING HOME CONTROLS — DRAGGABLE ============ */
-#home-controls{
-  position:fixed;
-  bottom:20px;
-  right:15px;
-  z-index:1000;
-  display:flex;
-  flex-direction:column-reverse;
-  gap:8px;
-  align-items:center;
-  user-select:none;
-  -webkit-user-select:none;
-  touch-action:none;
-  transition:opacity .2s;
-}
-#home-controls.dragging{
-  transition:none;
-  opacity:.85;
-}
-#home-controls.dragging #btn-home{
-  transform:scale(1.08);
-  box-shadow:0 10px 30px rgba(0,0,0,.7), 0 0 0 4px rgba(244,184,66,.35);
-}
-#btn-home{
-  width:52px;
-  height:52px;
-  border-radius:50%;
-  background:rgba(18,54,52,.9);
-  border:2px solid rgba(244,184,66,.7);
-  color:#FBD77A;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:grab;
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-  box-shadow:0 6px 20px rgba(0,0,0,.5);
-  transition:transform .15s,box-shadow .15s;
-  -webkit-appearance:none;
-  appearance:none;
-  padding:0;
-  touch-action:none;
-  -webkit-tap-highlight-color:transparent;
-}
-#btn-home:active{
-  cursor:grabbing;
-}
-#btn-home svg{
-  width:24px;
-  height:24px;
-  pointer-events:none;
-}
-#btn-toggle{
-  width:34px;
-  height:34px;
-  border-radius:50%;
-  background:rgba(18,54,52,.8);
-  border:1px solid rgba(244,184,66,.4);
-  color:rgba(251,215,122,.95);
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  cursor:pointer;
-  backdrop-filter:blur(8px);
-  -webkit-backdrop-filter:blur(8px);
-  box-shadow:0 3px 10px rgba(0,0,0,.3);
-  transition:transform .15s;
-  font-size:14px;
-  -webkit-appearance:none;
-  appearance:none;
-  padding:0;
-  line-height:1;
-  touch-action:manipulation;
-  -webkit-tap-highlight-color:transparent;
-}
-#btn-toggle:active{
-  transform:scale(.92);
-  background:rgba(18,54,52,.95);
-}
-
-/* Trạng thái thu gọn */
-#home-controls.minimized #btn-home{
-  width:18px;
-  height:18px;
-  opacity:.5;
-  border-color:rgba(244,184,66,.5);
-  box-shadow:0 3px 10px rgba(0,0,0,.4);
-}
+/* ============ FLOATING HOME CONTROLS ============ */
+#home-controls{position:fixed;bottom:20px;right:15px;z-index:1000;
+  display:flex;flex-direction:column-reverse;gap:8px;align-items:center;
+  user-select:none;-webkit-user-select:none;touch-action:none;transition:opacity .2s}
+#home-controls.dragging{transition:none;opacity:.85}
+#home-controls.dragging #btn-home{transform:scale(1.08);
+  box-shadow:0 10px 30px rgba(0,0,0,.7), 0 0 0 4px rgba(244,184,66,.35)}
+#btn-home{width:52px;height:52px;border-radius:50%;background:rgba(18,54,52,.9);
+  border:2px solid rgba(244,184,66,.7);color:#FBD77A;display:flex;align-items:center;justify-content:center;
+  cursor:grab;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 6px 20px rgba(0,0,0,.5);transition:transform .15s,box-shadow .15s;
+  -webkit-appearance:none;appearance:none;padding:0;touch-action:none;-webkit-tap-highlight-color:transparent}
+#btn-home:active{cursor:grabbing}
+#btn-home svg{width:24px;height:24px;pointer-events:none}
+#btn-toggle{width:34px;height:34px;border-radius:50%;background:rgba(18,54,52,.8);
+  border:1px solid rgba(244,184,66,.4);color:rgba(251,215,122,.95);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 3px 10px rgba(0,0,0,.3);transition:transform .15s;font-size:14px;
+  -webkit-appearance:none;appearance:none;padding:0;line-height:1;
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#btn-toggle:active{transform:scale(.92);background:rgba(18,54,52,.95)}
+#home-controls.minimized #btn-home{width:18px;height:18px;opacity:.5;
+  border-color:rgba(244,184,66,.5);box-shadow:0 3px 10px rgba(0,0,0,.4)}
 #home-controls.minimized #btn-home svg{display:none}
 #home-controls.minimized #btn-toggle{display:none}
-#home-controls.minimized #btn-home::after{
-  content:'';
-  width:8px;
-  height:8px;
-  border-radius:50%;
-  background:#FBD77A;
-  box-shadow:0 0 10px rgba(244,184,66,.9);
-}
-#home-controls.minimized #btn-home:active{
-  width:52px;
-  height:52px;
-  opacity:1;
-}
+#home-controls.minimized #btn-home::after{content:'';width:8px;height:8px;border-radius:50%;
+  background:#FBD77A;box-shadow:0 0 10px rgba(244,184,66,.9)}
+#home-controls.minimized #btn-home:active{width:52px;height:52px;opacity:1}
 #home-controls.minimized #btn-home:active::after{display:none}
 #home-controls.minimized #btn-home:active svg{display:block}
-/* ==================== PIN MODAL (SHOW) ==================== */
-#pin-modal{position:fixed;inset:0;z-index:2000;display:flex;align-items:center;justify-content:center;
-  background:rgba(10,22,40,.9);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  padding:1rem;opacity:0;pointer-events:none;transition:opacity .3s}
-#pin-modal.show{opacity:1;pointer-events:auto}
-.pin-card{background:rgba(25,71,67,.92);border:1px solid rgba(244,184,66,.4);
-  border-radius:22px;padding:1.75rem 1.5rem;width:100%;max-width:360px;text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,.6);position:relative;
-  transform:translateY(10px) scale(.97);transition:transform .35s cubic-bezier(.16,1,.3,1)}
-#pin-modal.show .pin-card{transform:translateY(0) scale(1)}
-.pin-icon{width:64px;height:64px;margin:0 auto 1rem;display:flex;align-items:center;justify-content:center;
-  font-size:28px;background:linear-gradient(135deg,rgba(244,184,66,.2),rgba(244,184,66,.05));
-  border:1px solid rgba(244,184,66,.5);border-radius:50%;
-  box-shadow:0 6px 24px rgba(244,184,66,.25)}
-.pin-title{font-weight:900;color:#FBD77A;font-size:1rem;letter-spacing:.08em;
-  text-transform:uppercase;margin:0 0 .35rem}
-.pin-sub{font-size:.8rem;color:#bfe9dc;font-weight:600;margin:0 0 1.25rem;line-height:1.5}
-#pin-input{width:100%;background:rgba(18,54,52,.8);border:1px solid rgba(244,184,66,.45);
-  border-radius:12px;padding:1rem;text-align:center;font-size:2rem;
-  letter-spacing:.5em;color:#fff;font-weight:900;outline:none;
-  font-family:'Nunito',sans-serif;transition:all .25s}
-#pin-input:focus{border-color:#FBD77A;box-shadow:0 0 0 3px rgba(244,184,66,.15)}
-#pin-error{color:#ef4444;font-size:.78rem;font-weight:700;
-  background:rgba(239,68,68,.1);border:1px solid rgba(239,68,68,.35);
-  padding:.5rem;border-radius:8px;margin:.65rem 0 0;display:none}
-#pin-error.show{display:block;animation:shake .35s}
-@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-6px)}75%{transform:translateX(6px)}}
-.pin-actions{display:flex;gap:.65rem;margin-top:1.25rem}
-.pin-actions {flex:1;padding:.9rem .5rem;border-radius:12px;
-  font-weight:900;font-size:.8rem;letter-spacing:.05em;text-transform:uppercase;
-  border:none;cursor:pointer;transition:all .2s;font-family:'Nunito',sans-serif;
-  -webkit-appearance:none;appearance:none}
-.btn-pin-cancel{background:rgba(18,54,52,.8);color:#bfe9dc;border:1px solid rgba(55,137,123,.5)}
-.btn-pin-cancel:hover{background:rgba(18,54,52,1)}
-.btn-pin-ok{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
-  box-shadow:0 6px 18px rgba(244,184,66,.4)}
-.btn-pin-ok:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(244,184,66,.55)}
-.btn-pin-ok:active{transform:scale(.97)}
+
+/* ==================== ORDER NOTIFICATION ==================== */
+#orderNotif{display:none;position:fixed;top:20px;left:50%;
+  transform:translateX(-50%) translateY(-120%);z-index:9998;
+  background:linear-gradient(135deg,#B91C1C 0%,#7F1D1D 100%);
+  border:2px solid #FBD77A;border-radius:16px;padding:14px 18px;
+  min-width:280px;max-width:90vw;
+  box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3);
+  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s;font-family:'Nunito',sans-serif}
+#orderNotif.show{display:block;transform:translateX(-50%) translateY(0);
+  animation:order-pulse 1.2s ease-in-out infinite}
+@keyframes order-pulse{
+  0%,100%{box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3)}
+  50%{box-shadow:0 12px 40px rgba(185,28,28,.9),0 0 80px rgba(244,184,66,.6)}
+}
+.order-notif-content{display:flex;align-items:center;gap:12px}
+.order-notif-icon{font-size:32px;animation:bell-shake 0.8s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(251,215,122,.9))}
+@keyframes bell-shake{0%,100%{transform:rotate(-8deg)}50%{transform:rotate(8deg)}}
+.order-notif-info{flex:1;min-width:0}
+.order-notif-title{color:#FFE58F;font-size:15px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9);margin-bottom:3px}
+.order-notif-sub{color:#fff;font-size:12px;font-weight:700;opacity:.95;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-notif-sub .table-hl{background:rgba(255,229,143,.2);color:#FFE58F;
+  padding:1px 6px;border-radius:6px;font-weight:900}
+.order-notif-actions{display:flex;gap:6px;flex-direction:column}
+.order-notif-btn{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
+  font-weight:900;font-size:11px;padding:8px 12px;border-radius:9px;border:none;
+  cursor:pointer;font-family:inherit;white-space:nowrap}
+.order-notif-btn:active{transform:scale(.95)}
+.order-notif-close{background:transparent;color:#FFE58F;font-size:11px;font-weight:700;
+  border:none;cursor:pointer;padding:4px;font-family:inherit}
+@media(min-width:768px){
+  #orderNotif{min-width:360px;padding:16px 22px}
+  .order-notif-icon{font-size:38px}
+  .order-notif-title{font-size:17px}
+  .order-notif-sub{font-size:13.5px}
+}
 
 /* ==================== MOBILE ==================== */
 @media (max-width:380px){
@@ -874,25 +282,16 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 }
 </style>
 <script src="master.js" defer></script>
-<!-- ════════ PWA MANIFEST ════════ -->
 <link rel="manifest" href="/DolphinApp/manifest.json">
-
-<!-- ════════ PWA THEME ════════ -->
 <meta name="theme-color" content="#123634">
 <meta name="color-scheme" content="dark">
-
-<!-- ════════ iOS SPECIFIC ════════ -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dolphin">
 <meta name="mobile-web-app-capable" content="yes">
-
-<!-- ════════ iOS ICONS ════════ -->
 <link rel="apple-touch-icon" sizes="152x152" href="/DolphinApp/pwa-icons/icon-152.png">
 <link rel="apple-touch-icon" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
 <link rel="apple-touch-icon" href="/DolphinApp/pwa-icons/icon-192.png">
-
-<!-- ════════ ANDROID / CHROME ════════ -->
 <link rel="icon" type="image/png" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/DolphinApp/pwa-icons/icon-512.png">
 </head>
@@ -913,7 +312,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   </div>
 </div>
 
-  <!-- ════════ UPDATE BANNER ════════ -->
+<!-- ════════ UPDATE BANNER ════════ -->
 <div id="updateBanner">
   <div class="update-content">
     <span class="update-icon">🎉</span>
@@ -927,7 +326,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     </div>
   </div>
 </div>
-  <!-- ══════════════ LANDING PAGE ══════════════ -->
+
+<!-- ══════════════ LANDING PAGE ══════════════ -->
 <div id="landing">
   <svg style="position:fixed;inset:0;width:100%;height:100%;z-index:-1" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
     <defs>
@@ -972,52 +372,23 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
              alt="Dolphin Ha Long Cruise" 
              style="max-width:min(90vw,520px);width:100%;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 8px 32px rgba(244,184,66,.35)) brightness(1.05);">
       </div>
+
       <!-- ════════ ANNOUNCEMENT TICKER ════════ -->
-<div id="announcementBar" class="fade-up">
-  <span class="announcement-icon">📢</span>
-  <div class="announcement-viewport">
-    <div class="announcement-track" id="announcementTrack">
-      <span class="announcement-text" id="announcementText">Đang tải thông báo...</span>
-      <span class="announcement-text" id="announcementText2">Đang tải thông báo...</span>
-    </div>
-  </div>
-</div>
+      <div id="announcementBar" class="fade-up">
+        <span class="announcement-icon">📢</span>
+        <div class="announcement-viewport">
+          <div class="announcement-track" id="announcementTrack">
+            <span class="announcement-text" id="announcementText">Đang tải thông báo...</span>
+            <span class="announcement-text" id="announcementText2">Đang tải thông báo...</span>
+          </div>
+        </div>
+      </div>
+
       <p class="fade-up d-1 welcome-lbl">
         <span class="wlc-vi">Vui lòng chọn khu vực của quý khách</span>
         <span class="wlc-en">Please select your area</span>
       </p>
 
-<!-- ════════ LEADERBOARD — TOP 5 NHÂN VIÊN NHANH NHẤT ════════ -->
-<div id="leaderboardSection" class="fade-up">
-  <div class="lb-header">
-    <div class="lb-title">
-      <span class="lb-trophy">🏆</span>
-      <span>TOP 5 NHÂN VIÊN PHỤC VỤ NHANH NHẤT</span>
-    </div>
-    <div class="lb-subtitle">7 ngày gần nhất</div>
-  </div>
-  <div class="lb-list" id="lb-list">
-    <div class="lb-loading">⏳ Đang tải bảng xếp hạng...</div>
-  </div>
-</div>
-      <!-- ════════ REVENUE LEADERBOARD ════════ -->
-<div id="revenueSection" class="fade-up">
-  <div class="rev-header">
-    <div class="rev-title">
-      <span class="rev-icon">💰</span>
-      <span>BẢNG XẾP HẠNG DOANH THU</span>
-    </div>
-    <div class="rev-subtitle">7 ngày gần nhất</div>
-  </div>
-  <div class="rev-tabs">
-    <button class="rev-tab active" data-tab="open" onclick="switchRevTab('open')">🏠 Mở bàn</button>
-    <button class="rev-tab" data-tab="prepare" onclick="switchRevTab('prepare')">📝 Nhận order</button>
-    <button class="rev-tab" data-tab="complete" onclick="switchRevTab('complete')">✅ Hoàn thành</button>
-  </div>
-  <div class="rev-list" id="rev-list">
-    <div class="lb-loading">⏳ Đang tải bảng xếp hạng...</div>
-  </div>
-</div>
       <div class="fade-up d-2 area-grid">
 
         <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
@@ -1044,7 +415,17 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <span class="area-icon">🎭</span>
           <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
           <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
-        </button>        <!-- 👑 MANAGER ONLY — TỔNG QUAN HỆ THỐNG -->
+        </button>
+
+        <!-- 🏆 BẢNG XẾP HẠNG -->
+        <button type="button" class="area-card" onclick="openApp('ranking')" aria-label="Bảng xếp hạng">
+          <span class="area-badge">VINH DANH</span>
+          <span class="area-icon">🏆</span>
+          <h3 class="area-title-en">BẢNG XẾP HẠNG</h3>
+          <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
+        </button>
+
+        <!-- 👑 MANAGER ONLY -->
         <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
           <span class="area-badge">CHỈ MANAGER</span>
           <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
@@ -1060,7 +441,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
 <!-- ══════════════ APP VIEW (IFRAME) ══════════════ -->
 <div id="app-view" class="hidden">
-  <!-- Floating home controls (nhỏ gọn, có thể ẩn/hiện) -->
   <div id="home-controls">
     <button type="button" id="btn-home" onclick="goHome()" title="Quay lại trang chủ" aria-label="Trang chủ">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
@@ -1074,11 +454,9 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
       </svg>
     </button>
   </div>
-
   <div id="app-loading"><div class="loader-ring"></div><div class="loader-text">Đang tải...</div></div>
   <iframe id="app-frame" allow="microphone; camera; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen" title="Dolphin App"></iframe>
 </div>
-
 
 <script>
 (function(){
@@ -1090,22 +468,20 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     bungalow:   'dolphin-bungalow.html',
     restaurant: 'dolphin-restaurant.html',
     show:       'dolphin-show.html',
-    dashboard:  'manager/dashboard.html'
+    dashboard:  'manager/dashboard.html',
+    ranking:    'ranking/index.html'
   };
 
   var currentApp = null;
   var transitionLock = false;
-  var pendingShowOpen = false;
 
-  /* ============ HOME BUTTON TOGGLE ============ */
+  /* ============ HOME BUTTON ============ */
   var HOME_KEY = 'dolphinHomeBtnHidden';
-
   function applyHomeBtnState(){
     var ctrl = document.getElementById('home-controls');
     var hidden = localStorage.getItem(HOME_KEY) === '1';
     ctrl.classList.toggle('minimized', hidden);
   }
-
   window.toggleHomeBtn = function(){
     var ctrl = document.getElementById('home-controls');
     var nowHidden = !ctrl.classList.contains('minimized');
@@ -1113,9 +489,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     ctrl.classList.toggle('minimized', nowHidden);
   };
 
-    /* ═══════════════════════════════════════════════════════════
-     DRAGGABLE HOME BUTTON — Kéo thả tự do + Snap vào cạnh
-     ═══════════════════════════════════════════════════════════ */
+  /* ============ DRAGGABLE HOME ============ */
   var DRAG_POS_KEY = 'dolphinHomeBtnPos';
   var ctrl = null;
 
@@ -1123,10 +497,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     try { localStorage.setItem(DRAG_POS_KEY, JSON.stringify({ x: x, y: y })); } catch(e){}
   }
   function loadHomePos(){
-    try {
-      var s = localStorage.getItem(DRAG_POS_KEY);
-      return s ? JSON.parse(s) : null;
-    } catch(e){ return null; }
+    try { var s = localStorage.getItem(DRAG_POS_KEY); return s ? JSON.parse(s) : null; }
+    catch(e){ return null; }
   }
   function applyHomePos(x, y){
     if (!ctrl) return;
@@ -1136,23 +508,19 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     ctrl.style.bottom = 'auto';
   }
   function clampPos(x, y){
-    var vw = window.innerWidth;
-    var vh = window.innerHeight;
-    var w = ctrl.offsetWidth || 60;
-    var h = ctrl.offsetHeight || 100;
+    var vw = window.innerWidth, vh = window.innerHeight;
+    var w = ctrl.offsetWidth || 60, h = ctrl.offsetHeight || 100;
     x = Math.max(4, Math.min(x, vw - w - 4));
     y = Math.max(4, Math.min(y, vh - h - 4));
     return { x: x, y: y };
   }
   function snapToEdge(){
     if (!ctrl) return;
-    var vw = window.innerWidth;
-    var w = ctrl.offsetWidth || 60;
+    var vw = window.innerWidth, w = ctrl.offsetWidth || 60;
     var cur = { x: ctrl.offsetLeft, y: ctrl.offsetTop };
     var snapLeft = cur.x < (vw - w) / 2;
     var nx = snapLeft ? 12 : (vw - w - 12);
     var ny = clampPos(nx, cur.y).y;
-    // Animate sang vị trí mới
     ctrl.style.transition = 'left .3s cubic-bezier(.16,1,.3,1), top .3s cubic-bezier(.16,1,.3,1)';
     applyHomePos(nx, ny);
     setTimeout(function(){ ctrl.style.transition = ''; }, 320);
@@ -1165,109 +533,66 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     var c = clampPos(pos.x, pos.y);
     applyHomePos(c.x, c.y);
   }
-
   function initDraggableHome(){
     ctrl = document.getElementById('home-controls');
     if (!ctrl) return;
-
-    // Áp dụng vị trí đã lưu
     var saved = loadHomePos();
     if (saved) {
       var c = clampPos(saved.x, saved.y);
       applyHomePos(c.x, c.y);
     }
-
     var btnHome = document.getElementById('btn-home');
     if (!btnHome) return;
-
-    // Nếu là minimized, vẫn cho drag nút nhỏ
-    var drag = { active: false, startX: 0, startY: 0, origX: 0, origY: 0, moved: false, startTime: 0 };
-
+    var drag = { active: false, startX: 0, startY: 0, origX: 0, origY: 0, moved: false };
     function getPoint(e){
       if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
       if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
       return { x: e.clientX, y: e.clientY };
     }
-
     function onStart(e){
-      if (e.target.closest('#btn-toggle')) return;   // không drag nút toggle
+      if (e.target.closest('#btn-toggle')) return;
       var pt = getPoint(e);
-      drag.active = true;
-      drag.moved = false;
-      drag.startX = pt.x;
-      drag.startY = pt.y;
-      drag.origX = ctrl.offsetLeft;
-      drag.origY = ctrl.offsetTop;
-      drag.startTime = Date.now();
+      drag.active = true; drag.moved = false;
+      drag.startX = pt.x; drag.startY = pt.y;
+      drag.origX = ctrl.offsetLeft; drag.origY = ctrl.offsetTop;
       ctrl.classList.add('dragging');
       ctrl.style.transition = '';
     }
-
     function onMove(e){
       if (!drag.active) return;
       var pt = getPoint(e);
-      var dx = pt.x - drag.startX;
-      var dy = pt.y - drag.startY;
-
-      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 8) return; // ngưỡng 8px mới coi là drag
-
+      var dx = pt.x - drag.startX, dy = pt.y - drag.startY;
+      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 8) return;
       drag.moved = true;
       if (e.cancelable) e.preventDefault();
-
-      var nx = drag.origX + dx;
-      var ny = drag.origY + dy;
-      var c = clampPos(nx, ny);
+      var c = clampPos(drag.origX + dx, drag.origY + dy);
       applyHomePos(c.x, c.y);
     }
-
-    function onEnd(e){
+    function onEnd(){
       if (!drag.active) return;
       drag.active = false;
       ctrl.classList.remove('dragging');
-
-      // Nếu chỉ tap (không di chuyển) → xử lý tap
-      if (!drag.moved) {
-        // Để button onclick tự chạy, không can thiệp
-        return;
-      }
-
-      // Nếu có di chuyển → snap vào cạnh
+      if (!drag.moved) return;
       snapToEdge();
     }
-
-    // Touch events
     btnHome.addEventListener('touchstart', onStart, { passive: true });
     document.addEventListener('touchmove', onMove, { passive: false });
     document.addEventListener('touchend', onEnd);
     document.addEventListener('touchcancel', onEnd);
-
-    // Mouse events (desktop)
-    btnHome.addEventListener('mousedown', function(e){
-      onStart(e);
-      e.preventDefault();
-    });
+    btnHome.addEventListener('mousedown', function(e){ onStart(e); e.preventDefault(); });
     document.addEventListener('mousemove', onMove);
     document.addEventListener('mouseup', onEnd);
-
-    // Xử lý resize
     window.addEventListener('resize', clampOnResize);
-    window.addEventListener('orientationchange', function(){
-      setTimeout(clampOnResize, 300);
-    });
-
-    // Ngăn click khi vừa drag xong
+    window.addEventListener('orientationchange', function(){ setTimeout(clampOnResize, 300); });
     btnHome.addEventListener('click', function(e){
-      if (drag.moved) {
-        e.preventDefault();
-        e.stopPropagation();
-        drag.moved = false;
-      }
+      if (drag.moved) { e.preventDefault(); e.stopPropagation(); drag.moved = false; }
     }, true);
   }
 
   applyHomeBtnState();
   setTimeout(initDraggableHome, 100);
-    /* ============ HIỆN DASHBOARD CHO MANAGER ============ */
+
+  /* ============ HIỆN DASHBOARD CHO MANAGER ============ */
   if (navigator.userAgent.indexOf('DolphinManager') >= 0) {
     var cardDash = document.getElementById('card-dashboard');
     if (cardDash) cardDash.style.display = 'flex';
@@ -1277,9 +602,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   window.openApp = function(area){
     if (transitionLock) return;
     if (!APP_MAP[area]) return;
-
-  
-
     doOpenApp(area);
   };
 
@@ -1287,23 +609,17 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     if (transitionLock) return;
     var url = APP_MAP[area];
     if (!url) return;
-
     transitionLock = true;
-
-    // Push hash cho nút Back
     if (location.hash !== '#' + area) {
       try { history.pushState({area: area}, '', '#' + area); } catch(e) { location.hash = area; }
     }
     currentApp = area;
-
-    var frame   = document.getElementById('app-frame');
-    var view    = document.getElementById('app-view');
+    var frame = document.getElementById('app-frame');
+    var view = document.getElementById('app-view');
     var landing = document.getElementById('landing');
     var loading = document.getElementById('app-loading');
-
     loading.classList.remove('hide');
     frame.classList.add('hidden-frame');
-
     var done = false;
     var onLoaded = function(){
       if (done) return; done = true;
@@ -1316,15 +632,12 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     };
     frame.addEventListener('load', onLoaded);
     frame.src = url;
-
-    // Fallback nếu iframe không load sau 10s
     setTimeout(function(){
       if (done) return; done = true;
       loading.classList.add('hide');
       frame.classList.remove('hidden-frame');
       transitionLock = false;
     }, 10000);
-
     landing.classList.add('fade-out');
     setTimeout(function(){
       landing.style.display = 'none';
@@ -1338,18 +651,15 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   window.goHome = function(){
     if (transitionLock) return;
     transitionLock = true;
-
     if (location.hash) {
       try { history.pushState({}, '', location.pathname + location.search); }
       catch(e){ location.hash = ''; }
     }
     currentApp = null;
-
-    var frame   = document.getElementById('app-frame');
-    var view    = document.getElementById('app-view');
+    var frame = document.getElementById('app-frame');
+    var view = document.getElementById('app-view');
     var landing = document.getElementById('landing');
     var loading = document.getElementById('app-loading');
-
     view.classList.remove('show');
     setTimeout(function(){
       view.classList.add('hidden');
@@ -1365,7 +675,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     }, 420);
   };
 
-  /* ============ POPSTATE (Back/Forward) ============ */
+  /* ============ POPSTATE ============ */
   window.addEventListener('popstate', function(){
     if (transitionLock) return;
     var hash = (location.hash || '').replace('#', '');
@@ -1384,7 +694,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     }
   });
 
-  /* ============ CHỐNG DOUBLE-TAP ZOOM (iOS) ============ */
+  /* ============ CHỐNG DOUBLE-TAP ZOOM ============ */
   var lastTouch = 0;
   document.addEventListener('touchend', function(e){
     var now = Date.now();
@@ -1394,6 +704,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
 })();
 </script>
+
 <script>
 // ════════ PWA SERVICE WORKER ════════
 if ('serviceWorker' in navigator) {
@@ -1401,422 +712,13 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/DolphinApp/service-worker.js', {
       scope: '/DolphinApp/'
     })
-    .then(function(reg){
-      console.log('✅ Service Worker registered:', reg.scope);
-    })
-    .catch(function(err){
-      console.warn('❌ Service Worker failed:', err);
-    });
+    .then(function(reg){ console.log('✅ Service Worker registered:', reg.scope); })
+    .catch(function(err){ console.warn('❌ Service Worker failed:', err); });
   });
 }
 </script>
-  <!-- ════════ REVENUE LEADERBOARD ════════ -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const revFirebaseConfig = {
-  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
-  authDomain: "dolphin-f6d67.firebaseapp.com",
-  projectId: "dolphin-f6d67"
-};
-
-// ════════ CẤU HÌNH GIÁ ════════
-const PRICE_LOUNGE_PAX = 250000;      // 1 PAX Lounge = 250k
-const PRICE_BUNGALOW = 2000000;       // 1 căn Bungalow = 2M
-const DAYS_BACK = 7;
-const MIN_REVENUE = 100000;           // Tối thiểu 100k mới hiện
-const TOP_N = 5;
-const MAX_ORDERS_PER_TABLE = 20;      // Bỏ bàn có quá nhiều order (nghi lỗi)
-
-let revTables = { lounge: {}, bun: {} };
-let revOrders = { lounge: [], bun: [] };
-let currentRevTab = 'open';
-let revListenersReady = 0;
-const REV_TOTAL_LISTENERS = 4;
-
-try {
-  const app = initializeApp(revFirebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  signInAnonymously(auth).then(() => {
-    // 1. Lounge tables
-    onSnapshot(collection(db, 'lounge_tables'), (snap) => {
-      const obj = {};
-      snap.forEach(d => obj[d.id] = d.data());
-      revTables.lounge = obj;
-      checkAndRender();
-    });
-
-    // 2. Bungalow tables
-    onSnapshot(collection(db, 'bun_tables'), (snap) => {
-      const obj = {};
-      snap.forEach(d => obj[d.id] = d.data());
-      revTables.bun = obj;
-      checkAndRender();
-    });
-
-    // 3. Lounge orders
-    onSnapshot(collection(db, 'lounge_orders'), (snap) => {
-      const arr = [];
-      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-      revOrders.lounge = arr;
-      checkAndRender();
-    });
-
-    // 4. Bungalow orders
-    onSnapshot(collection(db, 'bun_orders'), (snap) => {
-      const arr = [];
-      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-      revOrders.bun = arr;
-      checkAndRender();
-    });
-  }).catch(err => {
-    console.warn('[Rev] Auth error:', err);
-  });
-} catch(e) {
-  console.warn('[Rev] Init error:', e);
-}
-
-function checkAndRender() {
-  revListenersReady++;
-  renderRevenue();
-}
-
-// ════════ TÍNH DOANH THU BÀN ════════
-function getTableRevenue(type, tableId) {
-  if (type === 'lounge') {
-    const t = revTables.lounge[tableId];
-    if (!t) return 0;
-    const pax = parseInt(t.pax) || 0;
-    return pax * PRICE_LOUNGE_PAX;
-  }
-  if (type === 'bun') {
-    const t = revTables.bun[tableId];
-    if (!t) return 0;
-    return PRICE_BUNGALOW;
-  }
-  return 0;
-}
-
-// ════════ TÍNH XẾP HẠNG ════════
-function calculateRevenue(mode) {
-  const now = Date.now();
-  const cutoff = now - (DAYS_BACK * 24 * 60 * 60 * 1000);
-  const employees = {};
-
-  // ─── MODE 1: MỞ BÀN ───
-  if (mode === 'open') {
-    // Lounge: cộng pax × 250k cho openedByStaff
-    Object.values(revTables.lounge).forEach(t => {
-      const staff = (t.openedByStaff || '').trim();
-      if (!staff) return;
-      const pax = parseInt(t.pax) || 0;
-      if (pax <= 0) return;
-      const rev = pax * PRICE_LOUNGE_PAX;
-      if (!employees[staff]) employees[staff] = { name: staff, revenue: 0, count: 0 };
-      employees[staff].revenue += rev;
-      employees[staff].count += 1;
-    });
-
-    // Bungalow: cộng 2M cho openedByStaff
-    Object.values(revTables.bun).forEach(t => {
-      const staff = (t.openedByStaff || '').trim();
-      if (!staff) return;
-      if (!employees[staff]) employees[staff] = { name: staff, revenue: 0, count: 0 };
-      employees[staff].revenue += PRICE_BUNGALOW;
-      employees[staff].count += 1;
-    });
-  }
-
-  // ─── MODE 2 & 3: NHẬN ORDER / HOÀN THÀNH ───
-  if (mode === 'prepare' || mode === 'complete') {
-    // Xử lý từng loại
-    ['lounge', 'bun'].forEach(type => {
-      const orders = revOrders[type] || [];
-
-      // Group orders theo bàn
-      const byTable = {};
-      orders.forEach(o => {
-        const t = o.table;
-        if (!t) return;
-        if (!byTable[t]) byTable[t] = [];
-        byTable[t].push(o);
-      });
-
-      // Với mỗi bàn, chia doanh thu cho số order
-      Object.keys(byTable).forEach(tableId => {
-        const tableRev = getTableRevenue(type, tableId);
-        if (tableRev <= 0) return;
-
-        const tableOrders = byTable[tableId];
-        // Lọc order hợp lệ
-        const validOrders = tableOrders.filter(o => {
-          if (mode === 'prepare') return !!(o.preparedBy || '').trim();
-          if (mode === 'complete') return !!(o.completedBy || '').trim() && o.completedAt;
-          return false;
-        });
-
-        if (validOrders.length === 0) return;
-        if (validOrders.length > MAX_ORDERS_PER_TABLE) return;
-
-        const share = tableRev / validOrders.length;
-
-        validOrders.forEach(o => {
-          const staff = mode === 'prepare'
-            ? (o.preparedBy || '').trim()
-            : (o.completedBy || '').trim();
-          if (!staff) return;
-
-          // Nếu có " & " (nhiều người cùng nhận) → chia đều
-          const names = staff.split(' & ').map(s => s.trim()).filter(Boolean);
-          const perPerson = share / names.length;
-
-          names.forEach(name => {
-            if (!employees[name]) employees[name] = { name, revenue: 0, count: 0 };
-            employees[name].revenue += perPerson;
-            employees[name].count += 1;
-          });
-        });
-      });
-    });
-  }
-
-  // Lọc và sắp xếp
-  const list = Object.values(employees)
-    .filter(e => e.revenue >= MIN_REVENUE)
-    .sort((a, b) => b.revenue - a.revenue)
-    .slice(0, TOP_N);
-
-  return list;
-}
-
-// ════════ FORMAT ════════
-function formatMoney(amount) {
-  if (amount >= 1000000000) return (amount / 1000000000).toFixed(1) + 'B';
-  if (amount >= 1000000) {
-    const m = amount / 1000000;
-    return (m >= 10 ? Math.round(m) : m.toFixed(1)) + 'M';
-  }
-  if (amount >= 1000) return Math.round(amount / 1000) + 'K';
-  return Math.round(amount) + 'đ';
-}
-
-function escapeRevHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-}
-
-// ════════ RENDER ════════
-function renderRevenue() {
-  const section = document.getElementById('revenueSection');
-  const list = document.getElementById('rev-list');
-  if (!section || !list) return;
-
-  const data = calculateRevenue(currentRevTab);
-
-  if (data.length === 0) {
-    section.classList.remove('show');
-    return;
-  }
-
-  const medals = ['🥇', '🥈', '🥉', '4', '5'];
-  const labels = { open: 'Bàn đã mở', prepare: 'Order đã nhận', complete: 'Order hoàn thành' };
-
-  list.innerHTML = data.map((emp, idx) => {
-    const rank = idx + 1;
-    const medal = rank <= 3 ? medals[rank - 1] : rank;
-    return `
-      <div class="rev-row rank-${rank}">
-        <div class="rev-rank">${medal}</div>
-        <div class="rev-name">${escapeRevHtml(emp.name)}</div>
-        <div style="text-align:right">
-          <div class="rev-money">${formatMoney(emp.revenue)}<span class="unit">đ</span></div>
-          <div class="rev-sub-count">${emp.count} ${labels[currentRevTab] || ''}</div>
-        </div>
-      </div>`;
-  }).join('');
-
-  section.classList.add('show');
-}
-
-// ════════ TAB SWITCHING ════════
-window.switchRevTab = function(tab) {
-  currentRevTab = tab;
-  document.querySelectorAll('.rev-tab').forEach(b => {
-    b.classList.toggle('active', b.dataset.tab === tab);
-  });
-  renderRevenue();
-};
-</script>
-<!-- ════════ LEADERBOARD — FIREBASE REALTIME ════════ -->
-<script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
-  authDomain: "dolphin-f6d67.firebaseapp.com",
-  projectId: "dolphin-f6d67"
-};
-
-// ════════ CONFIG ════════
-const COLLECTIONS = ['bun_orders', 'lounge_orders', 'res_orders'];
-const DAYS_BACK = 7;              // Chỉ tính 7 ngày gần nhất
-const MIN_ORDERS = 3;             // Nhân viên phải có ít nhất 3 đơn
-const MIN_SECONDS = 10;           // Bỏ đơn quá nhanh (< 10s)
-const MAX_SECONDS = 30 * 60;      // Bỏ đơn quá chậm (> 30 phút)
-const TOP_N = 5;                  // Lấy top 5
-
-let allOrders = [];
-let listeners = {};
-
-try {
-  const app = initializeApp(firebaseConfig);
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-
-  signInAnonymously(auth).then(() => {
-    COLLECTIONS.forEach(colName => {
-      const ref = collection(db, colName);
-      listeners[colName] = onSnapshot(ref, (snap) => {
-        const arr = [];
-        snap.forEach(d => {
-          const data = d.data();
-          arr.push({ id: d.id, _col: colName, ...data });
-        });
-        // Merge: xóa đơn cũ của collection này, thêm mới
-        allOrders = allOrders.filter(o => o._col !== colName).concat(arr);
-        renderLeaderboard();
-      }, (err) => {
-        console.warn('[Leaderboard] ' + colName + ' listen error:', err);
-      });
-    });
-  }).catch(err => {
-    console.warn('[Leaderboard] Auth error:', err);
-    showLeaderboardError();
-  });
-} catch(e) {
-  console.warn('[Leaderboard] Init error:', e);
-  showLeaderboardError();
-}
-
-// ════════ TÍNH TOÁN ════════
-function calculateLeaderboard() {
-  const now = Date.now();
-  const cutoff = now - (DAYS_BACK * 24 * 60 * 60 * 1000);
-
-  // Lọc đơn completed trong 7 ngày
-  const validOrders = allOrders.filter(o => {
-    if (!o.timestamp || !o.completedAt) return false;
-    if (o.status !== 'completed') return false;
-    if (o.timestamp < cutoff) return false;
-    const duration = (o.completedAt - o.timestamp) / 1000;
-    if (duration < MIN_SECONDS) return false;
-    if (duration > MAX_SECONDS) return false;
-    return true;
-  });
-
-  // Group theo nhân viên
-  const employees = {};
-  validOrders.forEach(o => {
-    // Ưu tiên completedBy, fallback preparedBy
-    const name = (o.completedBy || o.preparedBy || '').trim();
-    if (!name) return;
-
-    if (!employees[name]) {
-      employees[name] = { name, count: 0, totalSeconds: 0, orders: [] };
-    }
-    const dur = (o.completedAt - o.timestamp) / 1000;
-    employees[name].count += 1;
-    employees[name].totalSeconds += dur;
-    employees[name].orders.push(dur);
-  });
-
-  // Lọc nhân viên đủ điều kiện
-  const list = Object.values(employees)
-    .filter(e => e.count >= MIN_ORDERS)
-    .map(e => ({
-      name: e.name,
-      count: e.count,
-      avgSeconds: e.totalSeconds / e.count
-    }))
-    .sort((a, b) => a.avgSeconds - b.avgSeconds)
-    .slice(0, TOP_N);
-
-  return list;
-}
-
-// ════════ FORMAT THỜI GIAN ════════
-function formatDuration(seconds) {
-  if (seconds < 60) return Math.round(seconds) + 's';
-  const m = Math.floor(seconds / 60);
-  const s = Math.round(seconds % 60);
-  return m + 'p' + (s > 0 ? s + 's' : '');
-}
-
-function getSpeedClass(seconds) {
-  if (seconds < 60) return 'fast';
-  if (seconds < 120) return 'slow';
-  return '';
-}
-
-function escapeHtml(str) {
-  return String(str).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-}
-
-// ════════ RENDER ════════
-function renderLeaderboard() {
-  const section = document.getElementById('leaderboardSection');
-  const list = document.getElementById('lb-list');
-  if (!section || !list) return;
-
-  const data = calculateLeaderboard();
-
-  if (data.length === 0) {
-    section.classList.remove('show');
-    return;
-  }
-
-  const medals = ['🥇', '🥈', '🥉', '4', '5'];
-
-  list.innerHTML = data.map((emp, idx) => {
-    const rank = idx + 1;
-    const medal = rank <= 3 ? medals[rank - 1] : rank;
-    const speedClass = getSpeedClass(emp.avgSeconds);
-
-    return `
-      <div class="lb-row rank-${rank}">
-        <div class="lb-rank">${medal}</div>
-        <div class="lb-name">${escapeHtml(emp.name)}</div>
-        <div class="lb-stats">
-          <div class="lb-stat">
-            <div class="lb-stat-val">${emp.count}</div>
-            <div class="lb-stat-label">Đơn</div>
-          </div>
-          <div class="lb-stat">
-            <div class="lb-stat-val ${speedClass}">${formatDuration(emp.avgSeconds)}</div>
-            <div class="lb-stat-label">TB</div>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-
-  section.classList.add('show');
-}
-
-function showLeaderboardError() {
-  const list = document.getElementById('lb-list');
-  if (list) list.innerHTML = '<div class="lb-empty">Không thể tải bảng xếp hạng</div>';
-}
-</script>
-  <!-- ════════ ANNOUNCEMENT TICKER — FIREBASE REALTIME ════════ -->
+<!-- ════════ ANNOUNCEMENT TICKER — FIREBASE ════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1832,17 +734,12 @@ try {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-
   signInAnonymously(auth).then(() => {
     const ref = doc(db, 'master_config', 'announcement');
     onSnapshot(ref, (snap) => {
       updateAnnouncement(snap.exists() ? snap.data() : null);
-    }, (err) => {
-      console.warn('[Announcement] Listen error:', err);
-    });
-  }).catch(err => {
-    console.warn('[Announcement] Auth error:', err);
-  });
+    }, (err) => { console.warn('[Announcement] Listen error:', err); });
+  }).catch(err => { console.warn('[Announcement] Auth error:', err); });
 
   function updateAnnouncement(data) {
     const bar = document.getElementById('announcementBar');
@@ -1850,25 +747,17 @@ try {
     const t2 = document.getElementById('announcementText2');
     const track = document.getElementById('announcementTrack');
     if (!bar || !t1 || !t2 || !track) return;
-
     const active = data && data.active === true;
     const text = data && data.text ? String(data.text).trim() : '';
-
-    if (!active || !text) {
-      bar.classList.remove('show');
-      return;
-    }
-
+    if (!active || !text) { bar.classList.remove('show'); return; }
     const fullText = '📢 ' + text + '   •   📢 ' + text + '   •   ';
     t1.textContent = fullText;
     t2.textContent = fullText;
     bar.classList.add('show');
-
-    // Adaptive speed: text càng dài → scroll càng lâu
     requestAnimationFrame(() => {
       const w = t1.offsetWidth;
       if (w > 0) {
-        const speed = 80; // pixels per second
+        const speed = 80;
         const duration = Math.max(15, Math.min(120, w / speed));
         track.style.animation = 'none';
         void track.offsetWidth;
@@ -1876,11 +765,10 @@ try {
       }
     });
   }
-} catch(e) {
-  console.warn('[Announcement] Init error:', e);
-}
+} catch(e) { console.warn('[Announcement] Init error:', e); }
 </script>
-<!-- ════════ ORDER NOTIFICATION LISTENER ════════ -->
+
+<!-- ════════ ORDER NOTIFICATION ════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1892,7 +780,6 @@ const notifFirebaseConfig = {
   projectId: "dolphin-f6d67"
 };
 
-// Collections theo dõi
 const WATCH_COLLECTIONS = [
   { name: 'bun_orders',    label: 'Bungalow',  icon: '🌴' },
   { name: 'lounge_orders', label: 'Lounge',    icon: '🍸' },
@@ -1900,10 +787,8 @@ const WATCH_COLLECTIONS = [
 ];
 
 let notifAudioCtx = null;
-let notifLastOrderId = null;
 let notifHideTimer = null;
 
-// Unlock audio khi user tương tác lần đầu
 function unlockNotifAudio(){
   try {
     if (!notifAudioCtx) notifAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -1914,39 +799,29 @@ function unlockNotifAudio(){
   document.addEventListener(ev, unlockNotifAudio, { once: false, passive: true });
 });
 
-// Âm thanh chuông — 3 tiếng "ting ting ting" dài
 function playOrderBell(){
   try {
     if (!notifAudioCtx) notifAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
     if (notifAudioCtx.state === 'suspended') notifAudioCtx.resume();
-
     const ctx = notifAudioCtx;
     const now = ctx.currentTime;
     const master = ctx.createGain();
     master.gain.value = 0.8;
     master.connect(ctx.destination);
-
-    // Compressor để tránh vỡ tiếng
     const comp = ctx.createDynamicsCompressor();
     comp.threshold.value = -18;
     comp.ratio.value = 4;
     comp.connect(master);
-
-    // Delay tạo không gian
     const delay = ctx.createDelay();
     delay.delayTime.value = 0.02;
     const delayGain = ctx.createGain();
     delayGain.gain.value = 0.3;
     delay.connect(delayGain);
     delayGain.connect(master);
-
     function strike(freq, time, gainVal, decay){
       const partials = [
-        {r:1.00, g:1.00, d:1.0},
-        {r:2.00, g:0.6,  d:0.85},
-        {r:2.76, g:0.4,  d:0.7},
-        {r:4.07, g:0.25, d:0.55},
-        {r:5.43, g:0.15, d:0.4}
+        {r:1.00, g:1.00, d:1.0},{r:2.00, g:0.6,  d:0.85},
+        {r:2.76, g:0.4,  d:0.7},{r:4.07, g:0.25, d:0.55},{r:5.43, g:0.15, d:0.4}
       ];
       partials.forEach(p => {
         const osc = ctx.createOscillator();
@@ -1959,53 +834,36 @@ function playOrderBell(){
         g.gain.setValueAtTime(0.0001, time);
         g.gain.exponentialRampToValueAtTime(peak, time + 0.005);
         g.gain.exponentialRampToValueAtTime(0.0001, time + dec);
-        osc.connect(g);
-        g.connect(comp);
-        g.connect(delay);
-        osc.start(time);
-        osc.stop(time + dec + 0.05);
+        osc.connect(g); g.connect(comp); g.connect(delay);
+        osc.start(time); osc.stop(time + dec + 0.05);
       });
     }
-
-    // 3 tiếng ting liên tiếp
-    const baseFreq = 1046.50; // C6
+    const baseFreq = 1046.50;
     strike(baseFreq, now + 0.0, 0.5, 1.2);
     strike(baseFreq, now + 0.35, 0.5, 1.2);
     strike(baseFreq, now + 0.70, 0.5, 2.5);
-    // Tiếng hài trầm
     strike(baseFreq * 0.75, now + 0.70, 0.35, 2.5);
     strike(baseFreq * 0.5,  now + 0.72, 0.25, 2.5);
-
-    // Vibration
-    if (navigator.vibrate) {
-      try { navigator.vibrate([200,100,200,100,400]); } catch(e){}
-    }
-  } catch(e){
-    console.warn('[Notif] Bell error:', e);
-  }
+    if (navigator.vibrate) { try { navigator.vibrate([200,100,200,100,400]); } catch(e){} }
+  } catch(e){ console.warn('[Notif] Bell error:', e); }
 }
 
-// Hiện banner thông báo
 function showOrderNotif(collection, orderData){
   const notif = document.getElementById('orderNotif');
   const title = document.getElementById('orderNotifTitle');
   const sub = document.getElementById('orderNotifSub');
   if (!notif || !title || !sub) return;
-
   const col = WATCH_COLLECTIONS.find(c => c.name === collection);
   const colLabel = col ? (col.icon + ' ' + col.label) : collection;
   const table = orderData.table || '--';
   const itemCount = Array.isArray(orderData.items) ? orderData.items.length : 0;
   const customer = orderData.customerName || '';
-
   title.textContent = '🔔 CÓ ĐƠN MỚI!';
   sub.innerHTML = colLabel + ' · Bàn <span class="table-hl">' + table + '</span> · ' +
                   (itemCount > 0 ? itemCount + ' món' : 'đơn mới') +
                   (customer ? ' · ' + customer : '');
-
   notif.dataset.collection = collection;
   notif.dataset.table = table;
-
   notif.classList.add('show');
   if (notifHideTimer) clearTimeout(notifHideTimer);
   notifHideTimer = setTimeout(() => { closeOrderNotif(); }, 12000);
@@ -2020,12 +878,7 @@ window.openOrderFromNotif = function(){
   const notif = document.getElementById('orderNotif');
   if (!notif) return;
   const collection = notif.dataset.collection;
-  // Map collection → app key
-  const map = {
-    'bun_orders': 'bungalow',
-    'lounge_orders': 'lounge',
-    'res_orders': 'restaurant'
-  };
+  const map = { 'bun_orders':'bungalow','lounge_orders':'lounge','res_orders':'restaurant' };
   const appKey = map[collection];
   if (appKey && window.openApp) window.openApp(appKey);
   closeOrderNotif();
@@ -2035,22 +888,15 @@ try {
   const app = initializeApp(notifFirebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
-
   signInAnonymously(auth).then(() => {
     WATCH_COLLECTIONS.forEach(cfg => {
       const isInitial = { flag: true };
       onSnapshot(collection(db, cfg.name), snap => {
-        if (isInitial.flag) {
-          // Bỏ qua lần load đầu
-          isInitial.flag = false;
-          return;
-        }
+        if (isInitial.flag) { isInitial.flag = false; return; }
         snap.docChanges().forEach(ch => {
           if (ch.type === 'added') {
             const data = ch.doc.data();
-            // Chỉ báo đơn "pending" (mới tạo)
             if (data.status === 'pending') {
-              notifLastOrderId = ch.doc.id;
               playOrderBell();
               showOrderNotif(cfg.name, data);
             }
@@ -2059,165 +905,86 @@ try {
       }, err => console.warn('[Notif] Listen error ' + cfg.name, err));
     });
   }).catch(err => console.warn('[Notif] Auth error:', err));
-} catch(e){
-  console.warn('[Notif] Init error:', e);
-}
+} catch(e){ console.warn('[Notif] Init error:', e); }
 </script>
 
-  <!-- ════════ VERSION CHECK + AUTO UPDATE ════════ -->
+<!-- ════════ VERSION CHECK + AUTO UPDATE ════════ -->
 <script>
 (function(){
   'use strict';
-
   var VERSION_KEY = 'dolphinAppVersion';
   var DISMISS_KEY = 'dolphinUpdateDismissed';
-  var CHECK_INTERVAL = 5 * 60 * 1000; // 5 phút
+  var CHECK_INTERVAL = 5 * 60 * 1000;
   var UPDATE_URL = '/DolphinApp/version.json';
-
   var currentRemoteVersion = null;
 
-  // ════════ Lấy version hiện tại của app ════════
   function getLocalVersion(){
-    try { return localStorage.getItem(VERSION_KEY) || '0.0.0'; }
-    catch(e){ return '0.0.0'; }
+    try { return localStorage.getItem(VERSION_KEY) || '0.0.0'; } catch(e){ return '0.0.0'; }
   }
-  function setLocalVersion(v){
-    try { localStorage.setItem(VERSION_KEY, v); } catch(e){}
-  }
-
-  // ════════ Kiểm tra đã dismiss chưa ════════
+  function setLocalVersion(v){ try { localStorage.setItem(VERSION_KEY, v); } catch(e){} }
   function isDismissed(version){
     try {
       var d = JSON.parse(localStorage.getItem(DISMISS_KEY) || 'null');
       if (!d) return false;
-      // Dismiss trong 6 giờ
       if (Date.now() - d.time > 6 * 60 * 60 * 1000) return false;
       return d.version === version;
     } catch(e){ return false; }
   }
   function dismissCurrent(){
     try {
-      localStorage.setItem(DISMISS_KEY, JSON.stringify({
-        version: currentRemoteVersion,
-        time: Date.now()
-      }));
+      localStorage.setItem(DISMISS_KEY, JSON.stringify({ version: currentRemoteVersion, time: Date.now() }));
     } catch(e){}
   }
-
-  // ════════ Fetch version.json từ server ════════
   function checkForUpdate(){
-    var url = UPDATE_URL + '?t=' + Date.now(); // Bypass cache
-    fetch(url, {
-      cache: 'no-store',
-      headers: { 'Cache-Control': 'no-cache' }
-    })
-    .then(function(r){
-      if (!r.ok) throw new Error('HTTP ' + r.status);
-      return r.json();
-    })
+    var url = UPDATE_URL + '?t=' + Date.now();
+    fetch(url, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
+    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
     .then(function(data){
       if (!data || !data.version) return;
-
       var remoteVer = data.version;
       var localVer = getLocalVersion();
       currentRemoteVersion = remoteVer;
-
-      console.log('[Update] Local:', localVer, '| Remote:', remoteVer);
-
-      // Lần đầu cài → ghi nhớ version hiện tại, không hiện banner
-      if (localVer === '0.0.0') {
-        setLocalVersion(remoteVer);
-        return;
-      }
-
-      // Version khác → hiện banner
+      if (localVer === '0.0.0') { setLocalVersion(remoteVer); return; }
       if (remoteVer !== localVer) {
-        if (isDismissed(remoteVer) && !data.forceUpdate) {
-          console.log('[Update] Skipped (dismissed)');
-          return;
-        }
+        if (isDismissed(remoteVer) && !data.forceUpdate) return;
         showUpdateBanner(data);
-      } else {
-        hideUpdateBanner();
-      }
+      } else { hideUpdateBanner(); }
     })
-    .catch(function(err){
-      console.warn('[Update] Check failed:', err);
-    });
+    .catch(function(err){ console.warn('[Update] Check failed:', err); });
   }
-
-  // ════════ Hiện banner ════════
   function showUpdateBanner(data){
     var banner = document.getElementById('updateBanner');
     var notesEl = document.getElementById('updateNotes');
     if (!banner || !notesEl) return;
-
     var notes = data.notes || 'Phiên bản mới đã sẵn sàng';
     notesEl.textContent = 'v' + data.version + ' · ' + notes;
-
     banner.classList.add('show');
-    // Đẩy trang xuống để không bị che
     document.body.style.paddingTop = banner.offsetHeight + 'px';
   }
-
   function hideUpdateBanner(){
     var banner = document.getElementById('updateBanner');
     if (!banner) return;
     banner.classList.remove('show');
     document.body.style.paddingTop = '0';
   }
-
-  // ════════ Thực hiện cập nhật ════════
   window.performUpdate = function(){
     var btn = document.getElementById('updateBtn');
-    if (btn) {
-      btn.disabled = true;
-      btn.textContent = '⏳ Đang cập nhật...';
-    }
-
+    if (btn) { btn.disabled = true; btn.textContent = '⏳ Đang cập nhật...'; }
     var actions = [
-      // 1. Xóa toàn bộ cache
       ('caches' in window) ? caches.keys().then(function(names){
         return Promise.all(names.map(function(n){
-          if (n.indexOf('dolphin-') === 0 || n.indexOf('workbox') === 0) {
-            console.log('[Update] Deleting cache:', n);
-            return caches.delete(n);
-          }
+          if (n.indexOf('dolphin-') === 0 || n.indexOf('workbox') === 0) return caches.delete(n);
         }));
       }) : Promise.resolve(),
-
-      // 2. Unregister service worker cũ
       ('serviceWorker' in navigator) ? navigator.serviceWorker.getRegistrations().then(function(regs){
-        return Promise.all(regs.map(function(r){
-          console.log('[Update] Unregistering SW:', r.scope);
-          return r.unregister();
-        }));
+        return Promise.all(regs.map(function(r){ return r.unregister(); }));
       }) : Promise.resolve(),
-
-      // 3. Xóa localStorage tạm (giữ lại staff name, master key)
       Promise.resolve().then(function(){
-        try {
-          var keep = ['dolphinStaffName', 'dolphinMasterDevice',
-                      'dolphinMasterCodeCache', 'dolphinMasterAuthToken'];
-          var backup = {};
-          keep.forEach(function(k){
-            var v = localStorage.getItem(k);
-            if (v) backup[k] = v;
-          });
-          // Không xóa hết, chỉ xóa version key
-          localStorage.removeItem(VERSION_KEY);
-          localStorage.removeItem(DISMISS_KEY);
-        } catch(e){}
+        try { localStorage.removeItem(VERSION_KEY); localStorage.removeItem(DISMISS_KEY); } catch(e){}
       })
     ];
-
     Promise.all(actions).then(function(){
-      // Ghi version mới (sẽ được ghi lại khi load)
-      console.log('[Update] Cache cleared — reloading...');
-
-      // Đợi 1 chút để browser hoàn tất
       setTimeout(function(){
-        // Force reload với cache bypass
         if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
           navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
         }
@@ -2225,81 +992,47 @@ try {
       }, 600);
     }).catch(function(err){
       console.error('[Update] Error:', err);
-      // Vẫn reload dù có lỗi
       setTimeout(function(){ window.location.reload(true); }, 500);
     });
   };
-
-  // ════════ Dismiss (Để sau) ════════
-  window.dismissUpdate = function(){
-    dismissCurrent();
-    hideUpdateBanner();
-  };
-
-  // ════════ Khởi động ════════
+  window.dismissUpdate = function(){ dismissCurrent(); hideUpdateBanner(); };
   function start(){
-    // Check lần đầu sau 2 giây
     setTimeout(checkForUpdate, 2000);
-    // Check lại mỗi 5 phút
     setInterval(checkForUpdate, CHECK_INTERVAL);
-    // Check khi quay lại tab
     document.addEventListener('visibilitychange', function(){
-      if (document.visibilityState === 'visible') {
-        setTimeout(checkForUpdate, 1000);
-      }
+      if (document.visibilityState === 'visible') setTimeout(checkForUpdate, 1000);
     });
-    // Check khi có mạng lại
-    window.addEventListener('online', function(){
-      setTimeout(checkForUpdate, 500);
-    });
+    window.addEventListener('online', function(){ setTimeout(checkForUpdate, 500); });
   }
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', start);
-  } else {
-    start();
-  }
+  } else { start(); }
 })();
 </script>
+
+<!-- ════════ ENHANCED LANDING ════════ -->
 <script>
-// ════════ ENHANCED LANDING — QUICK UPGRADE ════════
 (function(){
   'use strict';
-
-  // ─── 1. Particle lấp lánh ───
   function initParticles(){
     const landing = document.getElementById('landing');
     if (!landing) return;
-    // Số lượng hạt dựa theo máy
     const isMobile = window.innerWidth < 768;
     const count = isMobile ? 12 : 22;
-
     for (let i = 0; i < count; i++){
       const p = document.createElement('div');
       p.className = 'particle';
       const size = 4 + Math.random() * 8;
-      p.style.cssText = `
-        width:${size}px;height:${size}px;
-        left:${Math.random() * 100}%;
-        top:${70 + Math.random() * 30}%;
-        animation-duration:${12 + Math.random() * 10}s;
-        animation-delay:-${Math.random() * 15}s;
-        opacity:${0.3 + Math.random() * 0.5};
-      `;
+      p.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(Math.random()*100)+'%;top:'+(70+Math.random()*30)+'%;animation-duration:'+(12+Math.random()*10)+'s;animation-delay:-'+(Math.random()*15)+'s;opacity:'+(0.3+Math.random()*0.5);
       landing.appendChild(p);
     }
   }
-
-  // ─── 2. Nền đổi màu theo giờ VN ───
   function updateTimeBackground(){
     const landing = document.getElementById('landing');
     if (!landing) return;
     try {
-      const vnTime = new Intl.DateTimeFormat('en-US', {
-        timeZone:'Asia/Ho_Chi_Minh', hour12:false, hour:'2-digit'
-      }).format(new Date());
+      const vnTime = new Intl.DateTimeFormat('en-US', { timeZone:'Asia/Ho_Chi_Minh', hour12:false, hour:'2-digit' }).format(new Date());
       const h = parseInt(vnTime, 10);
-
       landing.classList.remove('time-morning','time-day','time-evening','time-night');
       if (h >= 5 && h < 9) landing.classList.add('time-morning');
       else if (h >= 9 && h < 16) landing.classList.add('time-day');
@@ -2307,13 +1040,10 @@ try {
       else landing.classList.add('time-night');
     } catch(e){}
   }
-
-  // ─── 3. Nâng cấp mặt trời — thêm halo thứ 2 ───
   function enhanceSun(){
     const sunGroup = document.querySelector('.sun');
     if (!sunGroup || sunGroup.dataset.enhanced === '1') return;
     sunGroup.dataset.enhanced = '1';
-    // Thêm halo mờ bên ngoài
     const halo = document.createElementNS('http://www.w3.org/2000/svg','circle');
     halo.setAttribute('cx','1100');
     halo.setAttribute('cy','250');
@@ -2323,20 +1053,15 @@ try {
     halo.setAttribute('class','sun-halo-2');
     sunGroup.insertBefore(halo, sunGroup.firstChild);
   }
-
-  // ─── Khởi động ───
   function init(){
     initParticles();
     enhanceSun();
     updateTimeBackground();
     setInterval(updateTimeBackground, 60000);
   }
-
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
-  } else {
-    setTimeout(init, 500);
-  }
+  } else { setTimeout(init, 500); }
 })();
 </script>
 </body>

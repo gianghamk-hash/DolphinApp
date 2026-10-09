@@ -1968,7 +1968,15 @@ window.executeSaveCustomerName = async function({table,dataToSave}){
   }
   catch(e){ window.showToast("Lỗi lưu!","❌"); }
 };
-window.clearCustomerName = function(){ const t = document.getElementById('reception-target-table').value; window.promptManagerAuth('clear',{table:t}); };
+window.clearCustomerName = function(){
+  const t = document.getElementById('reception-target-table').value;
+  // 👑 Master bypass — xóa trực tiếp không cần PIN
+  if (localStorage.getItem('dolphinMasterDevice') === 'true') {
+    window.executeClearCustomerName(t);
+    return;
+  }
+  window.promptManagerAuth('clear',{table:t});
+};
 window.executeClearCustomerName = async function(table){
   try{ if(db) await deleteDoc(doc(db,'lounge_tables',table)); window.showToast(`Xóa khách bàn ${table}`,'🧹'); window.closeCustomerNameModal(); }
   catch(e){ window.showToast("Lỗi xóa!","❌"); }

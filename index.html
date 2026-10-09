@@ -61,7 +61,43 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   font-size:.55rem;font-weight:900;letter-spacing:.12em;
   padding:3px 8px;border-radius:99px;text-transform:uppercase;box-shadow:0 3px 10px rgba(244,184,66,.5)}
 
-/* ==================== SCENE ANIM ==================== */
+/* ==================== ENHANCED SCENE — QUICK UPGRADE ==================== */
+/* Mặt trời phát sáng nhiều tầng */
+.sun-halo-2{animation:sun-pulse-2 7s ease-in-out infinite;transform-origin:center}
+@keyframes sun-pulse-2{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.5;transform:scale(1.08)}}
+
+/* Sóng có gradient */
+.wave-anim path{filter:drop-shadow(0 2px 4px rgba(255,255,255,.3))}
+
+/* Particle lấp lánh */
+.particle{position:absolute;border-radius:50%;pointer-events:none;
+  background:radial-gradient(circle,#FFF8C2 0%,rgba(251,215,122,0) 70%);
+  animation:particle-float linear infinite;will-change:transform,opacity}
+@keyframes particle-float{
+  0%{transform:translateY(0) scale(0);opacity:0}
+  15%{opacity:.9;transform:translateY(-20px) scale(1)}
+  85%{opacity:.7}
+  100%{transform:translateY(-100vh) scale(.4);opacity:0}
+}
+
+/* Card phát sáng khi hover */
+.area-card:hover{
+  box-shadow:0 28px 56px -16px rgba(0,0,0,.7),
+             0 0 60px -8px rgba(244,184,66,.7),
+             inset 0 0 30px rgba(244,184,66,.15)!important;
+}
+.area-card:hover .area-icon{
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.5)) drop-shadow(0 0 20px rgba(244,184,66,.9));
+}
+
+/* Nền đổi màu theo giờ */
+#landing::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
+  background:transparent;transition:background 3s ease-out}
+#landing.time-morning::before{background:linear-gradient(180deg,rgba(255,180,100,.15) 0%,transparent 60%)}
+#landing.time-day::before{background:transparent}
+#landing.time-evening::before{background:linear-gradient(180deg,rgba(255,120,60,.2) 0%,transparent 60%)}
+#landing.time-night::before{background:linear-gradient(180deg,rgba(10,20,60,.4) 0%,rgba(10,20,60,.15) 60%,transparent)}
+  /* ==================== SCENE ANIM ==================== */
 @keyframes wave-flow{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .wave-anim{animation:wave-flow 14s linear infinite}
 .wave-anim-2{animation:wave-flow 22s linear infinite reverse}
@@ -2222,6 +2258,84 @@ try {
     document.addEventListener('DOMContentLoaded', start);
   } else {
     start();
+  }
+})();
+</script>
+<script>
+// ════════ ENHANCED LANDING — QUICK UPGRADE ════════
+(function(){
+  'use strict';
+
+  // ─── 1. Particle lấp lánh ───
+  function initParticles(){
+    const landing = document.getElementById('landing');
+    if (!landing) return;
+    // Số lượng hạt dựa theo máy
+    const isMobile = window.innerWidth < 768;
+    const count = isMobile ? 12 : 22;
+
+    for (let i = 0; i < count; i++){
+      const p = document.createElement('div');
+      p.className = 'particle';
+      const size = 4 + Math.random() * 8;
+      p.style.cssText = `
+        width:${size}px;height:${size}px;
+        left:${Math.random() * 100}%;
+        top:${70 + Math.random() * 30}%;
+        animation-duration:${12 + Math.random() * 10}s;
+        animation-delay:-${Math.random() * 15}s;
+        opacity:${0.3 + Math.random() * 0.5};
+      `;
+      landing.appendChild(p);
+    }
+  }
+
+  // ─── 2. Nền đổi màu theo giờ VN ───
+  function updateTimeBackground(){
+    const landing = document.getElementById('landing');
+    if (!landing) return;
+    try {
+      const vnTime = new Intl.DateTimeFormat('en-US', {
+        timeZone:'Asia/Ho_Chi_Minh', hour12:false, hour:'2-digit'
+      }).format(new Date());
+      const h = parseInt(vnTime, 10);
+
+      landing.classList.remove('time-morning','time-day','time-evening','time-night');
+      if (h >= 5 && h < 9) landing.classList.add('time-morning');
+      else if (h >= 9 && h < 16) landing.classList.add('time-day');
+      else if (h >= 16 && h < 19) landing.classList.add('time-evening');
+      else landing.classList.add('time-night');
+    } catch(e){}
+  }
+
+  // ─── 3. Nâng cấp mặt trời — thêm halo thứ 2 ───
+  function enhanceSun(){
+    const sunGroup = document.querySelector('.sun');
+    if (!sunGroup || sunGroup.dataset.enhanced === '1') return;
+    sunGroup.dataset.enhanced = '1';
+    // Thêm halo mờ bên ngoài
+    const halo = document.createElementNS('http://www.w3.org/2000/svg','circle');
+    halo.setAttribute('cx','1100');
+    halo.setAttribute('cy','250');
+    halo.setAttribute('r','250');
+    halo.setAttribute('fill','url(#sunCorona)');
+    halo.setAttribute('opacity','0.6');
+    halo.setAttribute('class','sun-halo-2');
+    sunGroup.insertBefore(halo, sunGroup.firstChild);
+  }
+
+  // ─── Khởi động ───
+  function init(){
+    initParticles();
+    enhanceSun();
+    updateTimeBackground();
+    setInterval(updateTimeBackground, 60000);
+  }
+
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
+  } else {
+    setTimeout(init, 500);
   }
 })();
 </script>

@@ -3,7 +3,7 @@
    Dành cho GitHub Pages — subfolder /DolphinApp/
    ============================================================ */
 
-const CACHE_NAME = 'dolphin-v2.4.6';
+const CACHE_NAME = 'dolphin-v2.5.';
 const BASE = '/DolphinApp';
 const CACHE_URLS = [
   BASE + '/',
@@ -14,6 +14,8 @@ const CACHE_URLS = [
   BASE + '/dolphin-show.html',
   BASE + '/manifest.json',
    BASE + '/logo-dolphin.png',
+   BASE + '/staff-sync.js',
+  BASE + '/community-chat.js',
 ];
 
 self.addEventListener('install', (event) => {

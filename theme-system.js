@@ -477,8 +477,6 @@
         background:radial-gradient(circle at 30% 50%,var(--hclock-glow,rgba(244,184,66,.18)),transparent 60%),
                    radial-gradient(circle at 70% 50%,var(--hclock-inset,rgba(78,205,196,.12)),transparent 60%);
       }
-
-      /* ─── Per-theme clock variables ─── */
       body.theme-tet{
         --hclock-glow:rgba(255,215,0,.6); --hclock-inset:rgba(255,80,80,.15);
         --hclock-color:#FFD700; --hclock-icon:'🧧'; --hclock-loc:'🏮';
@@ -531,9 +529,9 @@
         --hclock-glow:rgba(184,216,240,.7); --hclock-inset:rgba(74,138,204,.15);
         --hclock-color:#E0F0FF; --hclock-icon:'❄️'; --hclock-loc:'⛄';
       }
-    `;                                    ← DẤU ĐÓNG BACKTICK VẪN GIỮ NGUYÊN
+    `;                          ← BACKTICK ĐÓNG — CHỈ 1 LẦN DUY NHẤT
     document.head.appendChild(s);
-  }
+  }                             ← ĐÓNG HÀM — CHỈ 1 LẦN DUY NHẤT
   
   // ═══════ LAYERS ═══════
   function ensureLayers(){

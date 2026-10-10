@@ -434,7 +434,107 @@
     `;
     document.head.appendChild(s);
   }
+      @media(max-width:768px){
+        #themeBadge{font-size:9.5px;padding:4px 9px;top:6px;left:6px}
+        #themeBadge .tb-icon{font-size:12px}
+      }
 
+      /* ═══════════════════════════════════════════════════
+         🕐 HALONG CLOCK — Theme overrides
+         ═══════════════════════════════════════════════════ */
+      body[class*="theme-"] #halongClock{
+        border-width:2px;
+        animation:hclock-glow-pulse 3s ease-in-out infinite;
+      }
+      @keyframes hclock-glow-pulse{
+        0%,100%{box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 30px var(--hclock-glow,rgba(244,184,66,.25)),inset 0 0 30px var(--hclock-inset,rgba(244,184,66,.06))}
+        50%{box-shadow:0 8px 40px rgba(0,0,0,.6),0 0 50px var(--hclock-glow,rgba(244,184,66,.5)),inset 0 0 45px var(--hclock-inset,rgba(244,184,66,.12))}
+      }
+      body[class*="theme-"] #halongClock .hclock-time{
+        color:var(--hclock-color, #FBD77A);
+        text-shadow:0 0 14px var(--hclock-glow, rgba(244,184,66,.65)),
+                    0 0 28px var(--hclock-glow, rgba(244,184,66,.35));
+      }
+      body[class*="theme-"] #halongClock .hclock-loc-text{
+        color:var(--hclock-color, #FBD77A);
+      }
+      body[class*="theme-"] #halongClock .hclock-icon{
+        font-size:0;
+        filter:drop-shadow(0 0 12px var(--hclock-glow, rgba(244,184,66,.8)));
+      }
+      body[class*="theme-"] #halongClock .hclock-icon::after{
+        content:var(--hclock-icon, '🕐');
+        font-size:28px;
+      }
+      body[class*="theme-"] #halongClock .hclock-loc-icon{
+        font-size:0;
+      }
+      body[class*="theme-"] #halongClock .hclock-loc-icon::after{
+        content:var(--hclock-loc, '📍');
+        font-size:18px;
+      }
+      body[class*="theme-"] #halongClock .hclock-glow{
+        background:radial-gradient(circle at 30% 50%,var(--hclock-glow,rgba(244,184,66,.18)),transparent 60%),
+                   radial-gradient(circle at 70% 50%,var(--hclock-inset,rgba(78,205,196,.12)),transparent 60%);
+      }
+
+      /* ─── Per-theme clock variables ─── */
+      body.theme-tet{
+        --hclock-glow:rgba(255,215,0,.6); --hclock-inset:rgba(255,80,80,.15);
+        --hclock-color:#FFD700; --hclock-icon:'🧧'; --hclock-loc:'🏮';
+      }
+      body.theme-valentine{
+        --hclock-glow:rgba(255,77,109,.6); --hclock-inset:rgba(255,150,180,.15);
+        --hclock-color:#FFB6C1; --hclock-icon:'💝'; --hclock-loc:'💖';
+      }
+      body.theme-womenday{
+        --hclock-glow:rgba(217,70,166,.6); --hclock-inset:rgba(255,180,220,.15);
+        --hclock-color:#FFC0CB; --hclock-icon:'🌷'; --hclock-loc:'🌹';
+      }
+      body.theme-reunification, body.theme-nationalday{
+        --hclock-glow:rgba(255,215,0,.7); --hclock-inset:rgba(218,37,29,.2);
+        --hclock-color:#FFD700; --hclock-icon:'⭐'; --hclock-loc:'🇻🇳';
+      }
+      body.theme-children{
+        --hclock-glow:rgba(78,205,196,.6); --hclock-inset:rgba(255,107,157,.15);
+        --hclock-color:#4ECDC4; --hclock-icon:'🎈'; --hclock-loc:'🎉';
+      }
+      body.theme-midautumn{
+        --hclock-glow:rgba(240,192,96,.7); --hclock-inset:rgba(255,200,100,.15);
+        --hclock-color:#FFE8A0; --hclock-icon:'🏮'; --hclock-loc:'🌕';
+      }
+      body.theme-halloween{
+        --hclock-glow:rgba(255,140,0,.7); --hclock-inset:rgba(150,50,200,.2);
+        --hclock-color:#FF9500; --hclock-icon:'🎃'; --hclock-loc:'🦇';
+      }
+      body.theme-christmas{
+        --hclock-glow:rgba(220,20,60,.65); --hclock-inset:rgba(10,125,61,.2);
+        --hclock-color:#FFE4E6; --hclock-icon:'🎄'; --hclock-loc:'🎁';
+      }
+      body.theme-newyear{
+        --hclock-glow:rgba(255,215,0,.7); --hclock-inset:rgba(139,0,255,.2);
+        --hclock-color:#FFD700; --hclock-icon:'🎊'; --hclock-loc:'🎆';
+      }
+      body.theme-spring{
+        --hclock-glow:rgba(255,182,193,.6); --hclock-inset:rgba(78,205,196,.15);
+        --hclock-color:#FFB6C1; --hclock-icon:'🌸'; --hclock-loc:'🦋';
+      }
+      body.theme-summer{
+        --hclock-glow:rgba(255,200,50,.7); --hclock-inset:rgba(80,180,255,.15);
+        --hclock-color:#FFE066; --hclock-icon:'☀️'; --hclock-loc:'🌴';
+      }
+      body.theme-autumn{
+        --hclock-glow:rgba(255,179,71,.65); --hclock-inset:rgba(210,105,30,.15);
+        --hclock-color:#FFB347; --hclock-icon:'🍁'; --hclock-loc:'🍂';
+      }
+      body.theme-winter{
+        --hclock-glow:rgba(184,216,240,.7); --hclock-inset:rgba(74,138,204,.15);
+        --hclock-color:#E0F0FF; --hclock-icon:'❄️'; --hclock-loc:'⛄';
+      }
+    `;                                    ← DẤU ĐÓNG BACKTICK VẪN GIỮ NGUYÊN
+    document.head.appendChild(s);
+  }
+  
   // ═══════ LAYERS ═══════
   function ensureLayers(){
     var layers = ['theme-aurora','theme-godrays','themeCanvas','theme-vignette'];

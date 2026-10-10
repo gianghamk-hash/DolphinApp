@@ -1,7 +1,7 @@
 {
-  "version": "2.6.3",
-  "buildDate": "2026-10-01T21:00:00Z",
-  "commit": "test",
-  "notes": "PHIÊN BẢN 2.6.1 - BỔ SUNG KHO THEME BỐ ĐỜI, KHO AVATAR CHO NHÂN VIÊN ",
+  "version": "2.6.4",
+  "buildDate": "2026-10-11T00:00:00Z",
+  "commit": "manual-sync-20261011",
+  "notes": "Fix service worker network-first + remove chat",
   "forceUpdate": false
 }

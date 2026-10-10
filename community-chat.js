@@ -393,9 +393,12 @@
       }
 
       var initial = (m.sender || '?').charAt(0).toUpperCase();
+      var avtHtml = (window.AvatarSystem && window.AvatarSystem.renderAvatarHtml)
+        ? window.AvatarSystem.renderAvatarHtml(m.sender, 'sm')
+        : '<div class="chat-avatar">' + (m.sender || '?').charAt(0).toUpperCase() + '</div>';
       var time = getVNTimeStr(m.timestamp);
       return '<div class="chat-msg ' + (isMine ? 'mine' : '') + '">'
-        + '<div class="chat-avatar">' + initial + '</div>'
+        + avtHtml
         + '<div class="chat-body">'
         +   '<div class="chat-sender"><span>' + escapeHtml(m.sender || 'Ẩn danh') + '</span>'
         +   '<span class="chat-time">' + time + '</span></div>'

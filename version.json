@@ -1,7 +1,7 @@
 {
-  "version": "2.6.0",
+  "version": "2.6.1",
   "buildDate": "2026-10-01T21:00:00Z",
   "commit": "test",
-  "notes": "PHIÊN BẢN 2.6.0 - BỔ SUNG KHO THEME BỐ ĐỜI, KHO AVATAR CHO NHÂN VIÊN ",
+  "notes": "PHIÊN BẢN 2.6.1 - BỔ SUNG KHO THEME BỐ ĐỜI, KHO AVATAR CHO NHÂN VIÊN ",
   "forceUpdate": false
 }

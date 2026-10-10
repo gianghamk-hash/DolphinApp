@@ -1,9 +1,5 @@
 /* ============================================================
-   👤 AVATAR SYSTEM — Nhân viên chọn avatar cá nhân
-   - 60 avatar chia 6 nhóm
-   - Lưu Firebase (staff_profiles/{name})
-   - Hiển thị khắp nơi: Chat, Caro, Ranking
-   - Fallback: chữ cái đầu
+   👤 AVATAR SYSTEM v2 — Đổi qua chat (bỏ nút FAB)
    ============================================================ */
 (function(){
   'use strict';
@@ -17,7 +13,6 @@
   var COL_PROFILES = 'staff_profiles';
   var AVATAR_KEY = 'dolphinAvatar';
 
-  // 60 avatar chia 6 nhóm
   var AVATARS = {
     'Động vật biển':    ['🐬','🐳','🐋','🦈','🐠','🐟','🐡','🦑','🐙','🦐','🦞','🦀','🐚','🐢','🐊'],
     'Động vật':         ['🐯','🦁','🐺','🐻','🐼','🐨','🦊','🐰','🐭','🐹','🐮','🐷','🐸','🐵','🦝'],
@@ -29,8 +24,8 @@
 
   var state = {
     currentAvatar: null,
-    cache: {},
-    unsub: null
+    editingName: null,
+    cache: {}
   };
 
   function getStaffName(){
@@ -44,11 +39,7 @@
   }
 
   function getLocalAvatar(){
-    try {
-      var saved = localStorage.getItem(AVATAR_KEY);
-      if (saved) return saved;
-    } catch(e){}
-    return null;
+    try { return localStorage.getItem(AVATAR_KEY) || null; } catch(e){ return null; }
   }
 
   function setLocalAvatar(emoji){
@@ -72,7 +63,6 @@
     var s = document.createElement('style');
     s.id = 'avatar-styles';
     s.textContent = `
-      /* Avatar hiển thị */
       .avt{display:inline-flex;align-items:center;justify-content:center;
         border-radius:50%;font-weight:900;flex-shrink:0;text-align:center;
         background:linear-gradient(135deg,#2a6e65,#194743);
@@ -86,19 +76,11 @@
       .avt.avt-xl{width:64px;height:64px;font-size:32px}
       .avt.avt-mine{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
 
-      /* Nút mở avatar picker */
-      #avatarFab{position:fixed;bottom:88px;left:15px;z-index:1100;
-        width:54px;height:54px;border-radius:50%;
-        background:linear-gradient(135deg,#2a6e65,#194743);
-        border:2px solid #FBD77A;color:#FBD77A;font-size:24px;
-        display:flex;align-items:center;justify-content:center;cursor:pointer;
-        box-shadow:0 6px 20px rgba(244,184,66,.4),0 2px 8px rgba(0,0,0,.3);
-        transition:transform .2s,box-shadow .2s;user-select:none;-webkit-user-select:none;
-        -webkit-tap-highlight-color:transparent;touch-action:none}
-      #avatarFab:active{transform:scale(.92)}
-      #avatarFab.dragging{cursor:grabbing;transform:scale(1.08);
-        box-shadow:0 10px 30px rgba(0,0,0,.6),0 0 0 4px rgba(244,184,66,.35);transition:none}
-      #avatarFab .avatar-emoji{font-size:26px;line-height:1}
+      /* Clickable sender name in chat */
+      .chat-sender{cursor:pointer;transition:all .15s;border-radius:6px;padding:2px 4px;margin:-2px -4px}
+      .chat-sender:hover{background:rgba(244,184,66,.15)}
+      .chat-sender:active{transform:scale(.97)}
+      .chat-sender span:first-child{text-decoration:underline;text-decoration-style:dotted;text-decoration-color:rgba(244,184,66,.4);text-underline-offset:3px}
 
       /* Modal picker */
       #avatarModal{position:fixed;inset:0;z-index:1300;background:rgba(10,31,29,.9);
@@ -150,7 +132,6 @@
       .avt-pick:active{transform:scale(.92)}
       .avt-pick.selected{background:linear-gradient(135deg,#FBD77A,#F4B842);
         border-color:#FBD77A;box-shadow:0 0 20px rgba(244,184,66,.6)}
-      .avt-empty{text-align:center;padding:24px 20px;color:#98dccb;font-size:12.5px;opacity:.7}
 
       @media(min-width:768px){
         #avatarModal{align-items:center}
@@ -162,17 +143,9 @@
     document.head.appendChild(s);
   }
 
-  // ═══════ INJECT UI ═══════
-  function injectUI(){
-    if (document.getElementById('avatarFab')) return;
-
-    var fab = document.createElement('button');
-    fab.id = 'avatarFab';
-    var curAvt = getLocalAvatar();
-    fab.innerHTML = '<span class="avatar-emoji">' + (curAvt || getInitial(getStaffName()) || '👤') + '</span>';
-    fab.title = 'Chọn avatar';
-    document.body.appendChild(fab);
-
+  // ═══════ MODAL ═══════
+  function injectModal(){
+    if (document.getElementById('avatarModal')) return;
     var modal = document.createElement('div');
     modal.id = 'avatarModal';
     modal.innerHTML = ''
@@ -180,26 +153,23 @@
       +   '<div class="avt-header">'
       +     '<div class="avt-header-title">'
       +       '<span class="icon">👤</span>'
-      +       '<div>CHỌN AVATAR<span class="sub">Avatar hiển thị trong chat và xếp hạng</span></div>'
+      +       '<div>CHỌN AVATAR<span class="sub">Bấm vào tên trong chat để đổi avatar</span></div>'
       +     '</div>'
       +     '<button class="avt-close" onclick="AvatarSystem.close()">✕</button>'
       +   '</div>'
       +   '<div class="avt-current">'
       +     '<div class="avt-current-avatar" id="avtCurrentIcon">👤</div>'
       +     '<div class="avt-current-info">'
-      +       '<div class="avt-current-name" id="avtCurrentName">Chưa có tên</div>'
-      +       '<div class="avt-current-hint" id="avtCurrentHint">Bấm avatar bên dưới để chọn</div>'
+      +       '<div class="avt-current-name" id="avtCurrentName">--</div>'
+      +       '<div class="avt-current-hint" id="avtCurrentHint">Chọn avatar bên dưới</div>'
       +     '</div>'
       +   '</div>'
       +   '<div class="avt-tabs" id="avtTabs"></div>'
       +   '<div class="avt-body" id="avtBody"></div>'
       + '</div>';
     document.body.appendChild(modal);
-
     renderTabs();
     renderAvatars();
-    updateCurrentDisplay();
-    setupFabDrag(fab);
   }
 
   function renderTabs(){
@@ -213,15 +183,12 @@
       btn.onclick = function(){
         tabs.querySelectorAll('.avt-tab').forEach(function(b){ b.classList.remove('active'); });
         btn.classList.add('active');
-        document.getElementById('avtBody').innerHTML = '';
         renderAvatarSection(btn.dataset.key);
       };
     });
   }
 
   function renderAvatars(){
-    var body = document.getElementById('avtBody');
-    if (!body) return;
     var firstKey = Object.keys(AVATARS)[0];
     renderAvatarSection(firstKey);
   }
@@ -230,60 +197,63 @@
     var body = document.getElementById('avtBody');
     if (!body) return;
     var list = AVATARS[key] || [];
-    var current = state.currentAvatar || getLocalAvatar();
-    var section = document.createElement('div');
-    section.className = 'avt-section';
-    section.innerHTML = '<div class="avt-section-title">' + key + '</div>'
+    var current = getAvatarFor(state.editingName);
+    body.innerHTML = '<div class="avt-section"><div class="avt-section-title">' + key + '</div>'
       + '<div class="avt-grid">' + list.map(function(emoji){
         var sel = emoji === current ? 'selected' : '';
         return '<div class="avt-pick ' + sel + '" data-emoji="' + emoji + '">' + emoji + '</div>';
-      }).join('') + '</div>';
-    body.innerHTML = '';
-    body.appendChild(section);
+      }).join('') + '</div></div>';
 
     body.querySelectorAll('.avt-pick').forEach(function(el){
-      el.onclick = function(){
-        var emoji = el.dataset.emoji;
-        selectAvatar(emoji);
-      };
+      el.onclick = function(){ selectAvatar(el.dataset.emoji); };
     });
   }
 
   function updateCurrentDisplay(){
-    var name = getStaffName();
-    var avt = state.currentAvatar || getLocalAvatar();
+    var name = state.editingName;
+    var avt = getAvatarFor(name);
     var iconEl = document.getElementById('avtCurrentIcon');
     var nameEl = document.getElementById('avtCurrentName');
     var hintEl = document.getElementById('avtCurrentHint');
     if (iconEl) iconEl.textContent = avt || getInitial(name) || '👤';
-    if (nameEl) nameEl.textContent = name || '⚠️ Chưa có tên (vào Lễ Tân để nhập)';
-    if (hintEl) hintEl.textContent = avt ? 'Đã chọn avatar' : 'Bấm avatar bên dưới để chọn';
+    if (nameEl) nameEl.textContent = name || '--';
+    if (hintEl){
+      var isMe = name === getStaffName();
+      hintEl.textContent = isMe ? 'Đây là avatar của bạn' : 'Đang đổi avatar cho nhân viên khác';
+      hintEl.style.color = isMe ? '#98dccb' : '#fbbf24';
+    }
   }
 
   function selectAvatar(emoji){
-    var name = getStaffName();
-    if (!name){
-      alert('Vui lòng nhập tên nhân viên trước!\n(Vào Lễ Tân hoặc bấm Đổi tên)');
-      return;
+    var name = state.editingName;
+    if (!name) return;
+
+    // Nếu là avatar của chính mình → lưu localStorage
+    if (name === getStaffName()){
+      setLocalAvatar(emoji);
     }
-    setLocalAvatar(emoji);
-    // Đổi nút
-    var fab = document.getElementById('avatarFab');
-    if (fab){
-      var el = fab.querySelector('.avatar-emoji');
-      if (el) el.textContent = emoji;
-    }
-    // Đổi hiển thị trong modal
+
+    // Update cache ngay lập tức
+    state.cache[name] = emoji;
+
+    // Cập nhật display
     var iconEl = document.getElementById('avtCurrentIcon');
     if (iconEl) iconEl.textContent = emoji;
     var hintEl = document.getElementById('avtCurrentHint');
     if (hintEl) hintEl.textContent = '✅ Đã chọn: ' + emoji;
+
     // Đánh dấu selected
     document.querySelectorAll('.avt-pick').forEach(function(el){
       el.classList.toggle('selected', el.dataset.emoji === emoji);
     });
+
     // Lưu Firebase
     saveToFirebase(name, emoji);
+
+    // Thông báo
+    if (window.ChatSystem && window.ChatSystem.pushSystemMessage && name === getStaffName()){
+      // Không cần thông báo cho toàn hệ thống
+    }
   }
 
   function saveToFirebase(name, emoji){
@@ -297,14 +267,21 @@
           updatedAt: { integerValue: String(Date.now()) }
         }
       })
-    }).then(function(){
-      console.log('[Avatar] Saved to Firebase:', name, emoji);
+    }).then(function(r){
+      if (!r.ok) throw new Error('HTTP ' + r.status);
+      console.log('[Avatar] Saved:', name, emoji);
+      // Trigger refresh cho tất cả UI
+      try {
+        window.dispatchEvent(new CustomEvent('dolphinAvatarCacheUpdated', {
+          detail: { cache: state.cache }
+        }));
+      } catch(e){}
     }).catch(function(e){
       console.warn('[Avatar] Save error:', e);
+      alert('Không lưu được avatar. Vui lòng thử lại.');
     });
   }
 
-  // ═══════ FETCH CACHE AVATARS ═══════
   function fetchAllAvatars(){
     fetch('https://firestore.googleapis.com/v1/projects/dolphin-f6d67/databases/(default)/documents/' + COL_PROFILES + '?key=' + FIREBASE_CONFIG.apiKey + '&pageSize=200', { cache: 'no-store' })
       .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
@@ -329,9 +306,7 @@
 
   function getAvatarFor(name){
     if (!name) return null;
-    // Ưu tiên cache
     if (state.cache[name]) return state.cache[name];
-    // Fallback localStorage nếu là mình
     if (name === getStaffName()){
       var local = getLocalAvatar();
       if (local) return local;
@@ -339,137 +314,69 @@
     return null;
   }
 
-  // ═══════ FAB DRAG ═══════
-  var FAB_POS_KEY = 'dolphinAvatarFabPos';
-  function setupFabDrag(fab){
-    function savePos(x, y){
-      try { localStorage.setItem(FAB_POS_KEY, JSON.stringify({ x: x, y: y })); } catch(e){}
-    }
-    function loadPos(){
-      try {
-        var s = localStorage.getItem(FAB_POS_KEY);
-        return s ? JSON.parse(s) : null;
-      } catch(e){ return null; }
-    }
-    function clamp(x, y){
-      var vw = window.innerWidth, vh = window.innerHeight;
-      var w = fab.offsetWidth || 54, h = fab.offsetHeight || 54;
-      return {
-        x: Math.max(4, Math.min(x, vw - w - 4)),
-        y: Math.max(4, Math.min(y, vh - h - 4))
-      };
-    }
-    function applyPos(x, y){
-      fab.style.left = x + 'px';
-      fab.style.top = y + 'px';
-      fab.style.bottom = 'auto';
-      fab.style.right = 'auto';
-    }
-    var saved = loadPos();
-    if (saved){
-      var c = clamp(saved.x, saved.y);
-      applyPos(c.x, c.y);
-    }
-    var drag = { active: false, moved: false, startX: 0, startY: 0, origX: 0, origY: 0, startTime: 0 };
-    function getPoint(e){
-      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-      return { x: e.clientX, y: e.clientY };
-    }
-    function onStart(e){
-      var p = getPoint(e);
-      drag.active = true;
-      drag.moved = false;
-      drag.startX = p.x;
-      drag.startY = p.y;
-      drag.origX = fab.offsetLeft;
-      drag.origY = fab.offsetTop;
-      drag.startTime = Date.now();
-      fab.classList.add('dragging');
-      fab.style.transition = '';
-    }
-    function onMove(e){
-      if (!drag.active) return;
-      var p = getPoint(e);
-      var dx = p.x - drag.startX;
-      var dy = p.y - drag.startY;
-      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 8) return;
-      drag.moved = true;
-      if (e.cancelable) e.preventDefault();
-      var c = clamp(drag.origX + dx, drag.origY + dy);
-      applyPos(c.x, c.y);
-    }
-    function onEnd(){
-      if (!drag.active) return;
-      drag.active = false;
-      fab.classList.remove('dragging');
-      if (!drag.moved){
-        var elapsed = Date.now() - drag.startTime;
-        if (elapsed < 500) window.AvatarSystem.open();
-        return;
-      }
-      // Snap to edge
-      var vw = window.innerWidth;
-      var w = fab.offsetWidth || 54;
-      var snapLeft = fab.offsetLeft < (vw - w) / 2;
-      var nx = snapLeft ? 12 : (vw - w - 12);
-      var c = clamp(nx, fab.offsetTop);
-      fab.style.transition = 'left .3s cubic-bezier(.16,1,.3,1), top .3s cubic-bezier(.16,1,.3,1)';
-      applyPos(c.x, c.y);
-      setTimeout(function(){ fab.style.transition = ''; }, 320);
-      savePos(c.x, c.y);
-    }
-    fab.addEventListener('touchstart', onStart, { passive: true });
-    document.addEventListener('touchmove', onMove, { passive: false });
-    document.addEventListener('touchend', onEnd);
-    document.addEventListener('touchcancel', onEnd);
-    fab.addEventListener('mousedown', function(e){ onStart(e); e.preventDefault(); });
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onEnd);
-    window.addEventListener('resize', function(){
-      var p = loadPos();
-      if (!p) return;
-      var c = clamp(p.x, p.y);
-      applyPos(c.x, c.y);
+  // ═══════ CLICK CHAT SENDER → MỞ PICKER ═══════
+  function bindChatClicks(){
+    document.addEventListener('click', function(e){
+      var sender = e.target.closest('.chat-sender');
+      if (!sender) return;
+      // Lấy tên từ span đầu tiên
+      var nameSpan = sender.querySelector('span:first-child');
+      if (!nameSpan) return;
+      var name = (nameSpan.textContent || '').trim();
+      if (!name || name === 'HỆ THỐNG' || name === 'Ẩn danh') return;
+      openPickerFor(name);
     });
+  }
+
+  // ═══════ OPEN / CLOSE ═══════
+  function openPickerFor(name){
+    if (!name) return;
+    state.editingName = name;
+    injectModal();
+    var m = document.getElementById('avatarModal');
+    if (!m) return;
+    m.classList.add('open');
+    renderAvatars();
+    renderTabs();
+    updateCurrentDisplay();
+  }
+
+  function open(){
+    openPickerFor(getStaffName());
+  }
+
+  function close(){
+    var m = document.getElementById('avatarModal');
+    if (m) m.classList.remove('open');
+    state.editingName = null;
   }
 
   // ═══════ INIT ═══════
   function init(){
     injectStyles();
     state.currentAvatar = getLocalAvatar();
-    // Đợi DOM
-    if (document.readyState === 'loading'){
-      document.addEventListener('DOMContentLoaded', function(){
-        setTimeout(function(){
-          injectUI();
-          fetchAllAvatars();
-        }, 800);
-      });
-    } else {
+
+    var start = function(){
       setTimeout(function(){
-        injectUI();
+        injectModal();
+        bindChatClicks();
         fetchAllAvatars();
-      }, 800);
+      }, 600);
+    };
+
+    if (document.readyState === 'loading'){
+      document.addEventListener('DOMContentLoaded', start);
+    } else {
+      start();
     }
-    // Refresh cache mỗi 5 phút
+
     setInterval(fetchAllAvatars, 5 * 60 * 1000);
-    // Listen name change
-    window.addEventListener('dolphinStaffNameChanged', updateCurrentDisplay);
   }
 
   window.AvatarSystem = {
-    open: function(){
-      var m = document.getElementById('avatarModal');
-      if (m){
-        m.classList.add('open');
-        updateCurrentDisplay();
-      }
-    },
-    close: function(){
-      var m = document.getElementById('avatarModal');
-      if (m) m.classList.remove('open');
-    },
+    open: open,
+    openFor: openPickerFor,
+    close: close,
     getAvatar: getAvatarFor,
     getMine: function(){ return state.currentAvatar || getLocalAvatar(); },
     renderAvatarHtml: function(name, size){
@@ -485,5 +392,5 @@
 
   init();
 
-  console.log('%c👤 AVATAR SYSTEM LOADED', 'background:#4ade80;color:#0a1f1d;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  console.log('%c👤 AVATAR SYSTEM v2 LOADED (chat-click)', 'background:#4ade80;color:#0a1f1d;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 })();

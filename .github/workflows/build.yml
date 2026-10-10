@@ -334,45 +334,119 @@ jobs:
           convert /tmp/icon_1024.png -resize 144x144 app/src/main/res/mipmap-xxhdpi/ic_launcher_round.png
           convert /tmp/icon_1024.png -resize 192x192 app/src/main/res/mipmap-xxxhdpi/ic_launcher_round.png
 
-      - name: Auto-update version.json + sw-config.json
+      - name: Auto-update version + changelog
         run: |
-          COMMIT_HASH=$(git rev-parse --short HEAD)
+          # ═══ Variables ═══
+          CURRENT_COMMIT=$(git rev-parse --short HEAD)
           BUILD_TIME=$(date -u +"%Y-%m-%dT%H:%M:%SZ")
           COMMIT_MSG=$(git log -1 --pretty=%s | sed 's/"/\\"/g' | head -c 200)
 
-          OLD_VERSION=$(python3 -c "import json; print(json.load(open('version.json'))['version'])" 2>/dev/null || echo "1.0.0")
+          # ═══ Đọc version cũ ═══
+          if [ -f version.json ]; then
+            OLD_VERSION=$(python3 -c "import json; print(json.load(open('version.json'))['version'])" 2>/dev/null || echo "1.0.0")
+            PREV_COMMIT=$(python3 -c "import json; print(json.load(open('version.json')).get('commit', ''))" 2>/dev/null || echo "")
+          else
+            OLD_VERSION="1.0.0"
+            PREV_COMMIT=""
+          fi
+
+          # ═══ Tăng version ═══
           MAJOR=$(echo $OLD_VERSION | cut -d. -f1)
           MINOR=$(echo $OLD_VERSION | cut -d. -f2)
           PATCH=$(echo $OLD_VERSION | cut -d. -f3)
           NEW_PATCH=$((PATCH + 1))
           NEW_VERSION="${MAJOR}.${MINOR}.${NEW_PATCH}"
 
-          # Ghi version.json
+          echo "📦 $OLD_VERSION → $NEW_VERSION"
+          echo "📝 Commit: $CURRENT_COMMIT"
+          echo "📅 Time: $BUILD_TIME"
+
+          # ═══ Lấy git log & diff ═══
+          if [ -n "$PREV_COMMIT" ] && git rev-parse "$PREV_COMMIT" >/dev/null 2>&1; then
+            RANGE="$PREV_COMMIT..$CURRENT_COMMIT"
+          else
+            RANGE="$CURRENT_COMMIT~5..$CURRENT_COMMIT"
+          fi
+
+          COMMIT_COUNT=$(git rev-list --count $RANGE 2>/dev/null || echo "0")
+          STAT=$(git diff --shortstat $RANGE 2>/dev/null || echo "")
+          FILES=$(echo "$STAT" | grep -oE '[0-9]+ file' | grep -oE '[0-9]+' || echo "0")
+          INS=$(echo "$STAT" | grep -oE '[0-9]+ insertion' | grep -oE '[0-9]+' || echo "0")
+          DELS=$(echo "$STAT" | grep -oE '[0-9]+ deletion' | grep -oE '[0-9]+' || echo "0")
+
+          echo "📊 $COMMIT_COUNT commits, $FILES files, +$INS -$DELS"
+
+          # ═══ Lấy danh sách commits ═══
+          COMMITS_JSON=$(git log $RANGE --pretty=format:'{"hash":"%h","message":"%s"}' --max-count=20 2>/dev/null | tr '\n' ',' | sed 's/,$//')
+
+          # ═══ Lấy danh sách file thay đổi ═══
+          FILES_JSON=$(git diff --numstat $RANGE 2>/dev/null | awk -F'\t' 'NR<=30 && $3 !~ /^(app\/|\.github\/)/ {printf "{\"path\":\"%s\",\"ins\":%s,\"dels\":%s},", $3, $1, $2}' | sed 's/,$//')
+
+          # ═══ Ghi changelog.json ═══
+          cat > changelog.json << EOF_CHANGELOG
+          {
+            "version": "$NEW_VERSION",
+            "previousVersion": "$OLD_VERSION",
+            "commit": "$CURRENT_COMMIT",
+            "previousCommit": "$PREV_COMMIT",
+            "buildDate": "$BUILD_TIME",
+            "summary": "$COMMIT_MSG",
+            "changes": {
+              "totalCommits": $COMMIT_COUNT,
+              "filesChanged": $FILES,
+              "insertions": $INS,
+              "deletions": $DELS
+            },
+            "details": [$COMMITS_JSON],
+            "fileChanges": [$FILES_JSON]
+          }
+          EOF_CHANGELOG
+
+          # ═══ Ghi version.json ═══
           cat > version.json << EOF_VERSION
           {
-            "version": "${NEW_VERSION}",
-            "buildDate": "${BUILD_TIME}",
-            "commit": "${COMMIT_HASH}",
-            "notes": "${COMMIT_MSG}",
+            "version": "$NEW_VERSION",
+            "previousVersion": "$OLD_VERSION",
+            "buildDate": "$BUILD_TIME",
+            "commit": "$CURRENT_COMMIT",
+            "notes": "$COMMIT_MSG",
             "forceUpdate": false
           }
           EOF_VERSION
 
-          # Ghi sw-config.json — copy y hệt
+          # ═══ Copy sang sw-config.json ═══
           cp version.json sw-config.json
 
-          echo "=== Updated version ==="
-          cat version.json
-          echo ""
-          echo "=== sw-config.json ==="
-          cat sw-config.json
+          # ═══ Append vào history ═══
+          python3 << 'EOF_PY'
+          import json, os
+          try:
+              with open('changelog-history.json', 'r', encoding='utf-8') as f:
+                  h = json.load(f)
+          except:
+              h = {"versions": []}
+          with open('changelog.json', 'r', encoding='utf-8') as f:
+              cl = json.load(f)
+          h["versions"].append({
+              "version": cl["version"],
+              "date": cl["buildDate"],
+              "commit": cl["commit"],
+              "summary": cl.get("summary", ""),
+              "changes": cl.get("changes", {})
+          })
+          h["versions"] = h["versions"][-100:]
+          with open('changelog-history.json', 'w', encoding='utf-8') as f:
+              json.dump(h, f, ensure_ascii=False, indent=2)
+          EOF_PY
+
+          echo "✅ Done"
 
       - name: Commit version files
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add version.json sw-config.json
-          git diff --quiet && git diff --staged --quiet || git commit -m "chore: auto-bump version [skip ci]"
+          git add version.json sw-config.json changelog.json changelog-history.json
+          git diff --quiet && git diff --staged --quiet || git commit -m "chore: auto-bump version + changelog [skip ci]"
           git push || true
 
       - name: Generate keystore

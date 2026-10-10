@@ -124,6 +124,54 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </button>
   </div>
 
+  <!-- THEME CONTROL -->
+  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
+    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+      <span>🎨</span> CHỦ ĐỀ SỰ KIỆN
+    </h2>
+    <p class="text-[11px] text-teal-300 mb-4 leading-relaxed">
+      Chọn chủ đề cho landing page. <b class="text-gold-400">Auto</b> = tự động theo ngày VN (Lễ trước, Mùa sau).
+    </p>
+
+    <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Chủ đề</label>
+    <select id="theme-select" class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-3 text-[13px] text-white focus:outline-none focus:border-gold-500 mb-3">
+      <option value="auto">🔄 Auto (theo ngày VN)</option>
+      <option value="default">🐬 Mặc định</option>
+      <optgroup label="🇻🇳 Ngày Lễ Việt Nam">
+        <option value="tet">🌸 Tết Nguyên Đán</option>
+        <option value="valentine">💖 Valentine</option>
+        <option value="womenday">🌹 Quốc Tế Phụ Nữ 8/3</option>
+        <option value="reunification">🇻🇳 30/4 Thống Nhất</option>
+        <option value="children">🎈 Tết Thiếu Nhi 1/6</option>
+        <option value="nationalday">🇻🇳 Quốc Khánh 2/9</option>
+        <option value="midautumn">🏮 Trung Thu</option>
+        <option value="halloween">🎃 Halloween</option>
+        <option value="christmas">🎄 Giáng Sinh</option>
+        <option value="newyear">🎊 Tết Dương Lịch</option>
+      </optgroup>
+      <optgroup label="🌤️ Bốn Mùa">
+        <option value="spring">🌸 Mùa Xuân</option>
+        <option value="summer">☀️ Mùa Hè</option>
+        <option value="autumn">🍂 Mùa Thu</option>
+        <option value="winter">❄️ Mùa Đông</option>
+      </optgroup>
+    </select>
+
+    <div id="theme-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
+
+    <div class="flex gap-2 flex-wrap">
+      <button onclick="saveTheme()" id="theme-save-btn"
+        class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-3 text-[12px] uppercase tracking-wider">
+        💾 Lưu chủ đề
+      </button>
+      <button onclick="previewTheme()"
+        class="bg-teal-800/60 border border-teal-600/60 text-teal-200 font-black rounded-xl px-4 py-3 text-[11.5px] uppercase tracking-wider">
+        👁️ Xem trước
+      </button>
+    </div>
+    <div class="text-[10px] text-teal-500 mt-3 italic" id="theme-meta"></div>
+  </div>
+
   <!-- ANNOUNCEMENT CONTROL -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -286,6 +334,7 @@ try {
     $('conn-text').style.color = '#34d399';
     startListeners(db);
     startCaroListener(db);
+    startThemeListener(db);
     startAnnouncementListener(db);
     setTimeout(startAnnouncementUIBindings, 300);
   }).catch(() => {
@@ -448,6 +497,93 @@ setTimeout(loadVersionInfo, 800);
 setInterval(loadVersionInfo, 60000);
 
 // ═══════════════════════════════════════════════════════════
+// THEME MANAGEMENT
+// ═══════════════════════════════════════════════════════════
+let themeListenStarted = false;
+
+function startThemeListener(db) {
+  if (themeListenStarted) return;
+  themeListenStarted = true;
+  try {
+    const ref = doc(db, 'master_config', 'theme');
+    onSnapshot(ref, (snap) => {
+      const data = snap.exists() ? snap.data() : { themeKey: 'auto' };
+      const sel = document.getElementById('theme-select');
+      const meta = document.getElementById('theme-meta');
+      if (!sel) return;
+      sel.value = data.themeKey || 'auto';
+      if (meta) {
+        if (data.updatedAt) {
+          const d = new Date(data.updatedAt);
+          const timeStr = d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
+          meta.textContent = '✏️ Cập nhật cuối: ' + timeStr + (data.updatedBy ? ' · ' + data.updatedBy : '');
+        } else {
+          meta.textContent = '';
+        }
+      }
+    }, (err) => { console.warn('[Theme] listen', err); });
+  } catch(e) { console.warn('[Theme] init', e); }
+}
+
+window.saveTheme = async function() {
+  const sel = document.getElementById('theme-select');
+  const status = document.getElementById('theme-status');
+  const btn = document.getElementById('theme-save-btn');
+  if (!sel || !status || !btn || !window.__db){
+    showThemeStatus('error', '❌ Không tìm thấy Firebase');
+    return;
+  }
+  const themeKey = sel.value;
+  btn.disabled = true;
+  btn.style.opacity = '.6';
+  btn.textContent = '⏳ Đang lưu...';
+  try {
+    const ref = doc(window.__db, 'master_config', 'theme');
+    await setDoc(ref, {
+      themeKey: themeKey,
+      updatedAt: Date.now(),
+      updatedBy: 'Manager'
+    }, { merge: true });
+    showThemeStatus('success', '✅ Đã lưu! Nhân viên sẽ thấy trong 1-2 giây');
+    setTimeout(() => { status.classList.add('hidden'); }, 3500);
+  } catch(e) {
+    console.error(e);
+    showThemeStatus('error', '❌ Lỗi: ' + e.message);
+  } finally {
+    btn.disabled = false;
+    btn.style.opacity = '1';
+    btn.textContent = '💾 Lưu chủ đề';
+  }
+};
+
+window.previewTheme = function() {
+  const sel = document.getElementById('theme-select');
+  if (!sel) return;
+  const themeKey = sel.value;
+  if (themeKey === 'auto'){
+    window.open('/DolphinApp/', '_blank');
+  } else {
+    window.open('/DolphinApp/?theme=' + themeKey, '_blank');
+  }
+};
+
+function showThemeStatus(type, text) {
+  const status = document.getElementById('theme-status');
+  if (!status) return;
+  status.classList.remove('hidden');
+  status.textContent = text;
+  if (type === 'error') {
+    status.style.background = 'rgba(239,83,80,.15)';
+    status.style.color = '#ef5350';
+    status.style.border = '1px solid rgba(239,83,80,.4)';
+  } else {
+    status.style.background = 'rgba(16,185,129,.15)';
+    status.style.color = '#10b981';
+    status.style.border = '1px solid rgba(16,185,129,.4)';
+  }
+}
+
+  // ═══════════════════════════════════════════════════════════
 // ANNOUNCEMENT MANAGEMENT
 // ═══════════════════════════════════════════════════════════
 let announcementListenStarted = false;

@@ -91,6 +91,197 @@
     var s = document.createElement('style');
     s.id = 'theme-styles';
     s.textContent = `
+          /* ═══════════════════════════════════════════════════
+         🎀 THEME DECORATIONS — Announcement + Area Cards
+         (đã sửa để khớp cấu trúc index.html)
+         ═══════════════════════════════════════════════════ */
+
+      /* ─── ANNOUNCEMENT BAR ─── */
+      body[class*="theme-"] #announcementBar{
+        border-width:3px;
+        animation:ann-glow-pulse 2.5s ease-in-out infinite;
+      }
+      /* Trang trí bên PHẢI bar — bên trái đã có 📢 */
+      body[class*="theme-"] #announcementBar::after{
+        content:var(--ann-orn-r, '✨');
+        position:absolute;right:10px;top:50%;
+        transform:translateY(-50%);
+        font-size:20px;z-index:6;pointer-events:none;
+        filter:drop-shadow(0 0 8px var(--ann-glow, rgba(255,255,255,.8)));
+        animation:ann-orn-bounce 1.6s ease-in-out infinite;
+      }
+      /* Đổi emoji 📢 gốc thành emoji theo theme */
+      body[class*="theme-"] .announcement-icon::after{
+        content:var(--ann-icon-swap, '');
+      }
+      /* Ẩn emoji 📢 gốc, thay bằng theme */
+      body.theme-tet .announcement-icon{font-size:0}
+      body.theme-tet .announcement-icon::after{content:'🧧';font-size:22px}
+      body.theme-valentine .announcement-icon{font-size:0}
+      body.theme-valentine .announcement-icon::after{content:'💝';font-size:22px}
+      body.theme-womenday .announcement-icon{font-size:0}
+      body.theme-womenday .announcement-icon::after{content:'🌷';font-size:22px}
+      body.theme-reunification .announcement-icon,
+      body.theme-nationalday .announcement-icon{font-size:0}
+      body.theme-reunification .announcement-icon::after,
+      body.theme-nationalday .announcement-icon::after{content:'⭐';font-size:22px}
+      body.theme-children .announcement-icon{font-size:0}
+      body.theme-children .announcement-icon::after{content:'🎈';font-size:22px}
+      body.theme-midautumn .announcement-icon{font-size:0}
+      body.theme-midautumn .announcement-icon::after{content:'🏮';font-size:22px}
+      body.theme-halloween .announcement-icon{font-size:0}
+      body.theme-halloween .announcement-icon::after{content:'🎃';font-size:22px}
+      body.theme-christmas .announcement-icon{font-size:0}
+      body.theme-christmas .announcement-icon::after{content:'🎄';font-size:22px}
+      body.theme-newyear .announcement-icon{font-size:0}
+      body.theme-newyear .announcement-icon::after{content:'🎊';font-size:22px}
+      body.theme-spring .announcement-icon{font-size:0}
+      body.theme-spring .announcement-icon::after{content:'🌸';font-size:22px}
+      body.theme-summer .announcement-icon{font-size:0}
+      body.theme-summer .announcement-icon::after{content:'☀️';font-size:22px}
+      body.theme-autumn .announcement-icon{font-size:0}
+      body.theme-autumn .announcement-icon::after{content:'🍁';font-size:22px}
+      body.theme-winter .announcement-icon{font-size:0}
+      body.theme-winter .announcement-icon::after{content:'❄️';font-size:22px}
+
+      /* ─── AREA CARDS ─── */
+      body[class*="theme-"] .area-card{
+        border-width:2px;
+        box-shadow:
+          0 10px 40px -10px rgba(0,0,0,.6),
+          0 0 30px var(--card-glow, rgba(244,184,66,.25)),
+          inset 0 0 25px var(--card-inset, rgba(244,184,66,.05));
+        animation:card-breathe 4s ease-in-out infinite;
+      }
+      body[class*="theme-"] .area-card:hover{
+        box-shadow:
+          0 20px 60px -10px rgba(0,0,0,.8),
+          0 0 60px var(--card-glow, rgba(244,184,66,.6)),
+          inset 0 0 40px var(--card-inset, rgba(244,184,66,.15))!important;
+      }
+      /* Emoji trang trí — đặt BÊN TRONG card, góc dưới-trái (tránh badge góc phải trên) */
+      body[class*="theme-"] .area-card .theme-orn{
+        position:absolute;font-size:22px;line-height:1;pointer-events:none;
+        z-index:4;opacity:.85;
+        filter:drop-shadow(0 0 10px var(--card-glow, rgba(255,255,255,.7)));
+        animation:orn-float 3s ease-in-out infinite;
+        transition:opacity .4s;
+      }
+      body[class*="theme-"] .area-card .theme-orn-tl{
+        top:10px;left:10px;
+      }
+      body[class*="theme-"] .area-card .theme-orn-br{
+        bottom:10px;right:10px;
+        animation-delay:-1.5s;
+      }
+      body[class*="theme-"] .area-card:hover .theme-orn{opacity:1;font-size:26px}
+
+      /* ─── ANIMATIONS ─── */
+      @keyframes ann-glow-pulse{
+        0%,100%{box-shadow:0 6px 28px var(--ann-glow,rgba(244,184,66,.5)),inset 0 0 30px var(--ann-inset,rgba(255,215,0,.08))}
+        50%{box-shadow:0 6px 36px var(--ann-glow,rgba(244,184,66,.9)),inset 0 0 50px var(--ann-inset,rgba(255,215,0,.15))}
+      }
+      @keyframes ann-orn-bounce{
+        0%,100%{transform:translateY(-50%) scale(1) rotate(-10deg)}
+        50%{transform:translateY(-50%) scale(1.25) rotate(10deg)}
+      }
+      @keyframes card-breathe{
+        0%,100%{box-shadow:0 10px 40px -10px rgba(0,0,0,.6),0 0 30px var(--card-glow,rgba(244,184,66,.25)),inset 0 0 25px var(--card-inset,rgba(244,184,66,.05))}
+        50%{box-shadow:0 12px 50px -10px rgba(0,0,0,.7),0 0 45px var(--card-glow,rgba(244,184,66,.45)),inset 0 0 35px var(--card-inset,rgba(244,184,66,.1))}
+      }
+      @keyframes orn-float{
+        0%,100%{transform:translateY(0) rotate(-6deg) scale(1)}
+        50%{transform:translateY(-6px) rotate(6deg) scale(1.1)}
+      }
+
+      /* ─── BADGE theo theme ─── */
+      body[class*="theme-"] .area-badge{
+        background:linear-gradient(135deg, var(--badge-c1, #FBD77A), var(--badge-c2, #D99A2B))!important;
+        box-shadow:0 4px 16px var(--badge-glow, rgba(244,184,66,.6))!important;
+      }
+
+      /* ═══════════════════════════════════════════════════
+         🌸 PER-THEME VARIABLES
+         ═══════════════════════════════════════════════════ */
+
+      body.theme-tet{
+        --ann-glow:rgba(255,215,0,.7); --ann-inset:rgba(255,215,0,.15);
+        --ann-orn-r:'🏮';
+        --card-glow:rgba(255,215,0,.5); --card-inset:rgba(255,80,80,.08);
+        --badge-c1:#FFD700; --badge-c2:#D42A2A; --badge-glow:rgba(255,215,0,.7);
+      }
+      body.theme-valentine{
+        --ann-glow:rgba(255,77,109,.7); --ann-inset:rgba(255,77,109,.15);
+        --ann-orn-r:'💖';
+        --card-glow:rgba(255,77,109,.5); --card-inset:rgba(255,150,180,.08);
+        --badge-c1:#FFB6C1; --badge-c2:#C9184A; --badge-glow:rgba(255,77,109,.7);
+      }
+      body.theme-womenday{
+        --ann-glow:rgba(217,70,166,.7); --ann-inset:rgba(217,70,166,.15);
+        --ann-orn-r:'💐';
+        --card-glow:rgba(217,70,166,.5); --card-inset:rgba(255,180,220,.08);
+        --badge-c1:#FFC0CB; --badge-c2:#8B1A8B; --badge-glow:rgba(217,70,166,.7);
+      }
+      body.theme-reunification, body.theme-nationalday{
+        --ann-glow:rgba(255,215,0,.8); --ann-inset:rgba(255,215,0,.15);
+        --ann-orn-r:'🇻🇳';
+        --card-glow:rgba(255,215,0,.55); --card-inset:rgba(218,37,29,.1);
+        --badge-c1:#FFD700; --badge-c2:#DA251D; --badge-glow:rgba(255,215,0,.8);
+      }
+      body.theme-children{
+        --ann-glow:rgba(78,205,196,.7); --ann-inset:rgba(255,215,0,.12);
+        --ann-orn-r:'🎉';
+        --card-glow:rgba(255,107,157,.5); --card-inset:rgba(78,205,196,.1);
+        --badge-c1:#4ECDC4; --badge-c2:#FF6B9D; --badge-glow:rgba(255,107,157,.7);
+      }
+      body.theme-midautumn{
+        --ann-glow:rgba(240,192,96,.8); --ann-inset:rgba(240,192,96,.15);
+        --ann-orn-r:'🌕';
+        --card-glow:rgba(255,180,60,.55); --card-inset:rgba(255,200,100,.1);
+        --badge-c1:#FFE8A0; --badge-c2:#C98A20; --badge-glow:rgba(240,192,96,.8);
+      }
+      body.theme-halloween{
+        --ann-glow:rgba(255,140,0,.8); --ann-inset:rgba(150,50,200,.15);
+        --ann-orn-r:'🦇';
+        --card-glow:rgba(255,140,0,.55); --card-inset:rgba(150,50,200,.15);
+        --badge-c1:#FF9500; --badge-c2:#8B0000; --badge-glow:rgba(255,140,0,.8);
+      }
+      body.theme-christmas{
+        --ann-glow:rgba(220,20,60,.7); --ann-inset:rgba(255,255,255,.1);
+        --ann-orn-r:'🎁';
+        --card-glow:rgba(220,20,60,.55); --card-inset:rgba(10,125,61,.15);
+        --badge-c1:#FFFFFF; --badge-c2:#C41E3A; --badge-glow:rgba(220,20,60,.8);
+      }
+      body.theme-newyear{
+        --ann-glow:rgba(255,215,0,.8); --ann-inset:rgba(255,20,147,.15);
+        --ann-orn-r:'🎆';
+        --card-glow:rgba(255,215,0,.55); --card-inset:rgba(255,20,147,.12);
+        --badge-c1:#FFD700; --badge-c2:#8B00FF; --badge-glow:rgba(255,215,0,.8);
+      }
+      body.theme-spring{
+        --ann-glow:rgba(255,182,193,.7); --ann-inset:rgba(255,182,193,.15);
+        --ann-orn-r:'🌷';
+        --card-glow:rgba(255,107,157,.5); --card-inset:rgba(78,205,196,.1);
+        --badge-c1:#FFB6C1; --badge-c2:#4ECDC4; --badge-glow:rgba(255,182,193,.7);
+      }
+      body.theme-summer{
+        --ann-glow:rgba(255,200,50,.8); --ann-inset:rgba(255,200,50,.15);
+        --ann-orn-r:'🌴';
+        --card-glow:rgba(255,200,50,.55); --card-inset:rgba(80,180,255,.12);
+        --badge-c1:#FFE066; --badge-c2:#FF6B35; --badge-glow:rgba(255,200,50,.8);
+      }
+      body.theme-autumn{
+        --ann-glow:rgba(255,179,71,.75); --ann-inset:rgba(255,179,71,.15);
+        --ann-orn-r:'🍂';
+        --card-glow:rgba(255,179,71,.55); --card-inset:rgba(210,105,30,.12);
+        --badge-c1:#FFB347; --badge-c2:#8B4513; --badge-glow:rgba(255,179,71,.75);
+      }
+      body.theme-winter{
+        --ann-glow:rgba(184,216,240,.8); --ann-inset:rgba(255,255,255,.12);
+        --ann-orn-r:'⛄';
+        --card-glow:rgba(184,216,240,.55); --card-inset:rgba(74,138,204,.12);
+        --badge-c1:#FFFFFF; --badge-c2:#4A8ACC; --badge-glow:rgba(184,216,240,.8);
+      }
       /* ═══ CANVAS LAYER ═══ */
       #themeCanvas{position:fixed;inset:0;pointer-events:none;z-index:2}
       #theme-vignette{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;transition:opacity 1s}
@@ -861,6 +1052,7 @@
   function applyTheme(key){
     if (!THEMES[key]) key = 'default';
     clearAll();
+     document.querySelectorAll('.theme-orn').forEach(function(el){ el.remove(); });
     state.currentTheme = key;
     if (key === 'default'){
       showBadge(null);
@@ -869,6 +1061,7 @@
     }
     ensureLayers();
     document.body.classList.add('theme-' + key);
+     decorateAreaCards(key);
     var aurora = document.getElementById('theme-aurora');
     var rays = document.getElementById('theme-godrays');
     var vig = document.getElementById('theme-vignette');
@@ -943,7 +1136,45 @@ function fetchThemeFromFirebase(){
 // Không cần setInterval — onSnapshot tự realtime
   }
 
-  window.ThemeSystem = {
+// ═══════ DECORATE AREA CARDS ═══════
+function decorateAreaCards(themeKey){
+  var cards = document.querySelectorAll('.area-card');
+  var ornMap = {
+    tet:          ['🧧','🌸'],
+    valentine:    ['💕','🌹'],
+    womenday:     ['🌹','💮'],
+    reunification:['⭐','🎆'],
+    children:     ['🎁','🍭'],
+    nationalday:  ['⭐','🎆'],
+    midautumn:    ['🏮','🥮'],
+    halloween:    ['👻','🕷️'],
+    christmas:    ['❄️','🎅'],
+    newyear:      ['🥂','✨'],
+    spring:       ['🦋','🌺'],
+    summer:       ['🍹','🥥'],
+    autumn:       ['🌾','🍄'],
+    winter:       ['❄️','🌨️']
+  };
+  var orns = ornMap[themeKey] || ['',''];
+
+  cards.forEach(function(card){
+    // Xóa decoration cũ
+    card.querySelectorAll('.theme-orn').forEach(function(el){ el.remove(); });
+    if (themeKey === 'default') return;
+
+    // Chèn 2 emoji — dùng setTimeout để đảm bảo sau khi DOM sẵn sàng
+    var tl = document.createElement('span');
+    tl.className = 'theme-orn theme-orn-tl';
+    tl.textContent = orns[0];
+    card.appendChild(tl);
+
+    var br = document.createElement('span');
+    br.className = 'theme-orn theme-orn-br';
+    br.textContent = orns[1];
+    card.appendChild(br);
+  });
+}
+   window.ThemeSystem = {
     setTheme: function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },

@@ -88,42 +88,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 #landing.time-evening::before{background:linear-gradient(180deg,rgba(255,120,60,.2) 0%,transparent 60%)}
 #landing.time-night::before{background:linear-gradient(180deg,rgba(10,20,60,.4) 0%,rgba(10,20,60,.15) 60%,transparent)}
 
-/* ==================== SCROLL OPTIMIZATION ==================== */
-html {
-  scroll-behavior: smooth;
-  -webkit-overflow-scrolling: touch;
-  overscroll-behavior-y: contain;
-}
-body {
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-rendering: optimizeLegibility;
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-#landing, #app-view, #app-frame {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-  will-change: transform;
-}
-.area-card, .glass-card {
-  transform: translateZ(0);
-  backface-visibility: hidden;
-}
-.area-grid, #outlet-grid, #orders-list, #caro-games-list {
-  contain: layout style;
-  will-change: transform;
-}
-/* Tắt animation khi user đang cuộn */
-body.scrolling .th-fall,
-body.scrolling .th-float,
-body.scrolling .th-shine,
-body.scrolling .th-fly,
-body.scrolling .cloud,
-body.scrolling .bird-track {
-  animation-play-state: paused;
-}
-  /* ==================== SCENE ANIM ==================== */
+/* ==================== SCENE ANIM ==================== */
 @keyframes wave-flow{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 .wave-anim{animation:wave-flow 14s linear infinite}
 .wave-anim-2{animation:wave-flow 22s linear infinite reverse}

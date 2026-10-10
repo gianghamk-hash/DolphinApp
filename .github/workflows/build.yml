@@ -313,6 +313,7 @@ jobs:
           cp community-chat.js app/src/main/assets/
           mkdir -p app/src/main/assets/manager
           cp manager/dashboard.html app/src/main/assets/manager/
+          cp avatar-system.js app/src/main/assets/
 
       - name: Generate icons
         run: |

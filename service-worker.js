@@ -16,6 +16,7 @@ const CACHE_URLS = [
    BASE + '/logo-dolphin.png',
    BASE + '/staff-sync.js',
   BASE + '/community-chat.js',
+   BASE + '/avatar-system.js',
 ];
 
 self.addEventListener('install', (event) => {

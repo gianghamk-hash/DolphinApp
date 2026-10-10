@@ -37,7 +37,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 </head>
 <body class="pb-8">
 
-<!-- ════════ HEADER ════════ -->
 <div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
   <div class="max-w-7xl mx-auto px-3 md:px-6 py-3 flex items-center justify-between gap-2 flex-wrap">
     <div class="flex items-center gap-3">
@@ -56,7 +55,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <main class="max-w-7xl mx-auto px-3 md:px-6 py-4 space-y-5">
 
-  <!-- ════════ CARO MONITOR ════════ -->
+  <!-- CARO MONITOR -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center justify-between flex-wrap gap-2">
       <span class="flex items-center gap-2"><span>🎮</span> ĐANG CHƠI CỜ CARO</span>
@@ -70,152 +69,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </div>
   </div>
 
-// ═══════════════════════════════════════════════════════════
-// CARO GAME MONITOR
-// ═══════════════════════════════════════════════════════════
-let caroGamesAll = [];
-let caroListenerStarted = false;
-
-function startCaroListener(){
-  if (caroListenerStarted) return;
-  caroListenerStarted = true;
-  try {
-    const ref = collection(window.__db, 'caro_games');
-    onSnapshot(ref, (snap) => {
-      const arr = [];
-      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
-      caroGamesAll = arr;
-      renderCaroMonitor();
-    }, (err) => {
-      console.warn('[Caro Monitor]', err);
-    });
-  } catch(e){
-    console.warn('[Caro Monitor] init error', e);
-  }
-}
-
-function formatElapsed(ms){
-  const sec = Math.floor(ms / 1000);
-  if (sec < 60) return sec + 's';
-  const min = Math.floor(sec / 60);
-  if (min < 60) return min + ' phút';
-  const hr = Math.floor(min / 60);
-  return hr + 'h' + (min % 60);
-}
-
-function escapeCaroHtml(s){
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
-}
-
-function renderCaroMonitor(){
-  const list = document.getElementById('caro-games-list');
-  const pCount = document.getElementById('caro-playing-count');
-  const wCount = document.getElementById('caro-waiting-count');
-  if (!list) return;
-
-  const now = Date.now();
-  const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
-
-  // Lọc chỉ lấy games trong 24h
-  const recent = caroGamesAll.filter(g => (g.createdAt || 0) > twentyFourHoursAgo);
-
-  const playing = recent.filter(g => g.status === 'playing');
-  const waiting = recent.filter(g => g.status === 'waiting');
-
-  if (pCount) pCount.textContent = playing.length;
-  if (wCount) wCount.textContent = waiting.length;
-
-  if (!playing.length && !waiting.length){
-    list.innerHTML = '<div class="text-center text-teal-500 text-xs py-6">Không có ván nào trong 24h qua</div>';
-    return;
-  }
-
-  // Hiển thị ván đang chơi trước
-  let html = '';
-
-  playing.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
-  playing.forEach(g => {
-    const moves = (g.moves || []).length;
-    const elapsed = now - (g.createdAt || now);
-    const v = g.view || {};
-    const cols = v.maxC - v.minC + 1 || 20;
-    const rows = v.maxR - v.minR + 1 || 20;
-    const lastMove = (g.moves && g.moves.length) ? g.moves[g.moves.length - 1] : null;
-    const lastMoveTime = lastMove ? formatElapsed(now - lastMove.t) + ' trước' : '--';
-    const turnName = g.currentTurn === 1 ? g.player1 : g.player2;
-
-    html += `
-      <div class="bg-black/30 rounded-xl p-3 border border-emerald-700/40">
-        <div class="flex items-center gap-3 flex-wrap">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center font-black flex-shrink-0"
-               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
-            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</span>
-              <span class="text-[10px] text-red-400 font-black">VS</span>
-              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player2 || '?')}</span>
-            </div>
-            <div class="text-[10px] text-teal-400 font-bold mt-1">
-              📐 ${cols}×${rows} · 🎯 ${moves} nước · ⏱️ ${formatElapsed(elapsed)}
-            </div>
-          </div>
-          <div class="flex items-center gap-2 flex-shrink-0">
-            <span class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2 py-1 rounded-lg text-[10px] font-black uppercase animate-pulse">
-              🔥 ĐANG ĐẤU
-            </span>
-          </div>
-        </div>
-        <div class="text-[10px] text-teal-400 mt-2 pt-2 border-t border-white/10 flex justify-between flex-wrap gap-1">
-          <span>▶️ Lượt: <b class="text-gold-400">${escapeCaroHtml(turnName || '--')}</b></span>
-          <span>⏰ Nước cuối: ${lastMoveTime}</span>
-        </div>
-      </div>`;
-  });
-
-  // Ván đang chờ
-  if (waiting.length){
-    if (playing.length){
-      html += '<div class="text-[10px] text-teal-400 font-black uppercase mt-3 mb-1 px-1">⏳ Đang chờ đối thủ</div>';
-    }
-    waiting.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    waiting.forEach(g => {
-      const elapsed = now - (g.createdAt || now);
-      html += `
-        <div class="bg-black/20 rounded-xl p-2.5 border border-teal-700/30 flex items-center gap-3 flex-wrap">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-[11px] flex-shrink-0"
-               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
-            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
-          </div>
-          <div class="flex-1 min-w-0">
-            <div class="text-[12px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</div>
-            <div class="text-[10px] text-teal-400 font-bold">Chờ ghép · ${formatElapsed(elapsed)}</div>
-          </div>
-          <span class="bg-gold-500/20 border border-gold-500/40 text-gold-400 px-2 py-1 rounded-lg text-[10px] font-black uppercase">
-            ⏳ CHỜ
-          </span>
-        </div>`;
-    });
-  }
-
-  list.innerHTML = html;
-}
-
-function startCaroUIBinding(){
-  // Khởi động listener sau khi Firebase sẵn sàng
-  setTimeout(() => {
-    if (window.__db) startCaroListener();
-    else setTimeout(startCaroUIBinding, 800);
-  }, 1500);
-}
-startCaroUIBinding();
-
-// Auto refresh elapsed time mỗi 30s
-setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
-  <!-- ════════ TOP STATS ════════ -->
+  <!-- TOP STATS -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="glass glass-premium stat-card">
       <div class="text-[10px] text-teal-300 font-black uppercase tracking-wider mb-1">📋 Đơn hôm nay</div>
@@ -239,13 +93,13 @@ setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
     </div>
   </div>
 
-  <!-- ════════ OUTLET OVERVIEW ════════ -->
+  <!-- OUTLET OVERVIEW -->
   <div>
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>🏝️</span> KHU VỰC PHỤC VỤ</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="outlet-grid"></div>
   </div>
 
-  <!-- ════════ VERSION INFO ════════ -->
+  <!-- VERSION INFO -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
       <span>🔄</span> PHIÊN BẢN HIỆN TẠI
@@ -269,7 +123,8 @@ setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
       🔄 Kiểm tra bản cập nhật
     </button>
   </div>
-  <!-- ════════ ANNOUNCEMENT CONTROL ════════ -->
+
+  <!-- ANNOUNCEMENT CONTROL -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
       <span>📢</span> BẢNG TIN NỘI BỘ
@@ -277,16 +132,14 @@ setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
     <p class="text-[11px] text-teal-300 mb-4 leading-relaxed">
       Nội dung này sẽ <b class="text-gold-400">chạy chữ từ phải sang trái</b> trên màn hình landing của TẤT CẢ nhân viên (PWA + Staff APK).
     </p>
-
     <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Nội dung thông báo</label>
     <textarea id="announcement-input" rows="3" maxlength="500"
-      placeholder="VD: Tối nay đoàn 30 khách bàn J5 — chuẩn bị trước 18:00. Hết khoai tây chiên — báo bếp khi khách hỏi."
+      placeholder="VD: Tối nay đoàn 30 khách bàn J5 — chuẩn bị trước 18:00."
       class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12.5px] text-white focus:outline-none focus:border-gold-500 resize-none"
       style="font-family:'Nunito',sans-serif"></textarea>
     <div class="flex items-center justify-between mt-1 mb-4">
       <span class="text-[10px] text-teal-500" id="announcement-count">0 / 500 ký tự</span>
     </div>
-
     <div class="flex items-center justify-between bg-black/30 rounded-xl px-3 py-3 mb-4 border border-teal-700/40">
       <div class="flex items-center gap-3">
         <span class="text-lg">👁️</span>
@@ -301,9 +154,7 @@ setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
         <span id="toggle-thumb" class="absolute rounded-full transition-all" style="top:3px;left:3px;width:22px;height:22px;background:#98dccb"></span>
       </label>
     </div>
-
     <div id="announcement-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
-
     <div class="flex gap-2 flex-wrap">
       <button onclick="saveAnnouncement()" id="announcement-save-btn"
         class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-3 text-[12px] uppercase tracking-wider">
@@ -316,7 +167,8 @@ setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
     </div>
     <div class="text-[10px] text-teal-500 mt-3 italic" id="announcement-meta"></div>
   </div>
-  <!-- ════════ REALTIME ORDERS ════════ -->
+
+  <!-- REALTIME ORDERS -->
   <div class="glass glass-premium rounded-2xl overflow-hidden">
     <div class="p-3.5 md:p-5 border-b border-white/10">
       <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
@@ -337,7 +189,7 @@ setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
     <div class="max-h-[500px] overflow-y-auto" id="orders-list"></div>
   </div>
 
-  <!-- ════════ HISTORY LOOKUP ════════ -->
+  <!-- HISTORY LOOKUP -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>📜</span> TRA CỨU LỊCH SỬ</h2>
     <div class="grid grid-cols-2 md:flex gap-2 mb-4">
@@ -420,10 +272,12 @@ function tick() {
 setInterval(tick, 1000); tick();
 
 // ──── CONNECT ────
+let dbRef = null;
 try {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  dbRef = db;
   window.__db = db;
 
   signInAnonymously(auth).then(() => {
@@ -431,6 +285,7 @@ try {
     $('conn-text').textContent = 'ONLINE';
     $('conn-text').style.color = '#34d399';
     startListeners(db);
+    startCaroListener(db);
     startAnnouncementListener(db);
     setTimeout(startAnnouncementUIBindings, 300);
   }).catch(() => {
@@ -438,6 +293,130 @@ try {
     $('conn-text').style.color = '#ef4444';
   });
 } catch(e) { console.warn(e); }
+
+// ═══════════════════════════════════════════════════════════
+// CARO GAME MONITOR
+// ═══════════════════════════════════════════════════════════
+let caroGamesAll = [];
+let caroListenerStarted = false;
+
+function startCaroListener(db) {
+  if (caroListenerStarted) return;
+  caroListenerStarted = true;
+  try {
+    const ref = collection(db, 'caro_games');
+    onSnapshot(ref, (snap) => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      caroGamesAll = arr;
+      renderCaroMonitor();
+    }, (err) => {
+      console.warn('[Caro Monitor]', err);
+    });
+  } catch(e){
+    console.warn('[Caro Monitor] init error', e);
+  }
+}
+
+function formatCaroElapsed(ms){
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return sec + 's';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + ' phút';
+  const hr = Math.floor(min / 60);
+  return hr + 'h' + (min % 60);
+}
+
+function escapeCaroHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function renderCaroMonitor(){
+  const list = document.getElementById('caro-games-list');
+  const pCount = document.getElementById('caro-playing-count');
+  const wCount = document.getElementById('caro-waiting-count');
+  if (!list) return;
+
+  const now = Date.now();
+  const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
+  const recent = caroGamesAll.filter(g => (g.createdAt || 0) > twentyFourHoursAgo);
+  const playing = recent.filter(g => g.status === 'playing');
+  const waiting = recent.filter(g => g.status === 'waiting');
+
+  if (pCount) pCount.textContent = playing.length;
+  if (wCount) wCount.textContent = waiting.length;
+
+  if (!playing.length && !waiting.length){
+    list.innerHTML = '<div class="text-center text-teal-500 text-xs py-6">Không có ván nào trong 24h qua</div>';
+    return;
+  }
+
+  let html = '';
+  playing.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+  playing.forEach(g => {
+    const moves = (g.moves || []).length;
+    const elapsed = now - (g.createdAt || now);
+    const v = g.view || {};
+    const cols = (v.maxC - v.minC + 1) || 20;
+    const rows = (v.maxR - v.minR + 1) || 20;
+    const lastMove = (g.moves && g.moves.length) ? g.moves[g.moves.length - 1] : null;
+    const lastMoveTime = lastMove ? formatCaroElapsed(now - lastMove.t) + ' trước' : '--';
+    const turnName = g.currentTurn === 1 ? g.player1 : g.player2;
+
+    html += `
+      <div class="bg-black/30 rounded-xl p-3 border border-emerald-700/40">
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-black flex-shrink-0"
+               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
+            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</span>
+              <span class="text-[10px] text-red-400 font-black">VS</span>
+              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player2 || '?')}</span>
+            </div>
+            <div class="text-[10px] text-teal-400 font-bold mt-1">
+              📐 ${cols}×${rows} · 🎯 ${moves} nước · ⏱️ ${formatCaroElapsed(elapsed)}
+            </div>
+          </div>
+          <span class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2 py-1 rounded-lg text-[10px] font-black uppercase animate-pulse">🔥 ĐANG ĐẤU</span>
+        </div>
+        <div class="text-[10px] text-teal-400 mt-2 pt-2 border-t border-white/10 flex justify-between flex-wrap gap-1">
+          <span>▶️ Lượt: <b class="text-gold-400">${escapeCaroHtml(turnName || '--')}</b></span>
+          <span>⏰ Nước cuối: ${lastMoveTime}</span>
+        </div>
+      </div>`;
+  });
+
+  if (waiting.length){
+    if (playing.length){
+      html += '<div class="text-[10px] text-teal-400 font-black uppercase mt-3 mb-1 px-1">⏳ Đang chờ đối thủ</div>';
+    }
+    waiting.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    waiting.forEach(g => {
+      const elapsed = now - (g.createdAt || now);
+      html += `
+        <div class="bg-black/20 rounded-xl p-2.5 border border-teal-700/30 flex items-center gap-3 flex-wrap">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-[11px] flex-shrink-0"
+               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
+            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[12px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</div>
+            <div class="text-[10px] text-teal-400 font-bold">Chờ ghép · ${formatCaroElapsed(elapsed)}</div>
+          </div>
+          <span class="bg-gold-500/20 border border-gold-500/40 text-gold-400 px-2 py-1 rounded-lg text-[10px] font-black uppercase">⏳ CHỜ</span>
+        </div>`;
+    });
+  }
+
+  list.innerHTML = html;
+}
+
+setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
 
 // ═══════════════════════════════════════════════════════════
 // VERSION INFO
@@ -462,14 +441,13 @@ function loadVersionInfo() {
 
 window.checkVersionNow = function() {
   loadVersionInfo();
-  // Trigger update check trong tất cả iframe
-  alert('Đã làm mới thông tin phiên bản.\n\nCác thiết bị nhân viên sẽ tự thấy banner cập nhật trong vòng 5 phút.');
+  alert('Đã làm mới thông tin phiên bản.');
 };
 
 setTimeout(loadVersionInfo, 800);
 setInterval(loadVersionInfo, 60000);
 
-  // ═══════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════════════
 // ANNOUNCEMENT MANAGEMENT
 // ═══════════════════════════════════════════════════════════
 let announcementListenStarted = false;
@@ -486,7 +464,6 @@ function startAnnouncementListener(db) {
       const meta = document.getElementById('announcement-meta');
       if (!input || !toggle) return;
 
-      // Chỉ cập nhật input khi user không đang focus vào nó
       if (document.activeElement !== input) {
         input.value = data.text || '';
         updateAnnouncementCount();
@@ -545,17 +522,14 @@ window.saveAnnouncement = async function() {
     showAnnouncementStatus('error', '❌ Không tìm thấy Firebase');
     return;
   }
-
   const text = input.value.trim();
   if (!text) {
     showAnnouncementStatus('error', '❌ Vui lòng nhập nội dung thông báo');
     return;
   }
-
   btn.disabled = true;
   btn.style.opacity = '.6';
   btn.textContent = '⏳ Đang lưu...';
-
   try {
     const ref = doc(window.__db, 'master_config', 'announcement');
     await setDoc(ref, {
@@ -577,7 +551,7 @@ window.saveAnnouncement = async function() {
 };
 
 window.clearAnnouncement = async function() {
-  if (!confirm('🗑️ Xóa thông báo hiện tại?\n\nNhân viên sẽ không thấy banner nữa.')) return;
+  if (!confirm('🗑️ Xóa thông báo hiện tại?')) return;
   const input = document.getElementById('announcement-input');
   const toggle = document.getElementById('announcement-active');
   if (input) input.value = '';
@@ -613,8 +587,10 @@ function startAnnouncementUIBindings() {
   updateAnnouncementToggle();
 }
 
-  function startListeners(db) {
-  // Orders
+// ═══════════════════════════════════════════════════════════
+// REALTIME LISTENERS
+// ═══════════════════════════════════════════════════════════
+function startListeners(db) {
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     if (cfg.colOrders) {
       onSnapshot(collection(db, cfg.colOrders), snap => {
@@ -642,14 +618,15 @@ function startAnnouncementUIBindings() {
   });
 }
 
-// ──── RENDER ALL ────
+// ═══════════════════════════════════════════════════════════
+// RENDER
+// ═══════════════════════════════════════════════════════════
 function renderAll() {
   renderStats();
   renderOutlets();
   renderOrders();
 }
 
-// ──── STATS ────
 function renderStats() {
   let totalOrders = 0, totalPending = 0, totalOccupied = 0, totalTables = 0, totalGuests = 0;
 
@@ -658,21 +635,15 @@ function renderStats() {
     const tables = state.tables[key] || {};
     const occupiedCount = Object.keys(tables).length;
 
-    // Đơn hôm nay
     const todayOrders = orders.filter(o => isToday(o.timestamp));
     totalOrders += todayOrders.length;
 
-    // Pending + preparing
     const activeOrders = todayOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
     totalPending += activeOrders.length;
 
-    // Occupied tables
     totalOccupied += occupiedCount;
-
-    // Total tables (chỉ cộng với outlet có số bàn xác định)
     if (cfg.totalTables) totalTables += cfg.totalTables;
 
-    // Guests (pax)
     Object.values(tables).forEach(t => {
       if (t.pax) totalGuests += parseInt(t.pax) || 0;
       else if (t.guests) totalGuests += parseInt(t.guests) || 0;
@@ -690,7 +661,6 @@ function renderStats() {
   $('s-guests-sub').textContent = 'Đang được phục vụ';
 }
 
-// ──── OUTLETS ────
 function renderOutlets() {
   const html = Object.entries(OUTLETS).map(([key, cfg]) => {
     const orders = state.orders[key] || [];
@@ -742,14 +712,11 @@ function renderOutlets() {
   $('outlet-grid').innerHTML = html;
 }
 
-// ──── ORDERS LIST ────
 function renderOrders() {
-  // Merge all orders
   const all = [];
   Object.entries(state.orders).forEach(([key, arr]) => {
     arr.forEach(o => all.push({ ...o, _outlet: key }));
   });
-  // Show tables as "orders" too (each booking is a "request")
   Object.entries(state.tables.show || {}).forEach(([id, t]) => {
     all.push({
       _outlet: 'show',
@@ -766,7 +733,6 @@ function renderOrders() {
   });
   all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
 
-  // Count chips
   const today = all.filter(o => isToday(o.timestamp));
   const delayed = today.filter(o => o.status === 'pending' && (Date.now() - o.timestamp) > 300000);
   $('fc-all').textContent = today.length;
@@ -775,7 +741,6 @@ function renderOrders() {
   $('fc-delayed').textContent = delayed.length;
   $('fc-completed').textContent = today.filter(o => o.status === 'completed').length;
 
-  // Filter
   let filtered = today;
   const f = state.filter;
   if (f === 'pending') filtered = filtered.filter(o => o.status === 'pending');
@@ -783,7 +748,6 @@ function renderOrders() {
   else if (f === 'completed') filtered = filtered.filter(o => o.status === 'completed');
   else if (f === 'delayed') filtered = filtered.filter(o => o.status === 'pending' && (Date.now() - o.timestamp) > 300000);
 
-  // Search
   const s = state.search.toLowerCase().trim();
   if (s) {
     filtered = filtered.filter(o => {
@@ -887,7 +851,6 @@ $('h-search-btn').onclick = async () => {
           data.orders.forEach(o => allRows.push({ _outlet: key, ...o, _shift: data.shift }));
         }
         if (data.bookings && Array.isArray(data.bookings)) {
-          // Show history
           data.bookings.forEach(b => {
             const items = Object.entries(b.service?.drinks || {}).map(([k, v]) => `${k} x${v}`)
               .concat(Object.entries(b.service?.foods || {}).map(([k, v]) => `${k} x${v}`));
@@ -921,7 +884,6 @@ $('h-search-btn').onclick = async () => {
   }
 
   filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
   $('h-summary').textContent = `Tìm thấy ${filtered.length} bản ghi`;
 
   $('h-body').innerHTML = filtered.map(r => {
@@ -947,7 +909,6 @@ $('h-search-btn').onclick = async () => {
   }).join('');
 };
 
-// ──── CLEANUP OLD UI (rotate every 30s for accuracy) ────
 setInterval(renderOrders, 30000);
 </script>
 </body>

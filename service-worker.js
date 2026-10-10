@@ -1,10 +1,20 @@
 /* ============================================================
-   Dolphin PWA Service Worker v1.0
-   Dành cho GitHub Pages — subfolder /DolphinApp/
+   🚀 DOLPHIN SERVICE WORKER v3 — Auto version
+   - Tự đọc version từ sw-config.json
+   - Tự xóa cache khi version thay đổi
+   - Không cần đổi CACHE_NAME tay
    ============================================================ */
 
-const CACHE_NAME = 'dolphin-v2.6.3';
 const BASE = '/DolphinApp';
+const CONFIG_URL = BASE + '/sw-config.json';
+const FALLBACK_CACHE = 'dolphin-fallback';
+
+// Runtime values
+let APP_VERSION = '0.0.0';
+let CACHE_NAME = FALLBACK_CACHE;
+let configLoaded = false;
+
+// Danh sách file cần cache
 const CACHE_URLS = [
   BASE + '/',
   BASE + '/index.html',
@@ -13,50 +23,103 @@ const CACHE_URLS = [
   BASE + '/dolphin-restaurant.html',
   BASE + '/dolphin-show.html',
   BASE + '/manifest.json',
-   BASE + '/logo-dolphin.png',
-   BASE + '/staff-sync.js',
+  BASE + '/ranking/index.html',
+  BASE + '/caro/index.html',
+  BASE + '/staff-sync.js',
   BASE + '/community-chat.js',
-   BASE + '/avatar-system.js',
+  BASE + '/theme-system.js',
+  BASE + '/avatar-system.js',
+  BASE + '/logo-dolphin.png'
 ];
 
-self.addEventListener('install', (event) => {
+// ═══════ ĐỌC VERSION TỪ CONFIG ═══════
+async function loadConfig(){
+  try {
+    const r = await fetch(CONFIG_URL + '?t=' + Date.now(), {
+      cache: 'no-store',
+      headers: { 'Cache-Control': 'no-cache' }
+    });
+    if (!r.ok) throw new Error('HTTP ' + r.status);
+    const data = await r.json();
+    APP_VERSION = data.version || '0.0.0';
+    CACHE_NAME = 'dolphin-v' + APP_VERSION;
+    configLoaded = true;
+    console.log('[SW] Config loaded: v' + APP_VERSION);
+    return true;
+  } catch(e) {
+    console.warn('[SW] Config load failed:', e);
+    // Fallback: dùng timestamp làm version
+    APP_VERSION = 'fallback-' + Date.now();
+    CACHE_NAME = 'dolphin-' + APP_VERSION;
+    return false;
+  }
+}
+
+// ═══════ INSTALL ═══════
+self.addEventListener('install', event => {
   console.log('[SW] Installing...');
-  event.waitUntil(
-    caches.open(CACHE_NAME)
-      .then(cache => {
-        console.log('[SW] Caching app shell');
-        return cache.addAll(CACHE_URLS).catch(err => {
-          console.warn('[SW] Some files failed to cache:', err);
-        });
-      })
-      .then(() => self.skipWaiting())
-  );
+  event.waitUntil((async () => {
+    await loadConfig();
+    console.log('[SW] Cache name:', CACHE_NAME);
+
+    const cache = await caches.open(CACHE_NAME);
+    console.log('[SW] Caching app shell...');
+
+    // Cache từng file, không fail toàn bộ nếu 1 file lỗi
+    const results = await Promise.allSettled(
+      CACHE_URLS.map(url => cache.add(url).catch(e => {
+        console.warn('[SW] Failed to cache:', url, e.message);
+      }))
+    );
+
+    const success = results.filter(r => r.status === 'fulfilled').length;
+    console.log('[SW] Cached ' + success + '/' + CACHE_URLS.length + ' files');
+
+    await self.skipWaiting();
+  })());
 });
 
-self.addEventListener('activate', (event) => {
+// ═══════ ACTIVATE ═══════
+self.addEventListener('activate', event => {
   console.log('[SW] Activating...');
-  event.waitUntil(
-    s.keys().then(keys => {
-      return Promise.all(
-        keys.map(key => {
-          if (key !== _NAME) {
-            console.log('[SW] Removing old :', key);
-            return s.delete(key);
-          }
-        })
-      );
-    }).then(() => self.clients.claim())
-  );
+  event.waitUntil((async () => {
+    // Đảm bảo đã đọc config
+    if (!configLoaded) await loadConfig();
+
+    // Xóa tất cả cache cũ (khác CACHE_NAME hiện tại)
+    const keys = await caches.keys();
+    const deletePromises = [];
+    for (const key of keys) {
+      if (key.startsWith('dolphin-') && key !== CACHE_NAME) {
+        console.log('[SW] Deleting old cache:', key);
+        deletePromises.push(caches.delete(key));
+      }
+    }
+    await Promise.all(deletePromises);
+
+    await self.clients.claim();
+    console.log('[SW] Activated with cache:', CACHE_NAME);
+
+    // Thông báo cho tất cả client đang mở
+    const clients = await self.clients.matchAll();
+    clients.forEach(c => {
+      c.postMessage({
+        type: 'SW_ACTIVATED',
+        version: APP_VERSION
+      });
+    });
+  })());
 });
 
-self.addEventListener('fetch', (event) => {
+// ═══════ FETCH ═══════
+self.addEventListener('fetch', event => {
   const { request } = event;
   const url = new URL(request.url);
 
-  // Bỏ qua request không phải GET
+  // Bỏ qua non-GET
   if (request.method !== 'GET') return;
 
-  // Bỏ qua các domain bên ngoài — luôn đi mạng (Firebase realtime)
+  // Bỏ qua domain ngoài
   if (
     url.hostname.includes('firebase') ||
     url.hostname.includes('googleapis.com') ||
@@ -68,17 +131,19 @@ self.addEventListener('fetch', (event) => {
     url.hostname.includes('cdn.tailwindcss.com') ||
     url.hostname.includes('cdnjs.cloudflare.com') ||
     url.hostname.includes('open-meteo.com')
-  ) {
+  ) return;
+
+  // Chỉ xử lý same-origin
+  if (url.origin !== self.location.origin) return;
+
+  // Bỏ qua version.json và sw-config.json — luôn lấy mới
+  if (url.pathname.indexOf('version.json') >= 0 || url.pathname.indexOf('sw-config.json') >= 0) {
+    event.respondWith(fetch(request, { cache: 'no-store' }));
     return;
   }
 
-  // Chỉ xử lý request cùng origin
-  if (url.origin !== self.location.origin) return;
-
-  // Chỉ cache các file trong /DolphinApp/
+  // Chỉ cache trong /DolphinApp/
   if (!url.pathname.startsWith(BASE)) return;
-     // KHÔNG cache version.json — luôn lấy bản mới
-  if (url.pathname.indexOf('version.json') >= 0) return;
 
   const isHTML = request.headers.get('accept')?.includes('text/html');
 
@@ -88,7 +153,7 @@ self.addEventListener('fetch', (event) => {
       fetch(request)
         .then(response => {
           const clone = response.clone();
-          caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+          caches.open(CACHE_NAME).then(c => c.put(request, clone));
           return response;
         })
         .catch(() => caches.match(request).then(r => r || caches.match(BASE + '/')))
@@ -101,7 +166,7 @@ self.addEventListener('fetch', (event) => {
         return fetch(request).then(response => {
           if (response.ok) {
             const clone = response.clone();
-            caches.open(CACHE_NAME).then(cache => cache.put(request, clone));
+            caches.open(CACHE_NAME).then(c => c.put(request, clone));
           }
           return response;
         });
@@ -110,8 +175,48 @@ self.addEventListener('fetch', (event) => {
   }
 });
 
-self.addEventListener('message', (event) => {
-  if (event.data && event.data.type === 'SKIP_WAITING') {
+// ═══════ MESSAGE HANDLER ═══════
+self.addEventListener('message', event => {
+  const data = event.data || {};
+
+  if (data.type === 'SKIP_WAITING') {
     self.skipWaiting();
+  }
+
+  if (data.type === 'GET_VERSION') {
+    event.source?.postMessage({
+      type: 'VERSION_INFO',
+      version: APP_VERSION,
+      cacheName: CACHE_NAME
+    });
+  }
+
+  if (data.type === 'CHECK_UPDATE') {
+    event.waitUntil((async () => {
+      const oldVersion = APP_VERSION;
+      const oldCache = CACHE_NAME;
+      await loadConfig();
+      if (CACHE_NAME !== oldCache) {
+        console.log('[SW] Update detected:', oldVersion, '→', APP_VERSION);
+        const clients = await self.clients.matchAll();
+        clients.forEach(c => {
+          c.postMessage({
+            type: 'NEW_VERSION',
+            oldVersion: oldVersion,
+            newVersion: APP_VERSION
+          });
+        });
+      }
+    })());
+  }
+
+  if (data.type === 'FORCE_UPDATE') {
+    event.waitUntil((async () => {
+      await loadConfig();
+      const keys = await caches.keys();
+      await Promise.all(keys.filter(k => k.startsWith('dolphin-')).map(k => caches.delete(k)));
+      const clients = await self.clients.matchAll();
+      clients.forEach(c => c.postMessage({ type: 'RELOAD_NOW' }));
+    })());
   }
 });

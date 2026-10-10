@@ -56,6 +56,165 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <main class="max-w-7xl mx-auto px-3 md:px-6 py-4 space-y-5">
 
+  <!-- ════════ CARO MONITOR ════════ -->
+  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
+    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center justify-between flex-wrap gap-2">
+      <span class="flex items-center gap-2"><span>🎮</span> ĐANG CHƠI CỜ CARO</span>
+      <span class="text-[10px] text-teal-400 font-bold normal-case">
+        <span id="caro-playing-count">0</span> đang đấu ·
+        <span id="caro-waiting-count">0</span> chờ ghép
+      </span>
+    </h2>
+    <div id="caro-games-list" class="space-y-2">
+      <div class="text-center text-teal-500 text-xs py-6">⏳ Đang tải...</div>
+    </div>
+  </div>
+
+// ═══════════════════════════════════════════════════════════
+// CARO GAME MONITOR
+// ═══════════════════════════════════════════════════════════
+let caroGamesAll = [];
+let caroListenerStarted = false;
+
+function startCaroListener(){
+  if (caroListenerStarted) return;
+  caroListenerStarted = true;
+  try {
+    const ref = collection(window.__db, 'caro_games');
+    onSnapshot(ref, (snap) => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      caroGamesAll = arr;
+      renderCaroMonitor();
+    }, (err) => {
+      console.warn('[Caro Monitor]', err);
+    });
+  } catch(e){
+    console.warn('[Caro Monitor] init error', e);
+  }
+}
+
+function formatElapsed(ms){
+  const sec = Math.floor(ms / 1000);
+  if (sec < 60) return sec + 's';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + ' phút';
+  const hr = Math.floor(min / 60);
+  return hr + 'h' + (min % 60);
+}
+
+function escapeCaroHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({
+    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+  }[c]));
+}
+
+function renderCaroMonitor(){
+  const list = document.getElementById('caro-games-list');
+  const pCount = document.getElementById('caro-playing-count');
+  const wCount = document.getElementById('caro-waiting-count');
+  if (!list) return;
+
+  const now = Date.now();
+  const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
+
+  // Lọc chỉ lấy games trong 24h
+  const recent = caroGamesAll.filter(g => (g.createdAt || 0) > twentyFourHoursAgo);
+
+  const playing = recent.filter(g => g.status === 'playing');
+  const waiting = recent.filter(g => g.status === 'waiting');
+
+  if (pCount) pCount.textContent = playing.length;
+  if (wCount) wCount.textContent = waiting.length;
+
+  if (!playing.length && !waiting.length){
+    list.innerHTML = '<div class="text-center text-teal-500 text-xs py-6">Không có ván nào trong 24h qua</div>';
+    return;
+  }
+
+  // Hiển thị ván đang chơi trước
+  let html = '';
+
+  playing.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
+  playing.forEach(g => {
+    const moves = (g.moves || []).length;
+    const elapsed = now - (g.createdAt || now);
+    const v = g.view || {};
+    const cols = v.maxC - v.minC + 1 || 20;
+    const rows = v.maxR - v.minR + 1 || 20;
+    const lastMove = (g.moves && g.moves.length) ? g.moves[g.moves.length - 1] : null;
+    const lastMoveTime = lastMove ? formatElapsed(now - lastMove.t) + ' trước' : '--';
+    const turnName = g.currentTurn === 1 ? g.player1 : g.player2;
+
+    html += `
+      <div class="bg-black/30 rounded-xl p-3 border border-emerald-700/40">
+        <div class="flex items-center gap-3 flex-wrap">
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-black flex-shrink-0"
+               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
+            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="flex items-center gap-2 flex-wrap">
+              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</span>
+              <span class="text-[10px] text-red-400 font-black">VS</span>
+              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player2 || '?')}</span>
+            </div>
+            <div class="text-[10px] text-teal-400 font-bold mt-1">
+              📐 ${cols}×${rows} · 🎯 ${moves} nước · ⏱️ ${formatElapsed(elapsed)}
+            </div>
+          </div>
+          <div class="flex items-center gap-2 flex-shrink-0">
+            <span class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2 py-1 rounded-lg text-[10px] font-black uppercase animate-pulse">
+              🔥 ĐANG ĐẤU
+            </span>
+          </div>
+        </div>
+        <div class="text-[10px] text-teal-400 mt-2 pt-2 border-t border-white/10 flex justify-between flex-wrap gap-1">
+          <span>▶️ Lượt: <b class="text-gold-400">${escapeCaroHtml(turnName || '--')}</b></span>
+          <span>⏰ Nước cuối: ${lastMoveTime}</span>
+        </div>
+      </div>`;
+  });
+
+  // Ván đang chờ
+  if (waiting.length){
+    if (playing.length){
+      html += '<div class="text-[10px] text-teal-400 font-black uppercase mt-3 mb-1 px-1">⏳ Đang chờ đối thủ</div>';
+    }
+    waiting.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    waiting.forEach(g => {
+      const elapsed = now - (g.createdAt || now);
+      html += `
+        <div class="bg-black/20 rounded-xl p-2.5 border border-teal-700/30 flex items-center gap-3 flex-wrap">
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-[11px] flex-shrink-0"
+               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
+            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
+          </div>
+          <div class="flex-1 min-w-0">
+            <div class="text-[12px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</div>
+            <div class="text-[10px] text-teal-400 font-bold">Chờ ghép · ${formatElapsed(elapsed)}</div>
+          </div>
+          <span class="bg-gold-500/20 border border-gold-500/40 text-gold-400 px-2 py-1 rounded-lg text-[10px] font-black uppercase">
+            ⏳ CHỜ
+          </span>
+        </div>`;
+    });
+  }
+
+  list.innerHTML = html;
+}
+
+function startCaroUIBinding(){
+  // Khởi động listener sau khi Firebase sẵn sàng
+  setTimeout(() => {
+    if (window.__db) startCaroListener();
+    else setTimeout(startCaroUIBinding, 800);
+  }, 1500);
+}
+startCaroUIBinding();
+
+// Auto refresh elapsed time mỗi 30s
+setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
   <!-- ════════ TOP STATS ════════ -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="glass glass-premium stat-card">

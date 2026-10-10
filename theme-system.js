@@ -882,17 +882,54 @@
     }
   }
 
-  // ═══════ FIREBASE ═══════
-  function fetchThemeFromFirebase(){
-    fetch('https://firestore.googleapis.com/v1/projects/dolphin-f6d67/databases/(default)/documents/master_config/theme?key=' + FIREBASE_CONFIG.apiKey, { cache: 'no-store' })
-      .then(function(r){ if (!r.ok) throw new Error('404'); return r.json(); })
-      .then(function(data){
-        var key = (data && data.fields && data.fields.themeKey && data.fields.themeKey.stringValue) || 'auto';
+// ═══════ FIREBASE (realtime, có auth) ═══════
+var themeApp = null;
+var themeUnsubscribe = null;
+
+function fetchThemeFromFirebase(){
+  Promise.all([
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+  ]).then(function(mods){
+    try {
+      themeApp = mods[0].getApp('theme-app');
+    } catch(e){
+      themeApp = mods[0].initializeApp(FIREBASE_CONFIG, 'theme-app');
+    }
+    var auth = mods[1].getAuth(themeApp);
+    var db = mods[2].getFirestore(themeApp);
+
+    function startListener(){
+      if (themeUnsubscribe) themeUnsubscribe();
+      var ref = mods[2].doc(db, 'master_config', 'theme');
+      themeUnsubscribe = mods[2].onSnapshot(ref, function(snap){
+        var key = 'auto';
+        if (snap.exists()){
+          var data = snap.data();
+          key = data.themeKey || data.theme || 'auto';
+        }
+        console.log('[Theme] Firestore says:', key);
         if (key === 'auto' || !THEMES[key]) applyTheme(detectThemeByDate());
         else applyTheme(key);
-      })
-      .catch(function(){ applyTheme(detectThemeByDate()); });
-  }
+      }, function(err){
+        console.warn('[Theme] Listen error:', err);
+        applyTheme(detectThemeByDate());
+      });
+    }
+
+    if (auth.currentUser) startListener();
+    else mods[1].signInAnonymously(auth)
+      .then(startListener)
+      .catch(function(err){
+        console.warn('[Theme] Auth error:', err);
+        applyTheme(detectThemeByDate());
+      });
+  }).catch(function(err){
+    console.warn('[Theme] Firebase init fail:', err);
+    applyTheme(detectThemeByDate());
+  });
+}
 
   function init(){
     injectStyles();

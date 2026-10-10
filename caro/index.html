@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · Cờ Caro</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+<script src="/DolphinApp/staff-sync.js" defer></script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:100vh;margin:0;overflow-x:hidden}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:active{transform:scale(.96)}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(.96)}
+
+#boardWrapper{overflow-x:auto;overflow-y:auto;max-height:70vh;-webkit-overflow-scrolling:touch;padding:4px;border-radius:12px}
+#boardWrapper::-webkit-scrollbar{width:6px;height:6px}
+#boardWrapper::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
+
+#board{display:grid;margin:0 auto;
+  background:#F4DFA8;border-radius:12px;overflow:hidden;border:3px solid #8B6F3D;
+  box-shadow:0 8px 32px rgba(0,0,0,.5),inset 0 0 60px rgba(139,111,61,.3)}
+.cell{position:relative;border-right:1px solid rgba(139,111,61,.35);border-bottom:1px solid rgba(139,111,61,.35);
+  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
+.cell:hover{background:rgba(255,255,255,.25)}
+.cell.last-move::before{content:'';position:absolute;width:30%;height:30%;border-radius:50%;
+  background:#dc2626;box-shadow:0 0 8px rgba(220,38,38,.9);z-index:3;animation:last-move-pulse 1s ease-in-out infinite}
+@keyframes last-move-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.cell.win{background:linear-gradient(135deg,rgba(74,222,128,.7),rgba(16,185,129,.5))!important;animation:win-pulse 1s ease-in-out infinite}
+@keyframes win-pulse{0%,100%{opacity:1}50%{opacity:.65}}
+.piece{width:86%;height:86%;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-weight:900;position:relative;z-index:2;animation:piece-drop .25s cubic-bezier(.16,1,.3,1);
+  font-family:'Nunito',sans-serif}
+@keyframes piece-drop{0%{transform:scale(0) rotate(-90deg);opacity:0}100%{transform:scale(1) rotate(0);opacity:1}}
+.piece.x{background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A;
+  box-shadow:0 2px 6px rgba(0,0,0,.4),inset -2px -2px 4px rgba(0,0,0,.3),inset 2px 2px 4px rgba(255,255,255,.15)}
+.piece.o{background:linear-gradient(135deg,#fff,#e5e7eb);color:#dc2626;border:2px solid #dc2626;
+  box-shadow:0 2px 6px rgba(0,0,0,.4),inset -2px -2px 4px rgba(0,0,0,.2),inset 2px 2px 4px rgba(255,255,255,.8)}
+
+.avatar{width:44px;height:44px;border-radius:50%;display:flex;align-items:center;justify-content:center;
+  font-size:18px;font-weight:900;flex-shrink:0}
+.avatar.p1{background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A}
+.avatar.p2{background:linear-gradient(135deg,#fff,#e5e7eb);color:#dc2626;border:2px solid #dc2626}
+.avatar.active{box-shadow:0 0 0 3px rgba(244,184,66,.5),0 0 20px rgba(244,184,66,.6);animation:avatar-pulse 1.5s ease-in-out infinite}
+@keyframes avatar-pulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
+
+.game-row{padding:12px 14px;background:rgba(10,30,28,.5);border-radius:12px;border:1px solid rgba(255,255,255,.08);
+  margin-bottom:8px;cursor:pointer;transition:all .2s}
+.game-row:active{transform:scale(.98);background:rgba(10,30,28,.8)}
+
+.game-chat-msg{padding:6px 10px;font-size:12.5px;line-height:1.4;border-radius:10px;margin-bottom:4px;
+  background:rgba(25,71,67,.6);color:#fff}
+.game-chat-msg .who{color:#FBD77A;font-weight:800;font-size:11px;margin-right:6px}
+.game-chat-msg.mine{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634}
+.game-chat-msg.mine .who{color:#123634}
+.game-chat-msg.system{background:rgba(244,184,66,.15);border:1px solid rgba(244,184,66,.4);color:#FBD77A;
+  text-align:center;font-weight:800;font-size:11px}
+
+#loadingOverlay{position:fixed;inset:0;background:rgba(10,31,29,.95);backdrop-filter:blur(12px);
+  z-index:9999;display:none;align-items:center;justify-content:center;flex-direction:column;gap:16px}
+#loadingOverlay.show{display:flex}
+.spinner{width:48px;height:48px;border:3px solid rgba(244,184,66,.2);border-top-color:#FBD77A;
+  border-radius:50%;animation:spin 1s linear infinite}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+.result-modal{position:fixed;inset:0;background:rgba(10,31,29,.9);backdrop-filter:blur(12px);
+  z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+.result-modal.show{display:flex}
+.result-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;
+  padding:30px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 80px rgba(244,184,66,.3);
+  animation:result-pop .5s cubic-bezier(.16,1,.3,1)}
+@keyframes result-pop{0%{transform:scale(.8);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.rules-modal{position:fixed;inset:0;background:rgba(10,31,29,.95);backdrop-filter:blur(12px);
+  z-index:9997;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.rules-modal.show{display:flex}
+.rules-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;
+  padding:24px;max-width:480px;width:100%;max-height:90vh;overflow-y:auto;
+  box-shadow:0 20px 60px rgba(0,0,0,.7)}
+.rules-card h3{color:#FBD77A;font-weight:900;font-size:16px;text-transform:uppercase;letter-spacing:.08em;margin-bottom:14px;text-align:center}
+.rules-card .rule{margin-bottom:12px;padding:12px;background:rgba(10,30,28,.6);border-radius:12px;border-left:3px solid #FBD77A}
+.rules-card .rule-icon{font-size:20px;margin-right:8px}
+.rules-card .rule-title{color:#FBD77A;font-weight:900;font-size:13px;margin-bottom:4px}
+.rules-card .rule-desc{color:#bfe9dc;font-size:12.5px;line-height:1.55}
+.rules-card .rule-desc b{color:#fff}
+</style>
+</head>
+<body class="pb-6">
+
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <div class="text-center flex-1">
+      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
+      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Cờ Caro Online</p>
+    </div>
+    <button onclick="openRules()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">❓</button>
+  </div>
+</div>
+
+<div id="lobbyView" class="max-w-2xl mx-auto px-4 pt-5">
+  <div class="glass rounded-2xl p-5 mb-5 text-center">
+    <div class="text-5xl mb-2">🎮</div>
+    <h2 class="text-[15px] font-black text-gold-400 uppercase tracking-widest mb-1">CỜ CARO ONLINE</h2>
+    <p class="text-[12px] text-teal-300 mb-4">Bàn 20×20 tự mở rộng · 5 quân liền kề thắng (Luật quốc tế)</p>
+    <button onclick="createGame()" class="btn-gold w-full py-3.5 rounded-xl text-[13px] uppercase tracking-wider mb-2">
+      ➕ TẠO VÁN MỚI
+    </button>
+    <button onclick="openRules()" class="btn-outline w-full py-3 rounded-xl text-[12px] uppercase tracking-wider">
+      📖 XEM QUY TẮC CHƠI
+    </button>
+    <div class="text-[10px] text-teal-400 mt-3" id="myNameDisplay"></div>
+  </div>
+
+  <div class="glass rounded-2xl p-4">
+    <h3 class="text-[12px] font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
+      <span>⏳</span> VÁN ĐANG CHỜ
+      <span class="text-[10px] text-teal-400 font-bold normal-case opacity:.7 ml-auto" id="gamesCount"></span>
+    </h3>
+    <div id="gamesList">
+      <div class="text-center py-8 text-teal-500 text-[12px] font-bold">Đang tải...</div>
+    </div>
+  </div>
+
+  <div class="mt-4 text-center text-[10px] text-teal-500 leading-relaxed">
+    💡 Cùng tên nhân viên → tự động ghép vào cùng ván<br>
+    🗑️ Ván chờ >30p tự xóa · Ván xong >2h tự xóa
+  </div>
+</div>
+
+<div id="gameView" class="max-w-2xl mx-auto px-4 pt-5" style="display:none">
+  <div class="glass rounded-2xl p-3 mb-3">
+    <div class="flex items-center justify-between gap-3">
+      <div class="flex items-center gap-2 flex-1 min-w-0" id="player1Box">
+        <div class="avatar p1" id="p1Avatar">?</div>
+        <div class="min-w-0 flex-1">
+          <div class="text-[9px] text-teal-400 font-bold uppercase">Người 1 (X)</div>
+          <div class="text-[13px] font-black text-white truncate" id="p1Name">Đang chờ...</div>
+        </div>
+      </div>
+      <div class="text-2xl">🆚</div>
+      <div class="flex items-center gap-2 flex-1 min-w-0 justify-end" id="player2Box">
+        <div class="min-w-0 flex-1 text-right">
+          <div class="text-[9px] text-teal-400 font-bold uppercase">Người 2 (O)</div>
+          <div class="text-[13px] font-black text-white truncate" id="p2Name">Đang chờ...</div>
+        </div>
+        <div class="avatar p2" id="p2Avatar">?</div>
+      </div>
+    </div>
+    <div class="text-center mt-3 pt-3 border-t border-white/10">
+      <div class="text-[10px] text-teal-400 font-bold uppercase">Lượt đi</div>
+      <div class="text-[14px] font-black text-gold-400" id="turnText">Đang tải...</div>
+      <div class="text-[10px] text-teal-400 mt-1" id="boardSizeText"></div>
+    </div>
+  </div>
+
+  <div class="mb-3">
+    <div id="boardWrapper"><div id="board"></div></div>
+  </div>
+
+  <div class="flex gap-2 mb-3">
+    <button onclick="leaveGame()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">🚪 Rời ván</button>
+    <button onclick="resignGame()" id="resignBtn" class="flex-1 py-3 rounded-xl text-[12px] uppercase" style="background:rgba(239,83,80,.15);color:#ef5350;border:1px solid rgba(239,83,80,.4);font-weight:800;cursor:pointer;font-family:inherit">🏳️ Đầu hàng</button>
+  </div>
+
+  <div class="glass rounded-2xl p-3">
+    <div class="text-[11px] font-black text-white uppercase tracking-widest mb-2 flex items-center gap-2">
+      <span>💬</span> CHAT TRONG VÁN
+    </div>
+    <div id="gameChatMessages" class="max-h-40 overflow-y-auto mb-2 pr-1" style="min-height:60px">
+      <div class="text-center text-teal-500 text-[11px] py-4">Chưa có tin nhắn</div>
+    </div>
+    <div class="flex gap-2">
+      <input type="text" id="gameChatInput" placeholder="Nhập tin nhắn..." maxlength="200" autocomplete="off"
+        class="flex-1 bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[13px] text-white outline-none focus:border-gold-500">
+      <button onclick="sendGameChat()" class="btn-gold px-4 rounded-xl">➤</button>
+    </div>
+  </div>
+</div>
+
+<div id="rulesModal" class="rules-modal">
+  <div class="rules-card">
+    <h3>📖 Quy Tắc Chơi Cờ Caro</h3>
+
+    <div class="rule">
+      <div class="rule-title"><span class="rule-icon">🎯</span>Mục tiêu</div>
+      <div class="rule-desc">Tạo được <b>1 hàng 5 quân cờ liên tiếp</b> theo chiều <b>dọc, ngang hoặc chéo</b> là thắng ngay.</div>
+    </div>
+
+    <div class="rule">
+      <div class="rule-title"><span class="rule-icon">🌍</span>Luật cờ quốc tế (Free-style Gomoku)</div>
+      <div class="rule-desc">
+        Chỉ cần đủ <b>5 quân liền kề</b> là thắng — <b>không quan tâm bị chặn 2 đầu</b>.<br><br>
+        ✅ <code style="background:#000;padding:2px 6px;border-radius:4px;color:#4ade80">_XXXXX_</code> → Thắng<br>
+        ✅ <code style="background:#000;padding:2px 6px;border-radius:4px;color:#4ade80">OXXXXX_</code> → Thắng<br>
+        ✅ <code style="background:#000;padding:2px 6px;border-radius:4px;color:#4ade80">OXXXXXO</code> → Thắng<br>
+        ✅ <code style="background:#000;padding:2px 6px;border-radius:4px;color:#4ade80">XXXXX</code> (bất kỳ) → Thắng
+      </div>
+    </div>
+
+    <div class="rule">
+      <div class="rule-title"><span class="rule-icon">📐</span>Bàn cờ tự mở rộng</div>
+      <div class="rule-desc">Bàn cờ mặc định <b>20×20 ô</b>. Khi quân cờ tiến sát biên (còn 3 ô) → bàn cờ <b>tự mở rộng thêm 5 ô</b> mỗi chiều. Có thể mở rộng <b>vô hạn</b> cho đến khi phân định thắng thua.</div>
+    </div>
+
+    <div class="rule">
+      <div class="rule-title"><span class="rule-icon">🎲</span>Luật chơi</div>
+      <div class="rule-desc">
+        • Người 1 (X) đánh trước<br>
+        • Lần lượt đánh X và O<br>
+        • Không được đánh vào ô đã có quân<br>
+        • Đủ 5 quân liền kề → thắng
+      </div>
+    </div>
+
+    <div class="rule">
+      <div class="rule-title"><span class="rule-icon">🏳️</span>Đầu hàng</div>
+      <div class="rule-desc">Bấm nút "Đầu hàng" để nhận thua. Ván kết thúc ngay.</div>
+    </div>
+
+    <button onclick="closeRules()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">
+      ✓ ĐÃ HIỂU
+    </button>
+  </div>
+</div>
+
+<div id="loadingOverlay">
+  <div class="spinner"></div>
+  <div class="text-gold-400 text-[13px] font-bold" id="loadingText">Đang xử lý...</div>
+</div>
+
+<div id="resultModal" class="result-modal">
+  <div class="result-card">
+    <div class="text-6xl mb-3" id="resultIcon">🏆</div>
+    <h3 class="text-[20px] font-black text-gold-400 uppercase tracking-widest mb-2" id="resultTitle">BẠN THẮNG!</h3>
+    <p class="text-[13px] text-teal-200 mb-5" id="resultSub"></p>
+    <button onclick="closeResultAndLeave()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider">
+      ✓ VỀ SẢNH CHỜ
+    </button>
+  </div>
+</div>
+
+<script>
+(function(){
+  'use strict';
+
+  var FIREBASE_CONFIG = {
+    apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+    authDomain: "dolphin-f6d67.firebaseapp.com",
+    projectId: "dolphin-f6d67"
+  };
+  var COL_GAMES = 'caro_games';
+
+  var INITIAL_RADIUS = 10;
+  var EXPAND_STEP = 5;
+  var EXPAND_THRESHOLD = 3;
+  var MAX_VIEW_SIZE = 60;
+  var WIN_COUNT = 5;
+  var MAX_MOVES = 500;
+
+  var WAITING_TIMEOUT = 30 * 60 * 1000;
+  var FINISHED_TIMEOUT = 2 * 60 * 60 * 1000;
+
+  var state = {
+    db: null, auth: null, modules: null, initialized: false,
+    currentUser: '',
+    currentGame: null, currentGameId: null,
+    unsubGames: null, unsubGame: null,
+    myPlayerNum: 0,
+    lastViewKey: ''
+  };
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
+
+  function getStaffName(){
+    try {
+      if (typeof window.getSyncedStaffName === 'function'){
+        var n = window.getSyncedStaffName();
+        if (n && n.trim()) return n.trim();
+      }
+      return localStorage.getItem('dolphinStaffName') || '';
+    } catch(e){ return ''; }
+  }
+
+  function getVNDateStr(){
+    var parts = new Intl.DateTimeFormat('en-US', { timeZone:'Asia/Ho_Chi_Minh', year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date());
+    var o = {};
+    parts.forEach(function(p){ if (p.type !== 'literal') o[p.type] = p.value; });
+    return o.year + '-' + o.month + '-' + o.day;
+  }
+
+  function cellKey(r, c){ return r + ',' + c; }
+  function getCell(cells, r, c){ return cells[cellKey(r, c)] || 0; }
+
+  function showLoading(text){ $('loadingText').textContent = text || 'Đang xử lý...'; $('loadingOverlay').classList.add('show'); }
+  function hideLoading(){ $('loadingOverlay').classList.remove('show'); }
+
+  window.openRules = function(){ $('rulesModal').classList.add('show'); };
+  window.closeRules = function(){ $('rulesModal').classList.remove('show'); };
+
+  function initFirebase(){
+    if (state.initialized) return;
+    state.initialized = true;
+    Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+    ]).then(function(mods){
+      state.modules = { app: mods[0], auth: mods[1], db: mods[2] };
+      var app = mods[0].initializeApp(FIREBASE_CONFIG, 'caro-app');
+      state.auth = mods[1].getAuth(app);
+      state.db = mods[2].getFirestore(app);
+      return mods[1].signInAnonymously(state.auth);
+    }).then(function(){
+      state.currentUser = getStaffName();
+      updateMyNameDisplay();
+      startGamesListener();
+      setTimeout(cleanupOldGames, 3000);
+      var p = new URLSearchParams(location.search);
+      var gid = p.get('game');
+      if (gid) joinGameById(gid);
+    }).catch(function(err){
+      console.warn('[Caro] init:', err);
+      alert('Không kết nối được Firebase. Vui lòng thử lại.');
+    });
+  }
+
+  function updateMyNameDisplay(){
+    var el = $('myNameDisplay');
+    if (!el) return;
+    if (state.currentUser){
+      el.innerHTML = '👤 Bạn chơi với tên: <b class="text-gold-400">' + esc(state.currentUser) + '</b>';
+    } else {
+      el.innerHTML = '<span class="text-red-400 font-bold">⚠️ Chưa có tên — vào Lễ Tân để nhập tên!</span>';
+    }
+  }
+
+  function startGamesListener(){
+    if (state.unsubGames) state.unsubGames();
+    var m = state.modules;
+    var q = m.db.query(m.db.collection(state.db, COL_GAMES), m.db.where('status', '==', 'waiting'), m.db.limit(20));
+    state.unsubGames = m.db.onSnapshot(q, function(snap){
+      var games = [];
+      snap.forEach(function(d){ games.push(Object.assign({ id: d.id }, d.data())); });
+      games.sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
+      renderGamesList(games);
+    }, function(err){ console.warn('[Caro] listen:', err); });
+  }
+
+  function renderGamesList(games){
+    var el = $('gamesList');
+    $('gamesCount').textContent = games.length + ' ván';
+    if (!games.length){
+      el.innerHTML = '<div class="text-center py-8 text-teal-500 text-[12px] font-bold">Không có ván nào đang chờ<br><span class="text-[10.5px] opacity:.7">Bấm "TẠO VÁN MỚI" để bắt đầu</span></div>';
+      return;
+    }
+    var myName = state.currentUser;
+    el.innerHTML = games.map(function(g){
+      var isMine = g.player1 === myName;
+      var ageMin = Math.floor((Date.now() - (g.createdAt || 0)) / 60000);
+      var ageText = ageMin < 1 ? 'vừa xong' : (ageMin + ' phút trước');
+      return '<div class="game-row" onclick="joinGame(\'' + g.id + '\')">'
+        + '<div class="flex items-center gap-3">'
+        + '<div class="avatar p1">' + esc((g.player1 || '?').charAt(0).toUpperCase()) + '</div>'
+        + '<div class="flex-1 min-w-0">'
+        + '<div class="text-[13px] font-black text-white truncate">' + esc(g.player1 || 'Ẩn danh') + (isMine ? ' <span class="text-gold-400 text-[10px]">(BẠN)</span>' : '') + '</div>'
+        + '<div class="text-[10px] text-teal-400 font-bold">Đang chờ đối thủ · ' + ageText + '</div>'
+        + '</div><div class="text-2xl opacity:.7">👉</div></div></div>';
+    }).join('');
+  }
+
+  window.createGame = function(){
+    if (!state.currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
+    if (!state.db){ alert('Đang kết nối... vui lòng thử lại sau'); return; }
+    showLoading('Đang tạo ván...');
+    var m = state.modules;
+    var gameData = {
+      player1: state.currentUser,
+      player2: null,
+      cells: {},
+      view: { minR: -INITIAL_RADIUS, maxR: INITIAL_RADIUS - 1, minC: -INITIAL_RADIUS, maxC: INITIAL_RADIUS - 1 },
+      currentTurn: 1,
+      status: 'waiting',
+      winner: null,
+      winningCells: null,
+      moves: [],
+      chat: [],
+      createdAt: Date.now(),
+      updatedAt: Date.now(),
+      dateVN: getVNDateStr(),
+      finishedAt: null
+    };
+    m.db.addDoc(m.db.collection(state.db, COL_GAMES), gameData).then(function(ref){
+      state.currentGameId = ref.id;
+      joinGame(ref.id);
+    }).catch(function(err){
+      console.error(err);
+      hideLoading();
+      alert('Lỗi tạo ván: ' + err.message);
+    });
+  };
+
+  window.joinGame = function(gameId){
+    if (!state.currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
+    state.currentGameId = gameId;
+    showLoading('Đang vào ván...');
+    var m = state.modules;
+    var docRef = m.db.doc(state.db, COL_GAMES, gameId);
+
+    m.db.getDoc(docRef).then(function(snap){
+      if (!snap.exists()) throw new Error('Ván không tồn tại');
+      var g = snap.data();
+      var myName = state.currentUser;
+      if (g.player1 === myName){ state.myPlayerNum = 1; subscribeGame(gameId); return; }
+      if (g.player2 === myName){ state.myPlayerNum = 2; subscribeGame(gameId); return; }
+      if (!g.player2 && g.status === 'waiting'){
+        return m.db.updateDoc(docRef, {
+          player2: myName, status: 'playing', updatedAt: Date.now()
+        }).then(function(){ state.myPlayerNum = 2; subscribeGame(gameId); });
+      }
+      throw new Error('Ván đã đầy hoặc đã kết thúc');
+    }).catch(function(err){
+      console.error(err);
+      hideLoading();
+      alert('Không thể vào ván: ' + err.message);
+      state.currentGameId = null;
+    });
+  };
+
+  window.joinGameById = function(gameId){
+    if (!state.currentUser){ setTimeout(function(){ joinGameById(gameId); }, 1000); return; }
+    joinGame(gameId);
+  };
+
+  function subscribeGame(gameId){
+    if (state.unsubGame) state.unsubGame();
+    var m = state.modules;
+    var docRef = m.db.doc(state.db, COL_GAMES, gameId);
+    state.unsubGame = m.db.onSnapshot(docRef, function(snap){
+      if (!snap.exists()){ showLobby(); return; }
+      state.currentGame = snap.data();
+      hideLoading();
+      if ($('lobbyView').style.display !== 'none') showGameView();
+      renderGame();
+    }, function(err){
+      console.warn('[Caro] subscribe:', err);
+      hideLoading();
+      alert('Mất kết nối với ván.');
+      showLobby();
+    });
+  }
+
+  function renderGame(){
+    var g = state.currentGame;
+    if (!g) return;
+
+    $('p1Name').textContent = g.player1 || 'Đang chờ...';
+    $('p2Name').textContent = g.player2 || 'Đang chờ...';
+    $('p1Avatar').textContent = (g.player1 || '?').charAt(0).toUpperCase();
+    $('p2Avatar').textContent = g.player2 ? g.player2.charAt(0).toUpperCase() : '?';
+    $('player1Box').querySelector('.avatar').classList.toggle('active', g.currentTurn === 1 && g.status === 'playing');
+    $('player2Box').querySelector('.avatar').classList.toggle('active', g.currentTurn === 2 && g.status === 'playing');
+
+    var turnEl = $('turnText');
+    if (g.status === 'waiting'){
+      turnEl.textContent = 'Chờ đối thủ tham gia...';
+      turnEl.className = 'text-[14px] font-black text-teal-300';
+    } else if (g.status === 'finished'){
+      var winnerName = g.winner === 1 ? g.player1 : (g.winner === 2 ? g.player2 : null);
+      if (winnerName){ turnEl.textContent = '🏆 ' + winnerName + ' thắng!'; turnEl.className = 'text-[14px] font-black text-gold-400'; }
+      else { turnEl.textContent = '🤝 Hòa!'; turnEl.className = 'text-[14px] font-black text-teal-300'; }
+    } else {
+      var turnName = g.currentTurn === 1 ? g.player1 : g.player2;
+      var isMyTurn = state.myPlayerNum === g.currentTurn;
+      turnEl.textContent = isMyTurn ? '⭐ LƯỢT BẠN' : '⏳ Lượt ' + turnName;
+      turnEl.className = 'text-[14px] font-black ' + (isMyTurn ? 'text-gold-400 animate-pulse' : 'text-teal-300');
+    }
+
+    var rb = $('resignBtn');
+    if (rb) rb.style.display = g.status === 'playing' ? 'block' : 'none';
+
+    renderBoard(g);
+    renderGameChat(g.chat || []);
+  }
+
+  function renderBoard(g){
+    var board = $('board');
+    if (!board || !g.view) return;
+
+    var v = g.view;
+    var rows = Math.min(v.maxR - v.minR + 1, MAX_VIEW_SIZE);
+    var cols = Math.min(v.maxC - v.minC + 1, MAX_VIEW_SIZE);
+
+    var viewKey = rows + 'x' + cols + ':' + v.minR + ',' + v.minC;
+    var needRebuild = state.lastViewKey !== viewKey;
+    state.lastViewKey = viewKey;
+
+    var wrapperWidth = $('boardWrapper').clientWidth - 10;
+    var cellSize = Math.max(16, Math.min(Math.floor(wrapperWidth / cols), 40));
+
+    board.style.gridTemplateColumns = 'repeat(' + cols + ',' + cellSize + 'px)';
+    board.style.gridTemplateRows = 'repeat(' + rows + ',' + cellSize + 'px)';
+    board.style.width = (cols * cellSize) + 'px';
+
+    if (needRebuild){
+      var html = '';
+      for (var i = 0; i < rows; i++){
+        for (var j = 0; j < cols; j++){
+          var r = v.minR + i, c = v.minC + j;
+          html += '<div class="cell" data-r="' + r + '" data-c="' + c + '" onclick="clickCell(' + r + ',' + c + ')" style="width:' + cellSize + 'px;height:' + cellSize + 'px"></div>';
+        }
+      }
+      board.innerHTML = html;
+    }
+
+    var cells = g.cells || {};
+    var lastMove = (g.moves && g.moves.length) ? g.moves[g.moves.length - 1] : null;
+    var winning = g.winningCells || [];
+    var winningSet = {};
+    winning.forEach(function(w){ winningSet[w.r + ',' + w.c] = true; });
+
+    for (var i2 = 0; i2 < rows; i2++){
+      for (var j2 = 0; j2 < cols; j2++){
+        var r2 = v.minR + i2, c2 = v.minC + j2;
+        var cell = board.children[i2 * cols + j2];
+        if (!cell) continue;
+        var val = cells[cellKey(r2, c2)] || 0;
+        var isLast = lastMove && lastMove.r === r2 && lastMove.c === c2;
+        var isWin = winningSet[cellKey(r2, c2)];
+
+        cell.className = 'cell';
+        if (isWin) cell.classList.add('win');
+        if (isLast && !isWin) cell.classList.add('last-move');
+
+        var existing = cell.querySelector('.piece');
+        if (val === 0){ if (existing) existing.remove(); }
+        else {
+          var symbol = val === 1 ? 'X' : 'O';
+          var cls = val === 1 ? 'x' : 'o';
+          var size = Math.round(cellSize * 0.75);
+          if (existing){
+            existing.className = 'piece ' + cls;
+            existing.textContent = symbol;
+            existing.style.width = size + 'px';
+            existing.style.height = size + 'px';
+            existing.style.fontSize = Math.round(cellSize * 0.5) + 'px';
+          } else {
+            var p = document.createElement('div');
+            p.className = 'piece ' + cls;
+            p.textContent = symbol;
+            p.style.width = size + 'px';
+            p.style.height = size + 'px';
+            p.style.fontSize = Math.round(cellSize * 0.5) + 'px';
+            cell.appendChild(p);
+          }
+        }
+      }
+    }
+
+    $('boardSizeText').textContent = '📐 Bàn cờ: ' + cols + ' × ' + rows + ' ô';
+  }
+
+  window.clickCell = function(r, c){
+    var g = state.currentGame;
+    if (!g) return;
+    if (g.status !== 'playing') return;
+    if (state.myPlayerNum !== g.currentTurn) return;
+    if (getCell(g.cells, r, c) !== 0) return;
+
+    var cells = Object.assign({}, g.cells);
+    cells[cellKey(r, c)] = state.myPlayerNum;
+
+    var moves = (g.moves || []).slice();
+    moves.push({ r: r, c: c, p: state.myPlayerNum, t: Date.now() });
+
+    var win = checkWin(cells, r, c, state.myPlayerNum);
+    var view = expandViewIfNeeded(g.view, r, c);
+
+    var updateData = {
+      cells: cells,
+      moves: moves,
+      view: view,
+      currentTurn: state.myPlayerNum === 1 ? 2 : 1,
+      updatedAt: Date.now()
+    };
+
+    if (win){
+      updateData.status = 'finished';
+      updateData.winner = state.myPlayerNum;
+      updateData.winningCells = win;
+      updateData.finishedAt = Date.now();
+    } else if (moves.length >= MAX_MOVES){
+      updateData.status = 'finished';
+      updateData.winner = null;
+      updateData.finishedAt = Date.now();
+    }
+
+    var m = state.modules;
+    m.db.updateDoc(m.db.doc(state.db, COL_GAMES, state.currentGameId), updateData).catch(function(err){
+      console.error('Update error:', err);
+    });
+  };
+
+  function expandViewIfNeeded(view, r, c){
+    var v = { minR: view.minR, maxR: view.maxR, minC: view.minC, maxC: view.maxC };
+    if (r - v.minR < EXPAND_THRESHOLD) v.minR -= EXPAND_STEP;
+    if (v.maxR - r < EXPAND_THRESHOLD) v.maxR += EXPAND_STEP;
+    if (c - v.minC < EXPAND_THRESHOLD) v.minC -= EXPAND_STEP;
+    if (v.maxC - c < EXPAND_THRESHOLD) v.maxC += EXPAND_STEP;
+    return v;
+  }
+
+  // ═══════ CHECK WIN — Luật cờ quốc tế (Free-style Gomoku) ═══════
+  function checkWin(cells, r, c, player){
+    var dirs = [[0, 1], [1, 0], [1, 1], [1, -1]];
+
+    for (var d = 0; d < dirs.length; d++){
+      var dr = dirs[d][0], dc = dirs[d][1];
+      var positions = [{ r: r, c: c }];
+
+      for (var s1 = 1; s1 <= 4; s1++){
+        var nr = r + dr * s1, nc = c + dc * s1;
+        if (getCell(cells, nr, nc) !== player) break;
+        positions.push({ r: nr, c: nc });
+      }
+      for (var s2 = 1; s2 <= 4; s2++){
+        var nr2 = r - dr * s2, nc2 = c - dc * s2;
+        if (getCell(cells, nr2, nc2) !== player) break;
+        positions.push({ r: nr2, c: nc2 });
+      }
+
+      if (positions.length < WIN_COUNT) continue;
+
+      positions.sort(function(a, b){
+        var pa = (a.r - r) * dr + (a.c - c) * dc;
+        var pb = (b.r - r) * dr + (b.c - c) * dc;
+        return pa - pb;
+      });
+
+      // Chỉ cần 5 quân liên tiếp là thắng — không kiểm tra chặn
+      return positions.slice(0, WIN_COUNT);
+    }
+    return null;
+  }
+
+  function renderGameChat(chat){
+    var el = $('gameChatMessages');
+    if (!el) return;
+    if (!chat.length){
+      el.innerHTML = '<div class="text-center text-teal-500 text-[11px] py-4">Chưa có tin nhắn</div>';
+      return;
+    }
+    var myName = state.currentUser;
+    el.innerHTML = chat.map(function(m){
+      if (m.type === 'system') return '<div class="game-chat-msg system">' + esc(m.text) + '</div>';
+      var mine = m.sender === myName;
+      return '<div class="game-chat-msg ' + (mine ? 'mine' : '') + '">'
+        + '<span class="who">' + esc(m.sender) + '</span>' + esc(m.text) + '</div>';
+    }).join('');
+    requestAnimationFrame(function(){ el.scrollTop = el.scrollHeight; });
+  }
+
+  window.sendGameChat = function(){
+    var input = $('gameChatInput');
+    var text = input.value.trim();
+    if (!text) return;
+    if (!state.currentGameId || !state.currentUser) return;
+    var m = state.modules;
+    var docRef = m.db.doc(state.db, COL_GAMES, state.currentGameId);
+    m.db.getDoc(docRef).then(function(snap){
+      if (!snap.exists()) return;
+      var chat = (snap.data().chat || []).slice();
+      chat.push({ sender: state.currentUser, text: text, timestamp: Date.now() });
+      if (chat.length > 100) chat = chat.slice(-100);
+      return m.db.updateDoc(docRef, { chat: chat });
+    }).then(function(){ input.value = ''; }).catch(function(e){ console.warn(e); });
+  };
+
+  $('gameChatInput') && $('gameChatInput').addEventListener('keydown', function(e){
+    if (e.key === 'Enter'){ e.preventDefault(); sendGameChat(); }
+  });
+
+  function showGameView(){
+    $('lobbyView').style.display = 'none';
+    $('gameView').style.display = 'block';
+    state.lastViewKey = '';
+  }
+  function showLobby(){
+    $('gameView').style.display = 'none';
+    $('lobbyView').style.display = 'block';
+    state.currentGameId = null;
+    state.currentGame = null;
+    state.myPlayerNum = 0;
+    state.lastViewKey = '';
+    if (state.unsubGame){ state.unsubGame(); state.unsubGame = null; }
+  }
+
+  window.resignGame = function(){
+    var g = state.currentGame;
+    if (!g || g.status !== 'playing') return;
+    if (!confirm('Bạn chắc chắn muốn đầu hàng?')) return;
+    var winner = state.myPlayerNum === 1 ? 2 : 1;
+    var m = state.modules;
+    m.db.updateDoc(m.db.doc(state.db, COL_GAMES, state.currentGameId), {
+      status: 'finished', winner: winner, finishedAt: Date.now(),
+      resigned: true, resignedBy: state.currentUser
+    });
+  };
+
+  window.leaveGame = function(){
+    var g = state.currentGame;
+    if (g && g.status === 'playing'){
+      if (!confirm('Ván đang chơi. Rời ván sẽ tính là đầu hàng?')) return;
+      var winner = state.myPlayerNum === 1 ? 2 : 1;
+      var m = state.modules;
+      m.db.updateDoc(m.db.doc(state.db, COL_GAMES, state.currentGameId), {
+        status: 'finished', winner: winner, finishedAt: Date.now(),
+        resigned: true, resignedBy: state.currentUser
+      });
+    }
+    showLobby();
+  };
+
+  window.closeResultAndLeave = function(){
+    $('resultModal').classList.remove('show');
+    showLobby();
+  };
+
+  var lastResultShown = null;
+  function checkResultModal(){
+    var g = state.currentGame;
+    if (!g || g.status !== 'finished') return;
+    var key = state.currentGameId + ':' + g.finishedAt;
+    if (lastResultShown === key) return;
+    lastResultShown = key;
+
+    var modal = $('resultModal');
+    var icon = $('resultIcon');
+    var title = $('resultTitle');
+    var sub = $('resultSub');
+
+    if (!g.winner){
+      icon.textContent = '🤝'; title.textContent = 'HÒA!';
+      sub.textContent = 'Bàn cờ đã đầy hoặc quá nhiều nước';
+    } else if (g.winner === state.myPlayerNum){
+      icon.textContent = '🏆'; title.textContent = 'BẠN THẮNG!';
+      sub.textContent = 'Chúc mừng!';
+    } else {
+      icon.textContent = '😢'; title.textContent = 'BẠN THUA';
+      var winnerName = g.winner === 1 ? g.player1 : g.player2;
+      sub.textContent = (g.resigned && g.resignedBy === state.currentUser ? 'Bạn đã đầu hàng' : winnerName + ' đã thắng');
+    }
+    modal.classList.add('show');
+  }
+
+  var _origRender = renderGame;
+  renderGame = function(){ _origRender(); checkResultModal(); };
+
+  function cleanupOldGames(){
+    if (!state.db || !state.modules) return;
+    var m = state.modules;
+    var now = Date.now();
+    var q = m.db.query(m.db.collection(state.db, COL_GAMES), m.db.limit(100));
+    m.db.getDocs(q).then(function(snap){
+      var tasks = [];
+      snap.forEach(function(d){
+        var g = d.data();
+        var age = now - (g.createdAt || 0);
+        var del = false;
+        if (g.status === 'waiting' && age > WAITING_TIMEOUT) del = true;
+        if (g.status === 'finished' && g.finishedAt && (now - g.finishedAt) > FINISHED_TIMEOUT) del = true;
+        if (age > 24 * 60 * 60 * 1000) del = true;
+        if (del) tasks.push(m.db.deleteDoc(m.db.doc(state.db, COL_GAMES, d.id)));
+      });
+      if (tasks.length){
+        Promise.all(tasks).then(function(){ console.log('[Caro] Cleaned ' + tasks.length); });
+      }
+    });
+  }
+
+  window.goBack = function(){
+    if (state.currentGame && state.currentGame.status === 'playing'){
+      if (!confirm('Ván đang chơi. Thoát sẽ tính là đầu hàng?')) return;
+      resignGame();
+    }
+    window.location.href = '/DolphinApp/';
+  };
+
+  window.addEventListener('resize', function(){
+    state.lastViewKey = '';
+    if (state.currentGame) renderBoard(state.currentGame);
+  });
+
+  function init(){
+    state.currentUser = getStaffName();
+    updateMyNameDisplay();
+    initFirebase();
+    console.log('%c🎮 CARO GAME LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  }
+
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
+})();
+</script>
+</body>
+</html>

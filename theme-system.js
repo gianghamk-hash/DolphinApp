@@ -939,8 +939,8 @@ function fetchThemeFromFirebase(){
       applyTheme(urlTheme);
       return;
     }
-    fetchThemeFromFirebase();
-    setInterval(fetchThemeFromFirebase, 10 * 60 * 1000);
+   fetchThemeFromFirebase();
+// Không cần setInterval — onSnapshot tự realtime
   }
 
   window.ThemeSystem = {

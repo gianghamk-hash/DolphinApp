@@ -29,7 +29,10 @@ const CACHE_URLS = [
   BASE + '/community-chat.js',
   BASE + '/theme-system.js',
   BASE + '/avatar-system.js',
-  BASE + '/logo-dolphin.png'
+  BASE + '/logo-dolphin.png',
+  BASE + '/changelog.json',
+  BASE + '/changelog-history.json',
+  BASE + '/sw-config.json', 
 ];
 
 // ═══════ ĐỌC VERSION TỪ CONFIG ═══════

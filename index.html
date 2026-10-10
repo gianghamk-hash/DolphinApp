@@ -8,6 +8,90 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+  /* ════════════════ HALONG CLOCK WIDGET ════════════════ */
+#halongClock{
+  position:relative;display:flex;align-items:center;gap:12px;
+  max-width:min(92vw,560px);margin:0 auto clamp(1.25rem,2.5vw,2rem);
+  padding:12px 20px;border-radius:18px;
+  background:linear-gradient(135deg,rgba(15,61,56,.75),rgba(10,43,40,.85));
+  border:2px solid rgba(244,184,66,.55);
+  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 40px rgba(244,184,66,.25),
+             inset 0 0 30px rgba(244,184,66,.06);
+  backdrop-filter:blur(16px) saturate(140%);
+  -webkit-backdrop-filter:blur(16px) saturate(140%);
+  overflow:hidden;isolation:isolate;font-family:'Nunito',sans-serif;
+}
+#halongClock .hclock-glow{
+  position:absolute;inset:-50%;pointer-events:none;z-index:-1;
+  background:radial-gradient(circle at 30% 50%,rgba(244,184,66,.18),transparent 60%),
+             radial-gradient(circle at 70% 50%,rgba(78,205,196,.12),transparent 60%);
+  animation:hclock-drift 8s ease-in-out infinite alternate;
+}
+@keyframes hclock-drift{
+  0%{transform:translateX(-3%) scale(1)}
+  100%{transform:translateX(3%) scale(1.05)}
+}
+#halongClock .hclock-icon{
+  font-size:28px;line-height:1;flex-shrink:0;
+  animation:hclock-tick 2s ease-in-out infinite;
+  filter:drop-shadow(0 0 12px rgba(244,184,66,.8));
+}
+@keyframes hclock-tick{
+  0%,100%{transform:rotate(-8deg) scale(1)}
+  50%{transform:rotate(8deg) scale(1.08)}
+}
+#halongClock .hclock-body{flex:1;min-width:0;text-align:left}
+#halongClock .hclock-time{
+  display:flex;align-items:baseline;gap:2px;
+  font-weight:900;line-height:1;
+  font-variant-numeric:tabular-nums;
+  color:#FBD77A;letter-spacing:.02em;
+  text-shadow:0 0 12px rgba(244,184,66,.65),0 0 24px rgba(244,184,66,.35);
+  font-size:clamp(1.6rem,4.5vw,2.4rem);
+}
+#halongClock .hclock-h,
+#halongClock .hclock-m,
+#halongClock .hclock-s{
+  font-family:'Fraunces','Nunito',serif;
+  font-weight:900;
+}
+#halongClock .hclock-s{
+  font-size:.55em;opacity:.85;margin-left:2px;
+  color:#bfe9dc;
+}
+#halongClock .hclock-sep{opacity:.55;font-weight:700;font-size:.85em}
+#halongClock .hclock-sep-s{font-size:.55em;opacity:.5}
+#halongClock .hclock-date{
+  font-size:clamp(.7rem,1.6vw,.82rem);
+  color:#bfe9dc;font-weight:700;margin-top:5px;
+  letter-spacing:.03em;opacity:.92;
+}
+#halongClock .hclock-loc{
+  display:flex;align-items:center;gap:6px;
+  padding-left:12px;border-left:1px solid rgba(244,184,66,.3);
+  flex-shrink:0;text-align:left;
+}
+#halongClock .hclock-loc-icon{
+  font-size:18px;
+  animation:hclock-pin 2.5s ease-in-out infinite;
+  filter:drop-shadow(0 0 6px rgba(244,184,66,.7));
+}
+@keyframes hclock-pin{
+  0%,100%{transform:translateY(0) scale(1)}
+  50%{transform:translateY(-3px) scale(1.15)}
+}
+#halongClock .hclock-loc-text{
+  font-size:clamp(.62rem,1.4vw,.72rem);
+  font-weight:800;color:#FBD77A;letter-spacing:.04em;
+  text-transform:uppercase;line-height:1.3;
+  text-shadow:0 0 8px rgba(244,184,66,.5);
+}
+@media(max-width:480px){
+  #halongClock{padding:10px 14px;gap:8px}
+  #halongClock .hclock-icon{font-size:22px}
+  #halongClock .hclock-loc{padding-left:8px}
+  #halongClock .hclock-loc-text{font-size:.6rem}
+}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%;overflow:hidden}
 body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
@@ -370,6 +454,25 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   <div style="position:relative;z-index:10;width:100%;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem">
     <div style="width:100%;max-width:1200px">
 
+<!-- ════════ HALONG CLOCK WIDGET ════════ -->
+<div id="halongClock" class="fade-up">
+  <div class="hclock-glow"></div>
+  <div class="hclock-icon">🕐</div>
+  <div class="hclock-body">
+    <div class="hclock-time" aria-live="polite">
+      <span class="hclock-h" id="hclockH">00</span>
+      <span class="hclock-sep">:</span>
+      <span class="hclock-m" id="hclockM">00</span>
+      <span class="hclock-sep hclock-sep-s">:</span>
+      <span class="hclock-s" id="hclockS">00</span>
+    </div>
+    <div class="hclock-date" id="hclockDate">Đang tải...</div>
+  </div>
+  <div class="hclock-loc">
+    <span class="hclock-loc-icon">📍</span>
+    <span class="hclock-loc-text">Vịnh Hạ Long<br>Quảng Ninh</span>
+  </div>
+</div>
       <div class="text-center fade-up" style="margin-bottom:clamp(1.5rem,3.5vw,2.5rem)">
         <img src="/DolphinApp/logo-dolphin.png" 
              alt="Dolphin Ha Long Cruise" 
@@ -1077,15 +1180,64 @@ try {
     sunGroup.insertBefore(halo, sunGroup.firstChild);
   }
   function init(){
-    initParticles();
-    enhanceSun();
-    updateTimeBackground();
-    setInterval(updateTimeBackground, 60000);
-  }
+  initParticles();
+  enhanceSun();
+  updateTimeBackground();
+  initHalongClock();   // ← THÊM DÒNG NÀY
+  setInterval(updateTimeBackground, 60000);
+}
   if (document.readyState === 'loading') {
     document.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
   } else { setTimeout(init, 500); }
 })();
+function initHalongClock(){
+  var elH = document.getElementById('hclockH');
+  var elM = document.getElementById('hclockM');
+  var elS = document.getElementById('hclockS');
+  var elDate = document.getElementById('hclockDate');
+  if (!elH || !elM || !elS || !elDate) return;
+
+  var DOW_VN = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
+  var fmtTime = new Intl.DateTimeFormat('en-GB', {
+    timeZone:'Asia/Ho_Chi_Minh',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+  });
+  var fmtDate = new Intl.DateTimeFormat('en-GB', {
+    timeZone:'Asia/Ho_Chi_Minh',
+    day:'2-digit', month:'2-digit', year:'numeric', weekday:'short'
+  });
+
+  function tick(){
+    var now = new Date();
+    var parts = fmtTime.formatToParts(now);
+    var h = '00', m = '00', s = '00';
+    parts.forEach(function(p){
+      if (p.type === 'hour') h = p.value;
+      if (p.type === 'minute') m = p.value;
+      if (p.type === 'second') s = p.value;
+    });
+    elH.textContent = h;
+    elM.textContent = m;
+    elS.textContent = s;
+
+    var dp = fmtDate.formatToParts(now);
+    var d = '01', mo = '01', y = '2026', dow = '';
+    dp.forEach(function(p){
+      if (p.type === 'day') d = p.value;
+      if (p.type === 'month') mo = p.value;
+      if (p.type === 'year') y = p.value;
+      if (p.type === 'weekday') dow = p.value;
+    });
+    // Map weekday EN → VN
+    var map = { Sun:'Chủ Nhật', Mon:'Thứ Hai', Tue:'Thứ Ba', Wed:'Thứ Tư',
+                Thu:'Thứ Năm', Fri:'Thứ Sáu', Sat:'Thứ Bảy' };
+    var dowVN = map[dow] || dow;
+    elDate.textContent = dowVN + ', ' + d + ' tháng ' + mo + ', ' + y;
+  }
+
+  tick();
+  setInterval(tick, 1000);
+}
 </script>
 </body>
 </html>

@@ -4,7 +4,7 @@
    - Multi-layer parallax
    - God rays + vignette + color grading
    - Animated gradient sky
-   - 15 themes
+   - 15 themes + Halong Clock integration
    ============================================================ */
 (function(){
   'use strict';
@@ -91,9 +91,8 @@
     var s = document.createElement('style');
     s.id = 'theme-styles';
     s.textContent = `
-          /* ═══════════════════════════════════════════════════
+      /* ═══════════════════════════════════════════════════
          🎀 THEME DECORATIONS — Announcement + Area Cards
-         (đã sửa để khớp cấu trúc index.html)
          ═══════════════════════════════════════════════════ */
 
       /* ─── ANNOUNCEMENT BAR ─── */
@@ -101,7 +100,6 @@
         border-width:3px;
         animation:ann-glow-pulse 2.5s ease-in-out infinite;
       }
-      /* Trang trí bên PHẢI bar — bên trái đã có 📢 */
       body[class*="theme-"] #announcementBar::after{
         content:var(--ann-orn-r, '✨');
         position:absolute;right:10px;top:50%;
@@ -110,11 +108,9 @@
         filter:drop-shadow(0 0 8px var(--ann-glow, rgba(255,255,255,.8)));
         animation:ann-orn-bounce 1.6s ease-in-out infinite;
       }
-      /* Đổi emoji 📢 gốc thành emoji theo theme */
       body[class*="theme-"] .announcement-icon::after{
         content:var(--ann-icon-swap, '');
       }
-      /* Ẩn emoji 📢 gốc, thay bằng theme */
       body.theme-tet .announcement-icon{font-size:0}
       body.theme-tet .announcement-icon::after{content:'🧧';font-size:22px}
       body.theme-valentine .announcement-icon{font-size:0}
@@ -159,7 +155,6 @@
           0 0 60px var(--card-glow, rgba(244,184,66,.6)),
           inset 0 0 40px var(--card-inset, rgba(244,184,66,.15))!important;
       }
-      /* Emoji trang trí — đặt BÊN TRONG card, góc dưới-trái (tránh badge góc phải trên) */
       body[class*="theme-"] .area-card .theme-orn{
         position:absolute;font-size:22px;line-height:1;pointer-events:none;
         z-index:4;opacity:.85;
@@ -167,13 +162,8 @@
         animation:orn-float 3s ease-in-out infinite;
         transition:opacity .4s;
       }
-      body[class*="theme-"] .area-card .theme-orn-tl{
-        top:10px;left:10px;
-      }
-      body[class*="theme-"] .area-card .theme-orn-br{
-        bottom:10px;right:10px;
-        animation-delay:-1.5s;
-      }
+      body[class*="theme-"] .area-card .theme-orn-tl{top:10px;left:10px}
+      body[class*="theme-"] .area-card .theme-orn-br{bottom:10px;right:10px;animation-delay:-1.5s}
       body[class*="theme-"] .area-card:hover .theme-orn{opacity:1;font-size:26px}
 
       /* ─── ANIMATIONS ─── */
@@ -282,6 +272,7 @@
         --card-glow:rgba(184,216,240,.55); --card-inset:rgba(74,138,204,.12);
         --badge-c1:#FFFFFF; --badge-c2:#4A8ACC; --badge-glow:rgba(184,216,240,.8);
       }
+
       /* ═══ CANVAS LAYER ═══ */
       #themeCanvas{position:fixed;inset:0;pointer-events:none;z-index:2}
       #theme-vignette{position:fixed;inset:0;pointer-events:none;z-index:3;opacity:0;transition:opacity 1s}
@@ -431,13 +422,6 @@
         #themeBadge{font-size:9.5px;padding:4px 9px;top:6px;left:6px}
         #themeBadge .tb-icon{font-size:12px}
       }
-    `;
-    document.head.appendChild(s);
-  }
-      @media(max-width:768px){
-        #themeBadge{font-size:9.5px;padding:4px 9px;top:6px;left:6px}
-        #themeBadge .tb-icon{font-size:12px}
-      }
 
       /* ═══════════════════════════════════════════════════
          🕐 HALONG CLOCK — Theme overrides
@@ -455,9 +439,7 @@
         text-shadow:0 0 14px var(--hclock-glow, rgba(244,184,66,.65)),
                     0 0 28px var(--hclock-glow, rgba(244,184,66,.35));
       }
-      body[class*="theme-"] #halongClock .hclock-loc-text{
-        color:var(--hclock-color, #FBD77A);
-      }
+      body[class*="theme-"] #halongClock .hclock-loc-text{color:var(--hclock-color, #FBD77A)}
       body[class*="theme-"] #halongClock .hclock-icon{
         font-size:0;
         filter:drop-shadow(0 0 12px var(--hclock-glow, rgba(244,184,66,.8)));
@@ -466,9 +448,7 @@
         content:var(--hclock-icon, '🕐');
         font-size:28px;
       }
-      body[class*="theme-"] #halongClock .hclock-loc-icon{
-        font-size:0;
-      }
+      body[class*="theme-"] #halongClock .hclock-loc-icon{font-size:0}
       body[class*="theme-"] #halongClock .hclock-loc-icon::after{
         content:var(--hclock-loc, '📍');
         font-size:18px;
@@ -477,6 +457,8 @@
         background:radial-gradient(circle at 30% 50%,var(--hclock-glow,rgba(244,184,66,.18)),transparent 60%),
                    radial-gradient(circle at 70% 50%,var(--hclock-inset,rgba(78,205,196,.12)),transparent 60%);
       }
+
+      /* ─── Per-theme clock variables ─── */
       body.theme-tet{
         --hclock-glow:rgba(255,215,0,.6); --hclock-inset:rgba(255,80,80,.15);
         --hclock-color:#FFD700; --hclock-icon:'🧧'; --hclock-loc:'🏮';
@@ -529,10 +511,10 @@
         --hclock-glow:rgba(184,216,240,.7); --hclock-inset:rgba(74,138,204,.15);
         --hclock-color:#E0F0FF; --hclock-icon:'❄️'; --hclock-loc:'⛄';
       }
-    `;                          ← BACKTICK ĐÓNG — CHỈ 1 LẦN DUY NHẤT
+    `;
     document.head.appendChild(s);
-  }                             ← ĐÓNG HÀM — CHỈ 1 LẦN DUY NHẤT
-  
+  }
+   
   // ═══════ LAYERS ═══════
   function ensureLayers(){
     var layers = ['theme-aurora','theme-godrays','themeCanvas','theme-vignette'];
@@ -659,7 +641,6 @@
     var ctx = state.ctx;
     ctx.clearRect(0, 0, state.viewportW, state.viewportH);
 
-    // Update + draw
     for (var i = state.particles.length - 1; i >= 0; i--){
       var p = state.particles[i];
       p.update(dt);
@@ -669,14 +650,12 @@
       }
     }
 
-    // Spawn theo theme
     var theme = state.currentTheme;
     if (theme !== 'default'){
       var spawner = SPAWNERS[theme];
       if (spawner) spawner(dt);
     }
 
-    // Cắt bớt particles nếu quá nhiều
     if (state.particles.length > 500){
       state.particles.splice(0, state.particles.length - 500);
     }
@@ -1067,7 +1046,6 @@
       blue:   ['#00BFFF','#4ECDC4','#87CEEB','#00FFFF']
     };
     var colors = palettes[colorKey] || palettes.gold;
-    // Trail rocket
     addParticle({
       x: x, y: state.viewportH,
       vx: 0, vy: -600,
@@ -1077,7 +1055,6 @@
       shape: 'circle',
       maxLife: 1
     });
-    // Explosion at target y
     setTimeout(function(){
       var count = 50 + Math.floor(Math.random() * 40);
       var baseSize = 4 + Math.random() * 3;
@@ -1096,7 +1073,6 @@
           maxLife: 1.2 + Math.random() * 1.3
         });
       }
-      // Extra sparks
       for (var j = 0; j < 20; j++){
         addParticle({
           x: x, y: y,
@@ -1112,7 +1088,7 @@
       }
     }, 600 + Math.random() * 200);
   }
-
+   
   // ═══════ CLEAR ═══════
   function clearAll(){
     state.particles = [];
@@ -1150,16 +1126,17 @@
   function applyTheme(key){
     if (!THEMES[key]) key = 'default';
     clearAll();
-     document.querySelectorAll('.theme-orn').forEach(function(el){ el.remove(); });
+    document.querySelectorAll('.theme-orn').forEach(function(el){ el.remove(); });
     state.currentTheme = key;
     if (key === 'default'){
       showBadge(null);
       if (state.rafId) cancelAnimationFrame(state.rafId);
+      state.rafId = null;
       return;
     }
     ensureLayers();
     document.body.classList.add('theme-' + key);
-     decorateAreaCards(key);
+    decorateAreaCards(key);
     var aurora = document.getElementById('theme-aurora');
     var rays = document.getElementById('theme-godrays');
     var vig = document.getElementById('theme-vignette');
@@ -1173,54 +1150,91 @@
     }
   }
 
-// ═══════ FIREBASE (realtime, có auth) ═══════
-var themeApp = null;
-var themeUnsubscribe = null;
+  // ═══════ DECORATE AREA CARDS ═══════
+  function decorateAreaCards(themeKey){
+    var cards = document.querySelectorAll('.area-card');
+    var ornMap = {
+      tet:          ['🧧','🌸'],
+      valentine:    ['💕','🌹'],
+      womenday:     ['🌹','💮'],
+      reunification:['⭐','🎆'],
+      children:     ['🎁','🍭'],
+      nationalday:  ['⭐','🎆'],
+      midautumn:    ['🏮','🥮'],
+      halloween:    ['👻','🕷️'],
+      christmas:    ['❄️','🎅'],
+      newyear:      ['🥂','✨'],
+      spring:       ['🦋','🌺'],
+      summer:       ['🍹','🥥'],
+      autumn:       ['🌾','🍄'],
+      winter:       ['❄️','🌨️']
+    };
+    var orns = ornMap[themeKey] || ['',''];
 
-function fetchThemeFromFirebase(){
-  Promise.all([
-    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
-    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
-    import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-  ]).then(function(mods){
-    try {
-      themeApp = mods[0].getApp('theme-app');
-    } catch(e){
-      themeApp = mods[0].initializeApp(FIREBASE_CONFIG, 'theme-app');
-    }
-    var auth = mods[1].getAuth(themeApp);
-    var db = mods[2].getFirestore(themeApp);
+    cards.forEach(function(card){
+      card.querySelectorAll('.theme-orn').forEach(function(el){ el.remove(); });
+      if (themeKey === 'default') return;
 
-    function startListener(){
-      if (themeUnsubscribe) themeUnsubscribe();
-      var ref = mods[2].doc(db, 'master_config', 'theme');
-      themeUnsubscribe = mods[2].onSnapshot(ref, function(snap){
-        var key = 'auto';
-        if (snap.exists()){
-          var data = snap.data();
-          key = data.themeKey || data.theme || 'auto';
-        }
-        console.log('[Theme] Firestore says:', key);
-        if (key === 'auto' || !THEMES[key]) applyTheme(detectThemeByDate());
-        else applyTheme(key);
-      }, function(err){
-        console.warn('[Theme] Listen error:', err);
-        applyTheme(detectThemeByDate());
-      });
-    }
+      var tl = document.createElement('span');
+      tl.className = 'theme-orn theme-orn-tl';
+      tl.textContent = orns[0];
+      card.appendChild(tl);
 
-    if (auth.currentUser) startListener();
-    else mods[1].signInAnonymously(auth)
-      .then(startListener)
-      .catch(function(err){
-        console.warn('[Theme] Auth error:', err);
-        applyTheme(detectThemeByDate());
-      });
-  }).catch(function(err){
-    console.warn('[Theme] Firebase init fail:', err);
-    applyTheme(detectThemeByDate());
-  });
-}
+      var br = document.createElement('span');
+      br.className = 'theme-orn theme-orn-br';
+      br.textContent = orns[1];
+      card.appendChild(br);
+    });
+  }
+
+  // ═══════ FIREBASE (realtime, có auth) ═══════
+  var themeApp = null;
+  var themeUnsubscribe = null;
+
+  function fetchThemeFromFirebase(){
+    Promise.all([
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
+      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
+    ]).then(function(mods){
+      try {
+        themeApp = mods[0].getApp('theme-app');
+      } catch(e){
+        themeApp = mods[0].initializeApp(FIREBASE_CONFIG, 'theme-app');
+      }
+      var auth = mods[1].getAuth(themeApp);
+      var db = mods[2].getFirestore(themeApp);
+
+      function startListener(){
+        if (themeUnsubscribe) themeUnsubscribe();
+        var ref = mods[2].doc(db, 'master_config', 'theme');
+        themeUnsubscribe = mods[2].onSnapshot(ref, function(snap){
+          var key = 'auto';
+          if (snap.exists()){
+            var data = snap.data();
+            key = data.themeKey || data.theme || 'auto';
+          }
+          console.log('[Theme] Firestore says:', key);
+          if (key === 'auto' || !THEMES[key]) applyTheme(detectThemeByDate());
+          else applyTheme(key);
+        }, function(err){
+          console.warn('[Theme] Listen error:', err);
+          applyTheme(detectThemeByDate());
+        });
+      }
+
+      if (auth.currentUser) startListener();
+      else mods[1].signInAnonymously(auth)
+        .then(startListener)
+        .catch(function(err){
+          console.warn('[Theme] Auth error:', err);
+          applyTheme(detectThemeByDate());
+        });
+    }).catch(function(err){
+      console.warn('[Theme] Firebase init fail:', err);
+      applyTheme(detectThemeByDate());
+    });
+  }
 
   function init(){
     injectStyles();
@@ -1230,49 +1244,10 @@ function fetchThemeFromFirebase(){
       applyTheme(urlTheme);
       return;
     }
-   fetchThemeFromFirebase();
-// Không cần setInterval — onSnapshot tự realtime
+    fetchThemeFromFirebase();
   }
 
-// ═══════ DECORATE AREA CARDS ═══════
-function decorateAreaCards(themeKey){
-  var cards = document.querySelectorAll('.area-card');
-  var ornMap = {
-    tet:          ['🧧','🌸'],
-    valentine:    ['💕','🌹'],
-    womenday:     ['🌹','💮'],
-    reunification:['⭐','🎆'],
-    children:     ['🎁','🍭'],
-    nationalday:  ['⭐','🎆'],
-    midautumn:    ['🏮','🥮'],
-    halloween:    ['👻','🕷️'],
-    christmas:    ['❄️','🎅'],
-    newyear:      ['🥂','✨'],
-    spring:       ['🦋','🌺'],
-    summer:       ['🍹','🥥'],
-    autumn:       ['🌾','🍄'],
-    winter:       ['❄️','🌨️']
-  };
-  var orns = ornMap[themeKey] || ['',''];
-
-  cards.forEach(function(card){
-    // Xóa decoration cũ
-    card.querySelectorAll('.theme-orn').forEach(function(el){ el.remove(); });
-    if (themeKey === 'default') return;
-
-    // Chèn 2 emoji — dùng setTimeout để đảm bảo sau khi DOM sẵn sàng
-    var tl = document.createElement('span');
-    tl.className = 'theme-orn theme-orn-tl';
-    tl.textContent = orns[0];
-    card.appendChild(tl);
-
-    var br = document.createElement('span');
-    br.className = 'theme-orn theme-orn-br';
-    br.textContent = orns[1];
-    card.appendChild(br);
-  });
-}
-   window.ThemeSystem = {
+  window.ThemeSystem = {
     setTheme: function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },

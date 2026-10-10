@@ -719,14 +719,76 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 </script>
 
 <script>
-// ════════ PWA SERVICE WORKER ════════
+// ════════ PWA SERVICE WORKER — AUTO VERSION ════════
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
     navigator.serviceWorker.register('/DolphinApp/service-worker.js', {
-      scope: '/DolphinApp/'
+      scope: '/DolphinApp/',
+      updateViaCache: 'none'
     })
-    .then(function(reg){ console.log('✅ Service Worker registered:', reg.scope); })
-    .catch(function(err){ console.warn('❌ Service Worker failed:', err); });
+    .then(function(reg){
+      console.log('✅ SW registered:', reg.scope);
+
+      // ═══ Check update mỗi 5 phút ═══
+      setInterval(function(){
+        reg.update();
+        if (reg.active) {
+          reg.active.postMessage({ type: 'CHECK_UPDATE' });
+        }
+      }, 5 * 60 * 1000);
+
+      // ═══ Check khi quay lại tab ═══
+      document.addEventListener('visibilitychange', function(){
+        if (document.visibilityState === 'visible') {
+          reg.update();
+          if (reg.active) {
+            reg.active.postMessage({ type: 'CHECK_UPDATE' });
+          }
+        }
+      });
+
+      // ═══ Listen updatefound ═══
+      reg.addEventListener('updatefound', function(){
+        var newWorker = reg.installing;
+        if (!newWorker) return;
+        newWorker.addEventListener('statechange', function(){
+          if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+            console.log('🔄 New SW installed — activating...');
+            newWorker.postMessage({ type: 'SKIP_WAITING' });
+          }
+        });
+      });
+    })
+    .catch(function(err){
+      console.warn('❌ SW failed:', err);
+    });
+
+    // ═══ Listen message từ SW ═══
+    navigator.serviceWorker.addEventListener('message', function(e){
+      var data = e.data || {};
+      if (data.type === 'SW_ACTIVATED') {
+        console.log('✅ SW activated v' + data.version);
+      }
+      if (data.type === 'NEW_VERSION') {
+        console.log('🎉 New version available:', data.newVersion);
+        // Tự reload sau 1 giây
+        setTimeout(function(){
+          window.location.reload(true);
+        }, 1000);
+      }
+      if (data.type === 'RELOAD_NOW') {
+        window.location.reload(true);
+      }
+    });
+
+    // ═══ Listen controllerchange → reload ═══
+    var refreshing = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if (refreshing) return;
+      refreshing = true;
+      console.log('🔄 Controller changed — reloading...');
+      window.location.reload();
+    });
   });
 }
 </script>
@@ -972,107 +1034,6 @@ try {
 } catch(e){ console.warn('[Notif] Init error:', e); }
 </script>
 
-<!-- ════════ VERSION CHECK + AUTO UPDATE ════════ -->
-<script>
-(function(){
-  'use strict';
-  var VERSION_KEY = 'dolphinAppVersion';
-  var DISMISS_KEY = 'dolphinUpdateDismissed';
-  var CHECK_INTERVAL = 5 * 60 * 1000;
-  var UPDATE_URL = '/DolphinApp/version.json';
-  var currentRemoteVersion = null;
-
-  function getLocalVersion(){
-    try { return localStorage.getItem(VERSION_KEY) || '0.0.0'; } catch(e){ return '0.0.0'; }
-  }
-  function setLocalVersion(v){ try { localStorage.setItem(VERSION_KEY, v); } catch(e){} }
-  function isDismissed(version){
-    try {
-      var d = JSON.parse(localStorage.getItem(DISMISS_KEY) || 'null');
-      if (!d) return false;
-      if (Date.now() - d.time > 6 * 60 * 60 * 1000) return false;
-      return d.version === version;
-    } catch(e){ return false; }
-  }
-  function dismissCurrent(){
-    try {
-      localStorage.setItem(DISMISS_KEY, JSON.stringify({ version: currentRemoteVersion, time: Date.now() }));
-    } catch(e){}
-  }
-  function checkForUpdate(){
-    var url = UPDATE_URL + '?t=' + Date.now();
-    fetch(url, { cache: 'no-store', headers: { 'Cache-Control': 'no-cache' } })
-    .then(function(r){ if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); })
-    .then(function(data){
-      if (!data || !data.version) return;
-      var remoteVer = data.version;
-      var localVer = getLocalVersion();
-      currentRemoteVersion = remoteVer;
-      if (localVer === '0.0.0') { setLocalVersion(remoteVer); return; }
-      if (remoteVer !== localVer) {
-        if (isDismissed(remoteVer) && !data.forceUpdate) return;
-        showUpdateBanner(data);
-      } else { hideUpdateBanner(); }
-    })
-    .catch(function(err){ console.warn('[Update] Check failed:', err); });
-  }
-  function showUpdateBanner(data){
-    var banner = document.getElementById('updateBanner');
-    var notesEl = document.getElementById('updateNotes');
-    if (!banner || !notesEl) return;
-    var notes = data.notes || 'Phiên bản mới đã sẵn sàng';
-    notesEl.textContent = 'v' + data.version + ' · ' + notes;
-    banner.classList.add('show');
-    document.body.style.paddingTop = banner.offsetHeight + 'px';
-  }
-  function hideUpdateBanner(){
-    var banner = document.getElementById('updateBanner');
-    if (!banner) return;
-    banner.classList.remove('show');
-    document.body.style.paddingTop = '0';
-  }
-  window.performUpdate = function(){
-    var btn = document.getElementById('updateBtn');
-    if (btn) { btn.disabled = true; btn.textContent = '⏳ Đang cập nhật...'; }
-    var actions = [
-      ('caches' in window) ? caches.keys().then(function(names){
-        return Promise.all(names.map(function(n){
-          if (n.indexOf('dolphin-') === 0 || n.indexOf('workbox') === 0) return caches.delete(n);
-        }));
-      }) : Promise.resolve(),
-      ('serviceWorker' in navigator) ? navigator.serviceWorker.getRegistrations().then(function(regs){
-        return Promise.all(regs.map(function(r){ return r.unregister(); }));
-      }) : Promise.resolve(),
-      Promise.resolve().then(function(){
-        try { localStorage.removeItem(VERSION_KEY); localStorage.removeItem(DISMISS_KEY); } catch(e){}
-      })
-    ];
-    Promise.all(actions).then(function(){
-      setTimeout(function(){
-        if ('serviceWorker' in navigator && navigator.serviceWorker.controller) {
-          navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-        }
-        window.location.reload(true);
-      }, 600);
-    }).catch(function(err){
-      console.error('[Update] Error:', err);
-      setTimeout(function(){ window.location.reload(true); }, 500);
-    });
-  };
-  window.dismissUpdate = function(){ dismissCurrent(); hideUpdateBanner(); };
-  function start(){
-    setTimeout(checkForUpdate, 2000);
-    setInterval(checkForUpdate, CHECK_INTERVAL);
-    document.addEventListener('visibilitychange', function(){
-      if (document.visibilityState === 'visible') setTimeout(checkForUpdate, 1000);
-    });
-    window.addEventListener('online', function(){ setTimeout(checkForUpdate, 500); });
-  }
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', start);
-  } else { start(); }
-})();
-</script>
 
 <!-- ════════ ENHANCED LANDING ════════ -->
 <script>

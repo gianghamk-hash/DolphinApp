@@ -124,6 +124,17 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </button>
   </div>
 
+  <!-- CHANGELOG VIEWER -->
+  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
+    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center justify-between flex-wrap gap-2">
+      <span class="flex items-center gap-2"><span>📋</span> LỊCH SỬ CẬP NHẬT</span>
+      <button onclick="loadChangelog()" class="text-[10px] bg-teal-800/60 border border-teal-600/60 text-teal-200 font-bold rounded-lg px-3 py-1.5 uppercase tracking-wider">🔄 Refresh</button>
+    </h2>
+    <div id="changelog-container" class="space-y-3">
+      <div class="text-center text-teal-500 text-xs py-6">⏳ Đang tải...</div>
+    </div>
+  </div>
+
   <!-- THEME CONTROL -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
@@ -497,6 +508,89 @@ setTimeout(loadVersionInfo, 800);
 setInterval(loadVersionInfo, 60000);
 
 // ═══════════════════════════════════════════════════════════
+// CHANGELOG VIEWER
+// ═══════════════════════════════════════════════════════════
+window.loadChangelog = function() {
+  const container = document.getElementById('changelog-container');
+  if (!container) return;
+
+  Promise.all([
+    fetch('/DolphinApp/changelog.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null),
+    fetch('/DolphinApp/changelog-history.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null)
+  ]).then(([current, history]) => {
+    let html = '';
+
+    // Current version
+    if (current) {
+      const c = current.changes || {};
+      const summary = current.summary || 'Không có mô tả';
+      html += `
+        <div class="bg-emerald-950/40 rounded-xl p-3 border border-emerald-500/40">
+          <div class="flex items-center justify-between flex-wrap gap-2 mb-2">
+            <div class="flex items-center gap-2">
+              <span class="text-[10px] bg-emerald-500 text-white px-2 py-0.5 rounded font-black uppercase">Hiện tại</span>
+              <span class="text-[14px] font-black text-emerald-400 tabular">v${current.version}</span>
+            </div>
+            <span class="text-[10px] text-teal-300">${new Date(current.buildDate).toLocaleString('vi-VN')}</span>
+          </div>
+          <div class="text-[12px] text-white font-bold mb-2">${summary}</div>
+          <div class="flex gap-3 flex-wrap text-[10px] text-teal-300">
+            <span>📝 ${c.totalCommits || 0} commits</span>
+            <span>📁 ${c.filesChanged || 0} files</span>
+            <span class="text-emerald-400">+${c.insertions || 0}</span>
+            <span class="text-red-400">-${c.deletions || 0}</span>
+          </div>
+          ${current.fileChanges && current.fileChanges.length ? `
+            <div class="mt-2 pt-2 border-t border-white/10 space-y-1">
+              ${current.fileChanges.slice(0, 8).map(f => `
+                <div class="flex justify-between text-[10.5px]">
+                  <span class="text-teal-200 truncate">📄 ${f.path}</span>
+                  <span class="flex gap-2 ml-2">
+                    <span class="text-emerald-400 font-bold">+${f.ins || 0}</span>
+                    <span class="text-red-400 font-bold">-${f.dels || 0}</span>
+                  </span>
+                </div>
+              `).join('')}
+            </div>
+          ` : ''}
+        </div>
+      `;
+    }
+
+    // History
+    if (history && history.versions && history.versions.length > 1) {
+      const older = history.versions.slice(0, -1).reverse().slice(0, 10);
+      html += `<div class="text-[10px] text-teal-400 font-black uppercase mt-3 mb-1 px-1">📜 Version cũ hơn</div>`;
+      older.forEach(v => {
+        const c = v.changes || {};
+        html += `
+          <div class="bg-black/30 rounded-lg p-2.5 border border-teal-700/30">
+            <div class="flex justify-between items-center mb-1 flex-wrap gap-1">
+              <span class="text-[12px] font-black text-gold-400 tabular">v${v.version}</span>
+              <span class="text-[9.5px] text-teal-400">${v.date ? new Date(v.date).toLocaleString('vi-VN') : ''}</span>
+            </div>
+            <div class="text-[11px] text-teal-100 truncate">${v.summary || '(không có mô tả)'}</div>
+            <div class="flex gap-3 text-[9.5px] text-teal-400 mt-1">
+              <span>📁 ${c.filesChanged || 0}</span>
+              <span class="text-emerald-400">+${c.insertions || 0}</span>
+              <span class="text-red-400">-${c.deletions || 0}</span>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    container.innerHTML = html || '<div class="text-center text-teal-500 text-xs py-6">Không có dữ liệu</div>';
+  }).catch(e => {
+    console.warn('[Changelog] load error', e);
+    container.innerHTML = '<div class="text-center text-red-400 text-xs py-6">Lỗi tải dữ liệu</div>';
+  });
+};
+
+setTimeout(loadChangelog, 1500);
+setInterval(loadChangelog, 5 * 60 * 1000);
+
+  // ═══════════════════════════════════════════════════════════
 // THEME MANAGEMENT
 // ═══════════════════════════════════════════════════════════
 let themeListenStarted = false;

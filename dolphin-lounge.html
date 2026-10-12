@@ -13,261 +13,84 @@ tailwind.config = {
     fontFamily: { serif: ['Cinzel','serif'], sans: ['Plus Jakarta Sans','sans-serif'] },
     colors: { teal: { 950:'#0A3350',900:'#0E4573',800:'#135A93',700:'#1C79BD' }, gold: { 400:'#FBBF24',500:'#F59E0B',600:'#D97706' } },
     animation: {
-      'spin-slow':'spin 3s linear infinite','cloud-drift-1':'cloudDrift 55s linear infinite','cloud-drift-2':'cloudDrift 75s linear infinite','cloud-drift-3':'cloudDrift 95s linear infinite',
-      'dolphin-jump':'dolphinJump 7s ease-in-out infinite','palm-sway':'palmSway 4.5s ease-in-out infinite','wave-move':'waveMove 10s linear infinite','card-pop':'cardPop 0.45s ease',
-      'wave-bob-1':'waveBob 6s ease-in-out infinite','wave-bob-2':'waveBob 7.5s ease-in-out infinite','foam-pulse':'foamPulse 3.5s ease-in-out infinite',
-      'breath':'breath 4s ease-in-out infinite','shimmer':'shimmer 3.5s linear infinite','fly':'fly 18s linear infinite','glitter':'glitter 2.5s ease-in-out infinite'
+      'spin-slow':'spin 3s linear infinite',
+      'card-pop':'cardPop 0.45s ease',
+      'breath':'breath 4s ease-in-out infinite',
+      'shimmer':'shimmer 3.5s linear infinite'
     },
     keyframes: {
-      cloudDrift:{'0%':{transform:'translateX(-10vw)'},'100%':{transform:'translateX(110vw)'}},
-      dolphinJump:{'0%,100%':{transform:'translate(0,0) rotate(0deg)'},'15%':{transform:'translate(8vw,-70px) rotate(-18deg)'},'30%':{transform:'translate(16vw,0) rotate(10deg)'},'45%':{transform:'translate(24vw,-70px) rotate(-18deg)'},'60%':{transform:'translate(32vw,0) rotate(10deg)'},'75%':{transform:'translate(40vw,-55px) rotate(-14deg)'},'90%':{transform:'translate(46vw,0) rotate(6deg)'}},
-      palmSway:{'0%,100%':{transform:'rotate(-3deg)'},'50%':{transform:'rotate(4deg)'}},
-      waveMove:{'0%':{backgroundPositionX:'0px'},'100%':{backgroundPositionX:'1000px'}},
       cardPop:{'0%':{transform:'scale(1)'},'30%':{transform:'scale(1.035)',boxShadow:'0 0 0 3px rgba(56,189,248,0.45)'},'100%':{transform:'scale(1)'}},
-      waveBob:{'0%,100%':{transform:'translateX(0) translateY(0) scaleY(1)'},'50%':{transform:'translateX(-2%) translateY(-6px) scaleY(1.06)'}},
-      foamPulse:{'0%,100%':{opacity:'0.5',transform:'scaleX(1)'},'50%':{opacity:'0.85',transform:'scaleX(1.03)'}},
       breath:{'0%,100%':{textShadow:'0 0 8px rgba(245,158,11,0.5), 0 0 20px rgba(245,158,11,0.3)'},'50%':{textShadow:'0 0 20px rgba(245,158,11,0.9), 0 0 45px rgba(245,158,11,0.6)'}},
-      shimmer:{'0%':{backgroundPosition:'-200% center'},'100%':{backgroundPosition:'200% center'}},
-      fly:{'0%':{transform:'translateX(-15vw) translateY(0)'},'25%':{transform:'translateX(25vw) translateY(-15px)'},'50%':{transform:'translateX(50vw) translateY(-30px)'},'75%':{transform:'translateX(75vw) translateY(-15px)'},'100%':{transform:'translateX(115vw) translateY(0)'}},
-      glitter:{'0%,100%':{opacity:'0',transform:'scale(0.5)'},'50%':{opacity:'1',transform:'scale(1.2)'}}
+      shimmer:{'0%':{backgroundPosition:'-200% center'},'100%':{backgroundPosition:'200% center'}}
     }
   }}
 }
 </script>
 <style>
-body{background-color:#0A3350;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden;cursor:default}
+:root{--theme-border:rgba(244,184,66,.55);--theme-border-soft:rgba(244,184,66,.22);--theme-glow:rgba(244,184,66,.28);--theme-accent:#FBD77A;--theme-accent2:#bfe9dc;--theme-bg1:#0A3350;--theme-bg2:#051628;--theme-shape:22px;--theme-trans:1.2s ease}
+body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%)!important;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden;cursor:default;transition:background var(--theme-trans)!important;min-height:100vh}
 .text-shadow-gold{text-shadow:0 2px 10px rgba(245,158,11,0.4)}
-::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1C79BD;border-radius:99px}::-webkit-scrollbar-thumb:hover{background:#F59E0B}
-.table-radio:checked+label,.lang-radio:checked+label{background:linear-gradient(135deg,#FBBF24 0%,#D97706 100%);color:#000;border-color:transparent;transform:scale(1.05) translateY(-2px);font-weight:900;box-shadow:0 10px 25px -5px rgba(245,158,11,0.5)}
-.glass-card{background:rgba(10,51,80,0.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.08)}
-
-.cloud-shape{position:absolute;background:#fff;border-radius:100px;opacity:.9;filter:blur(.5px);box-shadow:0 10px 30px rgba(255,255,255,.25)}
-.cloud-shape::before,.cloud-shape::after{content:'';position:absolute;background:inherit;border-radius:50%}
-.horizon-hills{position:absolute;left:0;right:0;height:70px}
-.ocean-waves{position:absolute;left:0;right:0;bottom:0;height:140px;background-image:repeating-radial-gradient(circle at 40px -10px,transparent 0,transparent 38px,rgba(255,255,255,.3) 40px,rgba(255,255,255,.3) 42px,transparent 44px);background-size:90px 50px;opacity:.5;animation:waveMove 10s linear infinite}
-.wave-crest{position:absolute;left:0;width:140%}
-.foam-line{position:absolute;left:0;right:0;height:26px;background:linear-gradient(180deg,rgba(255,255,255,.9),rgba(255,255,255,0));border-radius:50%;animation:foamPulse 3.5s ease-in-out infinite}
-.dolphin-track{position:absolute;left:0;width:100%}
-.palm-sway-inner{transform-origin:bottom center}
-.hammock-swing{position:absolute;transform-origin:top center;animation:palmSway 5s ease-in-out infinite;animation-delay:-1s}
+::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-track{background:transparent}::-webkit-scrollbar-thumb{background:#1C79BD;border-radius:99px}
+.table-radio:checked+label,.lang-radio:checked+label{background:linear-gradient(135deg,var(--theme-accent) 0%,var(--theme-accent2) 100%)!important;color:#000;border-color:transparent;transform:scale(1.05) translateY(-2px);font-weight:900;box-shadow:0 10px 25px -5px rgba(245,158,11,0.5)}
+.glass-card{background:rgba(10,51,80,0.55);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid var(--theme-border-soft)!important;transition:border-color var(--theme-trans),box-shadow var(--theme-trans)!important}
 .menu-card{transition:transform .35s ease,box-shadow .35s ease;will-change:transform}
-
-.mist{position:absolute;left:0;right:0;pointer-events:none;background:linear-gradient(180deg,transparent,rgba(255,255,255,.55),transparent);filter:blur(18px);opacity:0;transition:opacity 2s}
-.mist-1{animation:mistDrift 40s linear infinite}
-.mist-2{animation:mistDrift 55s linear infinite reverse}
-@keyframes mistDrift{0%{transform:translateX(-10%)}100%{transform:translateX(10%)}}
-
-.glitter-column{position:absolute;pointer-events:none;mix-blend-mode:screen;filter:blur(3px);transition:opacity 1.5s;opacity:0}
-.glitter-column .shard{position:absolute;height:2px;background:linear-gradient(90deg,transparent,#fff,transparent);border-radius:99px;animation:glitterShard 2.8s ease-in-out infinite}
-@keyframes glitterShard{0%,100%{opacity:.15;transform:scaleX(.6)}50%{opacity:.95;transform:scaleX(1.15)}}
-
-.bio-dot{position:absolute;width:5px;height:5px;border-radius:50%;background:radial-gradient(circle,#a7f3ff 0%,rgba(34,211,238,0) 70%);box-shadow:0 0 12px #22d3ee;animation:bioFloat 12s ease-in-out infinite}
-@keyframes bioFloat{0%{transform:translateY(0) scale(.8);opacity:.2}50%{transform:translateY(-40px) scale(1.4);opacity:.9}100%{transform:translateY(-90px) scale(.6);opacity:0}}
-
 .ripple-host{position:relative;overflow:hidden}
 .ripple-el{position:absolute;border-radius:50%;background:rgba(255,255,255,.45);transform:scale(0);animation:rippleExpand .6s ease-out;pointer-events:none}
 @keyframes rippleExpand{to{transform:scale(4);opacity:0}}
-
 .skeleton{background:linear-gradient(90deg,rgba(20,60,90,.6) 25%,rgba(40,90,130,.8) 50%,rgba(20,60,90,.6) 75%);background-size:200% 100%;animation:skeletonShimmer 1.4s ease-in-out infinite;border-radius:12px}
 @keyframes skeletonShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
 #toast-progress{height:3px;background:linear-gradient(90deg,#FBBF24,#F59E0B);border-radius:99px;transition:width linear}
 .toast-anim{animation:toastIn .4s cubic-bezier(.2,.9,.3,1.4)}
 @keyframes toastIn{0%{transform:translateX(120%) translateY(-20px);opacity:0}100%{transform:translateX(0) translateY(0);opacity:1}}
-
 .call-pulse{position:relative}
 .call-pulse::before,.call-pulse::after{content:'';position:absolute;inset:0;border-radius:inherit;border:2px solid rgba(245,158,11,.6);animation:callRing 2s ease-out infinite}
 .call-pulse::after{animation-delay:1s}
 @keyframes callRing{0%{transform:scale(1);opacity:.8}100%{transform:scale(1.5);opacity:0}}
-
 .logo-glow{animation:breath 4s ease-in-out infinite}
-.logo-shimmer{background:linear-gradient(90deg,#F59E0B 0%,#FBBF24 25%,#FFF7C2 50%,#FBBF24 75%,#F59E0B 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 3.5s linear infinite}
-
-.vip-spark{position:absolute;width:14px;height:14px;pointer-events:none;opacity:0;animation:vipTwinkle 1.8s ease-in-out infinite}
-@keyframes vipTwinkle{0%,100%{opacity:0;transform:scale(.4) rotate(0deg)}50%{opacity:1;transform:scale(1.1) rotate(180deg)}}
-
+.logo-shimmer{background:linear-gradient(90deg,var(--theme-accent) 0%,var(--theme-accent2) 25%,#FFF7C2 50%,var(--theme-accent2) 75%,var(--theme-accent) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 3.5s linear infinite}
 #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:500}
-#dust-canvas{position:fixed;inset:0;pointer-events:none;z-index:1;opacity:.55}
-
-#cocktail-cursor{position:fixed;pointer-events:none;z-index:9999;width:32px;height:32px;transition:transform .12s ease;opacity:0;transform:translate(-50%,-50%) scale(.6)}
-body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) scale(1)}
-
 #scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#FBBF24,#22d3ee,#FBBF24);background-size:200% 100%;z-index:999;width:0;box-shadow:0 0 10px rgba(245,158,11,.7);transition:width .1s linear;animation:shimmer 4s linear infinite}
-
-#celestial-core { will-change: left, top, width, height, opacity, box-shadow, background; transition: left 1.2s linear, top 1.2s linear, width 1.2s ease, height 1.2s ease, box-shadow 1.2s ease, background 1.2s ease; }
-#celestial-glow { will-change: left, top, width, height, opacity; }
-
 .sound-toggle{position:relative;transition:all .3s}
 .sound-toggle.active{color:#FBBF24;text-shadow:0 0 12px rgba(245,158,11,.9);border-color:rgba(245,158,11,.6)!important}
 .sound-toggle.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(245,158,11,.7);animation:callRing 2s ease-out infinite}
 .sound-menu{position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,51,80,.95);backdrop-filter:blur(20px);border:1px solid rgba(245,158,11,.4);border-radius:16px;padding:8px;box-shadow:0 20px 40px rgba(0,0,0,.6);min-width:260px;transform-origin:top right;transition:all .25s cubic-bezier(.2,.9,.3,1.2);z-index:300}
 .sound-menu.hidden-pop{opacity:0;transform:scale(.9) translateY(-6px);pointer-events:none}
 .sound-menu .menu-title{padding:8px 14px 4px;font-size:9px;font-weight:900;color:#FBBF24;text-transform:uppercase;letter-spacing:.15em;opacity:.8}
-.sound-menu button.mode-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:11.5px;color:#cbd5e1;width:100%;text-align:left;transition:all .18s;letter-spacing:.01em}
+.sound-menu button.mode-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:11.5px;color:#cbd5e1;width:100%;text-align:left;transition:all .18s}
 .sound-menu button.mode-btn:hover{background:rgba(28,121,189,.3);color:#fff}
 .sound-menu button.mode-btn.active{background:linear-gradient(135deg,#FBBF24,#D97706);color:#000;box-shadow:0 4px 12px rgba(245,158,11,.4)}
 .sound-menu button.mode-btn .icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
 .sound-menu button.mode-btn .meta{display:flex;flex-direction:column;flex:1;min-width:0}
 .sound-menu button.mode-btn .meta .name{font-weight:900;font-size:11.5px;line-height:1.2}
 .sound-menu button.mode-btn .meta .sub{font-size:8.5px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
-.sound-menu button.mode-btn.active .meta .sub{opacity:.75}
 .sound-menu .divider{height:1px;background:rgba(255,255,255,.08);margin:6px 0}
 .sound-menu .vol-wrap{padding:8px 12px 4px}
 .sound-menu input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#FBBF24,#F59E0B);border-radius:99px;outline:none}
 .sound-menu input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(245,158,11,.9);cursor:pointer}
-
-.weather-badge{transition:all .6s ease}
-
 @media(max-width:767px){
-  .hammock-swing svg{width:200px!important;height:75px!important}
-  .palm-sway-inner svg{width:95px!important;height:174px!important}
-  .dolphin-track svg{width:38px!important;height:19px!important}
-  .horizon-hills{opacity:.65}
-  .wave-crest{height:26px!important}
-  .foam-line{height:18px!important}
-  .hammock-swing{opacity:.55}
   #btn-role-customer,#btn-role-reception,#btn-role-bungalow,#btn-role-staff,#btn-role-admin{padding:6px 10px!important;font-size:10px!important}
-  #cocktail-cursor{display:none}
   .sound-menu{min-width:230px}
   .sound-menu button.mode-btn{padding:9px 10px;font-size:11px}
 }
-@media(min-width:768px){#sky-scene{filter:saturate(1.05)}}
-@media(prefers-reduced-motion:reduce){.dolphin-track,.hammock-swing,.palm-sway-inner,.wave-crest,.foam-line,.ocean-waves,.cloud-shape,.logo-glow,.logo-shimmer,.shimmer{animation:none!important}}
+@media(prefers-reduced-motion:reduce){.logo-glow,.logo-shimmer{animation:none!important}}
 </style>
 <script src="master.js" defer></script>
 <script src="staff-sync.js" defer></script>
+<script src="theme-system.js" defer></script>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black relative z-0">
 
 <div id="scroll-progress"></div>
 <canvas id="confetti-canvas"></canvas>
-<canvas id="dust-canvas"></canvas>
 
-<div id="cocktail-cursor">
-  <svg viewBox="0 0 32 32" width="32" height="32" style="filter:drop-shadow(0 2px 6px rgba(245,158,11,.6))">
-    <path d="M6,6 L16,16 L26,6 Z" fill="#FBBF24" opacity=".9"/>
-    <path d="M6,6 L16,16 L26,6" fill="none" stroke="#D97706" stroke-width="1.5"/>
-    <line x1="16" y1="16" x2="16" y2="26" stroke="#fff" stroke-width="1.5"/>
-    <line x1="11" y1="27" x2="21" y2="27" stroke="#fff" stroke-width="1.5"/>
-    <circle cx="23" cy="4" r="3" fill="#ef4444"/>
-    <circle cx="23" cy="3" r="1.5" fill="#22c55e"/>
-  </svg>
-</div>
-
-<div id="sky-scene" class="fixed inset-0 z-[-1] overflow-hidden pointer-events-none">
-  <div id="sky-gradient" class="absolute inset-0 transition-[background] duration-[1500ms] ease-linear"></div>
-  <div id="celestial-wrap" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0">
-    <div id="celestial-glow" class="absolute rounded-full" style="width:280px;height:280px;transform:translate(-50%,-50%);filter:blur(45px)"></div>
-    <div id="celestial-core" class="absolute rounded-full" style="width:80px;height:80px;transform:translate(-50%,-50%)"></div>
-  </div>
-  <div id="glitter-col" class="glitter-column" style="width:140px;height:26%;left:50%;bottom:22%"></div>
-  <div id="clouds-layer" class="absolute inset-0">
-    <div class="cloud-shape animate-cloud-drift-1" style="top:5%;width:130px;height:42px"></div>
-    <div class="cloud-shape animate-cloud-drift-2" style="top:13%;width:170px;height:48px;opacity:.85"></div>
-    <div class="cloud-shape animate-cloud-drift-3" style="top:2%;width:100px;height:34px;opacity:.75"></div>
-  </div>
-  <div class="horizon-hills" style="top:33%">
-    <svg viewBox="0 0 1000 120" width="100%" height="100%" preserveAspectRatio="none">
-      <path d="M0,120 L0,75 L70,45 L150,80 L230,35 L320,68 L410,25 L500,58 L590,20 L680,55 L770,30 L860,62 L930,22 L1000,58 L1000,120 Z" fill="#7FB3C2" opacity=".5"/>
-      <path d="M0,120 L0,95 L110,62 L210,88 L310,58 L430,84 L540,52 L650,82 L760,48 L880,80 L1000,65 L1000,120 Z" fill="#4F9C8E" opacity=".65"/>
-    </svg>
-  </div>
-  <div class="mist mist-1" style="top:34%;height:80px"></div>
-  <div class="mist mist-2" style="top:36%;height:60px"></div>
-  <svg class="wave-crest animate-wave-bob-1" style="bottom:20%" viewBox="0 0 800 60" height="40" preserveAspectRatio="none">
-    <path d="M0,40 Q40,15 80,35 Q120,52 160,32 Q200,12 240,34 Q280,52 320,30 Q360,10 400,32 Q440,50 480,30 Q520,12 560,32 Q600,50 640,30 Q680,12 720,34 Q760,50 800,32 L800,60 L0,60 Z" fill="rgba(255,255,255,.4)"/>
-  </svg>
-  <svg class="wave-crest animate-wave-bob-2" style="bottom:16%;animation-delay:-2.5s" viewBox="0 0 800 50" height="30" preserveAspectRatio="none">
-    <path d="M0,32 Q40,12 80,28 Q120,42 160,26 Q200,10 240,28 Q280,42 320,24 Q360,8 400,26 Q440,40 480,24 Q520,10 560,26 Q600,40 640,24 Q680,10 720,28 Q760,40 800,26 L800,50 L0,50 Z" fill="rgba(255,255,255,.28)"/>
-  </svg>
-  <div class="dolphin-track" id="dolphin-1" style="bottom:20%;left:6%;animation:dolphinJump 7s ease-in-out infinite">
-    <svg viewBox="0 0 100 50" width="56" height="28" style="filter:drop-shadow(0 4px 6px rgba(20,60,70,.3))">
-      <path d="M5,35 Q20,10 45,15 Q55,5 70,8 Q65,15 58,18 Q75,20 85,33 Q70,38 60,30 Q45,40 25,35 Q15,38 5,35 Z" fill="#FBFEFF"/>
-      <path d="M28,33 Q34,46 23,48 Q31,38 28,33 Z" fill="#FBFEFF"/>
-      <circle cx="16" cy="26" r="1.6" fill="#1C4D5A"/>
-    </svg>
-  </div>
-  <div class="dolphin-track" id="dolphin-2" style="bottom:22%;left:35%;animation:dolphinJump 9s ease-in-out -3s infinite;opacity:.85">
-    <svg viewBox="0 0 100 50" width="44" height="22" style="filter:drop-shadow(0 4px 6px rgba(20,60,70,.3))">
-      <path d="M5,35 Q20,10 45,15 Q55,5 70,8 Q65,15 58,18 Q75,20 85,33 Q70,38 60,30 Q45,40 25,35 Q15,38 5,35 Z" fill="#FBFEFF"/>
-      <path d="M28,33 Q34,46 23,48 Q31,38 28,33 Z" fill="#FBFEFF"/>
-      <circle cx="16" cy="26" r="1.6" fill="#1C4D5A"/>
-    </svg>
-  </div>
-  <div id="bio-layer" class="absolute inset-0" style="opacity:0;transition:opacity 2s"></div>
-  <div class="ocean-waves" style="bottom:4%;height:110px"></div>
-  <div class="foam-line" style="bottom:3%"></div>
-  <div class="foam-line" style="bottom:0%;animation-delay:-1.8s;opacity:.75"></div>
-  <div id="gulls-layer" class="absolute inset-0"></div>
-  <div id="boat-wrap" class="absolute" style="right:6%;bottom:3%">
-    <svg viewBox="0 0 200 70" width="140" height="49" style="animation:palmSway 6s ease-in-out infinite;transform-origin:center">
-      <ellipse cx="100" cy="55" rx="92" ry="6" fill="#0A3350" opacity=".18"/>
-      <path d="M10,38 Q100,66 190,38 Q172,18 100,18 Q28,18 10,38 Z" fill="#A9754A" stroke="#6B4226" stroke-width="2"/>
-      <line x1="45" y1="22" x2="45" y2="36" stroke="#6B4226" stroke-width="2"/>
-      <line x1="100" y1="19" x2="100" y2="36" stroke="#6B4226" stroke-width="2"/>
-      <line x1="155" y1="22" x2="155" y2="36" stroke="#6B4226" stroke-width="2"/>
-      <line x1="150" y1="2" x2="196" y2="42" stroke="#7A4A20" stroke-width="4" stroke-linecap="round"/>
-      <ellipse cx="198" cy="44" rx="9" ry="4.5" fill="#7A4A20" transform="rotate(42 198 44)"/>
-    </svg>
-  </div>
-  <div class="hammock-swing" style="left:50%;bottom:23%;transform:translateX(-50%)">
-    <svg viewBox="0 0 400 150" width="300" height="112">
-      <line x1="18" y1="8" x2="18" y2="40" stroke="#7A4A20" stroke-width="3"/>
-      <line x1="382" y1="8" x2="382" y2="40" stroke="#7A4A20" stroke-width="3"/>
-      <path d="M18,40 C75,115 325,115 382,40 L382,55 C325,128 75,128 18,55 Z" fill="#F2A33D" stroke="#C97A1E" stroke-width="2"/>
-      <path d="M18,40 C75,115 325,115 382,40" fill="none" stroke="#E08A2A" stroke-width="3" opacity=".6"/>
-      <path d="M45,122 C120,138 280,138 355,122" fill="none" stroke="#D43F3F" stroke-width="3" stroke-dasharray="4,7" stroke-linecap="round"/>
-      <line x1="40" y1="45" x2="30" y2="78" stroke="#7A4A20" stroke-width="2"/>
-      <circle cx="29" cy="90" r="13" fill="#F4F6F8" stroke="#E0526B" stroke-width="2"/>
-      <path d="M29,77 L29,103 M16,90 L42,90 M19,80 Q29,90 19,100 M39,80 Q29,90 39,100" stroke="#E0526B" stroke-width="2" fill="none"/>
-    </svg>
-  </div>
-  <div class="absolute" style="left:2%;bottom:0;transform:rotate(15deg);transform-origin:bottom center">
-    <div class="palm-sway-inner" style="animation:palmSway 4.5s ease-in-out infinite">
-      <svg viewBox="0 0 120 220" width="150" height="275">
-        <path d="M60,220 C54,160 38,138 46,88" stroke="#8A6A45" stroke-width="11" fill="none" stroke-linecap="round"/>
-        <g transform="translate(46,88)">
-          <path d="M0,0 C-10,-30 -45,-35 -60,-20 C-35,-15 -15,-10 0,0 Z" fill="#2F8F4E"/>
-          <path d="M0,0 C10,-35 45,-40 65,-25 C35,-18 15,-10 0,0 Z" fill="#37A25A"/>
-          <path d="M0,0 C-5,-40 -20,-60 -10,-75 C5,-55 5,-30 0,0 Z" fill="#3DB566"/>
-          <path d="M0,0 C8,-38 30,-55 45,-70 C25,-50 15,-25 0,0 Z" fill="#2F8F4E"/>
-          <path d="M0,0 C0,-45 10,-65 0,-80 C-10,-60 -5,-35 0,0 Z" fill="#37A25A"/>
-          <circle cx="2" cy="4" r="7" fill="#8A6A45"/>
-        </g>
-      </svg>
-    </div>
-  </div>
-  <div class="absolute" style="right:4%;bottom:0;transform:scaleX(-1) rotate(15deg);transform-origin:bottom center">
-    <div class="palm-sway-inner" style="animation:palmSway 5.2s ease-in-out infinite;animation-delay:-1.4s">
-      <svg viewBox="0 0 120 220" width="170" height="312">
-        <path d="M60,220 C54,160 38,138 46,88" stroke="#8A6A45" stroke-width="11" fill="none" stroke-linecap="round"/>
-        <g transform="translate(46,88)">
-          <path d="M0,0 C-10,-30 -45,-35 -60,-20 C-35,-15 -15,-10 0,0 Z" fill="#2F8F4E"/>
-          <path d="M0,0 C10,-35 45,-40 65,-25 C35,-18 15,-10 0,0 Z" fill="#37A25A"/>
-          <path d="M0,0 C-5,-40 -20,-60 -10,-75 C5,-55 5,-30 0,0 Z" fill="#3DB566"/>
-          <path d="M0,0 C8,-38 30,-55 45,-70 C25,-50 15,-25 0,0 Z" fill="#2F8F4E"/>
-          <path d="M0,0 C0,-45 10,-65 0,-80 C-10,-60 -5,-35 0,0 Z" fill="#37A25A"/>
-          <circle cx="2" cy="4" r="7" fill="#8A6A45"/>
-        </g>
-      </svg>
-    </div>
-  </div>
-  <div id="rain-layer" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0"></div>
-  <div id="wind-layer" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0"></div>
-  <div id="weather-overlay" class="absolute inset-0 transition-opacity duration-1000" style="opacity:0;background:rgba(0,0,20,.35)"></div>
-  <div class="absolute inset-x-0 bottom-0 h-[42%] bg-gradient-to-b from-transparent to-[#0A3350]/70"></div>
-</div>
 <div class="bg-teal-950/80 backdrop-blur-md border-b border-teal-800/50 px-4 py-2 text-xs flex flex-wrap justify-between items-center gap-3 z-50">
   <div class="flex items-center gap-3 flex-wrap">
     <div class="flex items-center gap-2">
       <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,.8)]"></span>
       <span id="cloud-status-text" class="font-bold text-teal-200 tracking-wider text-[10px] uppercase">⚡ ĐANG KẾT NỐI...</span>
     </div>
-    <div id="vn-clock" class="hidden sm:flex items-center gap-1.5 bg-teal-900/60 border border-teal-700/50 px-2.5 py-1 rounded-lg text-[10px] font-black text-gold-400 tracking-wider">
+    <div id="vn-clock" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black tracking-wider" style="background:rgba(18,54,52,.6);border:1px solid var(--theme-border);color:var(--theme-accent);">
       <span>🕒</span><span id="vn-clock-text">--:--</span>
-    </div>
-    <div id="weather-badge" class="weather-badge hidden sm:flex items-center gap-1.5 bg-teal-900/60 border border-teal-700/50 px-2.5 py-1 rounded-lg text-[10px] font-black text-white tracking-wider">
-      <span id="wb-icon">☀️</span><span id="wb-text">--°C • --</span>
     </div>
   </div>
   <div class="flex items-center gap-2">
@@ -317,7 +140,7 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
 
   <div id="view-customer" class="flex-1 flex flex-col hidden relative">
     <div id="welcome-screen" class="absolute inset-0 bg-teal-950/90 z-[100] flex flex-col items-center justify-center p-4 backdrop-blur-lg">
-      <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-teal-700/40 w-full max-w-2xl shadow-2xl overflow-y-auto max-h-[90vh] custom-scrollbar relative">
+      <div class="glass-card p-6 md:p-8 rounded-[2rem] border border-teal-700/40 w-full max-w-2xl shadow-2xl overflow-y-auto max-h-[90vh] relative">
         <div class="absolute -top-20 left-1/2 -translate-x-1/2 w-64 h-32 bg-gold-500/20 blur-[60px] pointer-events-none"></div>
         <div class="text-center mb-6 relative z-10">
           <h1 class="text-3xl font-serif font-black logo-shimmer tracking-widest mb-1">DOLPHIN</h1>
@@ -335,7 +158,7 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
         </div>
         <div class="mb-8 relative z-10">
           <span id="welcome-step-2" class="block text-xs font-black text-teal-400 mb-3 uppercase tracking-wider flex items-center gap-2"><span class="w-4 h-px bg-teal-600"></span>2. SELECT TABLE:<span class="flex-1 h-px bg-teal-800/50"></span></span>
-          <div class="h-[200px] overflow-y-auto pr-3 custom-scrollbar bg-teal-950/30 rounded-2xl p-4 border border-teal-800/30">
+          <div class="h-[200px] overflow-y-auto pr-3 bg-teal-950/30 rounded-2xl p-4 border border-teal-800/30">
             <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-2.5" id="welcome-tables-lounge"></div>
           </div>
         </div>
@@ -397,7 +220,7 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
       </div>
 
       <div class="sticky top-[100px] md:top-[90px] bg-teal-950/80 backdrop-blur-xl z-20 border-b border-teal-800/40 py-3 mt-5 shadow-sm">
-        <div class="max-w-7xl mx-auto px-4 flex gap-3 overflow-x-auto custom-scrollbar pb-1" id="categories-container"></div>
+        <div class="max-w-7xl mx-auto px-4 flex gap-3 overflow-x-auto pb-1" id="categories-container"></div>
       </div>
 
       <div class="max-w-7xl mx-auto w-full px-4 mt-6 flex-1 pb-32">
@@ -565,7 +388,7 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
           <input type="text" id="admin-search-order" oninput="renderAdmin()" placeholder="Tìm bàn, món, tên NV..." class="w-full bg-teal-950/80 border border-teal-600/50 rounded-xl pl-9 pr-3 py-2.5 text-xs text-white focus:outline-none focus:border-gold-500 shadow-inner">
         </div>
       </div>
-      <div class="overflow-x-auto custom-scrollbar pb-2">
+      <div class="overflow-x-auto pb-2">
         <table class="w-full text-left text-xs min-w-[800px]">
           <thead><tr class="border-b border-teal-700/50 text-teal-300 text-[10px] uppercase font-black tracking-widest bg-teal-900/40">
             <th class="py-4 px-4 rounded-tl-xl">Thời gian</th><th class="py-4 px-4">Bàn</th><th class="py-4 px-4">Món ăn</th><th class="py-4 px-4">Trạng thái</th><th class="py-4 px-4">Người làm</th><th class="py-4 px-4 rounded-tr-xl text-right">Thao tác</th>
@@ -681,6 +504,7 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
     <button onclick="clearCustomerName()" class="w-full border border-red-500/40 text-red-400 py-2.5 rounded-xl text-[10px] font-bold uppercase hover:bg-red-950/50 transition-all relative z-10">✕ Xóa bàn này</button>
   </div>
 </div>
+
 <div id="modal-cancel-qty" class="fixed inset-0 z-[170] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
   <div class="bg-red-950/90 border border-red-700/50 w-full max-w-xs rounded-[2rem] overflow-hidden p-6 shadow-2xl text-center">
     <h3 class="font-black text-red-400 text-sm uppercase mb-2 tracking-widest">Hủy Món</h3>
@@ -735,7 +559,7 @@ body.cocktail-zone #cocktail-cursor{opacity:1;transform:translate(-50%,-50%) sca
       <h3 id="lbl-confirm-title" class="font-black text-gold-400 text-sm uppercase tracking-widest drop-shadow-sm">Confirm Order</h3>
       <button onclick="toggleCartModal(false)" class="text-teal-400 text-xl hover:text-white px-2 bg-teal-900/50 rounded-lg w-8 h-8 flex items-center justify-center transition-colors">✕</button>
     </div>
-    <div class="space-y-2.5 max-h-[30vh] md:max-h-[280px] overflow-y-auto custom-scrollbar pr-2 relative z-10" id="cart-items-list"></div>
+    <div class="space-y-2.5 max-h-[30vh] md:max-h-[280px] overflow-y-auto pr-2 relative z-10" id="cart-items-list"></div>
     <div class="pt-5 border-t border-teal-700/50 mt-5 relative z-10">
       <label id="lbl-notes" class="block text-[10px] font-black text-teal-300 mb-2 uppercase tracking-widest">Notes:</label>
       <textarea rows="2" id="customer-notes-input" placeholder="..." class="w-full bg-teal-950/80 border border-teal-600/50 p-3.5 text-sm rounded-xl focus:outline-none focus:border-gold-500 text-white shadow-inner"></textarea>
@@ -869,18 +693,15 @@ window.playNotificationAlert = function() {
     let ctx = (window.Ambient && Ambient.ctx && Ambient.ctx.state!=='closed') ? Ambient.ctx : globalAudioCtx;
     if(!ctx){ ctx = new (window.AudioContext||window.webkitAudioContext)(); globalAudioCtx = ctx; }
     if(ctx.state==='suspended') ctx.resume();
-
     const notifGain = ctx.createGain();
     notifGain.gain.value = 0.85;
     notifGain.connect(ctx.destination);
-
     const delayL = ctx.createDelay(); delayL.delayTime.value = 0.02;
     const delayR = ctx.createDelay(); delayR.delayTime.value = 0.032;
     const mergeL = ctx.createGain(); mergeL.gain.value = 0.35;
     const mergeR = ctx.createGain(); mergeR.gain.value = 0.35;
     delayL.connect(mergeL); delayR.connect(mergeR);
     mergeL.connect(notifGain); mergeR.connect(notifGain);
-
     const strikeBell = (freq, startTime, loudness, decay) => {
       const partials = [
         { r:1.00, g:1.00, d:1.00 },{ r:2.00, g:0.65, d:0.85 },{ r:2.76, g:0.45, d:0.75 },
@@ -899,12 +720,8 @@ window.playNotificationAlert = function() {
         g.gain.exponentialRampToValueAtTime(peak, a + 0.004);
         g.gain.exponentialRampToValueAtTime(peak * 0.4, a + 0.06);
         g.gain.exponentialRampToValueAtTime(0.0001, a + dec);
-        osc.connect(g);
-        g.connect(notifGain);
-        g.connect(delayL);
-        g.connect(delayR);
-        osc.start(a);
-        osc.stop(a + dec + 0.05);
+        osc.connect(g); g.connect(notifGain); g.connect(delayL); g.connect(delayR);
+        osc.start(a); osc.stop(a + dec + 0.05);
       });
       const clickOsc = ctx.createOscillator();
       const clickG = ctx.createGain();
@@ -915,7 +732,6 @@ window.playNotificationAlert = function() {
       clickOsc.connect(clickG); clickG.connect(notifGain);
       clickOsc.start(startTime); clickOsc.stop(startTime + 0.03);
     };
-
     const now = ctx.currentTime + 0.05;
     const baseFreq = 1046.50;
     for (let i = 0; i < 6; i++) strikeBell(baseFreq, now + i * 0.22, 1.0 - i * 0.03, 1.4);
@@ -992,8 +808,7 @@ const Ambient = {
     if (this.reverb && wetAmount > 0) {
       const g = this.ctx.createGain();
       g.gain.value = wetAmount;
-      node.connect(g);
-      g.connect(this.reverb);
+      node.connect(g); g.connect(this.reverb);
     }
   },
   playLead(freq, t, dur, gain = 1.0) {
@@ -1216,241 +1031,6 @@ document.addEventListener('click', (e) => {
   }
 });
 
-const HLB_LAT = 20.9101, HLB_LNG = 107.1839;
-const sceneState = { weatherCode:0, cloudCover:30, windSpeed:5, isDay:1, temperature:25, condition:'clear', lastFetch:0 };
-
-function hexToRgb(h){ h=h.replace('#',''); if(h.length===3) h=h.split('').map(c=>c+c).join(''); const n=parseInt(h,16); return {r:(n>>16)&255,g:(n>>8)&255,b:n&255}; }
-function mixColor(a,b,t){
-  if(a.startsWith('rgb')){ const m=a.match(/\d+/g); a='#'+m.slice(0,3).map(x=>(+x).toString(16).padStart(2,'0')).join(''); }
-  if(b.startsWith('rgb')){ const m=b.match(/\d+/g); b='#'+m.slice(0,3).map(x=>(+x).toString(16).padStart(2,'0')).join(''); }
-  const A=hexToRgb(a),B=hexToRgb(b);
-  return `rgb(${Math.round(A.r+(B.r-A.r)*t)},${Math.round(A.g+(B.g-A.g)*t)},${Math.round(A.b+(B.b-A.b)*t)})`;
-}
-function getSunTimes(date){
-  const start = new Date(date.getFullYear(),0,0);
-  const doy = Math.floor((date-start)/86400000);
-  const lat = HLB_LAT*Math.PI/180;
-  const decl = 23.44*Math.PI/180*Math.sin(2*Math.PI*(doy-81)/365);
-  const cosHA = -Math.tan(lat)*Math.tan(decl);
-  const HA = Math.acos(Math.max(-1,Math.min(1,cosHA)))*12/Math.PI;
-  return {sunrise:12-HA, sunset:12+HA};
-}
-function classifyWeather(code,cc,ws,isDay){
-  if(!isDay) return 'night';
-  if(code>=95) return 'storm';
-  if(code>=80&&code<=82) return 'rain';
-  if(code>=61&&code<=65) return 'rain';
-  if(code>=51&&code<=57) return 'drizzle';
-  if(code===45||code===48) return 'fog';
-  if(ws>40) return 'storm';
-  if(ws>25) return 'windy';
-  if(cc>=85) return 'overcast';
-  if(cc>=45) return 'partly-cloudy';
-  return 'clear';
-}
-function weatherLabel(cond){
-  return {clear:'Trong xanh',night:'Đêm yên',storm:'Giông bão',rain:'Mưa',drizzle:'Mưa phùn',fog:'Sương mù',windy:'Gió mạnh',overcast:'Âm u','partly-cloudy':'Râm mát'}[cond]||'—';
-}
-function weatherIcon(cond,isDay){
-  if(!isDay) return '🌙';
-  return {clear:'☀️',storm:'⛈️',rain:'🌧️',drizzle:'🌦️',fog:'🌫️',windy:'💨',overcast:'☁️','partly-cloudy':'⛅'}[cond]||'☀️';
-}
-
-function updateSkyScene(){
-  const t = window.getVNTime();
-  const h = t.hours + t.minutes/60;
-  const {sunrise,sunset} = getSunTimes(new Date());
-  let sunProgress = null;
-  if(h>=sunrise && h<=sunset) sunProgress = (h-sunrise)/(sunset-sunrise);
-
-  const core = document.getElementById('celestial-core');
-  const glow = document.getElementById('celestial-glow');
-  const wrap = document.getElementById('celestial-wrap');
-  if(!core||!wrap) return;
-
-  let dim = 1;
-  if(['rain','storm','overcast','drizzle'].includes(sceneState.condition)) dim = 0.55;
-  if(sceneState.condition==='fog') dim = 0.4;
-  if(sceneState.condition==='partly-cloudy') dim = 0.9;
-  dim *= (1-Math.min(sceneState.cloudCover,90)/220);
-
-  let cx,cy,size;
-  if(sunProgress!==null){
-    cx = 5 + sunProgress*90;
-    const arcY = Math.sin(sunProgress*Math.PI);
-    cy = 60 - arcY*48;
-    const stops = [{p:0,c:'#ff6b35'},{p:.15,c:'#ffa34f'},{p:.35,c:'#ffd36b'},{p:.5,c:'#fff4b8'},{p:.65,c:'#ffd36b'},{p:.85,c:'#ffa34f'},{p:1,c:'#ff6b35'}];
-    let color='#ffd36b';
-    for(let i=0;i<stops.length-1;i++){ if(sunProgress>=stops[i].p && sunProgress<=stops[i+1].p){ const tt=(sunProgress-stops[i].p)/(stops[i+1].p-stops[i].p); color=mixColor(stops[i].c,stops[i+1].c,tt); break; } }
-    const _isMobile = innerWidth < 768;
-    const _sunBase = _isMobile ? 200 : 280;
-    const _sunExtra = _isMobile ? 100 : 140;
-    size = _sunBase + (1-arcY)*_sunExtra;
-    wrap.style.opacity='1';
-    core.style.left=cx+'%'; core.style.top=cy+'%';
-    core.style.width=size+'px'; core.style.height=size+'px';
-    core.style.background = `radial-gradient(circle at 35% 35%, #ffffff 0%, #fff8d8 18%, ${color} 55%, ${color} 100%)`;
-    core.style.boxShadow = `0 0 ${size*0.5}px ${color}, 0 0 ${size*1.4}px ${color}cc, 0 0 ${size*2.8}px ${color}80, 0 0 ${size*4.5}px ${color}40`;
-    core.style.opacity = String(Math.max(0.75, dim));
-    glow.style.left=cx+'%'; glow.style.top=cy+'%';
-    glow.style.width=(size*2.8)+'px'; glow.style.height=(size*2.8)+'px';
-    glow.style.background = `radial-gradient(circle, ${color} 0%, ${color}80 25%, transparent 70%)`;
-    glow.style.opacity = String(0.65*dim);
-    const col = document.getElementById('glitter-col');
-    col.style.left = (cx-4)+'%';
-    col.style.opacity = String(0.9*dim);
-    if(col.dataset.built!=='1'){
-      col.dataset.built='1'; col.innerHTML='';
-      for(let i=0;i<16;i++){ const s = document.createElement('div'); s.className='shard'; s.style.left = (Math.random()*100)+'%'; s.style.top = (i/16*100)+'%'; s.style.width = (12+Math.random()*40)+'px'; s.style.animationDelay = (Math.random()*2.8)+'s'; col.appendChild(s); }
-    }
-  } else {
-    let moonProgress;
-    const nightDur = (24-sunset)+sunrise;
-    if(h>sunset) moonProgress = (h-sunset)/nightDur;
-    else moonProgress = (h+24-sunset)/nightDur;
-    cx = 5 + moonProgress*90;
-    const arcY = Math.sin(moonProgress*Math.PI);
-    cy = 60 - arcY*48;
-    wrap.style.opacity='1';
-    core.style.left=cx+'%'; core.style.top=cy+'%';
-    core.style.width='140px'; core.style.height='140px';
-    core.style.background='radial-gradient(circle at 35% 35%, #ffffff 0%, #e8eef5 60%, #b8c4d1 100%)';
-    core.style.boxShadow='0 0 80px #c8d8e8aa, 0 0 160px #c8d8e855, inset -14px -14px 32px #a8b5c280';
-    core.style.opacity = String(0.95*Math.max(dim,0.6));
-    glow.style.left=cx+'%'; glow.style.top=cy+'%';
-    glow.style.width='380px'; glow.style.height='380px';
-    glow.style.background='radial-gradient(circle, #c8d8e8 0%, transparent 65%)';
-    glow.style.opacity='0.45';
-    const col = document.getElementById('glitter-col');
-    col.style.left=(cx-4)+'%';
-    col.style.opacity=String(0.4*dim);
-    if(col.dataset.built!=='moon'){
-      col.dataset.built='moon'; col.innerHTML='';
-      for(let i=0;i<14;i++){ const s = document.createElement('div'); s.className='shard'; s.style.left=(Math.random()*100)+'%'; s.style.top=(i/14*100)+'%'; s.style.width=(8+Math.random()*28)+'px'; s.style.animationDelay=(Math.random()*2.8)+'s'; s.style.background='linear-gradient(90deg,transparent,#dbeafe,transparent)'; col.appendChild(s); }
-    }
-  }
-
-  const bio = document.getElementById('bio-layer');
-  bio.style.opacity = sceneState.isDay ? '0' : '1';
-  if(!sceneState.isDay && bio.dataset.built!=='1'){
-    bio.dataset.built='1'; bio.innerHTML='';
-    for(let i=0;i<24;i++){ const d = document.createElement('div'); d.className='bio-dot'; d.style.left = (Math.random()*100)+'%'; d.style.top = (55+Math.random()*20)+'%'; d.style.animationDelay = (Math.random()*12)+'s'; d.style.animationDuration = (8+Math.random()*6)+'s'; bio.appendChild(d); }
-  }
-
-  const isMorning = h>=4 && h<9;
-  const isFoggy = ['overcast','fog','drizzle','rain'].includes(sceneState.condition);
-  document.querySelectorAll('.mist').forEach(el=>{ el.style.opacity = (isMorning || isFoggy) ? '0.85' : '0'; });
-
-  updateSkyGradient(sunProgress);
-  updateClouds();
-  updateWeatherEffects();
-  updateWeatherBadge();
-}
-
-function updateSkyGradient(sp){
-  const sky = document.getElementById('sky-gradient');
-  const overlay = document.getElementById('weather-overlay');
-  if(!sky) return;
-  const N_top='#0a1c3a', N_bot='#1a2e4a';
-  const D_top='#5b4a7a', D_bot='#ff9a6b';
-  const M_top='#6fbce8', M_bot='#c8e4f0';
-  const No_top='#5db5ea',No_bot='#d8ecf5';
-  const K_top='#6a4a7a', K_bot='#ff7a4a';
-  let top,mid,bot;
-  if(sp===null){ top=N_top; mid='#142b4a'; bot=N_bot; }
-  else if(sp<0.12){ const t=sp/0.12; top=mixColor(N_top,D_top,t); mid=mixColor(N_bot,D_bot,t); bot=mixColor(N_bot,'#ffb88a',t); }
-  else if(sp<0.30){ const t=(sp-0.12)/0.18; top=mixColor(D_top,M_top,t); mid=mixColor(D_bot,M_bot,t); bot=mixColor('#ffb88a',M_bot,t); }
-  else if(sp<0.70){ top=No_top; mid='#a8d5e8'; bot=No_bot; }
-  else if(sp<0.88){ const t=(sp-0.70)/0.18; top=mixColor(No_top,K_top,t); mid=mixColor(No_bot,K_bot,t); bot=mixColor(No_bot,'#ff8a5a',t); }
-  else { const t=(sp-0.88)/0.12; top=mixColor(K_top,N_top,t); mid=mixColor(K_bot,N_bot,t); bot=mixColor('#ff8a5a',N_bot,t); }
-  let ov=0;
-  if(sceneState.condition==='rain'){ top=mixColor('#5a6a7a',top,.4); mid=mixColor('#6a7a8a',mid,.4); bot=mixColor('#7a8a9a',bot,.4); ov=.30; }
-  if(sceneState.condition==='storm'){ top=mixColor('#2a3a4a',top,.6); mid=mixColor('#3a4a5a',mid,.6); bot=mixColor('#4a5a6a',bot,.6); ov=.50; }
-  if(sceneState.condition==='drizzle'){ top=mixColor('#7a8a9a',top,.3); mid=mixColor('#8a9aaa',mid,.3); bot=mixColor('#9aaaba',bot,.3); ov=.20; }
-  if(sceneState.condition==='overcast'){ top=mixColor('#9aaaba',top,.4); mid=mixColor('#aabac8',mid,.4); bot=mixColor('#bac8d8',bot,.4); ov=.15; }
-  if(sceneState.condition==='fog'){ top=mixColor('#c8d0d8',top,.6); mid=mixColor('#d8e0e8',mid,.6); bot=mixColor('#e8f0f5',bot,.6); ov=.35; }
-  sky.style.background = `linear-gradient(180deg, ${top} 0%, ${mid} 38%, ${bot} 62%, #4FB2AE 78%, #63D2C4 90%, #E6E0B8 100%)`;
-  if(overlay) overlay.style.opacity = String(ov);
-}
-function updateClouds(){
-  const layer = document.getElementById('clouds-layer');
-  if(!layer) return;
-  const desired = Math.min(12, Math.max(3, Math.round(sceneState.cloudCover/100*12)+2));
-  const dark = ['storm','rain','overcast'].includes(sceneState.condition);
-  const fill = dark ? '#b8bfc7' : '#ffffff';
-  if(layer.children.length !== desired){
-    layer.innerHTML='';
-    for(let i=0;i<desired;i++){
-      const top = 3+Math.random()*30;
-      const speed = Math.max(30, 70+Math.random()*60-sceneState.windSpeed);
-      const size = 100+Math.random()*120;
-      const op = 0.55+Math.random()*0.4;
-      const c = document.createElement('div');
-      c.className='cloud-shape';
-      c.style.cssText = `top:${top}%;width:${size}px;height:${size*0.32}px;opacity:${op};background:${fill};animation:cloudDrift ${speed}s linear infinite;animation-delay:-${Math.random()*speed}s;`;
-      layer.appendChild(c);
-    }
-  } else {
-    Array.from(layer.children).forEach(c=>{ c.style.background=fill; });
-  }
-}
-function updateWeatherEffects(){
-  const rain = document.getElementById('rain-layer');
-  const wind = document.getElementById('wind-layer');
-  if(!rain||!wind) return;
-  const isRaining = ['rain','drizzle','storm'].includes(sceneState.condition);
-  const isWindy = sceneState.windSpeed>20 || sceneState.condition==='storm';
-  rain.style.opacity = isRaining ? '1':'0';
-  wind.style.opacity = isWindy ? '1':'0';
-  if(isRaining){
-    const sig = sceneState.condition;
-    if(rain.dataset.sig !== sig){
-      rain.dataset.sig = sig;
-      const n = sig==='storm'?140:sig==='rain'?80:40;
-      let html='';
-      for(let i=0;i<n;i++){ const left=Math.random()*100, delay=Math.random()*1.5, dur=.5+Math.random()*.6, len=10+Math.random()*20; html += `<div style="position:absolute;left:${left}%;top:-10%;width:1.5px;height:${len}px;background:linear-gradient(180deg,transparent,rgba(200,220,255,.75));animation:rainFall ${dur}s linear ${delay}s infinite"></div>`; }
-      rain.innerHTML = html;
-    }
-  } else if(rain.dataset.sig){ rain.dataset.sig=''; rain.innerHTML=''; }
-  if(isWindy){
-    const sig = sceneState.condition;
-    if(wind.dataset.sig !== sig){
-      wind.dataset.sig = sig;
-      const n = sig==='storm'?20:10;
-      let html='';
-      for(let i=0;i<n;i++){ const top=Math.random()*60, delay=Math.random()*3, dur=2+Math.random()*2; html += `<div style="position:absolute;left:-15%;top:${top}%;width:${120+Math.random()*80}px;height:1.5px;background:linear-gradient(90deg,transparent,rgba(255,255,255,.5),transparent);animation:windBlow ${dur}s linear ${delay}s infinite"></div>`; }
-      wind.innerHTML = html;
-    }
-  } else if(wind.dataset.sig){ wind.dataset.sig=''; wind.innerHTML=''; }
-}
-function updateWeatherBadge(){
-  const badge = document.getElementById('weather-badge');
-  if(!badge) return;
-  const icon = weatherIcon(sceneState.condition, sceneState.isDay===1);
-  const temp = Math.round(sceneState.temperature);
-  document.getElementById('wb-icon').innerText = icon;
-  document.getElementById('wb-text').innerText = `${temp}°C • ${weatherLabel(sceneState.condition)}`;
-}
-async function fetchWeather(){
-  try{
-    const url = `https://api.open-meteo.com/v1/forecast?latitude=${HLB_LAT}&longitude=${HLB_LNG}&current=temperature_2m,weather_code,cloud_cover,wind_speed_10m,is_day&timezone=Asia%2FHo_Chi_Minh`;
-    const r = await fetch(url); if(!r.ok) throw new Error('fetch fail');
-    const d = await r.json(); const c = d.current;
-    sceneState.weatherCode = c.weather_code;
-    sceneState.cloudCover = c.cloud_cover;
-    sceneState.windSpeed = c.wind_speed_10m;
-    sceneState.isDay = c.is_day===1 ? 1 : 0;
-    sceneState.temperature = c.temperature_2m;
-    sceneState.condition = classifyWeather(c.weather_code, c.cloud_cover, c.wind_speed_10m, c.is_day);
-    sceneState.lastFetch = Date.now();
-  } catch(e){
-    const t = window.getVNTime();
-    sceneState.isDay = (t.hours>=6 && t.hours<18) ? 1 : 0;
-    sceneState.condition = sceneState.isDay ? 'clear' : 'night';
-  }
-  updateSkyScene();
-}
-
 function tickClock(){
   const el = document.getElementById('vn-clock-text');
   if(!el) return;
@@ -1480,56 +1060,6 @@ const Confetti = (()=>{
   return {spawn, burstFrom};
 })();
 
-(function(){
-  const canvas = document.getElementById('dust-canvas');
-  const ctx = canvas.getContext('2d');
-  let W,H,parts=[];
-  function resize(){ W=canvas.width=innerWidth; H=canvas.height=innerHeight; }
-  addEventListener('resize', resize); resize();
-  const N = innerWidth<768?28:55;
-  for(let i=0;i<N;i++){ parts.push({x:Math.random()*W,y:Math.random()*H,r:0.6+Math.random()*1.6,vy:-0.08-Math.random()*0.25,vx:(Math.random()-.5)*0.15,ph:Math.random()*Math.PI*2}); }
-  function draw(){
-    ctx.clearRect(0,0,W,H);
-    parts.forEach(p=>{ p.y += p.vy; p.x += p.vx; p.ph += 0.015; if(p.y< -5){ p.y = H+5; p.x = Math.random()*W; } if(p.x< -5) p.x = W+5; if(p.x>W+5) p.x=-5; const tw = 0.4 + 0.6*Math.abs(Math.sin(p.ph)); ctx.beginPath(); ctx.fillStyle = `rgba(251,191,36,${0.55*tw})`; ctx.shadowColor = 'rgba(245,158,11,.9)'; ctx.shadowBlur = 8; ctx.arc(p.x,p.y,p.r,0,Math.PI*2); ctx.fill(); });
-    requestAnimationFrame(draw);
-  }
-  draw();
-})();
-
-function spawnGulls(){
-  const layer = document.getElementById('gulls-layer');
-  if(!layer || layer.dataset.built==='1') return;
-  layer.dataset.built='1';
-  const N = 3;
-  for(let i=0;i<N;i++){ const g = document.createElement('div'); const dur = 16+Math.random()*14; const top = 12+Math.random()*20; const scl = 0.6+Math.random()*0.6; g.style.cssText = `position:absolute;top:${top}%;left:-10vw;animation:fly ${dur}s linear -${Math.random()*dur}s infinite;transform:scale(${scl});`; g.innerHTML = `<svg viewBox="0 0 60 24" width="60" height="24" style="filter:drop-shadow(0 2px 4px rgba(0,0,0,.2))"><path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#F8FAFC" stroke-width="3" stroke-linecap="round"/><path d="M2,14 Q15,2 30,12 Q45,2 58,14" fill="none" stroke="#0A3350" stroke-width="1" stroke-linecap="round" opacity=".5"/></svg>`; layer.appendChild(g); }
-}
-function updateGullsVisibility(){
-  const layer = document.getElementById('gulls-layer');
-  if(!layer) return;
-  layer.style.opacity = sceneState.isDay===1 && !['storm','rain'].includes(sceneState.condition) ? '1' : '0.2';
-}
-function updateBoat(){
-  const boat = document.getElementById('boat-wrap');
-  if(!boat) return;
-  boat.style.right = '6%';
-  if(sceneState.condition==='storm') boat.style.animation = 'palmSway 1.2s ease-in-out infinite';
-  else if(sceneState.windSpeed>20) boat.style.animation = 'palmSway 2.5s ease-in-out infinite';
-  else boat.style.animation = 'palmSway 6s ease-in-out infinite';
-}
-
-window.startWeatherScene = function(){
-  fetchWeather();
-  spawnGulls();
-  tickClock();
-  setInterval(updateSkyScene, 60000);
-  setInterval(fetchWeather, 15*60*1000);
-  setInterval(tickClock, 30000);
-  setInterval(updateGullsVisibility, 60000);
-  setInterval(updateBoat, 30000);
-  updateGullsVisibility();
-  updateBoat();
-};
-
 function applyViewportClass(){
   const m = innerWidth<768;
   document.body.classList.toggle('is-mobile', m);
@@ -1552,12 +1082,6 @@ document.addEventListener('click', function(e){
   btn.appendChild(el);
   setTimeout(()=>el.remove(), 600);
 }, true);
-
-(function(){
-  const cursor = document.getElementById('cocktail-cursor');
-  document.addEventListener('mousemove', e=>{ cursor.style.left = e.clientX+'px'; cursor.style.top = e.clientY+'px'; });
-  document.addEventListener('mouseover', e=>{ const inMenu = e.target.closest('#menu-items-grid, #categories-container, .menu-card'); document.body.classList.toggle('cocktail-zone', !!inMenu); });
-})();
 
 document.addEventListener('mousemove', e=>{
   const card = e.target.closest('.menu-card');
@@ -1585,7 +1109,7 @@ function setupRealtimeListeners(){
     const arr=[]; snap.forEach(d=>arr.push({id:d.id,...d.data()}));
     arr.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));
     state.orders = arr;
-    if(hasNew && ['staff','admin','bungalow'].includes(state.currentRole)){ playNotificationAlert(); window.showToast("🚨 CÓ YÊU CẦU MỚI TỪ LOUNGE!","🔔"); triggerDolphinCelebration(); }
+    if(hasNew && ['staff','admin','bungalow'].includes(state.currentRole)){ playNotificationAlert(); window.showToast("🚨 CÓ YÊU CẦU MỚI TỪ LOUNGE!","🔔"); }
     renderAll();
   });
   onSnapshot(collection(db,'lounge_calls'), snap=>{
@@ -1604,12 +1128,6 @@ function setupRealtimeListeners(){
     window.updateWelcomeLabels();
     renderAll();
   });
-}
-
-function triggerDolphinCelebration(){
-  const d1 = document.getElementById('dolphin-1');
-  const d2 = document.getElementById('dolphin-2');
-  [d1,d2].forEach(d=>{ if(!d) return; d.style.animation = 'dolphinJump 3.5s ease-in-out 1'; setTimeout(()=>{ d.style.animation = d.id==='dolphin-1'?'dolphinJump 7s ease-in-out infinite':'dolphinJump 9s ease-in-out -3s infinite'; }, 3600); });
 }
 
 window.onload = function() {
@@ -1645,7 +1163,8 @@ window.onload = function() {
   }
 
   window.startCloudConnection();
-  window.startWeatherScene();
+  tickClock();
+  setInterval(tickClock, 30000);
   renderAll();
 };
 
@@ -1725,7 +1244,6 @@ window.verifyPin = function(){
 };
 window.closePinModal = function(){ document.getElementById('modal-pin').classList.add('hidden'); pendingRoleRequest=null; };
 
-/* ═══════════ SỬA 1: openCustomerNameModal với auto-fill ═══════════ */
 window.openCustomerNameModal = function(table){
   document.getElementById('reception-target-table').value = table;
   document.getElementById('lbl-reception-table').innerText = `${table}`;
@@ -1737,7 +1255,6 @@ window.openCustomerNameModal = function(table){
   document.getElementById('customer-payment-input').value = a.paymentMethod || 'TM';
   document.getElementById('customer-foc-reason').value = a.focReason || '';
 
-  // 👑 Auto-fill + khóa tên NV mở bàn
   const openerEl = document.getElementById('customer-staff-opener');
   const lockHint = document.getElementById('staff-opener-lock');
   const lockName = document.getElementById('staff-opener-name-lock');
@@ -1770,7 +1287,6 @@ window.toggleFocReason = function(){
 };
 window.closeCustomerNameModal = function(){ document.getElementById('modal-customer-name').classList.add('hidden'); };
 
-/* ═══════════ SỬA 2: saveCustomerName lưu openedByStaff ═══════════ */
 window.saveCustomerName = async function(){
   const table = document.getElementById('reception-target-table').value;
   const name = document.getElementById('customer-name-input').value.trim();
@@ -1784,7 +1300,6 @@ window.saveCustomerName = async function(){
   if(pax<=0){ window.showToast("Pax phải > 0!","⚠️"); return; }
   if((payment==='FOC'||payment==='TA_UNPAID') && !focReason){ window.showToast("Nhập lý do!","⚠️"); return; }
 
-  // 👑 Lấy tên NV mở bàn
   let staffOpener = '';
   const openerEl = document.getElementById('customer-staff-opener');
   if (openerEl && openerEl.value) staffOpener = String(openerEl.value).trim();
@@ -1816,7 +1331,6 @@ window.saveCustomerName = async function(){
   await window.executeSaveCustomerName({table, dataToSave:data});
 };
 
-/* ═══════════ SỬA 3: executeSaveCustomerName với merge ═══════════ */
 window.executeSaveCustomerName = async function({table,dataToSave}){
   try{ 
     if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave, { merge: true }); 
@@ -2234,7 +1748,7 @@ window.fetchHistoryData = async function(){
     if(sTable){ const f={}; Object.keys(hist).forEach(t=>{ if(t.toUpperCase().includes(sTable)) f[t]=hist[t]; }); hist=f; }
     window.currentHistoryData = hist;
     if(!Object.keys(hist).length){
-      c.innerHTML = `<div class="col-span-full text-center py-12 border border-dashed border-teal-800/40 rounded-2xl"><svg viewBox="0 0 120 80" width="120" height="80" class="mx-auto mb-3 opacity-50"><ellipse cx="60" cy="68" rx="50" ry="6" fill="#1e3a5f"/><path d="M20,40 Q60,60 100,40 Q90,25 60,25 Q30,25 20,40 Z" fill="#5b7fa8" stroke="#3b5a80" stroke-width="1.5"/><line x1="40" y1="28" x2="40" y2="38" stroke="#3b5a80" stroke-width="1.5"/><line x1="60" y1="26" x2="60" y2="38" stroke="#3b5a80" stroke-width="1.5"/><line x1="80" y1="28" x2="80" y2="38" stroke="#3b5a80" stroke-width="1.5"/><path d="M60,26 L60,10 M60,10 L80,20" stroke="#7a5a30" stroke-width="2" fill="none"/><text x="60" y="76" text-anchor="middle" fill="#5b7fa8" font-size="7" font-family="sans-serif">Không có dữ liệu</text></svg><div class="text-teal-400 font-bold text-sm">Không tìm thấy dữ liệu</div><div class="text-teal-500 text-[10px] mt-1">Thử đổi ngày hoặc ca khác</div></div>`;
+      c.innerHTML = `<div class="col-span-full text-center py-12 border border-dashed border-teal-800/40 rounded-2xl"><div class="text-teal-400 font-bold text-sm">Không tìm thấy dữ liệu</div><div class="text-teal-500 text-[10px] mt-1">Thử đổi ngày hoặc ca khác</div></div>`;
       return;
     }
     c.innerHTML = Object.keys(hist).map(t=>{
@@ -2304,11 +1818,6 @@ window.renderCustomer = function(){
   let display = state.selectedTable;
   if(name) display += ` <span class="text-xs text-white block mt-1 break-words whitespace-normal leading-tight px-1 drop-shadow-sm">${name}</span>`;
   document.getElementById('current-table-display').innerHTML = display;
-
-  const vipBadge = document.getElementById('table-vip-badge');
-  const existingSparkles = vipBadge.querySelectorAll('.vip-spark');
-  existingSparkles.forEach(s=>s.remove());
-  if(pax >= 10 && name){ for(let i=0;i<6;i++){ const sp = document.createElement('span'); sp.className='vip-spark'; sp.innerHTML = '✦'; sp.style.color = '#FBBF24'; sp.style.fontSize = '14px'; sp.style.textShadow = '0 0 8px rgba(245,158,11,.9)'; sp.style.left = (5+Math.random()*85)+'%'; sp.style.top = (5+Math.random()*85)+'%'; sp.style.animationDelay = (i*0.3)+'s'; vipBadge.appendChild(sp); } }
 
   const banner = document.getElementById('pax-alert-banner');
   if(isKtour){ banner.classList.remove('hidden'); document.getElementById('lbl-pax-warning-title').innerText = t.ktourWarningTitle; document.getElementById('lbl-pax-warning-msg').innerText = t.ktourWarningMsg; }
@@ -2437,7 +1946,6 @@ function updateHeartbeat(){
   if(sub) sub.innerText = cnt===0 ? 'Đang rảnh rỗi — chờ order mới' : `${cnt} đơn đang chờ xác nhận`;
   if(label) label.innerText = cnt>6 ? 'CAO ĐIỂM' : cnt>3 ? 'ĐANG BẬN' : 'NHỊP HOẠT ĐỘNG';
   if(peak) peak.classList.toggle('hidden', cnt<=5);
-  if(cnt>5 && !window._peakAlerted){ window._peakAlerted = true; try{ window.playNotificationAlert(); }catch(e){} setTimeout(()=>{ window._peakAlerted=false; }, 60000); }
 }
 
 window.renderBungalowTrack = function(){

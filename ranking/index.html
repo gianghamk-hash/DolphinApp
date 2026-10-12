@@ -35,6 +35,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .week-bar{background:linear-gradient(135deg,rgba(244,184,66,.15),rgba(244,184,66,.05));border:1px solid rgba(244,184,66,.4);border-radius:12px;padding:9px 14px;margin-bottom:14px;text-align:center}
 .week-bar .label{font-size:9.5px;color:#98dccb;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
 .week-bar .value{font-size:13px;color:#FBD77A;font-weight:900;margin-top:2px}
+.week-bar .stat{font-size:10px;color:#bfe9dc;margin-top:4px;opacity:.75;font-weight:700}
 </style>
 </head>
 <body>
@@ -55,6 +56,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   <div class="week-bar">
     <div class="label">📅 Tuần hiện tại (giờ Việt Nam)</div>
     <div class="value" id="week-range">Đang tải...</div>
+    <div class="stat" id="week-stat"></div>
   </div>
 
   <div class="flex gap-2 mb-4">
@@ -115,18 +117,15 @@ const firebaseConfig = {
   projectId: "dolphin-f6d67"
 };
 
-// ════════ CẤU HÌNH GIÁ ════════
-const PRICE_LOUNGE_PAX = 250000;      // 250K/pax
-const PRICE_BUNGALOW = 2000000;       // 2.000K/căn
-const PRICE_SHOW_BGL = 2000000;       // 2.000K/bàn BGL
-const PRICE_SHOW_VPS = 1390000;       // 1.390K/bàn VPS
-const PRICE_SHOW_BARVIEW = 790000;    // 790K/bàn Bar View
+const PRICE_LOUNGE_PAX = 250000;
+const PRICE_BUNGALOW = 2000000;
+const PRICE_SHOW_BGL = 2000000;
+const PRICE_SHOW_VPS = 1390000;
+const PRICE_SHOW_BARVIEW = 790000;
 
 const TOP_N = 10;
 const EXCLUDE_PAYMENTS = ['FOC', 'TA_UNPAID', 'KTOUR'];
-const MAX_ORDERS_PER_TABLE = 30;
 
-// ════════ STATE ════════
 const state = {
   loungeTables: {},
   bunTables: {},
@@ -134,12 +133,15 @@ const state = {
   loungeOrders: [],
   bunOrders: [],
   resOrders: [],
+  // ──── NEW: history từ 3 khu vực ────
+  loungeHistory: [],
+  bunHistory: [],
+  resHistory: [],
   mainTab: 'revenue',
   weekStart: 0,
   weekEnd: 0
 };
 
-// ════════ HELPERS ════════
 function $(id){ return document.getElementById(id); }
 function esc(s){ return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
 
@@ -158,7 +160,7 @@ function formatPoints(p){
   return p.toFixed(1);
 }
 
-// ════════ VIETNAM WEEK ════════
+/* ════════ WEEK RANGE ════════ */
 function getWeekRangeVN(){
   const parts = new Intl.DateTimeFormat('en-US', {
     timeZone: 'Asia/Ho_Chi_Minh',
@@ -195,7 +197,19 @@ function formatWeekRange(start, end){
   return fmt.format(start) + ' → ' + fmt.format(end);
 }
 
-// ════════ FIREBASE ════════
+/* ════════ VN DATE → TIMESTAMP ════════ */
+function vnDateToTimestamp(dateStr){
+  if (!dateStr) return 0;
+  const m = String(dateStr).match(/^(\d{4})-(\d{2})-(\d{2})/);
+  if (!m) return 0;
+  return Date.UTC(+m[1], +m[2]-1, +m[3], -7, 0, 0);
+}
+
+function isInWeek(ts){
+  return ts >= state.weekStart && ts < state.weekEnd;
+}
+
+/* ════════ FIREBASE ════════ */
 try {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -238,30 +252,80 @@ try {
       state.resOrders = arr;
       renderAll();
     });
+
+    /* ════════ NEW: LẮNG NGHE LỊCH SỬ ĐÓNG CA ════════ */
+    onSnapshot(collection(db, 'lounge_history_sessions'), snap => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      state.loungeHistory = arr;
+      renderAll();
+    });
+    onSnapshot(collection(db, 'bun_history'), snap => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      state.bunHistory = arr;
+      renderAll();
+    });
+    onSnapshot(collection(db, 'res_history'), snap => {
+      const arr = [];
+      snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
+      state.resHistory = arr;
+      renderAll();
+    });
+
   }).catch(e => console.warn('Auth error:', e));
 } catch(e){ console.warn(e); }
 
-// ════════ LOẠI TRỪ DOANH THU ════════
+/* ════════ LOẠI TRỪ DOANH THU ════════ */
 function isExcludedFromRevenue(t){
   if (!t) return false;
   const pay = (t.paymentMethod || t.payment || '').toUpperCase();
   return EXCLUDE_PAYMENTS.indexOf(pay) >= 0;
 }
 
-// ════════ PHÂN LOẠI BÀN SHOW ════════
 function getShowPrice(label){
   if (!label) return 0;
   const s = String(label).toUpperCase().trim();
-  // BGL 201 → BGL 406
   if (s.indexOf('BGL') === 0) return PRICE_SHOW_BGL;
-  // VPS 1 → VPS 14
   if (s.indexOf('VPS') === 0) return PRICE_SHOW_VPS;
-  // BAR VIEW 1 → BAR VIEW 12
   if (s.indexOf('BAR VIEW') === 0 || s.indexOf('BARVIEW') === 0) return PRICE_SHOW_BARVIEW;
   return 0;
 }
 
-// ════════ TÍNH DOANH THU ════════
+/* ════════ GOM TABLES TỪ CURRENT + HISTORY ════════ */
+function collectLoungeTables(){
+  const out = [];
+  // Current — không filter (vì archive sẽ xóa)
+  Object.values(state.loungeTables).forEach(t => out.push(t));
+  // History — filter theo session date
+  state.loungeHistory.forEach(sess => {
+    const sessTs = vnDateToTimestamp(sess.date);
+    if (!isInWeek(sessTs)) return;
+    const tbls = sess.tables || {};
+    Object.values(tbls).forEach(t => out.push(t));
+  });
+  return out;
+}
+
+function collectBunTables(){
+  const out = [];
+  Object.values(state.bunTables).forEach(t => out.push(t));
+  state.bunHistory.forEach(sess => {
+    const sessTs = vnDateToTimestamp(sess.date);
+    if (!isInWeek(sessTs)) return;
+    const tbls = sess.tables || {};
+    Object.values(tbls).forEach(t => out.push(t));
+  });
+  return out;
+}
+
+function collectShowTables(){
+  const out = [];
+  Object.values(state.showTables).forEach(t => out.push(t));
+  return out;
+}
+
+/* ════════ TÍNH DOANH THU ════════ */
 function calcRevenue(){
   const emp = {};
 
@@ -273,8 +337,8 @@ function calcRevenue(){
     emp[name].details.push(label);
   }
 
-  // 1. Lounge — pax × 250K
-  Object.values(state.loungeTables).forEach(t => {
+  // 1. Lounge
+  collectLoungeTables().forEach(t => {
     if (isExcludedFromRevenue(t)) return;
     const staff = (t.openedByStaff || '').trim();
     if (!staff) return;
@@ -283,16 +347,16 @@ function calcRevenue(){
     add(staff, pax * PRICE_LOUNGE_PAX, 'Lounge x' + pax);
   });
 
-  // 2. Bungalow — 2.000K/căn
-  Object.values(state.bunTables).forEach(t => {
+  // 2. Bungalow
+  collectBunTables().forEach(t => {
     if (isExcludedFromRevenue(t)) return;
     const staff = (t.openedByStaff || '').trim();
     if (!staff) return;
     add(staff, PRICE_BUNGALOW, 'BGL');
   });
 
-  // 3. Show — BGL/VPS/BarView (dùng seller làm người mở bàn)
-  Object.values(state.showTables).forEach(t => {
+  // 3. Show (không có history riêng — chỉ current)
+  collectShowTables().forEach(t => {
     if (isExcludedFromRevenue(t)) return;
     const staff = (t.seller || '').trim();
     if (!staff) return;
@@ -320,7 +384,6 @@ function renderRevenue(){
   list.innerHTML = data.map((e, i) => {
     const r = i + 1;
     const m = r <= 3 ? medals[r - 1] : r;
-    // Rút gọn chi tiết
     const lbl = e.details.slice(0, 3).join(' · ') + (e.details.length > 3 ? ' · +' + (e.details.length - 3) : '');
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
@@ -336,31 +399,44 @@ function renderRevenue(){
   }).join('');
 }
 
-// ════════ ĐIỂM CÔNG VIỆC ════════
+/* ════════ ĐIỂM CÔNG VIỆC ════════ */
 function parseStaffNames(str){
   if (!str) return [];
   return str.split('&').map(s => s.trim()).filter(Boolean);
+}
+
+function collectAllOrders(){
+  const out = [];
+  // Current
+  state.loungeOrders.forEach(o => out.push(o));
+  state.bunOrders.forEach(o => out.push(o));
+  state.resOrders.forEach(o => out.push(o));
+  // History — filter theo order completedAt
+  state.loungeHistory.forEach(sess => {
+    (sess.orders || []).forEach(o => out.push(o));
+  });
+  state.bunHistory.forEach(sess => {
+    (sess.orders || []).forEach(o => out.push(o));
+  });
+  state.resHistory.forEach(sess => {
+    (sess.orders || []).forEach(o => out.push(o));
+  });
+  return out;
 }
 
 function calcPoints(){
   const emp = {};
 
   function ensure(name){
-    if (!emp[name]) emp[name] = {
-      name: name,
-      points: 0,
-      both: 0,
-      onlyComplete: 0,
-      onlyPrepare: 0
-    };
+    if (!emp[name]) emp[name] = { name: name, points: 0, both: 0, onlyComplete: 0, onlyPrepare: 0 };
     return emp[name];
   }
 
-  const allOrders = [].concat(state.loungeOrders, state.bunOrders, state.resOrders);
+  const allOrders = collectAllOrders();
 
   allOrders.forEach(o => {
     if (!o.completedAt) return;
-    if (o.completedAt < state.weekStart || o.completedAt >= state.weekEnd) return;
+    if (!isInWeek(o.completedAt)) return;
     if (o.status !== 'completed') return;
 
     const preparedNames = parseStaffNames(o.preparedBy);
@@ -414,13 +490,24 @@ function renderPoints(){
   }).join('');
 }
 
-// ════════ RENDER ════════
+/* ════════ STATS NHANH ════════ */
+function renderWeekStat(){
+  const el = $('week-stat');
+  if (!el) return;
+  const loungeCnt = collectLoungeTables().length;
+  const bunCnt = collectBunTables().length;
+  const showCnt = collectShowTables().length;
+  const totalOrders = collectAllOrders().filter(o => o.completedAt && isInWeek(o.completedAt)).length;
+  el.textContent = `🍸 ${loungeCnt} · 🌴 ${bunCnt} · 🎭 ${showCnt} · 📦 ${totalOrders} đơn hoàn thành`;
+}
+
+/* ════════ RENDER ════════ */
 function renderAll(){
+  renderWeekStat();
   if (state.mainTab === 'revenue') renderRevenue();
   else renderPoints();
 }
 
-// ════════ TABS ════════
 window.switchMain = function(tab){
   state.mainTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.main === tab));
@@ -433,7 +520,7 @@ window.goBack = function(){
   window.location.href = '/DolphinApp/';
 };
 
-// ════════ INIT ════════
+/* ════════ INIT ════════ */
 (function init(){
   const range = getWeekRangeVN();
   state.weekStart = range.start;

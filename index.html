@@ -8,6 +8,92 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
+  /* ==================== 3. LOGO ANIMATION ==================== */
+.logo-img{
+  animation: logoIn 1.2s cubic-bezier(.16,1,.3,1) both,
+             logoBreathe 5s ease-in-out infinite 1.5s;
+}
+@keyframes logoIn{
+  0%{opacity:0;transform:scale(.85) translateY(20px);filter:blur(10px) brightness(1.5)}
+  100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0) brightness(1.05)}
+}
+@keyframes logoBreathe{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.025)}
+}
+@media(prefers-reduced-motion:reduce){
+  .logo-img{animation:none}
+}
+
+/* ==================== 2. SKELETON LOADING ==================== */
+.area-card.skeleton{
+  pointer-events:none;
+  background:rgba(25,71,67,.35)!important;
+  border:1px dashed rgba(244,184,66,.15)!important;
+  position:relative;
+  overflow:hidden;
+}
+.area-card.skeleton > *{
+  visibility:hidden!important;
+}
+.area-card.skeleton::after{
+  content:'';
+  position:absolute;
+  inset:0;
+  border-radius:inherit;
+  background:linear-gradient(90deg,
+    rgba(25,71,67,0) 0%,
+    rgba(78,205,196,.14) 45%,
+    rgba(244,184,66,.10) 55%,
+    rgba(25,71,67,0) 100%);
+  background-size:200% 100%;
+  animation:skeletonShimmer 1.5s ease-in-out infinite;
+  pointer-events:none;
+  z-index:3;
+}
+@keyframes skeletonShimmer{
+  0%{background-position:200% 0}
+  100%{background-position:-200% 0}
+}
+
+/* ==================== 9. NOTIF BADGE ==================== */
+.area-notif-badge{
+  position:absolute;
+  top:.6rem;
+  left:.85rem;
+  background:linear-gradient(135deg,#EF4444,#B91C1C);
+  color:#fff;
+  font-size:.6rem;
+  font-weight:900;
+  letter-spacing:.06em;
+  padding:4px 9px;
+  border-radius:99px;
+  display:none;
+  align-items:center;
+  gap:5px;
+  box-shadow:0 4px 12px rgba(239,68,68,.6),
+             0 0 0 2px rgba(239,68,68,.25);
+  z-index:6;
+  text-transform:uppercase;
+  font-family:'Nunito',sans-serif;
+  animation:notifPulse 1.4s ease-in-out infinite;
+  will-change:transform;
+}
+.area-notif-badge.show{display:inline-flex}
+.area-notif-badge .nb-dot{
+  width:7px;height:7px;border-radius:50%;
+  background:#fff;
+  box-shadow:0 0 8px #fff;
+}
+@keyframes notifPulse{
+  0%,100%{transform:scale(1);
+    box-shadow:0 4px 12px rgba(239,68,68,.6),0 0 0 2px rgba(239,68,68,.25)}
+  50%{transform:scale(1.08);
+    box-shadow:0 6px 20px rgba(239,68,68,.9),0 0 0 4px rgba(239,68,68,.35)}
+}
+@media(prefers-reduced-motion:reduce){
+  .area-notif-badge{animation:none}
+}
   /* ════════════════ HALONG CLOCK WIDGET ════════════════ */
 #halongClock{
   position:relative;display:flex;align-items:center;gap:12px;
@@ -419,9 +505,10 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
       </div>
 
       <div class="text-center fade-up" style="margin-bottom:clamp(1.5rem,3.5vw,2.5rem)">
-        <img src="/DolphinApp/logo-dolphin.png" 
-             alt="Dolphin Ha Long Cruise" 
-             style="max-width:min(90vw,520px);width:100%;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 8px 32px rgba(244,184,66,.35)) brightness(1.05);">
+<img src="/DolphinApp/logo-dolphin.png" 
+     alt="Dolphin Ha Long Cruise" 
+     class="logo-img"
+     style="max-width:min(90vw,520px);width:100%;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 8px 32px rgba(244,184,66,.35)) brightness(1.05);">
       </div>
 
       <!-- ════════ ANNOUNCEMENT TICKER ════════ -->
@@ -446,21 +533,24 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
       <div class="fade-up d-2 area-grid">
 
-        <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
-          <span class="area-badge">VIP</span>
+<button type="button" class="area-card" id="card-lounge" data-area="lounge" onclick="openApp('lounge')" aria-label="Premium Lounge">
+  <span class="area-notif-badge" id="badge-lounge"><span class="nb-dot"></span><span class="nb-text">0</span></span>
+  <span class="area-badge">VIP</span>
           <span class="area-icon">🍸</span>
           <h3 class="area-title-en">PREMIUM LOUNGE ACCESS</h3>
           <p class="area-title-vi">Phòng LOUNGE</p>
         </button>
 
-        <button type="button" class="area-card" onclick="openApp('bungalow')" aria-label="Bungalow">
-          <span class="area-icon">🌴</span>
+<button type="button" class="area-card" id="card-bungalow" data-area="bungalow" onclick="openApp('bungalow')" aria-label="Bungalow">
+  <span class="area-notif-badge" id="badge-bungalow"><span class="nb-dot"></span><span class="nb-text">0</span></span>
+  <span class="area-icon">🌴</span>
           <h3 class="area-title-en">BUNGALOW</h3>
           <p class="area-title-vi">KHU VỰC CHÒI BUNGALOW</p>
         </button>
 
-        <button type="button" class="area-card" onclick="openApp('restaurant')" aria-label="Restaurant">
-          <span class="area-badge">BUFFET ALACARTE</span>
+<button type="button" class="area-card" id="card-restaurant" data-area="restaurant" onclick="openApp('restaurant')" aria-label="Restaurant">
+  <span class="area-notif-badge" id="badge-restaurant"><span class="nb-dot"></span><span class="nb-text">0</span></span>
+  <span class="area-badge">BUFFET ALACARTE</span>
           <span class="area-icon">🍽️</span>
           <h3 class="area-title-en">SUN VIEW RESTAURANT</h3>
           <p class="area-title-vi">Nhà Hàng Tầng 2</p>
@@ -656,6 +746,37 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
   applyHomeBtnState();
   setTimeout(initDraggableHome, 100);
+    /* ════════ SKELETON LOADING ════════ */
+  (function skeletonFlow(){
+    var cards = document.querySelectorAll('.area-card');
+    if (!cards.length) return;
+
+    /* Bước 1: Bật skeleton NGAY */
+    cards.forEach(function(c){ c.classList.add('skeleton'); });
+
+    /* Bước 2: Sau 600ms hiện nội dung thật */
+    setTimeout(function(){
+      cards.forEach(function(c){
+        c.classList.remove('skeleton');
+        /* Hiệu ứng mở dần */
+        c.style.opacity = '0';
+        c.style.transform = 'translateY(8px)';
+        c.style.transition = 'opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1)';
+        requestAnimationFrame(function(){
+          requestAnimationFrame(function(){
+            c.style.opacity = '1';
+            c.style.transform = '';
+          });
+        });
+      });
+    }, 600);
+  })();
+
+  /* ════════ XÓA BADGE KHI VÀO APP ════════ */
+  window.clearAreaBadge = function(area){
+    var el = document.getElementById('badge-' + area);
+    if (el) el.classList.remove('show');
+  };
 
   /* ============ HIỆN DASHBOARD CHO MANAGER ============ */
   if (navigator.userAgent.indexOf('DolphinManager') >= 0) {
@@ -686,6 +807,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
       try { history.pushState({area: area}, '', '#' + area); } catch(e) { location.hash = area; }
     }
     currentApp = area;
+        /* Xóa badge khi vào app */
+    if (window.clearAreaBadge) window.clearAreaBadge(area);
     var frame = document.getElementById('app-frame');
     var view = document.getElementById('app-view');
     var landing = document.getElementById('landing');
@@ -1180,6 +1303,67 @@ if (document.readyState === 'loading') {
   document.addEventListener('DOMContentLoaded', function(){ setTimeout(initHalongClock, 200); });
 } else {
   setTimeout(initHalongClock, 200);
+}
+</script>
+  <!-- ════════ AREA NOTIF BADGE — FIREBASE ════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, query, where, onSnapshot }
+  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const badgeCfg = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+
+/* Mapping: collection → area key */
+const ORDER_MAP = {
+  'bun_orders':    'bungalow',
+  'lounge_orders': 'lounge',
+  'res_orders':    'restaurant'
+};
+
+function setBadge(areaKey, count){
+  const el = document.getElementById('badge-' + areaKey);
+  if (!el) return;
+
+  /* Nếu đang trong app mode (đã vào app) → ẩn badge */
+  if (document.body.classList.contains('app-mode')) {
+    el.classList.remove('show');
+    return;
+  }
+
+  const textEl = el.querySelector('.nb-text');
+  if (count > 0){
+    if (textEl) textEl.textContent = count > 99 ? '99+' : String(count);
+    el.classList.add('show');
+  } else {
+    el.classList.remove('show');
+  }
+}
+
+try {
+  const app = initializeApp(badgeCfg, 'badge-app');
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+
+  signInAnonymously(auth).then(() => {
+    Object.keys(ORDER_MAP).forEach(col => {
+      const areaKey = ORDER_MAP[col];
+      const q = query(collection(db, col), where('status', '==', 'pending'));
+      onSnapshot(q, snap => {
+        setBadge(areaKey, snap.size);
+      }, err => {
+        console.warn('[Badge] listen error', col, err);
+      });
+    });
+  }).catch(err => {
+    console.warn('[Badge] auth error:', err);
+  });
+} catch(e){
+  console.warn('[Badge] init error:', e);
 }
 </script>
 

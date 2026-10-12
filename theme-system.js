@@ -1,8 +1,8 @@
 /* ============================================================
-   THEME SYSTEM v6.1 — BIG ICON ENHANCED
-   - Aura layer + emoji nổi bật cho mọi theme
-   - Opacity tăng + animation đa tầng
-   - Tối ưu: chỉ transform/opacity/filter (GPU)
+   THEME SYSTEM v6.2 — BIG ICON + iOS PWA FIX
+   - Fix big icon không hiển thị trên iPhone PWA
+   - Loại bỏ contain:strict (WebKit bug)
+   - Explicit viewport sizing + Apple Color Emoji font
    ============================================================ */
 (function(){
   'use strict';
@@ -140,79 +140,24 @@
   };
 
   /* ============================================================
-     BIG BACKGROUND ICON — ENHANCED
-     Mỗi theme: emoji + aura + animation riêng
-     ────────────────────────────────────────────────────────────
-     e    : emoji chính
-     aE   : animation emoji
-     dE   : duration emoji
-     oE   : opacity emoji (0.45-0.80)
-     aura : màu aura (radial glow)
-     aA   : animation aura
-     dA   : duration aura
-     sE   : scale emoji
+     BIG BACKGROUND ICON — ENHANCED (giữ nguyên v6.1)
      ============================================================ */
   var BIG_ICONS = {
-    default: {
-      e:'🐬', aE:'bgi-float', dE:'6s', oE:0.55,
-      aura:'rgba(111,195,191,.55)', aA:'aura-soft', dA:'4s', sE:1.0
-    },
-    tet: {
-      e:'🧧', aE:'bgi-swing', dE:'4s', oE:0.72,
-      aura:'rgba(255,107,53,.55)', aA:'aura-warm', dA:'3s', sE:1.0
-    },
-    valentine: {
-      e:'💖', aE:'bgi-beat', dE:'1.8s', oE:0.75,
-      aura:'rgba(255,77,109,.60)', aA:'aura-heart', dA:'1.8s', sE:1.0
-    },
-    womenday: {
-      e:'💐', aE:'bgi-bloom', dE:'3.2s', oE:0.72,
-      aura:'rgba(217,70,166,.55)', aA:'aura-bloom', dA:'3.2s', sE:1.0
-    },
-    reunification: {
-      e:'🇻🇳', aE:'bgi-wave', dE:'3s', oE:0.68,
-      aura:'rgba(218,37,29,.55)', aA:'aura-flag', dA:'3s', sE:1.25
-    },
-    children: {
-      e:'🎈', aE:'bgi-float', dE:'3.6s', oE:0.72,
-      aura:'rgba(78,205,196,.55)', aA:'aura-soft', dA:'3s', sE:1.0
-    },
-    nationalday: {
-      e:'🇻🇳', aE:'bgi-wave', dE:'3s', oE:0.68,
-      aura:'rgba(255,215,0,.55)', aA:'aura-flag', dA:'3s', sE:1.25
-    },
-    midautumn: {
-      e:'🏮', aE:'bgi-swing', dE:'3.2s', oE:0.75,
-      aura:'rgba(240,192,96,.60)', aA:'aura-warm', dA:'3s', sE:1.0
-    },
-    halloween: {
-      e:'👻', aE:'bgi-flicker', dE:'3s', oE:0.80,
-      aura:'rgba(255,149,0,.55)', aA:'aura-ghost', dA:'3s', sE:1.0
-    },
-    christmas: {
-      e:'🎄', aE:'bgi-glow', dE:'3s', oE:0.72,
-      aura:'rgba(10,125,61,.60)', aA:'aura-soft', dA:'2.4s', sE:1.0
-    },
-    newyear: {
-      e:'🎆', aE:'bgi-pulse', dE:'2s', oE:0.78,
-      aura:'rgba(139,0,255,.60)', aA:'aura-firework', dA:'2s', sE:1.0
-    },
-    spring: {
-      e:'🌸', aE:'bgi-sway', dE:'4.5s', oE:0.70,
-      aura:'rgba(255,182,193,.55)', aA:'aura-bloom', dA:'3.5s', sE:1.0
-    },
-    summer: {
-      e:'☀️', aE:'bgi-rotate', dE:'28s', oE:0.72,
-      aura:'rgba(255,176,0,.60)', aA:'aura-sun', dA:'4s', sE:1.0
-    },
-    autumn: {
-      e:'🍁', aE:'bgi-fall-sway', dE:'5s', oE:0.72,
-      aura:'rgba(210,105,30,.55)', aA:'aura-warm', dA:'3.2s', sE:1.0
-    },
-    winter: {
-      e:'❄️', aE:'bgi-rotate', dE:'22s', oE:0.70,
-      aura:'rgba(184,216,240,.60)', aA:'aura-frost', dA:'3s', sE:1.0
-    }
+    default:        { e:'🐬', aE:'bgi-float',    dE:'6s',   oE:0.55, aura:'rgba(111,195,191,.55)', aA:'aura-soft',     dA:'4s',   sE:1.0 },
+    tet:            { e:'🧧', aE:'bgi-swing',    dE:'4s',   oE:0.72, aura:'rgba(255,107,53,.55)',  aA:'aura-warm',     dA:'3s',   sE:1.0 },
+    valentine:      { e:'💖', aE:'bgi-beat',     dE:'1.8s', oE:0.75, aura:'rgba(255,77,109,.60)',  aA:'aura-heart',    dA:'1.8s', sE:1.0 },
+    womenday:       { e:'💐', aE:'bgi-bloom',    dE:'3.2s', oE:0.72, aura:'rgba(217,70,166,.55)',  aA:'aura-bloom',    dA:'3.2s', sE:1.0 },
+    reunification:  { e:'🇻🇳', aE:'bgi-wave',     dE:'3s',   oE:0.68, aura:'rgba(218,37,29,.55)',   aA:'aura-flag',     dA:'3s',   sE:1.25 },
+    children:       { e:'🎈', aE:'bgi-float',    dE:'3.6s', oE:0.72, aura:'rgba(78,205,196,.55)',  aA:'aura-soft',     dA:'3s',   sE:1.0 },
+    nationalday:    { e:'🇻🇳', aE:'bgi-wave',     dE:'3s',   oE:0.68, aura:'rgba(255,215,0,.55)',   aA:'aura-flag',     dA:'3s',   sE:1.25 },
+    midautumn:      { e:'🏮', aE:'bgi-swing',    dE:'3.2s', oE:0.75, aura:'rgba(240,192,96,.60)',  aA:'aura-warm',     dA:'3s',   sE:1.0 },
+    halloween:      { e:'👻', aE:'bgi-flicker',  dE:'3s',   oE:0.80, aura:'rgba(255,149,0,.55)',   aA:'aura-ghost',    dA:'3s',   sE:1.0 },
+    christmas:      { e:'🎄', aE:'bgi-glow',     dE:'3s',   oE:0.72, aura:'rgba(10,125,61,.60)',   aA:'aura-soft',     dA:'2.4s', sE:1.0 },
+    newyear:        { e:'🎆', aE:'bgi-pulse',    dE:'2s',   oE:0.78, aura:'rgba(139,0,255,.60)',   aA:'aura-firework', dA:'2s',   sE:1.0 },
+    spring:         { e:'🌸', aE:'bgi-sway',     dE:'4.5s', oE:0.70, aura:'rgba(255,182,193,.55)', aA:'aura-bloom',    dA:'3.5s', sE:1.0 },
+    summer:         { e:'☀️', aE:'bgi-rotate',   dE:'28s',  oE:0.72, aura:'rgba(255,176,0,.60)',   aA:'aura-sun',      dA:'4s',   sE:1.0 },
+    autumn:         { e:'🍁', aE:'bgi-fall-sway',dE:'5s',   oE:0.72, aura:'rgba(210,105,30,.55)',  aA:'aura-warm',     dA:'3.2s', sE:1.0 },
+    winter:         { e:'❄️', aE:'bgi-rotate',   dE:'22s',  oE:0.70, aura:'rgba(184,216,240,.60)', aA:'aura-frost',    dA:'3s',   sE:1.0 }
   };
 
   var state = { currentTheme:'default', unsubscribe:null, app:null, urlParam:null };
@@ -270,18 +215,32 @@
       '  --theme-trans: 1s ease;',
       '}',
 
+      /* ──── HTML + BODY background fallback cho iOS PWA ──── */
+      'html{',
+      '  background-color:#0a2b28;',
+      '  min-height:100%;',
+      '  min-height:100dvh;',
+      '}',
       'body{',
       '  background: linear-gradient(160deg, var(--theme-bg1) 0%, var(--theme-bg2) 100%) !important;',
       '  transition: background var(--theme-trans) !important;',
+      '  min-height:100vh;',
+      '  min-height:100dvh;',
       '}',
       '#landing{ background: transparent !important; }',
 
       /* ============================================================
-         BIG BACKGROUND ICON — CONTAINER
+         BIG BACKGROUND ICON — v6.2 iOS-safe
+         ────────────────────────────────────────────────────────────
+         ĐÃ BỎ: contain:strict (WebKit bug)
+         THAY: explicit width/height + 100dvh fallback
          ============================================================ */
       '#themeBigIcon{',
       '  position:fixed;',
-      '  inset:0;',
+      '  top:0;',
+      '  left:0;',
+      '  width:100vw;',
+      '  height:100vh;',
       '  pointer-events:none;',
       '  z-index:1;',
       '  display:flex;',
@@ -291,163 +250,196 @@
       '  opacity:0;',
       '  transition:opacity 1.4s ease;',
       '  will-change:opacity;',
-      '  contain:strict;',
+      '  -webkit-transform:translate3d(0,0,0);',
+      '  transform:translate3d(0,0,0);',
+      '  -webkit-backface-visibility:hidden;',
+      '  backface-visibility:hidden;',
+      '  -webkit-user-select:none;',
+      '  user-select:none;',
+      '  -webkit-touch-callout:none;',
+      '  -webkit-tap-highlight-color:transparent;',
+      '}',
+      '@supports (height:100dvh){',
+      '  #themeBigIcon{ height:100dvh; }',
       '}',
       '#themeBigIcon.show{ opacity:1; }',
 
-      /* ───── AURA LAYER (radial glow phía sau) ───── */
+      /* ───── AURA ───── */
       '#themeBigIcon .tbi-aura{',
       '  position:absolute;',
       '  width:min(85vw,900px);',
       '  height:min(85vw,900px);',
       '  border-radius:50%;',
+      '  -webkit-filter:blur(40px);',
       '  filter:blur(40px);',
       '  opacity:.6;',
       '  will-change:transform,opacity;',
       '  pointer-events:none;',
-      '  transform:translateZ(0);',
-      '  backface-visibility:hidden;',
+      '  -webkit-transform:translate3d(0,0,0);',
+      '  transform:translate3d(0,0,0);',
       '  -webkit-backface-visibility:hidden;',
+      '  backface-visibility:hidden;',
       '}',
 
-      /* ───── EMOJI LAYER ───── */
+      /* ───── EMOJI ───── */
       '#themeBigIcon .tbi-emoji{',
       '  position:relative;',
       '  font-size:clamp(200px,50vw,620px);',
+      '  font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","EmojiOne Color",sans-serif;',
       '  line-height:1;',
       '  user-select:none;',
       '  -webkit-user-select:none;',
       '  display:block;',
       '  transform-origin:center;',
       '  will-change:transform,opacity,filter;',
-      '  backface-visibility:hidden;',
       '  -webkit-backface-visibility:hidden;',
-      '  transform:translateZ(0);',
+      '  backface-visibility:hidden;',
+      '  -webkit-transform:translate3d(0,0,0);',
+      '  transform:translate3d(0,0,0);',
+      '  -webkit-font-smoothing:antialiased;',
       '}',
       '#themeBigIcon .tbi-emoji.flag{',
       '  font-size:clamp(240px,64vw,820px);',
-      '  transform:scaleY(0.72) translateZ(0);',
+      '  -webkit-transform:scaleY(0.72) translate3d(0,0,0);',
+      '  transform:scaleY(0.72) translate3d(0,0,0);',
       '}',
 
-      /* ============================================================
-         AURA ANIMATIONS
-         ============================================================ */
+      /* ============ AURA ANIMATIONS ============ */
       '@keyframes aura-soft{',
-      '  0%,100%{ transform:scale(.95); opacity:.5; }',
-      '  50%    { transform:scale(1.08); opacity:.8; }',
+      '  0%,100%{ transform:scale(.95) translate3d(0,0,0); opacity:.5; }',
+      '  50%    { transform:scale(1.08) translate3d(0,0,0); opacity:.8; }',
       '}',
       '@keyframes aura-warm{',
-      '  0%,100%{ transform:scale(.92); opacity:.55; }',
-      '  50%    { transform:scale(1.12); opacity:.9; }',
+      '  0%,100%{ transform:scale(.92) translate3d(0,0,0); opacity:.55; }',
+      '  50%    { transform:scale(1.12) translate3d(0,0,0); opacity:.9; }',
       '}',
       '@keyframes aura-heart{',
-      '  0%,100%{ transform:scale(1); opacity:.6; }',
-      '  12%    { transform:scale(1.15); opacity:.95; }',
-      '  24%    { transform:scale(1); opacity:.6; }',
-      '  36%    { transform:scale(1.1); opacity:.85; }',
-      '  48%    { transform:scale(1); opacity:.6; }',
+      '  0%,100%{ transform:scale(1) translate3d(0,0,0); opacity:.6; }',
+      '  12%    { transform:scale(1.15) translate3d(0,0,0); opacity:.95; }',
+      '  24%    { transform:scale(1) translate3d(0,0,0); opacity:.6; }',
+      '  36%    { transform:scale(1.1) translate3d(0,0,0); opacity:.85; }',
+      '  48%    { transform:scale(1) translate3d(0,0,0); opacity:.6; }',
       '}',
       '@keyframes aura-bloom{',
-      '  0%   { transform:scale(.9) rotate(0deg); opacity:.55; }',
-      '  50%  { transform:scale(1.15) rotate(180deg); opacity:.85; }',
-      '  100% { transform:scale(.9) rotate(360deg); opacity:.55; }',
+      '  0%   { transform:scale(.9) rotate(0deg) translate3d(0,0,0); opacity:.55; }',
+      '  50%  { transform:scale(1.15) rotate(180deg) translate3d(0,0,0); opacity:.85; }',
+      '  100% { transform:scale(.9) rotate(360deg) translate3d(0,0,0); opacity:.55; }',
       '}',
       '@keyframes aura-flag{',
-      '  0%  { transform:skewY(0deg) scale(1); opacity:.7; }',
-      '  25% { transform:skewY(4deg) scale(1.05); opacity:.85; }',
-      '  50% { transform:skewY(0deg) scale(1); opacity:.7; }',
-      '  75% { transform:skewY(-4deg) scale(1.05); opacity:.85; }',
-      '  100%{ transform:skewY(0deg) scale(1); opacity:.7; }',
+      '  0%  { transform:skewY(0deg) scale(1) translate3d(0,0,0); opacity:.7; }',
+      '  25% { transform:skewY(4deg) scale(1.05) translate3d(0,0,0); opacity:.85; }',
+      '  50% { transform:skewY(0deg) scale(1) translate3d(0,0,0); opacity:.7; }',
+      '  75% { transform:skewY(-4deg) scale(1.05) translate3d(0,0,0); opacity:.85; }',
+      '  100%{ transform:skewY(0deg) scale(1) translate3d(0,0,0); opacity:.7; }',
       '}',
       '@keyframes aura-ghost{',
-      '  0%,100%{ transform:scale(1) translateY(0); opacity:.75; }',
-      '  25%    { transform:scale(1.08) translateY(-8px); opacity:.45; }',
-      '  50%    { transform:scale(1) translateY(0); opacity:.85; }',
-      '  75%    { transform:scale(1.05) translateY(-4px); opacity:.5; }',
+      '  0%,100%{ transform:scale(1) translateY(0) translate3d(0,0,0); opacity:.75; }',
+      '  25%    { transform:scale(1.08) translateY(-8px) translate3d(0,0,0); opacity:.45; }',
+      '  50%    { transform:scale(1) translateY(0) translate3d(0,0,0); opacity:.85; }',
+      '  75%    { transform:scale(1.05) translateY(-4px) translate3d(0,0,0); opacity:.5; }',
       '}',
       '@keyframes aura-firework{',
-      '  0%   { transform:scale(.8); opacity:.4; }',
-      '  40%  { transform:scale(1.2); opacity:1; }',
-      '  70%  { transform:scale(1.05); opacity:.85; }',
-      '  100% { transform:scale(.8); opacity:.4; }',
+      '  0%   { transform:scale(.8) translate3d(0,0,0); opacity:.4; }',
+      '  40%  { transform:scale(1.2) translate3d(0,0,0); opacity:1; }',
+      '  70%  { transform:scale(1.05) translate3d(0,0,0); opacity:.85; }',
+      '  100% { transform:scale(.8) translate3d(0,0,0); opacity:.4; }',
       '}',
       '@keyframes aura-sun{',
-      '  0%  { transform:scale(.95) rotate(0deg); opacity:.55; }',
-      '  50% { transform:scale(1.1) rotate(180deg); opacity:.85; }',
-      '  100%{ transform:scale(.95) rotate(360deg); opacity:.55; }',
+      '  0%  { transform:scale(.95) rotate(0deg) translate3d(0,0,0); opacity:.55; }',
+      '  50% { transform:scale(1.1) rotate(180deg) translate3d(0,0,0); opacity:.85; }',
+      '  100%{ transform:scale(.95) rotate(360deg) translate3d(0,0,0); opacity:.55; }',
       '}',
       '@keyframes aura-frost{',
-      '  0%,100%{ transform:scale(.9); opacity:.5; }',
-      '  50%    { transform:scale(1.15); opacity:.85; }',
+      '  0%,100%{ transform:scale(.9) translate3d(0,0,0); opacity:.5; }',
+      '  50%    { transform:scale(1.15) translate3d(0,0,0); opacity:.85; }',
       '}',
 
-      /* ============================================================
-         EMOJI ANIMATIONS
-         ============================================================ */
+      /* ============ EMOJI ANIMATIONS ============ */
       '@keyframes bgi-float{',
-      '  0%,100%{ transform:translateY(0) rotate(-2deg); }',
-      '  50%    { transform:translateY(-36px) rotate(2deg); }',
+      '  0%,100%{ transform:translateY(0) rotate(-2deg) translate3d(0,0,0); }',
+      '  50%    { transform:translateY(-36px) rotate(2deg) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-swing{',
-      '  0%,100%{ transform:rotate(-9deg) translateY(0); }',
-      '  50%    { transform:rotate(9deg) translateY(-10px); }',
+      '  0%,100%{ transform:rotate(-9deg) translateY(0) translate3d(0,0,0); }',
+      '  50%    { transform:rotate(9deg) translateY(-10px) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-beat{',
-      '  0%,100%{ transform:scale(1); }',
-      '  12%    { transform:scale(1.14); }',
-      '  24%    { transform:scale(1); }',
-      '  36%    { transform:scale(1.1); }',
-      '  48%    { transform:scale(1); }',
+      '  0%,100%{ transform:scale(1) translate3d(0,0,0); }',
+      '  12%    { transform:scale(1.14) translate3d(0,0,0); }',
+      '  24%    { transform:scale(1) translate3d(0,0,0); }',
+      '  36%    { transform:scale(1.1) translate3d(0,0,0); }',
+      '  48%    { transform:scale(1) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-bloom{',
-      '  0%  { transform:rotate(-12deg) scale(1); }',
-      '  50% { transform:rotate(12deg) scale(1.1); }',
-      '  100%{ transform:rotate(-12deg) scale(1); }',
+      '  0%  { transform:rotate(-12deg) scale(1) translate3d(0,0,0); }',
+      '  50% { transform:rotate(12deg) scale(1.1) translate3d(0,0,0); }',
+      '  100%{ transform:rotate(-12deg) scale(1) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-glow{',
       '  0%,100%{ filter:drop-shadow(0 0 40px currentColor) drop-shadow(0 0 80px currentColor) brightness(.9); opacity:.7; }',
       '  50%    { filter:drop-shadow(0 0 100px currentColor) drop-shadow(0 0 200px currentColor) brightness(1.3); opacity:1; }',
       '}',
       '@keyframes bgi-wave{',
-      '  0%  { transform:skewY(0deg) rotate(0deg); }',
-      '  25% { transform:skewY(4deg) rotate(-2deg); }',
-      '  50% { transform:skewY(0deg) rotate(0deg); }',
-      '  75% { transform:skewY(-4deg) rotate(2deg); }',
-      '  100%{ transform:skewY(0deg) rotate(0deg); }',
+      '  0%  { transform:skewY(0deg) rotate(0deg) translate3d(0,0,0); }',
+      '  25% { transform:skewY(4deg) rotate(-2deg) translate3d(0,0,0); }',
+      '  50% { transform:skewY(0deg) rotate(0deg) translate3d(0,0,0); }',
+      '  75% { transform:skewY(-4deg) rotate(2deg) translate3d(0,0,0); }',
+      '  100%{ transform:skewY(0deg) rotate(0deg) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-flicker{',
-      '  0%,100%{ opacity:.85; transform:translateY(0) scale(1); }',
-      '  8%    { opacity:.35; transform:translateY(-10px) scale(1.02); }',
-      '  16%   { opacity:1;   transform:translateY(0) scale(1); }',
-      '  28%   { opacity:.5;  transform:translateY(-6px) scale(1.01); }',
-      '  36%   { opacity:1;   transform:translateY(0) scale(1.03); }',
-      '  48%   { opacity:.4;  transform:translateY(-14px) scale(1.02); }',
-      '  60%   { opacity:.95; transform:translateY(0) scale(1); }',
-      '  72%   { opacity:.55; transform:translateY(-8px) scale(1.01); }',
-      '  84%   { opacity:1;   transform:translateY(0) scale(1.02); }',
-      '  92%   { opacity:.7;  transform:translateY(-4px) scale(1); }',
+      '  0%,100%{ opacity:.85; transform:translateY(0) scale(1) translate3d(0,0,0); }',
+      '  8%    { opacity:.35; transform:translateY(-10px) scale(1.02) translate3d(0,0,0); }',
+      '  16%   { opacity:1;   transform:translateY(0) scale(1) translate3d(0,0,0); }',
+      '  28%   { opacity:.5;  transform:translateY(-6px) scale(1.01) translate3d(0,0,0); }',
+      '  36%   { opacity:1;   transform:translateY(0) scale(1.03) translate3d(0,0,0); }',
+      '  48%   { opacity:.4;  transform:translateY(-14px) scale(1.02) translate3d(0,0,0); }',
+      '  60%   { opacity:.95; transform:translateY(0) scale(1) translate3d(0,0,0); }',
+      '  72%   { opacity:.55; transform:translateY(-8px) scale(1.01) translate3d(0,0,0); }',
+      '  84%   { opacity:1;   transform:translateY(0) scale(1.02) translate3d(0,0,0); }',
+      '  92%   { opacity:.7;  transform:translateY(-4px) scale(1) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-pulse{',
-      '  0%,100%{ transform:scale(.92); opacity:.65; }',
-      '  50%    { transform:scale(1.18); opacity:1; }',
+      '  0%,100%{ transform:scale(.92) translate3d(0,0,0); opacity:.65; }',
+      '  50%    { transform:scale(1.18) translate3d(0,0,0); opacity:1; }',
       '}',
       '@keyframes bgi-sway{',
-      '  0%,100%{ transform:rotate(-14deg) translateX(-18px); }',
-      '  50%    { transform:rotate(14deg)  translateX(18px); }',
+      '  0%,100%{ transform:rotate(-14deg) translateX(-18px) translate3d(0,0,0); }',
+      '  50%    { transform:rotate(14deg)  translateX(18px) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-rotate{',
-      '  0%  { transform:rotate(0deg); }',
-      '  100%{ transform:rotate(360deg); }',
+      '  0%  { transform:rotate(0deg) translate3d(0,0,0); }',
+      '  100%{ transform:rotate(360deg) translate3d(0,0,0); }',
       '}',
       '@keyframes bgi-fall-sway{',
-      '  0%  { transform:translateY(-22vh) rotate(-15deg) translateX(-20px); opacity:.5; }',
-      '  50% { opacity:1; transform:translateY(0) rotate(0deg) translateX(20px); }',
-      '  100%{ transform:translateY(22vh) rotate(15deg) translateX(-20px); opacity:.5; }',
+      '  0%  { transform:translateY(-22vh) rotate(-15deg) translateX(-20px) translate3d(0,0,0); opacity:.5; }',
+      '  50% { opacity:1; transform:translateY(0) rotate(0deg) translateX(20px) translate3d(0,0,0); }',
+      '  100%{ transform:translateY(22vh) rotate(15deg) translateX(-20px) translate3d(0,0,0); opacity:.5; }',
       '}',
 
       '@media (prefers-reduced-motion: reduce){',
       '  #themeBigIcon .tbi-emoji,',
       '  #themeBigIcon .tbi-aura{ animation:none !important; }',
+      '}',
+
+      /* ============================================================
+         iOS PWA SPECIFIC FIX
+         ────────────────────────────────────────────────────────────
+         @supports (-webkit-touch-callout: none) = detect iOS
+         ============================================================ */
+      '@supports (-webkit-touch-callout: none){',
+      '  html, body{',
+      '    min-height:100vh;',
+      '    min-height:-webkit-fill-available;',
+      '  }',
+      '  #themeBigIcon{',
+      '    width:100%;',
+      '    height:100%;',
+      '    position:fixed;',
+      '    top:0; left:0; right:0; bottom:0;',
+      '  }',
+      '  @supports (height:100dvh){',
+      '    #themeBigIcon{ height:100dvh; }',
+      '  }',
       '}',
 
       /* ==== LANDING: ĐỒNG HỒ ==== */
@@ -476,7 +468,7 @@
       '  transition:border-color var(--theme-trans) !important;',
       '}',
 
-      /* ==== LANDING: AREA CARD ==== */
+      /* ==== AREA CARD ==== */
       '.area-card{',
       '  border-color:var(--theme-border-soft) !important;',
       '  transition:border-color var(--theme-trans),',
@@ -526,6 +518,7 @@
       '  color:var(--theme-accent);',
       '  font-family:Nunito,sans-serif;',
       '  backdrop-filter:blur(10px);',
+      '  -webkit-backdrop-filter:blur(10px);',
       '  pointer-events:none;opacity:0;',
       '  transition:opacity .5s,border-color var(--theme-trans),color var(--theme-trans);',
       '}',
@@ -551,7 +544,7 @@
       '@media(max-width:768px){',
       '  #themeBadge{ font-size:9.5px;padding:4px 9px;top:6px;left:6px; }',
       '  #themeBadge .tb-icon{ font-size:12px; }',
-      '  #themeBigIcon .tbi-aura{ width:min(95vw,700px); height:min(95vw,700px); filter:blur(30px); }',
+      '  #themeBigIcon .tbi-aura{ width:min(95vw,700px); height:min(95vw,700px); -webkit-filter:blur(30px); filter:blur(30px); }',
       '}'
     ].join('\n');
     document.head.appendChild(s);
@@ -564,12 +557,36 @@
     if (!hasLanding()) return null;
     var el = document.getElementById('themeBigIcon');
     if (el) return el;
+
     el = document.createElement('div');
     el.id = 'themeBigIcon';
+    el.setAttribute('aria-hidden', 'true');
     el.innerHTML =
       '<div class="tbi-aura" aria-hidden="true"></div>' +
       '<span class="tbi-emoji" aria-hidden="true"></span>';
-    document.body.appendChild(el);
+
+    /* ═══════ iOS PWA FIX ═══════
+       Chèn vào #landing thay vì body khi ở iOS PWA.
+       Lý do: iOS PWA có bug khiến fixed element ở body bị
+       #landing (transparent) che phủ không đúng. Chèn vào
+       #landing đảm bảo cùng stacking context. */
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    var isStandalone = window.navigator.standalone === true ||
+                       window.matchMedia('(display-mode: standalone)').matches;
+
+    if (isIOS && isStandalone) {
+      var landing = document.getElementById('landing');
+      if (landing && landing.firstChild){
+        landing.insertBefore(el, landing.firstChild);
+      } else if (landing) {
+        landing.appendChild(el);
+      } else {
+        document.body.appendChild(el);
+      }
+    } else {
+      document.body.appendChild(el);
+    }
     return el;
   }
 
@@ -582,29 +599,26 @@
     var emoji = el.querySelector('.tbi-emoji');
     if (!aura || !emoji) return;
 
-    /* ════════ EMOJI ════════ */
+    /* ═══════ EMOJI ═══════ */
     emoji.textContent = cfg.e;
     emoji.style.color = accentColor;
     emoji.style.opacity = cfg.o;
     emoji.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ') drop-shadow(0 0 120px ' + accentColor + ')';
+    emoji.style.webkitFilter = emoji.style.filter;
 
-    /* Flag emoji cần scale đặc biệt */
     var isFlag = (cfg.e === '🇻🇳' || /[\u{1F1E6}-\u{1F1FF}]{2}/u.test(cfg.e));
     emoji.classList.toggle('flag', isFlag);
 
-    /* Reset + apply animation */
     emoji.style.animation = 'none';
     void emoji.offsetWidth;
     emoji.style.animation = cfg.aE + ' ' + cfg.dE + ' ease-in-out infinite';
 
-    /* ════════ AURA ════════ */
-    /* Radial gradient dùng màu theme */
+    /* ═══════ AURA ═══════ */
     aura.style.background = 'radial-gradient(circle at 50% 50%, ' +
       cfg.aura + ' 0%, ' +
       cfg.aura.replace(/[\d.]+\)$/, '0.35)') + ' 35%, ' +
       'transparent 70%)';
 
-    /* Reset + apply animation */
     aura.style.animation = 'none';
     void aura.offsetWidth;
     aura.style.animation = cfg.aA + ' ' + cfg.dA + ' ease-in-out infinite';
@@ -628,9 +642,11 @@
     root.style.setProperty('--theme-bg2',         t.bg2);
     root.style.setProperty('--theme-radius',      t.radius || '22px');
 
+    /* iOS PWA fallback: đổi cả html background để tránh bug trắng đen */
+    root.style.backgroundColor = t.bg2;
+
     document.body.setAttribute('data-theme', state.currentTheme);
 
-    /* Landing clock elements */
     var ci = document.querySelector('#halongClock .hclock-icon');
     if (ci && t.icon) ci.textContent = t.icon;
     var li = document.querySelector('#halongClock .hclock-loc-icon');
@@ -638,18 +654,14 @@
     var ai = document.querySelector('#announcementBar .announcement-icon');
     if (ai && t.ann) ai.textContent = t.ann;
 
-    /* Border-radius động cho area-cards */
     document.querySelectorAll('.area-card').forEach(function(card){
       card.style.borderRadius = t.radius || '22px';
     });
 
-    /* Big Icon */
     applyBigIcon(state.currentTheme, t.accent);
 
-    /* Lưu localStorage */
     try { localStorage.setItem(LS_THEME_KEY, state.currentTheme); } catch(e){}
 
-    /* Broadcast */
     try {
       var bc = window.__dolphinThemeBC ||
                (window.__dolphinThemeBC = new BroadcastChannel('dolphin-theme'));
@@ -727,7 +739,6 @@
       else applyTheme(detectThemeByDate());
     }
 
-    /* Lắng nghe thay đổi từ tab khác */
     try {
       window.addEventListener('storage', function(e){
         if (e.key === LS_THEME_KEY && THEMES[e.newValue]) applyTheme(e.newValue);
@@ -743,17 +754,27 @@
       };
     } catch(e){}
 
-    /* Parent nghe Firestore */
     fetchThemeFromFirebase();
 
-    /* Retry nếu #landing xuất hiện muộn */
     if (hasLanding() && !document.getElementById('themeBigIcon')){
       applyBigIcon(state.currentTheme, THEMES[state.currentTheme].accent);
+    }
+
+    /* ═══════ iOS PWA: re-apply khi orientation change ═══════ */
+    var isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
+                (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
+    if (isIOS){
+      window.addEventListener('orientationchange', function(){
+        setTimeout(function(){
+          var el = document.getElementById('themeBigIcon');
+          if (el) el.classList.add('show');
+        }, 300);
+      });
     }
   }
 
   window.ThemeSystem = {
-    version:    '6.1',
+    version:    '6.2',
     setTheme:   function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },
@@ -765,6 +786,6 @@
     document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  console.log('%c🎨 THEME SYSTEM v6.1 — BIG ICON ENHANCED',
+  console.log('%c🎨 THEME SYSTEM v6.2 — iOS PWA FIX',
     'background:linear-gradient(90deg,#FFD700,#FF1493);color:#fff;font-size:12px;padding:4px 10px;border-radius:4px;font-weight:900');
 })();

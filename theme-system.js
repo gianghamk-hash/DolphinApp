@@ -1,8 +1,8 @@
 /* ============================================================
-   THEME SYSTEM v6 — BIG ANIMATED ICON
-   - Big theme icon ở lớp nền (chỉ trên landing)
-   - 15 theme × 15 icon × 15 animation riêng
-   - Sync theme sang iframe qua URL + localStorage
+   THEME SYSTEM v6.1 — BIG ICON ENHANCED
+   - Aura layer + emoji nổi bật cho mọi theme
+   - Opacity tăng + animation đa tầng
+   - Tối ưu: chỉ transform/opacity/filter (GPU)
    ============================================================ */
 (function(){
   'use strict';
@@ -140,25 +140,79 @@
   };
 
   /* ============================================================
-     BIG BACKGROUND ICON — PER THEME
+     BIG BACKGROUND ICON — ENHANCED
+     Mỗi theme: emoji + aura + animation riêng
+     ────────────────────────────────────────────────────────────
+     e    : emoji chính
+     aE   : animation emoji
+     dE   : duration emoji
+     oE   : opacity emoji (0.45-0.80)
+     aura : màu aura (radial glow)
+     aA   : animation aura
+     dA   : duration aura
+     sE   : scale emoji
      ============================================================ */
   var BIG_ICONS = {
-    /*  theme         emoji  animation       dur    opacity  scale  */
-    default:        { e:'🐬', a:'bgi-float',   d:'7s',  o:0.16,  s:1.0  },
-    tet:            { e:'🧧', a:'bgi-swing',   d:'4s',  o:0.30,  s:1.0  },
-    valentine:      { e:'💖', a:'bgi-beat',    d:'1.6s',o:0.32,  s:1.0  },
-    womenday:       { e:'💐', a:'bgi-glow',    d:'2.5s',o:0.32,  s:1.0  },
-    reunification:  { e:'🇻🇳', a:'bgi-wave',    d:'3s',  o:0.40,  s:1.25 },
-    children:       { e:'🎈', a:'bgi-float',   d:'4s',  o:0.30,  s:1.0  },
-    nationalday:    { e:'🇻🇳', a:'bgi-wave',    d:'3s',  o:0.40,  s:1.25 },
-    midautumn:      { e:'🏮', a:'bgi-swing',   d:'3.5s',o:0.34,  s:1.0  },
-    halloween:      { e:'👻', a:'bgi-flicker', d:'3s',  o:0.42,  s:1.0  },
-    christmas:      { e:'🎄', a:'bgi-glow',    d:'3s',  o:0.34,  s:1.0  },
-    newyear:        { e:'🎆', a:'bgi-pulse',   d:'2s',  o:0.42,  s:1.0  },
-    spring:         { e:'🌸', a:'bgi-sway',    d:'5s',  o:0.28,  s:1.0  },
-    summer:         { e:'☀️', a:'bgi-rotate',  d:'30s', o:0.28,  s:1.0  },
-    autumn:         { e:'🍁', a:'bgi-fall',    d:'6s',  o:0.34,  s:1.0  },
-    winter:         { e:'❄️', a:'bgi-rotate',  d:'25s', o:0.28,  s:1.0  }
+    default: {
+      e:'🐬', aE:'bgi-float', dE:'6s', oE:0.55,
+      aura:'rgba(111,195,191,.55)', aA:'aura-soft', dA:'4s', sE:1.0
+    },
+    tet: {
+      e:'🧧', aE:'bgi-swing', dE:'4s', oE:0.72,
+      aura:'rgba(255,107,53,.55)', aA:'aura-warm', dA:'3s', sE:1.0
+    },
+    valentine: {
+      e:'💖', aE:'bgi-beat', dE:'1.8s', oE:0.75,
+      aura:'rgba(255,77,109,.60)', aA:'aura-heart', dA:'1.8s', sE:1.0
+    },
+    womenday: {
+      e:'💐', aE:'bgi-bloom', dE:'3.2s', oE:0.72,
+      aura:'rgba(217,70,166,.55)', aA:'aura-bloom', dA:'3.2s', sE:1.0
+    },
+    reunification: {
+      e:'🇻🇳', aE:'bgi-wave', dE:'3s', oE:0.68,
+      aura:'rgba(218,37,29,.55)', aA:'aura-flag', dA:'3s', sE:1.25
+    },
+    children: {
+      e:'🎈', aE:'bgi-float', dE:'3.6s', oE:0.72,
+      aura:'rgba(78,205,196,.55)', aA:'aura-soft', dA:'3s', sE:1.0
+    },
+    nationalday: {
+      e:'🇻🇳', aE:'bgi-wave', dE:'3s', oE:0.68,
+      aura:'rgba(255,215,0,.55)', aA:'aura-flag', dA:'3s', sE:1.25
+    },
+    midautumn: {
+      e:'🏮', aE:'bgi-swing', dE:'3.2s', oE:0.75,
+      aura:'rgba(240,192,96,.60)', aA:'aura-warm', dA:'3s', sE:1.0
+    },
+    halloween: {
+      e:'👻', aE:'bgi-flicker', dE:'3s', oE:0.80,
+      aura:'rgba(255,149,0,.55)', aA:'aura-ghost', dA:'3s', sE:1.0
+    },
+    christmas: {
+      e:'🎄', aE:'bgi-glow', dE:'3s', oE:0.72,
+      aura:'rgba(10,125,61,.60)', aA:'aura-soft', dA:'2.4s', sE:1.0
+    },
+    newyear: {
+      e:'🎆', aE:'bgi-pulse', dE:'2s', oE:0.78,
+      aura:'rgba(139,0,255,.60)', aA:'aura-firework', dA:'2s', sE:1.0
+    },
+    spring: {
+      e:'🌸', aE:'bgi-sway', dE:'4.5s', oE:0.70,
+      aura:'rgba(255,182,193,.55)', aA:'aura-bloom', dA:'3.5s', sE:1.0
+    },
+    summer: {
+      e:'☀️', aE:'bgi-rotate', dE:'28s', oE:0.72,
+      aura:'rgba(255,176,0,.60)', aA:'aura-sun', dA:'4s', sE:1.0
+    },
+    autumn: {
+      e:'🍁', aE:'bgi-fall-sway', dE:'5s', oE:0.72,
+      aura:'rgba(210,105,30,.55)', aA:'aura-warm', dA:'3.2s', sE:1.0
+    },
+    winter: {
+      e:'❄️', aE:'bgi-rotate', dE:'22s', oE:0.70,
+      aura:'rgba(184,216,240,.60)', aA:'aura-frost', dA:'3s', sE:1.0
+    }
   };
 
   var state = { currentTheme:'default', unsubscribe:null, app:null, urlParam:null };
@@ -216,7 +270,6 @@
       '  --theme-trans: 1s ease;',
       '}',
 
-      /* Body gradient */
       'body{',
       '  background: linear-gradient(160deg, var(--theme-bg1) 0%, var(--theme-bg2) 100%) !important;',
       '  transition: background var(--theme-trans) !important;',
@@ -224,207 +277,263 @@
       '#landing{ background: transparent !important; }',
 
       /* ============================================================
-         BIG BACKGROUND ICON
+         BIG BACKGROUND ICON — CONTAINER
          ============================================================ */
       '#themeBigIcon{',
-      '  position: fixed;',
-      '  inset: 0;',
-      '  pointer-events: none;',
-      '  z-index: 1;',                 /* trên body bg, dưới #landing (z50) */
-      '  display: flex;',
-      '  align-items: center;',
-      '  justify-content: center;',
-      '  overflow: hidden;',
-      '  opacity: 0;',
-      '  transition: opacity 1.2s ease;',
-      '  will-change: opacity;',
+      '  position:fixed;',
+      '  inset:0;',
+      '  pointer-events:none;',
+      '  z-index:1;',
+      '  display:flex;',
+      '  align-items:center;',
+      '  justify-content:center;',
+      '  overflow:hidden;',
+      '  opacity:0;',
+      '  transition:opacity 1.4s ease;',
+      '  will-change:opacity;',
+      '  contain:strict;',
       '}',
-      '#themeBigIcon.show{ opacity: 1; }',
+      '#themeBigIcon.show{ opacity:1; }',
 
+      /* ───── AURA LAYER (radial glow phía sau) ───── */
+      '#themeBigIcon .tbi-aura{',
+      '  position:absolute;',
+      '  width:min(85vw,900px);',
+      '  height:min(85vw,900px);',
+      '  border-radius:50%;',
+      '  filter:blur(40px);',
+      '  opacity:.6;',
+      '  will-change:transform,opacity;',
+      '  pointer-events:none;',
+      '  transform:translateZ(0);',
+      '  backface-visibility:hidden;',
+      '  -webkit-backface-visibility:hidden;',
+      '}',
+
+      /* ───── EMOJI LAYER ───── */
       '#themeBigIcon .tbi-emoji{',
-      '  font-size: clamp(220px, 55vw, 700px);',
-      '  line-height: 1;',
-      '  user-select: none;',
-      '  -webkit-user-select: none;',
-      '  display: block;',
-      '  transform-origin: center;',
-      '  filter: drop-shadow(0 0 60px currentColor);',
-      '  will-change: transform, opacity;',
-      '  backface-visibility: hidden;',
-      '  -webkit-backface-visibility: hidden;',
+      '  position:relative;',
+      '  font-size:clamp(200px,50vw,620px);',
+      '  line-height:1;',
+      '  user-select:none;',
+      '  -webkit-user-select:none;',
+      '  display:block;',
+      '  transform-origin:center;',
+      '  will-change:transform,opacity,filter;',
+      '  backface-visibility:hidden;',
+      '  -webkit-backface-visibility:hidden;',
+      '  transform:translateZ(0);',
       '}',
       '#themeBigIcon .tbi-emoji.flag{',
-      '  font-size: clamp(260px, 70vw, 900px);',
-      '  transform: scaleY(0.72);',
+      '  font-size:clamp(240px,64vw,820px);',
+      '  transform:scaleY(0.72) translateZ(0);',
       '}',
 
-      /* Animation: bay lơ lửng */
+      /* ============================================================
+         AURA ANIMATIONS
+         ============================================================ */
+      '@keyframes aura-soft{',
+      '  0%,100%{ transform:scale(.95); opacity:.5; }',
+      '  50%    { transform:scale(1.08); opacity:.8; }',
+      '}',
+      '@keyframes aura-warm{',
+      '  0%,100%{ transform:scale(.92); opacity:.55; }',
+      '  50%    { transform:scale(1.12); opacity:.9; }',
+      '}',
+      '@keyframes aura-heart{',
+      '  0%,100%{ transform:scale(1); opacity:.6; }',
+      '  12%    { transform:scale(1.15); opacity:.95; }',
+      '  24%    { transform:scale(1); opacity:.6; }',
+      '  36%    { transform:scale(1.1); opacity:.85; }',
+      '  48%    { transform:scale(1); opacity:.6; }',
+      '}',
+      '@keyframes aura-bloom{',
+      '  0%   { transform:scale(.9) rotate(0deg); opacity:.55; }',
+      '  50%  { transform:scale(1.15) rotate(180deg); opacity:.85; }',
+      '  100% { transform:scale(.9) rotate(360deg); opacity:.55; }',
+      '}',
+      '@keyframes aura-flag{',
+      '  0%  { transform:skewY(0deg) scale(1); opacity:.7; }',
+      '  25% { transform:skewY(4deg) scale(1.05); opacity:.85; }',
+      '  50% { transform:skewY(0deg) scale(1); opacity:.7; }',
+      '  75% { transform:skewY(-4deg) scale(1.05); opacity:.85; }',
+      '  100%{ transform:skewY(0deg) scale(1); opacity:.7; }',
+      '}',
+      '@keyframes aura-ghost{',
+      '  0%,100%{ transform:scale(1) translateY(0); opacity:.75; }',
+      '  25%    { transform:scale(1.08) translateY(-8px); opacity:.45; }',
+      '  50%    { transform:scale(1) translateY(0); opacity:.85; }',
+      '  75%    { transform:scale(1.05) translateY(-4px); opacity:.5; }',
+      '}',
+      '@keyframes aura-firework{',
+      '  0%   { transform:scale(.8); opacity:.4; }',
+      '  40%  { transform:scale(1.2); opacity:1; }',
+      '  70%  { transform:scale(1.05); opacity:.85; }',
+      '  100% { transform:scale(.8); opacity:.4; }',
+      '}',
+      '@keyframes aura-sun{',
+      '  0%  { transform:scale(.95) rotate(0deg); opacity:.55; }',
+      '  50% { transform:scale(1.1) rotate(180deg); opacity:.85; }',
+      '  100%{ transform:scale(.95) rotate(360deg); opacity:.55; }',
+      '}',
+      '@keyframes aura-frost{',
+      '  0%,100%{ transform:scale(.9); opacity:.5; }',
+      '  50%    { transform:scale(1.15); opacity:.85; }',
+      '}',
+
+      /* ============================================================
+         EMOJI ANIMATIONS
+         ============================================================ */
       '@keyframes bgi-float{',
-      '  0%,100%{ transform: translateY(0) }',
-      '  50%    { transform: translateY(-40px) }',
+      '  0%,100%{ transform:translateY(0) rotate(-2deg); }',
+      '  50%    { transform:translateY(-36px) rotate(2deg); }',
       '}',
-
-      /* Animation: đung đưa */
       '@keyframes bgi-swing{',
-      '  0%,100%{ transform: rotate(-8deg) }',
-      '  50%    { transform: rotate(8deg) }',
+      '  0%,100%{ transform:rotate(-9deg) translateY(0); }',
+      '  50%    { transform:rotate(9deg) translateY(-10px); }',
       '}',
-
-      /* Animation: nhịp tim */
       '@keyframes bgi-beat{',
-      '  0%,100%{ transform: scale(1) }',
-      '  15%    { transform: scale(1.12) }',
-      '  30%    { transform: scale(1) }',
-      '  45%    { transform: scale(1.08) }',
-      '  60%    { transform: scale(1) }',
+      '  0%,100%{ transform:scale(1); }',
+      '  12%    { transform:scale(1.14); }',
+      '  24%    { transform:scale(1); }',
+      '  36%    { transform:scale(1.1); }',
+      '  48%    { transform:scale(1); }',
       '}',
-
-      /* Animation: lấp lánh (glow) */
+      '@keyframes bgi-bloom{',
+      '  0%  { transform:rotate(-12deg) scale(1); }',
+      '  50% { transform:rotate(12deg) scale(1.1); }',
+      '  100%{ transform:rotate(-12deg) scale(1); }',
+      '}',
       '@keyframes bgi-glow{',
-      '  0%,100%{ filter: drop-shadow(0 0 40px currentColor) brightness(0.85); opacity: 0.6 }',
-      '  50%    { filter: drop-shadow(0 0 120px currentColor) drop-shadow(0 0 220px currentColor) brightness(1.15); opacity: 1 }',
+      '  0%,100%{ filter:drop-shadow(0 0 40px currentColor) drop-shadow(0 0 80px currentColor) brightness(.9); opacity:.7; }',
+      '  50%    { filter:drop-shadow(0 0 100px currentColor) drop-shadow(0 0 200px currentColor) brightness(1.3); opacity:1; }',
       '}',
-
-      /* Animation: vẫy cờ */
       '@keyframes bgi-wave{',
-      '  0%  { transform: skewY(0deg)   rotate(0deg)   }',
-      '  25% { transform: skewY(3deg)   rotate(-2deg)  }',
-      '  50% { transform: skewY(0deg)   rotate(0deg)   }',
-      '  75% { transform: skewY(-3deg)  rotate(2deg)   }',
-      '  100%{ transform: skewY(0deg)   rotate(0deg)   }',
+      '  0%  { transform:skewY(0deg) rotate(0deg); }',
+      '  25% { transform:skewY(4deg) rotate(-2deg); }',
+      '  50% { transform:skewY(0deg) rotate(0deg); }',
+      '  75% { transform:skewY(-4deg) rotate(2deg); }',
+      '  100%{ transform:skewY(0deg) rotate(0deg); }',
       '}',
-
-      /* Animation: ma ẩn hiện */
       '@keyframes bgi-flicker{',
-      '  0%,100%{ opacity: 0.75; transform: translateY(0)   }',
-      '  10%    { opacity: 0.25; transform: translateY(-10px)}',
-      '  20%    { opacity: 0.95; transform: translateY(0)   }',
-      '  30%    { opacity: 0.40; transform: translateY(-6px)}',
-      '  40%    { opacity: 1;    transform: translateY(0)   }',
-      '  50%    { opacity: 0.35; transform: translateY(-14px)}',
-      '  60%    { opacity: 0.90; transform: translateY(0)   }',
-      '  70%    { opacity: 0.30; transform: translateY(-8px)}',
-      '  80%    { opacity: 0.95; transform: translateY(0)   }',
-      '  90%    { opacity: 0.55; transform: translateY(-4px)}',
+      '  0%,100%{ opacity:.85; transform:translateY(0) scale(1); }',
+      '  8%    { opacity:.35; transform:translateY(-10px) scale(1.02); }',
+      '  16%   { opacity:1;   transform:translateY(0) scale(1); }',
+      '  28%   { opacity:.5;  transform:translateY(-6px) scale(1.01); }',
+      '  36%   { opacity:1;   transform:translateY(0) scale(1.03); }',
+      '  48%   { opacity:.4;  transform:translateY(-14px) scale(1.02); }',
+      '  60%   { opacity:.95; transform:translateY(0) scale(1); }',
+      '  72%   { opacity:.55; transform:translateY(-8px) scale(1.01); }',
+      '  84%   { opacity:1;   transform:translateY(0) scale(1.02); }',
+      '  92%   { opacity:.7;  transform:translateY(-4px) scale(1); }',
       '}',
-
-      /* Animation: phồng xẹp (pháo hoa) */
       '@keyframes bgi-pulse{',
-      '  0%,100%{ transform: scale(0.9); opacity: 0.5 }',
-      '  50%    { transform: scale(1.15); opacity: 1 }',
+      '  0%,100%{ transform:scale(.92); opacity:.65; }',
+      '  50%    { transform:scale(1.18); opacity:1; }',
       '}',
-
-      /* Animation: nghiêng qua lại */
       '@keyframes bgi-sway{',
-      '  0%,100%{ transform: rotate(-15deg) translateX(-20px) }',
-      '  50%    { transform: rotate(15deg)  translateX(20px)  }',
+      '  0%,100%{ transform:rotate(-14deg) translateX(-18px); }',
+      '  50%    { transform:rotate(14deg)  translateX(18px); }',
       '}',
-
-      /* Animation: xoay chậm */
       '@keyframes bgi-rotate{',
-      '  0%  { transform: rotate(0deg) }',
-      '  100%{ transform: rotate(360deg) }',
+      '  0%  { transform:rotate(0deg); }',
+      '  100%{ transform:rotate(360deg); }',
+      '}',
+      '@keyframes bgi-fall-sway{',
+      '  0%  { transform:translateY(-22vh) rotate(-15deg) translateX(-20px); opacity:.5; }',
+      '  50% { opacity:1; transform:translateY(0) rotate(0deg) translateX(20px); }',
+      '  100%{ transform:translateY(22vh) rotate(15deg) translateX(-20px); opacity:.5; }',
       '}',
 
-      /* Animation: rơi (lá) */
-      '@keyframes bgi-fall{',
-      '  0%  { transform: translateY(-18vh) rotate(0deg);    opacity: 0.4 }',
-      '  50% { opacity: 1 }',
-      '  100%{ transform: translateY(18vh)  rotate(360deg);  opacity: 0.4 }',
-      '}',
-
-      /* Reduce motion */
       '@media (prefers-reduced-motion: reduce){',
-      '  #themeBigIcon .tbi-emoji{ animation-duration: 0s !important; animation: none !important; }',
+      '  #themeBigIcon .tbi-emoji,',
+      '  #themeBigIcon .tbi-aura{ animation:none !important; }',
       '}',
 
       /* ==== LANDING: ĐỒNG HỒ ==== */
       '#halongClock{',
-      '  border-color: var(--theme-border) !important;',
-      '  box-shadow: 0 8px 32px rgba(0,0,0,.5), 0 0 40px var(--theme-glow),',
-      '              inset 0 0 30px var(--theme-glow) !important;',
-      '  transition: border-color var(--theme-trans), box-shadow var(--theme-trans) !important;',
+      '  border-color:var(--theme-border) !important;',
+      '  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 40px var(--theme-glow),',
+      '             inset 0 0 30px var(--theme-glow) !important;',
+      '  transition:border-color var(--theme-trans),box-shadow var(--theme-trans) !important;',
       '}',
       '#halongClock .hclock-time{',
-      '  color: var(--theme-accent) !important;',
-      '  text-shadow: 0 0 12px var(--theme-glow), 0 0 24px var(--theme-glow) !important;',
-      '  transition: color var(--theme-trans) !important;',
+      '  color:var(--theme-accent) !important;',
+      '  text-shadow:0 0 12px var(--theme-glow),0 0 24px var(--theme-glow) !important;',
+      '  transition:color var(--theme-trans) !important;',
       '}',
       '#halongClock .hclock-loc-text{',
-      '  color: var(--theme-accent) !important;',
-      '  text-shadow: 0 0 8px var(--theme-glow) !important;',
-      '  transition: color var(--theme-trans) !important;',
+      '  color:var(--theme-accent) !important;',
+      '  text-shadow:0 0 8px var(--theme-glow) !important;',
+      '  transition:color var(--theme-trans) !important;',
       '}',
       '#halongClock .hclock-date, #halongClock .hclock-s{',
-      '  color: var(--theme-accent2) !important;',
-      '  transition: color var(--theme-trans) !important;',
+      '  color:var(--theme-accent2) !important;',
+      '  transition:color var(--theme-trans) !important;',
       '}',
       '#halongClock .hclock-loc{',
-      '  border-left-color: var(--theme-border) !important;',
-      '  transition: border-color var(--theme-trans) !important;',
+      '  border-left-color:var(--theme-border) !important;',
+      '  transition:border-color var(--theme-trans) !important;',
       '}',
 
       /* ==== LANDING: AREA CARD ==== */
       '.area-card{',
-      '  border-color: var(--theme-border-soft) !important;',
-      '  transition: border-color var(--theme-trans),',
-      '              transform .45s cubic-bezier(.16,1,.3,1),',
-      '              box-shadow .45s ease,',
-      '              border-radius .7s cubic-bezier(.16,1,.3,1) !important;',
+      '  border-color:var(--theme-border-soft) !important;',
+      '  transition:border-color var(--theme-trans),',
+      '             transform .45s cubic-bezier(.16,1,.3,1),',
+      '             box-shadow .45s ease,',
+      '             border-radius .7s cubic-bezier(.16,1,.3,1) !important;',
       '}',
       '.area-card:hover{',
-      '  border-color: var(--theme-border) !important;',
-      '  box-shadow: 0 28px 56px -16px rgba(0,0,0,.7),',
-      '              0 0 40px -8px var(--theme-glow),',
-      '              inset 0 0 30px var(--theme-glow) !important;',
+      '  border-color:var(--theme-border) !important;',
+      '  box-shadow:0 28px 56px -16px rgba(0,0,0,.7),',
+      '             0 0 40px -8px var(--theme-glow),',
+      '             inset 0 0 30px var(--theme-glow) !important;',
       '}',
       '.area-card::before{',
-      '  background: linear-gradient(135deg, var(--theme-border), transparent 45%, var(--theme-border-soft)) !important;',
-      '  transition: opacity .4s, background var(--theme-trans) !important;',
+      '  background:linear-gradient(135deg,var(--theme-border),transparent 45%,var(--theme-border-soft)) !important;',
+      '  transition:opacity .4s,background var(--theme-trans) !important;',
       '}',
       '.area-card:hover .area-title-en{',
-      '  color: var(--theme-accent) !important;',
-      '  text-shadow: 0 0 20px var(--theme-glow) !important;',
+      '  color:var(--theme-accent) !important;',
+      '  text-shadow:0 0 20px var(--theme-glow) !important;',
       '}',
-      '.area-title-vi{',
-      '  color: var(--theme-accent2) !important;',
-      '  transition: color var(--theme-trans) !important;',
-      '}',
+      '.area-title-vi{ color:var(--theme-accent2) !important; transition:color var(--theme-trans) !important; }',
       '.area-badge{',
-      '  background: linear-gradient(135deg, var(--theme-accent), var(--theme-accent2)) !important;',
-      '  transition: background var(--theme-trans) !important;',
+      '  background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent2)) !important;',
+      '  transition:background var(--theme-trans) !important;',
       '}',
 
-      /* ==== LANDING: ANNOUNCEMENT + WELCOME ==== */
+      /* ==== ANNOUNCEMENT + WELCOME ==== */
       '#announcementBar{',
-      '  border-color: var(--theme-border) !important;',
-      '  box-shadow: 0 6px 28px var(--theme-glow), inset 0 0 30px var(--theme-glow) !important;',
-      '  transition: border-color var(--theme-trans), box-shadow var(--theme-trans) !important;',
+      '  border-color:var(--theme-border) !important;',
+      '  box-shadow:0 6px 28px var(--theme-glow),inset 0 0 30px var(--theme-glow) !important;',
+      '  transition:border-color var(--theme-trans),box-shadow var(--theme-trans) !important;',
       '}',
-      '.announcement-text{ color: var(--theme-accent) !important; transition: color var(--theme-trans) !important; }',
-      '.welcome-lbl .wlc-vi{ color: var(--theme-accent) !important; transition: color var(--theme-trans); }',
-      '.welcome-lbl .wlc-en{ color: var(--theme-accent2) !important; transition: color var(--theme-trans); }',
+      '.announcement-text{ color:var(--theme-accent) !important; transition:color var(--theme-trans) !important; }',
+      '.welcome-lbl .wlc-vi{ color:var(--theme-accent) !important; transition:color var(--theme-trans); }',
+      '.welcome-lbl .wlc-en{ color:var(--theme-accent2) !important; transition:color var(--theme-trans); }',
 
       /* ==== BADGE ==== */
       '#themeBadge{',
-      '  position:fixed; top:8px; left:8px; z-index:9998;',
-      '  display:flex; align-items:center; gap:6px;',
+      '  position:fixed;top:8px;left:8px;z-index:9998;',
+      '  display:flex;align-items:center;gap:6px;',
       '  padding:6px 12px;',
       '  background:rgba(10,31,29,.9);',
       '  border:1px solid var(--theme-border);',
       '  border-radius:999px;',
-      '  font-size:11px; font-weight:900;',
-      '  color: var(--theme-accent);',
-      '  font-family: Nunito, sans-serif;',
-      '  backdrop-filter: blur(10px);',
-      '  pointer-events:none; opacity:0;',
-      '  transition: opacity .5s, border-color var(--theme-trans), color var(--theme-trans);',
+      '  font-size:11px;font-weight:900;',
+      '  color:var(--theme-accent);',
+      '  font-family:Nunito,sans-serif;',
+      '  backdrop-filter:blur(10px);',
+      '  pointer-events:none;opacity:0;',
+      '  transition:opacity .5s,border-color var(--theme-trans),color var(--theme-trans);',
       '}',
       '#themeBadge.show{ opacity:1; }',
       '#themeBadge .tb-icon{ font-size:14px; }',
       'body.app-mode #themeBadge{ display:none !important; }',
 
-      /* ==== APP CON: đổi hình dáng ==== */
+      /* ==== APP CON ==== */
       'body[data-theme]:not([data-theme="default"]) .glass-card,',
       'body[data-theme]:not([data-theme="default"]) .menu-card,',
       'body[data-theme]:not([data-theme="default"]) .order-card,',
@@ -432,25 +541,24 @@
       'body[data-theme]:not([data-theme="default"]) .order-item,',
       'body[data-theme]:not([data-theme="default"]) .modal-content,',
       'body[data-theme]:not([data-theme="default"]) .app-header{',
-      '  border-radius: var(--theme-radius) !important;',
-      '  transition: border-color var(--theme-trans),',
-      '              box-shadow var(--theme-trans),',
-      '              background var(--theme-trans),',
-      '              border-radius .9s cubic-bezier(.16,1,.3,1) !important;',
+      '  border-radius:var(--theme-radius) !important;',
+      '  transition:border-color var(--theme-trans),',
+      '             box-shadow var(--theme-trans),',
+      '             background var(--theme-trans),',
+      '             border-radius .9s cubic-bezier(.16,1,.3,1) !important;',
       '}',
 
       '@media(max-width:768px){',
-      '  #themeBadge{ font-size:9.5px; padding:4px 9px; top:6px; left:6px; }',
+      '  #themeBadge{ font-size:9.5px;padding:4px 9px;top:6px;left:6px; }',
       '  #themeBadge .tb-icon{ font-size:12px; }',
+      '  #themeBigIcon .tbi-aura{ width:min(95vw,700px); height:min(95vw,700px); filter:blur(30px); }',
       '}'
     ].join('\n');
     document.head.appendChild(s);
   }
 
   /* ============== BIG ICON ============== */
-  function hasLanding(){
-    return !!document.getElementById('landing');
-  }
+  function hasLanding(){ return !!document.getElementById('landing'); }
 
   function ensureBigIcon(){
     if (!hasLanding()) return null;
@@ -458,7 +566,9 @@
     if (el) return el;
     el = document.createElement('div');
     el.id = 'themeBigIcon';
-    el.innerHTML = '<span class="tbi-emoji" aria-hidden="true"></span>';
+    el.innerHTML =
+      '<div class="tbi-aura" aria-hidden="true"></div>' +
+      '<span class="tbi-emoji" aria-hidden="true"></span>';
     document.body.appendChild(el);
     return el;
   }
@@ -468,24 +578,39 @@
     if (!el) return;
 
     var cfg = BIG_ICONS[themeKey] || BIG_ICONS.default;
-    var emojiEl = el.querySelector('.tbi-emoji');
-    if (!emojiEl) return;
+    var aura = el.querySelector('.tbi-aura');
+    var emoji = el.querySelector('.tbi-emoji');
+    if (!aura || !emoji) return;
 
-    emojiEl.textContent = cfg.e;
-    emojiEl.style.color = accentColor;
-    emojiEl.style.opacity = cfg.o;
-    emojiEl.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ')';
+    /* ════════ EMOJI ════════ */
+    emoji.textContent = cfg.e;
+    emoji.style.color = accentColor;
+    emoji.style.opacity = cfg.o;
+    emoji.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ') drop-shadow(0 0 120px ' + accentColor + ')';
 
-    /* Flag emoji cần scale */
+    /* Flag emoji cần scale đặc biệt */
     var isFlag = (cfg.e === '🇻🇳' || /[\u{1F1E6}-\u{1F1FF}]{2}/u.test(cfg.e));
-    emojiEl.classList.toggle('flag', isFlag);
+    emoji.classList.toggle('flag', isFlag);
 
-    /* Reset animation + apply */
-    emojiEl.style.animation = 'none';
-    void emojiEl.offsetWidth;
-    emojiEl.style.animation = cfg.a + ' ' + cfg.d + ' ease-in-out infinite';
+    /* Reset + apply animation */
+    emoji.style.animation = 'none';
+    void emoji.offsetWidth;
+    emoji.style.animation = cfg.aE + ' ' + cfg.dE + ' ease-in-out infinite';
+
+    /* ════════ AURA ════════ */
+    /* Radial gradient dùng màu theme */
+    aura.style.background = 'radial-gradient(circle at 50% 50%, ' +
+      cfg.aura + ' 0%, ' +
+      cfg.aura.replace(/[\d.]+\)$/, '0.35)') + ' 35%, ' +
+      'transparent 70%)';
+
+    /* Reset + apply animation */
+    aura.style.animation = 'none';
+    void aura.offsetWidth;
+    aura.style.animation = cfg.aA + ' ' + cfg.dA + ' ease-in-out infinite';
 
     el.classList.add('show');
+    el.setAttribute('data-bt', themeKey);
   }
 
   /* ============== APPLY THEME ============== */
@@ -505,7 +630,7 @@
 
     document.body.setAttribute('data-theme', state.currentTheme);
 
-    /* Landing elements */
+    /* Landing clock elements */
     var ci = document.querySelector('#halongClock .hclock-icon');
     if (ci && t.icon) ci.textContent = t.icon;
     var li = document.querySelector('#halongClock .hclock-loc-icon');
@@ -513,18 +638,18 @@
     var ai = document.querySelector('#announcementBar .announcement-icon');
     if (ai && t.ann) ai.textContent = t.ann;
 
-    /* Áp border-radius động cho area-cards */
+    /* Border-radius động cho area-cards */
     document.querySelectorAll('.area-card').forEach(function(card){
       card.style.borderRadius = t.radius || '22px';
     });
 
-    /* BIG ICON — chỉ chạy trên landing */
+    /* Big Icon */
     applyBigIcon(state.currentTheme, t.accent);
 
     /* Lưu localStorage */
     try { localStorage.setItem(LS_THEME_KEY, state.currentTheme); } catch(e){}
 
-    /* Broadcast cho iframe */
+    /* Broadcast */
     try {
       var bc = window.__dolphinThemeBC ||
                (window.__dolphinThemeBC = new BroadcastChannel('dolphin-theme'));
@@ -590,21 +715,19 @@
   function init(){
     injectStyles();
 
-    /* 1. URL param */
     var urlParams = new URLSearchParams(location.search);
     var urlTheme = urlParams.get('theme');
     if (urlTheme && THEMES[urlTheme]){
       state.urlParam = urlTheme;
       applyTheme(urlTheme);
     } else {
-      /* 2. localStorage */
       var saved = null;
       try { saved = localStorage.getItem(LS_THEME_KEY); } catch(e){}
       if (saved && THEMES[saved]) applyTheme(saved);
       else applyTheme(detectThemeByDate());
     }
 
-    /* 3. Lắng nghe thay đổi realtime (tab khác) */
+    /* Lắng nghe thay đổi từ tab khác */
     try {
       window.addEventListener('storage', function(e){
         if (e.key === LS_THEME_KEY && THEMES[e.newValue]) applyTheme(e.newValue);
@@ -620,17 +743,17 @@
       };
     } catch(e){}
 
-    /* 4. Parent nghe Firestore */
+    /* Parent nghe Firestore */
     fetchThemeFromFirebase();
 
-    /* 5. Retry: nếu #landing xuất hiện muộn → thêm icon */
+    /* Retry nếu #landing xuất hiện muộn */
     if (hasLanding() && !document.getElementById('themeBigIcon')){
       applyBigIcon(state.currentTheme, THEMES[state.currentTheme].accent);
     }
   }
 
   window.ThemeSystem = {
-    version:    '6.0',
+    version:    '6.1',
     setTheme:   function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },
@@ -642,6 +765,6 @@
     document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  console.log('%c🎨 THEME SYSTEM v6 BIG-ICON LOADED',
+  console.log('%c🎨 THEME SYSTEM v6.1 — BIG ICON ENHANCED',
     'background:linear-gradient(90deg,#FFD700,#FF1493);color:#fff;font-size:12px;padding:4px 10px;border-radius:4px;font-weight:900');
 })();

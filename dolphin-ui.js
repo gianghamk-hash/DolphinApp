@@ -1,15 +1,11 @@
 /* ============================================================
-   DOLPHIN UI EXTRAS v6.0
+   DOLPHIN UI EXTRAS v6.1
    ─────────────────────────────────────────────────────────────
    • N6: Global Toast System (thống nhất 4 app)
    • A4: Alert đơn quá 5 phút trên Landing
    • C2: Empty State Illustrations cho 3 app con
-   • D1: Mini Dashboard cho Manager
+   • D1: Mini Dashboard cho Manager — ĐẨY XUỐNG CUỐI LANDING
    ─────────────────────────────────────────────────────────────
-   Tự detect context:
-     - Có #landing + không iframe → chạy A4 + D1
-     - Không có #landing (app con) → chạy C2
-     - N6 toast chạy mọi nơi
    ============================================================ */
 (function(){
   'use strict';
@@ -33,11 +29,10 @@
   var ALERT_POLL_MS = 20000;
   var DASH_POLL_MS  = 30000;
 
-  /* Toast config */
-  var TOAST_MAX        = 5;         /* tối đa 5 toast cùng lúc */
-  var TOAST_DEFAULT_MS = 3200;      /* auto dismiss mặc định */
-  var TOAST_ERR_MS     = 5200;      /* lỗi hiện lâu hơn */
-  var TOAST_LOADING_MS = 0;         /* loading không tự tắt */
+  var TOAST_MAX        = 5;
+  var TOAST_DEFAULT_MS = 3200;
+  var TOAST_ERR_MS     = 5200;
+  var TOAST_LOADING_MS = 0;
 
   /* ============================================================
      HELPERS
@@ -81,216 +76,94 @@
       loading: { icon:'⏳', color:'#FBD77A', bg1:'rgba(15,61,56,.98)',   bg2:'rgba(10,43,40,.98)' }
     };
 
-    /* ───── Inject CSS ───── */
     function injectStyles(){
       if (document.getElementById('dolphinToastStyles')) return;
       var s = document.createElement('style');
       s.id = 'dolphinToastStyles';
       s.textContent = [
-        /* Container */
         '#dtoastContainer{',
-        '  position:fixed;',
-        '  top:16px;',
-        '  right:16px;',
-        '  z-index:9999;',
-        '  display:flex;',
-        '  flex-direction:column;',
-        '  gap:10px;',
-        '  pointer-events:none;',
-        '  max-width:min(92vw,400px);',
-        '  width:max-content;',
+        '  position:fixed;top:16px;right:16px;z-index:9999;',
+        '  display:flex;flex-direction:column;gap:10px;',
+        '  pointer-events:none;max-width:min(92vw,400px);width:max-content;',
         '  font-family:"Nunito",-apple-system,BlinkMacSystemFont,sans-serif;',
         '}',
         '@media(max-width:640px){',
-        '  #dtoastContainer{',
-        '    top:10px;',
-        '    left:10px;',
-        '    right:10px;',
-        '    max-width:none;',
-        '    width:auto;',
-        '    align-items:stretch;',
-        '  }',
+        '  #dtoastContainer{ top:10px;left:10px;right:10px;max-width:none;width:auto;align-items:stretch; }',
         '}',
-
-        /* Toast base */
         '.dtoast{',
-        '  position:relative;',
-        '  display:flex;',
-        '  align-items:center;',
-        '  gap:12px;',
-        '  padding:12px 14px 12px 14px;',
-        '  border-radius:14px;',
-        '  color:#fff;',
-        '  font-size:13px;',
-        '  font-weight:800;',
-        '  letter-spacing:.02em;',
-        '  box-shadow:0 12px 36px rgba(0,0,0,.45),',
-        '             0 0 0 1px rgba(255,255,255,.08) inset;',
-        '  pointer-events:auto;',
-        '  cursor:default;',
-        '  backdrop-filter:blur(14px);',
-        '  -webkit-backdrop-filter:blur(14px);',
-        '  overflow:hidden;',
-        '  will-change:transform,opacity;',
-        '  transform-origin:top right;',
-        '  opacity:0;',
+        '  position:relative;display:flex;align-items:center;gap:12px;',
+        '  padding:12px 14px;border-radius:14px;color:#fff;',
+        '  font-size:13px;font-weight:800;letter-spacing:.02em;',
+        '  box-shadow:0 12px 36px rgba(0,0,0,.45),0 0 0 1px rgba(255,255,255,.08) inset;',
+        '  pointer-events:auto;cursor:default;',
+        '  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);',
+        '  overflow:hidden;will-change:transform,opacity;',
+        '  transform-origin:top right;opacity:0;',
         '  transform:translateX(120%) scale(.94);',
-        '  transition:opacity .28s cubic-bezier(.16,1,.3,1),',
-        '             transform .34s cubic-bezier(.16,1,.3,1);',
+        '  transition:opacity .28s cubic-bezier(.16,1,.3,1),transform .34s cubic-bezier(.16,1,.3,1);',
         '}',
-        '.dtoast.show{',
-        '  opacity:1;',
-        '  transform:translateX(0) scale(1);',
-        '}',
-        '.dtoast.hide{',
-        '  opacity:0;',
-        '  transform:translateX(120%) scale(.94);',
-        '}',
+        '.dtoast.show{ opacity:1;transform:translateX(0) scale(1); }',
+        '.dtoast.hide{ opacity:0;transform:translateX(120%) scale(.94); }',
         '@media(max-width:640px){',
-        '  .dtoast{',
-        '    transform-origin:top center;',
-        '    transform:translateY(-120%) scale(.94);',
-        '  }',
+        '  .dtoast{ transform-origin:top center;transform:translateY(-120%) scale(.94); }',
         '  .dtoast.show{ transform:translateY(0) scale(1); }',
         '  .dtoast.hide{ transform:translateY(-120%) scale(.94); }',
         '}',
-
-        /* Type variants */
         '.dtoast[data-type="success"]{',
         '  background:linear-gradient(135deg,rgba(22,163,74,.98),rgba(21,128,61,.98));',
         '  border:1px solid rgba(74,222,128,.4);',
-        '  box-shadow:0 12px 36px rgba(22,163,74,.5),',
-        '             0 0 24px rgba(74,222,128,.35),',
-        '             0 0 0 1px rgba(74,222,128,.15) inset;',
+        '  box-shadow:0 12px 36px rgba(22,163,74,.5),0 0 24px rgba(74,222,128,.35),0 0 0 1px rgba(74,222,128,.15) inset;',
         '}',
         '.dtoast[data-type="error"]{',
         '  background:linear-gradient(135deg,rgba(220,38,38,.98),rgba(153,27,27,.98));',
         '  border:1px solid rgba(248,113,113,.4);',
-        '  box-shadow:0 12px 36px rgba(220,38,38,.55),',
-        '             0 0 24px rgba(248,113,113,.35),',
-        '             0 0 0 1px rgba(248,113,113,.15) inset;',
+        '  box-shadow:0 12px 36px rgba(220,38,38,.55),0 0 24px rgba(248,113,113,.35),0 0 0 1px rgba(248,113,113,.15) inset;',
         '}',
         '.dtoast[data-type="warning"]{',
         '  background:linear-gradient(135deg,rgba(217,119,6,.98),rgba(146,64,14,.98));',
         '  border:1px solid rgba(251,191,36,.45);',
-        '  box-shadow:0 12px 36px rgba(217,119,6,.55),',
-        '             0 0 24px rgba(251,191,36,.35),',
-        '             0 0 0 1px rgba(251,191,36,.18) inset;',
+        '  box-shadow:0 12px 36px rgba(217,119,6,.55),0 0 24px rgba(251,191,36,.35),0 0 0 1px rgba(251,191,36,.18) inset;',
         '}',
         '.dtoast[data-type="info"]{',
         '  background:linear-gradient(135deg,rgba(37,99,235,.98),rgba(30,64,175,.98));',
         '  border:1px solid rgba(96,165,250,.4);',
-        '  box-shadow:0 12px 36px rgba(37,99,235,.5),',
-        '             0 0 24px rgba(96,165,250,.35),',
-        '             0 0 0 1px rgba(96,165,250,.15) inset;',
+        '  box-shadow:0 12px 36px rgba(37,99,235,.5),0 0 24px rgba(96,165,250,.35),0 0 0 1px rgba(96,165,250,.15) inset;',
         '}',
         '.dtoast[data-type="loading"]{',
         '  background:linear-gradient(135deg,rgba(15,61,56,.98),rgba(10,43,40,.98));',
         '  border:1px solid rgba(244,184,66,.5);',
-        '  box-shadow:0 12px 36px rgba(0,0,0,.55),',
-        '             0 0 28px rgba(244,184,66,.4),',
-        '             0 0 0 1px rgba(244,184,66,.15) inset;',
+        '  box-shadow:0 12px 36px rgba(0,0,0,.55),0 0 28px rgba(244,184,66,.4),0 0 0 1px rgba(244,184,66,.15) inset;',
         '}',
-
-        /* Icon */
         '.dtoast .dt-icon{',
-        '  font-size:20px;',
-        '  line-height:1;',
-        '  flex-shrink:0;',
+        '  font-size:20px;line-height:1;flex-shrink:0;',
         '  filter:drop-shadow(0 0 8px rgba(255,255,255,.35));',
-        '  display:flex;',
-        '  align-items:center;',
-        '  justify-content:center;',
-        '  width:26px;',
-        '  height:26px;',
+        '  display:flex;align-items:center;justify-content:center;width:26px;height:26px;',
         '}',
-        '.dtoast[data-type="loading"] .dt-icon{',
-        '  animation:dtSpin 1.4s linear infinite;',
-        '}',
-        '@keyframes dtSpin{',
-        '  to{ transform:rotate(360deg); }',
-        '}',
-
-        /* Body */
-        '.dtoast .dt-body{',
-        '  flex:1;',
-        '  min-width:0;',
-        '  display:flex;',
-        '  flex-direction:column;',
-        '  gap:2px;',
-        '}',
-        '.dtoast .dt-title{',
-        '  font-weight:900;',
-        '  font-size:13px;',
-        '  letter-spacing:.03em;',
-        '  line-height:1.25;',
-        '  text-shadow:0 1px 2px rgba(0,0,0,.35);',
-        '  word-break:break-word;',
-        '}',
-        '.dtoast .dt-sub{',
-        '  font-size:11px;',
-        '  font-weight:700;',
-        '  opacity:.9;',
-        '  letter-spacing:.02em;',
-        '  line-height:1.3;',
-        '  word-break:break-word;',
-        '}',
-
-        /* Close btn */
+        '.dtoast[data-type="loading"] .dt-icon{ animation:dtSpin 1.4s linear infinite; }',
+        '@keyframes dtSpin{ to{ transform:rotate(360deg); } }',
+        '.dtoast .dt-body{ flex:1;min-width:0;display:flex;flex-direction:column;gap:2px; }',
+        '.dtoast .dt-title{ font-weight:900;font-size:13px;letter-spacing:.03em;line-height:1.25;text-shadow:0 1px 2px rgba(0,0,0,.35);word-break:break-word; }',
+        '.dtoast .dt-sub{ font-size:11px;font-weight:700;opacity:.9;letter-spacing:.02em;line-height:1.3;word-break:break-word; }',
         '.dtoast .dt-close{',
-        '  flex-shrink:0;',
-        '  width:22px;',
-        '  height:22px;',
-        '  border-radius:50%;',
-        '  border:none;',
-        '  background:rgba(255,255,255,.15);',
-        '  color:#fff;',
-        '  font-size:11px;',
-        '  font-weight:900;',
-        '  cursor:pointer;',
-        '  display:flex;',
-        '  align-items:center;',
-        '  justify-content:center;',
-        '  padding:0;',
-        '  transition:background .15s, transform .15s;',
-        '  font-family:inherit;',
-        '  line-height:1;',
+        '  flex-shrink:0;width:22px;height:22px;border-radius:50%;border:none;',
+        '  background:rgba(255,255,255,.15);color:#fff;font-size:11px;font-weight:900;',
+        '  cursor:pointer;display:flex;align-items:center;justify-content:center;',
+        '  padding:0;transition:background .15s,transform .15s;font-family:inherit;line-height:1;',
         '}',
-        '.dtoast .dt-close:hover{',
-        '  background:rgba(255,255,255,.3);',
-        '  transform:scale(1.1);',
-        '}',
+        '.dtoast .dt-close:hover{ background:rgba(255,255,255,.3);transform:scale(1.1); }',
         '.dtoast .dt-close:active{ transform:scale(.92); }',
-
-        /* Progress bar */
         '.dtoast .dt-progress{',
-        '  position:absolute;',
-        '  left:0;',
-        '  right:0;',
-        '  bottom:0;',
-        '  height:3px;',
-        '  background:rgba(255,255,255,.15);',
-        '  overflow:hidden;',
-        '  border-radius:0 0 14px 14px;',
+        '  position:absolute;left:0;right:0;bottom:0;height:3px;',
+        '  background:rgba(255,255,255,.15);overflow:hidden;border-radius:0 0 14px 14px;',
         '}',
         '.dtoast .dt-progress::before{',
-        '  content:"";',
-        '  position:absolute;',
-        '  inset:0;',
-        '  background:linear-gradient(90deg,',
-        '    rgba(255,255,255,0) 0%,',
-        '    rgba(255,255,255,.7) 50%,',
-        '    rgba(255,255,255,0) 100%);',
-        '  transform:translateX(-100%);',
-        '  animation:dtProgress 3.2s linear forwards;',
+        '  content:"";position:absolute;inset:0;',
+        '  background:linear-gradient(90deg,rgba(255,255,255,0) 0%,rgba(255,255,255,.7) 50%,rgba(255,255,255,0) 100%);',
+        '  transform:translateX(-100%);animation:dtProgress 3.2s linear forwards;',
         '}',
-        '@keyframes dtProgress{',
-        '  to{ transform:translateX(100%); }',
-        '}',
-
-        /* Reduce motion */
+        '@keyframes dtProgress{ to{ transform:translateX(100%); } }',
         '@media(prefers-reduced-motion:reduce){',
-        '  .dtoast{ transition:opacity .01s; transform:none !important; }',
+        '  .dtoast{ transition:opacity .01s;transform:none !important; }',
         '  .dtoast.show{ opacity:1; }',
         '  .dtoast.hide{ opacity:0; }',
         '  .dtoast .dt-progress::before{ animation:none; }',
@@ -300,7 +173,6 @@
       document.head.appendChild(s);
     }
 
-    /* ───── Ensure container ───── */
     function ensureContainer(){
       if (container) return container;
       container = document.getElementById('dtoastContainer');
@@ -314,7 +186,6 @@
       return container;
     }
 
-    /* ───── Create toast element ───── */
     function createToast(opts){
       var type = opts.type || 'info';
       var cfg = TYPE_MAP[type] || TYPE_MAP.info;
@@ -327,7 +198,6 @@
 
       var iconHtml;
       if (opts.icon != null && opts.icon !== '') {
-        /* Custom icon (emoji) */
         iconHtml = '<span class="dt-icon">' + escapeHtml(opts.icon) + '</span>';
       } else {
         iconHtml = '<span class="dt-icon">' + cfg.icon + '</span>';
@@ -337,7 +207,6 @@
         ? '<div class="dt-title">' + escapeHtml(opts.title) + '</div>'
         : '';
 
-      /* Nếu không có title → message là title luôn */
       var bodyHtml;
       if (opts.title) {
         bodyHtml = titleHtml +
@@ -354,20 +223,10 @@
         ? '<div class="dt-progress" style="animation-duration:' + duration + 'ms"></div>'
         : '';
 
-      el.innerHTML =
-        iconHtml +
+      el.innerHTML = iconHtml +
         '<div class="dt-body">' + bodyHtml + '</div>' +
-        closeHtml +
-        progressHtml;
+        closeHtml + progressHtml;
 
-      /* Set progress duration */
-      if (duration > 0 && opts.showProgress !== false) {
-        var prog = el.querySelector('.dt-progress::before');
-        /* Dùng style trực tiếp cho ::before không được, dùng animation-duration qua custom property */
-        el.style.setProperty('--dt-progress-dur', duration + 'ms');
-      }
-
-      /* Click close */
       var closeBtn = el.querySelector('.dt-close');
       if (closeBtn) {
         closeBtn.addEventListener('click', function(e){
@@ -376,7 +235,6 @@
         });
       }
 
-      /* Click toast → dismiss (trừ loading) */
       if (type !== 'loading' && opts.clickToDismiss !== false) {
         el.addEventListener('click', function(e){
           if (e.target.closest('.dt-close')) return;
@@ -387,19 +245,18 @@
       return { el: el, duration: duration, type: type };
     }
 
-    /* ───── Show toast ───── */
     function show(opts){
       if (!opts || (!opts.message && !opts.title)) return null;
-
       injectStyles();
       var c = ensureContainer();
 
-      /* Giới hạn số toast */
       while (activeToasts.length >= TOAST_MAX) {
         var oldest = activeToasts.shift();
         if (oldest && oldest.el && oldest.el.parentNode) {
           oldest.el.classList.add('hide');
-          setTimeout(function(el){ return function(){ if (el.parentNode) el.parentNode.removeChild(el); }; }(oldest.el), 320);
+          (function(el){
+            setTimeout(function(){ if (el.parentNode) el.parentNode.removeChild(el); }, 320);
+          })(oldest.el);
         }
         if (oldest && oldest.timer) clearTimeout(oldest.timer);
       }
@@ -408,14 +265,12 @@
       c.appendChild(obj.el);
       activeToasts.push(obj);
 
-      /* Trigger animation */
       requestAnimationFrame(function(){
         requestAnimationFrame(function(){
           obj.el.classList.add('show');
         });
       });
 
-      /* Auto dismiss */
       if (obj.duration > 0) {
         obj.timer = setTimeout(function(){ dismiss(obj.el); }, obj.duration);
       }
@@ -427,7 +282,6 @@
       };
     }
 
-    /* ───── Dismiss toast ───── */
     function dismiss(el){
       if (!el || !el.parentNode) return;
       var idx = -1;
@@ -446,16 +300,12 @@
       }, 320);
     }
 
-    /* ───── Update toast (chuyển loading → success/error) ───── */
     function updateToast(el, opts){
       if (!el || !el.parentNode || !opts) return;
-
       var type = opts.type || el.dataset.type || 'info';
       var cfg = TYPE_MAP[type] || TYPE_MAP.info;
-
       el.dataset.type = type;
 
-      /* Update icon */
       var iconEl = el.querySelector('.dt-icon');
       if (iconEl){
         if (opts.icon != null && opts.icon !== ''){
@@ -465,7 +315,6 @@
         }
       }
 
-      /* Update body */
       var bodyEl = el.querySelector('.dt-body');
       if (bodyEl){
         var titleHtml = opts.title
@@ -480,7 +329,6 @@
         bodyEl.innerHTML = bodyHtml;
       }
 
-      /* Reset timer */
       var obj = null;
       for (var i = 0; i < activeToasts.length; i++){
         if (activeToasts[i].el === el){ obj = activeToasts[i]; break; }
@@ -492,11 +340,9 @@
           ? opts.duration
           : (type === 'error' ? TOAST_ERR_MS : TOAST_DEFAULT_MS);
 
-        /* Update progress bar */
         var prog = el.querySelector('.dt-progress');
         if (prog && dur > 0){
           prog.style.animationDuration = dur + 'ms';
-          /* Reset animation */
           prog.style.display = 'none';
           void prog.offsetWidth;
           prog.style.display = '';
@@ -508,94 +354,45 @@
       }
     }
 
-    /* ───── Public API ───── */
-    function success(msg, opts){
-      opts = opts || {};
-      opts.type = 'success';
-      opts.message = msg;
-      return show(opts);
-    }
-    function error(msg, opts){
-      opts = opts || {};
-      opts.type = 'error';
-      opts.message = msg;
-      if (typeof opts.duration !== 'number') opts.duration = TOAST_ERR_MS;
-      return show(opts);
-    }
-    function warning(msg, opts){
-      opts = opts || {};
-      opts.type = 'warning';
-      opts.message = msg;
-      return show(opts);
-    }
-    function info(msg, opts){
-      opts = opts || {};
-      opts.type = 'info';
-      opts.message = msg;
-      return show(opts);
-    }
-    function loading(msg, opts){
-      opts = opts || {};
-      opts.type = 'loading';
-      opts.message = msg;
-      opts.duration = TOAST_LOADING_MS;   /* không auto dismiss */
-      opts.dismissible = opts.dismissible !== false;
-      return show(opts);
-    }
-    function dismissAll(){
-      var copy = activeToasts.slice();
-      copy.forEach(function(t){ dismiss(t.el); });
-    }
+    function success(msg, opts){ opts = opts || {}; opts.type = 'success'; opts.message = msg; return show(opts); }
+    function error(msg, opts){ opts = opts || {}; opts.type = 'error'; opts.message = msg; if (typeof opts.duration !== 'number') opts.duration = TOAST_ERR_MS; return show(opts); }
+    function warning(msg, opts){ opts = opts || {}; opts.type = 'warning'; opts.message = msg; return show(opts); }
+    function info(msg, opts){ opts = opts || {}; opts.type = 'info'; opts.message = msg; return show(opts); }
+    function loading(msg, opts){ opts = opts || {}; opts.type = 'loading'; opts.message = msg; opts.duration = TOAST_LOADING_MS; opts.dismissible = opts.dismissible !== false; return show(opts); }
+    function dismissAll(){ var copy = activeToasts.slice(); copy.forEach(function(t){ dismiss(t.el); }); }
 
-    /* ───── Legacy adapter: chuyển showToast cũ → toast mới ───── */
     var LEGACY_ICON_TYPE_MAP = {
-      '✅': 'success', '🟢': 'success', '🎉': 'success', '✨': 'success',
-      '🚀': 'success', '🏝️': 'success', '👋': 'success', '📝': 'info',
-      '❌': 'error', '🚫': 'error', '⛔': 'error',
-      '⚠️': 'warning', '🚨': 'warning', '🔔': 'warning',
-      '⏳': 'loading', '☁️': 'loading',
-      'ℹ️': 'info', '🛎️': 'info', '🍸': 'info', '🏆': 'info'
+      '✅':'success','🟢':'success','🎉':'success','✨':'success','🚀':'success','🏝️':'success','👋':'success','📝':'info',
+      '❌':'error','🚫':'error','⛔':'error',
+      '⚠️':'warning','🚨':'warning','🔔':'warning',
+      '⏳':'loading','☁️':'loading',
+      'ℹ️':'info','🛎️':'info','🍸':'info','🏆':'info'
     };
 
     function legacy(msg, icon){
       var type = LEGACY_ICON_TYPE_MAP[icon] || 'info';
       var opts = {
-        type: type,
-        message: msg,
-        icon: icon || null,
+        type: type, message: msg, icon: icon || null,
         duration: type === 'error' ? TOAST_ERR_MS :
-                  type === 'loading' ? TOAST_LOADING_MS :
-                  TOAST_DEFAULT_MS
+                  type === 'loading' ? TOAST_LOADING_MS : TOAST_DEFAULT_MS
       };
       return show(opts);
     }
 
     return {
-      show:        show,
-      success:     success,
-      error:       error,
-      warning:     warning,
-      info:        info,
-      loading:     loading,
-      dismiss:     dismiss,
-      dismissAll:  dismissAll,
-      update:      updateToast,
-      legacy:      legacy,
-      TYPE_MAP:    TYPE_MAP
+      show: show, success: success, error: error, warning: warning,
+      info: info, loading: loading, dismiss: dismiss, dismissAll: dismissAll,
+      update: updateToast, legacy: legacy, TYPE_MAP: TYPE_MAP
     };
   })();
 
-  /* Expose global */
   window.UI = window.UI || {};
   window.UI.toast = ToastSystem;
 
-  /* Override window.showToast cũ → dùng system mới */
   var _originalShowToast = window.showToast;
   window.showToast = function(msg, icon){
-    try {
-      ToastSystem.legacy(msg, icon);
-    } catch(e){
-      /* Fallback nếu toast system lỗi */
+    try { ToastSystem.legacy(msg, icon); }
+    catch(e){
       if (_originalShowToast && _originalShowToast !== window.showToast){
         try { _originalShowToast(msg, icon); } catch(err){}
       }
@@ -603,19 +400,17 @@
     }
   };
 
-  /* ═══════════════════════════════════════════════════════════
-     ══════════ A4: DELAY ALERT ON LANDING ══════════
-     ═══════════════════════════════════════════════════════════ */
+  /* ============================================================
+     A4: DELAY ALERT ON LANDING
+     ============================================================ */
   function injectAlertStyles(){
     if (document.getElementById('delayAlertStyles')) return;
     var s = document.createElement('style');
     s.id = 'delayAlertStyles';
     s.textContent = [
       '#delayAlert{',
-      '  position:fixed;top:14px;left:50%;',
-      '  transform:translateX(-50%) translateY(-140%);',
-      '  z-index:9997;max-width:min(92vw,560px);',
-      '  opacity:0;pointer-events:none;',
+      '  position:fixed;top:14px;left:50%;transform:translateX(-50%) translateY(-140%);',
+      '  z-index:9997;max-width:min(92vw,560px);opacity:0;pointer-events:none;',
       '  transition:transform .55s cubic-bezier(.16,1,.3,1), opacity .35s ease;',
       '  font-family:"Nunito",sans-serif;',
       '}',
@@ -707,19 +502,25 @@
     el.classList.add('show');
   }
 
-  /* ═══════════════════════════════════════════════════════════
-     ══════════ D1: MINI DASHBOARD FOR MANAGER ══════════
-     ═══════════════════════════════════════════════════════════ */
+  /* ============================================================
+     D1: MINI DASHBOARD FOR MANAGER — ĐẨY XUỐNG CUỐI
+     ============================================================ */
   function injectDashboardStyles(){
     if (document.getElementById('mgrDashStyles')) return;
     var s = document.createElement('style');
     s.id = 'mgrDashStyles';
     s.textContent = [
-      '#mgrDash{ display:none;margin:0 auto 1.5rem;max-width:min(92vw,900px);',
+      '#mgrDash{',
+      '  display:none;',
+      '  margin:2rem auto 0.5rem;',                       /* ← đẩy xuống: margin-top lớn */
+      '  max-width:min(92vw,900px);',
       '  background:linear-gradient(135deg,rgba(15,61,56,.85),rgba(10,43,40,.92));',
-      '  border:2px solid var(--theme-border, rgba(244,184,66,.55));border-radius:18px;padding:14px 18px;',
+      '  border:2px solid var(--theme-border, rgba(244,184,66,.55));',
+      '  border-radius:18px;padding:14px 18px;',
       '  box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 32px var(--theme-glow, rgba(244,184,66,.25)),inset 0 0 24px var(--theme-glow, rgba(244,184,66,.06));',
-      '  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);font-family:"Nunito",sans-serif; }',
+      '  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);',
+      '  font-family:"Nunito",sans-serif;',
+      '}',
       '#mgrDash.show{ display:block;animation:mgrIn .6s ease-out; }',
       '@keyframes mgrIn{ from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }',
       '#mgrDash .mgr-head{ display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--theme-border-soft, rgba(244,184,66,.25)); }',
@@ -737,7 +538,7 @@
       '#mgrDash .mgr-value.ok{ color:#66BB6A;text-shadow:0 0 12px rgba(102,187,106,.5); }',
       '#mgrDash .mgr-sub{ font-size:9px;font-weight:700;color:var(--theme-accent2, #bfe9dc);opacity:.7;margin-top:2px; }',
       '@media(max-width:520px){',
-      '  #mgrDash{ padding:11px 12px; }',
+      '  #mgrDash{ padding:11px 12px;margin-top:1.5rem; }',
       '  #mgrDash .mgr-title{ font-size:11px; }',
       '  #mgrDash .mgr-value{ font-size:17px; }',
       '  #mgrDash .mgr-item{ padding:8px 6px; }',
@@ -746,6 +547,7 @@
     document.head.appendChild(s);
   }
 
+  /* ═══════════ ĐẨY XUỐNG CUỐI — SAU AREA GRID ═══════════ */
   function ensureDashEl(){
     var el = document.getElementById('mgrDash');
     if (el) return el;
@@ -757,9 +559,21 @@
       '  <div class="mgr-time" id="mgrTime">--:--</div>' +
       '</div>' +
       '<div class="mgr-grid" id="mgrGrid"></div>';
-    var ref = document.querySelector('.welcome-lbl');
-    if (ref && ref.parentNode) ref.parentNode.insertBefore(el, ref);
-    else document.body.appendChild(el);
+
+    /* Chèn NGAY SAU .area-grid */
+    var areaGrid = document.querySelector('.area-grid');
+    if (areaGrid && areaGrid.parentNode){
+      if (areaGrid.nextSibling){
+        areaGrid.parentNode.insertBefore(el, areaGrid.nextSibling);
+      } else {
+        areaGrid.parentNode.appendChild(el);
+      }
+    } else {
+      /* Fallback: chèn cuối container chính */
+      var container = document.querySelector('#landing > div > div');
+      if (container) container.appendChild(el);
+      else document.body.appendChild(el);
+    }
     return el;
   }
 
@@ -814,9 +628,9 @@
       '</div>';
   }
 
-  /* ═══════════════════════════════════════════════════════════
-     ══════════ C2: EMPTY STATES ══════════
-     ═══════════════════════════════════════════════════════════ */
+  /* ============================================================
+     C2: EMPTY STATES
+     ============================================================ */
   var EMPTY_EMOJI = {
     lounge:     ['🍸', '🥂', '✨'],
     bungalow:   ['🌴', '🥥', '🏝️'],
@@ -861,9 +675,9 @@
     document.head.appendChild(s);
   }
 
-  /* ═══════════════════════════════════════════════════════════
+  /* ============================================================
      FIREBASE LISTENERS
-     ═══════════════════════════════════════════════════════════ */
+     ============================================================ */
   function initFirebase(){
     Promise.all([
       import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
@@ -935,9 +749,9 @@
     });
   }
 
-  /* ═══════════════════════════════════════════════════════════
+  /* ============================================================
      INIT
-     ═══════════════════════════════════════════════════════════ */
+     ============================================================ */
   function init(){
     if (hasLanding() && !isIframe()){
       injectAlertStyles();
@@ -963,6 +777,6 @@
     init();
   }
 
-  console.log('%c🎨 DOLPHIN UI v6.0 LOADED',
+  console.log('%c🎨 DOLPHIN UI v6.1 LOADED',
     'background:linear-gradient(90deg,#FBD77A,#F4B842);color:#0a2b28;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:900');
 })();

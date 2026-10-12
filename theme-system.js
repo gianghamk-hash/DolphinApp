@@ -1,9 +1,9 @@
 /* ============================================================
-   THEME SYSTEM v6.4 — JS-EXPLICIT SIZING (iOS PWA bulletproof)
-   - Đo viewport bằng documentElement.clientWidth/Height
-   - Set px trực tiếp cho container, aura, emoji
-   - Không dùng vmin/vw/vh (iOS PWA bug)
-   - Re-measure on resize / orientation / visibility
+   THEME SYSTEM v6.5 — MINIMALIST (iOS PWA bulletproof)
+   - Bỏ filter:blur → radial-gradient nhiều lớp
+   - Bỏ flex → margin âm để center
+   - Không dùng vmin/vw/vh trong CSS
+   - Debug mode: ?btdebug=1
    ============================================================ */
 (function(){
   'use strict';
@@ -14,6 +14,12 @@
     projectId: "dolphin-f6d67"
   };
   var LS_THEME_KEY = 'dolphin_theme';
+
+  /* Debug flag từ URL */
+  var DEBUG = false;
+  try {
+    DEBUG = new URLSearchParams(location.search).get('btdebug') === '1';
+  } catch(e){}
 
   /* ============================================================
      THEME DEFINITIONS
@@ -209,10 +215,13 @@
       '#landing{ background: transparent !important; }',
 
       /* ============================================================
-         BIG BACKGROUND ICON
+         BIG ICON — MINIMALIST v6.5
          ────────────────────────────────────────────────────────────
-         Width/height được set BẰNG JS (không dùng vmin/vw/vh)
-         CSS chỉ giữ basic layout để tránh FOUC
+         • KHÔNG dùng flex
+         • KHÔNG dùng filter:blur
+         • KHÔNG dùng transform trên container
+         • Aura = radial-gradient nhiều lớp (thay blur)
+         • Center bằng margin âm
          ============================================================ */
       '#themeBigIcon{',
       '  position: fixed;',
@@ -220,42 +229,47 @@
       '  left: 0;',
       '  pointer-events: none;',
       '  z-index: 1;',
-      '  display: flex;',
-      '  align-items: center;',
-      '  justify-content: center;',
-      '  overflow: hidden;',
       '  opacity: 0;',
       '  transition: opacity 1.4s ease;',
       '}',
       '#themeBigIcon.show{ opacity: 1; }',
 
-      '#themeBigIcon .tbi-center{',
-      '  position: relative;',
-      '  display: flex;',
-      '  align-items: center;',
-      '  justify-content: center;',
-      '}',
-
-      /* AURA — size do JS set */
+      /* Aura — radial-gradient nhiều lớp, KHÔNG blur */
       '#themeBigIcon .tbi-aura{',
       '  position: absolute;',
+      '  top: 50%;',
+      '  left: 50%;',
       '  border-radius: 50%;',
-      '  -webkit-filter: blur(40px);',
-      '  filter: blur(40px);',
-      '  opacity: .6;',
       '  pointer-events: none;',
       '}',
+      '#themeBigIcon .tbi-aura::before{',
+      '  content:"";',
+      '  position:absolute;',
+      '  inset:0;',
+      '  border-radius:50%;',
+      '  background: inherit;',
+      '}',
+      '#themeBigIcon .tbi-aura::after{',
+      '  content:"";',
+      '  position:absolute;',
+      '  inset:-20%;',
+      '  border-radius:50%;',
+      '  background: inherit;',
+      '  opacity:.5;',
+      '}',
 
-      /* EMOJI — font-size do JS set */
+      /* Emoji */
       '#themeBigIcon .tbi-emoji{',
-      '  position: relative;',
+      '  position: absolute;',
+      '  top: 50%;',
+      '  left: 50%;',
       '  font-family: "Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji","EmojiOne Color",sans-serif;',
       '  line-height: 1;',
+      '  text-align: center;',
       '  user-select: none;',
       '  -webkit-user-select: none;',
-      '  display: block;',
-      '  transform-origin: center;',
       '  -webkit-font-smoothing: antialiased;',
+      '  transform-origin: center;',
       '}',
       '#themeBigIcon .tbi-emoji.flag > .tbi-e-inner{',
       '  display: inline-block;',
@@ -263,52 +277,50 @@
       '  transform-origin: center;',
       '}',
 
-      /* ============ AURA ANIMATIONS ============ */
+      /* ============ AURA ANIMATIONS (chỉ opacity, KHÔNG transform scale) ============ */
       '@keyframes aura-soft{',
-      '  0%,100%{ transform:scale(.95); opacity:.5; }',
-      '  50%    { transform:scale(1.08); opacity:.8; }',
+      '  0%,100%{ opacity:.5; }',
+      '  50%    { opacity:.8; }',
       '}',
       '@keyframes aura-warm{',
-      '  0%,100%{ transform:scale(.92); opacity:.55; }',
-      '  50%    { transform:scale(1.12); opacity:.9; }',
+      '  0%,100%{ opacity:.55; }',
+      '  50%    { opacity:.9; }',
       '}',
       '@keyframes aura-heart{',
-      '  0%,100%{ transform:scale(1); opacity:.6; }',
-      '  12%    { transform:scale(1.15); opacity:.95; }',
-      '  24%    { transform:scale(1); opacity:.6; }',
-      '  36%    { transform:scale(1.1); opacity:.85; }',
-      '  48%    { transform:scale(1); opacity:.6; }',
+      '  0%,100%{ opacity:.6; }',
+      '  12%    { opacity:.95; }',
+      '  24%    { opacity:.6; }',
+      '  36%    { opacity:.85; }',
+      '  48%    { opacity:.6; }',
       '}',
       '@keyframes aura-bloom{',
-      '  0%   { transform:scale(.9) rotate(0deg); opacity:.55; }',
-      '  50%  { transform:scale(1.15) rotate(180deg); opacity:.85; }',
-      '  100% { transform:scale(.9) rotate(360deg); opacity:.55; }',
+      '  0%,100%{ opacity:.55; }',
+      '  50%    { opacity:.85; }',
       '}',
       '@keyframes aura-flag{',
-      '  0%,100%{ transform:scale(1);    opacity:.7; }',
-      '  25%    { transform:scale(1.05); opacity:.85; }',
-      '  75%    { transform:scale(1.05); opacity:.85; }',
+      '  0%,100%{ opacity:.7; }',
+      '  25%    { opacity:.85; }',
+      '  75%    { opacity:.85; }',
       '}',
       '@keyframes aura-ghost{',
-      '  0%,100%{ transform:scale(1);    opacity:.75; }',
-      '  25%    { transform:scale(1.08); opacity:.45; }',
-      '  50%    { transform:scale(1);    opacity:.85; }',
-      '  75%    { transform:scale(1.05); opacity:.5; }',
+      '  0%,100%{ opacity:.75; }',
+      '  25%    { opacity:.45; }',
+      '  50%    { opacity:.85; }',
+      '  75%    { opacity:.5; }',
       '}',
       '@keyframes aura-firework{',
-      '  0%   { transform:scale(.8); opacity:.4; }',
-      '  40%  { transform:scale(1.2); opacity:1; }',
-      '  70%  { transform:scale(1.05); opacity:.85; }',
-      '  100% { transform:scale(.8); opacity:.4; }',
+      '  0%   { opacity:.4; }',
+      '  40%  { opacity:1; }',
+      '  70%  { opacity:.85; }',
+      '  100% { opacity:.4; }',
       '}',
       '@keyframes aura-sun{',
-      '  0%  { transform:scale(.95) rotate(0deg); opacity:.55; }',
-      '  50% { transform:scale(1.1) rotate(180deg); opacity:.85; }',
-      '  100%{ transform:scale(.95) rotate(360deg); opacity:.55; }',
+      '  0%,100%{ opacity:.55; }',
+      '  50%    { opacity:.85; }',
       '}',
       '@keyframes aura-frost{',
-      '  0%,100%{ transform:scale(.9); opacity:.5; }',
-      '  50%    { transform:scale(1.15); opacity:.85; }',
+      '  0%,100%{ opacity:.5; }',
+      '  50%    { opacity:.85; }',
       '}',
 
       /* ============ EMOJI ANIMATIONS ============ */
@@ -333,8 +345,8 @@
       '  100%{ transform:rotate(-12deg) scale(1); }',
       '}',
       '@keyframes bgi-glow{',
-      '  0%,100%{ filter:drop-shadow(0 0 40px currentColor) drop-shadow(0 0 80px currentColor) brightness(.9); opacity:.7; }',
-      '  50%    { filter:drop-shadow(0 0 100px currentColor) drop-shadow(0 0 200px currentColor) brightness(1.3); opacity:1; }',
+      '  0%,100%{ opacity:.7; }',
+      '  50%    { opacity:1; }',
       '}',
       '@keyframes bgi-wave{',
       '  0%,100%{ transform:skewY(0deg); }',
@@ -374,6 +386,20 @@
       '@media (prefers-reduced-motion: reduce){',
       '  #themeBigIcon .tbi-emoji,',
       '  #themeBigIcon .tbi-aura{ animation:none !important; }',
+      '}',
+
+      /* DEBUG MODE: hiện khung đỏ để thấy vị trí */
+      'body.btdebug #themeBigIcon{',
+      '  background: rgba(255,0,0,.15);',
+      '  border: 2px dashed #FF0000;',
+      '}',
+      'body.btdebug #themeBigIcon .tbi-aura{',
+      '  background: rgba(255,255,0,.2) !important;',
+      '  border: 2px solid #FFFF00;',
+      '}',
+      'body.btdebug #themeBigIcon .tbi-emoji{',
+      '  background: rgba(0,255,0,.15);',
+      '  border: 2px solid #00FF00;',
       '}',
 
       /* ==== ĐỒNG HỒ ==== */
@@ -478,7 +504,6 @@
       '@media(max-width:768px){',
       '  #themeBadge{ font-size:9.5px;padding:4px 9px;top:6px;left:6px; }',
       '  #themeBadge .tb-icon{ font-size:12px; }',
-      '  #themeBigIcon .tbi-aura{ -webkit-filter:blur(30px); filter:blur(30px); }',
       '}',
 
       '@supports (-webkit-touch-callout: none){',
@@ -490,22 +515,17 @@
   }
 
   /* ============================================================
-     MEASURE VIEWPORT — reliable across iOS PWA
+     MEASURE VIEWPORT
      ============================================================ */
   function measureViewport(){
-    /* documentElement.clientWidth/Height = CSS viewport
-       (không tính scrollbar, đúng trên iOS PWA) */
     var de = document.documentElement;
     var vw = de.clientWidth || window.innerWidth || 0;
     var vh = de.clientHeight || window.innerHeight || 0;
 
-    /* iOS PWA: visualViewport chính xác hơn khi có keyboard */
     if (window.visualViewport){
       vw = Math.max(vw, Math.round(window.visualViewport.width) || 0);
       vh = Math.max(vh, Math.round(window.visualViewport.height) || 0);
     }
-
-    /* Fallback cứng */
     if (vw <= 0) vw = 375;
     if (vh <= 0) vh = 667;
 
@@ -524,55 +544,72 @@
     el.id = 'themeBigIcon';
     el.setAttribute('aria-hidden', 'true');
     el.innerHTML =
-      '<div class="tbi-center">' +
-      '  <div class="tbi-aura" aria-hidden="true"></div>' +
-      '  <span class="tbi-emoji" aria-hidden="true"></span>' +
-      '</div>';
+      '<div class="tbi-aura" aria-hidden="true"></div>' +
+      '<span class="tbi-emoji" aria-hidden="true"></span>';
 
     document.body.appendChild(el);
     return el;
   }
 
-  /* ═══════ SIZE ELEMENTS WITH EXPLICIT PX ═══════ */
-  var lastBigIconCfg = null;
-
+  /* ═══════ SIZE + POSITION (all explicit px) ═══════ */
   function sizeBigIcon(){
     var el = document.getElementById('themeBigIcon');
     if (!el) return;
 
     var vp = measureViewport();
 
-    /* Container: explicit px (không dùng vw/vh) */
+    /* Container = full viewport */
     el.style.width  = vp.w + 'px';
     el.style.height = vp.h + 'px';
     el.style.top    = '0px';
     el.style.left   = '0px';
-    el.style.right  = 'auto';
-    el.style.bottom = 'auto';
 
-    /* Center wrapper fill container */
-    var center = el.querySelector('.tbi-center');
-    if (center){
-      center.style.width  = '100%';
-      center.style.height = '100%';
-    }
-
-    /* Aura: 88% of vmin, cap 900px */
     var aura = el.querySelector('.tbi-aura');
+    var emoji = el.querySelector('.tbi-emoji');
+
+    /* Aura: 88% vmin, cap 900px */
     if (aura){
       var auraSize = Math.min(vp.vmin * 0.88, 900);
+      var auraHalf = auraSize / 2;
       aura.style.width  = auraSize + 'px';
       aura.style.height = auraSize + 'px';
+      aura.style.marginTop  = (-auraHalf) + 'px';
+      aura.style.marginLeft = (-auraHalf) + 'px';
     }
 
-    /* Emoji: 52% of vmin, cap 620px */
-    var emoji = el.querySelector('.tbi-emoji');
+    /* Emoji: 52% vmin (66% for flag), cap 620/820px */
     if (emoji){
       var isFlag = emoji.classList.contains('flag');
       var baseSize = isFlag ? vp.vmin * 0.66 : vp.vmin * 0.52;
       var emojiSize = Math.min(baseSize, isFlag ? 820 : 620);
-      emoji.style.fontSize = emojiSize + 'px';
+      var emojiHalf = emojiSize / 2;
+      emoji.style.width  = emojiSize + 'px';
+      emoji.style.height = emojiSize + 'px';
+      emoji.style.marginTop  = (-emojiHalf) + 'px';
+      emoji.style.marginLeft = (-emojiHalf) + 'px';
+      /* Font-size = 90% của box để fit vừa */
+      emoji.style.fontSize = Math.round(emojiSize * 0.9) + 'px';
+      emoji.style.lineHeight = emojiSize + 'px';
     }
+
+    if (DEBUG){
+      console.log('[BT-DEBUG] vp:', vp, 'aura:', aura && aura.style.width, 'emoji:', emoji && emoji.style.fontSize);
+    }
+  }
+
+  /* Build radial gradient cho aura (thay filter blur) */
+  function buildAuraGradient(color){
+    /* Parse rgba color → tách 3 kênh */
+    var m = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
+    if (!m) return color;
+    var r = m[1], g = m[2], b = m[3];
+    return 'radial-gradient(circle at center,' +
+      ' rgba(' + r + ',' + g + ',' + b + ',.75) 0%,' +
+      ' rgba(' + r + ',' + g + ',' + b + ',.55) 15%,' +
+      ' rgba(' + r + ',' + g + ',' + b + ',.35) 30%,' +
+      ' rgba(' + r + ',' + g + ',' + b + ',.18) 45%,' +
+      ' rgba(' + r + ',' + g + ',' + b + ',.08) 60%,' +
+      ' rgba(' + r + ',' + g + ',' + b + ',0) 75%)';
   }
 
   function applyBigIcon(themeKey, accentColor){
@@ -596,52 +633,49 @@
     }
 
     emoji.style.color = accentColor;
+    /* Đặt opacity qua biến riêng để animation opacity không ghi đè */
+    emoji.dataset.baseOpacity = cfg.o;
     emoji.style.opacity = cfg.o;
-    emoji.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ') drop-shadow(0 0 120px ' + accentColor + ')';
+    emoji.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ')';
     emoji.style.webkitFilter = emoji.style.filter;
 
     /* ═══════ AURA ═══════ */
-    aura.style.background = 'radial-gradient(circle at 50% 50%, ' +
-      cfg.aura + ' 0%, ' +
-      cfg.aura.replace(/[\d.]+\)$/, '0.35)') + ' 35%, ' +
-      'transparent 70%)';
+    aura.style.background = buildAuraGradient(cfg.aura);
+    aura.style.opacity = '.6';
 
     /* ═══════ SIZE (JS explicit) ═══════ */
     sizeBigIcon();
 
     /* ═══════ ANIMATIONS ═══════ */
     emoji.style.animation = 'none';
-    void emoji.offsetWidth;
-    emoji.style.animation = cfg.aE + ' ' + cfg.dE + ' ease-in-out infinite';
-    emoji.style.webkitAnimation = emoji.style.animation;
-
     aura.style.animation = 'none';
+    void emoji.offsetWidth;
     void aura.offsetWidth;
+    emoji.style.animation = cfg.aE + ' ' + cfg.dE + ' ease-in-out infinite';
     aura.style.animation = cfg.aA + ' ' + cfg.dA + ' ease-in-out infinite';
-    aura.style.webkitAnimation = aura.style.animation;
 
     el.classList.add('show');
     el.setAttribute('data-bt', themeKey);
 
-    lastBigIconCfg = { themeKey: themeKey, accent: accentColor };
+    /* Debug outline */
+    if (DEBUG){
+      document.body.classList.add('btdebug');
+      console.log('[BT-DEBUG] Applied:', themeKey,
+                  '| container:', el.style.width, 'x', el.style.height,
+                  '| aura:', aura.style.width,
+                  '| emoji:', emoji.style.fontSize);
+    }
   }
 
-  /* Re-size khi resize / orientation change */
+  /* Re-size handlers */
   var resizeDebounce = null;
   function handleResize(){
     if (resizeDebounce) clearTimeout(resizeDebounce);
-    resizeDebounce = setTimeout(function(){
-      sizeBigIcon();
-    }, 120);
+    resizeDebounce = setTimeout(sizeBigIcon, 100);
   }
-
   window.addEventListener('resize', handleResize);
-  window.addEventListener('orientationchange', function(){
-    setTimeout(handleResize, 300);
-  });
-  if (window.visualViewport){
-    window.visualViewport.addEventListener('resize', handleResize);
-  }
+  window.addEventListener('orientationchange', function(){ setTimeout(handleResize, 300); });
+  if (window.visualViewport) window.visualViewport.addEventListener('resize', handleResize);
 
   /* ============== APPLY THEME ============== */
   function applyTheme(key){
@@ -774,35 +808,25 @@
       applyBigIcon(state.currentTheme, THEMES[state.currentTheme].accent);
     }
 
-    /* ═══════ iOS SAFARI / PWA RETRY LOGIC ═══════
-       Safari và PWA trên iOS đôi khi layout xong muộn.
-       Re-size và re-apply ở các mốc thời gian quan trọng. */
-    var timings = [50, 200, 500, 1000, 2000];
-    timings.forEach(function(t){
-      setTimeout(function(){
-        sizeBigIcon();
-      }, t);
+    /* iOS PWA retry — re-size ở nhiều mốc thời gian */
+    [0, 50, 200, 500, 1000, 2000, 3500].forEach(function(t){
+      setTimeout(sizeBigIcon, t);
     });
 
-    /* Khi tab visible lại (PWA resume) */
+    /* Re-size khi tab visible */
     document.addEventListener('visibilitychange', function(){
-      if (document.visibilityState === 'visible'){
-        setTimeout(sizeBigIcon, 100);
-      }
+      if (document.visibilityState === 'visible') setTimeout(sizeBigIcon, 100);
     });
 
-    /* Khi page loaded hoàn toàn */
     if (document.readyState === 'complete'){
       setTimeout(sizeBigIcon, 100);
     } else {
-      window.addEventListener('load', function(){
-        setTimeout(sizeBigIcon, 100);
-      });
+      window.addEventListener('load', function(){ setTimeout(sizeBigIcon, 100); });
     }
   }
 
   window.ThemeSystem = {
-    version:    '6.4',
+    version:    '6.5',
     setTheme:   function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },
@@ -814,6 +838,6 @@
     document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  console.log('%c🎨 THEME SYSTEM v6.4 — JS-EXPLICIT SIZING',
+  console.log('%c🎨 THEME SYSTEM v6.5 — MINIMALIST iOS PWA',
     'background:linear-gradient(90deg,#FFD700,#FF1493);color:#fff;font-size:12px;padding:4px 10px;border-radius:4px;font-weight:900');
 })();

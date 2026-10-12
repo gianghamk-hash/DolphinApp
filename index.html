@@ -431,7 +431,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 }
 </style>
 <script src="staff-sync.js" defer></script>
-<script src="theme-system.js?v=5.0" defer></script>
+<script src="theme-system.js?v=6.6" defer></script>
 <script src="avatar-system.js" defer></script>
 <script src="master.js" defer></script>
 <script src="dolphin-ui.js?v=1.0" defer></script>
@@ -849,12 +849,9 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   window.goHome = function(){
     if (transitionLock) return;
     transitionLock = true;
-      /* Refresh greeting khi quay về Home */
-  try {
-    var nm = (localStorage.getItem('dolphinStaffName') || '').trim();
-    var el = document.getElementById('wlcStaffName');
-    if (el && nm) el.textContent = nm.charAt(0).toUpperCase() + nm.slice(1);
-  } catch(e){}
+
+    /* Refresh greeting khi quay về Home */
+    if (window.renderGreeting) window.renderGreeting();
     if (location.hash) {
       try { history.pushState({}, '', location.pathname + location.search); }
       catch(e){ location.hash = ''; }
@@ -880,22 +877,18 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     }, 420);
   };
 
-  /* ============ POPSTATE ============ */
-  window.addEventListener('popstate', function(){
-   /* ════════ HIỂN THỊ TÊN NHÂN VIÊN ════════ */
-  (function renderGreeting(){
+  /* ════════ HIỂN THỊ TÊN NHÂN VIÊN ════════ */
+  function renderGreeting(){
     try {
       var name = (localStorage.getItem('dolphinStaffName') || '').trim();
       var nameEl = document.getElementById('wlcStaffName');
       var subEl  = document.getElementById('wlcGreetingSub');
-      if (!nameEl || !subEl) return;
+      var greetEl = document.getElementById('wlcGreeting');
+      if (!nameEl || !subEl || !greetEl) return;
 
       if (name) {
-        // Viết hoa chữ đầu
         var display = name.charAt(0).toUpperCase() + name.slice(1);
-        nameEl.textContent = display;
 
-        // Đổi lời chào buổi theo giờ VN
         var hour = parseInt(new Intl.DateTimeFormat('en-US', {
           timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', hour12: false
         }).format(new Date()), 10);
@@ -907,13 +900,21 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
         else if (hour >= 18 && hour < 22) { greeting = 'CHÀO BUỔI TỐI';    emoji = '🌆'; }
         else                              { greeting = 'CHÀO BUỔI ĐÊM';    emoji = '🌙'; }
 
-        document.getElementById('wlcGreeting').innerHTML =
+        greetEl.innerHTML =
           greeting + ' <span id="wlcStaffName" style="color:#FBD77A;text-shadow:0 0 20px rgba(244,184,66,.7);font-weight:900;">' +
           display + '</span> ' + emoji;
+      } else {
+        nameEl.textContent = 'BẠN';
       }
     } catch(e){}
-  })();
+  }
+  window.renderGreeting = renderGreeting;
 
+  /* Chạy ngay khi script load */
+  renderGreeting();
+
+  /* ============ POPSTATE ============ */
+  window.addEventListener('popstate', function(){
     if (transitionLock) return;
     var hash = (location.hash || '').replace('#', '');
     if (hash && APP_MAP[hash]) {
@@ -925,6 +926,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
   /* ============ INITIAL HASH ============ */
   window.addEventListener('DOMContentLoaded', function(){
+    renderGreeting();
     var hash = (location.hash || '').replace('#', '');
     if (hash && APP_MAP[hash]) {
       setTimeout(function(){ window.openApp(hash); }, 350);
@@ -991,7 +993,31 @@ navigator.serviceWorker.addEventListener('message', function(e){
     if (banner){
       banner.querySelector('.update-title').textContent = 
         '🎉 Phiên bản ' + (data.newVersion || 'mới') + ' sẵn sàng!';
-      banner.querySelector('.update-notes').textContent = 
+      banner.querySelector('.update-notes    /* SW gửi NEW_VERSION → hiện banner */
+    navigator.serviceWorker.addEventListener('message', function(e){
+      var data = e.data || {};
+      if (data.type === 'NEW_VERSION') {
+        var banner = document.getElementById('updateBanner');
+        if (banner){
+          banner.querySelector('.update-title').textContent =
+            '🎉 Phiên bản ' + (data.newVersion || 'mới') + ' sẵn sàng!';
+          banner.querySelector('.update-notes').textContent =
+            'Bấm "Cập nhật ngay" để nhận tính năng mới.';
+          banner.classList.add('show');
+        }
+      }
+    });
+
+    /* Controllerchange → cũng hiện banner (KHÔNG auto reload) */
+    var pendingUpdate = false;
+    navigator.serviceWorker.addEventListener('controllerchange', function(){
+      if (pendingUpdate) return;
+      pendingUpdate = true;
+      var banner = document.getElementById('updateBanner');
+      if (banner) banner.classList.add('show');
+    });
+  });
+}').textContent = 
         'Bấm "Cập nhật ngay" để nhận tính năng mới.';
       banner.classList.add('show');
     }
@@ -1385,6 +1411,30 @@ window.addEventListener('dolphin-theme-changed', function(e){
   }
 });
 </script>
+<!-- ════════ UPDATE BANNER ACTIONS ════════ -->
+<script>
+window.dismissUpdate = function(){
+  var banner = document.getElementById('updateBanner');
+  if (banner) banner.classList.remove('show');
+};
 
+window.performUpdate = function(){
+  var btn = document.getElementById('updateBtn');
+  if (btn){
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Đang cập nhật...';
+  }
+  try {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    }
+  } catch(e){}
+  /* Đợi SW mới activate rồi reload */
+  setTimeout(function(){
+    window.location.reload();
+  }, 900);
+};
+</script>
+  
 </body>
 </html>

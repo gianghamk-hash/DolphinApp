@@ -1,9 +1,8 @@
 /* ============================================================
-   THEME SYSTEM v6.5 — MINIMALIST (iOS PWA bulletproof)
-   - Bỏ filter:blur → radial-gradient nhiều lớp
-   - Bỏ flex → margin âm để center
-   - Không dùng vmin/vw/vh trong CSS
-   - Debug mode: ?btdebug=1
+   THEME SYSTEM v6.6 — FIREWORK ANIMATION (Tết Dương Lịch)
+   - newyear: animation pháo hoa bay lên + nổ
+   - Các theme khác: giữ nguyên emoji + aura
+   - Không filter/vmin/vh — iOS PWA bulletproof
    ============================================================ */
 (function(){
   'use strict';
@@ -15,11 +14,8 @@
   };
   var LS_THEME_KEY = 'dolphin_theme';
 
-  /* Debug flag từ URL */
   var DEBUG = false;
-  try {
-    DEBUG = new URLSearchParams(location.search).get('btdebug') === '1';
-  } catch(e){}
+  try { DEBUG = new URLSearchParams(location.search).get('btdebug') === '1'; } catch(e){}
 
   /* ============================================================
      THEME DEFINITIONS
@@ -152,6 +148,27 @@
     winter:         { e:'❄️', aE:'bgi-rotate',    dE:'22s',  oE:0.70, aura:'rgba(184,216,240,.60)', aA:'aura-frost',    dA:'3s'   }
   };
 
+  /* ============================================================
+     FIREWORK CONFIG — chỉ dùng cho theme newyear
+     ============================================================ */
+  var FIREWORKS = [
+    { x: '18%', y: '26%', c: '#FFD700', delay: '0s'   }, /* Vàng */
+    { x: '78%', y: '22%', c: '#FF6B9D', delay: '0.7s' }, /* Hồng */
+    { x: '42%', y: '18%', c: '#4ECDC4', delay: '1.4s' }, /* Ngọc */
+    { x: '88%', y: '35%', c: '#B388FF', delay: '2.1s' }, /* Tím */
+    { x: '12%', y: '38%', c: '#FF6B35', delay: '2.8s' }, /* Cam */
+    { x: '60%', y: '30%', c: '#22C55E', delay: '3.5s' }  /* Xanh lá */
+  ];
+
+  function generateFireworksHTML(){
+    return FIREWORKS.map(function(fw){
+      return '<div class="fw" style="--x:' + fw.x + ';--y:' + fw.y + ';--c:' + fw.c + ';--delay:' + fw.delay + ';">' +
+        '<div class="fw-rocket"></div>' +
+        '<div class="fw-burst"></div>' +
+        '</div>';
+    }).join('');
+  }
+
   var state = { currentTheme:'default', unsubscribe:null, app:null, urlParam:null };
 
   /* ============== DATE ============== */
@@ -215,13 +232,7 @@
       '#landing{ background: transparent !important; }',
 
       /* ============================================================
-         BIG ICON — MINIMALIST v6.5
-         ────────────────────────────────────────────────────────────
-         • KHÔNG dùng flex
-         • KHÔNG dùng filter:blur
-         • KHÔNG dùng transform trên container
-         • Aura = radial-gradient nhiều lớp (thay blur)
-         • Center bằng margin âm
+         BIG ICON — base
          ============================================================ */
       '#themeBigIcon{',
       '  position: fixed;',
@@ -234,28 +245,13 @@
       '}',
       '#themeBigIcon.show{ opacity: 1; }',
 
-      /* Aura — radial-gradient nhiều lớp, KHÔNG blur */
+      /* Aura */
       '#themeBigIcon .tbi-aura{',
       '  position: absolute;',
       '  top: 50%;',
       '  left: 50%;',
       '  border-radius: 50%;',
       '  pointer-events: none;',
-      '}',
-      '#themeBigIcon .tbi-aura::before{',
-      '  content:"";',
-      '  position:absolute;',
-      '  inset:0;',
-      '  border-radius:50%;',
-      '  background: inherit;',
-      '}',
-      '#themeBigIcon .tbi-aura::after{',
-      '  content:"";',
-      '  position:absolute;',
-      '  inset:-20%;',
-      '  border-radius:50%;',
-      '  background: inherit;',
-      '  opacity:.5;',
       '}',
 
       /* Emoji */
@@ -277,130 +273,226 @@
       '  transform-origin: center;',
       '}',
 
-      /* ============ AURA ANIMATIONS (chỉ opacity, KHÔNG transform scale) ============ */
-      '@keyframes aura-soft{',
-      '  0%,100%{ opacity:.5; }',
-      '  50%    { opacity:.8; }',
+      /* ============================================================
+         FIREWORKS (chỉ hiện với theme newyear)
+         ============================================================ */
+      '#themeBigIcon .tbi-fireworks{',
+      '  position: absolute;',
+      '  top: 0;',
+      '  left: 0;',
+      '  width: 100%;',
+      '  height: 100%;',
+      '  pointer-events: none;',
+      '  display: none;',
       '}',
-      '@keyframes aura-warm{',
-      '  0%,100%{ opacity:.55; }',
-      '  50%    { opacity:.9; }',
+      '#themeBigIcon .tbi-fireworks.active{',
+      '  display: block;',
       '}',
+
+      '#themeBigIcon .fw{',
+      '  position: absolute;',
+      '  left: var(--x);',
+      '  top: var(--y);',
+      '  width: 0;',
+      '  height: 0;',
+      '  pointer-events: none;',
+      '}',
+
+      /* Rocket — glowing dot flying up */
+      '#themeBigIcon .fw-rocket{',
+      '  position: absolute;',
+      '  left: -3px;',
+      '  top: -3px;',
+      '  width: 6px;',
+      '  height: 6px;',
+      '  border-radius: 50%;',
+      '  background: var(--c);',
+      '  box-shadow:',
+      '    0 0 8px var(--c),',
+      '    0 0 16px var(--c),',
+      '    0 0 24px var(--c),',
+      '    0 0 40px var(--c);',
+      '  animation: fw-launch 4s cubic-bezier(.3,.05,.5,1) infinite;',
+      '  animation-delay: var(--delay);',
+      '  opacity: 0;',
+      '}',
+
+      /* Trail phía dưới rocket */
+      '#themeBigIcon .fw-rocket::before{',
+      '  content:"";',
+      '  position:absolute;',
+      '  left:50%;',
+      '  top:4px;',
+      '  width:3px;',
+      '  height:56px;',
+      '  margin-left:-1.5px;',
+      '  border-radius:3px;',
+      '  background: linear-gradient(to bottom,',
+      '    var(--c) 0%,',
+      '    rgba(255,255,255,.6) 20%,',
+      '    transparent 100%);',
+      '  opacity:.7;',
+      '  pointer-events:none;',
+      '}',
+
+      /* Burst — 24 tia sáng */
+      '#themeBigIcon .fw-burst{',
+      '  position: absolute;',
+      '  left: -4px;',
+      '  top: -4px;',
+      '  width: 8px;',
+      '  height: 8px;',
+      '  border-radius: 50%;',
+      '  background: var(--c);',
+      '  box-shadow:',
+      /* 24 particles: 3 vòng × 8 góc */
+      /* Vòng ngoài: r ≈ 110px */
+      '    0 -110px var(--c),',
+      '    78px -78px var(--c),',
+      '    110px 0 var(--c),',
+      '    78px 78px var(--c),',
+      '    0 110px var(--c),',
+      '    -78px 78px var(--c),',
+      '    -110px 0 var(--c),',
+      '    -78px -78px var(--c),',
+      /* Vòng giữa: r ≈ 85px, góc lệch 22.5° */
+      '    33px -79px var(--c),',
+      '    79px -33px var(--c),',
+      '    79px 33px var(--c),',
+      '    33px 79px var(--c),',
+      '    -33px 79px var(--c),',
+      '    -79px 33px var(--c),',
+      '    -79px -33px var(--c),',
+      '    -33px -79px var(--c),',
+      /* Vòng trong: r ≈ 55px, góc lệch 45° */
+      '    0 -55px var(--c),',
+      '    39px -39px var(--c),',
+      '    55px 0 var(--c),',
+      '    39px 39px var(--c),',
+      '    0 55px var(--c),',
+      '    -39px 39px var(--c),',
+      '    -55px 0 var(--c),',
+      '    -39px -39px var(--c);',
+      '  animation: fw-explode 4s ease-out infinite;',
+      '  animation-delay: var(--delay);',
+      '  opacity: 0;',
+      '  transform-origin: center;',
+      '}',
+
+      /* Flash — nổ sáng trắng */
+      '#themeBigIcon .fw-burst::before{',
+      '  content:"";',
+      '  position:absolute;',
+      '  left:-22px;',
+      '  top:-22px;',
+      '  width:44px;',
+      '  height:44px;',
+      '  border-radius:50%;',
+      '  background: radial-gradient(circle at center,',
+      '    #FFFFFF 0%,',
+      '    #FFFFFF 20%,',
+      '    var(--c) 45%,',
+      '    transparent 75%);',
+      '  animation: fw-flash 4s ease-out infinite;',
+      '  animation-delay: var(--delay);',
+      '  opacity: 0;',
+      '  pointer-events:none;',
+      '}',
+
+      /* ============ FIREWORK KEYFRAMES ============ */
+      '@keyframes fw-launch{',
+      '  0%   { transform: translateY(var(--launch-y, 800px)) scale(.6); opacity:0; }',
+      '  4%   { opacity:1; }',
+      '  22%  { transform: translateY(0) scale(1); opacity:1; }',
+      '  24%  { opacity:0; transform: translateY(0) scale(1.3); }',
+      '  100% { opacity:0; transform: translateY(0) scale(1.3); }',
+      '}',
+
+      '@keyframes fw-explode{',
+      '  0%, 24%   { transform: scale(0);    opacity:0; }',
+      '  25%       { transform: scale(.18);  opacity:1; }',
+      '  32%       { transform: scale(.55);  opacity:1; }',
+      '  48%       { transform: scale(.95);  opacity:1; }',
+      '  68%       { transform: scale(1.25); opacity:.6; }',
+      '  85%       { transform: scale(1.45); opacity:.15; }',
+      '  95%, 100% { transform: scale(1.55); opacity:0; }',
+      '}',
+
+      '@keyframes fw-flash{',
+      '  0%, 24%   { transform: scale(.3);  opacity:0; }',
+      '  25%       { transform: scale(.8);  opacity:1; }',
+      '  32%       { transform: scale(1.15); opacity:.9; }',
+      '  42%       { transform: scale(1.4); opacity:0; }',
+      '  100%      { transform: scale(1.4); opacity:0; }',
+      '}',
+
+      '@media (prefers-reduced-motion: reduce){',
+      '  #themeBigIcon .fw-rocket,',
+      '  #themeBigIcon .fw-burst,',
+      '  #themeBigIcon .fw-burst::before{ animation: none !important; }',
+      '}',
+
+      /* ============ AURA ANIMATIONS ============ */
+      '@keyframes aura-soft{ 0%,100%{ opacity:.5; } 50%{ opacity:.8; } }',
+      '@keyframes aura-warm{ 0%,100%{ opacity:.55; } 50%{ opacity:.9; } }',
       '@keyframes aura-heart{',
-      '  0%,100%{ opacity:.6; }',
-      '  12%    { opacity:.95; }',
-      '  24%    { opacity:.6; }',
-      '  36%    { opacity:.85; }',
-      '  48%    { opacity:.6; }',
+      '  0%,100%{ opacity:.6; } 12%{ opacity:.95; } 24%{ opacity:.6; }',
+      '  36%{ opacity:.85; } 48%{ opacity:.6; }',
       '}',
-      '@keyframes aura-bloom{',
-      '  0%,100%{ opacity:.55; }',
-      '  50%    { opacity:.85; }',
-      '}',
-      '@keyframes aura-flag{',
-      '  0%,100%{ opacity:.7; }',
-      '  25%    { opacity:.85; }',
-      '  75%    { opacity:.85; }',
-      '}',
+      '@keyframes aura-bloom{ 0%,100%{ opacity:.55; } 50%{ opacity:.85; } }',
+      '@keyframes aura-flag{ 0%,100%{ opacity:.7; } 25%{ opacity:.85; } 75%{ opacity:.85; } }',
       '@keyframes aura-ghost{',
-      '  0%,100%{ opacity:.75; }',
-      '  25%    { opacity:.45; }',
-      '  50%    { opacity:.85; }',
-      '  75%    { opacity:.5; }',
+      '  0%,100%{ opacity:.75; } 25%{ opacity:.45; }',
+      '  50%{ opacity:.85; } 75%{ opacity:.5; }',
       '}',
-      '@keyframes aura-firework{',
-      '  0%   { opacity:.4; }',
-      '  40%  { opacity:1; }',
-      '  70%  { opacity:.85; }',
-      '  100% { opacity:.4; }',
-      '}',
-      '@keyframes aura-sun{',
-      '  0%,100%{ opacity:.55; }',
-      '  50%    { opacity:.85; }',
-      '}',
-      '@keyframes aura-frost{',
-      '  0%,100%{ opacity:.5; }',
-      '  50%    { opacity:.85; }',
-      '}',
+      '@keyframes aura-firework{ 0%,100%{ opacity:.5; } 50%{ opacity:.85; } }',
+      '@keyframes aura-sun{ 0%,100%{ opacity:.55; } 50%{ opacity:.85; } }',
+      '@keyframes aura-frost{ 0%,100%{ opacity:.5; } 50%{ opacity:.85; } }',
 
       /* ============ EMOJI ANIMATIONS ============ */
       '@keyframes bgi-float{',
       '  0%,100%{ transform:translateY(0) rotate(-2deg); }',
       '  50%    { transform:translateY(-36px) rotate(2deg); }',
       '}',
-      '@keyframes bgi-swing{',
-      '  0%,100%{ transform:rotate(-9deg); }',
-      '  50%    { transform:rotate(9deg); }',
-      '}',
+      '@keyframes bgi-swing{ 0%,100%{ transform:rotate(-9deg); } 50%{ transform:rotate(9deg); } }',
       '@keyframes bgi-beat{',
-      '  0%,100%{ transform:scale(1); }',
-      '  12%    { transform:scale(1.14); }',
-      '  24%    { transform:scale(1); }',
-      '  36%    { transform:scale(1.1); }',
-      '  48%    { transform:scale(1); }',
+      '  0%,100%{ transform:scale(1); } 12%{ transform:scale(1.14); }',
+      '  24%{ transform:scale(1); } 36%{ transform:scale(1.1); } 48%{ transform:scale(1); }',
       '}',
       '@keyframes bgi-bloom{',
-      '  0%  { transform:rotate(-12deg) scale(1); }',
-      '  50% { transform:rotate(12deg) scale(1.1); }',
+      '  0%{ transform:rotate(-12deg) scale(1); } 50%{ transform:rotate(12deg) scale(1.1); }',
       '  100%{ transform:rotate(-12deg) scale(1); }',
       '}',
-      '@keyframes bgi-glow{',
-      '  0%,100%{ opacity:.7; }',
-      '  50%    { opacity:1; }',
-      '}',
-      '@keyframes bgi-wave{',
-      '  0%,100%{ transform:skewY(0deg); }',
-      '  25%    { transform:skewY(4deg); }',
-      '  75%    { transform:skewY(-4deg); }',
-      '}',
+      '@keyframes bgi-glow{ 0%,100%{ opacity:.7; } 50%{ opacity:1; } }',
+      '@keyframes bgi-wave{ 0%,100%{ transform:skewY(0deg); } 25%{ transform:skewY(4deg); } 75%{ transform:skewY(-4deg); } }',
       '@keyframes bgi-flicker{',
       '  0%,100%{ opacity:.85; transform:translateY(0) scale(1); }',
-      '  8%    { opacity:.35; transform:translateY(-10px) scale(1.02); }',
-      '  16%   { opacity:1;   transform:translateY(0) scale(1); }',
-      '  28%   { opacity:.5;  transform:translateY(-6px) scale(1.01); }',
-      '  36%   { opacity:1;   transform:translateY(0) scale(1.03); }',
-      '  48%   { opacity:.4;  transform:translateY(-14px) scale(1.02); }',
-      '  60%   { opacity:.95; transform:translateY(0) scale(1); }',
-      '  72%   { opacity:.55; transform:translateY(-8px) scale(1.01); }',
-      '  84%   { opacity:1;   transform:translateY(0) scale(1.02); }',
-      '  92%   { opacity:.7;  transform:translateY(-4px) scale(1); }',
+      '  8%{ opacity:.35; transform:translateY(-10px) scale(1.02); }',
+      '  16%{ opacity:1; transform:translateY(0) scale(1); }',
+      '  28%{ opacity:.5; transform:translateY(-6px) scale(1.01); }',
+      '  36%{ opacity:1; transform:translateY(0) scale(1.03); }',
+      '  48%{ opacity:.4; transform:translateY(-14px) scale(1.02); }',
+      '  60%{ opacity:.95; transform:translateY(0) scale(1); }',
+      '  72%{ opacity:.55; transform:translateY(-8px) scale(1.01); }',
+      '  84%{ opacity:1; transform:translateY(0) scale(1.02); }',
+      '  92%{ opacity:.7; transform:translateY(-4px) scale(1); }',
       '}',
-      '@keyframes bgi-pulse{',
-      '  0%,100%{ transform:scale(.92); opacity:.65; }',
-      '  50%    { transform:scale(1.18); opacity:1; }',
-      '}',
+      '@keyframes bgi-pulse{ 0%,100%{ transform:scale(.92); opacity:.65; } 50%{ transform:scale(1.18); opacity:1; } }',
       '@keyframes bgi-sway{',
       '  0%,100%{ transform:rotate(-14deg) translateX(-18px); }',
       '  50%    { transform:rotate(14deg)  translateX(18px); }',
       '}',
-      '@keyframes bgi-rotate{',
-      '  0%  { transform:rotate(0deg); }',
-      '  100%{ transform:rotate(360deg); }',
-      '}',
+      '@keyframes bgi-rotate{ 0%{ transform:rotate(0deg); } 100%{ transform:rotate(360deg); } }',
       '@keyframes bgi-fall-sway{',
       '  0%  { transform:translateY(-22vh) rotate(-15deg) translateX(-20px); opacity:.5; }',
       '  50% { opacity:1; transform:translateY(0) rotate(0deg) translateX(20px); }',
       '  100%{ transform:translateY(22vh) rotate(15deg) translateX(-20px); opacity:.5; }',
       '}',
 
-      '@media (prefers-reduced-motion: reduce){',
-      '  #themeBigIcon .tbi-emoji,',
-      '  #themeBigIcon .tbi-aura{ animation:none !important; }',
-      '}',
-
-      /* DEBUG MODE: hiện khung đỏ để thấy vị trí */
-      'body.btdebug #themeBigIcon{',
-      '  background: rgba(255,0,0,.15);',
-      '  border: 2px dashed #FF0000;',
-      '}',
-      'body.btdebug #themeBigIcon .tbi-aura{',
-      '  background: rgba(255,255,0,.2) !important;',
-      '  border: 2px solid #FFFF00;',
-      '}',
-      'body.btdebug #themeBigIcon .tbi-emoji{',
-      '  background: rgba(0,255,0,.15);',
-      '  border: 2px solid #00FF00;',
-      '}',
+      /* DEBUG */
+      'body.btdebug #themeBigIcon{ background: rgba(255,0,0,.15); border:2px dashed #FF0000; }',
+      'body.btdebug #themeBigIcon .tbi-aura{ background:rgba(255,255,0,.2)!important; border:2px solid #FFFF00; }',
+      'body.btdebug #themeBigIcon .tbi-emoji{ background:rgba(0,255,0,.15); border:2px solid #00FF00; }',
 
       /* ==== ĐỒNG HỒ ==== */
       '#halongClock{',
@@ -521,14 +613,12 @@
     var de = document.documentElement;
     var vw = de.clientWidth || window.innerWidth || 0;
     var vh = de.clientHeight || window.innerHeight || 0;
-
     if (window.visualViewport){
       vw = Math.max(vw, Math.round(window.visualViewport.width) || 0);
       vh = Math.max(vh, Math.round(window.visualViewport.height) || 0);
     }
     if (vw <= 0) vw = 375;
     if (vh <= 0) vh = 667;
-
     return { w: vw, h: vh, vmin: Math.min(vw, vh) };
   }
 
@@ -545,20 +635,19 @@
     el.setAttribute('aria-hidden', 'true');
     el.innerHTML =
       '<div class="tbi-aura" aria-hidden="true"></div>' +
-      '<span class="tbi-emoji" aria-hidden="true"></span>';
+      '<span class="tbi-emoji" aria-hidden="true"></span>' +
+      '<div class="tbi-fireworks" aria-hidden="true"></div>';
 
     document.body.appendChild(el);
     return el;
   }
 
-  /* ═══════ SIZE + POSITION (all explicit px) ═══════ */
+  /* ═══════ SIZE ELEMENTS (explicit px) ═══════ */
   function sizeBigIcon(){
     var el = document.getElementById('themeBigIcon');
     if (!el) return;
-
     var vp = measureViewport();
 
-    /* Container = full viewport */
     el.style.width  = vp.w + 'px';
     el.style.height = vp.h + 'px';
     el.style.top    = '0px';
@@ -567,7 +656,6 @@
     var aura = el.querySelector('.tbi-aura');
     var emoji = el.querySelector('.tbi-emoji');
 
-    /* Aura: 88% vmin, cap 900px */
     if (aura){
       var auraSize = Math.min(vp.vmin * 0.88, 900);
       var auraHalf = auraSize / 2;
@@ -577,7 +665,6 @@
       aura.style.marginLeft = (-auraHalf) + 'px';
     }
 
-    /* Emoji: 52% vmin (66% for flag), cap 620/820px */
     if (emoji){
       var isFlag = emoji.classList.contains('flag');
       var baseSize = isFlag ? vp.vmin * 0.66 : vp.vmin * 0.52;
@@ -587,19 +674,24 @@
       emoji.style.height = emojiSize + 'px';
       emoji.style.marginTop  = (-emojiHalf) + 'px';
       emoji.style.marginLeft = (-emojiHalf) + 'px';
-      /* Font-size = 90% của box để fit vừa */
       emoji.style.fontSize = Math.round(emojiSize * 0.9) + 'px';
       emoji.style.lineHeight = emojiSize + 'px';
     }
 
+    /* Fireworks container: full size + set --launch-y cho rocket */
+    var fw = el.querySelector('.tbi-fireworks');
+    if (fw){
+      fw.style.width  = vp.w + 'px';
+      fw.style.height = vp.h + 'px';
+      fw.style.setProperty('--launch-y', Math.round(vp.h * 0.85) + 'px');
+    }
+
     if (DEBUG){
-      console.log('[BT-DEBUG] vp:', vp, 'aura:', aura && aura.style.width, 'emoji:', emoji && emoji.style.fontSize);
+      console.log('[BT-DEBUG] vp:', vp);
     }
   }
 
-  /* Build radial gradient cho aura (thay filter blur) */
   function buildAuraGradient(color){
-    /* Parse rgba color → tách 3 kênh */
     var m = color.match(/rgba?\((\d+),\s*(\d+),\s*(\d+)/);
     if (!m) return color;
     var r = m[1], g = m[2], b = m[3];
@@ -619,51 +711,64 @@
     var cfg = BIG_ICONS[themeKey] || BIG_ICONS.default;
     var aura = el.querySelector('.tbi-aura');
     var emoji = el.querySelector('.tbi-emoji');
-    if (!aura || !emoji) return;
+    var fw = el.querySelector('.tbi-fireworks');
+    if (!aura || !emoji || !fw) return;
 
-    /* ═══════ EMOJI ═══════ */
-    var isFlag = (cfg.e === '🇻🇳' || /[\u{1F1E6}-\u{1F1FF}]{2}/u.test(cfg.e));
+    var isNewYear = (themeKey === 'newyear');
 
-    if (isFlag){
-      emoji.classList.add('flag');
-      emoji.innerHTML = '<span class="tbi-e-inner">' + cfg.e + '</span>';
-    } else {
-      emoji.classList.remove('flag');
-      emoji.textContent = cfg.e;
-    }
-
-    emoji.style.color = accentColor;
-    /* Đặt opacity qua biến riêng để animation opacity không ghi đè */
-    emoji.dataset.baseOpacity = cfg.o;
-    emoji.style.opacity = cfg.o;
-    emoji.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ')';
-    emoji.style.webkitFilter = emoji.style.filter;
-
-    /* ═══════ AURA ═══════ */
+    /* ═══════ AURA — luôn hiển thị ═══════ */
     aura.style.background = buildAuraGradient(cfg.aura);
     aura.style.opacity = '.6';
 
-    /* ═══════ SIZE (JS explicit) ═══════ */
-    sizeBigIcon();
+    /* ═══════ EMOJI ═══════ */
+    if (isNewYear){
+      /* Ẩn emoji, hiện fireworks */
+      emoji.style.display = 'none';
+      emoji.style.animation = 'none';
 
-    /* ═══════ ANIMATIONS ═══════ */
-    emoji.style.animation = 'none';
+      /* Tạo fireworks nếu chưa có */
+      if (!fw.innerHTML || !fw.querySelector('.fw')){
+        fw.innerHTML = generateFireworksHTML();
+      }
+      fw.classList.add('active');
+    } else {
+      /* Hiện emoji, ẩn fireworks */
+      emoji.style.display = 'block';
+      fw.classList.remove('active');
+
+      var isFlag = (cfg.e === '🇻🇳' || /[\u{1F1E6}-\u{1F1FF}]{2}/u.test(cfg.e));
+      if (isFlag){
+        emoji.classList.add('flag');
+        emoji.innerHTML = '<span class="tbi-e-inner">' + cfg.e + '</span>';
+      } else {
+        emoji.classList.remove('flag');
+        emoji.textContent = cfg.e;
+      }
+
+      emoji.style.color = accentColor;
+      emoji.style.opacity = cfg.o;
+      emoji.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ')';
+      emoji.style.webkitFilter = emoji.style.filter;
+
+      emoji.style.animation = 'none';
+      void emoji.offsetWidth;
+      emoji.style.animation = cfg.aE + ' ' + cfg.dE + ' ease-in-out infinite';
+    }
+
+    /* ═══════ AURA ANIMATION ═══════ */
     aura.style.animation = 'none';
-    void emoji.offsetWidth;
     void aura.offsetWidth;
-    emoji.style.animation = cfg.aE + ' ' + cfg.dE + ' ease-in-out infinite';
     aura.style.animation = cfg.aA + ' ' + cfg.dA + ' ease-in-out infinite';
+
+    /* ═══════ SIZE ═══════ */
+    sizeBigIcon();
 
     el.classList.add('show');
     el.setAttribute('data-bt', themeKey);
 
-    /* Debug outline */
     if (DEBUG){
       document.body.classList.add('btdebug');
-      console.log('[BT-DEBUG] Applied:', themeKey,
-                  '| container:', el.style.width, 'x', el.style.height,
-                  '| aura:', aura.style.width,
-                  '| emoji:', emoji.style.fontSize);
+      console.log('[BT-DEBUG] Applied:', themeKey, '| fireworks:', isNewYear);
     }
   }
 
@@ -808,12 +913,10 @@
       applyBigIcon(state.currentTheme, THEMES[state.currentTheme].accent);
     }
 
-    /* iOS PWA retry — re-size ở nhiều mốc thời gian */
     [0, 50, 200, 500, 1000, 2000, 3500].forEach(function(t){
       setTimeout(sizeBigIcon, t);
     });
 
-    /* Re-size khi tab visible */
     document.addEventListener('visibilitychange', function(){
       if (document.visibilityState === 'visible') setTimeout(sizeBigIcon, 100);
     });
@@ -826,7 +929,7 @@
   }
 
   window.ThemeSystem = {
-    version:    '6.5',
+    version:    '6.6',
     setTheme:   function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },
@@ -838,6 +941,6 @@
     document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  console.log('%c🎨 THEME SYSTEM v6.5 — MINIMALIST iOS PWA',
+  console.log('%c🎨 THEME SYSTEM v6.6 — FIREWORKS',
     'background:linear-gradient(90deg,#FFD700,#FF1493);color:#fff;font-size:12px;padding:4px 10px;border-radius:4px;font-weight:900');
 })();

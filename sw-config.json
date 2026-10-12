@@ -1,7 +1,5 @@
 {
-  "version": "3.0.0",
-  "buildDate": "2026-10-11T00:00:00Z",
-  "commit": "manual-sync-20261011",
-  "notes": "Fix service worker network-first + remove chat",
-  "forceUpdate": false
+  "version": "5.0",
+  "releaseDate": "2026-10-12",
+  "notes": "Firework animation cho Tết Dương Lịch, fix iOS PWA big icon"
 }

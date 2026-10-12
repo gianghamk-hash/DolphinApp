@@ -984,21 +984,28 @@ if ('serviceWorker' in navigator) {
       console.warn('❌ SW failed:', err);
     });
 
-    navigator.serviceWorker.addEventListener('message', function(e){
-      var data = e.data || {};
-      if (data.type === 'SW_ACTIVATED') {
-        console.log('✅ SW activated v' + data.version);
-      }
-      if (data.type === 'NEW_VERSION') {
-        console.log('🎉 New version available:', data.newVersion);
-        setTimeout(function(){
-          window.location.reload(true);
-        }, 1000);
-      }
-      if (data.type === 'RELOAD_NOW') {
-        window.location.reload(true);
-      }
-    });
+navigator.serviceWorker.addEventListener('message', function(e){
+  var data = e.data || {};
+  if (data.type === 'NEW_VERSION') {
+    var banner = document.getElementById('updateBanner');
+    if (banner){
+      banner.querySelector('.update-title').textContent = 
+        '🎉 Phiên bản ' + (data.newVersion || 'mới') + ' sẵn sàng!';
+      banner.querySelector('.update-notes').textContent = 
+        'Bấm "Cập nhật ngay" để nhận tính năng mới.';
+      banner.classList.add('show');
+    }
+  }
+});
+
+/* Controllerchange → cũng hiện banner thay vì reload */
+var pendingUpdate = false;
+navigator.serviceWorker.addEventListener('controllerchange', function(){
+  if (pendingUpdate) return;   // tránh banner 2 lần
+  pendingUpdate = true;
+  var banner = document.getElementById('updateBanner');
+  if (banner) banner.classList.add('show');
+});
 
     var refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', function(){

@@ -11,49 +11,16 @@
 <script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif'],mono:['JetBrains Mono','monospace']},colors:{teal:{50:'#effaf6',100:'#d8f3ea',200:'#bfe9dc',300:'#98dccb',400:'#6cc7b3',500:'#4aa896',600:'#37897b',700:'#2a6e65',800:'#215852',900:'#194743',950:'#123634'},gold:{400:'#FBD77A',500:'#F4B842',600:'#D99A2B'}}}}}</script>
 <style>
 *{box-sizing:border-box}html,body{overscroll-behavior-y:contain}
-body{background-color:#6fc3bf;color:#fff;font-family:'Nunito',sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;cursor:default}
-.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.28em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+:root{--theme-border:rgba(244,184,66,.55);--theme-border-soft:rgba(244,184,66,.22);--theme-glow:rgba(244,184,66,.28);--theme-accent:#FBD77A;--theme-accent2:#bfe9dc;--theme-bg1:#0f3d38;--theme-bg2:#0a2b28;--theme-shape:22px;--theme-trans:1.2s ease}
+body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%)!important;color:#fff;font-family:'Nunito',sans-serif;-webkit-tap-highlight-color:transparent;overflow-x:hidden;-webkit-font-smoothing:antialiased;min-height:100vh;min-height:100dvh;cursor:default;transition:background var(--theme-trans)!important}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.28em;background:linear-gradient(180deg,var(--theme-accent) 0%,var(--theme-accent2) 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5));transition:filter var(--theme-trans)}
 .tabular,.qty-num,.clock-time,.stat-number{font-variant-numeric:tabular-nums}
 ::-webkit-scrollbar{width:4px;height:4px}::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
-.table-radio:checked+label,.lang-radio:checked+label{background:linear-gradient(135deg,#FBD77A 0%,#E8A24A 100%);color:#123634;border-color:transparent;transform:scale(1.04);font-weight:900}
-.glass-card{background:rgba(25,71,67,.82);backdrop-filter:blur(14px) saturate(140%);border:1px solid rgba(255,255,255,.22);box-shadow:0 4px 12px rgba(0,0,0,.18),0 16px 40px -12px rgba(10,50,60,.5);position:relative}
-.glass-card.premium::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,rgba(255,255,255,.35) 0%,transparent 40%,rgba(244,184,66,.2) 100%);-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.6}
-.halong-bg{position:fixed;inset:0;z-index:-2;overflow:hidden;pointer-events:none}
-.halong-bg svg{width:100%;height:100%;display:block}
-.weather-overlay{position:fixed;inset:0;z-index:-1;pointer-events:none;overflow:hidden}
-.cloud-layer{will-change:transform}
-.cloud-slow{animation:cloud-drift-slow 40s ease-in-out infinite alternate}
-.cloud-medium{animation:cloud-drift-medium 30s ease-in-out infinite alternate}
-.cloud-fast{animation:cloud-drift-fast 20s ease-in-out infinite alternate}
-.cloud-storm{animation:cloud-drift-storm 8s ease-in-out infinite alternate}
-@keyframes cloud-drift-slow{0%{transform:translateX(-3%)}100%{transform:translateX(3%)}}
-@keyframes cloud-drift-medium{0%{transform:translateX(-5%)}100%{transform:translateX(5%)}}
-@keyframes cloud-drift-fast{0%{transform:translateX(-8%)}100%{transform:translateX(8%)}}
-@keyframes cloud-drift-storm{0%{transform:translateX(-15%)}100%{transform:translateX(15%)}}
-@keyframes boat-bob{0%,100%{transform:translateY(0)}50%{transform:translateY(4px)}}
-.ghibli-boat{animation:boat-bob 5s ease-in-out infinite;transform-origin:center}
-@keyframes birds-fly{0%{transform:translate(-200px,30px);opacity:0}10%{opacity:.75}90%{opacity:.75}100%{transform:translate(1600px,-40px);opacity:0}}
-.birds-flying{animation:birds-fly 55s linear infinite}
-@keyframes bird-flap{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.4)}}
-.bird-wing{transform-origin:center;animation:bird-flap .6s ease-in-out infinite}
-@keyframes sun-breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
-.sun-core-group{animation:sun-breathe 6s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-@keyframes halo-pulse{0%,100%{opacity:.65;transform:scale(1)}50%{opacity:.95;transform:scale(1.06)}}
-.sun-halo{animation:halo-pulse 5s ease-in-out infinite;transform-box:fill-box;transform-origin:center}
-@keyframes reflection-shimmer{0%,100%{opacity:.5}50%{opacity:.85}}
-.sun-reflection{animation:reflection-shimmer 4s ease-in-out infinite;transform-origin:center}
-.sun-element{transition:transform 3s ease-in-out,opacity 2s ease-in-out}
-.rain-drop{position:absolute;width:2px;background:linear-gradient(to bottom,transparent,rgba(180,220,255,.75));animation:rain-fall linear infinite;pointer-events:none;border-radius:50%}
-@keyframes rain-fall{0%{transform:translateY(-100vh);opacity:0}10%,90%{opacity:1}100%{transform:translateY(100vh) translateX(-50px);opacity:0}}
-.fog-overlay{position:fixed;inset:0;pointer-events:none;background:linear-gradient(to bottom,transparent,rgba(220,230,240,.6));opacity:0;transition:opacity 2s;z-index:-1}
-.fog-overlay.active{opacity:1}
-@keyframes lightning-flash{0%,92%,100%{opacity:0}93%,95%{opacity:.9}94%,96%{opacity:.3}}
-.lightning-overlay{position:fixed;inset:0;background:white;pointer-events:none;opacity:0;z-index:-1}
-.lightning-overlay.active{animation:lightning-flash 8s infinite}
-.weather-cluster{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;background:rgba(18,54,52,.82);border:1px solid rgba(244,184,66,.35);border-radius:999px;white-space:nowrap}
-.weather-icon-wrap{font-size:14px;line-height:1}
-.clock-display{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;color:#FBD77A;display:inline-flex;align-items:center;gap:3px}
-.weather-temp-text{font-size:11px;font-weight:800;color:#FBD77A}
+.table-radio:checked+label,.lang-radio:checked+label{background:linear-gradient(135deg,var(--theme-accent) 0%,var(--theme-accent2) 100%)!important;color:#123634;border-color:transparent;transform:scale(1.04);font-weight:900}
+.glass-card{background:rgba(25,71,67,.82);backdrop-filter:blur(14px) saturate(140%);border:1px solid var(--theme-border-soft)!important;box-shadow:0 4px 12px rgba(0,0,0,.18),0 16px 40px -12px rgba(10,50,60,.5);position:relative;transition:border-color var(--theme-trans),box-shadow var(--theme-trans)!important}
+.glass-card.premium::before{content:'';position:absolute;inset:0;border-radius:inherit;padding:1px;background:linear-gradient(135deg,var(--theme-border) 0%,transparent 40%,var(--theme-border-soft) 100%)!important;-webkit-mask:linear-gradient(#fff 0 0) content-box,linear-gradient(#fff 0 0);-webkit-mask-composite:xor;mask-composite:exclude;pointer-events:none;opacity:.6}
+.weather-cluster{display:inline-flex;align-items:center;gap:6px;padding:3px 10px;background:rgba(18,54,52,.82);border:1px solid var(--theme-border);border-radius:999px;white-space:nowrap}
+.clock-display{font-family:'JetBrains Mono',monospace;font-weight:700;font-size:12px;color:var(--theme-accent);display:inline-flex;align-items:center;gap:3px}
 .state-chip{display:inline-flex;align-items:center;gap:4px;padding:3px 10px;border-radius:999px;font-size:10px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;border:1px solid;white-space:nowrap}
 .state-pending{color:#FFA726;background:rgba(255,167,38,.12);border-color:rgba(255,167,38,.4)}
 .state-cooking{color:#FF6B6B;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4)}
@@ -75,13 +42,13 @@ body{background-color:#6fc3bf;color:#fff;font-family:'Nunito',sans-serif;-webkit
 .modal-header-icon.red{background:linear-gradient(135deg,rgba(239,83,80,.2),rgba(239,83,80,.04));border-color:rgba(239,83,80,.5)}
 .modal-header-icon.emerald{background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.04));border-color:rgba(16,185,129,.5)}
 .filter-chip{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;border-radius:999px;font-size:11px;font-weight:700;border:1px solid rgba(55,137,123,.4);background:rgba(25,71,67,.55);color:#bfe9dc;cursor:pointer;white-space:nowrap}
-.filter-chip.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
+.filter-chip.active{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent2))!important;color:#123634;border-color:transparent}
 .filter-chip .chip-count{background:rgba(0,0,0,.2);padding:1px 6px;border-radius:999px;font-size:10px;font-weight:900}
 .filter-chip.active .chip-count{background:rgba(18,54,52,.3);color:#FBD77A}
 .top-sim-bar{padding:8px 12px;display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;font-size:11px}
 .role-buttons-wrap{display:flex;gap:4px;padding:3px;border-radius:12px;overflow-x:auto;width:100%}
 .role-btn{flex-shrink:0;padding:7px 10px;font-size:10.5px;border-radius:9px;min-height:34px;display:inline-flex;align-items:center;gap:5px;white-space:nowrap;font-weight:700;transition:all .15s;border:1px solid transparent}
-.role-btn.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900}
+.role-btn.active{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent2))!important;color:#123634;font-weight:900}
 .role-btn:not(.active){background:rgba(45,110,101,.5);color:#98dccb;border-color:rgba(55,137,123,.4)}
 .conn-status{display:flex;align-items:center;gap:6px;font-size:9.5px}
 .conn-dot{width:7px;height:7px;border-radius:50%}
@@ -123,111 +90,30 @@ body{background-color:#6fc3bf;color:#fff;font-family:'Nunito',sans-serif;-webkit
 .menu-card .qty-control button{width:42px!important;height:42px!important;font-size:22px!important}
 .modal-content{max-width:580px!important;padding:32px!important}
 }
-.sound-toggle{position:fixed;bottom:20px;right:20px;width:44px;height:44px;border-radius:50%;background:rgba(18,54,52,.85);border:1px solid rgba(244,184,66,.35);color:#FBD77A;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:150;box-shadow:0 4px 14px rgba(0,0,0,.35)}
-.bell-test-btn{position:fixed;bottom:20px;right:76px;width:44px;height:44px;border-radius:50%;background:rgba(18,54,52,.85);border:1px solid rgba(244,184,66,.35);color:#FBD77A;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;z-index:150}
-.bell-test-menu{position:fixed;bottom:76px;right:76px;display:flex;flex-direction:column;gap:6px;background:rgba(18,54,52,.96);border:1px solid rgba(244,184,66,.4);border-radius:14px;padding:12px 10px 10px;z-index:151}
-.bell-test-menu.hidden{display:none}
-.bell-test-menu button{padding:9px 16px;font-size:12.5px;font-weight:700;border-radius:9px;background:rgba(45,110,101,.5);color:#bfe9dc;border:1px solid rgba(55,137,123,.4);cursor:pointer;text-align:left;font-family:'Nunito',sans-serif}
-.bell-test-menu button:hover{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634}
-.bell-test-menu::before{content:'🔔 THỬ CHUÔNG';position:absolute;top:-10px;left:50%;transform:translateX(-50%);background:#F4B842;color:#123634;padding:2px 10px;border-radius:999px;font-size:9px;font-weight:900;white-space:nowrap}
-/* Ẩn 2 nút nổi gây che khuất */
-.sound-toggle,.bell-test-btn,.bell-test-menu{display:none!important}
 </style>
 <script src="master.js" defer></script>
-<!-- ════════ PWA MANIFEST ════════ -->
+<script src="staff-sync.js" defer></script>
+<script src="theme-system.js" defer></script>
 <link rel="manifest" href="/DolphinApp/manifest.json">
-
-<!-- ════════ PWA THEME ════════ -->
 <meta name="theme-color" content="#123634">
 <meta name="color-scheme" content="dark">
-
-<!-- ════════ iOS SPECIFIC ════════ -->
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dolphin">
 <meta name="mobile-web-app-capable" content="yes">
-
-<!-- ════════ iOS ICONS ════════ -->
 <link rel="apple-touch-icon" sizes="152x152" href="/DolphinApp/pwa-icons/icon-152.png">
 <link rel="apple-touch-icon" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
 <link rel="apple-touch-icon" href="/DolphinApp/pwa-icons/icon-192.png">
-
-<!-- ════════ ANDROID / CHROME ════════ -->
 <link rel="icon" type="image/png" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/DolphinApp/pwa-icons/icon-512.png">
-<script src="staff-sync.js" defer></script>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-gold-500 selection:text-black relative z-0">
-
-<div class="halong-bg" aria-hidden="true">
-<svg id="halongSvg" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-<defs>
-<linearGradient id="skyGradient" x1="0" y1="0" x2="0" y2="1"><stop id="skyStop1" offset="0" stop-color="#5fb4d9"/><stop id="skyStop2" offset="0.55" stop-color="#a9e0e6"/><stop id="skyStop3" offset="1" stop-color="#fbf0cf"/></linearGradient>
-<linearGradient id="seaGradient" x1="0" y1="0" x2="0" y2="1"><stop id="seaStop1" offset="0" stop-color="#3fb8b0"/><stop id="seaStop2" offset="0.5" stop-color="#2a9d9b"/><stop id="seaStop3" offset="1" stop-color="#1c7c82"/></linearGradient>
-<linearGradient id="farMountainGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb9c9"/><stop offset="1" stop-color="#b9d9de"/></linearGradient>
-<linearGradient id="midMountainGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8f86"/><stop offset="1" stop-color="#6fb0a4"/></linearGradient>
-<linearGradient id="nearMountainGradient" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f7461"/><stop offset="1" stop-color="#3f8c73"/></linearGradient>
-<radialGradient id="sunHalo" cx="0.5" cy="0.5" r="0.5"><stop id="haloStop" offset="0" stop-color="#fff6c8" stop-opacity="0.9"/><stop offset="0.5" stop-color="#ffd070" stop-opacity="0.5"/><stop offset="1" stop-color="#ffb040" stop-opacity="0"/></radialGradient>
-<radialGradient id="sunDiscGrad" cx="0.5" cy="0.5" r="0.5"><stop id="discStop1" offset="0" stop-color="#ffffff" stop-opacity="1"/><stop id="discStop2" offset="0.7" stop-color="#fff6c8" stop-opacity="0.98"/><stop id="discStop3" offset="1" stop-color="#ffe090" stop-opacity="0.9"/></radialGradient>
-<filter id="cloudBlur"><feGaussianBlur stdDeviation="1.5"/></filter>
-</defs>
-<rect id="skyRect" width="1440" height="900" fill="url(#skyGradient)"/>
-<g id="sunGroup" class="sun-element" style="transform-origin:720px 220px;">
-<circle id="sunMidHalo" cx="720" cy="220" r="260" fill="url(#sunHalo)" opacity="0.9"/>
-<circle id="sunGlowRing" cx="720" cy="220" r="165" fill="url(#sunHalo)" opacity="1"/>
-<g class="sun-core-group">
-<circle id="sunDisc" cx="720" cy="220" r="115" fill="url(#sunDiscGrad)"/>
-<circle id="sunInnerCore" cx="720" cy="220" r="78" fill="#ffffff" opacity="0.95"/>
-</g>
-</g>
-<g id="cloudsFar">
-<g class="cloud-layer cloud-slow" fill="#fff" opacity="0.72" filter="url(#cloudBlur)"><ellipse cx="200" cy="100" rx="110" ry="32"/><ellipse cx="290" cy="80" rx="78" ry="36"/><ellipse cx="130" cy="88" rx="65" ry="26"/></g>
-<g class="cloud-layer cloud-slow" fill="#fff" opacity="0.68" filter="url(#cloudBlur)"><ellipse cx="1180" cy="70" rx="120" ry="30"/><ellipse cx="1290" cy="55" rx="85" ry="35"/></g>
-</g>
-<g id="cloudsMid">
-<g class="cloud-layer cloud-medium" fill="#fff" opacity="0.86"><ellipse cx="350" cy="180" rx="90" ry="26"/><ellipse cx="440" cy="160" rx="62" ry="32"/></g>
-<g class="cloud-layer cloud-medium" fill="#fff" opacity="0.82"><ellipse cx="1080" cy="160" rx="80" ry="24"/><ellipse cx="1150" cy="145" rx="55" ry="28"/></g>
-</g>
-<g id="darkClouds" opacity="0" style="transition:opacity 2s;"><ellipse cx="300" cy="80" rx="180" ry="55" fill="#4a5a6a"/><ellipse cx="700" cy="90" rx="200" ry="60" fill="#4a5a6a"/><ellipse cx="1100" cy="100" rx="220" ry="65" fill="#4a5a6a"/></g>
-<g class="birds-flying" opacity="0.7"><g><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a" class="bird-wing"/></g><g transform="translate(20,8)"><path d="M0 0 Q4 -3 8 0 Q4 -1 0 0" fill="#2a4a5a" class="bird-wing"/></g><g transform="translate(35,2)"><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a" class="bird-wing"/></g></g>
-<g id="mountainsFar">
-<path d="M0 420 L60 350 Q80 330 105 350 L150 390 L210 310 Q232 285 258 312 L300 380 L380 350 Q400 335 420 355 L470 400 L560 320 Q585 298 610 325 L660 390 L760 330 Q785 310 808 332 L860 390 L950 335 Q975 315 1000 338 L1060 400 L1130 340 Q1155 320 1180 345 L1200 365 L1200 470 L0 470Z" fill="url(#farMountainGradient)"/>
-</g>
-<g id="mountainsMid">
-<path d="M0 480 L40 410 Q70 365 110 390 L150 430 L200 370 Q235 330 270 370 L320 450 L420 380 Q460 345 495 385 L540 450 L700 390 Q740 355 775 395 L820 460 L980 385 Q1020 355 1055 390 L1110 450 L1200 400 L1200 540 L0 540Z" fill="url(#midMountainGradient)"/>
-</g>
-<rect id="seaRect" y="480" width="1440" height="420" fill="url(#seaGradient)"/>
-<g id="wavesGroup" stroke="#d9f6f2" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.5"><path d="M80 550 q25 -10 50 0 t50 0"/><path d="M360 600 q28 -11 56 0 t56 0"/><path d="M640 560 q25 -10 50 0 t50 0"/><path d="M900 620 q30 -11 60 0 t60 0"/><path d="M520 700 q32 -12 64 0 t64 0"/><path d="M1020 690 q28 -11 56 0 t56 0"/></g>
-<g id="islandsNear">
-<path d="M-30 900 L-30 620 Q10 570 70 600 L120 550 Q160 520 205 560 L250 620 Q290 645 320 690 L330 900Z" fill="url(#nearMountainGradient)"/>
-<path d="M520 900 L540 740 Q575 680 625 695 L660 660 Q705 630 745 675 L790 740 L810 900Z" fill="#3a8570"/>
-<path d="M1100 900 L1120 720 Q1160 660 1210 680 L1250 630 Q1295 610 1335 650 L1370 900Z" fill="url(#nearMountainGradient)"/>
-</g>
-<g id="boat1" class="ghibli-boat" transform="translate(950 540)"><path d="M0 45 L130 45 L115 62 L15 62Z" fill="#f6efe0"/><path d="M38 38 L50 -5 L64 38Z" fill="#e8a24a"/><path d="M62 38 L78 -12 L94 38Z" fill="#d98a35"/></g>
-<g id="boat2" class="ghibli-boat" transform="translate(400 580)" opacity="0.6"><path d="M0 20 L50 20 L44 28 L6 28Z" fill="#e8dcc8"/></g>
-<g id="dolphins"></g>
-</svg>
-</div>
-
-<div id="rainContainer" class="weather-overlay"></div>
-<div id="fogOverlay" class="fog-overlay"></div>
-<div id="lightningOverlay" class="lightning-overlay"></div>
-<button id="soundToggle" class="sound-toggle" onclick="toggleAmbientSound()" title="Âm thanh">🔇</button>
-<button id="bellTestBtn" class="bell-test-btn" onclick="toggleBellTest()" title="Thử chuông">🔔</button>
-<div id="bellTestMenu" class="bell-test-menu hidden">
-<button onclick="testBell('newOrder')">🔔 Order mới</button>
-<button onclick="testBell('call')">🛎️ Khách gọi</button>
-<button onclick="testBell('delayed')">⚠️ Quá 5 phút</button>
-<button onclick="testBell('complete')">✅ Hoàn thành</button>
-</div>
 
 <div class="bg-teal-950/85 backdrop-blur-md border-b border-teal-800/50 z-50 relative top-sim-bar">
 <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
 <div class="conn-status"><span id="cloud-status-dot" class="conn-dot bg-gold-500 animate-pulse"></span><span id="cloud-status-text" class="font-bold text-teal-200 uppercase">KẾT NỐI...</span></div>
-<div id="weather-badge" class="weather-cluster hidden">
-<span id="weather-icon" class="weather-icon-wrap">☀️</span>
+<div id="clock-badge" class="weather-cluster hidden">
 <span class="clock-display"><span id="clock-time">--:--</span><span id="clock-seconds">:--</span></span>
-<span id="weather-text" class="weather-temp-text">--°C</span>
 </div>
 </div>
 <div class="role-buttons-wrap bg-teal-900/50 border border-teal-800/50">
@@ -418,7 +304,6 @@ body{background-color:#6fc3bf;color:#fff;font-family:'Nunito',sans-serif;-webkit
 </div>
 </main>
 
-<!-- Modals -->
 <div id="modal-pin" class="fixed inset-0 z-[150] modal-backdrop hidden flex items-center justify-center p-3 md:p-6">
 <div class="glass-card premium border border-teal-700/50 w-full max-w-xs md:max-w-md modal-content text-center relative">
 <button onclick="closePinModal()" class="absolute top-2 right-2 text-teal-400 p-2 text-base">✕</button>
@@ -503,10 +388,9 @@ import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/fireba
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
-const state={currentRole:'customer',tableSelected:false,selectedTable:null,currentLanguage:'VI',activeCategory:'all',searchTerm:'',cart:{},orders:[],activeCalls:[],tableAssignments:{},isSending:false,isCallingStaff:false,pendingAction:null,warningDismissedForShift:null,alertedDelayedOrders:new Set(),lastTransactionWarning:null,serviceStatusOverride:'auto',adminFilter:'all',weather:{temp:25,effect:'clear',icon:'☀️',description:'',isDay:true,cloudCover:0,windSpeed:5},soundEnabled:false,lastGreetingTime:0};
+const state={currentRole:'customer',tableSelected:false,selectedTable:null,currentLanguage:'VI',activeCategory:'all',searchTerm:'',cart:{},orders:[],activeCalls:[],tableAssignments:{},isSending:false,isCallingStaff:false,pendingAction:null,warningDismissedForShift:null,alertedDelayedOrders:new Set(),lastTransactionWarning:null,serviceStatusOverride:'auto',adminFilter:'all'};
 window.state=state;
 
-// Collections riêng cho Restaurant
 const COL_ORDERS='res_orders',COL_CALLS='res_calls',COL_TABLES='res_tables',COL_HISTORY='res_history',COL_SETTINGS='res_settings';
 
 window.getStaffName=()=>localStorage.getItem('dolphinStaffName')||'';
@@ -515,20 +399,9 @@ window.setStaffName=(n)=>localStorage.setItem('dolphinStaffName',n.trim());
 
 window.getVNTime=function(){const now=new Date();const f=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,year:'numeric',month:'numeric',day:'numeric',hour:'numeric',minute:'numeric',second:'numeric'});const p=f.formatToParts(now);const o={};for(const x of p)if(x.type!=='literal')o[x.type]=parseInt(x.value,10);const ts=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:true,hour:'2-digit',minute:'2-digit'}).format(now);return{hours:o.hour===24?0:o.hour,minutes:o.minute,seconds:o.second,timeString:ts,fullYear:o.year,month:o.month-1,dateNum:o.day}};
 
-window.updateClock=function(){try{const now=new Date();const s=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(now);const p=s.split(':');const c=document.getElementById('clock-time');const sc=document.getElementById('clock-seconds');if(c)c.textContent=p[0]+':'+p[1];if(sc)sc.textContent=':'+p[2];}catch(e){}};
+window.updateClock=function(){try{const now=new Date();const s=new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour12:false,hour:'2-digit',minute:'2-digit',second:'2-digit'}).format(now);const p=s.split(':');const c=document.getElementById('clock-time');const sc=document.getElementById('clock-seconds');if(c)c.textContent=p[0]+':'+p[1];if(sc)sc.textContent=':'+p[2];const b=document.getElementById('clock-badge');if(b)b.classList.remove('hidden');}catch(e){}};
 setInterval(window.updateClock,1000);
 
-const HALONG_LAT=20.9101,HALONG_LON=107.1839;
-const WEATHER_MAP={0:{d:'Trời quang',i:'☀️',e:'clear'},1:{d:'Ít mây',i:'🌤️',e:'partly'},2:{d:'Có mây',i:'⛅',e:'partly'},3:{d:'Âm u',i:'☁️',e:'overcast'},45:{d:'Sương mù',i:'🌫️',e:'fog'},51:{d:'Mưa phùn',i:'🌦️',e:'drizzle'},61:{d:'Mưa nhẹ',i:'🌧️',e:'rain'},63:{d:'Mưa',i:'🌧️',e:'rain'},65:{d:'Mưa to',i:'🌧️',e:'rain-heavy'},80:{d:'Mưa rào',i:'🌦️',e:'rain'},95:{d:'Giông bão',i:'⛈️',e:'storm'}};
-
-window.fetchWeather=async function(){try{const url=`https://api.open-meteo.com/v1/forecast?latitude=${HALONG_LAT}&longitude=${HALONG_LON}&current=temperature_2m,weather_code,wind_speed_10m,cloud_cover,is_day&timezone=Asia%2FHo_Chi_Minh`;const r=await fetch(url);if(!r.ok)throw 0;const d=await r.json();const c=d.current;const m=WEATHER_MAP[c.weather_code]||{d:'?',i:'🌡️',e:'clear'};state.weather={temp:Math.round(c.temperature_2m),effect:m.e,icon:m.i,description:m.d,isDay:c.is_day===1,cloudCover:c.cloud_cover,windSpeed:c.wind_speed_10m};updateWeatherBadge();applyWeatherEffects();updateSunPosition();}catch(e){updateWeatherBadge();}};
-function updateWeatherBadge(){const b=document.getElementById('weather-badge');if(!b)return;b.classList.remove('hidden');document.getElementById('weather-icon').innerText=state.weather.icon;document.getElementById('weather-text').innerText=`${state.weather.temp}°C`;}
-
-window.updateSunPosition=function(){const vn=window.getVNTime();const h=vn.hours+vn.minutes/60;const sg=document.getElementById('sunGroup');if(!sg)return;const isDay=h>=5.5&&h<=18.5;const isStorm=state.weather.effect==='storm';const isRain=['rain','rain-heavy','drizzle'].includes(state.weather.effect);const isFog=state.weather.effect==='fog';let op=1;if(!isDay)op=0;else if(isStorm)op=0.15;else if(isRain)op=0.35;else if(isFog)op=0.3;sg.setAttribute('opacity',String(op));if(isDay){const dg=(h-5.5)/13;const x=250+dg*940;const y=520-Math.sin(Math.PI*dg)*320;sg.setAttribute('transform',`translate(${x-720},${y-220})`);}else sg.setAttribute('transform','translate(-600,-200)');const sky=['#0a1628','#1a2a4a','#2d3e5c'];const sea=['#0a2838','#0d3540','#0a2028'];if(isDay){sky[0]='#5fb4d9';sky[1]='#a9e0e6';sky[2]='#fbf0cf';sea[0]='#3fb8b0';sea[1]='#2a9d9b';sea[2]='#1c7c82';}if(isStorm){sky[0]='#1a2535';sky[1]='#2a3a4a';sky[2]='#3a4a5a';sea[0]='#1a3038';sea[1]='#152830';sea[2]='#0a1820';}const s1=document.getElementById('skyStop1'),s2=document.getElementById('skyStop2'),s3=document.getElementById('skyStop3');if(s1)s1.setAttribute('stop-color',sky[0]);if(s2)s2.setAttribute('stop-color',sky[1]);if(s3)s3.setAttribute('stop-color',sky[2]);const a1=document.getElementById('seaStop1'),a2=document.getElementById('seaStop2'),a3=document.getElementById('seaStop3');if(a1)a1.setAttribute('stop-color',sea[0]);if(a2)a2.setAttribute('stop-color',sea[1]);if(a3)a3.setAttribute('stop-color',sea[2]);};
-
-window.applyWeatherEffects=function(){const e=state.weather.effect;const w=state.weather.windSpeed||0;const cc=state.weather.cloudCover||0;const body=document.body;document.querySelectorAll('.cloud-layer').forEach(el=>el.classList.remove('cloud-slow','cloud-medium','cloud-fast','cloud-storm'));let c='cloud-medium';if(e==='storm'||w>40)c='cloud-storm';else if(w>25)c='cloud-fast';else if(w>15)c='cloud-medium';else c='cloud-slow';document.querySelectorAll('.cloud-layer').forEach(el=>el.classList.add(c));const dc=document.getElementById('darkClouds');if(dc){if(e==='storm')dc.setAttribute('opacity','0.9');else if(e==='rain-heavy')dc.setAttribute('opacity','0.7');else if(e==='rain'||e==='overcast')dc.setAttribute('opacity','0.4');else dc.setAttribute('opacity','0');}body.classList.toggle('storm',e==='storm');const rc=document.getElementById('rainContainer');if(rc)rc.innerHTML='';let n=0,dur=0.6,hh='20px',op=1;if(e==='drizzle'){n=40;dur=1.4;hh='14px';op=0.6;}else if(e==='rain'){n=100;dur=0.9;hh='24px';op=0.85;}else if(e==='rain-heavy'){n=200;dur=0.55;hh='32px';}else if(e==='storm'){n=300;dur=0.45;hh='36px';}if(n>0&&rc){const f=document.createDocumentFragment();for(let i=0;i<n;i++){const d=document.createElement('div');d.className='rain-drop';d.style.left=Math.random()*110-5+'%';d.style.height=hh;d.style.animationDuration=(dur+Math.random()*0.4)+'s';d.style.animationDelay=(-Math.random()*2)+'s';d.style.opacity=op*(0.5+Math.random()*0.5);f.appendChild(d);}rc.appendChild(f);}document.getElementById('fogOverlay')?.classList.toggle('active',e==='fog');document.getElementById('lightningOverlay')?.classList.toggle('active',e==='storm');};
-
-// Constants
 const TABLES_J=['J1','J1.5','J2','J2.5','J3','J3.5','J4','J4.5','J5','J5.5','J6','J6.5','J7'];
 const TABLES_Q=['Q1','Q1.5','Q2','Q2.5','Q3','Q3.5','Q4','Q4.5','Q5','Q5.5','Q6','Q6.5','Q7'];
 const TABLES_LOUNGE=['L1','L2','L3','L4','L5','L6','L7','L8','L9','L10','L11','L12'];
@@ -557,9 +430,6 @@ window.unlockAudio=()=>{if(!globalAudioCtx)globalAudioCtx=new(window.AudioContex
 document.addEventListener('click',window.unlockAudio);
 
 window.playNotificationAlert=function(type){if(navigator.vibrate){try{navigator.vibrate(type==='delayed'?[400,150,400,150,400,150,400,150,400,150,400]:[300,100,300,100,300,100,300,100,300,100,300]);}catch(e){}}try{if(!globalAudioCtx)globalAudioCtx=new(window.AudioContext||window.webkitAudioContext)();if(globalAudioCtx.state==='suspended')globalAudioCtx.resume();const ctx=globalAudioCtx;const now=ctx.currentTime;const mg=ctx.createGain();mg.gain.value=0.75;mg.connect(ctx.destination);let bf=880,si=0.85,st=7,use2=true;if(type==='delayed'){bf=523;si=0.75;st=8;}else if(type==='call'){bf=988;si=0.85;st=7;}else if(type==='complete'){bf=660;si=0.75;st=5;use2=false;}function strike(t,f,g){[1,2,2.76,4.07,5.43,8].forEach((r,i)=>{const o=ctx.createOscillator();const gg=ctx.createGain();o.type='sine';o.frequency.value=f*r;gg.gain.setValueAtTime(0,t);gg.gain.linearRampToValueAtTime([.55,.35,.22,.15,.10,.06][i]*g,t+0.008);gg.gain.exponentialRampToValueAtTime(0.001,t+[2.8,2.4,2,1.6,1.3,.9][i]);o.connect(gg);gg.connect(mg);o.start(t);o.stop(t+3);});}for(let i=0;i<st;i++)strike(now+i*si,bf,1+i*0.08);if(use2)strike(now+0.03,bf*2,0.55);}catch(e){}};
-window.toggleBellTest=()=>document.getElementById('bellTestMenu').classList.toggle('hidden');
-window.testBell=(t)=>{try{if(!globalAudioCtx)globalAudioCtx=new(window.AudioContext||window.webkitAudioContext)();if(globalAudioCtx.state==='suspended')globalAudioCtx.resume();}catch(e){}window.playNotificationAlert(t);setTimeout(()=>document.getElementById('bellTestMenu').classList.add('hidden'),700);};
-document.addEventListener('click',(e)=>{const m=document.getElementById('bellTestMenu');const b=document.getElementById('bellTestBtn');if(m&&!m.classList.contains('hidden')&&!m.contains(e.target)&&b&&!b.contains(e.target))m.classList.add('hidden');});
 
 function checkServiceEndingSoon(){if(state.currentRole!=='customer'||!state.tableSelected)return;const vn=window.getVNTime();const h=vn.hours,m=vn.minutes;let cs=null;if(h===11&&m>=45&&m<=59)cs='lunch';else if(h===19&&m>=45&&m<=59)cs='dinner';if(cs){if(state.warningDismissedForShift!==cs)window.showTimeWarningModal(cs);}else state.warningDismissedForShift=null;}
 window.showTimeWarningModal=(s)=>{const t=WARNING_TRANS[state.currentLanguage]||WARNING_TRANS['VI'];document.getElementById('warning-message').innerText=t.msg.replace('{meal}',s==='lunch'?t.lunch:t.dinner);document.getElementById('warning-btn').innerText=t.btn;document.getElementById('modal-time-warning').classList.remove('hidden');playNotificationAlert('delayed');state.warningDismissedForShift=s;};
@@ -580,8 +450,9 @@ document.getElementById('welcome-tables-q').innerHTML=mk(TABLES_Q,'q');
 document.getElementById('welcome-tables-lounge').innerHTML=mk(TABLES_LOUNGE,'l');
 const saved=sessionStorage.getItem('dolphinRestSetup');
 if(saved){const p=JSON.parse(saved);state.selectedTable=p.table;state.currentLanguage=p.lang;state.tableSelected=true;}
-window.startCloudConnection();window.updateClock();window.fetchWeather();window.updateSunPosition();
-setInterval(window.updateSunPosition,60000);setInterval(window.fetchWeather,900000);setInterval(checkServiceEndingSoon,15000);setInterval(checkDelayedOrders,15000);setInterval(checkAutoArchive,30000);
+window.startCloudConnection();window.updateClock();
+setInterval(window.updateClock,1000);
+setInterval(checkServiceEndingSoon,15000);setInterval(checkDelayedOrders,15000);setInterval(checkAutoArchive,30000);
 renderAll();
 };
 
@@ -648,40 +519,11 @@ window.renderReception=function(){const d=document.getElementById('current-recep
 window.renderAdmin=function(){const bA=document.getElementById('btn-status-auto'),bO=document.getElementById('btn-status-open'),bC=document.getElementById('btn-status-closed');const base='px-2 md:px-4 py-2 rounded-lg text-[9.5px] md:text-xs ';bA.className=base+(state.serviceStatusOverride==='auto'?'font-black bg-teal-600 text-white':'font-bold text-teal-400');bO.className=base+(state.serviceStatusOverride==='open'?'font-black bg-emerald-500 text-white':'font-bold text-teal-400');bC.className=base+(state.serviceStatusOverride==='closed'?'font-black bg-red-600 text-white':'font-bold text-teal-400');document.getElementById('stat-total').innerText=state.orders.length;document.getElementById('stat-pending').innerText=state.orders.filter(o=>o.status==='pending').length;document.getElementById('stat-prep').innerText=state.orders.filter(o=>o.status==='preparing').length;document.getElementById('stat-done').innerText=state.orders.filter(o=>o.status==='completed').length;const dly=state.orders.filter(o=>o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000).length;const fa=document.getElementById('fc-all'),fp=document.getElementById('fc-pending'),fc=document.getElementById('fc-cooking'),fd=document.getElementById('fc-delayed'),fdone=document.getElementById('fc-done');if(fa)fa.textContent=state.orders.length;if(fp)fp.textContent=state.orders.filter(o=>o.status==='pending').length;if(fc)fc.textContent=state.orders.filter(o=>o.status==='preparing').length;if(fd)fd.textContent=dly;if(fdone)fdone.textContent=state.orders.filter(o=>o.status==='completed').length;const rm=(tables,id)=>{document.getElementById(id).innerHTML=tables.map(t=>{const to=state.orders.filter(o=>o.table===t&&o.status!=='completed');const hc=state.activeCalls.some(c=>c.table===t);let bg='bg-teal-900/40 border-teal-700/50 text-teal-400',badge='';if(hc){bg='bg-red-600 text-white animate-pulse border-red-500';badge='🛎️';}else if(to.some(o=>o.status==='preparing')){bg='bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black border-transparent';badge='🔥';}else if(to.some(o=>o.status==='pending')){bg='bg-gold-900/50 text-gold-400 border-gold-700/50';badge='⏳';}return`<div class="p-1.5 rounded-lg border text-center ${bg} text-[9.5px] font-bold">${t} ${badge}</div>`;}).join('');};rm(TABLES_J,'matrix-tables-j');rm(TABLES_Q,'matrix-tables-q');rm(TABLES_LOUNGE,'matrix-tables-lounge');const sv=(document.getElementById('admin-search-order')?.value||'').toLowerCase();const tb=document.getElementById('admin-orders-tbody');let f=state.orders.filter(o=>{const mi=o.items.some(i=>(i.name['VI']||i.name).toLowerCase().includes(sv));return!sv||o.table.toLowerCase().includes(sv)||(o.preparedBy||'').toLowerCase().includes(sv)||mi;});const ff=state.adminFilter||'all';if(ff==='pending')f=f.filter(o=>o.status==='pending');else if(ff==='cooking')f=f.filter(o=>o.status==='preparing');else if(ff==='done')f=f.filter(o=>o.status==='completed');else if(ff==='delayed')f=f.filter(o=>o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000);if(f.length===0){tb.innerHTML=`<tr><td colspan="6" class="text-center py-8 text-teal-500/80 font-bold text-[10.5px]">Không có đơn.</td></tr>`;}else{tb.innerHTML=f.map(o=>{const dly=o.status==='pending'&&o.timestamp&&(Date.now()-o.timestamp)>300000;let st='<span class="state-chip state-pending" style="font-size:9px;padding:2px 8px;"><span class="dot"></span>Chờ</span>';if(o.status==='preparing')st='<span class="state-chip state-cooking" style="font-size:9px;padding:2px 8px;"><span class="dot"></span>Nấu</span>';if(o.status==='completed')st='<span class="state-chip state-ready" style="font-size:9px;padding:2px 8px;">✅ Xong</span>';const its=o.items.map((i,idx)=>{const c=i.cancelledQty||(i.cancelled?i.qty:0);if(c>=i.qty)return`<span class="line-through text-teal-600 text-[9.5px]">${i.name['VI']||i.name} (x${i.qty})</span>`;return`<span class="inline-block mr-1 mb-0.5 text-[9.5px]">${i.name['VI']||i.name} <strong class="text-white tabular">x${i.qty-c}</strong> <button onclick="openCancelModal('${o.id}', ${idx}, ${i.qty}, ${c})" class="text-[7.5px] bg-red-950/80 text-red-300 px-1 py-0.5 rounded ml-0.5 border border-red-900/50">HỦY</button></span>`;}).join(' ');let pn=o.preparedBy?`Nấu: ${o.preparedBy}`:'--';if(o.completedBy)pn+=` · Giao: ${o.completedBy}`;return`<tr class="${dly?'bg-red-950/20':''} border-b border-teal-700/30 text-[9.5px]"><td class="py-2.5 px-2.5 font-mono text-teal-300 tabular">${o.time}</td><td class="py-2.5 px-2.5 font-black text-gold-400 tabular">${o.table}</td><td class="py-2.5 px-2.5 text-[9.5px]">${its}</td><td class="py-2.5 px-2.5">${st}</td><td class="py-2.5 px-2.5 text-teal-200 text-[8.5px]">${pn}</td><td class="py-2.5 px-2.5 text-right"><button onclick="openStaffNameModal('${o.id}', 'completed')" class="bg-teal-900 border border-teal-700 text-teal-200 px-2 py-1 rounded text-[8.5px] font-bold">XONG</button></td></tr>`;}).join('');}};
 
 window.renderAll=function(){['view-customer','view-staff','view-admin','view-reception','welcome-screen','main-customer-content'].forEach(id=>document.getElementById(id).classList.add('hidden'));const sp=state.orders.filter(o=>o.status==='pending').length;document.getElementById('pending-count-staff').innerText=`(${sp})`;if(state.currentRole==='customer'){document.getElementById('view-customer').classList.remove('hidden');if(!state.tableSelected)document.getElementById('welcome-screen').classList.remove('hidden');else{document.getElementById('main-customer-content').classList.remove('hidden');window.renderCustomer();}}else if(state.currentRole==='staff'){document.getElementById('view-staff').classList.remove('hidden');window.renderStaff();}else if(state.currentRole==='admin'){document.getElementById('view-admin').classList.remove('hidden');window.renderAdmin();}else if(state.currentRole==='reception'){document.getElementById('view-reception').classList.remove('hidden');window.renderReception();}};
-/* ===== MASTER HOOK ===== */
-window.__masterGetPendingRole = function(){ 
-  try { return pendingRoleRequest; } catch(e){ return null; } 
-};
-window.__masterExecuteManagerAction = async function(){
-  try {
-    if (typeof pendingManagerAction !== 'undefined' && pendingManagerData) {
-      if (pendingManagerAction === 'clear' && window.executeClearCustomerName)
-        await window.executeClearCustomerName(pendingManagerData.table);
-      else if (pendingManagerAction === 'save' && window.executeSaveCustomerName)
-        await window.executeSaveCustomerName(pendingManagerData);
-    }
-  } catch(e){ console.warn('masterHook mgr:', e); }
-};
-window.__masterExecuteClearAll = async function(){
-  try {
-    var coll = 'res_tables';
-    var snap = await getDocs(collection(db, coll));
-    await Promise.all(snap.docs.map(function(d){ return deleteDoc(d.ref); }));
-    window.showToast && window.showToast('Đã xóa toàn bộ khách!', '🧹');
-  } catch(e){ console.warn('masterHook clear:', e); }
-};
-window.__masterExecutePass = function(){
-  try {
-    if (typeof passMode !== 'undefined') {
-      if (passMode === 'delete' && window.doDelete) window.doDelete();
-      else if (passMode === 'deleteShow' && window.doDeleteShow) window.doDeleteShow();
-      else {
-        svcUnlocked = true;
-        if (window.lockUi) window.lockUi(false);
-      }
-    }
-  } catch(e){ console.warn('masterHook pass:', e); }
-};
+
+window.__masterGetPendingRole=function(){try{return pendingRoleRequest;}catch(e){return null;}};
+window.__masterExecuteManagerAction=async function(){try{if(typeof pendingManagerAction!=='undefined'&&pendingManagerData){if(pendingManagerAction==='clear'&&window.executeClearCustomerName)await window.executeClearCustomerName(pendingManagerData.table);else if(pendingManagerAction==='save'&&window.executeSaveCustomerName)await window.executeSaveCustomerName(pendingManagerData);}}catch(e){console.warn('masterHook mgr:',e);}};
+window.__masterExecuteClearAll=async function(){try{var snap=await getDocs(collection(db,'res_tables'));await Promise.all(snap.docs.map(function(d){return deleteDoc(d.ref);}));window.showToast&&window.showToast('Đã xóa toàn bộ khách!','🧹');}catch(e){console.warn('masterHook clear:',e);}};
+window.__masterExecutePass=function(){try{if(typeof passMode!=='undefined'){if(passMode==='delete'&&window.doDelete)window.doDelete();else if(passMode==='deleteShow'&&window.doDeleteShow)window.doDeleteShow();else{svcUnlocked=true;if(window.lockUi)window.lockUi(false);}}}catch(e){console.warn('masterHook pass:',e);}};
 </script>
 </body>
 </html>

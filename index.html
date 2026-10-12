@@ -144,19 +144,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   font-size:.55rem;font-weight:900;letter-spacing:.12em;
   padding:3px 8px;border-radius:99px;text-transform:uppercase;box-shadow:0 3px 10px rgba(244,184,66,.5)}
 
-/* ==================== ENHANCED SCENE ==================== */
-.sun-halo-2{animation:sun-pulse-2 7s ease-in-out infinite;transform-origin:center}
-@keyframes sun-pulse-2{0%,100%{opacity:.25;transform:scale(1)}50%{opacity:.5;transform:scale(1.08)}}
-.wave-anim path{filter:drop-shadow(0 2px 4px rgba(255,255,255,.3))}
-.particle{position:absolute;border-radius:50%;pointer-events:none;
-  background:radial-gradient(circle,#FFF8C2 0%,rgba(251,215,122,0) 70%);
-  animation:particle-float linear infinite;will-change:transform,opacity}
-@keyframes particle-float{
-  0%{transform:translateY(0) scale(0);opacity:0}
-  15%{opacity:.9;transform:translateY(-20px) scale(1)}
-  85%{opacity:.7}
-  100%{transform:translateY(-100vh) scale(.4);opacity:0}
-}
+/* Enhance card hover glow */
 .area-card:hover{
   box-shadow:0 28px 56px -16px rgba(0,0,0,.7),
              0 0 60px -8px rgba(244,184,66,.7),
@@ -165,28 +153,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 .area-card:hover .area-icon{
   filter:drop-shadow(0 8px 16px rgba(0,0,0,.5)) drop-shadow(0 0 20px rgba(244,184,66,.9));
 }
-#landing::before{content:'';position:absolute;inset:0;pointer-events:none;z-index:1;
-  background:transparent;transition:background 3s ease-out}
-#landing.time-morning::before{background:linear-gradient(180deg,rgba(255,180,100,.15) 0%,transparent 60%)}
-#landing.time-day::before{background:transparent}
-#landing.time-evening::before{background:linear-gradient(180deg,rgba(255,120,60,.2) 0%,transparent 60%)}
-#landing.time-night::before{background:linear-gradient(180deg,rgba(10,20,60,.4) 0%,rgba(10,20,60,.15) 60%,transparent)}
 
-/* ==================== SCENE ANIM ==================== */
-@keyframes wave-flow{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-.wave-anim{animation:wave-flow 14s linear infinite}
-.wave-anim-2{animation:wave-flow 22s linear infinite reverse}
-@keyframes cloud-drift{0%{transform:translateX(-6%)}100%{transform:translateX(6%)}}
-.cloud{animation:cloud-drift 32s ease-in-out infinite alternate}
-.cloud-2{animation:cloud-drift 40s ease-in-out infinite alternate-reverse;animation-delay:-8s}
-@keyframes boat-bob{0%,100%{transform:translateY(0) rotate(0)}50%{transform:translateY(7px) rotate(.6deg)}}
-.boat{animation:boat-bob 5s ease-in-out infinite;transform-origin:center}
-.boat-2{animation:boat-bob 6.5s ease-in-out infinite;animation-delay:-2s;transform-origin:center}
-@keyframes sun-breathe{0%,100%{transform:scale(1);opacity:.92}50%{transform:scale(1.07);opacity:1}}
-.sun{animation:sun-breathe 6s ease-in-out infinite;transform-origin:center;transform-box:fill-box}
-@keyframes bird-fly{0%{transform:translate(-150px,0);opacity:0}12%{opacity:.75}88%{opacity:.75}100%{transform:translate(1600px,-80px);opacity:0}}
-.bird-track{animation:bird-fly 48s linear infinite}
-.bird-track-2{animation:bird-fly 65s linear infinite;animation-delay:-20s}
+/* ==================== SCENE ANIM (only entrance) ==================== */
 @keyframes float-up{0%{transform:translateY(28px);opacity:0}100%{transform:translateY(0);opacity:1}}
 .fade-up{animation:float-up .85s cubic-bezier(.16,1,.3,1) both}
 .d-1{animation-delay:.08s}.d-2{animation-delay:.22s}
@@ -266,10 +234,12 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
 /* ==================== TRANSITIONS ==================== */
 #landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
-  position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden}
+  position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden;
+  background:transparent !important}
 #landing.fade-out{opacity:0;transform:scale(1.06);pointer-events:none}
 #app-view{opacity:0;transition:opacity .45s ease;position:fixed;inset:0;z-index:40;background:#123634}
 #app-view.show{opacity:1}
+#app-view.hidden{display:none}
 #app-frame{width:100%;height:100%;border:0;display:block;background:#123634;position:absolute;inset:0;z-index:1}
 #app-frame.hidden-frame{opacity:0}
 #app-loading{position:absolute;inset:0;z-index:5;display:flex;align-items:center;
@@ -416,63 +386,29 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
 <!-- ══════════════ LANDING PAGE ══════════════ -->
 <div id="landing">
-  <svg style="position:fixed;inset:0;width:100%;height:100%;z-index:-1" viewBox="0 0 1440 900" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-    <defs>
-      <linearGradient id="skyG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5fb4d9"/><stop offset="0.55" stop-color="#a9e0e6"/><stop offset="1" stop-color="#fbf0cf"/></linearGradient>
-      <linearGradient id="seaG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3fb8b0"/><stop offset="0.5" stop-color="#2a9d9b"/><stop offset="1" stop-color="#1c7c82"/></linearGradient>
-      <linearGradient id="farM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fb9c9"/><stop offset="1" stop-color="#b9d9de"/></linearGradient>
-      <linearGradient id="midM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4f8f86"/><stop offset="1" stop-color="#6fb0a4"/></linearGradient>
-      <linearGradient id="nearM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2f7461"/><stop offset="1" stop-color="#3f8c73"/></linearGradient>
-      <radialGradient id="sunCorona" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#fff6c8" stop-opacity="0.58"/><stop offset="0.4" stop-color="#ffe4a0" stop-opacity="0.3"/><stop offset="1" stop-color="#ffd080" stop-opacity="0"/></radialGradient>
-      <radialGradient id="sunHalo" cx="0.5" cy="0.5" r="0.5"><stop offset="0" stop-color="#ffffff" stop-opacity="1"/><stop offset="0.7" stop-color="#fff6c8" stop-opacity="0.98"/><stop offset="1" stop-color="#ffe090" stop-opacity="0.9"/></radialGradient>
-      <filter id="cloudBlur"><feGaussianBlur stdDeviation="1.6"/></filter>
-      <radialGradient id="vignette" cx="0.5" cy="0.55" r="0.72"><stop offset="0.5" stop-color="#000" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity="0.55"/></radialGradient>
-    </defs>
-    <rect width="1440" height="900" fill="url(#skyG)"/>
-    <g class="sun" style="transform-origin:1100px 250px"><circle cx="1100" cy="250" r="400" fill="url(#sunCorona)"/><circle cx="1100" cy="250" r="155" fill="url(#sunHalo)"/><circle cx="1100" cy="250" r="88" fill="#ffffff" opacity="0.96"/><ellipse cx="1075" cy="225" rx="30" ry="22" fill="#ffffff" opacity="0.7"/></g>
-    <g class="cloud" filter="url(#cloudBlur)" fill="#ffffff" opacity="0.78"><ellipse cx="200" cy="120" rx="110" ry="30"/><ellipse cx="290" cy="100" rx="78" ry="34"/><ellipse cx="130" cy="108" rx="65" ry="24"/><ellipse cx="240" cy="138" rx="130" ry="20" fill="#eef8fb"/></g>
-    <g class="cloud-2" filter="url(#cloudBlur)" fill="#ffffff" opacity="0.72"><ellipse cx="1180" cy="90" rx="120" ry="28"/><ellipse cx="1290" cy="75" rx="85" ry="32"/><ellipse cx="1110" cy="80" rx="70" ry="22"/><ellipse cx="1200" cy="115" rx="140" ry="18" fill="#eef8fb"/></g>
-    <g class="cloud" style="animation-delay:-15s" filter="url(#cloudBlur)" fill="#ffffff" opacity="0.6"><ellipse cx="700" cy="160" rx="90" ry="24"/><ellipse cx="770" cy="145" rx="60" ry="28"/><ellipse cx="650" cy="150" rx="55" ry="20"/></g>
-    <g class="bird-track" opacity="0.7"><g transform="translate(300,180)"><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a"/></g><g transform="translate(320,188)"><path d="M0 0 Q4 -3 8 0 Q4 -1 0 0" fill="#2a4a5a"/></g><g transform="translate(335,182)"><path d="M0 0 Q5 -4 10 0 Q5 -1.5 0 0" fill="#2a4a5a"/></g></g>
-    <g class="bird-track-2" opacity="0.55"><g transform="translate(400,220)"><path d="M0 0 Q4 -3 8 0 Q4 -1 0 0" fill="#2a4a5a"/></g><g transform="translate(415,226)"><path d="M0 0 Q3 -2 6 0 Q3 -1 0 0" fill="#2a4a5a"/></g></g>
-    <path d="M0 420 L60 350 Q80 330 105 350 L150 390 L210 310 Q232 285 258 312 L300 380 L380 350 Q400 335 420 355 L470 400 L560 320 Q585 298 610 325 L660 390 L760 330 Q785 310 808 332 L860 390 L950 335 Q975 315 1000 338 L1060 400 L1130 340 Q1155 320 1180 345 L1200 365 L1200 470 L0 470Z" fill="url(#farM)"/>
-    <path d="M0 480 L40 410 Q70 365 110 390 L150 430 L200 370 Q235 330 270 370 L320 450 L420 380 Q460 345 495 385 L540 450 L700 390 Q740 355 775 395 L820 460 L980 385 Q1020 355 1055 390 L1110 450 L1200 400 L1200 540 L0 540Z" fill="url(#midM)"/>
-    <g fill="#3f8c73" opacity="0.6"><circle cx="270" cy="378" r="15"/><circle cx="300" cy="392" r="11"/><circle cx="495" cy="392" r="14"/><circle cx="775" cy="400" r="15"/><circle cx="1055" cy="398" r="14"/></g>
-    <rect y="480" width="1440" height="420" fill="url(#seaG)"/><rect y="480" width="1440" height="30" fill="#cdeef0" opacity="0.3"/>
-    <ellipse cx="1100" cy="520" rx="140" ry="5" fill="#fff6c8" opacity="0.6"/><ellipse cx="1100" cy="545" rx="200" ry="4" fill="#fff6c8" opacity="0.45"/><ellipse cx="1100" cy="575" rx="120" ry="3" fill="#fff6c8" opacity="0.3"/>
-    <g class="wave-anim" stroke="#d9f6f2" stroke-width="3" stroke-linecap="round" fill="none" opacity="0.55"><path d="M0 620 q30 -12 60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0 t60 0"/></g>
-    <g class="wave-anim-2" stroke="#d9f6f2" stroke-width="2.5" stroke-linecap="round" fill="none" opacity="0.42"><path d="M0 700 q32 -12 64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0 t64 0"/></g>
-    <g class="wave-anim" style="animation-duration:24s" stroke="#d9f6f2" stroke-width="2" stroke-linecap="round" fill="none" opacity="0.35"><path d="M0 780 q36 -14 72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0 t72 0"/></g>
-    <path d="M-30 900 L-30 720 Q10 670 70 700 L120 650 Q160 620 205 660 L250 720 Q290 745 320 790 L330 900Z" fill="url(#nearM)"/>
-    <path d="M1140 900 L1160 740 Q1200 680 1250 700 L1290 650 Q1335 630 1375 670 L1410 900Z" fill="url(#nearM)"/>
-    <g fill="#7cc58f" opacity="0.75"><circle cx="85" cy="708" r="16"/><circle cx="130" cy="665" r="14"/><circle cx="195" cy="668" r="15"/><circle cx="1250" cy="708" r="15"/><circle cx="1300" cy="665" r="14"/></g>
-    <g class="boat" transform="translate(450 640)"><path d="M0 40 L140 40 L124 58 L16 58Z" fill="#f6efe0"/><rect x="14" y="32" width="112" height="10" fill="#fffaf0"/><rect x="68" y="-10" width="5" height="46" fill="#8B6914" opacity="0.7"/><path d="M40 32 L52 -8 L66 32Z" fill="#e8a24a"/><path d="M64 32 L80 -14 L96 32Z" fill="#d98a35"/><path d="M94 32 L108 -4 L122 32Z" fill="#e8a24a"/></g>
-    <g class="boat-2" transform="translate(880 720) scale(.55)" opacity="0.75"><path d="M0 40 L140 40 L124 58 L16 58Z" fill="#f6efe0"/><path d="M40 32 L52 -8 L66 32Z" fill="#e8a24a"/><path d="M64 32 L80 -14 L96 32Z" fill="#d98a35"/></g>
-    <rect width="1440" height="900" fill="url(#vignette)"/>
-  </svg>
-
   <div style="position:relative;z-index:10;width:100%;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem">
     <div style="width:100%;max-width:1200px">
 
-<!-- ════════ HALONG CLOCK WIDGET ════════ -->
-<div id="halongClock" class="fade-up">
-  <div class="hclock-glow"></div>
-  <div class="hclock-icon">🕐</div>
-  <div class="hclock-body">
-    <div class="hclock-time" aria-live="polite">
-      <span class="hclock-h" id="hclockH">00</span>
-      <span class="hclock-sep">:</span>
-      <span class="hclock-m" id="hclockM">00</span>
-      <span class="hclock-sep hclock-sep-s">:</span>
-      <span class="hclock-s" id="hclockS">00</span>
-    </div>
-    <div class="hclock-date" id="hclockDate">Đang tải...</div>
-  </div>
-  <div class="hclock-loc">
-    <span class="hclock-loc-icon">📍</span>
-    <span class="hclock-loc-text">Vịnh Hạ Long<br>Quảng Ninh</span>
-  </div>
-</div>
+      <!-- ════════ HALONG CLOCK WIDGET ════════ -->
+      <div id="halongClock" class="fade-up">
+        <div class="hclock-glow"></div>
+        <div class="hclock-icon">🕐</div>
+        <div class="hclock-body">
+          <div class="hclock-time" aria-live="polite">
+            <span class="hclock-h" id="hclockH">00</span>
+            <span class="hclock-sep">:</span>
+            <span class="hclock-m" id="hclockM">00</span>
+            <span class="hclock-sep hclock-sep-s">:</span>
+            <span class="hclock-s" id="hclockS">00</span>
+          </div>
+          <div class="hclock-date" id="hclockDate">Đang tải...</div>
+        </div>
+        <div class="hclock-loc">
+          <span class="hclock-loc-icon">📍</span>
+          <span class="hclock-loc-text">Vịnh Hạ Long<br>Quảng Ninh</span>
+        </div>
+      </div>
+
       <div class="text-center fade-up" style="margin-bottom:clamp(1.5rem,3.5vw,2.5rem)">
         <img src="/DolphinApp/logo-dolphin.png" 
              alt="Dolphin Ha Long Cruise" 
@@ -593,6 +529,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   var HOME_KEY = 'dolphinHomeBtnHidden';
   function applyHomeBtnState(){
     var ctrl = document.getElementById('home-controls');
+    if (!ctrl) return;
     var hidden = localStorage.getItem(HOME_KEY) === '1';
     ctrl.classList.toggle('minimized', hidden);
   }
@@ -830,7 +767,6 @@ if ('serviceWorker' in navigator) {
     .then(function(reg){
       console.log('✅ SW registered:', reg.scope);
 
-      // ═══ Check update mỗi 5 phút ═══
       setInterval(function(){
         reg.update();
         if (reg.active) {
@@ -838,7 +774,6 @@ if ('serviceWorker' in navigator) {
         }
       }, 5 * 60 * 1000);
 
-      // ═══ Check khi quay lại tab ═══
       document.addEventListener('visibilitychange', function(){
         if (document.visibilityState === 'visible') {
           reg.update();
@@ -848,7 +783,6 @@ if ('serviceWorker' in navigator) {
         }
       });
 
-      // ═══ Listen updatefound ═══
       reg.addEventListener('updatefound', function(){
         var newWorker = reg.installing;
         if (!newWorker) return;
@@ -864,7 +798,6 @@ if ('serviceWorker' in navigator) {
       console.warn('❌ SW failed:', err);
     });
 
-    // ═══ Listen message từ SW ═══
     navigator.serviceWorker.addEventListener('message', function(e){
       var data = e.data || {};
       if (data.type === 'SW_ACTIVATED') {
@@ -872,7 +805,6 @@ if ('serviceWorker' in navigator) {
       }
       if (data.type === 'NEW_VERSION') {
         console.log('🎉 New version available:', data.newVersion);
-        // Tự reload sau 1 giây
         setTimeout(function(){
           window.location.reload(true);
         }, 1000);
@@ -882,7 +814,6 @@ if ('serviceWorker' in navigator) {
       }
     });
 
-    // ═══ Listen controllerchange → reload ═══
     var refreshing = false;
     navigator.serviceWorker.addEventListener('controllerchange', function(){
       if (refreshing) return;
@@ -1135,61 +1066,8 @@ try {
 } catch(e){ console.warn('[Notif] Init error:', e); }
 </script>
 
-
-<!-- ════════ ENHANCED LANDING ════════ -->
+<!-- ════════ HALONG CLOCK ════════ -->
 <script>
-(function(){
-  'use strict';
-  function initParticles(){
-    const landing = document.getElementById('landing');
-    if (!landing) return;
-    const isMobile = window.innerWidth < 768;
-    const count = isMobile ? 12 : 22;
-    for (let i = 0; i < count; i++){
-      const p = document.createElement('div');
-      p.className = 'particle';
-      const size = 4 + Math.random() * 8;
-      p.style.cssText = 'width:'+size+'px;height:'+size+'px;left:'+(Math.random()*100)+'%;top:'+(70+Math.random()*30)+'%;animation-duration:'+(12+Math.random()*10)+'s;animation-delay:-'+(Math.random()*15)+'s;opacity:'+(0.3+Math.random()*0.5);
-      landing.appendChild(p);
-    }
-  }
-  function updateTimeBackground(){
-    const landing = document.getElementById('landing');
-    if (!landing) return;
-    try {
-      const vnTime = new Intl.DateTimeFormat('en-US', { timeZone:'Asia/Ho_Chi_Minh', hour12:false, hour:'2-digit' }).format(new Date());
-      const h = parseInt(vnTime, 10);
-      landing.classList.remove('time-morning','time-day','time-evening','time-night');
-      if (h >= 5 && h < 9) landing.classList.add('time-morning');
-      else if (h >= 9 && h < 16) landing.classList.add('time-day');
-      else if (h >= 16 && h < 19) landing.classList.add('time-evening');
-      else landing.classList.add('time-night');
-    } catch(e){}
-  }
-  function enhanceSun(){
-    const sunGroup = document.querySelector('.sun');
-    if (!sunGroup || sunGroup.dataset.enhanced === '1') return;
-    sunGroup.dataset.enhanced = '1';
-    const halo = document.createElementNS('http://www.w3.org/2000/svg','circle');
-    halo.setAttribute('cx','1100');
-    halo.setAttribute('cy','250');
-    halo.setAttribute('r','250');
-    halo.setAttribute('fill','url(#sunCorona)');
-    halo.setAttribute('opacity','0.6');
-    halo.setAttribute('class','sun-halo-2');
-    sunGroup.insertBefore(halo, sunGroup.firstChild);
-  }
-  function init(){
-  initParticles();
-  enhanceSun();
-  updateTimeBackground();
-  initHalongClock();   // ← THÊM DÒNG NÀY
-  setInterval(updateTimeBackground, 60000);
-}
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', () => setTimeout(init, 500));
-  } else { setTimeout(init, 500); }
-})();
 function initHalongClock(){
   var elH = document.getElementById('hclockH');
   var elM = document.getElementById('hclockM');
@@ -1197,7 +1075,6 @@ function initHalongClock(){
   var elDate = document.getElementById('hclockDate');
   if (!elH || !elM || !elS || !elDate) return;
 
-  var DOW_VN = ['Chủ Nhật','Thứ Hai','Thứ Ba','Thứ Tư','Thứ Năm','Thứ Sáu','Thứ Bảy'];
   var fmtTime = new Intl.DateTimeFormat('en-GB', {
     timeZone:'Asia/Ho_Chi_Minh',
     hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
@@ -1228,7 +1105,6 @@ function initHalongClock(){
       if (p.type === 'year') y = p.value;
       if (p.type === 'weekday') dow = p.value;
     });
-    // Map weekday EN → VN
     var map = { Sun:'Chủ Nhật', Mon:'Thứ Hai', Tue:'Thứ Ba', Wed:'Thứ Tư',
                 Thu:'Thứ Năm', Fri:'Thứ Sáu', Sat:'Thứ Bảy' };
     var dowVN = map[dow] || dow;
@@ -1238,6 +1114,13 @@ function initHalongClock(){
   tick();
   setInterval(tick, 1000);
 }
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(initHalongClock, 200); });
+} else {
+  setTimeout(initHalongClock, 200);
+}
 </script>
+
 </body>
 </html>

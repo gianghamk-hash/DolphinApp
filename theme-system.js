@@ -1,7 +1,7 @@
 /* ============================================================
-   THEME SYSTEM v5.1 — FINAL
-   - Đổi màu + hình dáng cho cả landing VÀ app con
-   - Không particle, không canvas, không aurora
+   THEME SYSTEM v6 — BIG ANIMATED ICON
+   - Big theme icon ở lớp nền (chỉ trên landing)
+   - 15 theme × 15 icon × 15 animation riêng
    - Sync theme sang iframe qua URL + localStorage
    ============================================================ */
 (function(){
@@ -14,6 +14,9 @@
   };
   var LS_THEME_KEY = 'dolphin_theme';
 
+  /* ============================================================
+     THEME DEFINITIONS
+     ============================================================ */
   var THEMES = {
     default: {
       name:'Dolphin', badge:'DOLPHIN', icon:'🕐', loc:'📍', ann:'📢',
@@ -39,12 +42,12 @@
       ranges:[[2,10],[2,15]]
     },
     womenday: {
-      name:'Quốc Tế Phụ Nữ', badge:'8/3', icon:'🌷', loc:'🌹', ann:'🌷',
+      name:'Quốc Tế Phụ Nữ', badge:'20/10', icon:'🌷', loc:'🌹', ann:'🌷',
       border:'rgba(217,70,166,.80)', borderSoft:'rgba(217,70,166,.28)',
       glow:'rgba(217,70,166,.32)', accent:'#FFC1E3', accent2:'#FFE0F0',
       bg1:'#3a1030', bg2:'#1a0515',
       radius: '100px 22px 100px 22px',
-      ranges:[[3,5],[3,10]]
+      ranges:[[3,5],[3,10],[10,15],[10,25]]
     },
     reunification: {
       name:'30/4', badge:'30/4', icon:'⭐', loc:'🇻🇳', ann:'⭐',
@@ -136,6 +139,28 @@
     }
   };
 
+  /* ============================================================
+     BIG BACKGROUND ICON — PER THEME
+     ============================================================ */
+  var BIG_ICONS = {
+    /*  theme         emoji  animation       dur    opacity  scale  */
+    default:        { e:'🐬', a:'bgi-float',   d:'7s',  o:0.16,  s:1.0  },
+    tet:            { e:'🧧', a:'bgi-swing',   d:'4s',  o:0.30,  s:1.0  },
+    valentine:      { e:'💖', a:'bgi-beat',    d:'1.6s',o:0.32,  s:1.0  },
+    womenday:       { e:'💐', a:'bgi-glow',    d:'2.5s',o:0.32,  s:1.0  },
+    reunification:  { e:'🇻🇳', a:'bgi-wave',    d:'3s',  o:0.40,  s:1.25 },
+    children:       { e:'🎈', a:'bgi-float',   d:'4s',  o:0.30,  s:1.0  },
+    nationalday:    { e:'🇻🇳', a:'bgi-wave',    d:'3s',  o:0.40,  s:1.25 },
+    midautumn:      { e:'🏮', a:'bgi-swing',   d:'3.5s',o:0.34,  s:1.0  },
+    halloween:      { e:'👻', a:'bgi-flicker', d:'3s',  o:0.42,  s:1.0  },
+    christmas:      { e:'🎄', a:'bgi-glow',    d:'3s',  o:0.34,  s:1.0  },
+    newyear:        { e:'🎆', a:'bgi-pulse',   d:'2s',  o:0.42,  s:1.0  },
+    spring:         { e:'🌸', a:'bgi-sway',    d:'5s',  o:0.28,  s:1.0  },
+    summer:         { e:'☀️', a:'bgi-rotate',  d:'30s', o:0.28,  s:1.0  },
+    autumn:         { e:'🍁', a:'bgi-fall',    d:'6s',  o:0.34,  s:1.0  },
+    winter:         { e:'❄️', a:'bgi-rotate',  d:'25s', o:0.28,  s:1.0  }
+  };
+
   var state = { currentTheme:'default', unsubscribe:null, app:null, urlParam:null };
 
   /* ============== DATE ============== */
@@ -197,6 +222,121 @@
       '  transition: background var(--theme-trans) !important;',
       '}',
       '#landing{ background: transparent !important; }',
+
+      /* ============================================================
+         BIG BACKGROUND ICON
+         ============================================================ */
+      '#themeBigIcon{',
+      '  position: fixed;',
+      '  inset: 0;',
+      '  pointer-events: none;',
+      '  z-index: 1;',                 /* trên body bg, dưới #landing (z50) */
+      '  display: flex;',
+      '  align-items: center;',
+      '  justify-content: center;',
+      '  overflow: hidden;',
+      '  opacity: 0;',
+      '  transition: opacity 1.2s ease;',
+      '  will-change: opacity;',
+      '}',
+      '#themeBigIcon.show{ opacity: 1; }',
+
+      '#themeBigIcon .tbi-emoji{',
+      '  font-size: clamp(220px, 55vw, 700px);',
+      '  line-height: 1;',
+      '  user-select: none;',
+      '  -webkit-user-select: none;',
+      '  display: block;',
+      '  transform-origin: center;',
+      '  filter: drop-shadow(0 0 60px currentColor);',
+      '  will-change: transform, opacity;',
+      '  backface-visibility: hidden;',
+      '  -webkit-backface-visibility: hidden;',
+      '}',
+      '#themeBigIcon .tbi-emoji.flag{',
+      '  font-size: clamp(260px, 70vw, 900px);',
+      '  transform: scaleY(0.72);',
+      '}',
+
+      /* Animation: bay lơ lửng */
+      '@keyframes bgi-float{',
+      '  0%,100%{ transform: translateY(0) }',
+      '  50%    { transform: translateY(-40px) }',
+      '}',
+
+      /* Animation: đung đưa */
+      '@keyframes bgi-swing{',
+      '  0%,100%{ transform: rotate(-8deg) }',
+      '  50%    { transform: rotate(8deg) }',
+      '}',
+
+      /* Animation: nhịp tim */
+      '@keyframes bgi-beat{',
+      '  0%,100%{ transform: scale(1) }',
+      '  15%    { transform: scale(1.12) }',
+      '  30%    { transform: scale(1) }',
+      '  45%    { transform: scale(1.08) }',
+      '  60%    { transform: scale(1) }',
+      '}',
+
+      /* Animation: lấp lánh (glow) */
+      '@keyframes bgi-glow{',
+      '  0%,100%{ filter: drop-shadow(0 0 40px currentColor) brightness(0.85); opacity: 0.6 }',
+      '  50%    { filter: drop-shadow(0 0 120px currentColor) drop-shadow(0 0 220px currentColor) brightness(1.15); opacity: 1 }',
+      '}',
+
+      /* Animation: vẫy cờ */
+      '@keyframes bgi-wave{',
+      '  0%  { transform: skewY(0deg)   rotate(0deg)   }',
+      '  25% { transform: skewY(3deg)   rotate(-2deg)  }',
+      '  50% { transform: skewY(0deg)   rotate(0deg)   }',
+      '  75% { transform: skewY(-3deg)  rotate(2deg)   }',
+      '  100%{ transform: skewY(0deg)   rotate(0deg)   }',
+      '}',
+
+      /* Animation: ma ẩn hiện */
+      '@keyframes bgi-flicker{',
+      '  0%,100%{ opacity: 0.75; transform: translateY(0)   }',
+      '  10%    { opacity: 0.25; transform: translateY(-10px)}',
+      '  20%    { opacity: 0.95; transform: translateY(0)   }',
+      '  30%    { opacity: 0.40; transform: translateY(-6px)}',
+      '  40%    { opacity: 1;    transform: translateY(0)   }',
+      '  50%    { opacity: 0.35; transform: translateY(-14px)}',
+      '  60%    { opacity: 0.90; transform: translateY(0)   }',
+      '  70%    { opacity: 0.30; transform: translateY(-8px)}',
+      '  80%    { opacity: 0.95; transform: translateY(0)   }',
+      '  90%    { opacity: 0.55; transform: translateY(-4px)}',
+      '}',
+
+      /* Animation: phồng xẹp (pháo hoa) */
+      '@keyframes bgi-pulse{',
+      '  0%,100%{ transform: scale(0.9); opacity: 0.5 }',
+      '  50%    { transform: scale(1.15); opacity: 1 }',
+      '}',
+
+      /* Animation: nghiêng qua lại */
+      '@keyframes bgi-sway{',
+      '  0%,100%{ transform: rotate(-15deg) translateX(-20px) }',
+      '  50%    { transform: rotate(15deg)  translateX(20px)  }',
+      '}',
+
+      /* Animation: xoay chậm */
+      '@keyframes bgi-rotate{',
+      '  0%  { transform: rotate(0deg) }',
+      '  100%{ transform: rotate(360deg) }',
+      '}',
+
+      /* Animation: rơi (lá) */
+      '@keyframes bgi-fall{',
+      '  0%  { transform: translateY(-18vh) rotate(0deg);    opacity: 0.4 }',
+      '  50% { opacity: 1 }',
+      '  100%{ transform: translateY(18vh)  rotate(360deg);  opacity: 0.4 }',
+      '}',
+
+      /* Reduce motion */
+      '@media (prefers-reduced-motion: reduce){',
+      '  #themeBigIcon .tbi-emoji{ animation-duration: 0s !important; animation: none !important; }',
+      '}',
 
       /* ==== LANDING: ĐỒNG HỒ ==== */
       '#halongClock{',
@@ -284,8 +424,7 @@
       '#themeBadge .tb-icon{ font-size:14px; }',
       'body.app-mode #themeBadge{ display:none !important; }',
 
-      /* ==== APP CON: đổi hình dáng khung ==== */
-      /* Áp cho các container phổ biến trong 3 app */
+      /* ==== APP CON: đổi hình dáng ==== */
       'body[data-theme]:not([data-theme="default"]) .glass-card,',
       'body[data-theme]:not([data-theme="default"]) .menu-card,',
       'body[data-theme]:not([data-theme="default"]) .order-card,',
@@ -300,15 +439,6 @@
       '              border-radius .9s cubic-bezier(.16,1,.3,1) !important;',
       '}',
 
-      /* Đảm bảo các biến động được ăn vào app con */
-      'body[data-theme]:not([data-theme="default"]) .icon-badge{',
-      '  border-color: var(--theme-border-soft) !important;',
-      '  transition: border-color var(--theme-trans) !important;',
-      '}',
-      'body[data-theme]:not([data-theme="default"]) .state-chip{',
-      '  transition: color var(--theme-trans), background var(--theme-trans), border-color var(--theme-trans) !important;',
-      '}',
-
       '@media(max-width:768px){',
       '  #themeBadge{ font-size:9.5px; padding:4px 9px; top:6px; left:6px; }',
       '  #themeBadge .tb-icon{ font-size:12px; }',
@@ -317,7 +447,48 @@
     document.head.appendChild(s);
   }
 
-  /* ============== APPLY ============== */
+  /* ============== BIG ICON ============== */
+  function hasLanding(){
+    return !!document.getElementById('landing');
+  }
+
+  function ensureBigIcon(){
+    if (!hasLanding()) return null;
+    var el = document.getElementById('themeBigIcon');
+    if (el) return el;
+    el = document.createElement('div');
+    el.id = 'themeBigIcon';
+    el.innerHTML = '<span class="tbi-emoji" aria-hidden="true"></span>';
+    document.body.appendChild(el);
+    return el;
+  }
+
+  function applyBigIcon(themeKey, accentColor){
+    var el = ensureBigIcon();
+    if (!el) return;
+
+    var cfg = BIG_ICONS[themeKey] || BIG_ICONS.default;
+    var emojiEl = el.querySelector('.tbi-emoji');
+    if (!emojiEl) return;
+
+    emojiEl.textContent = cfg.e;
+    emojiEl.style.color = accentColor;
+    emojiEl.style.opacity = cfg.o;
+    emojiEl.style.filter = 'drop-shadow(0 0 60px ' + accentColor + ')';
+
+    /* Flag emoji cần scale */
+    var isFlag = (cfg.e === '🇻🇳' || /[\u{1F1E6}-\u{1F1FF}]{2}/u.test(cfg.e));
+    emojiEl.classList.toggle('flag', isFlag);
+
+    /* Reset animation + apply */
+    emojiEl.style.animation = 'none';
+    void emojiEl.offsetWidth;
+    emojiEl.style.animation = cfg.a + ' ' + cfg.d + ' ease-in-out infinite';
+
+    el.classList.add('show');
+  }
+
+  /* ============== APPLY THEME ============== */
   function applyTheme(key){
     var t = THEMES[key] || THEMES.default;
     state.currentTheme = (key in THEMES) ? key : 'default';
@@ -342,12 +513,15 @@
     var ai = document.querySelector('#announcementBar .announcement-icon');
     if (ai && t.ann) ai.textContent = t.ann;
 
-    /* Áp border-radius động cho landing area-cards */
+    /* Áp border-radius động cho area-cards */
     document.querySelectorAll('.area-card').forEach(function(card){
       card.style.borderRadius = t.radius || '22px';
     });
 
-    /* Lưu localStorage để iframe đọc */
+    /* BIG ICON — chỉ chạy trên landing */
+    applyBigIcon(state.currentTheme, t.accent);
+
+    /* Lưu localStorage */
     try { localStorage.setItem(LS_THEME_KEY, state.currentTheme); } catch(e){}
 
     /* Broadcast cho iframe */
@@ -370,9 +544,8 @@
     b.classList.add('show');
   }
 
-  /* ============== FIREBASE (chỉ parent) ============== */
+  /* ============== FIREBASE ============== */
   function fetchThemeFromFirebase(){
-    /* Nếu đang trong iframe (có URL theme) thì BỎ QUA Firebase để tránh conflict */
     if (state.urlParam) return;
 
     Promise.all([
@@ -424,14 +597,14 @@
       state.urlParam = urlTheme;
       applyTheme(urlTheme);
     } else {
-      /* 2. localStorage (parent đã ghi) */
+      /* 2. localStorage */
       var saved = null;
       try { saved = localStorage.getItem(LS_THEME_KEY); } catch(e){}
       if (saved && THEMES[saved]) applyTheme(saved);
       else applyTheme(detectThemeByDate());
     }
 
-    /* 3. Lắng nghe thay đổi realtime */
+    /* 3. Lắng nghe thay đổi realtime (tab khác) */
     try {
       window.addEventListener('storage', function(e){
         if (e.key === LS_THEME_KEY && THEMES[e.newValue]) applyTheme(e.newValue);
@@ -449,10 +622,15 @@
 
     /* 4. Parent nghe Firestore */
     fetchThemeFromFirebase();
+
+    /* 5. Retry: nếu #landing xuất hiện muộn → thêm icon */
+    if (hasLanding() && !document.getElementById('themeBigIcon')){
+      applyBigIcon(state.currentTheme, THEMES[state.currentTheme].accent);
+    }
   }
 
   window.ThemeSystem = {
-    version:    '5.1',
+    version:    '6.0',
     setTheme:   function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },
@@ -464,6 +642,6 @@
     document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  console.log('%c🎨 THEME SYSTEM v5.1 FINAL LOADED',
+  console.log('%c🎨 THEME SYSTEM v6 BIG-ICON LOADED',
     'background:linear-gradient(90deg,#FFD700,#FF1493);color:#fff;font-size:12px;padding:4px 10px;border-radius:4px;font-weight:900');
 })();

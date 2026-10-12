@@ -1,8 +1,8 @@
 /* ============================================================
-   THEME SYSTEM v4 — MINIMAL BUILD
-   - Chỉ dùng CSS variables
+   THEME SYSTEM v4.1 — MINIMAL + SHAPES
+   - Border-radius đổi theo theme (15 shapes)
    - Không particle, không canvas, không aurora
-   - Trang trí viền + góc card theo theme
+   - Chỉ CSS variables + border-radius động
    ============================================================ */
 (function(){
   'use strict';
@@ -13,7 +13,6 @@
     projectId: "dolphin-f6d67"
   };
 
-  /* Mỗi theme: colors + emoji + corner + range */
   var THEMES = {
     default: {
       name: 'Dolphin', badge: 'DOLPHIN',
@@ -25,6 +24,7 @@
       accent:      '#FBD77A',
       accent2:     '#bfe9dc',
       bg1: '#0f3d38', bg2: '#0a2b28',
+      shape: '22px',
       ranges: null
     },
     tet: {
@@ -37,6 +37,7 @@
       accent:      '#FFD166',
       accent2:     '#FFC1B0',
       bg1: '#3a0e0e', bg2: '#1a0505',
+      shape: '4px 4px 60px 60px / 4px 4px 45px 45px',
       ranges: [[1,15],[2,20]]
     },
     valentine: {
@@ -49,6 +50,7 @@
       accent:      '#FFB3C6',
       accent2:     '#FFD1DC',
       bg1: '#3a0a1a', bg2: '#1a0508',
+      shape: '60% 60% 22px 22px / 45% 45% 22px 22px',
       ranges: [[2,10],[2,15]]
     },
     womenday: {
@@ -61,6 +63,7 @@
       accent:      '#FFC1E3',
       accent2:     '#FFE0F0',
       bg1: '#3a1030', bg2: '#1a0515',
+      shape: '100px 22px 100px 22px',
       ranges: [[3,5],[3,10]]
     },
     reunification: {
@@ -73,6 +76,7 @@
       accent:      '#FFD700',
       accent2:     '#FFECB3',
       bg1: '#2a0505', bg2: '#0a0202',
+      shape: '2px 40px 2px 40px',
       ranges: [[4,28],[5,3]]
     },
     children: {
@@ -85,6 +89,7 @@
       accent:      '#FFD1DC',
       accent2:     '#B5EAD7',
       bg1: '#0e1e3a', bg2: '#050a1a',
+      shape: '50% 50% 50% 50% / 60% 60% 40% 40%',
       ranges: [[5,25],[6,5]]
     },
     nationalday: {
@@ -97,6 +102,7 @@
       accent:      '#FFD700',
       accent2:     '#FFF4B0',
       bg1: '#2a0505', bg2: '#0a0202',
+      shape: '2px 40px 2px 40px',
       ranges: [[8,30],[9,3]]
     },
     midautumn: {
@@ -109,6 +115,7 @@
       accent:      '#FFE8A0',
       accent2:     '#FFD1DC',
       bg1: '#2a0e2a', bg2: '#0a0310',
+      shape: '70px 70px 22px 22px',
       ranges: [[9,10],[10,5]]
     },
     halloween: {
@@ -121,6 +128,7 @@
       accent:      '#FFB84D',
       accent2:     '#B388FF',
       bg1: '#1a0a2a', bg2: '#050108',
+      shape: '60px 60px 60px 60px / 80px 80px 40px 40px',
       ranges: [[10,25],[11,1]]
     },
     christmas: {
@@ -133,6 +141,7 @@
       accent:      '#FFE8A0',
       accent2:     '#B8E8C8',
       bg1: '#0a1a2e', bg2: '#050a14',
+      shape: '8px 8px 80px 80px / 8px 8px 60px 60px',
       ranges: [[12,15],[12,26]]
     },
     newyear: {
@@ -145,6 +154,7 @@
       accent:      '#FFD700',
       accent2:     '#E0B0FF',
       bg1: '#1a0a3a', bg2: '#050110',
+      shape: '60px',
       ranges: [[12,29],[1,2]]
     },
     spring: {
@@ -157,6 +167,7 @@
       accent:      '#FFD1DC',
       accent2:     '#B5EAD7',
       bg1: '#1a2a1a', bg2: '#0a140a',
+      shape: '70px 70px 22px 22px',
       months: [3,4,5]
     },
     summer: {
@@ -169,6 +180,7 @@
       accent:      '#FFE58F',
       accent2:     '#A0E8E0',
       bg1: '#0a1a3a', bg2: '#030814',
+      shape: '22px 22px 50% 50% / 22px 22px 60% 60%',
       months: [6,7,8]
     },
     autumn: {
@@ -181,6 +193,7 @@
       accent:      '#FFD1A0',
       accent2:     '#FFB87A',
       bg1: '#2a1505', bg2: '#0a0502',
+      shape: '22px 100px 22px 100px',
       months: [9,10,11]
     },
     winter: {
@@ -193,6 +206,7 @@
       accent:      '#E0F0FF',
       accent2:     '#B8D8F0',
       bg1: '#0a1428', bg2: '#03060f',
+      shape: '60px 6px 60px 6px',
       months: [12,1,2]
     }
   };
@@ -251,7 +265,7 @@
     var s = document.createElement('style');
     s.id = 'theme-styles';
     s.textContent = [
-      /* CSS Variables — mọi thứ theme đều đi qua đây */
+      /* CSS Variables */
       ':root{',
       '  --theme-border: rgba(244,184,66,.55);',
       '  --theme-border-soft: rgba(244,184,66,.22);',
@@ -260,6 +274,7 @@
       '  --theme-accent2: #bfe9dc;',
       '  --theme-bg1: #0f3d38;',
       '  --theme-bg2: #0a2b28;',
+      '  --theme-shape: 22px;',
       '  --theme-trans: 1s ease;',
       '}',
 
@@ -270,7 +285,7 @@
       '}',
       '#landing{ background: transparent !important; }',
 
-      /* ==== ĐỒNG HỒ — viền + glow + chữ ==== */
+      /* ==== ĐỒNG HỒ ==== */
       '#halongClock{',
       '  border-color: var(--theme-border) !important;',
       '  box-shadow: 0 8px 32px rgba(0,0,0,.5),',
@@ -298,12 +313,18 @@
       '  transition: border-color var(--theme-trans) !important;',
       '}',
 
-      /* ==== AREA CARDS — viền + hover ==== */
+      /* ==== AREA CARDS — viền + hình dáng + hover ==== */
       '.area-card{',
       '  border-color: var(--theme-border-soft) !important;',
+      '  border-width: 2px !important;',
+      '  border-radius: var(--theme-shape) !important;',
       '  transition: border-color var(--theme-trans),',
+      '              border-radius .7s cubic-bezier(.16,1,.3,1),',
       '              transform .45s cubic-bezier(.16,1,.3,1),',
       '              box-shadow .45s ease !important;',
+      '}',
+      '.area-card::before{',
+      '  border-radius: inherit !important;',
       '}',
       '.area-card:hover{',
       '  border-color: var(--theme-border) !important;',
@@ -331,7 +352,7 @@
       '  transition: background var(--theme-trans) !important;',
       '}',
 
-      /* ==== ANNOUNCEMENT BAR ==== */
+      /* ==== ANNOUNCEMENT ==== */
       '#announcementBar{',
       '  border-color: var(--theme-border) !important;',
       '  box-shadow: 0 6px 28px var(--theme-glow),',
@@ -343,11 +364,11 @@
       '  transition: color var(--theme-trans) !important;',
       '}',
 
-      /* ==== WELCOME LABEL ==== */
+      /* ==== WELCOME ==== */
       '.welcome-lbl .wlc-vi{ color: var(--theme-accent) !important; transition: color var(--theme-trans); }',
       '.welcome-lbl .wlc-en{ color: var(--theme-accent2) !important; transition: color var(--theme-trans); }',
 
-      /* ==== CORNER DECORATION TRÊN CARD ==== */
+      /* ==== CORNER DECORATION ==== */
       '.theme-corner{',
       '  position: absolute;',
       '  font-size: 18px;',
@@ -361,6 +382,23 @@
       '.theme-corner-tl{ top: 10px; left: 12px; }',
       '.theme-corner-br{ bottom: 10px; right: 12px; }',
       '.area-card:hover .theme-corner{ opacity: 1; transform: scale(1.15); }',
+
+      /* ==== HÌNH DÁNG RIÊNG THEO TỪNG THEME ==== */
+      'body[data-theme="default"]      .area-card { border-radius: 22px !important; }',
+      'body[data-theme="tet"]          .area-card { border-radius: 4px 4px 60px 60px / 4px 4px 45px 45px !important; }',
+      'body[data-theme="valentine"]    .area-card { border-radius: 60% 60% 22px 22px / 45% 45% 22px 22px !important; }',
+      'body[data-theme="womenday"]     .area-card { border-radius: 100px 22px 100px 22px !important; }',
+      'body[data-theme="reunification"].area-card { border-radius: 2px 40px 2px 40px !important; }',
+      'body[data-theme="children"]     .area-card { border-radius: 50% 50% 50% 50% / 60% 60% 40% 40% !important; }',
+      'body[data-theme="nationalday"]  .area-card { border-radius: 2px 40px 2px 40px !important; }',
+      'body[data-theme="midautumn"]    .area-card { border-radius: 70px 70px 22px 22px !important; }',
+      'body[data-theme="halloween"]    .area-card { border-radius: 60px 60px 60px 60px / 80px 80px 40px 40px !important; }',
+      'body[data-theme="christmas"]    .area-card { border-radius: 8px 8px 80px 80px / 8px 8px 60px 60px !important; }',
+      'body[data-theme="newyear"]      .area-card { border-radius: 60px !important; }',
+      'body[data-theme="spring"]       .area-card { border-radius: 70px 70px 22px 22px !important; }',
+      'body[data-theme="summer"]       .area-card { border-radius: 22px 22px 50% 50% / 22px 22px 60% 60% !important; }',
+      'body[data-theme="autumn"]       .area-card { border-radius: 22px 100px 22px 100px !important; }',
+      'body[data-theme="winter"]       .area-card { border-radius: 60px 6px 60px 6px !important; }',
 
       /* ==== THEME BADGE ==== */
       '#themeBadge{',
@@ -404,6 +442,7 @@
     root.style.setProperty('--theme-accent2',     t.accent2);
     root.style.setProperty('--theme-bg1',         t.bg1);
     root.style.setProperty('--theme-bg2',         t.bg2);
+    root.style.setProperty('--theme-shape',       t.shape || '22px');
 
     document.body.setAttribute('data-theme', state.currentTheme);
 
@@ -507,6 +546,7 @@
   }
 
   window.ThemeSystem = {
+    version:    '4.1',
     setTheme:   function(key){ applyTheme(key); },
     getCurrent: function(){ return state.currentTheme; },
     listThemes: function(){ return Object.keys(THEMES); },
@@ -518,6 +558,6 @@
     document.addEventListener('DOMContentLoaded', init);
   else init();
 
-  console.log('%c🎨 THEME SYSTEM v4 MINIMAL LOADED',
+  console.log('%c🎨 THEME SYSTEM v4.1 MINIMAL+SHAPES LOADED',
     'background:linear-gradient(90deg,#FFD700,#FF1493);color:#fff;font-size:12px;padding:4px 10px;border-radius:4px;font-weight:900');
 })();

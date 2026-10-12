@@ -1,6 +1,6 @@
 {
-  "version": "2.6.5",
-  "buildDate": "2026-10-11T00:00:00Z",
+  "version": "3.0.0",
+  "buildDate": "2026-10-12T00:00:00Z",
   "commit": "manual-sync-20261011",
   "notes": "Fix service worker network-first + remove chat",
   "forceUpdate": false

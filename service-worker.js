@@ -27,6 +27,8 @@ const CACHE_URLS = [
   BASE + '/theme-system.js',
   BASE + '/avatar-system.js',
   BASE + '/logo-dolphin.png',
+  BASE + '/sw-config.json',   // ← Thêm để có fallback offline
+];
 ];
 
 async function loadConfig(){

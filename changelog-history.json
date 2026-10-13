@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.0",
+      "releaseDate": "2026-10-13T02:38:13.141Z",
+      "summary": "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG",
+      "details": [
+        "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG"
+      ]
+    },
+    {
       "version": "5.1",
       "releaseDate": "2026-10-13T00:00:00Z",
       "summary": "Fix lỗi Service Worker + đồng bộ version",

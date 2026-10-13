@@ -1,22 +1,22 @@
 {
-  "version": "1.0.0",
-  "previousVersion": "5.1",
-  "commit": "b72c4bd",
-  "previousCommit": "sw-fix-20261013",
-  "buildDate": "2026-10-13T02:38:13.141Z",
-  "summary": "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG",
+  "version": "1.0.1",
+  "previousVersion": "1.0.0",
+  "commit": "3c46555",
+  "previousCommit": "b72c4bd",
+  "buildDate": "2026-10-13T03:36:28.063Z",
+  "summary": "NÂNG CẤP LÊN GÓI HIỆU ỨNG 7.1 BỐ ĐỜI",
   "changes": {
-    "totalCommits": 4,
+    "totalCommits": 5,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG"
+    "NÂNG CẤP LÊN GÓI HIỆU ỨNG 7.1 BỐ ĐỜI"
   ],
   "fileChanges": [
     {
-      "file": "service-worker.js",
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

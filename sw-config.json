@@ -1,5 +1,5 @@
 {
-  "version": "5.0",
-  "releaseDate": "2026-10-12",
-  "notes": "Firework animation cho Tết Dương Lịch, fix iOS PWA big icon"
+  "version": "5.1",
+  "releaseDate": "2026-10-13",
+  "notes": "Fix service worker, đồng bộ version"
 }

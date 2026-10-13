@@ -1,0 +1,105 @@
+name: Auto Bump Version
+
+# Chỉ chạy khi push lên main với commit message chứa [bump] hoặc [release]
+on:
+  push:
+    branches: [ main, master ]
+    # Hoặc dùng paths để trigger khi sửa file cụ thể
+    # paths:
+    #   - 'index.html'
+    #   - 'theme-system.js'
+    #   - 'dolphin-*.html'
+
+# Chỉ chạy 1 lần, không loop
+concurrency:
+  group: auto-bump-${{ github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  bump:
+    # Bỏ qua nếu commit được tạo bởi chính Actions (tránh loop vô hạn)
+    if: |
+      !contains(github.event.head_commit.message, '[skip ci]') &&
+      !contains(github.event.head_commit.author.name, 'github-actions') &&
+      (contains(github.event.head_commit.message, '[bump]') ||
+       contains(github.event.head_commit.message, '[release]'))
+
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: 📥 Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+          token: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: 🔧 Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: 🐬 Detect bump type
+        id: detect
+        run: |
+          MSG="${{ github.event.head_commit.message }}"
+          if echo "$MSG" | grep -q "\[release\]"; then
+            echo "type=major" >> $GITHUB_OUTPUT
+            echo "Detected: MAJOR bump"
+          elif echo "$MSG" | grep -q "\[bump-minor\]"; then
+            echo "type=minor" >> $GITHUB_OUTPUT
+            echo "Detected: MINOR bump"
+          else
+            echo "type=patch" >> $GITHUB_OUTPUT
+            echo "Detected: PATCH bump (default)"
+          fi
+
+      - name: 🔍 Extract note from commit message
+        id: note
+        run: |
+          MSG="${{ github.event.head_commit.message }}"
+          # Lấy dòng đầu của commit message
+          NOTE=$(echo "$MSG" | head -n 1 | sed 's/\[bump\]//g' | sed 's/\[release\]//g' | sed 's/\[bump-minor\]//g' | xargs)
+          if [ -z "$NOTE" ]; then
+            NOTE="Auto update from GitHub Actions"
+          fi
+          echo "note=$NOTE" >> $GITHUB_OUTPUT
+          echo "Commit note: $NOTE"
+
+      - name: ⚙️ Configure Git
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+
+      - name: 🚀 Run bump-version.js
+        run: |
+          node bump-version.js ${{ steps.detect.outputs.type }} "${{ steps.note.outputs.note }}"
+
+      - name: 📊 Show changes
+        run: |
+          echo "=== Git diff summary ==="
+          git diff --stat
+
+      - name: 💾 Commit changes
+        run: |
+          git add -A
+          if git diff --staged --quiet; then
+            echo "No changes to commit"
+            exit 0
+          fi
+          git commit -m "🤖 Auto bump version [skip ci]"
+
+      - name: 📤 Push changes
+        run: |
+          git push origin HEAD:${{ github.ref_name }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: ✅ Summary
+        run: |
+          echo "### 🎉 Bump thành công!" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "- Type: \`${{ steps.detect.outputs.type }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Note: \`${{ steps.note.outputs.note }}\`" >> $GITHUB_STEP_SUMMARY
+          echo "- Commit: \`${{ github.sha }}\`" >> $GITHUB_STEP_SUMMARY

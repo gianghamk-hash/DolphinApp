@@ -1,22 +1,38 @@
 {
-  "version": "1.0.3",
-  "previousVersion": "1.0.2",
-  "commit": "65321b3",
-  "previousCommit": "33aaf9a",
-  "buildDate": "2026-10-13T06:56:53.329Z",
-  "summary": "Tạo folder sounds ● Commit directly to the main branch ○ Create a new branch... [Commit new file]",
+  "version": "1.0.4",
+  "previousVersion": "1.0.3",
+  "commit": "1f8b463",
+  "previousCommit": "65321b3",
+  "buildDate": "2026-10-13T06:57:53.960Z",
+  "summary": "Thêm 5 file nhạc theme",
   "changes": {
-    "totalCommits": 7,
-    "filesChanged": 1,
+    "totalCommits": 8,
+    "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Tạo folder sounds ● Commit directly to the main branch ○ Create a new branch... [Commit new file]"
+    "Thêm 5 file nhạc theme"
   ],
   "fileChanges": [
     {
-      "file": "sounds/.gitkeep",
+      "file": "sounds/soundscape-christmas.mp3",
+      "type": "update"
+    },
+    {
+      "file": "sounds/soundscape-halloween.mp3",
+      "type": "update"
+    },
+    {
+      "file": "sounds/soundscape-newyear.mp3",
+      "type": "update"
+    },
+    {
+      "file": "sounds/soundscape-tet.mp3",
+      "type": "update"
+    },
+    {
+      "file": "sounds/soundscape-valentine.mp3",
       "type": "update"
     }
   ]

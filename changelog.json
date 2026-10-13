@@ -1,16 +1,25 @@
 {
-  "version": "2.6.3",
-  "previousVersion": null,
-  "commit": "initial",
-  "previousCommit": "",
-  "buildDate": "2026-10-10T00:00:00Z",
-  "summary": "Phiên bản đầu tiên",
+  "version": "5.1",
+  "previousVersion": "5.0",
+  "commit": "sw-fix-20261013",
+  "previousCommit": "manual-sync-20261011",
+  "buildDate": "2026-10-13T00:00:00Z",
+  "summary": "Fix lỗi Service Worker + đồng bộ version",
   "changes": {
-    "totalCommits": 0,
-    "filesChanged": 0,
-    "insertions": 0,
-    "deletions": 0
+    "totalCommits": 3,
+    "filesChanged": 5,
+    "insertions": 42,
+    "deletions": 8
   },
-  "details": [],
-  "fileChanges": []
+  "details": [
+    "Fix syntax error trong service-worker.js (dấu ; thừa)",
+    "Đồng bộ version giữa 3 file JSON (sw-config, version, changelog)",
+    "Thêm cache cho các file mới (dolphin-ui.js, dolphin-clock-extras.js, staff-online.js)"
+  ],
+  "fileChanges": [
+    { "file": "service-worker.js", "type": "fix" },
+    { "file": "sw-config.json",    "type": "update" },
+    { "file": "version.json",      "type": "update" },
+    { "file": "changelog.json",    "type": "update" }
+  ]
 }

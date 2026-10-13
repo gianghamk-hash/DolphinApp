@@ -1,18 +1,18 @@
 {
-  "version": "1.0.1",
-  "previousVersion": "1.0.0",
-  "commit": "3c46555",
-  "previousCommit": "b72c4bd",
-  "buildDate": "2026-10-13T03:36:28.063Z",
-  "summary": "NÂNG CẤP LÊN GÓI HIỆU ỨNG 7.1 BỐ ĐỜI",
+  "version": "1.0.2",
+  "previousVersion": "1.0.1",
+  "commit": "33aaf9a",
+  "previousCommit": "3c46555",
+  "buildDate": "2026-10-13T03:46:27.136Z",
+  "summary": "Nâng theme v7.2 REVOLUTIONARY",
   "changes": {
-    "totalCommits": 5,
+    "totalCommits": 6,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "NÂNG CẤP LÊN GÓI HIỆU ỨNG 7.1 BỐ ĐỜI"
+    "Nâng theme v7.2 REVOLUTIONARY"
   ],
   "fileChanges": [
     {

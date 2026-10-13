@@ -1,38 +1,22 @@
 {
-  "version": "1.0.4",
-  "previousVersion": "1.0.3",
-  "commit": "1f8b463",
-  "previousCommit": "65321b3",
-  "buildDate": "2026-10-13T06:57:53.960Z",
-  "summary": "Thêm 5 file nhạc theme",
+  "version": "1.0.5",
+  "previousVersion": "1.0.4",
+  "commit": "42cea1e",
+  "previousCommit": "1f8b463",
+  "buildDate": "2026-10-13T17:04:48.058Z",
+  "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
   "changes": {
-    "totalCommits": 8,
-    "filesChanged": 5,
+    "totalCommits": 9,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Thêm 5 file nhạc theme"
+    "Nhạc theme v2.0 — 15 file + auto fade khi vào app"
   ],
   "fileChanges": [
     {
-      "file": "sounds/soundscape-christmas.mp3",
-      "type": "update"
-    },
-    {
-      "file": "sounds/soundscape-halloween.mp3",
-      "type": "update"
-    },
-    {
-      "file": "sounds/soundscape-newyear.mp3",
-      "type": "update"
-    },
-    {
-      "file": "sounds/soundscape-tet.mp3",
-      "type": "update"
-    },
-    {
-      "file": "sounds/soundscape-valentine.mp3",
+      "file": "dolphin-soundscape.js",
       "type": "update"
     }
   ]

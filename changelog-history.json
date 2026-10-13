@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.4",
+      "releaseDate": "2026-10-13T06:57:53.960Z",
+      "summary": "Thêm 5 file nhạc theme",
+      "details": [
+        "Thêm 5 file nhạc theme"
+      ]
+    },
+    {
       "version": "1.0.3",
       "releaseDate": "2026-10-13T06:56:53.329Z",
       "summary": "Tạo folder sounds ● Commit directly to the main branch ○ Create a new branch... [Commit new file]",

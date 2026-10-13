@@ -1,7 +1,7 @@
 {
-  "version": "1.0.4",
-  "buildDate": "2026-10-13T06:57:53.960Z",
-  "commit": "1f8b463",
-  "notes": "Thêm 5 file nhạc theme",
+  "version": "1.0.5",
+  "buildDate": "2026-10-13T17:04:48.058Z",
+  "commit": "42cea1e",
+  "notes": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
   "forceUpdate": false
 }

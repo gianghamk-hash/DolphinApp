@@ -1,25 +1,23 @@
 {
-  "version": "5.1",
-  "previousVersion": "5.0",
-  "commit": "sw-fix-20261013",
-  "previousCommit": "manual-sync-20261011",
-  "buildDate": "2026-10-13T00:00:00Z",
-  "summary": "Fix lỗi Service Worker + đồng bộ version",
+  "version": "1.0.0",
+  "previousVersion": "5.1",
+  "commit": "b72c4bd",
+  "previousCommit": "sw-fix-20261013",
+  "buildDate": "2026-10-13T02:38:13.141Z",
+  "summary": "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG",
   "changes": {
-    "totalCommits": 3,
-    "filesChanged": 5,
-    "insertions": 42,
-    "deletions": 8
+    "totalCommits": 4,
+    "filesChanged": 1,
+    "insertions": 0,
+    "deletions": 0
   },
   "details": [
-    "Fix syntax error trong service-worker.js (dấu ; thừa)",
-    "Đồng bộ version giữa 3 file JSON (sw-config, version, changelog)",
-    "Thêm cache cho các file mới (dolphin-ui.js, dolphin-clock-extras.js, staff-online.js)"
+    "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG"
   ],
   "fileChanges": [
-    { "file": "service-worker.js", "type": "fix" },
-    { "file": "sw-config.json",    "type": "update" },
-    { "file": "version.json",      "type": "update" },
-    { "file": "changelog.json",    "type": "update" }
+    {
+      "file": "service-worker.js",
+      "type": "update"
+    }
   ]
 }

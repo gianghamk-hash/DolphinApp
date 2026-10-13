@@ -1,3 +1,14 @@
 {
-  "versions": []
+  "versions": [
+    {
+      "version": "5.1",
+      "releaseDate": "2026-10-13T00:00:00Z",
+      "summary": "Fix lỗi Service Worker + đồng bộ version",
+      "details": [
+        "Fix syntax error trong service-worker.js (dấu ; thừa)",
+        "Đồng bộ version giữa 3 file JSON (sw-config, version, changelog)",
+        "Thêm cache cho các file mới (dolphin-ui.js, dolphin-clock-extras.js, staff-online.js)"
+      ]
+    }
+  ]
 }

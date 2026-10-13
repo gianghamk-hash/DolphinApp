@@ -1,9 +1,10 @@
-/* BUILD: 2026-10-12-23 */
+/* BUILD: 2026-10-13-00 */
 /* ============================================================
-   🚀 DOLPHIN SERVICE WORKER v4 — Network-First cho code
+   🚀 DOLPHIN SERVICE WORKER v5 — Network-First cho code
    - HTML/JS/CSS/JSON: Network First → luôn lấy bản mới
    - Ảnh/font: Cache First → nhanh
    - Fallback cache khi offline
+   - Đọc version từ sw-config.json (single source of truth)
    ============================================================ */
 
 const BASE = '/DolphinApp';
@@ -27,9 +28,11 @@ const CACHE_URLS = [
   BASE + '/staff-sync.js',
   BASE + '/theme-system.js',
   BASE + '/avatar-system.js',
+  BASE + '/dolphin-ui.js',
+  BASE + '/dolphin-clock-extras.js',
+  BASE + '/staff-online.js',
   BASE + '/logo-dolphin.png',
-  BASE + '/sw-config.json',   // ← Thêm để có fallback offline
-];
+  BASE + '/sw-config.json'
 ];
 
 async function loadConfig(){
@@ -89,7 +92,10 @@ self.addEventListener('fetch', event => {
   if (url.origin !== self.location.origin) return;
 
   // version/config: luôn lấy mới
-  if (url.pathname.includes('version.json') || url.pathname.includes('sw-config.json')) {
+  if (url.pathname.includes('version.json') ||
+      url.pathname.includes('sw-config.json') ||
+      url.pathname.includes('changelog.json') ||
+      url.pathname.includes('changelog-history.json')) {
     event.respondWith(fetch(request, { cache: 'no-store' }));
     return;
   }
@@ -97,10 +103,10 @@ self.addEventListener('fetch', event => {
   if (!url.pathname.startsWith(BASE)) return;
 
   const isCode = /\.(html|js|css|json)$/i.test(url.pathname) ||
-                 request.headers.get('accept')?.includes('text/html');
+                 (request.headers.get('accept') || '').includes('text/html');
 
   if (isCode) {
-    // ⚡ NETWORK FIRST — luôn thử lấy bản mới, fallback cache khi offline
+    // ⚡ NETWORK FIRST
     event.respondWith(
       fetch(request)
         .then(response => {
@@ -113,7 +119,7 @@ self.addEventListener('fetch', event => {
         .catch(() => caches.match(request).then(r => r || caches.match(BASE + '/')))
     );
   } else {
-    // Ảnh/font: Cache First
+    // Cache First cho ảnh/font
     event.respondWith(
       caches.match(request).then(cached => {
         if (cached) return cached;

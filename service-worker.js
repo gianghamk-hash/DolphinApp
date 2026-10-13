@@ -3,7 +3,7 @@
    🚀 DOLPHIN SERVICE WORKER v5 — Network-First cho code
    - HTML/JS/CSS/JSON: Network First → luôn lấy bản mới
    - Ảnh/font: Cache First → nhanh
-   - Fallback cache khi offline
+   - Fallback cache khi offlinVe
    - Đọc version từ sw-config.json (single source of truth)
    ============================================================ */
 

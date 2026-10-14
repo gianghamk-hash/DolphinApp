@@ -1,22 +1,22 @@
 {
-  "version": "1.0.27",
-  "previousVersion": "1.0.26",
-  "commit": "0234d7e",
-  "previousCommit": "d2dffa1",
-  "buildDate": "2026-10-14T15:34:48.054Z",
-  "summary": "Manager Dashboard: thêm Note + Reminder vào Settings",
+  "version": "1.0.28",
+  "previousVersion": "1.0.27",
+  "commit": "e314be0",
+  "previousCommit": "0234d7e",
+  "buildDate": "2026-10-14T15:49:25.117Z",
+  "summary": "Landing: Reminder watcher + popup đỏ + notif permission",
   "changes": {
-    "totalCommits": 31,
+    "totalCommits": 32,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Manager Dashboard: thêm Note + Reminder vào Settings"
+    "Landing: Reminder watcher + popup đỏ + notif permission"
   ],
   "fileChanges": [
     {
-      "file": "manager/dashboard.html",
+      "file": "index.html",
       "type": "update"
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.27",
+  "version": "1.0.28",
   "releaseDate": "2026-10-14",
-  "notes": "Manager Dashboard: thêm Note + Reminder vào Settings"
+  "notes": "Landing: Reminder watcher + popup đỏ + notif permission"
 }

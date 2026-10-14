@@ -1,7 +1,7 @@
 {
-  "version": "1.0.27",
-  "buildDate": "2026-10-14T15:34:48.054Z",
-  "commit": "0234d7e",
-  "notes": "Manager Dashboard: thêm Note + Reminder vào Settings",
+  "version": "1.0.28",
+  "buildDate": "2026-10-14T15:49:25.117Z",
+  "commit": "e314be0",
+  "notes": "Landing: Reminder watcher + popup đỏ + notif permission",
   "forceUpdate": false
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.21",
+      "releaseDate": "2026-10-14T08:15:54.227Z",
+      "summary": "2048 v2: animation trượt + âm thanh + màu chuẩn",
+      "details": [
+        "2048 v2: animation trượt + âm thanh + màu chuẩn"
+      ]
+    },
+    {
       "version": "1.0.20",
       "releaseDate": "2026-10-14T07:45:48.982Z",
       "summary": "Sổ Tay: bật thông báo hệ thống (Mức 2)",

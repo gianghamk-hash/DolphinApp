@@ -1,7 +1,7 @@
 {
-  "version": "1.0.21",
-  "buildDate": "2026-10-14T08:15:54.227Z",
-  "commit": "7db6a12",
-  "notes": "2048 v2: animation trượt + âm thanh + màu chuẩn",
+  "version": "1.0.22",
+  "buildDate": "2026-10-14T08:54:17.701Z",
+  "commit": "46e1cd0",
+  "notes": "Fix Block Blast cellSize + BXH không cần index",
   "forceUpdate": false
 }

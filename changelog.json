@@ -1,22 +1,22 @@
 {
-  "version": "1.0.21",
-  "previousVersion": "1.0.20",
-  "commit": "7db6a12",
-  "previousCommit": "dcf8a0c",
-  "buildDate": "2026-10-14T08:15:54.227Z",
-  "summary": "2048 v2: animation trượt + âm thanh + màu chuẩn",
+  "version": "1.0.22",
+  "previousVersion": "1.0.21",
+  "commit": "46e1cd0",
+  "previousCommit": "7db6a12",
+  "buildDate": "2026-10-14T08:54:17.701Z",
+  "summary": "Fix Block Blast cellSize + BXH không cần index",
   "changes": {
-    "totalCommits": 25,
+    "totalCommits": 26,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "2048 v2: animation trượt + âm thanh + màu chuẩn"
+    "Fix Block Blast cellSize + BXH không cần index"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/game2048.html",
+      "file": "giaitri/games/block-blast.html",
       "type": "update"
     }
   ]

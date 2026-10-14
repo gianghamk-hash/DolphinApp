@@ -1,18 +1,18 @@
 {
-  "version": "1.0.22",
-  "previousVersion": "1.0.21",
-  "commit": "46e1cd0",
-  "previousCommit": "7db6a12",
-  "buildDate": "2026-10-14T08:54:17.701Z",
-  "summary": "Fix Block Blast cellSize + BXH không cần index",
+  "version": "1.0.23",
+  "previousVersion": "1.0.22",
+  "commit": "9c08694",
+  "previousCommit": "46e1cd0",
+  "buildDate": "2026-10-14T09:23:56.516Z",
+  "summary": "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp",
   "changes": {
-    "totalCommits": 26,
+    "totalCommits": 27,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix Block Blast cellSize + BXH không cần index"
+    "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp"
   ],
   "fileChanges": [
     {

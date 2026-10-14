@@ -70,7 +70,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
   background:#fff;box-shadow:0 0 12px rgba(244,184,66,.9);cursor:pointer}
 
-/* === MINI PLAYER (fixed bottom) === */
+/* === MINI PLAYER === */
 #miniPlayer{position:fixed;left:0;right:0;bottom:0;z-index:60;
   background:linear-gradient(180deg,rgba(10,30,28,.75),rgba(10,30,28,.98));
   backdrop-filter:blur(16px);border-top:1px solid rgba(244,184,66,.4);
@@ -425,10 +425,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
           <span class="gm-title">2048</span>
           <span class="gm-sub">Ghép số đạt 2048</span>
         </button>
-        <button class="game-menu-btn" onclick="openGame('blockblast')">
-          <span class="gm-icon">🧱</span>
-          <span class="gm-title">Block Blast</span>
-          <span class="gm-sub">Xếp khối · BXH</span>
+        <button class="game-menu-btn" onclick="openGame('battleship')">
+          <span class="gm-icon">🚢</span>
+          <span class="gm-title">Battleship</span>
+          <span class="gm-sub">Bắn thuyền 1v1</span>
         </button>
       </div>
     </div>
@@ -511,7 +511,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   var GAME_URLS = {
     'chess': 'games/chess.html',
     'game2048': 'games/game2048.html',
-    'blockblast': 'games/block-blast.html'
+    'battleship': 'games/battleship.html'
   };
 
   window.showTab = function(name){

@@ -438,7 +438,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 <script src="dolphin-ui.js?v=1.0" defer></script>
 <script src="changelog-popup.js?v=1.0" defer></script>
 <script src="staff-online.js?v=1.0" defer></script>
-<script src="dolphin-soundscape.js?v=1.0" defer></script>
+<script src="dolphin-soundscape.js?v=2.0" defer></script>
 <link rel="manifest" href="/DolphinApp/manifest.json">
 <meta name="theme-color" content="#123634">
 <meta name="color-scheme" content="dark">
@@ -536,38 +536,63 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   </span>
 </p>
 
-      <div class="fade-up d-2 area-grid">
+   <div class="fade-up d-2 area-grid">
 
-        <!-- 🏆 BẢNG XẾP HẠNG -->
-        <button type="button" class="area-card" onclick="openApp('ranking')" aria-label="Bảng xếp hạng">
-          <span class="area-badge">VINH DANH</span>
-          <span class="area-icon">🏆</span>
-          <h3 class="area-title-en">BẢNG XẾP HẠNG</h3>
-          <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
-        </button>
+  <!-- 🍸 PREMIUM LOUNGE -->
+  <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
+    <span class="area-badge">VIP</span>
+    <span class="area-icon">🍸</span>
+    <h3 class="area-title-en">PREMIUM LOUNGE ACCESS</h3>
+    <p class="area-title-vi">Phòng LOUNGE</p>
+  </button>
 
-        <!-- ════════ CỜ CARO — CẠNH PHẢI BẢNG XẾP HẠNG ════════ -->
-        <button type="button" class="area-card" onclick="openApp('caro')" aria-label="Cờ Caro">
-          <span class="area-badge">GAME</span>
-          <span class="area-icon">🎮</span>
-          <h3 class="area-title-en">CỜ CARO ONLINE</h3>
-          <p class="area-title-vi">CHƠI CÙNG ĐỒNG NGHIỆP</p>
-        </button>
+  <!-- 🌴 BUNGALOW -->
+  <button type="button" class="area-card" onclick="openApp('bungalow')" aria-label="Bungalow">
+    <span class="area-icon">🌴</span>
+    <h3 class="area-title-en">BUNGALOW</h3>
+    <p class="area-title-vi">KHU VỰC CHÒI BUNGALOW</p>
+  </button>
 
-        <!-- 👑 DASHBOARD — XUỐNG CUỐI, FULL WIDTH -->
-        <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
-          <span class="area-badge">CHỈ MANAGER</span>
-          <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
-          <h3 class="area-title-en" style="font-size:.95rem;">SYSTEM DASHBOARD</h3>
-          <p class="area-title-vi">TỔNG QUAN TOÀN BỘ 4 KHU VỰC</p>
-        </button>
+  <!-- 🍽️ SUN VIEW RESTAURANT -->
+  <button type="button" class="area-card" onclick="openApp('restaurant')" aria-label="Restaurant">
+    <span class="area-badge">BUFFET ALACARTE</span>
+    <span class="area-icon">🍽️</span>
+    <h3 class="area-title-en">SUN VIEW RESTAURANT</h3>
+    <p class="area-title-vi">Nhà Hàng Tầng 2</p>
+  </button>
 
-      </div>
+  <!-- 🎭 DOLPHIN SHOW -->
+  <button type="button" class="area-card" onclick="openApp('show')" aria-label="Infinity Show">
+    <span class="area-icon">🎭</span>
+    <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
+    <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
+  </button>
 
-    </div>
-  </div>
+  <!-- 🏆 BẢNG XẾP HẠNG -->
+  <button type="button" class="area-card" onclick="openApp('ranking')" aria-label="Bảng xếp hạng">
+    <span class="area-badge">VINH DANH</span>
+    <span class="area-icon">🏆</span>
+    <h3 class="area-title-en">BẢNG XẾP HẠNG</h3>
+    <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
+  </button>
+
+  <!-- 🎮 CỜ CARO -->
+  <button type="button" class="area-card" onclick="openApp('caro')" aria-label="Cờ Caro">
+    <span class="area-badge">GAME</span>
+    <span class="area-icon">🎮</span>
+    <h3 class="area-title-en">CỜ CARO ONLINE</h3>
+    <p class="area-title-vi">CHƠI CÙNG ĐỒNG NGHIỆP</p>
+  </button>
+
+  <!-- 👑 SYSTEM DASHBOARD (chỉ Manager thấy) -->
+  <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
+    <span class="area-badge">CHỈ MANAGER</span>
+    <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
+    <h3 class="area-title-en" style="font-size:.95rem;">SYSTEM DASHBOARD</h3>
+    <p class="area-title-vi">TỔNG QUAN TOÀN BỘ 4 KHU VỰC</p>
+  </button>
+
 </div>
-
 <!-- ══════════════ APP VIEW (IFRAME) ══════════════ -->
 <div id="app-view" class="hidden">
   <div id="home-controls">
@@ -592,15 +617,15 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   'use strict';
 
   /* ============ CONFIG ============ */
- var APP_MAP = {
-  lounge:          'dolphin-lounge.html',
-  bungalow:        'dolphin-bungalow.html',
-  restaurant:      'dolphin-restaurant.html',
-  show:            'dolphin-show.html',
-  dashboard:       'manager/dashboard.html',
-  ranking:         'ranking/index.html',
-  caro:            'caro/index.html'
-};
+  var APP_MAP = {
+    lounge:     'dolphin-lounge.html',
+    bungalow:   'dolphin-bungalow.html',
+    restaurant: 'dolphin-restaurant.html',
+    show:       'dolphin-show.html',
+    dashboard:  'manager/dashboard.html',
+    ranking:    'ranking/index.html',
+    caro:       'caro/index.html'
+  };
 
   var currentApp = null;
   var transitionLock = false;

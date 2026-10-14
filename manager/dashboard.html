@@ -26,8 +26,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .state-cooking{color:#FF6B6B;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4)}
 .state-ready{color:#66BB6A;background:rgba(102,187,106,.12);border-color:rgba(102,187,106,.4)}
 .state-alert{color:#EF5350;background:rgba(239,83,80,.12);border-color:rgba(239,83,80,.5)}
-.state-info{color:#818cf8;background:rgba(129,140,248,.12);border-color:rgba(129,140,248,.4)}
-.state-cyan{color:#22d3ee;background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.4)}
 .stat-card{padding:14px;border-radius:16px;position:relative;overflow:hidden}
 .outlet-card{padding:16px;border-radius:18px;cursor:pointer;transition:transform .2s}
 .outlet-card:hover{transform:translateY(-3px)}
@@ -38,7 +36,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .btn-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(25,71,67,.7);border:1px solid rgba(55,137,123,.5);color:#bfe9dc;cursor:pointer;transition:all .15s}
 .btn-icon:active{transform:scale(.92)}
 .btn-icon.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
-/* Settings Modal */
 #settings-modal{position:fixed;inset:0;z-index:9999;display:none;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
 #settings-modal.show{display:flex}
 .settings-panel{background:linear-gradient(160deg,#0f3d38,#0a2b28);border:2px solid rgba(244,184,66,.5);border-radius:20px;width:100%;max-width:680px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.25);overflow:hidden}
@@ -47,7 +44,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .settings-tab:hover{background:rgba(255,255,255,.03);color:#FBD77A}
 .settings-tab.active{color:#FBD77A;border-bottom-color:#FBD77A;background:rgba(244,184,66,.08)}
 .settings-body{flex:1;overflow-y:auto;padding:16px 18px}
-/* Collapsible */
 .collapse-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
 .collapse-head:hover{background:rgba(255,255,255,.02)}
 .collapse-body{max-height:0;overflow:hidden;transition:max-height .35s ease-out}
@@ -78,8 +74,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <main class="max-w-7xl mx-auto px-3 md:px-6 py-4 space-y-5">
 
-  <!-- ═══════ TOP STATS (5 cards) ═══════ -->
-  <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
+  <!-- ═══════ TOP STATS (4 cards) ═══════ -->
+  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="glass glass-premium stat-card">
       <div class="text-[10px] text-teal-300 font-black uppercase tracking-wider mb-1">📋 Đơn hôm nay</div>
       <div class="text-3xl md:text-4xl font-black text-white tabular" id="s-orders">0</div>
@@ -100,44 +96,15 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       <div class="text-3xl md:text-4xl font-black text-red-400 tabular" id="s-guests">0</div>
       <div class="text-[10px] text-teal-400 mt-1">Đang phục vụ</div>
     </div>
-    <div class="glass glass-premium stat-card col-span-2 md:col-span-1" style="border-left:4px solid #a78bfa">
-      <div class="text-[10px] text-purple-300 font-black uppercase tracking-wider mb-1">🍹 Đồ uống hôm nay</div>
-      <div class="text-3xl md:text-4xl font-black tabular" style="color:#a78bfa" id="s-drinks">0</div>
-      <div class="text-[10px] text-teal-400 mt-1" id="s-drinks-sub">Doanh thu: <span id="s-drinks-revenue" class="text-purple-300 font-bold">0đ</span></div>
-    </div>
   </div>
 
-  <!-- ═══════ OUTLET OVERVIEW (5 outlets) ═══════ -->
+  <!-- ═══════ OUTLET OVERVIEW (4 outlets) ═══════ -->
   <div>
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>🏝️</span> KHU VỰC PHỤC VỤ</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3" id="outlet-grid"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="outlet-grid"></div>
   </div>
 
-  <!-- ═══════ 🍹 DRINKS TRACKING (NEW) ═══════ -->
-  <div class="glass glass-premium rounded-2xl overflow-hidden" style="border-left:4px solid #a78bfa">
-    <div class="p-3.5 md:p-5 border-b border-white/10">
-      <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
-        <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
-          <span>🍹</span> TRACKING ORDER ĐỒ UỐNG
-          <span class="text-[10px] font-normal text-purple-300 lowercase tracking-normal">(Phục vụ + Thu ngân)</span>
-        </h2>
-        <div class="flex items-center gap-2">
-          <span class="text-[10px] text-teal-400 font-bold">Hôm nay · <span id="drinks-total">0</span> đơn</span>
-        </div>
-      </div>
-      <div class="flex gap-2 overflow-x-auto pb-1" id="drinks-filter-chips">
-        <button class="chip active" data-dfilter="all">📊 Tất cả <span class="count" id="dc-all">0</span></button>
-        <button class="chip" data-dfilter="pending">⏳ Chờ PV <span class="count" id="dc-pending">0</span></button>
-        <button class="chip" data-dfilter="served">☑️ Đã PV <span class="count" id="dc-served">0</span></button>
-        <button class="chip" data-dfilter="received">💰 Đã nhận <span class="count" id="dc-received">0</span></button>
-        <button class="chip" data-dfilter="invoiced">✅ Đã HĐ <span class="count" id="dc-invoiced">0</span></button>
-        <button class="chip" data-dfilter="cancelled">❌ Hủy <span class="count" id="dc-cancelled">0</span></button>
-      </div>
-    </div>
-    <div class="max-h-[500px] overflow-y-auto" id="drinks-list"></div>
-  </div>
-
-  <!-- ═══════ REALTIME ORDERS (4 outlets cũ) ═══════ -->
+  <!-- ═══════ REALTIME ORDERS ═══════ -->
   <div class="glass glass-premium rounded-2xl overflow-hidden">
     <div class="p-3.5 md:p-5 border-b border-white/10">
       <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
@@ -351,36 +318,24 @@ import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDo
 
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
 
-/* ═══════════════ OUTLETS CONFIG ═══════════════ */
+/* ═══════════════ OUTLETS CONFIG (4 outlets) ═══════════════ */
 const OUTLETS = {
   bungalow:   { name: 'Bungalow',   icon: '🌴', color: 'emerald', accent: '#34d399', colOrders: 'bun_orders',    colCalls: 'bun_calls',    colTables: 'bun_tables',              colHistory: 'bun_history',               totalTables: 16, labelField: 'table' },
   lounge:     { name: 'Lounge',     icon: '🍸', color: 'amber',   accent: '#FBD77A', colOrders: 'lounge_orders', colCalls: 'lounge_calls', colTables: 'lounge_tables',           colHistory: 'lounge_history_sessions',   totalTables: 20, labelField: 'table' },
   restaurant: { name: 'Restaurant', icon: '🍽️', color: 'sky',     accent: '#60a5fa', colOrders: 'res_orders',    colCalls: 'res_calls',    colTables: 'res_tables',              colHistory: 'res_history',               totalTables: 38, labelField: 'table' },
-  show:       { name: 'Show',       icon: '🎭', color: 'rose',    accent: '#fb7185', colOrders: null,            colCalls: null,           colTables: 'show_tables',             colHistory: 'show_history',              totalTables: null, labelField: 'label' },
-  drinks:     { name: 'Đồ Uống',    icon: '🍹', color: 'purple',  accent: '#a78bfa', colOrders: 'drink_orders',  colCalls: null,           colTables: null,                       colHistory: null,                        totalTables: null, labelField: 'table', isDrinks: true }
-};
-
-/* Drink status map */
-const DRINK_STATUS = {
-  pending:   { label: 'Chờ PV',   cls: 'state-pending' },
-  served:    { label: 'Đã PV',    cls: 'state-cyan' },
-  received:  { label: 'Đã nhận',  cls: 'state-info' },
-  invoiced:  { label: 'Đã HĐ',    cls: 'state-ready' },
-  cancelled: { label: 'Đã hủy',   cls: 'state-alert' }
+  show:       { name: 'Show',       icon: '🎭', color: 'rose',    accent: '#fb7185', colOrders: null,            colCalls: null,           colTables: 'show_tables',             colHistory: 'show_history',              totalTables: null, labelField: 'label' }
 };
 
 const state = {
-  orders: { bungalow: [], lounge: [], restaurant: [], show: [], drinks: [] },
-  calls:  { bungalow: [], lounge: [], restaurant: [], show: [], drinks: [] },
-  tables: { bungalow: {}, lounge: {}, restaurant: {}, show: {}, drinks: {} },
+  orders: { bungalow: [], lounge: [], restaurant: [], show: [] },
+  calls:  { bungalow: [], lounge: [], restaurant: [], show: [] },
+  tables: { bungalow: {}, lounge: {}, restaurant: {}, show: {} },
   filter: 'all',
-  search: '',
-  drinksFilter: 'all'
+  search: ''
 };
 
 const $ = id => document.getElementById(id);
 
-/* Timestamp helper — drink_orders dùng createdAt */
 function getTs(o){ return o.createdAt || o.timestamp || 0; }
 
 function isToday(ts) {
@@ -812,24 +767,15 @@ function startListeners(db) {
 function renderAll() {
   renderStats();
   renderOutlets();
-  renderDrinksTracking();
   renderOrders();
 }
 
 function renderStats() {
   let totalOrders = 0, totalPending = 0, totalOccupied = 0, totalTables = 0, totalGuests = 0;
-  let drinksToday = 0, drinksRevenue = 0;
 
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     const orders = state.orders[key] || [];
     const tables = state.tables[key] || {};
-
-    if (cfg.isDrinks) {
-      const today = orders.filter(o => isToday(getTs(o)));
-      drinksToday = today.length;
-      drinksRevenue = today.filter(o => o.status === 'invoiced').reduce((s, o) => s + (o.totalAmount || 0), 0);
-      return;
-    }
 
     const occupiedCount = Object.keys(tables).length;
     const todayOrders = orders.filter(o => isToday(getTs(o)));
@@ -850,8 +796,6 @@ function renderStats() {
   $('s-total-tables').textContent = totalTables || '?';
   $('s-occupied-sub').textContent = totalTables ? `${Math.round((totalOccupied / totalTables) * 100)}% công suất` : 'Trên tổng số bàn';
   $('s-guests').textContent = totalGuests;
-  $('s-drinks').textContent = drinksToday;
-  $('s-drinks-revenue').textContent = formatMoney(drinksRevenue);
 }
 
 function formatMoney(n){ return (n || 0).toLocaleString('vi-VN') + 'đ'; }
@@ -862,49 +806,6 @@ function renderOutlets() {
     const tables = state.tables[key] || {};
     const calls = state.calls[key] || [];
     const todayOrders = orders.filter(o => isToday(getTs(o)));
-
-    if (cfg.isDrinks) {
-      const pending = todayOrders.filter(o => o.status === 'pending').length;
-      const served = todayOrders.filter(o => o.status === 'served').length;
-      const received = todayOrders.filter(o => o.status === 'received').length;
-      const invoiced = todayOrders.filter(o => o.status === 'invoiced').length;
-      const revenue = todayOrders.filter(o => o.status === 'invoiced').reduce((s, o) => s + (o.totalAmount || 0), 0);
-      return `
-        <div class="glass outlet-card" style="border-left:4px solid ${cfg.accent}">
-          <div class="flex items-center justify-between mb-3">
-            <div class="flex items-center gap-2">
-              <span class="text-2xl">${cfg.icon}</span>
-              <div>
-                <div class="font-black text-white text-[13px] uppercase tracking-wide">${cfg.name}</div>
-                <div class="text-[10px]" style="color:${cfg.accent}">${todayOrders.length} đơn hôm nay</div>
-              </div>
-            </div>
-            ${pending > 0 ? `<span class="state-chip state-pending animate-pulse">${pending} CHỜ</span>` : ''}
-          </div>
-          <div class="grid grid-cols-2 gap-2 mb-2">
-            <div class="bg-black/30 rounded-lg p-2 text-center">
-              <div class="text-[9px] text-teal-400 font-bold uppercase">Chờ PV</div>
-              <div class="text-base font-black text-amber-400 tabular">${pending}</div>
-            </div>
-            <div class="bg-black/30 rounded-lg p-2 text-center">
-              <div class="text-[9px] text-teal-400 font-bold uppercase">Đã PV</div>
-              <div class="text-base font-black text-cyan-400 tabular">${served}</div>
-            </div>
-            <div class="bg-black/30 rounded-lg p-2 text-center">
-              <div class="text-[9px] text-teal-400 font-bold uppercase">Đã nhận</div>
-              <div class="text-base font-black text-indigo-400 tabular">${received}</div>
-            </div>
-            <div class="bg-black/30 rounded-lg p-2 text-center">
-              <div class="text-[9px] text-teal-400 font-bold uppercase">Hóa đơn</div>
-              <div class="text-base font-black text-emerald-400 tabular">${invoiced}</div>
-            </div>
-          </div>
-          <div class="bg-black/30 rounded-lg p-2 text-center">
-            <div class="text-[9px] text-teal-400 font-bold uppercase">Doanh thu</div>
-            <div class="text-sm font-black tabular" style="color:${cfg.accent}">${formatMoney(revenue)}</div>
-          </div>
-        </div>`;
-    }
 
     const pending = todayOrders.filter(o => o.status === 'pending').length;
     const preparing = todayOrders.filter(o => o.status === 'preparing').length;
@@ -947,78 +848,7 @@ function renderOutlets() {
   $('outlet-grid').innerHTML = html;
 }
 
-/* ═══════════════ DRINKS TRACKING ═══════════════ */
-function renderDrinksTracking() {
-  const drinks = state.orders.drinks || [];
-  const today = drinks.filter(o => isToday(getTs(o)));
-
-  const counts = { pending: 0, served: 0, received: 0, invoiced: 0, cancelled: 0 };
-  today.forEach(o => { if (counts[o.status] !== undefined) counts[o.status]++; });
-
-  $('drinks-total').textContent = today.length;
-  $('dc-all').textContent = today.length;
-  $('dc-pending').textContent = counts.pending;
-  $('dc-served').textContent = counts.served;
-  $('dc-received').textContent = counts.received;
-  $('dc-invoiced').textContent = counts.invoiced;
-  $('dc-cancelled').textContent = counts.cancelled;
-
-  let filtered = today;
-  if (state.drinksFilter !== 'all') {
-    filtered = filtered.filter(o => o.status === state.drinksFilter);
-  }
-  filtered.sort((a, b) => getTs(b) - getTs(a));
-
-  const list = document.getElementById('drinks-list');
-  if (!filtered.length) {
-    list.innerHTML = '<div class="text-center py-10 text-teal-500 font-bold text-[12px]">Không có đơn đồ uống nào</div>';
-    return;
-  }
-
-  list.innerHTML = filtered.slice(0, 100).map(o => {
-    const st = DRINK_STATUS[o.status] || DRINK_STATUS.pending;
-    const itemsHtml = (o.items || []).map(it => {
-      const nm = it.displayName || it.name || 'Món';
-      return `${nm} <span class="text-gold-400 font-black">x${it.qty}</span>`;
-    }).join(' · ') || '<span class="text-teal-500 italic">Chưa có món</span>';
-
-    const staffName = (o.allStaffNames || [o.staffName]).join(', ');
-
-    return `
-      <div class="order-row" style="border-left:3px solid #a78bfa">
-        <div class="flex items-start gap-3 flex-wrap">
-          <div class="flex items-center gap-2 shrink-0">
-            <span class="text-lg">🍹</span>
-            <div>
-              <div class="text-[10px] text-purple-300 font-bold uppercase">${o.tableArea || 'Khu vực'}</div>
-              <div class="text-[13px] font-black text-white tabular">Bàn ${o.table || '--'}</div>
-            </div>
-          </div>
-          <div class="flex-1 min-w-[200px]">
-            <div class="text-[11.5px] text-white/90 leading-snug">${itemsHtml}</div>
-            ${o.specialNotes ? `<div class="text-[10px] text-gold-400/80 mt-1 italic">📝 ${o.specialNotes}</div>` : ''}
-            <div class="text-[10px] text-teal-400 mt-1">👤 ${staffName}</div>
-          </div>
-          <div class="flex flex-col items-end gap-1 shrink-0">
-            <div class="text-[10px] text-teal-300 tabular">${o.createdTimeString || '--:--'}</div>
-            <span class="state-chip ${st.cls}">${st.label}</span>
-            <div class="text-[11px] font-black tabular" style="color:#a78bfa">${formatMoney(o.totalAmount || 0)}</div>
-          </div>
-        </div>
-      </div>`;
-  }).join('');
-}
-
-document.querySelectorAll('#drinks-filter-chips .chip').forEach(btn => {
-  btn.onclick = () => {
-    document.querySelectorAll('#drinks-filter-chips .chip').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    state.drinksFilter = btn.dataset.dfilter;
-    renderDrinksTracking();
-  };
-});
-
-/* ═══════════════ REALTIME ORDERS (4 outlets) ═══════════════ */
+/* ═══════════════ REALTIME ORDERS ═══════════════ */
 function renderOrders() {
   const all = [];
   ['bungalow', 'lounge', 'restaurant'].forEach(key => {
@@ -1206,7 +1036,7 @@ $('h-search-btn').onclick = async () => {
   }).join('');
 };
 
-setInterval(() => { renderOrders(); renderDrinksTracking(); }, 30000);
+setInterval(renderOrders, 30000);
 </script>
 </body>
 </html>

@@ -8,7 +8,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script>window.DOLPHIN_HIDE_SOUND_WIDGET = true; window.DOLPHIN_ALLOW_SOUND = true;</script>
-<script src="/DolphinApp/dolphin-soundscape.js?v=2.1" defer></script>
+<script src="/DolphinApp/dolphin-soundscape.js?v=2.4" defer></script>
 <script src="/DolphinApp/staff-sync.js" defer></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -90,7 +90,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 #boardWrapper::-webkit-scrollbar{width:6px;height:6px}
 #boardWrapper::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
 #board{display:grid;margin:0 auto;background:#F4DFA8;border-radius:12px;overflow:hidden;border:3px solid #8B6F3D;
-  box-shadow:0 8px 32px rgba(0,0,0,.5),inset 0 0 60px rgba(139,111,61,.3)}
+  box-shadow:0 8px 32px rgba(0,0,0,.5),inset 0 0 60px rgba(139,111,61,.3);
+  transition:transform 0.18s cubic-bezier(.16,1,.3,1)}
 .cell{position:relative;border-right:1px solid rgba(139,111,61,.35);border-bottom:1px solid rgba(139,111,61,.35);
   display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s}
 .cell:hover{background:rgba(255,255,255,.25)}
@@ -148,6 +149,21 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .rules-card .rule-title{color:#FBD77A;font-weight:900;font-size:13px;margin-bottom:4px}
 .rules-card .rule-desc{color:#bfe9dc;font-size:12.5px;line-height:1.55}
 .rules-card .rule-desc b{color:#fff}
+
+/* === CARO ZOOM RESET BTN === */
+#caroZoomReset{
+  position:absolute;bottom:14px;right:14px;z-index:60;
+  height:38px;min-width:38px;padding:0 12px;border-radius:19px;
+  background:rgba(18,54,52,.92);
+  border:2px solid rgba(244,184,66,.7);
+  color:#FBD77A;font-size:13px;font-weight:900;font-family:inherit;
+  cursor:pointer;display:none;align-items:center;justify-content:center;gap:5px;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+  transition:transform .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+#caroZoomReset:active{transform:scale(.92)}
 </style>
 </head>
 <body>
@@ -229,7 +245,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
           <div class="text-[10px] text-teal-400 mt-1" id="boardSizeText"></div>
         </div>
       </div>
-      <div class="mb-3"><div id="boardWrapper"><div id="board"></div></div></div>
+      <div class="mb-3" id="boardContainer"><div id="boardWrapper"><div id="board"></div></div></div>
       <div class="flex gap-2 mb-3">
         <button onclick="leaveGame()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">🚪 Rời ván</button>
         <button onclick="resignGame()" id="resignBtn" class="flex-1 py-3 rounded-xl text-[12px] uppercase" style="background:rgba(239,83,80,.15);color:#ef5350;border:1px solid rgba(239,83,80,.4);font-weight:800;cursor:pointer;font-family:inherit">🏳️ Đầu hàng</button>
@@ -287,7 +303,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="glass rounded-2xl p-4">
       <div style="font-size:12px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px">
         <span>🎼</span> DANH SÁCH BÀI HÁT
-        <span style="font-size:10px;color:#7ec9be;font-weight:700;text-transform:none;letter-spacing:0;margin-left:auto;opacity:.7">15 bài</span>
+        <span style="font-size:10px;color:#7ec9be;font-weight:700;text-transform:none;letter-spacing:0;margin-left:auto;opacity:.7" id="trackCountLbl">15 bài</span>
       </div>
       <div id="trackList"></div>
     </div>
@@ -324,6 +340,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       <div class="rule-desc">Chỉ cần đủ <b>5 quân liền kề</b> là thắng — <b>không quan tâm bị chặn 2 đầu</b>.</div></div>
     <div class="rule"><div class="rule-title"><span class="rule-icon">📐</span>Bàn cờ tự mở rộng</div>
       <div class="rule-desc">Bàn cờ <b>20×20 ô</b>, tự mở rộng thêm 5 ô khi quân cờ tiến sát biên.</div></div>
+    <div class="rule"><div class="rule-title"><span class="rule-icon">🔍</span>Zoom bàn cờ</div>
+      <div class="rule-desc">Dùng <b>2 ngón tay</b> để phóng to / thu nhỏ bàn cờ (0.8× – 2×). Bấm nút <b>🔍 %</b> ở góc để reset về 100%.</div></div>
     <div class="rule"><div class="rule-title"><span class="rule-icon">🎲</span>Luật chơi</div>
       <div class="rule-desc">• Người 1 (X) đánh trước<br>• Lần lượt X và O<br>• Không đánh vào ô đã có quân<br>• Đủ 5 quân liền kề → thắng</div></div>
     <div class="rule"><div class="rule-title"><span class="rule-icon">🏳️</span>Đầu hàng</div>
@@ -416,6 +434,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     var v = Math.round(ds.getVolume() * 100);
     if (vol && document.activeElement !== vol) vol.value = String(v);
     if (pct) pct.textContent = v + '%';
+
+    // Track count
+    var cnt = document.getElementById('trackCountLbl');
+    if (cnt) cnt.textContent = tracks.length + ' bài';
 
     // Track list
     var list = document.getElementById('trackList');
@@ -539,7 +561,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 })();
 </script>
 
-<!-- ═══════════ CARO GAME LOGIC (port nguyên) ═══════════ -->
+<!-- ═══════════ CARO GAME LOGIC ═══════════ -->
 <script>
 (function(){
   'use strict';
@@ -1072,6 +1094,166 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();
+})();
+</script>
+
+<!-- ═══════════ CARO PINCH-ZOOM (0.8x – 2x) ═══════════ -->
+<script>
+(function(){
+  'use strict';
+
+  var MIN_SCALE  = 0.8;
+  var MAX_SCALE  = 2.0;
+  var SCALE_KEY  = 'dolphin_caro_zoom';
+  var DEFAULT    = 1.0;
+
+  var currentScale = DEFAULT;
+  var board = null;
+  var wrapper = null;
+  var pinchStart = null;
+  var attachTries = 0;
+
+  function $(id){ return document.getElementById(id); }
+
+  function loadScale(){
+    try {
+      var v = parseFloat(localStorage.getItem(SCALE_KEY));
+      if (!isNaN(v) && v >= MIN_SCALE && v <= MAX_SCALE) currentScale = v;
+    } catch(e){}
+  }
+
+  function saveScale(s){
+    try { localStorage.setItem(SCALE_KEY, String(s)); } catch(e){}
+  }
+
+  function updateResetBtn(){
+    var btn = $('caroZoomReset');
+    if (!btn) return;
+    btn.style.display = (Math.abs(currentScale - DEFAULT) > 0.01) ? 'flex' : 'none';
+    var lbl = btn.querySelector('.czr-label');
+    if (lbl) lbl.textContent = Math.round(currentScale * 100) + '%';
+  }
+
+  function applyScale(s){
+    if (!board) return;
+    s = Math.max(MIN_SCALE, Math.min(MAX_SCALE, s));
+    currentScale = s;
+    board.style.transform = 'scale(' + s + ')';
+    saveScale(s);
+    updateResetBtn();
+  }
+
+  function resetZoom(){
+    applyScale(DEFAULT);
+    if (window.showToast) window.showToast('Đã reset zoom về 100%', '🔍');
+  }
+
+  function getDistance(t1, t2){
+    var dx = t1.clientX - t2.clientX;
+    var dy = t1.clientY - t2.clientY;
+    return Math.sqrt(dx*dx + dy*dy);
+  }
+
+  function getMidpointPct(t1, t2){
+    if (!board) return 'center center';
+    var rect = board.getBoundingClientRect();
+    var mx = (t1.clientX + t2.clientX) / 2;
+    var my = (t1.clientY + t2.clientY) / 2;
+    var px = ((mx - rect.left) / rect.width) * 100;
+    var py = ((my - rect.top) / rect.height) * 100;
+    px = Math.max(0, Math.min(100, px));
+    py = Math.max(0, Math.min(100, py));
+    return px + '% ' + py + '%';
+  }
+
+  function onTouchStart(e){
+    if (e.touches.length === 2 && board){
+      pinchStart = {
+        distance: getDistance(e.touches[0], e.touches[1]),
+        scale: currentScale,
+        origin: getMidpointPct(e.touches[0], e.touches[1])
+      };
+      board.style.transition = 'none';
+      e.preventDefault();
+    }
+  }
+
+  function onTouchMove(e){
+    if (e.touches.length !== 2 || !pinchStart || !board) return;
+    e.preventDefault();
+    var d = getDistance(e.touches[0], e.touches[1]);
+    if (pinchStart.distance < 5) return;
+    var ratio = d / pinchStart.distance;
+    var newScale = pinchStart.scale * ratio;
+    newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
+    currentScale = newScale;
+    board.style.transformOrigin = pinchStart.origin;
+    board.style.transform = 'scale(' + newScale + ')';
+  }
+
+  function onTouchEnd(e){
+    if (e.touches.length < 2 && pinchStart){
+      pinchStart = null;
+      if (board) board.style.transition = 'transform 0.18s cubic-bezier(.16,1,.3,1)';
+      saveScale(currentScale);
+      updateResetBtn();
+    }
+  }
+
+  function createResetBtn(){
+    if ($('caroZoomReset')) return;
+    var container = $('boardContainer');
+    if (!container) return;
+
+    var btn = document.createElement('button');
+    btn.id = 'caroZoomReset';
+    btn.type = 'button';
+    btn.title = 'Reset zoom về 100%';
+    btn.innerHTML = '<span style="font-size:15px">🔍</span><span class="czr-label">100%</span>';
+    btn.addEventListener('click', function(e){
+      e.stopPropagation();
+      resetZoom();
+    });
+    container.appendChild(btn);
+    updateResetBtn();
+  }
+
+  function attachToBoard(){
+    wrapper = $('boardWrapper');
+    board = $('board');
+    if (!wrapper || !board) return false;
+
+    loadScale();
+    if (Math.abs(currentScale - DEFAULT) > 0.01){
+      board.style.transform = 'scale(' + currentScale + ')';
+    }
+
+    wrapper.addEventListener('touchstart', onTouchStart, { passive: false });
+    wrapper.addEventListener('touchmove', onTouchMove, { passive: false });
+    wrapper.addEventListener('touchend', onTouchEnd);
+    wrapper.addEventListener('touchcancel', onTouchEnd);
+
+    createResetBtn();
+    return true;
+  }
+
+  function init(){
+    var interval = setInterval(function(){
+      attachTries++;
+      if (attachToBoard() || attachTries >= 100){
+        clearInterval(interval);
+        if (attachTries < 100){
+          console.log('%c🔍 Caro pinch-zoom ready (0.8× – 2×)', 'background:#123634;color:#FBD77A;padding:3px 8px;border-radius:4px;font-weight:900');
+        }
+      }
+    }, 300);
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
 })();
 </script>
 

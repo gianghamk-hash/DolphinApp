@@ -551,14 +551,14 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
         </button>
 
-        <!-- 🎮 CỜ CARO -->
-        <button type="button" class="area-card" onclick="openApp('caro')" aria-label="Cờ Caro">
-          <span class="area-badge">GAME</span>
-          <span class="area-icon">🎮</span>
-          <h3 class="area-title-en">CỜ CARO ONLINE</h3>
-          <p class="area-title-vi">CHƠI CÙNG ĐỒNG NGHIỆP</p>
-        </button>
-
+        <!--🎮 GIẢI TRÍ -->
+<button type="button" class="area-card" onclick="openApp('giaitri')" aria-label="Giải trí">
+  <span class="area-badge">CARO · NHẠC</span>
+  <span class="area-icon">🎮</span>
+  <h3 class="area-title-en">GIẢI TRÍ</h3>
+  <p class="area-title-vi">CỜ CARO · NGHE NHẠC</p>
+</button>
+        
         <!-- 👑 SYSTEM DASHBOARD (chỉ Manager thấy) -->
         <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
           <span class="area-badge">CHỈ MANAGER</span>
@@ -604,7 +604,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     show:       'dolphin-show.html',
     dashboard:  'manager/dashboard.html',
     ranking:    'ranking/index.html',
-    caro:       'caro/index.html'
+   giaitri:    'giaitri/index.html'
   };
 
   var currentApp = null;

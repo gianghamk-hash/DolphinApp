@@ -1,0 +1,1098 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · Block Blast</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;overflow-x:hidden}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:active{transform:scale(.96)}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(.96)}
+.btn-outline:disabled{opacity:.4;cursor:not-allowed}
+
+/* ═══ SCORE PANEL ═══ */
+.stat-box{
+  flex:1;background:rgba(10,30,28,.7);border:1px solid rgba(55,137,123,.4);
+  border-radius:12px;padding:8px 12px;text-align:center;min-width:0;
+}
+.stat-box .lbl{font-size:9px;font-weight:900;color:#7ec9be;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
+.stat-box .val{font-size:20px;font-weight:900;color:#FBD77A;font-family:'Fraunces',serif;line-height:1}
+.stat-box.best .val{color:#bfe9dc}
+.stat-box.combo .val{color:#f472b6}
+.stat-box.combo.hot{animation:comboPulse .6s ease-in-out infinite}
+@keyframes comboPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.1)}}
+
+/* ═══ BOARD ═══ */
+#boardWrap{
+  padding:6px;
+  background:linear-gradient(135deg,#1a4a45,#0d2a28);
+  border:3px solid #8B6F3D;
+  border-radius:16px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5),inset 0 0 30px rgba(0,0,0,.3);
+  touch-action:none;
+  user-select:none;-webkit-user-select:none;
+  max-width:min(96vw,540px);
+  margin:0 auto;
+}
+#board{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  grid-template-rows:repeat(8,1fr);
+  gap:3px;
+  aspect-ratio:1;
+}
+.cell{
+  background:rgba(0,0,0,.35);
+  border-radius:6px;
+  transition:background .12s,transform .12s,box-shadow .12s;
+  position:relative;
+}
+.cell.filled{
+  background:var(--c,#4aa896);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.18),inset 0 -4px 8px rgba(0,0,0,.25),0 2px 4px rgba(0,0,0,.3);
+}
+.cell.filled::after{
+  content:'';position:absolute;inset:3px;
+  border-radius:4px;
+  background:linear-gradient(180deg,rgba(255,255,255,.28),transparent 50%);
+  pointer-events:none;
+}
+.cell.preview{
+  background:rgba(244,184,66,.28);
+  box-shadow:inset 0 0 0 2px rgba(244,184,66,.6);
+}
+.cell.preview-invalid{
+  background:rgba(220,38,38,.35);
+  box-shadow:inset 0 0 0 2px rgba(220,38,38,.8);
+}
+.cell.clearing{
+  animation:cellClear .28s ease-out forwards;
+  z-index:10;
+}
+@keyframes cellClear{
+  0%{transform:scale(1);background:#FBD77A}
+  40%{transform:scale(1.15);background:#fff;box-shadow:0 0 20px rgba(255,255,255,.9)}
+  100%{transform:scale(0);opacity:0}
+}
+.cell.newly-placed{animation:cellPlace .22s ease-out}
+@keyframes cellPlace{
+  0%{transform:scale(.5);opacity:.5}
+  100%{transform:scale(1);opacity:1}
+}
+
+/* ═══ TRAY ═══ */
+#tray{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:6px;
+  padding:8px;
+  background:rgba(10,30,28,.55);
+  border:1px solid rgba(55,137,123,.35);
+  border-radius:14px;
+  min-height:110px;
+  touch-action:none;
+  max-width:min(96vw,540px);
+  margin:0 auto;
+}
+.tray-slot{
+  display:flex;align-items:center;justify-content:center;
+  border-radius:10px;
+  min-height:96px;
+  position:relative;
+}
+.tray-slot.empty{opacity:.3}
+.shape-wrap{
+  display:grid;
+  gap:2px;
+  cursor:grab;
+  touch-action:none;
+  user-select:none;-webkit-user-select:none;
+  filter:drop-shadow(0 3px 6px rgba(0,0,0,.4));
+  transition:transform .15s,opacity .15s;
+}
+.shape-wrap:active{cursor:grabbing}
+.shape-wrap.dragging{opacity:.15;transform:scale(.9)}
+.shape-cell{
+  background:var(--c,#4aa896);
+  border-radius:4px;
+  position:relative;
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.2),inset 0 -3px 6px rgba(0,0,0,.25);
+}
+.shape-cell::after{
+  content:'';position:absolute;inset:2px;
+  border-radius:3px;
+  background:linear-gradient(180deg,rgba(255,255,255,.32),transparent 55%);
+  pointer-events:none;
+}
+.shape-cell.hidden{
+  background:transparent;
+  box-shadow:none;
+}
+.shape-cell.hidden::after{display:none}
+
+/* ═══ GHOST (floating) ═══ */
+#ghost{
+  position:fixed;
+  pointer-events:none;
+  z-index:9999;
+  display:none;
+  filter:drop-shadow(0 8px 16px rgba(0,0,0,.6)) drop-shadow(0 0 12px rgba(244,184,66,.5));
+  transform:translate(-50%,-50%);
+  opacity:.92;
+}
+#ghost.show{display:block}
+#ghost .shape-cell{
+  background:var(--c);
+  box-shadow:inset 0 0 0 2px rgba(255,255,255,.3),inset 0 -4px 8px rgba(0,0,0,.3);
+}
+#ghost .shape-cell.hidden{background:transparent;box-shadow:none}
+
+/* ═══ MODAL ═══ */
+.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);
+  z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
+.modal.show{display:flex}
+.modal-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;
+  padding:24px;max-width:400px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);
+  animation:popIn .35s cubic-bezier(.16,1,.3,1);max-height:90vh;overflow-y:auto}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* ═══ LEADERBOARD ═══ */
+.lb-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;
+  background:rgba(10,30,28,.55);
+  border-radius:10px;
+  margin-bottom:6px;
+  border:1px solid rgba(55,137,123,.3);
+}
+.lb-row.top1{background:linear-gradient(135deg,rgba(244,184,66,.25),rgba(244,184,66,.08));border-color:rgba(244,184,66,.6)}
+.lb-row.top2{background:linear-gradient(135deg,rgba(191,233,220,.18),rgba(191,233,220,.05));border-color:rgba(191,233,220,.5)}
+.lb-row.top3{background:linear-gradient(135deg,rgba(205,127,50,.18),rgba(205,127,50,.05));border-color:rgba(205,127,50,.5)}
+.lb-rank{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:13px;flex-shrink:0;
+  background:rgba(0,0,0,.4);color:#7ec9be;
+}
+.lb-row.top1 .lb-rank{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-size:17px}
+.lb-row.top2 .lb-rank{background:linear-gradient(135deg,#E5E7EB,#9CA3AF);color:#123634;font-size:15px}
+.lb-row.top3 .lb-rank{background:linear-gradient(135deg,#CD7F32,#92400E);color:#fff;font-size:15px}
+.lb-name{flex:1;min-width:0;text-align:left}
+.lb-name .n{font-weight:900;font-size:13px;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.lb-name .d{font-size:10px;color:#7ec9be;font-weight:700;margin-top:1px}
+.lb-score{font-weight:900;font-size:16px;color:#FBD77A;font-family:'Fraunces',serif}
+.lb-row.top1 .lb-score{font-size:19px}
+
+@keyframes scoreBounce{
+  0%{transform:scale(1);color:#FBD77A}
+  50%{transform:scale(1.3);color:#fff}
+  100%{transform:scale(1);color:#FBD77A}
+}
+.stat-box .val.bounce{animation:scoreBounce .5s ease-out}
+</style>
+</head>
+<body class="pb-6">
+
+<!-- HEADER -->
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <div class="text-center flex-1">
+      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
+      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Block Blast</p>
+    </div>
+    <button onclick="openLeaderboard()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-gold-400 text-lg active:scale-95" title="Bảng xếp hạng">🏆</button>
+    <button onclick="openRules()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">❓</button>
+  </div>
+</div>
+
+<div class="max-w-2xl mx-auto px-4 pt-5">
+
+  <!-- STATS -->
+  <div class="flex gap-2 mb-3">
+    <div class="stat-box">
+      <div class="lbl">🏆 Điểm</div>
+      <div class="val" id="scoreVal">0</div>
+    </div>
+    <div class="stat-box best">
+      <div class="lbl">👑 Kỷ lục</div>
+      <div class="val" id="bestVal">0</div>
+    </div>
+    <div class="stat-box combo" id="comboBox">
+      <div class="lbl">🔥 Combo</div>
+      <div class="val" id="comboVal">x1</div>
+    </div>
+  </div>
+
+  <!-- BOARD -->
+  <div id="boardWrap" class="mb-3">
+    <div id="board"></div>
+  </div>
+
+  <!-- TRAY -->
+  <div id="tray" class="mb-3">
+    <div class="tray-slot" data-slot="0"></div>
+    <div class="tray-slot" data-slot="1"></div>
+    <div class="tray-slot" data-slot="2"></div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="flex gap-2 mb-3">
+    <button onclick="restart()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Ván mới</button>
+    <button onclick="goBack()" class="flex-1 py-3 rounded-xl text-[12px] uppercase" style="background:rgba(239,83,80,.15);color:#ef5350;border:1px solid rgba(239,83,80,.4);font-weight:800;cursor:pointer;font-family:inherit">🚪 Thoát</button>
+  </div>
+
+  <!-- HINT -->
+  <div class="glass rounded-2xl p-4">
+    <div class="text-[11px] font-black text-white uppercase tracking-wider mb-2">💡 Hướng dẫn</div>
+    <div class="text-[11.5px] text-teal-200 leading-relaxed space-y-1">
+      <div>👉 <b class="text-gold-400">Kéo</b> các khối ở dưới thả vào bàn cờ 8×8</div>
+      <div>🎯 Điền đầy 1 hàng hoặc 1 cột → <b class="text-gold-400">nổ tung</b> + ghi điểm</div>
+      <div>🔥 Nổ nhiều hàng cùng lúc → <b class="text-gold-400">combo</b> nhân điểm</div>
+      <div>⛔ Hết chỗ đặt cả 3 khối → <b class="text-gold-400">Game Over</b></div>
+      <div>👑 Điểm cao → lên <b class="text-gold-400">Bảng xếp hạng</b></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- GHOST -->
+<div id="ghost"></div>
+
+<!-- GAME OVER MODAL -->
+<div id="gameOverModal" class="modal">
+  <div class="modal-card">
+    <div class="text-6xl mb-3">💥</div>
+    <h3 class="text-[22px] font-black text-red-400 uppercase tracking-widest mb-2">GAME OVER!</h3>
+    <p class="text-[12.5px] text-teal-200 mb-4">Không còn chỗ đặt khối nào</p>
+
+    <div class="bg-black/30 rounded-xl p-4 mb-4">
+      <div class="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Điểm của bạn</div>
+      <div class="text-[42px] font-black text-gold-400" style="font-family:'Fraunces',serif;line-height:1" id="finalScore">0</div>
+      <div class="text-[11px] text-teal-300 font-bold mt-2" id="newRecordTag" style="display:none">🎉 KỶ LỤC MỚI!</div>
+    </div>
+
+    <div id="saveStatus" class="text-[11px] text-teal-300 mb-3"></div>
+
+    <div class="flex gap-2">
+      <button onclick="openLeaderboard()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">🏆 BXH</button>
+      <button onclick="restart()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Chơi lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- LEADERBOARD MODAL -->
+<div id="leaderboardModal" class="modal">
+  <div class="modal-card" style="max-width:440px">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-[16px] font-black text-gold-400 uppercase tracking-widest">🏆 Bảng Xếp Hạng</h3>
+      <button onclick="closeLeaderboard()" class="text-teal-400 text-xl px-2">✕</button>
+    </div>
+
+    <div class="flex gap-2 mb-4 justify-center">
+      <button id="lbTabAll" class="px-4 py-2 rounded-lg text-[11px] font-black uppercase active" style="background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border:none;cursor:pointer;font-family:inherit" onclick="switchLbTab('all')">👥 Tất cả</button>
+      <button id="lbTabMe" class="px-4 py-2 rounded-lg text-[11px] font-black uppercase" style="background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);cursor:pointer;font-family:inherit" onclick="switchLbTab('me')">👤 Của tôi</button>
+    </div>
+
+    <div id="lbList" class="max-h-[50vh] overflow-y-auto pr-1">
+      <div class="text-center py-8 text-teal-500 text-[12px] font-bold">
+        <div class="text-3xl mb-2 animate-pulse">⏳</div>
+        Đang tải bảng xếp hạng...
+      </div>
+    </div>
+
+    <button onclick="closeLeaderboard()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">✓ ĐÓNG</button>
+  </div>
+</div>
+
+<!-- RULES MODAL -->
+<div id="rulesModal" class="modal">
+  <div class="modal-card" style="max-width:440px;text-align:left">
+    <h3 class="text-[16px] font-black text-gold-400 uppercase tracking-widest mb-4 text-center">📖 Luật Block Blast</h3>
+    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed">
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Bàn cờ:</b> 8×8 ô vuông
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Mỗi lượt:</b> Kéo 1 trong 3 khối ở dưới thả vào bàn cờ
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Nổ:</b> Điền đầy 1 hàng hoặc 1 cột → biến mất + ghi điểm
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Combo:</b> Nổ nhiều hàng cùng lúc → nhân điểm. Nổ liên tiếp → combo tăng
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Game over:</b> Không thể đặt bất kỳ khối nào trong 3 khối hiện có
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Điểm:</b> Đặt khối +1/ô · Nổ N hàng = 5×N×(N+1) × combo
+      </div>
+    </div>
+    <button onclick="closeRules()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">✓ ĐÃ HIỂU</button>
+  </div>
+</div>
+
+<!-- ═══════════ GAME LOGIC + FIREBASE ═══════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ═══════════════════════ FIREBASE ═══════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+const COL_SCORES = 'block_blast_scores';
+
+let db = null;
+let fbReady = false;
+
+try {
+  const app = initializeApp(firebaseConfig, 'bb-app');
+  const auth = getAuth(app);
+  db = getFirestore(app);
+  signInAnonymously(auth).then(function(){
+    fbReady = true;
+    console.log('[BlockBlast] Firebase ready');
+  }).catch(function(err){
+    console.warn('[BlockBlast] Auth fail:', err);
+  });
+} catch(e){ console.warn('[BlockBlast] Init fail:', e); }
+
+// ═══════════════════════ GAME CONFIG ═══════════════════════
+const SIZE = 8;
+const COLORS = [
+  '#EF4444', '#F97316', '#FBBF24', '#10B981',
+  '#06B6D4', '#3B82F6', '#8B5CF6', '#EC4899'
+];
+
+// Định nghĩa các hình khối (mảng [r, c])
+const SHAPES = [
+  // 1 ô
+  [[0,0]],
+  // 2 ô
+  [[0,0],[0,1]], [[0,0],[1,0]],
+  // 3 ô thẳng
+  [[0,0],[0,1],[0,2]], [[0,0],[1,0],[2,0]],
+  // 4 ô thẳng
+  [[0,0],[0,1],[0,2],[0,3]], [[0,0],[1,0],[2,0],[3,0]],
+  // 5 ô thẳng
+  [[0,0],[0,1],[0,2],[0,3],[0,4]], [[0,0],[1,0],[2,0],[3,0],[4,0]],
+  // Vuông
+  [[0,0],[0,1],[1,0],[1,1]],
+  [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]],
+  // L nhỏ (2x2 thiếu 1)
+  [[0,0],[1,0],[1,1]],
+  [[0,0],[0,1],[1,0]],
+  [[0,0],[0,1],[1,1]],
+  [[0,1],[1,0],[1,1]],
+  // L vừa (3 dài + 1)
+  [[0,0],[1,0],[2,0],[2,1]],
+  [[0,0],[1,0],[2,0],[0,1]],
+  [[0,0],[0,1],[0,2],[1,0]],
+  [[0,0],[0,1],[0,2],[1,2]],
+  [[0,0],[1,0],[1,1],[1,2]],
+  [[0,2],[1,0],[1,1],[1,2]],
+  [[0,0],[0,1],[1,0],[2,0]],
+  [[0,1],[1,1],[2,0],[2,1]],
+  // T
+  [[0,0],[0,1],[0,2],[1,1]],
+  [[0,1],[1,0],[1,1],[1,2]],
+  [[0,0],[1,0],[2,0],[1,1]],
+  [[0,1],[1,0],[1,1],[2,1]],
+  // S/Z
+  [[0,1],[0,2],[1,0],[1,1]],
+  [[0,0],[0,1],[1,1],[1,2]],
+  [[0,0],[1,0],[1,1],[2,1]],
+  [[0,1],[1,0],[1,1],[2,0]],
+];
+
+// ═══════════════════════ STATE ═══════════════════════
+const state = {
+  board: [],        // 8x8, 0 = trống, color = có khối
+  tray: [null, null, null], // mỗi slot = { shape: [[r,c]], color, id }
+  score: 0,
+  best: 0,
+  combo: 0,
+  maxCombo: 0,
+  gameOver: false,
+  drag: null,       // thông tin drag hiện tại
+  placedCells: 0
+};
+
+function $(id){ return document.getElementById(id); }
+function getStaffName(){
+  try {
+    if (typeof window.getSyncedStaffName === 'function'){
+      const n = window.getSyncedStaffName();
+      if (n && n.trim()) return n.trim();
+    }
+    return localStorage.getItem('dolphinStaffName') || 'Ẩn danh';
+  } catch(e){ return 'Ẩn danh'; }
+}
+function getVNDate(){
+  const p = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Ho_Chi_Minh', day: '2-digit', month: '2-digit', year: 'numeric' }).format(new Date());
+  return p;
+}
+
+// ═══════════════════════ BOARD SETUP ═══════════════════════
+function emptyBoard(){
+  const b = [];
+  for (let r = 0; r < SIZE; r++) b.push(new Array(SIZE).fill(0));
+  return b;
+}
+
+function renderBoard(){
+  const el = $('board');
+  if (!el) return;
+  if (el.children.length !== SIZE * SIZE){
+    let html = '';
+    for (let i = 0; i < SIZE * SIZE; i++) html += '<div class="cell" data-i="' + i + '"></div>';
+    el.innerHTML = html;
+  }
+  for (let r = 0; r < SIZE; r++){
+    for (let c = 0; c < SIZE; c++){
+      const cell = el.children[r * SIZE + c];
+      const v = state.board[r][c];
+      cell.className = 'cell' + (v ? ' filled' : '');
+      cell.style.setProperty('--c', v || '');
+    }
+  }
+}
+
+// ═══════════════════════ RENDER TRAY ═══════════════════════
+function getShapeBounds(shape){
+  let maxR = 0, maxC = 0;
+  shape.forEach(function(p){ if (p[0] > maxR) maxR = p[0]; if (p[1] > maxC) maxC = p[1]; });
+  return { rows: maxR + 1, cols: maxC + 1 };
+}
+
+function renderTray(){
+  const slots = document.querySelectorAll('.tray-slot');
+  slots.forEach(function(slot, i){
+    slot.innerHTML = '';
+    const item = state.tray[i];
+    if (!item){
+      slot.classList.add('empty');
+      return;
+    }
+    slot.classList.remove('empty');
+
+    const b = getShapeBounds(item.shape);
+    const miniCell = Math.min(22, Math.floor(96 / Math.max(b.rows, b.cols)));
+
+    const wrap = document.createElement('div');
+    wrap.className = 'shape-wrap';
+    wrap.style.gridTemplateColumns = 'repeat(' + b.cols + ', ' + miniCell + 'px)';
+    wrap.style.gridTemplateRows = 'repeat(' + b.rows + ', ' + miniCell + 'px)';
+    wrap.style.setProperty('--c', item.color);
+    wrap.dataset.slot = i;
+
+    const shapeSet = new Set(item.shape.map(function(p){ return p[0] + ',' + p[1]; }));
+    for (let r = 0; r < b.rows; r++){
+      for (let c = 0; c < b.cols; c++){
+        const cEl = document.createElement('div');
+        cEl.className = 'shape-cell' + (shapeSet.has(r + ',' + c) ? '' : ' hidden');
+        cEl.style.width = miniCell + 'px';
+        cEl.style.height = miniCell + 'px';
+        cEl.style.setProperty('--c', item.color);
+        wrap.appendChild(cEl);
+      }
+    }
+    slot.appendChild(wrap);
+  });
+}
+
+// ═══════════════════════ SPAWN ═══════════════════════
+function randomShape(){
+  const shape = SHAPES[Math.floor(Math.random() * SHAPES.length)];
+  const color = COLORS[Math.floor(Math.random() * COLORS.length)];
+  return { shape: shape, color: color, id: Date.now() + Math.random() };
+}
+
+function refillTray(){
+  let anyNew = false;
+  for (let i = 0; i < 3; i++){
+    if (!state.tray[i]){
+      state.tray[i] = randomShape();
+      anyNew = true;
+    }
+  }
+  return anyNew;
+}
+
+// ═══════════════════════ PLACEMENT ═══════════════════════
+function canPlace(shape, baseR, baseC){
+  for (const p of shape){
+    const r = baseR + p[0], c = baseC + p[1];
+    if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) return false;
+    if (state.board[r][c]) return false;
+  }
+  return true;
+}
+
+function placeShape(item, baseR, baseC){
+  // Đặt khối
+  for (const p of item.shape){
+    state.board[baseR + p[0]][baseC + p[1]] = item.color;
+  }
+
+  // Tăng điểm cơ bản
+  state.score += item.shape.length;
+  state.placedCells += item.shape.length;
+
+  // Render ngay để user thấy khối đã đặt
+  renderBoard();
+  document.querySelectorAll('.cell.filled').forEach(function(c){
+    c.classList.add('newly-placed');
+  });
+  setTimeout(function(){
+    document.querySelectorAll('.cell.newly-placed').forEach(function(c){
+      c.classList.remove('newly-placed');
+    });
+  }, 250);
+
+  // Tìm hàng/cột đầy
+  const fullRows = [];
+  const fullCols = [];
+  for (let r = 0; r < SIZE; r++){
+    let full = true;
+    for (let c = 0; c < SIZE; c++) if (!state.board[r][c]){ full = false; break; }
+    if (full) fullRows.push(r);
+  }
+  for (let c = 0; c < SIZE; c++){
+    let full = true;
+    for (let r = 0; r < SIZE; r++) if (!state.board[r][c]){ full = false; break; }
+    if (full) fullCols.push(c);
+  }
+
+  const totalLines = fullRows.length + fullCols.length;
+
+  if (totalLines > 0){
+    // Combo tăng
+    state.combo++;
+    if (state.combo > state.maxCombo) state.maxCombo = state.combo;
+
+    // Điểm nổ
+    const lineScore = 5 * totalLines * (totalLines + 1);
+    const comboMultiplier = 1 + (state.combo - 1) * 0.5;
+    const gain = Math.round(lineScore * comboMultiplier);
+    state.score += gain;
+
+    // Highlight cell sắp nổ
+    const boardEl = $('board');
+    fullRows.forEach(function(r){
+      for (let c = 0; c < SIZE; c++){
+        boardEl.children[r * SIZE + c].classList.add('clearing');
+      }
+    });
+    fullCols.forEach(function(c){
+      for (let r = 0; r < SIZE; r++){
+        boardEl.children[r * SIZE + c].classList.add('clearing');
+      }
+    });
+
+    // Xóa sau animation
+    setTimeout(function(){
+      fullRows.forEach(function(r){
+        for (let c = 0; c < SIZE; c++) state.board[r][c] = 0;
+      });
+      fullCols.forEach(function(c){
+        for (let r = 0; r < SIZE; r++) state.board[r][c] = 0;
+      });
+      renderBoard();
+      updateStats(true);
+      showComboToast(totalLines, state.combo, gain);
+    }, 280);
+
+  } else {
+    // Không nổ → reset combo
+    state.combo = 0;
+    updateStats(false);
+  }
+}
+
+function showComboToast(lines, combo, gain){
+  // Tạo toast nổi
+  const toast = document.createElement('div');
+  toast.style.cssText = 'position:fixed;top:30%;left:50%;transform:translate(-50%,-50%) scale(0.5);'
+    + 'z-index:10000;pointer-events:none;font-family:Fredoka,Nunito,sans-serif;'
+    + 'text-align:center;transition:transform .4s cubic-bezier(.16,1,.3,1),opacity .4s;opacity:0;';
+  toast.innerHTML = '<div style="font-size:48px;font-weight:900;color:#FBD77A;'
+    + 'text-shadow:0 0 20px rgba(244,184,66,1),0 4px 12px rgba(0,0,0,.7);line-height:1;'
+    + 'font-family:\'Fraunces\',serif">+' + gain + '</div>'
+    + (combo > 1 ? '<div style="font-size:20px;font-weight:900;color:#f472b6;margin-top:6px;'
+    + 'text-shadow:0 2px 8px rgba(0,0,0,.7);letter-spacing:.05em">🔥 COMBO x' + combo + '</div>' : '')
+    + (lines > 1 ? '<div style="font-size:14px;font-weight:800;color:#bfe9dc;margin-top:4px;'
+    + 'text-shadow:0 2px 6px rgba(0,0,0,.7)">NỔ ' + lines + ' HÀNG!</div>' : '');
+  document.body.appendChild(toast);
+  requestAnimationFrame(function(){
+    toast.style.transform = 'translate(-50%,-50%) scale(1)';
+    toast.style.opacity = '1';
+  });
+  setTimeout(function(){
+    toast.style.transform = 'translate(-50%,-50%) scale(1.3)';
+    toast.style.opacity = '0';
+  }, 800);
+  setTimeout(function(){ toast.remove(); }, 1300);
+}
+
+// ═══════════════════════ UPDATE STATS ═══════════════════════
+function updateStats(bounce){
+  const scoreEl = $('scoreVal');
+  const bestEl = $('bestVal');
+  const comboEl = $('comboVal');
+  const comboBox = $('comboBox');
+
+  if (state.score > state.best){
+    state.best = state.score;
+    try { localStorage.setItem('dolphin_bb_best', String(state.best)); } catch(e){}
+  }
+
+  scoreEl.textContent = state.score;
+  bestEl.textContent = state.best;
+
+  if (bounce){
+    scoreEl.classList.remove('bounce');
+    void scoreEl.offsetWidth;
+    scoreEl.classList.add('bounce');
+  }
+
+  if (state.combo > 1){
+    comboEl.textContent = 'x' + state.combo;
+    comboBox.classList.add('hot');
+  } else {
+    comboEl.textContent = 'x1';
+    comboBox.classList.remove('hot');
+  }
+}
+
+function loadBest(){
+  try {
+    const v = parseInt(localStorage.getItem('dolphin_bb_best'), 10);
+    if (!isNaN(v) && v > 0) state.best = v;
+  } catch(e){}
+}
+
+// ═══════════════════════ DRAG & DROP ═══════════════════════
+function startDrag(e, slotIndex, wrapEl){
+  if (state.gameOver) return;
+  const item = state.tray[slotIndex];
+  if (!item) return;
+
+  const board = $('board');
+  const boardRect = board.getBoundingClientRect();
+  const cellSize = boardRect.width / SIZE;
+  const bounds = getShapeBounds(item.shape);
+
+  // Tính offset trong shape
+  const wrapRect = wrapEl.getBoundingClientRect();
+  const miniCell = wrapRect.width / bounds.cols;
+  let offR = Math.floor((e.clientY - wrapRect.top) / miniCell);
+  let offC = Math.floor((e.clientX - wrapRect.left) / miniCell);
+  offR = Math.max(0, Math.min(bounds.rows - 1, offR));
+  offC = Math.max(0, Math.min(bounds.cols - 1, offC));
+
+  // Nếu offset không phải là cell của shape → tìm cell gần nhất
+  const shapeSet = new Set(item.shape.map(function(p){ return p[0] + ',' + p[1]; }));
+  if (!shapeSet.has(offR + ',' + offC)){
+    let best = null, bestDist = Infinity;
+    item.shape.forEach(function(p){
+      const d = Math.abs(p[0] - offR) + Math.abs(p[1] - offC);
+      if (d < bestDist){ bestDist = d; best = p; }
+    });
+    if (best){ offR = best[0]; offC = best[1]; }
+  }
+
+  // Ghost
+  const ghost = $('ghost');
+  const ghostCellSize = Math.max(20, Math.min(38, cellSize * 0.9));
+  ghost.innerHTML = '';
+  ghost.style.gridTemplateColumns = 'repeat(' + bounds.cols + ', ' + ghostCellSize + 'px)';
+  ghost.style.gridTemplateRows = 'repeat(' + bounds.rows + ', ' + ghostCellSize + 'px)';
+  ghost.style.display = 'grid';
+  ghost.style.gap = '2px';
+  ghost.style.setProperty('--c', item.color);
+
+  const shapeSetForRender = new Set(item.shape.map(function(p){ return p[0] + ',' + p[1]; }));
+  for (let r = 0; r < bounds.rows; r++){
+    for (let c = 0; c < bounds.cols; c++){
+      const cEl = document.createElement('div');
+      cEl.className = 'shape-cell' + (shapeSetForRender.has(r + ',' + c) ? '' : ' hidden');
+      cEl.style.width = ghostCellSize + 'px';
+      cEl.style.height = ghostCellSize + 'px';
+      cEl.style.setProperty('--c', item.color);
+      ghost.appendChild(cEl);
+    }
+  }
+  ghost.classList.add('show');
+
+  state.drag = {
+    slotIndex: slotIndex,
+    item: item,
+    bounds: bounds,
+    offR: offR,
+    offC: offC,
+    ghostSize: ghostCellSize,
+    boardRect: boardRect,
+    cellSize: cellSize
+  };
+
+  wrapEl.classList.add('dragging');
+  updateGhostPos(e.clientX, e.clientY);
+  updateBoardPreview(e.clientX, e.clientY);
+}
+
+function updateGhostPos(x, y){
+  const ghost = $('ghost');
+  if (!ghost) return;
+  ghost.style.left = x + 'px';
+  ghost.style.top = y + 'px';
+}
+
+function updateBoardPreview(x, y){
+  clearPreview();
+  if (!state.drag) return;
+
+  const d = state.drag;
+  const boardEl = $('board');
+  const cellSize = d.cellSize;
+  const targetC = Math.floor((x - d.boardRect.left) / cellSize) - d.offC;
+  const targetR = Math.floor((y - d.boardRect.top) / cellSize) - d.offR;
+
+  const valid = canPlace(d.item.shape, targetR, targetC);
+  const cls = valid ? 'preview' : 'preview-invalid';
+
+  d.item.shape.forEach(function(p){
+    const r = targetR + p[0];
+    const c = targetC + p[1];
+    if (r >= 0 && r < SIZE && c >= 0 && c < SIZE){
+      boardEl.children[r * SIZE + c].classList.add(cls);
+    }
+  });
+}
+
+function clearPreview(){
+  document.querySelectorAll('.cell.preview, .cell.preview-invalid').forEach(function(c){
+    c.classList.remove('preview', 'preview-invalid');
+  });
+}
+
+function endDrag(x, y){
+  if (!state.drag) return;
+  const d = state.drag;
+
+  const cellSize = d.cellSize;
+  const targetC = Math.floor((x - d.boardRect.left) / cellSize) - d.offC;
+  const targetR = Math.floor((y - d.boardRect.top) / cellSize) - d.offR;
+
+  const valid = canPlace(d.item.shape, targetR, targetC);
+
+  // Cleanup
+  $('ghost').classList.remove('show');
+  clearPreview();
+
+  const wrapEl = document.querySelector('.tray-slot[data-slot="' + d.slotIndex + '"] .shape-wrap');
+  if (wrapEl) wrapEl.classList.remove('dragging');
+
+  if (valid){
+    // Đặt
+    state.tray[d.slotIndex] = null;
+    placeShape(d.item, targetR, targetC);
+    renderTray();
+
+    // Refill nếu cần
+    setTimeout(function(){
+      const anyNew = refillTray();
+      if (anyNew){
+        renderTray();
+      } else if (!state.gameOver){
+        // Kiểm tra game over
+        checkGameOver();
+      }
+    }, 320);
+
+  } else {
+    // Không hợp lệ → khôi phục
+    if (wrapEl) wrapEl.classList.remove('dragging');
+    state.drag = null;
+  }
+}
+
+// ═══════════════════════ GAME OVER CHECK ═══════════════════════
+function findAnyValidPlacement(){
+  for (let i = 0; i < 3; i++){
+    const item = state.tray[i];
+    if (!item) continue;
+    for (let r = 0; r < SIZE; r++){
+      for (let c = 0; c < SIZE; c++){
+        if (canPlace(item.shape, r, c)) return true;
+      }
+    }
+  }
+  return false;
+}
+
+function checkGameOver(){
+  // Đợi render xong
+  if (findAnyValidPlacement()) return;
+
+  state.gameOver = true;
+  setTimeout(function(){
+    $('finalScore').textContent = state.score;
+
+    // Check kỷ lục mới (so với best của Firebase, không phải local)
+    const isNewRecord = state.score > 0 && state.score >= state.best;
+    $('newRecordTag').style.display = isNewRecord ? 'block' : 'none';
+
+    $('gameOverModal').classList.add('show');
+
+    // Auto-save lên Firebase
+    saveScore(state.score);
+  }, 400);
+}
+
+// ═══════════════════════ FIREBASE — SAVE + LOAD ═══════════════════════
+async function saveScore(score){
+  const statusEl = $('saveStatus');
+  if (score <= 0){ statusEl.textContent = ''; return; }
+
+  if (!fbReady || !db){
+    statusEl.textContent = '⚠️ Không kết nối được — chưa lưu BXH';
+    statusEl.style.color = '#FCA5A5';
+    return;
+  }
+
+  const name = getStaffName();
+  statusEl.textContent = '⏳ Đang lưu lên bảng xếp hạng...';
+  statusEl.style.color = '#FBD77A';
+
+  try {
+    await addDoc(collection(db, COL_SCORES), {
+      name: name,
+      score: score,
+      maxCombo: state.maxCombo,
+      timestamp: Date.now(),
+      dateVN: getVNDate()
+    });
+    statusEl.textContent = '✅ Đã lưu lên bảng xếp hạng!';
+    statusEl.style.color = '#66BB6A';
+    console.log('[BlockBlast] Score saved:', score);
+  } catch(e){
+    console.warn('[BlockBlast] Save fail:', e);
+    statusEl.textContent = '❌ Lỗi lưu: ' + (e.message || 'unknown');
+    statusEl.style.color = '#FCA5A5';
+  }
+}
+
+let lbTab = 'all';
+let lbCache = { all: null, me: null };
+
+window.switchLbTab = function(tab){
+  lbTab = tab;
+  const bAll = $('lbTabAll');
+  const bMe = $('lbTabMe');
+  if (tab === 'all'){
+    bAll.style.background = 'linear-gradient(135deg,#FBD77A,#F4B842)';
+    bAll.style.color = '#123634';
+    bAll.style.border = 'none';
+    bMe.style.background = 'rgba(25,71,67,.6)';
+    bMe.style.color = '#bfe9dc';
+    bMe.style.border = '1px solid rgba(55,137,123,.5)';
+  } else {
+    bMe.style.background = 'linear-gradient(135deg,#FBD77A,#F4B842)';
+    bMe.style.color = '#123634';
+    bMe.style.border = 'none';
+    bAll.style.background = 'rgba(25,71,67,.6)';
+    bAll.style.color = '#bfe9dc';
+    bAll.style.border = '1px solid rgba(55,137,123,.5)';
+  }
+  loadLeaderboard();
+};
+
+window.openLeaderboard = function(){
+  $('leaderboardModal').classList.add('show');
+  loadLeaderboard();
+};
+window.closeLeaderboard = function(){
+  $('leaderboardModal').classList.remove('show');
+};
+
+async function loadLeaderboard(){
+  const listEl = $('lbList');
+  const cacheKey = lbTab;
+  if (lbCache[cacheKey]){
+    renderLbList(lbCache[cacheKey]);
+    return;
+  }
+
+  listEl.innerHTML = '<div class="text-center py-8 text-teal-500 text-[12px] font-bold">'
+    + '<div class="text-3xl mb-2 animate-pulse">⏳</div>Đang tải...</div>';
+
+  if (!fbReady || !db){
+    listEl.innerHTML = '<div class="text-center py-8 text-red-400 text-[12px] font-bold">'
+      + '<div class="text-3xl mb-2">⚠️</div>Không kết nối được Firebase</div>';
+    return;
+  }
+
+  try {
+    let q;
+    if (lbTab === 'me'){
+      const meName = getStaffName();
+      q = query(collection(db, COL_SCORES),
+        where('name', '==', meName),
+        orderBy('score', 'desc'),
+        limit(20));
+    } else {
+      q = query(collection(db, COL_SCORES),
+        orderBy('score', 'desc'),
+        limit(20));
+    }
+    const snap = await getDocs(q);
+    const data = [];
+    snap.forEach(function(d){ data.push(d.data()); });
+    lbCache[cacheKey] = data;
+    renderLbList(data);
+  } catch(e){
+    console.warn('[BlockBlast] Load LB fail:', e);
+    listEl.innerHTML = '<div class="text-center py-8 text-red-400 text-[12px] font-bold">'
+      + '<div class="text-3xl mb-2">❌</div>Lỗi tải: ' + (e.message || 'unknown') + '</div>';
+  }
+}
+
+function renderLbList(data){
+  const listEl = $('lbList');
+  if (!data || !data.length){
+    listEl.innerHTML = '<div class="text-center py-8 text-teal-500 text-[12px] font-bold">'
+      + '<div class="text-3xl mb-2">🏆</div>'
+      + (lbTab === 'me' ? 'Bạn chưa có điểm nào trên BXH' : 'Chưa có ai lên BXH') + '</div>';
+    return;
+  }
+
+  const medals = ['🥇', '🥈', '🥉'];
+  const html = data.map(function(d, idx){
+    const cls = idx === 0 ? 'top1' : idx === 1 ? 'top2' : idx === 2 ? 'top3' : '';
+    const rank = idx < 3 ? medals[idx] : (idx + 1);
+    return '<div class="lb-row ' + cls + '">'
+      + '<div class="lb-rank">' + rank + '</div>'
+      + '<div class="lb-name">'
+      + '<div class="n">' + escapeHtml(d.name || 'Ẩn danh') + '</div>'
+      + '<div class="d">' + (d.dateVN || '') + (d.maxCombo > 1 ? ' · 🔥 x' + d.maxCombo : '') + '</div>'
+      + '</div>'
+      + '<div class="lb-score">' + (d.score || 0) + '</div>'
+      + '</div>';
+  }).join('');
+  listEl.innerHTML = html;
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+// ═══════════════════════ MODALS ═══════════════════════
+window.openRules = function(){ $('rulesModal').classList.add('show'); };
+window.closeRules = function(){ $('rulesModal').classList.remove('show'); };
+
+window.restart = function(){
+  if (!state.gameOver && state.score > 0){
+    if (!confirm('Ván đang chơi. Bắt đầu lại?')) return;
+  }
+  startNewGame();
+};
+
+window.goBack = function(){
+  if (!state.gameOver && state.score > 0){
+    if (!confirm('Ván đang chơi. Thoát sẽ mất tiến trình?')) return;
+  }
+  window.location.href = '/DolphinApp/giaitri/index.html';
+};
+
+// ═══════════════════════ INIT ═══════════════════════
+function startNewGame(){
+  state.board = emptyBoard();
+  state.tray = [null, null, null];
+  state.score = 0;
+  state.combo = 0;
+  state.maxCombo = 0;
+  state.gameOver = false;
+  state.drag = null;
+
+  refillTray();
+  renderBoard();
+  renderTray();
+  updateStats(false);
+  $('gameOverModal').classList.remove('show');
+  $('saveStatus').textContent = '';
+}
+
+function init(){
+  loadBest();
+  startNewGame();
+
+  // Gắn drag cho tray
+  const trayEl = $('tray');
+  trayEl.addEventListener('pointerdown', function(e){
+    const wrap = e.target.closest('.shape-wrap');
+    if (!wrap) return;
+    if (state.gameOver) return;
+    const slotIndex = parseInt(wrap.dataset.slot, 10);
+    if (isNaN(slotIndex)) return;
+    e.preventDefault();
+    wrap.setPointerCapture && wrap.setPointerCapture(e.pointerId);
+    startDrag(e, slotIndex, wrap);
+  });
+
+  document.addEventListener('pointermove', function(e){
+    if (!state.drag) return;
+    e.preventDefault();
+    updateGhostPos(e.clientX, e.clientY);
+    updateBoardPreview(e.clientX, e.clientY);
+  }, { passive: false });
+
+  document.addEventListener('pointerup', function(e){
+    if (!state.drag) return;
+    endDrag(e.clientX, e.clientY);
+  });
+  document.addEventListener('pointercancel', function(e){
+    if (!state.drag) return;
+    $('ghost').classList.remove('show');
+    clearPreview();
+    const wrap = document.querySelector('.tray-slot[data-slot="' + state.drag.slotIndex + '"] .shape-wrap');
+    if (wrap) wrap.classList.remove('dragging');
+    state.drag = null;
+  });
+
+  // Chặn double-tap zoom
+  let lastTap = 0;
+  document.addEventListener('touchend', function(e){
+    const now = Date.now();
+    if (now - lastTap < 300) e.preventDefault();
+    lastTap = now;
+  }, { passive: false });
+
+  console.log('%c🧱 BLOCK BLAST LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+}
+
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>

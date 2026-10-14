@@ -1,18 +1,18 @@
 {
-  "version": "1.0.13",
-  "previousVersion": "1.0.12",
-  "commit": "ed595bf",
-  "previousCommit": "9827dab",
-  "buildDate": "2026-10-14T03:09:14.763Z",
-  "summary": "Fix lỗi Service Worker block + dọn index.html",
+  "version": "1.0.14",
+  "previousVersion": "1.0.13",
+  "commit": "9e9a42f",
+  "previousCommit": "ed595bf",
+  "buildDate": "2026-10-14T05:08:32.086Z",
+  "summary": "Thêm nhạc Lofi Chill",
   "changes": {
-    "totalCommits": 17,
+    "totalCommits": 18,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix lỗi Service Worker block + dọn index.html"
+    "Thêm nhạc Lofi Chill"
   ],
   "fileChanges": [
     {

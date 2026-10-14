@@ -1,5 +1,5 @@
 {
-  "version": "1.0.13",
+  "version": "1.0.14",
   "releaseDate": "2026-10-14",
-  "notes": "Fix lỗi Service Worker block + dọn index.html"
+  "notes": "Thêm nhạc Lofi Chill"
 }

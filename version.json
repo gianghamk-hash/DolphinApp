@@ -1,7 +1,7 @@
 {
-  "version": "1.0.13",
-  "buildDate": "2026-10-14T03:09:14.763Z",
-  "commit": "ed595bf",
-  "notes": "Fix lỗi Service Worker block + dọn index.html",
+  "version": "1.0.14",
+  "buildDate": "2026-10-14T05:08:32.086Z",
+  "commit": "9e9a42f",
+  "notes": "Thêm nhạc Lofi Chill",
   "forceUpdate": false
 }

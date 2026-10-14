@@ -1,0 +1,1315 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · Sổ Tay Chung</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;overflow-x:hidden}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:active{transform:scale(.96)}
+.btn-gold:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(.96)}
+.hidden{display:none!important}
+
+/* ═══ TAB SWITCHER ═══ */
+.main-tabs{
+  display:flex;gap:6px;padding:6px;
+  background:rgba(10,30,28,.6);
+  border-radius:14px;
+  border:1px solid rgba(255,255,255,.08);
+  margin-bottom:14px;
+}
+.main-tab{
+  flex:1;padding:12px 8px;border-radius:10px;
+  font-weight:900;font-size:12.5px;letter-spacing:.04em;
+  border:none;background:transparent;color:#7ec9be;
+  cursor:pointer;font-family:inherit;
+  transition:all .2s;
+  display:flex;align-items:center;justify-content:center;gap:6px;
+  position:relative;
+}
+.main-tab.active{
+  background:linear-gradient(135deg,#FBD77A,#F4B842);
+  color:#123634;
+  box-shadow:0 4px 12px rgba(244,184,66,.4);
+}
+.main-tab:active{transform:scale(.97)}
+.main-tab .tab-badge{
+  position:absolute;top:4px;right:8px;
+  background:#ef4444;color:#fff;
+  font-size:9px;font-weight:900;
+  padding:1px 6px;border-radius:99px;
+  min-width:18px;text-align:center;
+  box-shadow:0 2px 6px rgba(239,68,68,.6);
+  animation:badgePulse 1.6s ease-in-out infinite;
+}
+.main-tab.active .tab-badge{
+  background:#123634;color:#FBD77A;
+}
+@keyframes badgePulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.15)}
+}
+
+/* ═══ NOTE CARD (giữ nguyên) ═══ */
+.note-card{
+  background:linear-gradient(135deg,rgba(26,74,69,.85),rgba(13,42,40,.85));
+  border:1px solid rgba(55,137,123,.4);
+  border-radius:14px;padding:14px;margin-bottom:10px;
+  transition:all .2s;position:relative;overflow:hidden;
+  animation:noteIn .3s cubic-bezier(.16,1,.3,1);
+}
+.note-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(180deg,#FBD77A,#F4B842);
+  border-radius:14px 0 0 14px;
+}
+.note-card.pinned{
+  background:linear-gradient(135deg,rgba(244,184,66,.22),rgba(244,184,66,.06));
+  border-color:rgba(244,184,66,.65);
+  box-shadow:0 4px 20px rgba(244,184,66,.25);
+}
+.note-card.pinned::before{
+  background:linear-gradient(180deg,#f472b6,#be185d);width:5px;
+}
+.note-card.mine::before{background:linear-gradient(180deg,#22d3ee,#0891b2)}
+.note-card.pinned.mine::before{background:linear-gradient(180deg,#f472b6,#be185d)}
+.note-card:active{transform:scale(.99)}
+@keyframes noteIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+
+.note-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px dashed rgba(255,255,255,.1)}
+.note-avatar{
+  width:32px;height:32px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:13px;flex-shrink:0;
+  background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
+  box-shadow:0 2px 8px rgba(244,184,66,.4);
+}
+.note-avatar.system{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
+.note-author{font-weight:900;font-size:12.5px;color:#fff;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-author .me-tag{font-size:9.5px;color:#22d3ee;font-weight:900;margin-left:4px}
+.note-time{font-size:10px;color:#7ec9be;font-weight:700;white-space:nowrap}
+.note-body{font-size:13.5px;color:#e6f7f2;line-height:1.55;white-space:pre-wrap;word-break:break-word;margin-bottom:10px}
+.note-body a{color:#FBD77A;text-decoration:underline}
+.note-actions{display:flex;gap:6px;justify-content:flex-end}
+.note-btn{
+  padding:6px 10px;border-radius:8px;
+  font-size:10.5px;font-weight:800;
+  border:1px solid transparent;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;gap:4px;
+  transition:all .15s;-webkit-tap-highlight-color:transparent;
+}
+.note-btn:active{transform:scale(.94)}
+.note-btn-pin{background:rgba(244,184,66,.15);color:#FBD77A;border-color:rgba(244,184,66,.4)}
+.note-btn-pin.active{background:linear-gradient(135deg,#f472b6,#be185d);color:#fff;border-color:transparent}
+.note-btn-del{background:rgba(239,83,80,.15);color:#ef5350;border-color:rgba(239,83,80,.4)}
+
+/* ═══ REMINDER CARD ═══ */
+.rem-card{
+  background:linear-gradient(135deg,rgba(26,74,69,.85),rgba(13,42,40,.85));
+  border:1px solid rgba(55,137,123,.4);
+  border-radius:14px;padding:14px;margin-bottom:10px;
+  position:relative;overflow:hidden;
+  transition:all .2s;
+  animation:noteIn .3s cubic-bezier(.16,1,.3,1);
+}
+.rem-card.upcoming{
+  border-color:rgba(34,211,238,.5);
+  background:linear-gradient(135deg,rgba(34,211,238,.14),rgba(34,211,238,.04));
+}
+.rem-card.upcoming-soon{
+  border-color:rgba(244,184,66,.7);
+  background:linear-gradient(135deg,rgba(244,184,66,.22),rgba(244,184,66,.06));
+  box-shadow:0 4px 20px rgba(244,184,66,.25);
+  animation:remSoon 2s ease-in-out infinite;
+}
+@keyframes remSoon{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.01)}
+}
+.rem-card.passed{
+  opacity:.55;
+  background:linear-gradient(135deg,rgba(120,120,120,.15),rgba(80,80,80,.05));
+  border-color:rgba(150,150,150,.3);
+}
+.rem-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:4px;
+  background:linear-gradient(180deg,#22d3ee,#0891b2);
+}
+.rem-card.upcoming-soon::before{background:linear-gradient(180deg,#FBD77A,#F4B842)}
+.rem-card.passed::before{background:linear-gradient(180deg,#666,#444)}
+.rem-card.mine::before{background:linear-gradient(180deg,#a78bfa,#7c3aed)}
+
+.rem-top{display:flex;align-items:flex-start;gap:10px;margin-bottom:10px}
+.rem-icon{
+  font-size:26px;flex-shrink:0;width:38px;height:38px;
+  display:flex;align-items:center;justify-content:center;
+  background:rgba(0,0,0,.3);border-radius:10px;
+}
+.rem-card.upcoming-soon .rem-icon{
+  animation:bellShake 1.5s ease-in-out infinite;
+}
+@keyframes bellShake{
+  0%,80%,100%{transform:rotate(0)}
+  85%{transform:rotate(-15deg)}
+  90%{transform:rotate(15deg)}
+  95%{transform:rotate(-10deg)}
+}
+.rem-info{flex:1;min-width:0}
+.rem-text{font-size:13.5px;font-weight:800;color:#fff;line-height:1.4;margin-bottom:6px;word-break:break-word}
+.rem-meta{font-size:10.5px;color:#7ec9be;font-weight:700;display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.rem-meta .tag{
+  padding:2px 8px;border-radius:99px;
+  background:rgba(0,0,0,.35);font-size:9.5px;font-weight:900;
+}
+.rem-meta .tag.passed{background:rgba(150,150,150,.3);color:#ccc}
+.rem-meta .tag.upcoming{background:rgba(34,211,238,.25);color:#22d3ee}
+.rem-meta .tag.soon{background:rgba(244,184,66,.3);color:#FBD77A}
+
+.rem-countdown{
+  font-size:15px;font-weight:900;
+  color:#FBD77A;font-family:'Fraunces',serif;
+  margin-top:6px;letter-spacing:.02em;
+  display:flex;align-items:center;gap:6px;
+}
+.rem-card.upcoming .rem-countdown{color:#22d3ee}
+.rem-card.passed .rem-countdown{color:#888;font-size:12px}
+
+.rem-actions{display:flex;gap:6px;justify-content:flex-end;margin-top:8px}
+
+/* ═══ REMINDER FORM ═══ */
+.quick-chip{
+  padding:7px 12px;border-radius:99px;
+  font-size:11px;font-weight:900;
+  background:rgba(25,71,67,.6);
+  border:1px solid rgba(55,137,123,.5);
+  color:#bfe9dc;cursor:pointer;font-family:inherit;
+  white-space:nowrap;
+  transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.quick-chip:active{transform:scale(.94);background:rgba(55,137,123,.7)}
+.quick-chip.gold{
+  background:linear-gradient(135deg,rgba(244,184,66,.25),rgba(244,184,66,.1));
+  border-color:rgba(244,184,66,.5);
+  color:#FBD77A;
+}
+
+#remInput, #remTimeInput{
+  width:100%;
+  background:rgba(10,30,28,.7);
+  border:2px solid rgba(55,137,123,.5);
+  border-radius:12px;
+  padding:12px 14px;
+  font-family:inherit;
+  font-size:13.5px;
+  color:#fff;
+  outline:none;
+  transition:border-color .2s;
+}
+#remInput{resize:none;line-height:1.5;min-height:60px;max-height:160px}
+#remInput:focus, #remTimeInput:focus{border-color:#FBD77A;box-shadow:0 0 0 3px rgba(244,184,66,.15)}
+#remInput::placeholder{color:rgba(126,201,190,.6)}
+#remTimeInput{color-scheme:dark;font-weight:800;font-size:14px}
+
+/* ═══ TEXTAREA NOTE (giữ nguyên) ═══ */
+#noteInput{
+  width:100%;background:rgba(10,30,28,.7);
+  border:2px solid rgba(55,137,123,.5);
+  border-radius:12px;padding:12px 14px;
+  font-family:inherit;font-size:13.5px;color:#fff;outline:none;
+  resize:none;line-height:1.5;transition:border-color .2s;
+  min-height:70px;max-height:200px;
+}
+#noteInput:focus{border-color:#FBD77A;box-shadow:0 0 0 3px rgba(244,184,66,.15)}
+#noteInput::placeholder{color:rgba(126,201,190,.6)}
+
+/* ═══ EMPTY / SEARCH / FILTER ═══ */
+.empty-notes{text-align:center;padding:40px 20px;color:rgba(126,201,190,.7)}
+.empty-notes .icon{font-size:56px;margin-bottom:12px;opacity:.7}
+.empty-notes .t{font-size:14px;font-weight:800;color:rgba(191,233,220,.85);margin-bottom:4px}
+.empty-notes .d{font-size:11.5px}
+
+.filter-btn{
+  padding:7px 14px;border-radius:999px;
+  font-size:11px;font-weight:800;
+  background:rgba(25,71,67,.55);
+  border:1px solid rgba(55,137,123,.4);
+  color:#bfe9dc;cursor:pointer;font-family:inherit;
+  white-space:nowrap;transition:all .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.filter-btn:active{transform:scale(.95)}
+.filter-btn.active{
+  background:linear-gradient(135deg,#FBD77A,#F4B842);
+  color:#123634;border-color:transparent;
+  box-shadow:0 3px 10px rgba(244,184,66,.4);
+}
+
+.spinner-sm{
+  width:20px;height:20px;
+  border:2.5px solid rgba(244,184,66,.2);
+  border-top-color:#FBD77A;
+  border-radius:50%;
+  animation:spin .8s linear infinite;
+  display:inline-block;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+
+/* ═══ MODAL ═══ */
+.modal{
+  position:fixed;inset:0;
+  background:rgba(10,31,29,.92);
+  backdrop-filter:blur(12px);
+  z-index:9998;display:none;
+  align-items:center;justify-content:center;
+  padding:20px;
+}
+.modal.show{display:flex}
+.modal-card{
+  background:linear-gradient(135deg,#1a4a45,#0d2a28);
+  border:2px solid #FBD77A;border-radius:24px;
+  padding:24px;max-width:380px;width:100%;
+  text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.7);
+  animation:popIn .3s cubic-bezier(.16,1,.3,1);
+}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+.pin-input{
+  width:100%;background:rgba(10,30,28,.7);
+  border:2px solid rgba(55,137,123,.5);
+  border-radius:12px;padding:14px;text-align:center;
+  font-size:26px;letter-spacing:.35em;color:#fff;
+  outline:none;font-weight:900;font-family:inherit;
+  margin-bottom:12px;
+}
+.pin-input:focus{border-color:#FBD77A}
+
+/* ═══ ALARM FIRE MODAL — ĐẶC BIỆT ═══ */
+#alarmModal{
+  background:rgba(0,0,0,.92);
+  z-index:10001;
+}
+#alarmModal .modal-card{
+  border:3px solid #ef4444;
+  background:linear-gradient(135deg,#7f1d1d,#1a0a0a);
+  box-shadow:0 20px 80px rgba(239,68,68,.5),0 0 120px rgba(239,68,68,.3);
+  max-width:400px;
+  animation:alarmPop .4s cubic-bezier(.16,1,.3,1);
+}
+@keyframes alarmPop{
+  0%{transform:scale(.5) rotate(-5deg);opacity:0}
+  60%{transform:scale(1.08) rotate(2deg)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+#alarmModal .alarm-icon{
+  font-size:72px;
+  animation:alarmShake .5s ease-in-out infinite;
+  filter:drop-shadow(0 0 20px rgba(239,68,68,1));
+  display:inline-block;
+}
+@keyframes alarmShake{
+  0%,100%{transform:rotate(-12deg) scale(1)}
+  50%{transform:rotate(12deg) scale(1.1)}
+}
+#alarmModal .alarm-title{
+  font-size:20px;font-weight:900;color:#fca5a5;
+  text-transform:uppercase;letter-spacing:.12em;
+  margin:12px 0 6px;
+  text-shadow:0 0 20px rgba(239,68,68,.8);
+}
+#alarmModal .alarm-body{
+  font-size:16px;font-weight:800;color:#fff;
+  line-height:1.5;margin:14px 0;
+  padding:16px;
+  background:rgba(0,0,0,.4);
+  border-radius:14px;
+  border-left:4px solid #FBD77A;
+  text-align:left;
+  word-break:break-word;
+  max-height:40vh;
+  overflow-y:auto;
+}
+#alarmModal .alarm-meta{
+  font-size:11px;color:#fca5a5;font-weight:700;
+  margin-bottom:16px;
+}
+</style>
+</head>
+<body class="pb-6">
+
+<!-- HEADER -->
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <div class="text-center flex-1">
+      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
+      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Sổ Tay Chung</p>
+    </div>
+    <button onclick="openRules()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">❓</button>
+  </div>
+</div>
+
+<div class="max-w-2xl mx-auto px-4 pt-5">
+
+  <!-- STATUS BAR -->
+  <div class="glass rounded-2xl p-3 mb-3 flex items-center justify-between gap-3">
+    <div class="flex items-center gap-2">
+      <span id="cloudDot" class="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse"></span>
+      <span id="cloudText" class="text-[10.5px] font-bold text-teal-300 uppercase tracking-wider">Đang kết nối...</span>
+    </div>
+    <span class="text-[10px] text-teal-400 font-bold" id="noteCount">0 ghi chú</span>
+  </div>
+
+  <!-- TAB SWITCHER -->
+  <div class="main-tabs">
+    <button class="main-tab active" data-tab="notes" onclick="showTab('notes')">
+      <span>📝</span> GHI CHÚ
+    </button>
+    <button class="main-tab" data-tab="reminders" onclick="showTab('reminders')">
+      <span>⏰</span> BÁO THỨC
+      <span class="tab-badge" id="remBadge" style="display:none">0</span>
+    </button>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- TAB: GHI CHÚ                        -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="tab-notes" class="tab-panel">
+
+    <div id="inputArea" class="glass rounded-2xl p-4 mb-4">
+      <div class="flex items-center gap-2 mb-2">
+        <span class="text-[11px] font-black text-gold-400 uppercase tracking-widest">✍️ Ghi chú mới</span>
+        <span class="text-[10px] text-teal-400 font-bold ml-auto" id="authorName">—</span>
+      </div>
+      <textarea id="noteInput" placeholder="VD: Bàn 201 khách VIP cần setup đặc biệt vào 19h tối nay..."></textarea>
+      <div class="flex items-center gap-2 mt-3">
+        <span class="text-[10px] text-teal-500 font-bold" id="charCount">0/1000</span>
+        <button id="clearBtn" onclick="clearInput()" class="ml-auto btn-outline px-3 py-2 rounded-xl text-[11px]">Xóa</button>
+        <button id="postBtn" onclick="postNote()" class="btn-gold px-5 py-2 rounded-xl text-[11.5px] uppercase tracking-wider">📝 Đăng</button>
+      </div>
+    </div>
+
+    <div class="relative mb-3">
+      <span class="absolute inset-y-0 left-3.5 flex items-center text-teal-500 pointer-events-none text-base">🔍</span>
+      <input type="text" id="searchInput" oninput="renderNotes()" placeholder="Tìm ghi chú..."
+        class="w-full bg-teal-950/60 border border-teal-700/50 rounded-xl pl-10 pr-4 py-3 text-[13px] text-white placeholder-teal-600 outline-none focus:border-gold-500 transition-colors">
+    </div>
+
+    <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+      <button class="filter-btn active" data-filter="all" onclick="setFilter('all')">📋 Tất cả</button>
+      <button class="filter-btn" data-filter="pinned" onclick="setFilter('pinned')">📌 Quan trọng</button>
+      <button class="filter-btn" data-filter="mine" onclick="setFilter('mine')">👤 Của tôi</button>
+      <button class="filter-btn" data-filter="today" onclick="setFilter('today')">📅 Hôm nay</button>
+    </div>
+
+    <div id="notesList">
+      <div class="text-center py-10 text-teal-500">
+        <div class="spinner-sm mb-3"></div>
+        <div class="text-[12px] font-bold">Đang tải ghi chú...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════════════════════════════ -->
+  <!-- TAB: BÁO THỨC                       -->
+  <!-- ═══════════════════════════════════ -->
+  <div id="tab-reminders" class="tab-panel hidden">
+
+    <!-- FORM TẠO BÁO THỨC -->
+    <div class="glass rounded-2xl p-4 mb-4">
+      <div class="flex items-center gap-2 mb-3">
+        <span class="text-[11px] font-black text-gold-400 uppercase tracking-widest">⏰ Báo thức mới</span>
+        <span class="text-[10px] text-teal-400 font-bold ml-auto" id="remAuthorName">—</span>
+      </div>
+
+      <textarea id="remInput" placeholder="VD: Họp ca tối tại quầy Lễ Tân — nhớ mang sổ ghi chú..."></textarea>
+
+      <div class="mt-3">
+        <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">🕒 Thời gian thông báo</div>
+        <input type="datetime-local" id="remTimeInput">
+      </div>
+
+      <div class="mt-3">
+        <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">⚡ Chọn nhanh</div>
+        <div class="flex flex-wrap gap-2">
+          <button class="quick-chip" onclick="setQuickTime(5)">+5 phút</button>
+          <button class="quick-chip" onclick="setQuickTime(10)">+10 phút</button>
+          <button class="quick-chip" onclick="setQuickTime(15)">+15 phút</button>
+          <button class="quick-chip" onclick="setQuickTime(30)">+30 phút</button>
+          <button class="quick-chip" onclick="setQuickTime(60)">+1 giờ</button>
+          <button class="quick-chip gold" onclick="setQuickTime(120)">+2 giờ</button>
+        </div>
+      </div>
+
+      <div class="flex items-center gap-2 mt-4">
+        <span class="text-[10px] text-teal-500 font-bold" id="remHint">Chưa chọn thời gian</span>
+        <button id="clearRemBtn" onclick="clearRemInput()" class="ml-auto btn-outline px-3 py-2 rounded-xl text-[11px]">Xóa</button>
+        <button id="postRemBtn" onclick="postReminder()" class="btn-gold px-5 py-2 rounded-xl text-[11.5px] uppercase tracking-wider">⏰ Đặt</button>
+      </div>
+    </div>
+
+    <!-- FILTERS -->
+    <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+      <button class="filter-btn active" data-remfilter="all" onclick="setRemFilter('all')">📋 Tất cả</button>
+      <button class="filter-btn" data-remfilter="upcoming" onclick="setRemFilter('upcoming')">⏳ Sắp tới</button>
+      <button class="filter-btn" data-remfilter="today" onclick="setRemFilter('today')">📅 Hôm nay</button>
+      <button class="filter-btn" data-remfilter="passed" onclick="setRemFilter('passed')">✅ Đã qua</button>
+    </div>
+
+    <div id="remindersList">
+      <div class="text-center py-10 text-teal-500">
+        <div class="spinner-sm mb-3"></div>
+        <div class="text-[12px] font-bold">Đang tải báo thức...</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL PIN -->
+<div id="pinModal" class="modal">
+  <div class="modal-card">
+    <div class="text-4xl mb-3">🔐</div>
+    <h3 class="text-[15px] font-black text-gold-400 uppercase tracking-widest mb-2">Xác Thực Quản Lý</h3>
+    <p class="text-[11.5px] text-teal-200 mb-4">Nhập mã PIN Quản Lý để xóa của người khác</p>
+    <input type="password" id="pinInput" class="pin-input" placeholder="••••••" maxlength="6" inputmode="numeric">
+    <p id="pinError" class="text-[11px] text-red-400 font-bold mb-3 hidden">Mã PIN không đúng!</p>
+    <div class="flex gap-2">
+      <button onclick="closePinModal()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">Hủy</button>
+      <button onclick="verifyPin()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">Xác nhận</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL RULES -->
+<div id="rulesModal" class="modal">
+  <div class="modal-card" style="max-width:460px;text-align:left">
+    <h3 class="text-[16px] font-black text-gold-400 uppercase tracking-widest mb-4 text-center">📖 Sổ Tay + Báo Thức</h3>
+
+    <div class="text-[12px] font-black text-gold-400 uppercase tracking-wider mb-2">📝 Tab Ghi Chú</div>
+    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed mb-4">
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        Ghi chú chung cho mọi nhân viên — setup phòng, lưu ý khách, nhắc ca trực...
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">📌 Ghim:</b> Đánh dấu quan trọng — luôn nằm đầu
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Xóa:</b> Của mình không cần PIN · Người khác cần <b>PIN 451994</b>
+      </div>
+    </div>
+
+    <div class="text-[12px] font-black text-red-400 uppercase tracking-wider mb-2">⏰ Tab Báo Thức</div>
+    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed">
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
+        <b class="text-red-400">Báo thức chung:</b> Khi đến giờ, <b>TẤT CẢ nhân viên</b> đang mở app sẽ cùng nhận thông báo — có chuông + rung + popup đỏ
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
+        <b class="text-red-400">Chọn nhanh:</b> +5p / +10p / +30p / +1h / +2h — hoặc chọn giờ cụ thể
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
+        <b class="text-red-400">Đếm ngược:</b> Hiện thời gian còn lại theo thời gian thực
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
+        <b class="text-red-400">Tự dọn:</b> Báo thức cũ > 7 ngày tự xóa
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
+        <b class="text-red-400">Chỉ chạy khi mở app:</b> Nếu tắt hẳn app → không nhận. Hãy để tab Sổ Tay mở trong ca trực để không bỏ lỡ.
+      </div>
+    </div>
+
+    <button onclick="closeRules()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">✓ ĐÃ HIỂU</button>
+  </div>
+</div>
+
+<!-- MODAL ALARM FIRE — POPUP ĐỎ KHI ĐẾN GIỜ -->
+<div id="alarmModal" class="modal">
+  <div class="modal-card">
+    <div class="alarm-icon">🔔</div>
+    <div class="alarm-title">BÁO THỨC!</div>
+    <div class="alarm-meta" id="alarmMeta">—</div>
+    <div class="alarm-body" id="alarmBody">—</div>
+    <button onclick="closeAlarm()" class="btn-gold w-full py-4 rounded-xl text-[14px] uppercase tracking-widest" style="background:linear-gradient(135deg,#FCA5A5,#EF4444);color:#fff">✓ ĐÃ HIỂU</button>
+  </div>
+</div>
+
+<!-- ═══════════ LOGIC ═══════════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, deleteDoc, updateDoc, doc, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// ═══════════════════════ CONFIG ═══════════════════════
+const firebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+const COL_NOTES = 'shared_notes';
+const COL_REMINDERS = 'shared_reminders';
+const MANAGER_PIN = '451994';
+const MAX_LEN = 1000;
+const AUTO_CLEAN_DAYS = 30;
+const REM_CLEAN_DAYS = 7;
+const REM_FIRE_WINDOW = 24 * 60 * 60 * 1000; // 24h
+const SOON_THRESHOLD = 5 * 60 * 1000; // 5 phút
+
+let db = null;
+let fbReady = false;
+let allNotes = [];
+let allReminders = [];
+let currentFilter = 'all';
+let currentRemFilter = 'all';
+let pendingDeleteId = null;
+let pendingDeleteType = 'note';
+let currentTab = 'notes';
+let currentAlarm = null;
+
+// ═══════════════════════ HELPERS ═══════════════════════
+function $(id){ return document.getElementById(id); }
+
+function getStaffName(){
+  try {
+    if (typeof window.getSyncedStaffName === 'function'){
+      const n = window.getSyncedStaffName();
+      if (n && n.trim()) return n.trim();
+    }
+    return localStorage.getItem('dolphinStaffName') || '';
+  } catch(e){ return ''; }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+function linkify(text){
+  return escapeHtml(text).replace(/(https?:\/\/[^\s<]+)/g, function(url){
+    return '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>';
+  });
+}
+
+function timeAgo(ts){
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const sec = Math.floor(diff / 1000);
+  if (sec < 30) return 'vừa xong';
+  if (sec < 60) return sec + 's trước';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + 'p trước';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'h trước';
+  const day = Math.floor(hr / 24);
+  if (day < 7) return day + ' ngày trước';
+  const d = new Date(ts);
+  return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+}
+
+function isToday(ts){
+  if (!ts) return false;
+  const now = new Date(), d = new Date(ts);
+  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+
+function formatTime(ts){
+  const d = new Date(ts);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const today = new Date();
+  if (d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()){
+    return hh + ':' + mm + ' hôm nay';
+  }
+  return hh + ':' + mm + ' · ' + dd + '/' + mo;
+}
+
+function countdownText(fireAt){
+  const diff = fireAt - Date.now();
+  if (diff <= 0){
+    const past = -diff;
+    if (past < 60 * 1000) return 'Vừa xong';
+    if (past < 60 * 60 * 1000) return Math.floor(past / 60000) + ' phút trước';
+    if (past < 24 * 60 * 60 * 1000) return Math.floor(past / 3600000) + ' giờ trước';
+    return Math.floor(past / 86400000) + ' ngày trước';
+  }
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return 'Còn ' + sec + ' giây';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return 'Còn ' + min + ' phút';
+  const hr = Math.floor(min / 60);
+  const remMin = min % 60;
+  if (hr < 24) return 'Còn ' + hr + 'h' + (remMin > 0 ? ' ' + remMin + 'p' : '');
+  const day = Math.floor(hr / 24);
+  const remHr = hr % 24;
+  return 'Còn ' + day + ' ngày' + (remHr > 0 ? ' ' + remHr + 'h' : '');
+}
+
+// ═══════════════════════ FIREBASE INIT ═══════════════════════
+try {
+  const app = initializeApp(firebaseConfig, 'notes-app');
+  const auth = getAuth(app);
+  db = getFirestore(app);
+  signInAnonymously(auth).then(function(){
+    fbReady = true;
+    updateCloudStatus('online');
+    listenNotes();
+    listenReminders();
+    setTimeout(autoCleanOldNotes, 5000);
+    setTimeout(autoCleanOldReminders, 6000);
+    startAlarmWatcher();
+  }).catch(function(err){
+    console.warn('[Notes] Auth fail:', err);
+    updateCloudStatus('offline');
+  });
+} catch(e){
+  console.warn('[Notes] Init fail:', e);
+  updateCloudStatus('offline');
+}
+
+function updateCloudStatus(status){
+  const dot = $('cloudDot'), text = $('cloudText');
+  if (!dot || !text) return;
+  if (status === 'online'){
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+    text.textContent = '🌐 Online · Real-time';
+    text.className = 'text-[10.5px] font-bold text-emerald-400 uppercase tracking-wider';
+  } else {
+    dot.className = 'w-2.5 h-2.5 rounded-full bg-red-500';
+    text.textContent = '⚠️ Mất kết nối';
+    text.className = 'text-[10.5px] font-bold text-red-400 uppercase tracking-wider';
+  }
+}
+
+// ═══════════════════════ TABS ═══════════════════════
+window.showTab = function(name){
+  currentTab = name;
+  document.querySelectorAll('.tab-panel').forEach(function(p){ p.classList.add('hidden'); });
+  const target = $('tab-' + name);
+  if (target) target.classList.remove('hidden');
+  document.querySelectorAll('.main-tab').forEach(function(b){
+    b.classList.toggle('active', b.dataset.tab === name);
+  });
+};
+
+// ═══════════════════════ REALTIME — NOTES ═══════════════════════
+function listenNotes(){
+  if (!db) return;
+  const q = query(collection(db, COL_NOTES), orderBy('timestamp', 'desc'));
+  onSnapshot(q, function(snap){
+    allNotes = [];
+    snap.forEach(function(d){ allNotes.push(Object.assign({ id: d.id }, d.data())); });
+    allNotes.sort(function(a, b){
+      if (a.pinned && !b.pinned) return -1;
+      if (!a.pinned && b.pinned) return 1;
+      return (b.timestamp || 0) - (a.timestamp || 0);
+    });
+    renderNotes();
+  }, function(err){
+    console.warn('[Notes] Listen fail:', err);
+    updateCloudStatus('offline');
+  });
+}
+
+// ═══════════════════════ RENDER NOTES ═══════════════════════
+window.renderNotes = function(){
+  const el = $('notesList');
+  const searchEl = $('searchInput');
+  const kw = (searchEl && searchEl.value || '').trim().toLowerCase();
+  const me = getStaffName();
+
+  let list = allNotes.slice();
+  if (currentFilter === 'pinned') list = list.filter(function(n){ return n.pinned; });
+  else if (currentFilter === 'mine') list = list.filter(function(n){ return n.author === me; });
+  else if (currentFilter === 'today') list = list.filter(function(n){ return isToday(n.timestamp); });
+  if (kw){
+    list = list.filter(function(n){
+      return (n.text || '').toLowerCase().includes(kw) || (n.author || '').toLowerCase().includes(kw);
+    });
+  }
+
+  const cntEl = $('noteCount');
+  if (cntEl) cntEl.textContent = allNotes.length + ' ghi chú';
+
+  if (!list.length){
+    let msg = 'Chưa có ghi chú nào', sub = 'Hãy là người đầu tiên viết gì đó!';
+    if (kw){ msg = 'Không tìm thấy ghi chú'; sub = 'Thử từ khóa khác'; }
+    else if (currentFilter === 'pinned'){ msg = 'Chưa có ghi chú quan trọng'; sub = 'Bấm 📌 để đánh dấu'; }
+    else if (currentFilter === 'mine'){ msg = 'Bạn chưa có ghi chú nào'; sub = 'Viết gì đó ở khung trên nhé!'; }
+    else if (currentFilter === 'today'){ msg = 'Hôm nay chưa có ghi chú'; sub = 'Mọi người chưa viết gì hôm nay'; }
+    el.innerHTML = '<div class="empty-notes"><div class="icon">📝</div><div class="t">' + msg + '</div><div class="d">' + sub + '</div></div>';
+    return;
+  }
+
+  el.innerHTML = list.map(function(n){
+    const isMine = n.author === me;
+    const initial = (n.author || '?').charAt(0).toUpperCase();
+    const classes = ['note-card'];
+    if (n.pinned) classes.push('pinned');
+    if (isMine) classes.push('mine');
+    const pinBtnClass = n.pinned ? 'note-btn note-btn-pin active' : 'note-btn note-btn-pin';
+    const pinIcon = n.pinned ? '📌' : '📍';
+    return '<div class="' + classes.join(' ') + '">'
+      + '<div class="note-header">'
+      + '<div class="note-avatar' + (n.pinned ? ' system' : '') + '">' + initial + '</div>'
+      + '<div class="note-author">' + escapeHtml(n.author || 'Ẩn danh') + (isMine ? '<span class="me-tag">(BẠN)</span>' : '') + '</div>'
+      + '<div class="note-time">🕒 ' + timeAgo(n.timestamp) + '</div>'
+      + '</div>'
+      + '<div class="note-body">' + linkify(n.text || '') + '</div>'
+      + '<div class="note-actions">'
+      + '<button class="' + pinBtnClass + '" onclick="togglePin(\'' + n.id + '\')">' + pinIcon + '<span>' + (n.pinned ? 'Bỏ ghim' : 'Ghim') + '</span></button>'
+      + '<button class="note-btn note-btn-del" onclick="deleteNote(\'' + n.id + '\')">🗑️<span>Xóa</span></button>'
+      + '</div></div>';
+  }).join('');
+};
+
+window.setFilter = function(f){
+  currentFilter = f;
+  document.querySelectorAll('.filter-btn[data-filter]').forEach(function(b){
+    b.classList.toggle('active', b.dataset.filter === f);
+  });
+  renderNotes();
+};
+
+// ═══════════════════════ POST NOTE ═══════════════════════
+window.postNote = async function(){
+  const input = $('noteInput');
+  const btn = $('postBtn');
+  const text = (input.value || '').trim();
+  if (!text){ if (window.showToast) window.showToast('Nhập nội dung ghi chú', '⚠️'); return; }
+  if (text.length > MAX_LEN){ if (window.showToast) window.showToast('Ghi chú quá dài', '⚠️'); return; }
+  const author = getStaffName();
+  if (!author){ if (window.showToast) window.showToast('Chưa có tên — vào Lễ Tân nhập tên', '⚠️'); return; }
+  if (!fbReady || !db){ if (window.showToast) window.showToast('Chưa kết nối', '❌'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>';
+  try {
+    await addDoc(collection(db, COL_NOTES), { text: text, author: author, timestamp: Date.now(), pinned: false });
+    input.value = ''; updateCharCount();
+    if (window.showToast) window.showToast('Đã đăng ghi chú!', '✅');
+  } catch(e){
+    if (window.showToast) window.showToast('Lỗi: ' + (e.message || ''), '❌');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '📝 Đăng';
+  }
+};
+
+window.clearInput = function(){
+  const input = $('noteInput');
+  if (!input.value) return;
+  if (!confirm('Xóa nội dung đang viết?')) return;
+  input.value = ''; updateCharCount();
+};
+
+function updateCharCount(){
+  const input = $('noteInput'), el = $('charCount');
+  if (!input || !el) return;
+  const len = input.value.length;
+  el.textContent = len + '/' + MAX_LEN;
+  el.style.color = len > MAX_LEN ? '#ef5350' : len > MAX_LEN * 0.9 ? '#FBD77A' : '';
+}
+
+// ═══════════════════════ PIN / DELETE NOTE ═══════════════════════
+window.togglePin = async function(id){
+  if (!fbReady || !db) return;
+  const note = allNotes.find(function(n){ return n.id === id; });
+  if (!note) return;
+  try {
+    await updateDoc(doc(db, COL_NOTES, id), { pinned: !note.pinned });
+    if (window.showToast) window.showToast(note.pinned ? 'Đã bỏ ghim' : 'Đã ghim lên đầu', '📌');
+  } catch(e){ if (window.showToast) window.showToast('Lỗi ghim', '❌'); }
+};
+
+window.deleteNote = function(id){
+  const note = allNotes.find(function(n){ return n.id === id; });
+  if (!note) return;
+  const me = getStaffName();
+  if (note.author === me){
+    if (!confirm('Xóa ghi chú của bạn?')) return;
+    doDeleteNote(id);
+  } else {
+    pendingDeleteId = id; pendingDeleteType = 'note';
+    $('pinInput').value = ''; $('pinError').classList.add('hidden');
+    $('pinModal').classList.add('show');
+    setTimeout(function(){ $('pinInput').focus(); }, 200);
+  }
+};
+
+async function doDeleteNote(id){
+  if (!fbReady || !db) return;
+  try {
+    await deleteDoc(doc(db, COL_NOTES, id));
+    if (window.showToast) window.showToast('Đã xóa ghi chú', '🧹');
+  } catch(e){ if (window.showToast) window.showToast('Lỗi xóa', '❌'); }
+}
+
+// ═══════════════════════ REALTIME — REMINDERS ═══════════════════════
+function listenReminders(){
+  if (!db) return;
+  const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'));
+  onSnapshot(q, function(snap){
+    allReminders = [];
+    snap.forEach(function(d){ allReminders.push(Object.assign({ id: d.id }, d.data())); });
+    renderReminders();
+    updateRemBadge();
+  }, function(err){
+    console.warn('[Rem] Listen fail:', err);
+  });
+}
+
+function updateRemBadge(){
+  const now = Date.now();
+  const upcoming = allReminders.filter(function(r){ return r.fireAt > now; });
+  const soon = allReminders.filter(function(r){ return r.fireAt > now && r.fireAt - now < SOON_THRESHOLD; });
+  const badge = $('remBadge');
+  if (!badge) return;
+  const count = soon.length > 0 ? soon.length : upcoming.length;
+  if (count > 0){
+    badge.textContent = count > 99 ? '99+' : String(count);
+    badge.style.display = 'block';
+    // Nếu có reminder sắp tới trong 5p → badge đỏ pulse
+    // Nếu chỉ upcoming xa → màu vàng nhạt hơn
+    if (soon.length > 0){
+      badge.style.background = '#ef4444';
+    } else {
+      badge.style.background = 'rgba(244,184,66,.85)';
+      badge.style.color = '#123634';
+    }
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+// ═══════════════════════ RENDER REMINDERS ═══════════════════════
+window.renderReminders = function(){
+  const el = $('remindersList');
+  if (!el) return;
+  const now = Date.now();
+  const me = getStaffName();
+
+  let list = allReminders.slice();
+  if (currentRemFilter === 'upcoming') list = list.filter(function(r){ return r.fireAt > now; });
+  else if (currentRemFilter === 'today') list = list.filter(function(r){ return isToday(r.fireAt); });
+  else if (currentRemFilter === 'passed') list = list.filter(function(r){ return r.fireAt <= now; });
+
+  // Sắp xếp: upcoming theo fireAt tăng dần, passed theo fireAt giảm dần
+  list.sort(function(a, b){
+    const aPassed = a.fireAt <= now;
+    const bPassed = b.fireAt <= now;
+    if (aPassed !== bPassed) return aPassed ? 1 : -1;
+    return aPassed ? (b.fireAt - a.fireAt) : (a.fireAt - b.fireAt);
+  });
+
+  if (!list.length){
+    let msg = 'Chưa có báo thức nào', sub = 'Đặt báo thức để nhắc cả team!';
+    if (currentRemFilter === 'upcoming'){ msg = 'Không có báo thức sắp tới'; sub = 'Tất cả đã qua giờ'; }
+    else if (currentRemFilter === 'today'){ msg = 'Hôm nay chưa có báo thức'; sub = 'Chưa ai đặt cho hôm nay'; }
+    else if (currentRemFilter === 'passed'){ msg = 'Chưa có báo thức nào qua'; sub = ''; }
+    el.innerHTML = '<div class="empty-notes"><div class="icon">⏰</div><div class="t">' + msg + '</div><div class="d">' + sub + '</div></div>';
+    return;
+  }
+
+  el.innerHTML = list.map(function(r){
+    const isPassed = r.fireAt <= now;
+    const isSoon = !isPassed && (r.fireAt - now) < SOON_THRESHOLD;
+    const isMine = r.author === me;
+
+    const classes = ['rem-card'];
+    if (isPassed) classes.push('passed');
+    else if (isSoon) classes.push('upcoming-soon');
+    else classes.push('upcoming');
+    if (isMine) classes.push('mine');
+
+    let tag = '<span class="tag upcoming">⏳ Sắp tới</span>';
+    if (isPassed) tag = '<span class="tag passed">✅ Đã qua</span>';
+    else if (isSoon) tag = '<span class="tag soon">🔥 Sắp tới!</span>';
+
+    return '<div class="' + classes.join(' ') + '">'
+      + '<div class="rem-top">'
+      + '<div class="rem-icon">' + (isPassed ? '✅' : isSoon ? '🔔' : '⏰') + '</div>'
+      + '<div class="rem-info">'
+      + '<div class="rem-text">' + escapeHtml(r.text || '') + '</div>'
+      + '<div class="rem-meta">'
+      + tag
+      + '<span>🕒 ' + formatTime(r.fireAt) + '</span>'
+      + '<span>👤 ' + escapeHtml(r.author || 'Ẩn danh') + (isMine ? ' (BẠN)' : '') + '</span>'
+      + '</div></div></div>'
+      + '<div class="rem-countdown" data-fireat="' + r.fireAt + '">'
+      + (isPassed ? '⏱ ' : '⏳ ') + '<span class="cd-text">' + countdownText(r.fireAt) + '</span>'
+      + '</div>'
+      + '<div class="rem-actions">'
+      + (isPassed ? '' : '<button class="note-btn" onclick="openRemEdit(\'' + r.id + '\')" style="background:rgba(34,211,238,.15);color:#22d3ee;border-color:rgba(34,211,238,.4)">✏️<span>Sửa giờ</span></button>')
+      + '<button class="note-btn note-btn-del" onclick="deleteReminder(\'' + r.id + '\')">🗑️<span>Xóa</span></button>'
+      + '</div></div>';
+  }).join('');
+};
+
+window.setRemFilter = function(f){
+  currentRemFilter = f;
+  document.querySelectorAll('.filter-btn[data-remfilter]').forEach(function(b){
+    b.classList.toggle('active', b.dataset.remfilter === f);
+  });
+  renderReminders();
+};
+
+// ═══════════════════════ CREATE REMINDER ═══════════════════════
+window.setQuickTime = function(minutes){
+  const target = new Date(Date.now() + minutes * 60 * 1000);
+  // Format YYYY-MM-DDTHH:MM (giờ local device)
+  const y = target.getFullYear();
+  const mo = String(target.getMonth() + 1).padStart(2, '0');
+  const d = String(target.getDate()).padStart(2, '0');
+  const h = String(target.getHours()).padStart(2, '0');
+  const mi = String(target.getMinutes()).padStart(2, '0');
+  const val = y + '-' + mo + '-' + d + 'T' + h + ':' + mi;
+  $('remTimeInput').value = val;
+  updateRemHint();
+  if (window.showToast) window.showToast('Đã chọn +' + minutes + ' phút', '⚡');
+};
+
+function updateRemHint(){
+  const el = $('remHint');
+  const inp = $('remTimeInput');
+  if (!el || !inp) return;
+  if (!inp.value){ el.textContent = 'Chưa chọn thời gian'; el.style.color = ''; return; }
+  const t = new Date(inp.value).getTime();
+  if (isNaN(t)){ el.textContent = 'Thời gian không hợp lệ'; el.style.color = '#ef5350'; return; }
+  const diff = t - Date.now();
+  if (diff <= 0){ el.textContent = '⚠️ Thời gian đã qua'; el.style.color = '#ef5350'; return; }
+  el.textContent = '⏳ ' + countdownText(t);
+  el.style.color = '#FBD77A';
+}
+
+window.clearRemInput = function(){
+  const inp = $('remInput'), time = $('remTimeInput');
+  if (!inp.value && !time.value) return;
+  if (!confirm('Xóa nội dung đang viết?')) return;
+  inp.value = ''; time.value = '';
+  updateRemHint();
+};
+
+window.postReminder = async function(){
+  const inp = $('remInput'), timeInp = $('remTimeInput');
+  const btn = $('postRemBtn');
+  const text = (inp.value || '').trim();
+  const timeVal = timeInp.value;
+
+  if (!text){ if (window.showToast) window.showToast('Nhập nội dung báo thức', '⚠️'); return; }
+  if (!timeVal){ if (window.showToast) window.showToast('Chọn thời gian', '⚠️'); return; }
+
+  const fireAt = new Date(timeVal).getTime();
+  if (isNaN(fireAt)){ if (window.showToast) window.showToast('Thời gian không hợp lệ', '⚠️'); return; }
+  if (fireAt <= Date.now()){ if (window.showToast) window.showToast('Thời gian đã qua — chọn lại', '⚠️'); return; }
+
+  const author = getStaffName();
+  if (!author){ if (window.showToast) window.showToast('Chưa có tên nhân viên', '⚠️'); return; }
+  if (!fbReady || !db){ if (window.showToast) window.showToast('Chưa kết nối', '❌'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>';
+  try {
+    await addDoc(collection(db, COL_REMINDERS), {
+      text: text, author: author, fireAt: fireAt, createdAt: Date.now()
+    });
+    inp.value = ''; timeInp.value = '';
+    updateRemHint();
+    if (window.showToast) window.showToast('Đã đặt báo thức — cả team sẽ nhận!', '⏰');
+  } catch(e){
+    if (window.showToast) window.showToast('Lỗi: ' + (e.message || ''), '❌');
+  } finally {
+    btn.disabled = false; btn.innerHTML = '⏰ Đặt';
+  }
+};
+
+// ═══════════════════════ EDIT REMINDER (chỉ sửa giờ) ═══════════════════════
+window.openRemEdit = function(id){
+  const r = allReminders.find(function(x){ return x.id === id; });
+  if (!r) return;
+  const target = new Date(r.fireAt);
+  const y = target.getFullYear();
+  const mo = String(target.getMonth() + 1).padStart(2, '0');
+  const d = String(target.getDate()).padStart(2, '0');
+  const h = String(target.getHours()).padStart(2, '0');
+  const mi = String(target.getMinutes()).padStart(2, '0');
+  const val = y + '-' + mo + '-' + d + 'T' + h + ':' + mi;
+  const newVal = prompt('Nhập giờ mới (YYYY-MM-DDTHH:MM)\n\nGiờ hiện tại: ' + val + '\n\nHoặc để trống để hủy.', val);
+  if (newVal === null || newVal === val) return;
+  const newTime = new Date(newVal).getTime();
+  if (isNaN(newTime) || newTime <= Date.now()){
+    if (window.showToast) window.showToast('Giờ không hợp lệ hoặc đã qua', '⚠️');
+    return;
+  }
+  updateDoc(doc(db, COL_REMINDERS, id), { fireAt: newTime }).then(function(){
+    if (window.showToast) window.showToast('Đã đổi giờ báo thức', '✏️');
+  }).catch(function(e){
+    if (window.showToast) window.showToast('Lỗi sửa', '❌');
+  });
+};
+
+window.deleteReminder = function(id){
+  const r = allReminders.find(function(x){ return x.id === id; });
+  if (!r) return;
+  const me = getStaffName();
+  if (r.author === me){
+    if (!confirm('Xóa báo thức của bạn?')) return;
+    doDeleteReminder(id);
+  } else {
+    pendingDeleteId = id; pendingDeleteType = 'reminder';
+    $('pinInput').value = ''; $('pinError').classList.add('hidden');
+    $('pinModal').classList.add('show');
+    setTimeout(function(){ $('pinInput').focus(); }, 200);
+  }
+};
+
+async function doDeleteReminder(id){
+  if (!fbReady || !db) return;
+  try {
+    await deleteDoc(doc(db, COL_REMINDERS, id));
+    if (window.showToast) window.showToast('Đã xóa báo thức', '🧹');
+  } catch(e){ if (window.showToast) window.showToast('Lỗi xóa', '❌'); }
+}
+
+// ═══════════════════════ PIN MODAL ═══════════════════════
+window.closePinModal = function(){
+  $('pinModal').classList.remove('show');
+  pendingDeleteId = null;
+};
+
+window.verifyPin = function(){
+  const pin = $('pinInput').value.trim();
+  if (pin !== MANAGER_PIN){
+    $('pinError').classList.remove('hidden');
+    $('pinInput').value = ''; $('pinInput').focus();
+    return;
+  }
+  $('pinError').classList.add('hidden');
+  const id = pendingDeleteId, type = pendingDeleteType;
+  closePinModal();
+  if (!id) return;
+  if (type === 'note') doDeleteNote(id);
+  else doDeleteReminder(id);
+};
+
+// ═══════════════════════ ALARM WATCHER ═══════════════════════
+function startAlarmWatcher(){
+  // Kiểm tra mỗi 5s
+  setInterval(function(){
+    checkAndFireAlarms();
+    updateCountdowns();
+    updateRemBadge();
+    // Re-render list mỗi 30s để update tag sắp tới
+    if (currentTab === 'reminders') renderReminders();
+  }, 5000);
+
+  // Cũng check khi tab visible
+  document.addEventListener('visibilitychange', function(){
+    if (!document.hidden) checkAndFireAlarms();
+  });
+
+  // Check ngay lập tức
+  setTimeout(checkAndFireAlarms, 1500);
+}
+
+function checkAndFireAlarms(){
+  const now = Date.now();
+  for (let i = 0; i < allReminders.length; i++){
+    const r = allReminders[i];
+    if (r.fireAt > now) continue;
+    if (now - r.fireAt > REM_FIRE_WINDOW) continue; // quá cũ > 24h
+    const firedKey = 'dolphin_rem_fired_' + r.id;
+    if (localStorage.getItem(firedKey)) continue;
+
+    // Fire!
+    localStorage.setItem(firedKey, String(now));
+    showAlarmPopup(r);
+    break; // Chỉ fire 1 cái 1 lúc — tránh spam
+  }
+}
+
+function showAlarmPopup(r){
+  currentAlarm = r;
+  const modal = $('alarmModal');
+  $('alarmBody').textContent = r.text || '';
+  $('alarmMeta').innerHTML = '👤 ' + escapeHtml(r.author || 'Ẩn danh') + ' · 🕒 ' + formatTime(r.fireAt);
+  modal.classList.add('show');
+  playAlarmSound();
+  if (navigator.vibrate){
+    try { navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300]); } catch(e){}
+  }
+}
+
+window.closeAlarm = function(){
+  $('alarmModal').classList.remove('show');
+  currentAlarm = null;
+  stopAlarmSound();
+  // Check cái tiếp theo nếu có
+  setTimeout(checkAndFireAlarms, 800);
+};
+
+// ═══════════════════════ ALARM SOUND ═══════════════════════
+let alarmAudioCtx = null;
+let alarmInterval = null;
+let alarmPlayCount = 0;
+
+function initAlarmAudio(){
+  try {
+    if (!alarmAudioCtx) alarmAudioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (alarmAudioCtx.state === 'suspended') alarmAudioCtx.resume();
+  } catch(e){}
+}
+
+function playAlarmSound(){
+  initAlarmAudio();
+  if (!alarmAudioCtx) return;
+  stopAlarmSound();
+  alarmPlayCount = 0;
+
+  function playBeep(){
+    if (!alarmAudioCtx) return;
+    if (alarmPlayCount >= 8) { stopAlarmSound(); return; }
+    alarmPlayCount++;
+
+    const ctx = alarmAudioCtx;
+    const now = ctx.currentTime;
+
+    // Pattern: 3 tiếng beep cao, cách nhau 0.12s
+    for (let i = 0; i < 3; i++){
+      const t = now + i * 0.13;
+      [1, 2].forEach(function(mult){
+        const osc = ctx.createOscillator();
+        const g = ctx.createGain();
+        osc.type = 'sine';
+        osc.frequency.value = (mult === 1 ? 880 : 1760) * 1.5;
+        g.gain.setValueAtTime(0.0001, t);
+        g.gain.exponentialRampToValueAtTime(mult === 1 ? 0.5 : 0.25, t + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, t + 0.12);
+        osc.connect(g); g.connect(ctx.destination);
+        osc.start(t); osc.stop(t + 0.15);
+      });
+    }
+  }
+
+  playBeep();
+  alarmInterval = setInterval(playBeep, 1000);
+}
+
+function stopAlarmSound(){
+  if (alarmInterval){ clearInterval(alarmInterval); alarmInterval = null; }
+}
+
+// ═══════════════════════ COUNTDOWN LIVE UPDATE ═══════════════════════
+function updateCountdowns(){
+  const els = document.querySelectorAll('.rem-countdown[data-fireat]');
+  const now = Date.now();
+  els.forEach(function(el){
+    const fireAt = parseInt(el.dataset.fireat, 10);
+    const txt = el.querySelector('.cd-text');
+    if (txt) txt.textContent = countdownText(fireAt);
+  });
+  updateRemHint();
+}
+
+// ═══════════════════════ AUTO CLEAN ═══════════════════════
+async function autoCleanOldNotes(){
+  if (!fbReady || !db) return;
+  const lastClean = parseInt(localStorage.getItem('dolphin_notes_last_clean') || '0', 10);
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (Date.now() - lastClean < dayMs) return;
+  try {
+    const cutoff = Date.now() - AUTO_CLEAN_DAYS * dayMs;
+    const toDelete = allNotes.filter(function(n){ return (n.timestamp || 0) < cutoff && !n.pinned; });
+    for (const n of toDelete) await deleteDoc(doc(db, COL_NOTES, n.id));
+    if (toDelete.length) console.log('[Notes] Cleaned ' + toDelete.length);
+    localStorage.setItem('dolphin_notes_last_clean', String(Date.now()));
+  } catch(e){ console.warn('[Notes] Auto-clean fail:', e); }
+}
+
+async function autoCleanOldReminders(){
+  if (!fbReady || !db) return;
+  const lastClean = parseInt(localStorage.getItem('dolphin_rem_last_clean') || '0', 10);
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (Date.now() - lastClean < dayMs) return;
+  try {
+    const cutoff = Date.now() - REM_CLEAN_DAYS * dayMs;
+    const toDelete = allReminders.filter(function(r){ return (r.fireAt || 0) < cutoff; });
+    for (const r of toDelete) await deleteDoc(doc(db, COL_REMINDERS, r.id));
+    if (toDelete.length) console.log('[Rem] Cleaned ' + toDelete.length);
+    localStorage.setItem('dolphin_rem_last_clean', String(Date.now()));
+  } catch(e){ console.warn('[Rem] Auto-clean fail:', e); }
+}
+
+// ═══════════════════════ MODALS ═══════════════════════
+window.openRules = function(){ $('rulesModal').classList.add('show'); };
+window.closeRules = function(){ $('rulesModal').classList.remove('show'); };
+
+window.goBack = function(){
+  const noteInp = $('noteInput');
+  const remInp = $('remInput');
+  if ((noteInp && noteInp.value.trim()) || (remInp && remInp.value.trim())){
+    if (!confirm('Bạn đang viết dở. Thoát sẽ mất nội dung. Tiếp tục?')) return;
+  }
+  window.location.href = '/DolphinApp/giaitri/index.html';
+};
+
+// ═══════════════════════ INIT ═══════════════════════
+function init(){
+  const name = getStaffName();
+  const nameEl = $('authorName');
+  const remNameEl = $('remAuthorName');
+  if (name){
+    if (nameEl){ nameEl.textContent = '👤 ' + name; nameEl.style.color = '#FBD77A'; }
+    if (remNameEl){ remNameEl.textContent = '👤 ' + name; remNameEl.style.color = '#FBD77A'; }
+  } else {
+    if (nameEl){ nameEl.textContent = '⚠️ Chưa có tên'; nameEl.style.color = '#ef5350'; }
+    if (remNameEl){ remNameEl.textContent = '⚠️ Chưa có tên'; remNameEl.style.color = '#ef5350'; }
+  }
+
+  const input = $('noteInput');
+  if (input){
+    input.addEventListener('input', updateCharCount);
+    input.addEventListener('keydown', function(e){
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); postNote(); }
+    });
+    updateCharCount();
+  }
+
+  const timeInp = $('remTimeInput');
+  if (timeInp){
+    timeInp.addEventListener('input', updateRemHint);
+    timeInp.addEventListener('change', updateRemHint);
+  }
+
+  const pinIn = $('pinInput');
+  if (pinIn){
+    pinIn.addEventListener('keydown', function(e){
+      if (e.key === 'Enter'){ e.preventDefault(); verifyPin(); }
+    });
+  }
+
+  // Unlock audio khi user tap lần đầu
+  ['click','touchstart','keydown'].forEach(function(ev){
+    document.addEventListener(ev, initAlarmAudio, { once: true, passive: true });
+  });
+
+  console.log('%c📝 SỔ TAY + BÁO THỨC LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+}
+
+if (document.readyState === 'loading'){
+  document.addEventListener('DOMContentLoaded', init);
+} else {
+  init();
+}
+</script>
+
+</body>
+</html>

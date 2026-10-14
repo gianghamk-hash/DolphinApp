@@ -773,6 +773,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     if (transitionLock) return;
     var baseUrl = APP_MAP[area];
     if (!baseUrl) return;
+        // ⚡ Pause nhạc landing để nhường cho iframe (nếu iframe cho phép nhạc)
+    try { if (window.DolphinSound) window.DolphinSound.pause(); } catch(e){}
 
     var themeKey = (window.ThemeSystem && window.ThemeSystem.getCurrent)
                    ? window.ThemeSystem.getCurrent() : 'default';
@@ -825,6 +827,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   window.goHome = function(){
     if (transitionLock) return;
     transitionLock = true;
+        // ⚡ Resume nhạc khi về landing
+    try { if (window.DolphinSound) window.DolphinSound.resume(); } catch(e){}
 
     if (window.renderGreeting) window.renderGreeting();
     if (location.hash) {

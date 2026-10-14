@@ -55,10 +55,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 .shape-cell.hidden{background:transparent;box-shadow:none}
 .shape-cell.hidden::after{display:none}
 
-#ghost{position:fixed;pointer-events:none;z-index:10000;display:none;filter:drop-shadow(0 10px 24px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(244,184,66,.5));opacity:0;will-change:transform;transition:opacity .1s ease-out}
+#ghost{position:fixed;pointer-events:none;z-index:10000;display:none;filter:drop-shadow(0 10px 24px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(244,184,66,.5));opacity:0;transition:opacity .08s ease-out}
 #ghost.show{display:block;opacity:.95}
-#ghost .shape-cell{background:linear-gradient(135deg,var(--c-light),var(--c));border-radius:5px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,.4),inset 0 -2px 4px rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.4)}
-#ghost .shape-cell::after{content:'';position:absolute;inset:2px;border-radius:3px;background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 55%);pointer-events:none}
+#ghost .shape-cell{background:linear-gradient(135deg,var(--c-light),var(--c));border-radius:6px;position:relative;box-shadow:inset 0 2px 0 rgba(255,255,255,.4),inset 0 -2px 4px rgba(0,0,0,.3),0 2px 4px rgba(0,0,0,.4)}
+#ghost .shape-cell::after{content:'';position:absolute;inset:3px;border-radius:4px;background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 55%);pointer-events:none}
 #ghost .shape-cell.hidden{background:transparent;box-shadow:none}
 #ghost .shape-cell.hidden::after{display:none}
 
@@ -126,7 +126,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 </div>
 
 <div id="ghost"></div>
-
 <div id="comboBanner"><div class="cb-main">COMBO x2</div><div class="cb-sub">BLAST!</div></div>
 
 <div id="gameOverModal" class="modal">
@@ -391,7 +390,7 @@ function updateStats(bounce){
 }
 function loadBest(){ try { const v = parseInt(localStorage.getItem('dolphin_bb_best'),10); if (!isNaN(v) && v > 0) state.best = v; } catch(e){} }
 
-// ═══════════════ DRAG SYSTEM v5 — CÙNG CÔNG THỨC CHO GHOST + PREVIEW ═══════════════
+// ═══════════════ DRAG SYSTEM v6 — GHOST = PREVIEW CÙNG VỊ TRÍ ═══════════════
 function measureBoard(){
   const boardEl = $('board');
   if (!boardEl) return;
@@ -399,24 +398,30 @@ function measureBoard(){
   boardCellSize = (boardRect.width - (SIZE - 1) * BOARD_GAP) / SIZE;
 }
 
-// CÙNG 1 CÔNG THỨC dùng cho cả ghost position và preview/place
-function getCursorCell(x, y){
+// Tính vị trí pixel của ô (r, c) trong board
+function cellPixelPos(r, c){
   const step = boardCellSize + BOARD_GAP;
   return {
-    c: (x - boardRect.left) / step,
-    r: (y - boardRect.top) / step
+    x: boardRect.left + c * step,
+    y: boardRect.top + r * step
   };
 }
 
-function getTargetPos(x, y, b){
-  const cc = getCursorCell(x, y);
-  // Vị trí ô đang trỏ vào (làm tròn) — shape sẽ được đặt ở đây
-  const anchorC = Math.floor(cc.c);
-  const anchorR = Math.floor(cc.r);
-  // Top-left shape để "tâm" shape xấp xỉ cursor
-  const targetC = anchorC - Math.floor((b.cols - 1) / 2);
-  const targetR = anchorR - Math.floor((b.rows - 1) / 2);
-  return { targetC: targetC, targetR: targetR };
+// Từ tọa độ cursor → tìm ô board cursor đang trỏ
+function cursorToCell(x, y){
+  const step = boardCellSize + BOARD_GAP;
+  return {
+    c: Math.floor((x - boardRect.left) / step),
+    r: Math.floor((y - boardRect.top) / step)
+  };
+}
+
+// Tính top-left shape từ cursor cell
+function computeTarget(cursorCell, b){
+  return {
+    c: cursorCell.c - Math.floor((b.cols - 1) / 2),
+    r: cursorCell.r - Math.floor((b.rows - 1) / 2)
+  };
 }
 
 function startDrag(e, slotIdx){
@@ -428,7 +433,7 @@ function startDrag(e, slotIdx){
   measureBoard();
   if (!boardRect) return;
   const b = getBounds(item.shape);
-  state.drag = { slotIdx: slotIdx, item: item, bounds: b, cellSize: boardCellSize };
+  state.drag = { slotIdx: slotIdx, item: item, bounds: b };
   buildGhost(item, b);
   wrap.classList.add('dragging');
   document.querySelectorAll('.tray-slot')[slotIdx].classList.add('dragging-slot');
@@ -439,7 +444,7 @@ function startDrag(e, slotIdx){
 
 function buildGhost(item, b){
   const ghost = $('ghost');
-  // DÙNG CÙNG cellSize với board — KHÔNG làm tròn
+  // DÙNG ĐÚNG cellSize và gap của board — KHÔNG làm tròn
   const cellSize = boardCellSize;
   const gap = BOARD_GAP;
   ghost.innerHTML = '';
@@ -462,36 +467,25 @@ function buildGhost(item, b){
   ghost.classList.add('show');
 }
 
-// Ghost dịch để TÂM của ghost nằm tại (x, y) — cùng công thức với preview
-function updateGhostPos(x, y){
+// Ghost đặt CHÍNH XÁC tại pixel pos của ô (targetR, targetC) — CÙNG vị trí với preview
+function updateGhostAt(targetR, targetC){
   const ghost = $('ghost');
   if (!ghost || !state.drag) return;
-  const b = state.drag.bounds;
-  const cellSize = boardCellSize;
-  const gap = BOARD_GAP;
-  // Kích thước ghost
-  const ghostW = b.cols * cellSize + (b.cols-1) * gap;
-  const ghostH = b.rows * cellSize + (b.rows-1) * gap;
-  // TÂM ghost — tính theo cùng hệ tọa độ sẽ dùng cho board
-  // Tâm của shape khi đặt tại (targetR, targetC) sẽ ở:
-  //   boardRect.left + (targetC + b.cols/2) * (cellSize + gap) - gap/2 ... phức tạp
-  // Cách đơn giản: ghost center at cursor → dịch đi halfW/halfH
-  ghost.style.left = x + 'px';
-  ghost.style.top = y + 'px';
-  ghost.style.setProperty('transform', 'translate('+(-ghostW/2)+'px, '+(-ghostH/2)+'px)', 'important');
+  const pos = cellPixelPos(targetR, targetC);
+  ghost.style.left = pos.x + 'px';
+  ghost.style.top = pos.y + 'px';
+  ghost.style.setProperty('transform', 'none', 'important');
 }
 
-function updatePreview(x, y){
+function updatePreviewAt(targetR, targetC){
   clearPreview();
-  if (!state.drag || !boardRect) return;
+  if (!state.drag) return;
   const item = state.drag.item;
-  const b = state.drag.bounds;
-  const target = getTargetPos(x, y, b);
-  const valid = canPlace(item.shape, target.targetR, target.targetC);
+  const valid = canPlace(item.shape, targetR, targetC);
   const boardEl = $('board');
   item.shape.forEach(function(p){
-    const r = target.targetR + p[0];
-    const c = target.targetC + p[1];
+    const r = targetR + p[0];
+    const c = targetC + p[1];
     if (r >= 0 && r < SIZE && c >= 0 && c < SIZE){
       boardEl.children[r*SIZE+c].classList.add(valid ? 'preview' : 'preview-invalid');
     }
@@ -504,8 +498,14 @@ function processMove(){
   state.rafPending = false;
   if (!state.pendingPointer || !state.drag) return;
   const p = state.pendingPointer;
-  updateGhostPos(p.x, p.y);
-  updatePreview(p.x, p.y);
+  // Chỉ tính khi cursor nằm trong vùng board (có margin rộng)
+  const cursorCell = cursorToCell(p.x, p.y);
+  const b = state.drag.bounds;
+  const target = computeTarget(cursorCell, b);
+  // Cập nhật ghost tại vị trí pixel chính xác — TRÙNG với preview
+  updateGhostAt(target.r, target.c);
+  // Cập nhật preview tại cùng target
+  updatePreviewAt(target.r, target.c);
 }
 
 function onPointerMove(e){
@@ -521,9 +521,10 @@ function onPointerUp(e){
   const item = state.drag.item;
   const slotIdx = state.drag.slotIdx;
   const b = state.drag.bounds;
-  const x = e.clientX, y = e.clientY;
-  const target = getTargetPos(x, y, b);
-  const valid = canPlace(item.shape, target.targetR, target.targetC);
+  const cursorCell = cursorToCell(e.clientX, e.clientY);
+  const target = computeTarget(cursorCell, b);
+  const valid = canPlace(item.shape, target.r, target.c);
+
   const ghost = $('ghost');
   ghost.classList.remove('show'); ghost.innerHTML = '';
   clearPreview();
@@ -531,10 +532,11 @@ function onPointerUp(e){
   if (wrap) wrap.classList.remove('dragging');
   document.querySelectorAll('.tray-slot')[slotIdx].classList.remove('dragging-slot');
   state.drag = null; state.pendingPointer = null;
+
   if (valid){
     state.processing = true;
     state.tray[slotIdx] = null;
-    placeShape(item, target.targetR, target.targetC);
+    placeShape(item, target.r, target.c);
     setTimeout(function(){
       const anyNew = refillTray();
       if (anyNew) renderTray();
@@ -665,7 +667,7 @@ function init(){
   document.addEventListener('touchend', function(e){ var now = Date.now(); if (now - lastTap < 300 && e.cancelable) e.preventDefault(); lastTap = now; }, { passive: false });
   window.addEventListener('resize', function(){ measureBoard(); renderTray(); });
   window.addEventListener('orientationchange', function(){ setTimeout(function(){ measureBoard(); renderTray(); }, 300); });
-  console.log('%c🧱 BLOCK BLAST v5 LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  console.log('%c🧱 BLOCK BLAST v6 LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);

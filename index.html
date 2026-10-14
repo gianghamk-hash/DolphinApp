@@ -8,7 +8,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-  /* ==================== 3. LOGO ANIMATION ==================== */
+/* ==================== LOGO ANIMATION ==================== */
 .logo-img{
   animation: logoIn 1.2s cubic-bezier(.16,1,.3,1) both,
              logoBreathe 5s ease-in-out infinite 1.5s;
@@ -21,26 +21,18 @@
   0%,100%{transform:scale(1)}
   50%{transform:scale(1.025)}
 }
-@media(prefers-reduced-motion:reduce){
-  .logo-img{animation:none}
-}
+@media(prefers-reduced-motion:reduce){ .logo-img{animation:none} }
 
-/* ==================== 2. SKELETON LOADING ==================== */
+/* ==================== SKELETON LOADING ==================== */
 .area-card.skeleton{
   pointer-events:none;
   background:rgba(25,71,67,.35)!important;
   border:1px dashed rgba(244,184,66,.15)!important;
-  position:relative;
-  overflow:hidden;
+  position:relative;overflow:hidden;
 }
-.area-card.skeleton > *{
-  visibility:hidden!important;
-}
+.area-card.skeleton > *{ visibility:hidden!important; }
 .area-card.skeleton::after{
-  content:'';
-  position:absolute;
-  inset:0;
-  border-radius:inherit;
+  content:'';position:absolute;inset:0;border-radius:inherit;
   background:linear-gradient(90deg,
     rgba(25,71,67,0) 0%,
     rgba(78,205,196,.14) 45%,
@@ -48,61 +40,37 @@
     rgba(25,71,67,0) 100%);
   background-size:200% 100%;
   animation:skeletonShimmer 1.5s ease-in-out infinite;
-  pointer-events:none;
-  z-index:3;
+  pointer-events:none;z-index:3;
 }
-@keyframes skeletonShimmer{
-  0%{background-position:200% 0}
-  100%{background-position:-200% 0}
-}
+@keyframes skeletonShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* ==================== 9. NOTIF BADGE ==================== */
+/* ==================== NOTIF BADGE ==================== */
 .area-notif-badge{
-  position:absolute;
-  top:.6rem;
-  left:.85rem;
+  position:absolute;top:.6rem;left:.85rem;
   background:linear-gradient(135deg,#EF4444,#B91C1C);
-  color:#fff;
-  font-size:.6rem;
-  font-weight:900;
-  letter-spacing:.06em;
-  padding:4px 9px;
-  border-radius:99px;
-  display:none;
-  align-items:center;
-  gap:5px;
-  box-shadow:0 4px 12px rgba(239,68,68,.6),
-             0 0 0 2px rgba(239,68,68,.25);
-  z-index:6;
-  text-transform:uppercase;
-  font-family:'Nunito',sans-serif;
-  animation:notifPulse 1.4s ease-in-out infinite;
-  will-change:transform;
+  color:#fff;font-size:.6rem;font-weight:900;letter-spacing:.06em;
+  padding:4px 9px;border-radius:99px;
+  display:none;align-items:center;gap:5px;
+  box-shadow:0 4px 12px rgba(239,68,68,.6),0 0 0 2px rgba(239,68,68,.25);
+  z-index:6;text-transform:uppercase;font-family:'Nunito',sans-serif;
+  animation:notifPulse 1.4s ease-in-out infinite;will-change:transform;
 }
 .area-notif-badge.show{display:inline-flex}
-.area-notif-badge .nb-dot{
-  width:7px;height:7px;border-radius:50%;
-  background:#fff;
-  box-shadow:0 0 8px #fff;
-}
+.area-notif-badge .nb-dot{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff}
 @keyframes notifPulse{
-  0%,100%{transform:scale(1);
-    box-shadow:0 4px 12px rgba(239,68,68,.6),0 0 0 2px rgba(239,68,68,.25)}
-  50%{transform:scale(1.08);
-    box-shadow:0 6px 20px rgba(239,68,68,.9),0 0 0 4px rgba(239,68,68,.35)}
+  0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(239,68,68,.6),0 0 0 2px rgba(239,68,68,.25)}
+  50%{transform:scale(1.08);box-shadow:0 6px 20px rgba(239,68,68,.9),0 0 0 4px rgba(239,68,68,.35)}
 }
-@media(prefers-reduced-motion:reduce){
-  .area-notif-badge{animation:none}
-}
-  /* ════════════════ HALONG CLOCK WIDGET ════════════════ */
+@media(prefers-reduced-motion:reduce){ .area-notif-badge{animation:none} }
+
+/* ==================== HALONG CLOCK WIDGET ==================== */
 #halongClock{
   position:relative;display:flex;align-items:center;gap:12px;
   max-width:min(92vw,560px);margin:0 auto clamp(1.25rem,2.5vw,2rem);
   padding:12px 20px;border-radius:18px;
   background:linear-gradient(135deg,rgba(15,61,56,.75),rgba(10,43,40,.85));
   border:2px solid rgba(244,184,66,.55);
-  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 40px rgba(244,184,66,.25),
-             inset 0 0 30px rgba(244,184,66,.06);
+  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 40px rgba(244,184,66,.25),inset 0 0 30px rgba(244,184,66,.06);
   backdrop-filter:blur(16px) saturate(140%);
   -webkit-backdrop-filter:blur(16px) saturate(140%);
   overflow:hidden;isolation:isolate;font-family:'Nunito',sans-serif;
@@ -112,22 +80,16 @@
   background:radial-gradient(circle at 30% 50%,rgba(244,184,66,.18),transparent 60%),
              radial-gradient(circle at 70% 50%,rgba(78,205,196,.12),transparent 60%);
 }
-#halongClock .hclock-icon{
-  font-size:28px;line-height:1;flex-shrink:0;
-  filter:drop-shadow(0 0 12px rgba(244,184,66,.8));
-}
+#halongClock .hclock-icon{font-size:28px;line-height:1;flex-shrink:0;filter:drop-shadow(0 0 12px rgba(244,184,66,.8))}
 #halongClock .hclock-body{flex:1;min-width:0;text-align:left}
 #halongClock .hclock-time{
   display:flex;align-items:baseline;gap:2px;
-  font-weight:900;line-height:1;
-  font-variant-numeric:tabular-nums;
+  font-weight:900;line-height:1;font-variant-numeric:tabular-nums;
   color:#FBD77A;letter-spacing:.02em;
   text-shadow:0 0 12px rgba(244,184,66,.65),0 0 24px rgba(244,184,66,.35);
   font-size:clamp(1.6rem,4.5vw,2.4rem);
 }
-#halongClock .hclock-h,
-#halongClock .hclock-m,
-#halongClock .hclock-s{
+#halongClock .hclock-h,#halongClock .hclock-m,#halongClock .hclock-s{
   font-family:'Fraunces','Nunito',serif;font-weight:900;
 }
 #halongClock .hclock-s{font-size:.55em;opacity:.85;margin-left:2px;color:#bfe9dc}
@@ -135,18 +97,14 @@
 #halongClock .hclock-sep-s{font-size:.55em;opacity:.5}
 #halongClock .hclock-date{
   font-size:clamp(.7rem,1.6vw,.82rem);
-  color:#bfe9dc;font-weight:700;margin-top:5px;
-  letter-spacing:.03em;opacity:.92;
+  color:#bfe9dc;font-weight:700;margin-top:5px;letter-spacing:.03em;opacity:.92;
 }
 #halongClock .hclock-loc{
   display:flex;align-items:center;gap:6px;
   padding-left:12px;border-left:1px solid rgba(244,184,66,.3);
   flex-shrink:0;text-align:left;
 }
-#halongClock .hclock-loc-icon{
-  font-size:18px;
-  filter:drop-shadow(0 0 6px rgba(244,184,66,.7));
-}
+#halongClock .hclock-loc-icon{font-size:18px;filter:drop-shadow(0 0 6px rgba(244,184,66,.7))}
 #halongClock .hclock-loc-text{
   font-size:clamp(.62rem,1.4vw,.72rem);
   font-weight:800;color:#FBD77A;letter-spacing:.04em;
@@ -159,70 +117,45 @@
   #halongClock .hclock-loc{padding-left:8px}
   #halongClock .hclock-loc-text{font-size:.6rem}
 }
+
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%;overflow:hidden}
 body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
 /* ==================== WELCOME ==================== */
 .welcome-lbl{
-  text-align:center;
-  font-size:clamp(.95rem,2vw,1.25rem);
-  font-weight:900;
-  color:#e6f7f2;
-  margin:0 0 clamp(1.25rem,3vw,2rem);
-  text-shadow:0 2px 10px rgba(0,0,0,.7);
-  letter-spacing:.04em;
-  line-height:1.5;
+  text-align:center;font-size:clamp(.95rem,2vw,1.25rem);font-weight:900;
+  color:#e6f7f2;margin:0 0 clamp(1.25rem,3vw,2rem);
+  text-shadow:0 2px 10px rgba(0,0,0,.7);letter-spacing:.04em;line-height:1.5;
 }
 .welcome-lbl .wlc-vi{
-  display:block;
-  color:#FBD77A;
-  font-family:'Fraunces',serif;
-  font-size:clamp(1.05rem,2.4vw,1.5rem);
-  letter-spacing:.06em;
-  margin-bottom:.35em;
+  display:block;color:#FBD77A;font-family:'Fraunces',serif;
+  font-size:clamp(1.05rem,2.4vw,1.5rem);letter-spacing:.06em;margin-bottom:.35em;
 }
 .welcome-lbl .wlc-vi #wlcStaffName{
-  display:inline-block;
-  color:#fff;
-  text-shadow:0 0 24px rgba(244,184,66,.8),
-              0 0 40px rgba(244,184,66,.5),
-              0 2px 6px rgba(0,0,0,.6);
-  font-weight:900;
-  letter-spacing:.08em;
-  margin:0 .15em;
+  display:inline-block;color:#fff;
+  text-shadow:0 0 24px rgba(244,184,66,.8),0 0 40px rgba(244,184,66,.5),0 2px 6px rgba(0,0,0,.6);
+  font-weight:900;letter-spacing:.08em;margin:0 .15em;
   animation:staffGlow 2.5s ease-in-out infinite;
 }
 @keyframes staffGlow{
-  0%,100%{ text-shadow:0 0 24px rgba(244,184,66,.8), 0 0 40px rgba(244,184,66,.5), 0 2px 6px rgba(0,0,0,.6); }
-  50%    { text-shadow:0 0 36px rgba(244,184,66,1), 0 0 60px rgba(244,184,66,.8), 0 2px 6px rgba(0,0,0,.6); }
+  0%,100%{text-shadow:0 0 24px rgba(244,184,66,.8),0 0 40px rgba(244,184,66,.5),0 2px 6px rgba(0,0,0,.6)}
+  50%{text-shadow:0 0 36px rgba(244,184,66,1),0 0 60px rgba(244,184,66,.8),0 2px 6px rgba(0,0,0,.6)}
 }
 .welcome-lbl .wlc-en{
-  display:block;
-  font-size:.85em;
-  color:#bfe9dc;
-  font-weight:800;
-  margin-top:.55em;
-  letter-spacing:.14em;
-  text-transform:uppercase;
-  opacity:.92;
+  display:block;font-size:.85em;color:#bfe9dc;font-weight:800;
+  margin-top:.55em;letter-spacing:.14em;text-transform:uppercase;opacity:.92;
 }
 
 /* ==================== AREA CARDS ==================== */
 .area-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(.75rem,2vw,1.25rem)}
 @media(min-width:900px){.area-grid{grid-template-columns:repeat(4,1fr)}}
 
-/* Base card — KHÔNG background, border, border-radius, overflow
-   Theme system v5 inject ::before với clip-path */
 .area-card{
-  position:relative;
-  padding:1.8rem 1rem 1.5rem;
-  text-align:center;cursor:pointer;
+  position:relative;padding:1.8rem 1rem 1.5rem;text-align:center;cursor:pointer;
   transition:transform .45s cubic-bezier(.16,1,.3,1);
-  isolation:isolate;
-  font-family:'Nunito',sans-serif;color:#fff;
-  display:flex;flex-direction:column;
-  align-items:center;justify-content:center;
+  isolation:isolate;font-family:'Nunito',sans-serif;color:#fff;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
   width:100%;min-height:190px;gap:.4rem;
   -webkit-appearance:none;appearance:none;outline:none;
   background:transparent;border:none;
@@ -250,18 +183,15 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 .area-title-vi{
   font-weight:700;font-size:clamp(.7rem,1.5vw,.9rem);
   color:#bfe9dc;margin:0;letter-spacing:.04em;
-  opacity:.9;font-style:italic;
-  transition:color 1s ease;
+  opacity:.9;font-style:italic;transition:color 1s ease;
   position:relative;z-index:2;
 }
 .area-badge{
   position:absolute;top:.75rem;right:.85rem;
   background:linear-gradient(135deg,#FBD77A,#D99A2B);
-  color:#123634;
-  font-size:.55rem;font-weight:900;letter-spacing:.12em;
+  color:#123634;font-size:.55rem;font-weight:900;letter-spacing:.12em;
   padding:3px 8px;border-radius:99px;text-transform:uppercase;
-  box-shadow:0 3px 10px rgba(244,184,66,.5);
-  z-index:5;
+  box-shadow:0 3px 10px rgba(244,184,66,.5);z-index:5;
 }
 
 /* ==================== ENTRANCE ANIM ==================== */
@@ -270,23 +200,29 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 .d-1{animation-delay:.08s}.d-2{animation-delay:.22s}
 
 /* ==================== ANNOUNCEMENT TICKER ==================== */
-#announcementBar{display:none;max-width:900px;margin:0 auto 1.5rem;
+#announcementBar{
+  display:none;max-width:900px;margin:0 auto 1.5rem;
   background:linear-gradient(135deg,#0f3d38 0%,#0a2b28 100%);
   border:2px solid #FBD77A;border-radius:14px;padding:14px 0;
   position:relative;overflow:hidden;
-  box-shadow:0 6px 28px rgba(244,184,66,.45),inset 0 0 30px rgba(244,184,66,.08)}
+  box-shadow:0 6px 28px rgba(244,184,66,.45),inset 0 0 30px rgba(244,184,66,.08);
+}
 #announcementBar.show{display:block;animation:announce-fade-in .6s ease-out}
 @keyframes announce-fade-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.announcement-icon{position:absolute;left:14px;top:50%;transform:translateY(-50%);
-  font-size:22px;z-index:5;
-  filter:drop-shadow(0 0 10px rgba(244,184,66,1))}
+.announcement-icon{
+  position:absolute;left:14px;top:50%;transform:translateY(-50%);
+  font-size:22px;z-index:5;filter:drop-shadow(0 0 10px rgba(244,184,66,1));
+}
 .announcement-viewport{overflow:hidden;padding-left:48px;padding-right:20px;position:relative}
-.announcement-track{display:inline-flex;white-space:nowrap;
-  animation:announce-marquee 25s linear infinite;will-change:transform}
-.announcement-text{padding-right:100px;color:#FFE58F;font-weight:900;font-size:14px;
-  letter-spacing:.04em;
+.announcement-track{
+  display:inline-flex;white-space:nowrap;
+  animation:announce-marquee 25s linear infinite;will-change:transform;
+}
+.announcement-text{
+  padding-right:100px;color:#FFE58F;font-weight:900;font-size:14px;letter-spacing:.04em;
   text-shadow:0 0 4px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.7),0 0 16px rgba(255,229,143,.6),0 0 24px rgba(244,184,66,.4);
-  font-family:'Nunito',sans-serif;-webkit-text-stroke:0.3px rgba(0,0,0,.3)}
+  font-family:'Nunito',sans-serif;-webkit-text-stroke:0.3px rgba(0,0,0,.3);
+}
 @keyframes announce-marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
 @media(min-width:768px){
   .announcement-text{font-size:17px;padding-right:160px}
@@ -297,30 +233,37 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 @media(prefers-reduced-motion:reduce){.announcement-track{animation-duration:60s}}
 
 /* ==================== UPDATE BANNER ==================== */
-#updateBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;
+#updateBanner{
+  display:none;position:fixed;top:0;left:0;right:0;z-index:9999;
   background:linear-gradient(135deg,#1a4a45 0%,#123634 100%);
   border-bottom:3px solid #FBD77A;padding:12px 16px;
   box-shadow:0 8px 32px rgba(244,184,66,.5);
-  animation:update-slide-down .5s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif}
+  animation:update-slide-down .5s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif;
+}
 #updateBanner.show{display:block}
 @keyframes update-slide-down{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
 .update-content{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
 .update-icon{font-size:32px;filter:drop-shadow(0 0 12px rgba(244,184,66,.9))}
 .update-info{flex:1;min-width:180px}
-.update-title{font-size:15px;font-weight:900;color:#FFE58F;text-transform:uppercase;
-  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9),0 0 16px rgba(255,229,143,.5);margin-bottom:2px}
+.update-title{
+  font-size:15px;font-weight:900;color:#FFE58F;text-transform:uppercase;
+  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9),0 0 16px rgba(255,229,143,.5);margin-bottom:2px;
+}
 .update-notes{font-size:11.5px;color:#bfe9dc;font-weight:600;line-height:1.4;opacity:.9}
 .update-actions{display:flex;gap:8px;flex-wrap:wrap}
-.update-btn{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;
+.update-btn{
+  background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;
   font-size:13px;text-transform:uppercase;letter-spacing:.05em;padding:12px 22px;
   border-radius:12px;border:none;cursor:pointer;
-  box-shadow:0 4px 16px rgba(244,184,66,.5);transition:all .2s;font-family:inherit;
-  white-space:nowrap}
+  box-shadow:0 4px 16px rgba(244,184,66,.5);transition:all .2s;font-family:inherit;white-space:nowrap;
+}
 .update-btn:active{transform:scale(.96)}
 .update-btn:disabled{opacity:.5;cursor:wait}
-.update-skip{background:transparent;color:#98dccb;font-weight:700;font-size:11.5px;
+.update-skip{
+  background:transparent;color:#98dccb;font-weight:700;font-size:11.5px;
   padding:12px 14px;border-radius:12px;border:1px solid rgba(152,220,203,.3);
-  cursor:pointer;font-family:inherit;white-space:nowrap}
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+}
 .update-skip:active{transform:scale(.96)}
 @media(min-width:768px){
   .update-title{font-size:17px}
@@ -336,81 +279,110 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 }
 
 /* ==================== TRANSITIONS ==================== */
-#landing{transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
+#landing{
+  transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
   position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden;
-  background:transparent !important}
+  background:transparent !important;
+}
 #landing.fade-out{opacity:0;transform:scale(1.06);pointer-events:none}
 #app-view{opacity:0;transition:opacity .45s ease;position:fixed;inset:0;z-index:40;background:#123634}
 #app-view.show{opacity:1}
 #app-view.hidden{display:none}
 #app-frame{width:100%;height:100%;border:0;display:block;background:#123634;position:absolute;inset:0;z-index:1}
 #app-frame.hidden-frame{opacity:0}
-#app-loading{position:absolute;inset:0;z-index:5;display:flex;align-items:center;
-  justify-content:center;flex-direction:column;gap:1rem;background:#123634;
-  transition:opacity .4s;pointer-events:none}
+#app-loading{
+  position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
+  flex-direction:column;gap:1rem;background:#123634;transition:opacity .4s;pointer-events:none;
+}
 #app-loading.hide{opacity:0}
-.loader-ring{width:56px;height:56px;border:4px solid rgba(244,184,66,.2);
-  border-top-color:#F4B842;border-radius:50%;animation:spin 1s linear infinite}
+.loader-ring{
+  width:56px;height:56px;border:4px solid rgba(244,184,66,.2);
+  border-top-color:#F4B842;border-radius:50%;animation:spin 1s linear infinite;
+}
 @keyframes spin{to{transform:rotate(360deg)}}
 .loader-text{color:#FBD77A;font-weight:800;font-size:.85rem;letter-spacing:.15em;text-transform:uppercase}
 
 /* ============ FLOATING HOME CONTROLS ============ */
-#home-controls{position:fixed;bottom:20px;right:15px;z-index:1000;
+#home-controls{
+  position:fixed;bottom:20px;right:15px;z-index:1000;
   display:flex;flex-direction:column-reverse;gap:8px;align-items:center;
-  user-select:none;-webkit-user-select:none;touch-action:none;transition:opacity .2s}
+  user-select:none;-webkit-user-select:none;touch-action:none;transition:opacity .2s;
+}
 #home-controls.dragging{transition:none;opacity:.85}
-#home-controls.dragging #btn-home{transform:scale(1.08);
-  box-shadow:0 10px 30px rgba(0,0,0,.7), 0 0 0 4px rgba(244,184,66,.35)}
-#btn-home{width:52px;height:52px;border-radius:50%;background:rgba(18,54,52,.9);
+#home-controls.dragging #btn-home{
+  transform:scale(1.08);
+  box-shadow:0 10px 30px rgba(0,0,0,.7), 0 0 0 4px rgba(244,184,66,.35);
+}
+#btn-home{
+  width:52px;height:52px;border-radius:50%;background:rgba(18,54,52,.9);
   border:2px solid rgba(244,184,66,.7);color:#FBD77A;display:flex;align-items:center;justify-content:center;
   cursor:grab;backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
   box-shadow:0 6px 20px rgba(0,0,0,.5);transition:transform .15s,box-shadow .15s;
-  -webkit-appearance:none;appearance:none;padding:0;touch-action:none;-webkit-tap-highlight-color:transparent}
+  -webkit-appearance:none;appearance:none;padding:0;touch-action:none;-webkit-tap-highlight-color:transparent;
+}
 #btn-home:active{cursor:grabbing}
 #btn-home svg{width:24px;height:24px;pointer-events:none}
-#btn-toggle{width:34px;height:34px;border-radius:50%;background:rgba(18,54,52,.8);
+#btn-toggle{
+  width:34px;height:34px;border-radius:50%;background:rgba(18,54,52,.8);
   border:1px solid rgba(244,184,66,.4);color:rgba(251,215,122,.95);
   display:flex;align-items:center;justify-content:center;cursor:pointer;
   backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
   box-shadow:0 3px 10px rgba(0,0,0,.3);transition:transform .15s;font-size:14px;
   -webkit-appearance:none;appearance:none;padding:0;line-height:1;
-  touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+  touch-action:manipulation;-webkit-tap-highlight-color:transparent;
+}
 #btn-toggle:active{transform:scale(.92);background:rgba(18,54,52,.95)}
-#home-controls.minimized #btn-home{width:18px;height:18px;opacity:.5;
-  border-color:rgba(244,184,66,.5);box-shadow:0 3px 10px rgba(0,0,0,.4)}
+#home-controls.minimized #btn-home{
+  width:18px;height:18px;opacity:.5;
+  border-color:rgba(244,184,66,.5);box-shadow:0 3px 10px rgba(0,0,0,.4);
+}
 #home-controls.minimized #btn-home svg{display:none}
 #home-controls.minimized #btn-toggle{display:none}
-#home-controls.minimized #btn-home::after{content:'';width:8px;height:8px;border-radius:50%;
-  background:#FBD77A;box-shadow:0 0 10px rgba(244,184,66,.9)}
+#home-controls.minimized #btn-home::after{
+  content:'';width:8px;height:8px;border-radius:50%;
+  background:#FBD77A;box-shadow:0 0 10px rgba(244,184,66,.9);
+}
 #home-controls.minimized #btn-home:active{width:52px;height:52px;opacity:1}
 #home-controls.minimized #btn-home:active::after{display:none}
 #home-controls.minimized #btn-home:active svg{display:block}
 
 /* ==================== ORDER NOTIFICATION ==================== */
-#orderNotif{display:none;position:fixed;top:20px;left:50%;
+#orderNotif{
+  display:none;position:fixed;top:20px;left:50%;
   transform:translateX(-50%) translateY(-120%);z-index:9998;
   background:linear-gradient(135deg,#B91C1C 0%,#7F1D1D 100%);
   border:2px solid #FBD77A;border-radius:16px;padding:14px 18px;
   min-width:280px;max-width:90vw;
   box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3);
-  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s;font-family:'Nunito',sans-serif}
+  transition:transform .5s cubic-bezier(.16,1,.3,1),opacity .3s;font-family:'Nunito',sans-serif;
+}
 #orderNotif.show{display:block;transform:translateX(-50%) translateY(0)}
 .order-notif-content{display:flex;align-items:center;gap:12px}
 .order-notif-icon{font-size:32px;filter:drop-shadow(0 0 12px rgba(251,215,122,.9))}
 .order-notif-info{flex:1;min-width:0}
-.order-notif-title{color:#FFE58F;font-size:15px;font-weight:900;text-transform:uppercase;
-  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9);margin-bottom:3px}
-.order-notif-sub{color:#fff;font-size:12px;font-weight:700;opacity:.95;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.order-notif-sub .table-hl{background:rgba(255,229,143,.2);color:#FFE58F;
-  padding:1px 6px;border-radius:6px;font-weight:900}
+.order-notif-title{
+  color:#FFE58F;font-size:15px;font-weight:900;text-transform:uppercase;
+  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9);margin-bottom:3px;
+}
+.order-notif-sub{
+  color:#fff;font-size:12px;font-weight:700;opacity:.95;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.order-notif-sub .table-hl{
+  background:rgba(255,229,143,.2);color:#FFE58F;
+  padding:1px 6px;border-radius:6px;font-weight:900;
+}
 .order-notif-actions{display:flex;gap:6px;flex-direction:column}
-.order-notif-btn{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
+.order-notif-btn{
+  background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
   font-weight:900;font-size:11px;padding:8px 12px;border-radius:9px;border:none;
-  cursor:pointer;font-family:inherit;white-space:nowrap}
+  cursor:pointer;font-family:inherit;white-space:nowrap;
+}
 .order-notif-btn:active{transform:scale(.95)}
-.order-notif-close{background:transparent;color:#FFE58F;font-size:11px;font-weight:700;
-  border:none;cursor:pointer;padding:4px;font-family:inherit}
+.order-notif-close{
+  background:transparent;color:#FFE58F;font-size:11px;font-weight:700;
+  border:none;cursor:pointer;padding:4px;font-family:inherit;
+}
 @media(min-width:768px){
   #orderNotif{min-width:360px;padding:16px 22px}
   .order-notif-icon{font-size:38px}
@@ -510,10 +482,10 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
       </div>
 
       <div class="text-center fade-up" style="margin-bottom:clamp(1.5rem,3.5vw,2.5rem)">
-<img src="/DolphinApp/logo-dolphin.png" 
-     alt="Dolphin Ha Long Cruise" 
-     class="logo-img"
-     style="max-width:min(90vw,520px);width:100%;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 8px 32px rgba(244,184,66,.35)) brightness(1.05);">
+        <img src="/DolphinApp/logo-dolphin.png"
+             alt="Dolphin Ha Long Cruise"
+             class="logo-img"
+             style="max-width:min(90vw,520px);width:100%;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 8px 32px rgba(244,184,66,.35)) brightness(1.05);">
       </div>
 
       <!-- ════════ ANNOUNCEMENT TICKER ════════ -->
@@ -527,72 +499,79 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
         </div>
       </div>
 
-<p class="fade-up d-1 welcome-lbl">
-  <span class="wlc-vi" id="wlcGreeting">
-    XIN CHÀO <span id="wlcStaffName">BẠN</span> 👋
-  </span>
-  <span class="wlc-en" id="wlcGreetingSub">
-    CÙNG CỐ GẮNG LÀM VIỆC NHÉ! 💪
-  </span>
-</p>
+      <p class="fade-up d-1 welcome-lbl">
+        <span class="wlc-vi" id="wlcGreeting">
+          XIN CHÀO <span id="wlcStaffName">BẠN</span> 👋
+        </span>
+        <span class="wlc-en" id="wlcGreetingSub">
+          CÙNG CỐ GẮNG LÀM VIỆC NHÉ! 💪
+        </span>
+      </p>
 
-   <div class="fade-up d-2 area-grid">
+      <div class="fade-up d-2 area-grid">
 
-  <!-- 🍸 PREMIUM LOUNGE -->
-  <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
-    <span class="area-badge">VIP</span>
-    <span class="area-icon">🍸</span>
-    <h3 class="area-title-en">PREMIUM LOUNGE ACCESS</h3>
-    <p class="area-title-vi">Phòng LOUNGE</p>
-  </button>
+        <!-- 🍸 PREMIUM LOUNGE -->
+        <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
+          <span class="area-badge">VIP</span>
+          <span class="area-notif-badge" id="badge-lounge"><span class="nb-dot"></span><span class="nb-text">0</span></span>
+          <span class="area-icon">🍸</span>
+          <h3 class="area-title-en">PREMIUM LOUNGE ACCESS</h3>
+          <p class="area-title-vi">Phòng LOUNGE</p>
+        </button>
 
-  <!-- 🌴 BUNGALOW -->
-  <button type="button" class="area-card" onclick="openApp('bungalow')" aria-label="Bungalow">
-    <span class="area-icon">🌴</span>
-    <h3 class="area-title-en">BUNGALOW</h3>
-    <p class="area-title-vi">KHU VỰC CHÒI BUNGALOW</p>
-  </button>
+        <!-- 🌴 BUNGALOW -->
+        <button type="button" class="area-card" onclick="openApp('bungalow')" aria-label="Bungalow">
+          <span class="area-notif-badge" id="badge-bungalow"><span class="nb-dot"></span><span class="nb-text">0</span></span>
+          <span class="area-icon">🌴</span>
+          <h3 class="area-title-en">BUNGALOW</h3>
+          <p class="area-title-vi">KHU VỰC CHÒI BUNGALOW</p>
+        </button>
 
-  <!-- 🍽️ SUN VIEW RESTAURANT -->
-  <button type="button" class="area-card" onclick="openApp('restaurant')" aria-label="Restaurant">
-    <span class="area-badge">BUFFET ALACARTE</span>
-    <span class="area-icon">🍽️</span>
-    <h3 class="area-title-en">SUN VIEW RESTAURANT</h3>
-    <p class="area-title-vi">Nhà Hàng Tầng 2</p>
-  </button>
+        <!-- 🍽️ SUN VIEW RESTAURANT -->
+        <button type="button" class="area-card" onclick="openApp('restaurant')" aria-label="Restaurant">
+          <span class="area-badge">BUFFET ALACARTE</span>
+          <span class="area-notif-badge" id="badge-restaurant"><span class="nb-dot"></span><span class="nb-text">0</span></span>
+          <span class="area-icon">🍽️</span>
+          <h3 class="area-title-en">SUN VIEW RESTAURANT</h3>
+          <p class="area-title-vi">Nhà Hàng Tầng 2</p>
+        </button>
 
-  <!-- 🎭 DOLPHIN SHOW -->
-  <button type="button" class="area-card" onclick="openApp('show')" aria-label="Infinity Show">
-    <span class="area-icon">🎭</span>
-    <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
-    <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
-  </button>
+        <!-- 🎭 DOLPHIN SHOW -->
+        <button type="button" class="area-card" onclick="openApp('show')" aria-label="Infinity Show">
+          <span class="area-icon">🎭</span>
+          <h3 class="area-title-en">DOLPHIN INFINITY SHOW</h3>
+          <p class="area-title-vi">DOLPHIN SHOW HẢI TRÌNH TỐI</p>
+        </button>
 
-  <!-- 🏆 BẢNG XẾP HẠNG -->
-  <button type="button" class="area-card" onclick="openApp('ranking')" aria-label="Bảng xếp hạng">
-    <span class="area-badge">VINH DANH</span>
-    <span class="area-icon">🏆</span>
-    <h3 class="area-title-en">BẢNG XẾP HẠNG</h3>
-    <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
-  </button>
+        <!-- 🏆 BẢNG XẾP HẠNG -->
+        <button type="button" class="area-card" onclick="openApp('ranking')" aria-label="Bảng xếp hạng">
+          <span class="area-badge">VINH DANH</span>
+          <span class="area-icon">🏆</span>
+          <h3 class="area-title-en">BẢNG XẾP HẠNG</h3>
+          <p class="area-title-vi">TOP NHÂN VIÊN XUẤT SẮC</p>
+        </button>
 
-  <!-- 🎮 CỜ CARO -->
-  <button type="button" class="area-card" onclick="openApp('caro')" aria-label="Cờ Caro">
-    <span class="area-badge">GAME</span>
-    <span class="area-icon">🎮</span>
-    <h3 class="area-title-en">CỜ CARO ONLINE</h3>
-    <p class="area-title-vi">CHƠI CÙNG ĐỒNG NGHIỆP</p>
-  </button>
+        <!-- 🎮 CỜ CARO -->
+        <button type="button" class="area-card" onclick="openApp('caro')" aria-label="Cờ Caro">
+          <span class="area-badge">GAME</span>
+          <span class="area-icon">🎮</span>
+          <h3 class="area-title-en">CỜ CARO ONLINE</h3>
+          <p class="area-title-vi">CHƠI CÙNG ĐỒNG NGHIỆP</p>
+        </button>
 
-  <!-- 👑 SYSTEM DASHBOARD (chỉ Manager thấy) -->
-  <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
-    <span class="area-badge">CHỈ MANAGER</span>
-    <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
-    <h3 class="area-title-en" style="font-size:.95rem;">SYSTEM DASHBOARD</h3>
-    <p class="area-title-vi">TỔNG QUAN TOÀN BỘ 4 KHU VỰC</p>
-  </button>
+        <!-- 👑 SYSTEM DASHBOARD (chỉ Manager thấy) -->
+        <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
+          <span class="area-badge">CHỈ MANAGER</span>
+          <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
+          <h3 class="area-title-en" style="font-size:.95rem;">SYSTEM DASHBOARD</h3>
+          <p class="area-title-vi">TỔNG QUAN TOÀN BỘ 4 KHU VỰC</p>
+        </button>
 
+      </div>
+    </div>
+  </div>
 </div>
+
 <!-- ══════════════ APP VIEW (IFRAME) ══════════════ -->
 <div id="app-view" class="hidden">
   <div id="home-controls">
@@ -612,6 +591,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   <iframe id="app-frame" allow="microphone; camera; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen" title="Dolphin App"></iframe>
 </div>
 
+<!-- ════════ MAIN APP LOGIC ════════ -->
 <script>
 (function(){
   'use strict';
@@ -640,6 +620,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   }
   window.toggleHomeBtn = function(){
     var ctrl = document.getElementById('home-controls');
+    if (!ctrl) return;
     var nowHidden = !ctrl.classList.contains('minimized');
     localStorage.setItem(HOME_KEY, nowHidden ? '1' : '0');
     ctrl.classList.toggle('minimized', nowHidden);
@@ -747,19 +728,15 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
   applyHomeBtnState();
   setTimeout(initDraggableHome, 100);
-    /* ════════ SKELETON LOADING ════════ */
+
+  /* ════════ SKELETON LOADING ════════ */
   (function skeletonFlow(){
     var cards = document.querySelectorAll('.area-card');
     if (!cards.length) return;
-
-    /* Bước 1: Bật skeleton NGAY */
     cards.forEach(function(c){ c.classList.add('skeleton'); });
-
-    /* Bước 2: Sau 600ms hiện nội dung thật */
     setTimeout(function(){
       cards.forEach(function(c){
         c.classList.remove('skeleton');
-        /* Hiệu ứng mở dần */
         c.style.opacity = '0';
         c.style.transform = 'translateY(8px)';
         c.style.transition = 'opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1)';
@@ -797,7 +774,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     var baseUrl = APP_MAP[area];
     if (!baseUrl) return;
 
-    /* Truyền theme hiện tại qua URL để iframe áp dụng */
     var themeKey = (window.ThemeSystem && window.ThemeSystem.getCurrent)
                    ? window.ThemeSystem.getCurrent() : 'default';
     var sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
@@ -808,8 +784,9 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
       try { history.pushState({area: area}, '', '#' + area); } catch(e) { location.hash = area; }
     }
     currentApp = area;
-        /* Xóa badge khi vào app */
+
     if (window.clearAreaBadge) window.clearAreaBadge(area);
+
     var frame = document.getElementById('app-frame');
     var view = document.getElementById('app-view');
     var landing = document.getElementById('landing');
@@ -849,7 +826,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     if (transitionLock) return;
     transitionLock = true;
 
-    /* Refresh greeting khi quay về Home */
     if (window.renderGreeting) window.renderGreeting();
     if (location.hash) {
       try { history.pushState({}, '', location.pathname + location.search); }
@@ -887,7 +863,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
       if (name) {
         var display = name.charAt(0).toUpperCase() + name.slice(1);
-
         var hour = parseInt(new Intl.DateTimeFormat('en-US', {
           timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', hour12: false
         }).format(new Date()), 10);
@@ -908,8 +883,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     } catch(e){}
   }
   window.renderGreeting = renderGreeting;
-
-  /* Chạy ngay khi script load */
   renderGreeting();
 
   /* ============ POPSTATE ============ */
@@ -943,8 +916,32 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 })();
 </script>
 
+<!-- ════════ UPDATE BANNER ACTIONS ════════ -->
 <script>
-// ════════ PWA SERVICE WORKER — AUTO VERSION ════════
+window.dismissUpdate = function(){
+  var banner = document.getElementById('updateBanner');
+  if (banner) banner.classList.remove('show');
+};
+
+window.performUpdate = function(){
+  var btn = document.getElementById('updateBtn');
+  if (btn){
+    btn.disabled = true;
+    btn.innerHTML = '⏳ Đang cập nhật...';
+  }
+  try {
+    if ('serviceWorker' in navigator && navigator.serviceWorker.controller){
+      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
+    }
+  } catch(e){}
+  setTimeout(function(){
+    window.location.reload();
+  }, 900);
+};
+</script>
+
+<!-- ════════ PWA SERVICE WORKER — AUTO VERSION ════════ -->
+<script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
     navigator.serviceWorker.register('/DolphinApp/service-worker.js', {
@@ -956,17 +953,13 @@ if ('serviceWorker' in navigator) {
 
       setInterval(function(){
         reg.update();
-        if (reg.active) {
-          reg.active.postMessage({ type: 'CHECK_UPDATE' });
-        }
+        if (reg.active) reg.active.postMessage({ type: 'CHECK_UPDATE' });
       }, 5 * 60 * 1000);
 
       document.addEventListener('visibilitychange', function(){
         if (document.visibilityState === 'visible') {
           reg.update();
-          if (reg.active) {
-            reg.active.postMessage({ type: 'CHECK_UPDATE' });
-          }
+          if (reg.active) reg.active.postMessage({ type: 'CHECK_UPDATE' });
         }
       });
 
@@ -985,29 +978,20 @@ if ('serviceWorker' in navigator) {
       console.warn('❌ SW failed:', err);
     });
 
-navigator.serviceWorker.addEventListener('message', function(e){
-  var data = e.data || {};
-  if (data.type === 'NEW_VERSION') {
-    var banner = document.getElementById('updateBanner');
-    if (banner){
-      banner.querySelector('.update-title').textContent = 
-        '🎉 Phiên bản ' + (data.newVersion || 'mới') + ' sẵn sàng!';
-      banner.querySelector('.update-notes    /* SW gửi NEW_VERSION → hiện banner */
     navigator.serviceWorker.addEventListener('message', function(e){
       var data = e.data || {};
       if (data.type === 'NEW_VERSION') {
         var banner = document.getElementById('updateBanner');
         if (banner){
-          banner.querySelector('.update-title').textContent =
-            '🎉 Phiên bản ' + (data.newVersion || 'mới') + ' sẵn sàng!';
-          banner.querySelector('.update-notes').textContent =
-            'Bấm "Cập nhật ngay" để nhận tính năng mới.';
+          var titleEl = banner.querySelector('.update-title');
+          var notesEl = banner.querySelector('.update-notes');
+          if (titleEl) titleEl.textContent = '🎉 Phiên bản ' + (data.newVersion || 'mới') + ' sẵn sàng!';
+          if (notesEl) notesEl.textContent = 'Bấm "Cập nhật ngay" để nhận tính năng mới.';
           banner.classList.add('show');
         }
       }
     });
 
-    /* Controllerchange → cũng hiện banner (KHÔNG auto reload) */
     var pendingUpdate = false;
     navigator.serviceWorker.addEventListener('controllerchange', function(){
       if (pendingUpdate) return;
@@ -1016,31 +1000,73 @@ navigator.serviceWorker.addEventListener('message', function(e){
       if (banner) banner.classList.add('show');
     });
   });
-}').textContent = 
-        'Bấm "Cập nhật ngay" để nhận tính năng mới.';
-      banner.classList.add('show');
-    }
+}
+</script>
+
+<!-- ════════ HALONG CLOCK ════════ -->
+<script>
+function initHalongClock(){
+  var elH = document.getElementById('hclockH');
+  var elM = document.getElementById('hclockM');
+  var elS = document.getElementById('hclockS');
+  var elDate = document.getElementById('hclockDate');
+  if (!elH || !elM || !elS || !elDate) return;
+
+  var fmtTime = new Intl.DateTimeFormat('en-GB', {
+    timeZone:'Asia/Ho_Chi_Minh',
+    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
+  });
+  var fmtDate = new Intl.DateTimeFormat('en-GB', {
+    timeZone:'Asia/Ho_Chi_Minh',
+    day:'2-digit', month:'2-digit', year:'numeric', weekday:'short'
+  });
+
+  function tick(){
+    var now = new Date();
+    var parts = fmtTime.formatToParts(now);
+    var h = '00', m = '00', s = '00';
+    parts.forEach(function(p){
+      if (p.type === 'hour') h = p.value;
+      if (p.type === 'minute') m = p.value;
+      if (p.type === 'second') s = p.value;
+    });
+    elH.textContent = h;
+    elM.textContent = m;
+    elS.textContent = s;
+
+    var dp = fmtDate.formatToParts(now);
+    var d = '01', mo = '01', y = '2026', dow = '';
+    dp.forEach(function(p){
+      if (p.type === 'day') d = p.value;
+      if (p.type === 'month') mo = p.value;
+      if (p.type === 'year') y = p.value;
+      if (p.type === 'weekday') dow = p.value;
+    });
+    var map = { Sun:'Chủ Nhật', Mon:'Thứ Hai', Tue:'Thứ Ba', Wed:'Thứ Tư',
+                Thu:'Thứ Năm', Fri:'Thứ Sáu', Sat:'Thứ Bảy' };
+    var dowVN = map[dow] || dow;
+    elDate.textContent = dowVN + ', ' + d + ' tháng ' + mo + ', ' + y;
+  }
+
+  tick();
+  setInterval(tick, 1000);
+}
+
+if (document.readyState === 'loading') {
+  document.addEventListener('DOMContentLoaded', function(){ setTimeout(initHalongClock, 200); });
+} else {
+  setTimeout(initHalongClock, 200);
+}
+</script>
+
+<!-- ════════ SYNC THEME SANG IFRAME KHI ĐỔI THEME ════════ -->
+<script>
+window.addEventListener('dolphin-theme-changed', function(e){
+  var f = document.getElementById('app-frame');
+  if (f && f.contentWindow && f.contentWindow.ThemeSystem){
+    try { f.contentWindow.ThemeSystem.setTheme(e.detail.key); } catch(err){}
   }
 });
-
-/* Controllerchange → cũng hiện banner thay vì reload */
-var pendingUpdate = false;
-navigator.serviceWorker.addEventListener('controllerchange', function(){
-  if (pendingUpdate) return;   // tránh banner 2 lần
-  pendingUpdate = true;
-  var banner = document.getElementById('updateBanner');
-  if (banner) banner.classList.add('show');
-});
-
-    var refreshing = false;
-    navigator.serviceWorker.addEventListener('controllerchange', function(){
-      if (refreshing) return;
-      refreshing = true;
-      console.log('🔄 Controller changed — reloading...');
-      window.location.reload();
-    });
-  });
-}
 </script>
 
 <!-- ════════ ANNOUNCEMENT TICKER — FIREBASE ════════ -->
@@ -1056,9 +1082,10 @@ const firebaseConfig = {
 };
 
 try {
-  const app = initializeApp(firebaseConfig);
+  const app = initializeApp(firebaseConfig, 'announcement-app');
   const auth = getAuth(app);
   const db = getFirestore(app);
+
   signInAnonymously(auth).then(() => {
     const ref = doc(db, 'master_config', 'announcement');
     onSnapshot(ref, (snap) => {
@@ -1204,7 +1231,7 @@ function showOrderNotif(cfg, data, type){
   notif.dataset.table = table;
   notif.classList.add('show');
   if (notifHideTimer) clearTimeout(notifHideTimer);
-  notifHideTimer = setTimeout(() => { closeOrderNotif(); }, 12000);
+  notifHideTimer = setTimeout(() => { window.closeOrderNotif(); }, 12000);
 }
 
 window.closeOrderNotif = function(){
@@ -1222,17 +1249,11 @@ window.openOrderFromNotif = function(){
   };
   const appKey = map[collection];
   if (appKey && window.openApp) window.openApp(appKey);
-  closeOrderNotif();
+  window.closeOrderNotif();
 };
 
-function pushToChat(text, icon){
-  if (window.ChatSystem && window.ChatSystem.pushSystemMessage){
-    window.ChatSystem.pushSystemMessage(text, icon);
-  }
-}
-
 try {
-  const app = initializeApp(notifFirebaseConfig);
+  const app = initializeApp(notifFirebaseConfig, 'notif-app');
   const auth = getAuth(app);
   const db = getFirestore(app);
 
@@ -1247,13 +1268,6 @@ try {
             if (data.status === 'pending'){
               playOrderBell();
               showOrderNotif(cfg, data, 'order');
-              const itemCount = Array.isArray(data.items) ? data.items.length : 0;
-              pushToChat(
-                cfg.label + ' · Bàn ' + (data.table || '--') + ' · ' +
-                (itemCount > 0 ? itemCount + ' món' : 'đơn mới') +
-                (data.customerName ? ' · ' + data.customerName : ''),
-                '🔔'
-              );
             }
           }
         });
@@ -1270,11 +1284,6 @@ try {
             if (data.status === 'pending'){
               playOrderBell();
               showOrderNotif(cfg, data, 'call');
-              pushToChat(
-                cfg.label + ' · Bàn ' + (data.table || '--') + ' gọi phục vụ' +
-                (data.customerName ? ' · ' + data.customerName : ''),
-                '🛎️'
-              );
             }
           }
         });
@@ -1284,62 +1293,7 @@ try {
 } catch(e){ console.warn('[Notif] Init error:', e); }
 </script>
 
-<!-- ════════ HALONG CLOCK ════════ -->
-<script>
-function initHalongClock(){
-  var elH = document.getElementById('hclockH');
-  var elM = document.getElementById('hclockM');
-  var elS = document.getElementById('hclockS');
-  var elDate = document.getElementById('hclockDate');
-  if (!elH || !elM || !elS || !elDate) return;
-
-  var fmtTime = new Intl.DateTimeFormat('en-GB', {
-    timeZone:'Asia/Ho_Chi_Minh',
-    hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
-  });
-  var fmtDate = new Intl.DateTimeFormat('en-GB', {
-    timeZone:'Asia/Ho_Chi_Minh',
-    day:'2-digit', month:'2-digit', year:'numeric', weekday:'short'
-  });
-
-  function tick(){
-    var now = new Date();
-    var parts = fmtTime.formatToParts(now);
-    var h = '00', m = '00', s = '00';
-    parts.forEach(function(p){
-      if (p.type === 'hour') h = p.value;
-      if (p.type === 'minute') m = p.value;
-      if (p.type === 'second') s = p.value;
-    });
-    elH.textContent = h;
-    elM.textContent = m;
-    elS.textContent = s;
-
-    var dp = fmtDate.formatToParts(now);
-    var d = '01', mo = '01', y = '2026', dow = '';
-    dp.forEach(function(p){
-      if (p.type === 'day') d = p.value;
-      if (p.type === 'month') mo = p.value;
-      if (p.type === 'year') y = p.value;
-      if (p.type === 'weekday') dow = p.value;
-    });
-    var map = { Sun:'Chủ Nhật', Mon:'Thứ Hai', Tue:'Thứ Ba', Wed:'Thứ Tư',
-                Thu:'Thứ Năm', Fri:'Thứ Sáu', Sat:'Thứ Bảy' };
-    var dowVN = map[dow] || dow;
-    elDate.textContent = dowVN + ', ' + d + ' tháng ' + mo + ', ' + y;
-  }
-
-  tick();
-  setInterval(tick, 1000);
-}
-
-if (document.readyState === 'loading') {
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(initHalongClock, 200); });
-} else {
-  setTimeout(initHalongClock, 200);
-}
-</script>
-  <!-- ════════ AREA NOTIF BADGE — FIREBASE ════════ -->
+<!-- ════════ AREA NOTIF BADGE — FIREBASE ════════ -->
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -1352,7 +1306,6 @@ const badgeCfg = {
   projectId: "dolphin-f6d67"
 };
 
-/* Mapping: collection → area key */
 const ORDER_MAP = {
   'bun_orders':    'bungalow',
   'lounge_orders': 'lounge',
@@ -1362,13 +1315,10 @@ const ORDER_MAP = {
 function setBadge(areaKey, count){
   const el = document.getElementById('badge-' + areaKey);
   if (!el) return;
-
-  /* Nếu đang trong app mode (đã vào app) → ẩn badge */
   if (document.body.classList.contains('app-mode')) {
     el.classList.remove('show');
     return;
   }
-
   const textEl = el.querySelector('.nb-text');
   if (count > 0){
     if (textEl) textEl.textContent = count > 99 ? '99+' : String(count);
@@ -1401,39 +1351,5 @@ try {
 }
 </script>
 
-<!-- ════════ SYNC THEME SANG IFRAME KHI ĐỔI THEME ════════ -->
-<script>
-window.addEventListener('dolphin-theme-changed', function(e){
-  var f = document.getElementById('app-frame');
-  if (f && f.contentWindow && f.contentWindow.ThemeSystem){
-    try { f.contentWindow.ThemeSystem.setTheme(e.detail.key); } catch(err){}
-  }
-});
-</script>
-<!-- ════════ UPDATE BANNER ACTIONS ════════ -->
-<script>
-window.dismissUpdate = function(){
-  var banner = document.getElementById('updateBanner');
-  if (banner) banner.classList.remove('show');
-};
-
-window.performUpdate = function(){
-  var btn = document.getElementById('updateBtn');
-  if (btn){
-    btn.disabled = true;
-    btn.innerHTML = '⏳ Đang cập nhật...';
-  }
-  try {
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller){
-      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-    }
-  } catch(e){}
-  /* Đợi SW mới activate rồi reload */
-  setTimeout(function(){
-    window.location.reload();
-  }, 900);
-};
-</script>
-  
 </body>
 </html>

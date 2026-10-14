@@ -40,9 +40,11 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 #settings-modal.show{display:flex}
 .settings-panel{background:linear-gradient(160deg,#0f3d38,#0a2b28);border:2px solid rgba(244,184,66,.5);border-radius:20px;width:100%;max-width:680px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.25);overflow:hidden}
 .settings-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2);overflow-x:auto}
-.settings-tab{flex:1;min-width:100px;padding:12px 16px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#98dccb;cursor:pointer;border:none;background:transparent;font-family:inherit;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.settings-tab{flex:1;min-width:90px;padding:12px 10px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.04em;color:#98dccb;cursor:pointer;border:none;background:transparent;font-family:inherit;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s;display:flex;align-items:center;justify-content:center;gap:4px;position:relative}
 .settings-tab:hover{background:rgba(255,255,255,.03);color:#FBD77A}
 .settings-tab.active{color:#FBD77A;border-bottom-color:#FBD77A;background:rgba(244,184,66,.08)}
+.settings-tab .tab-badge{background:#ef4444;color:#fff;font-size:9px;font-weight:900;padding:1px 5px;border-radius:99px;min-width:16px;text-align:center;animation:pulse-dot 1.6s ease-in-out infinite}
+.settings-tab.active .tab-badge{background:#123634;color:#FBD77A}
 .settings-body{flex:1;overflow-y:auto;padding:16px 18px}
 .collapse-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
 .collapse-head:hover{background:rgba(255,255,255,.02)}
@@ -50,6 +52,132 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .collapse.open .collapse-body{max-height:2000px;transition:max-height .5s ease-in}
 .collapse-chevron{transition:transform .3s;font-size:12px;color:#7ea8c8}
 .collapse.open .collapse-chevron{transform:rotate(180deg)}
+
+/* ═══ NOTE & REMINDER STYLES ═══ */
+.note-card{
+  background:linear-gradient(135deg,rgba(26,74,69,.85),rgba(13,42,40,.85));
+  border:1px solid rgba(55,137,123,.4);
+  border-radius:12px;padding:12px;margin-bottom:8px;
+  transition:all .2s;position:relative;overflow:hidden;
+  animation:noteIn .3s cubic-bezier(.16,1,.3,1);
+}
+.note-card::before{
+  content:'';position:absolute;left:0;top:0;bottom:0;width:3px;
+  background:linear-gradient(180deg,#FBD77A,#F4B842);
+  border-radius:12px 0 0 12px;
+}
+.note-card.pinned{
+  background:linear-gradient(135deg,rgba(244,184,66,.22),rgba(244,184,66,.06));
+  border-color:rgba(244,184,66,.65);
+  box-shadow:0 4px 20px rgba(244,184,66,.25);
+}
+.note-card.pinned::before{background:linear-gradient(180deg,#f472b6,#be185d);width:4px}
+.note-card.mine::before{background:linear-gradient(180deg,#22d3ee,#0891b2)}
+.note-card.pinned.mine::before{background:linear-gradient(180deg,#f472b6,#be185d)}
+@keyframes noteIn{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+
+.note-header{display:flex;align-items:center;gap:8px;margin-bottom:8px;padding-bottom:8px;border-bottom:1px dashed rgba(255,255,255,.1)}
+.note-avatar{
+  width:28px;height:28px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:12px;flex-shrink:0;
+  background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
+}
+.note-avatar.system{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff}
+.note-author{font-weight:900;font-size:12px;color:#fff;flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.note-author .me-tag{font-size:9px;color:#22d3ee;font-weight:900;margin-left:4px}
+.note-time{font-size:9.5px;color:#7ec9be;font-weight:700;white-space:nowrap}
+.note-body{font-size:12.5px;color:#e6f7f2;line-height:1.5;white-space:pre-wrap;word-break:break-word;margin-bottom:8px}
+.note-body a{color:#FBD77A;text-decoration:underline}
+.note-actions{display:flex;gap:5px;justify-content:flex-end}
+.note-btn{
+  padding:5px 9px;border-radius:7px;
+  font-size:10px;font-weight:800;
+  border:1px solid transparent;cursor:pointer;
+  font-family:inherit;display:flex;align-items:center;gap:3px;
+  transition:all .15s;-webkit-tap-highlight-color:transparent;
+}
+.note-btn:active{transform:scale(.94)}
+.note-btn-pin{background:rgba(244,184,66,.15);color:#FBD77A;border-color:rgba(244,184,66,.4)}
+.note-btn-pin.active{background:linear-gradient(135deg,#f472b6,#be185d);color:#fff;border-color:transparent}
+.note-btn-del{background:rgba(239,83,80,.15);color:#ef5350;border-color:rgba(239,83,80,.4)}
+
+.rem-card{
+  background:linear-gradient(135deg,rgba(26,74,69,.85),rgba(13,42,40,.85));
+  border:1px solid rgba(55,137,123,.4);
+  border-radius:12px;padding:12px;margin-bottom:8px;
+  position:relative;overflow:hidden;
+  animation:noteIn .3s cubic-bezier(.16,1,.3,1);
+}
+.rem-card.upcoming{border-color:rgba(34,211,238,.5);background:linear-gradient(135deg,rgba(34,211,238,.14),rgba(34,211,238,.04))}
+.rem-card.upcoming-soon{
+  border-color:rgba(244,184,66,.7);
+  background:linear-gradient(135deg,rgba(244,184,66,.22),rgba(244,184,66,.06));
+  box-shadow:0 4px 20px rgba(244,184,66,.25);
+}
+.rem-card.passed{opacity:.55;background:linear-gradient(135deg,rgba(120,120,120,.15),rgba(80,80,80,.05));border-color:rgba(150,150,150,.3)}
+.rem-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:3px;background:linear-gradient(180deg,#22d3ee,#0891b2)}
+.rem-card.upcoming-soon::before{background:linear-gradient(180deg,#FBD77A,#F4B842)}
+.rem-card.passed::before{background:linear-gradient(180deg,#666,#444)}
+.rem-card.mine::before{background:linear-gradient(180deg,#a78bfa,#7c3aed)}
+
+.rem-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:8px}
+.rem-icon{font-size:22px;flex-shrink:0;width:32px;height:32px;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,.3);border-radius:8px}
+.rem-info{flex:1;min-width:0}
+.rem-text{font-size:12.5px;font-weight:800;color:#fff;line-height:1.4;margin-bottom:5px;word-break:break-word}
+.rem-meta{font-size:10px;color:#7ec9be;font-weight:700;display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.rem-meta .tag{padding:2px 7px;border-radius:99px;background:rgba(0,0,0,.35);font-size:9px;font-weight:900}
+.rem-meta .tag.passed{background:rgba(150,150,150,.3);color:#ccc}
+.rem-meta .tag.upcoming{background:rgba(34,211,238,.25);color:#22d3ee}
+.rem-meta .tag.soon{background:rgba(244,184,66,.3);color:#FBD77A}
+.rem-countdown{font-size:13px;font-weight:900;color:#FBD77A;font-family:'Fraunces',serif;margin-top:5px;display:flex;align-items:center;gap:5px}
+.rem-card.upcoming .rem-countdown{color:#22d3ee}
+.rem-card.passed .rem-countdown{color:#888;font-size:11px}
+.rem-actions{display:flex;gap:5px;justify-content:flex-end;margin-top:6px}
+
+.quick-chip{
+  padding:6px 11px;border-radius:99px;
+  font-size:10.5px;font-weight:900;
+  background:rgba(25,71,67,.6);
+  border:1px solid rgba(55,137,123,.5);
+  color:#bfe9dc;cursor:pointer;font-family:inherit;
+  white-space:nowrap;transition:all .15s;
+}
+.quick-chip:active{transform:scale(.94);background:rgba(55,137,123,.7)}
+.quick-chip.gold{background:linear-gradient(135deg,rgba(244,184,66,.25),rgba(244,184,66,.1));border-color:rgba(244,184,66,.5);color:#FBD77A}
+
+.mgr-input{
+  width:100%;
+  background:rgba(10,30,28,.7);
+  border:2px solid rgba(55,137,123,.5);
+  border-radius:10px;
+  padding:10px 12px;
+  font-family:inherit;font-size:12.5px;color:#fff;outline:none;
+  transition:border-color .2s;
+}
+.mgr-input:focus{border-color:#FBD77A;box-shadow:0 0 0 3px rgba(244,184,66,.15)}
+.mgr-input::placeholder{color:rgba(126,201,190,.6)}
+textarea.mgr-input{resize:none;line-height:1.5;min-height:56px;max-height:140px}
+input[type="datetime-local"].mgr-input{color-scheme:dark;font-weight:800}
+
+.empty-notes{text-align:center;padding:30px 20px;color:rgba(126,201,190,.7)}
+.empty-notes .icon{font-size:44px;margin-bottom:10px;opacity:.7}
+.empty-notes .t{font-size:13px;font-weight:800;color:rgba(191,233,220,.85);margin-bottom:3px}
+.empty-notes .d{font-size:11px}
+
+.filter-btn{
+  padding:6px 12px;border-radius:999px;
+  font-size:10.5px;font-weight:800;
+  background:rgba(25,71,67,.55);
+  border:1px solid rgba(55,137,123,.4);
+  color:#bfe9dc;cursor:pointer;font-family:inherit;
+  white-space:nowrap;transition:all .15s;
+}
+.filter-btn:active{transform:scale(.95)}
+.filter-btn.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
+
+.spinner-sm{width:16px;height:16px;border:2px solid rgba(244,184,66,.2);border-top-color:#FBD77A;border-radius:50%;animation:spin .8s linear infinite;display:inline-block}
+@keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body class="pb-8">
@@ -74,7 +202,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <main class="max-w-7xl mx-auto px-3 md:px-6 py-4 space-y-5">
 
-  <!-- ═══════ TOP STATS (4 cards) ═══════ -->
+  <!-- ═══════ TOP STATS ═══════ -->
   <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
     <div class="glass glass-premium stat-card">
       <div class="text-[10px] text-teal-300 font-black uppercase tracking-wider mb-1">📋 Đơn hôm nay</div>
@@ -98,7 +226,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </div>
   </div>
 
-  <!-- ═══════ OUTLET OVERVIEW (4 outlets) ═══════ -->
+  <!-- ═══════ OUTLET OVERVIEW ═══════ -->
   <div>
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>🏝️</span> KHU VỰC PHỤC VỤ</h2>
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="outlet-grid"></div>
@@ -166,7 +294,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </div>
   </div>
 
-  <!-- ═══════ CARO MONITOR (Collapsible) ═══════ -->
+  <!-- ═══════ CARO MONITOR ═══════ -->
   <div class="glass glass-premium rounded-2xl collapse" id="caro-collapse">
     <div class="collapse-head" onclick="toggleCaro()">
       <div class="flex items-center gap-2">
@@ -201,9 +329,11 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </div>
     <div class="settings-tabs">
       <button class="settings-tab active" data-stab="theme" onclick="switchSettingsTab('theme')">🎨 Chủ đề</button>
-      <button class="settings-tab" data-stab="announcement" onclick="switchSettingsTab('announcement')">📢 Thông báo</button>
-      <button class="settings-tab" data-stab="version" onclick="switchSettingsTab('version')">🔄 Phiên bản</button>
-      <button class="settings-tab" data-stab="changelog" onclick="switchSettingsTab('changelog')">📋 Lịch sử</button>
+      <button class="settings-tab" data-stab="announcement" onclick="switchSettingsTab('announcement')">📢 TB</button>
+      <button class="settings-tab" data-stab="note" onclick="switchSettingsTab('note')">📝 Ghi chú</button>
+      <button class="settings-tab" data-stab="reminder" onclick="switchSettingsTab('reminder')">⏰ Báo thức <span class="tab-badge" id="reminderTabBadge" style="display:none">0</span></button>
+      <button class="settings-tab" data-stab="version" onclick="switchSettingsTab('version')">🔄 Ver</button>
+      <button class="settings-tab" data-stab="changelog" onclick="switchSettingsTab('changelog')">📋 LS</button>
     </div>
     <div class="settings-body">
 
@@ -277,6 +407,86 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
         <div class="text-[10px] text-teal-500 mt-3 italic" id="announcement-meta"></div>
       </div>
 
+      <!-- Tab: Note -->
+      <div id="stab-note" class="hidden">
+        <p class="text-[11px] text-teal-300 mb-3 leading-relaxed">
+          Ghi chú nội bộ cho Manager. <b class="text-gold-400">Không hiện cho nhân viên</b>.
+        </p>
+        <div class="mb-4">
+          <textarea id="noteInput" class="mgr-input" placeholder="VD: Bàn 201 khách VIP cần setup đặc biệt vào 19h tối nay..."></textarea>
+          <div class="flex items-center gap-2 mt-2">
+            <span class="text-[10px] text-teal-500 font-bold" id="noteCharCount">0/1000</span>
+            <button onclick="clearNoteInput()" class="ml-auto btn-outline px-3 py-2 rounded-xl text-[11px]" style="background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit">Xóa</button>
+            <button id="postNoteBtn" onclick="postNote()" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-2 text-[11.5px] uppercase tracking-wider cursor-pointer" style="border:none;font-family:inherit">📝 Đăng</button>
+          </div>
+        </div>
+
+        <div class="relative mb-3">
+          <span class="absolute inset-y-0 left-3 flex items-center text-teal-500 pointer-events-none text-sm">🔍</span>
+          <input type="text" id="noteSearchInput" oninput="renderNotes()" placeholder="Tìm ghi chú..."
+            class="w-full bg-black/40 border border-teal-700/50 rounded-xl pl-9 pr-4 py-2.5 text-[12px] text-white placeholder-teal-600 outline-none focus:border-gold-500 transition-colors">
+        </div>
+
+        <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+          <button class="filter-btn active" data-notefilter="all" onclick="setNoteFilter('all')">📋 Tất cả</button>
+          <button class="filter-btn" data-notefilter="pinned" onclick="setNoteFilter('pinned')">📌 Quan trọng</button>
+          <button class="filter-btn" data-notefilter="mine" onclick="setNoteFilter('mine')">👤 Của tôi</button>
+          <button class="filter-btn" data-notefilter="today" onclick="setNoteFilter('today')">📅 Hôm nay</button>
+        </div>
+
+        <div id="notesList">
+          <div class="text-center py-8 text-teal-500">
+            <div class="spinner-sm mb-2"></div>
+            <div class="text-[11px] font-bold">Đang tải ghi chú...</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Tab: Reminder -->
+      <div id="stab-reminder" class="hidden">
+        <p class="text-[11px] text-teal-300 mb-3 leading-relaxed">
+          Báo thức toàn team — khi đến giờ, <b class="text-red-400">TẤT CẢ nhân viên</b> đang mở app sẽ nhận thông báo ngay tại <b>màn hình Landing</b> (chuông + rung + popup đỏ).
+        </p>
+
+        <div class="mb-4">
+          <textarea id="remInput" class="mgr-input" placeholder="VD: Họp ca tối tại quầy Lễ Tân — nhớ mang sổ ghi chú..."></textarea>
+          <div class="mt-3">
+            <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">🕒 Thời gian thông báo</div>
+            <input type="datetime-local" id="remTimeInput" class="mgr-input">
+          </div>
+          <div class="mt-3">
+            <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">⚡ Chọn nhanh</div>
+            <div class="flex flex-wrap gap-2">
+              <button class="quick-chip" onclick="setQuickTime(5)">+5 phút</button>
+              <button class="quick-chip" onclick="setQuickTime(10)">+10 phút</button>
+              <button class="quick-chip" onclick="setQuickTime(15)">+15 phút</button>
+              <button class="quick-chip" onclick="setQuickTime(30)">+30 phút</button>
+              <button class="quick-chip" onclick="setQuickTime(60)">+1 giờ</button>
+              <button class="quick-chip gold" onclick="setQuickTime(120)">+2 giờ</button>
+            </div>
+          </div>
+          <div class="flex items-center gap-2 mt-3">
+            <span class="text-[10px] text-teal-500 font-bold" id="remHint">Chưa chọn thời gian</span>
+            <button onclick="clearRemInput()" class="ml-auto btn-outline px-3 py-2 rounded-xl text-[11px]" style="background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit">Xóa</button>
+            <button id="postRemBtn" onclick="postReminder()" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-2 text-[11.5px] uppercase tracking-wider cursor-pointer" style="border:none;font-family:inherit">⏰ Đặt</button>
+          </div>
+        </div>
+
+        <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
+          <button class="filter-btn active" data-remfilter="all" onclick="setRemFilter('all')">📋 Tất cả</button>
+          <button class="filter-btn" data-remfilter="upcoming" onclick="setRemFilter('upcoming')">⏳ Sắp tới</button>
+          <button class="filter-btn" data-remfilter="today" onclick="setRemFilter('today')">📅 Hôm nay</button>
+          <button class="filter-btn" data-remfilter="passed" onclick="setRemFilter('passed')">✅ Đã qua</button>
+        </div>
+
+        <div id="remindersList">
+          <div class="text-center py-8 text-teal-500">
+            <div class="spinner-sm mb-2"></div>
+            <div class="text-[11px] font-bold">Đang tải báo thức...</div>
+          </div>
+        </div>
+      </div>
+
       <!-- Tab: Version -->
       <div id="stab-version" class="hidden">
         <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
@@ -314,11 +524,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc, addDoc, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
 
-/* ═══════════════ OUTLETS CONFIG (4 outlets) ═══════════════ */
 const OUTLETS = {
   bungalow:   { name: 'Bungalow',   icon: '🌴', color: 'emerald', accent: '#34d399', colOrders: 'bun_orders',    colCalls: 'bun_calls',    colTables: 'bun_tables',              colHistory: 'bun_history',               totalTables: 16, labelField: 'table' },
   lounge:     { name: 'Lounge',     icon: '🍸', color: 'amber',   accent: '#FBD77A', colOrders: 'lounge_orders', colCalls: 'lounge_calls', colTables: 'lounge_tables',           colHistory: 'lounge_history_sessions',   totalTables: 20, labelField: 'table' },
@@ -335,9 +544,7 @@ const state = {
 };
 
 const $ = id => document.getElementById(id);
-
 function getTs(o){ return o.createdAt || o.timestamp || 0; }
-
 function isToday(ts) {
   if (!ts) return false;
   const d = new Date(ts);
@@ -345,14 +552,14 @@ function isToday(ts) {
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 }
 
-/* ═══════════════ CLOCK ═══════════════ */
+/* ═══ CLOCK ═══ */
 function tick() {
   const s = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
   $('clock').textContent = s;
 }
 setInterval(tick, 1000); tick();
 
-/* ═══════════════ FIREBASE ═══════════════ */
+/* ═══ FIREBASE ═══ */
 let dbRef = null;
 try {
   const app = initializeApp(firebaseConfig);
@@ -369,14 +576,18 @@ try {
     startCaroListener(db);
     startThemeListener(db);
     startAnnouncementListener(db);
+    startNoteListener(db);
+    startReminderListener(db);
     setTimeout(startAnnouncementUIBindings, 300);
+    setTimeout(startNoteUIBindings, 400);
+    setTimeout(startReminderUIBindings, 500);
   }).catch(() => {
     $('conn-text').textContent = 'OFFLINE';
     $('conn-text').style.color = '#ef4444';
   });
 } catch(e) { console.warn(e); }
 
-/* ═══════════════ SETTINGS MODAL ═══════════════ */
+/* ═══ SETTINGS MODAL ═══ */
 window.openSettings = function(){
   document.getElementById('settings-modal').classList.add('show');
   document.body.style.overflow = 'hidden';
@@ -387,18 +598,19 @@ window.closeSettings = function(){
 };
 window.switchSettingsTab = function(tab){
   document.querySelectorAll('.settings-tab').forEach(b => b.classList.toggle('active', b.dataset.stab === tab));
-  ['theme','announcement','version','changelog'].forEach(t => {
-    document.getElementById('stab-' + t).classList.toggle('hidden', t !== tab);
+  ['theme','announcement','note','reminder','version','changelog'].forEach(t => {
+    const el = document.getElementById('stab-' + t);
+    if (el) el.classList.toggle('hidden', t !== tab);
   });
   if (tab === 'changelog') loadChangelog();
 };
 
-/* ═══════════════ CARO COLLAPSIBLE ═══════════════ */
+/* ═══ CARO COLLAPSIBLE ═══ */
 window.toggleCaro = function(){
   document.getElementById('caro-collapse').classList.toggle('open');
 };
 
-/* ═══════════════ CARO MONITOR ═══════════════ */
+/* ═══ CARO MONITOR ═══ */
 let caroGamesAll = [];
 let caroListenerStarted = false;
 
@@ -433,20 +645,16 @@ function renderCaroMonitor(){
   const pCount = document.getElementById('caro-playing-count');
   const wCount = document.getElementById('caro-waiting-count');
   if (!list) return;
-
   const now = Date.now();
   const recent = caroGamesAll.filter(g => (g.createdAt || 0) > now - 24 * 60 * 60 * 1000);
   const playing = recent.filter(g => g.status === 'playing');
   const waiting = recent.filter(g => g.status === 'waiting');
-
   if (pCount) pCount.textContent = playing.length;
   if (wCount) wCount.textContent = waiting.length;
-
   if (!playing.length && !waiting.length){
     list.innerHTML = '<div class="text-center text-teal-500 text-xs py-4">Không có ván nào trong 24h qua</div>';
     return;
   }
-
   let html = '';
   playing.sort((a, b) => (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0));
   playing.forEach(g => {
@@ -456,7 +664,6 @@ function renderCaroMonitor(){
     const cols = (v.maxC - v.minC + 1) || 20;
     const rows = (v.maxR - v.minR + 1) || 20;
     const turnName = g.currentTurn === 1 ? g.player1 : g.player2;
-
     html += `
       <div class="bg-black/30 rounded-xl p-3 border border-emerald-700/40">
         <div class="flex items-center gap-3 flex-wrap">
@@ -474,7 +681,6 @@ function renderCaroMonitor(){
         <div class="text-[10px] text-teal-400 mt-2 pt-2 border-t border-white/10">▶️ Lượt: <b class="text-gold-400">${escapeCaroHtml(turnName||'--')}</b></div>
       </div>`;
   });
-
   if (waiting.length){
     waiting.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     waiting.forEach(g => {
@@ -490,13 +696,11 @@ function renderCaroMonitor(){
         </div>`;
     });
   }
-
   list.innerHTML = html;
 }
-
 setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
 
-/* ═══════════════ VERSION INFO ═══════════════ */
+/* ═══ VERSION INFO ═══ */
 function loadVersionInfo() {
   fetch('/DolphinApp/version.json?t=' + Date.now(), { cache: 'no-store' })
     .then(r => r.json())
@@ -511,26 +715,19 @@ function loadVersionInfo() {
     })
     .catch(e => console.warn('[Version] load error', e));
 }
-
-window.checkVersionNow = function() {
-  loadVersionInfo();
-  alert('Đã làm mới thông tin phiên bản.');
-};
-
+window.checkVersionNow = function() { loadVersionInfo(); alert('Đã làm mới thông tin phiên bản.'); };
 setTimeout(loadVersionInfo, 800);
 setInterval(loadVersionInfo, 60000);
 
-/* ═══════════════ CHANGELOG ═══════════════ */
+/* ═══ CHANGELOG ═══ */
 window.loadChangelog = function() {
   const container = document.getElementById('changelog-container');
   if (!container) return;
-
   Promise.all([
     fetch('/DolphinApp/changelog.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null),
     fetch('/DolphinApp/changelog-history.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null)
   ]).then(([current, history]) => {
     let html = '';
-
     if (current) {
       const c = current.changes || {};
       const summary = current.summary || 'Không có mô tả';
@@ -553,12 +750,10 @@ window.loadChangelog = function() {
         </div>
       `;
     }
-
     if (history && history.versions && history.versions.length > 1) {
       const older = history.versions.slice(0, -1).reverse().slice(0, 10);
       html += `<div class="text-[10px] text-teal-400 font-black uppercase mt-3 mb-1 px-1">📜 Version cũ hơn</div>`;
       older.forEach(v => {
-        const c = v.changes || {};
         html += `
           <div class="bg-black/30 rounded-lg p-2.5 border border-teal-700/30">
             <div class="flex justify-between items-center mb-1 flex-wrap gap-1">
@@ -570,19 +765,16 @@ window.loadChangelog = function() {
         `;
       });
     }
-
     container.innerHTML = html || '<div class="text-center text-teal-500 text-xs py-6">Không có dữ liệu</div>';
   }).catch(e => {
     console.warn('[Changelog] load error', e);
     container.innerHTML = '<div class="text-center text-red-400 text-xs py-6">Lỗi tải dữ liệu</div>';
   });
 };
-
 setTimeout(loadChangelog, 1500);
 
-/* ═══════════════ THEME ═══════════════ */
+/* ═══ THEME ═══ */
 let themeListenStarted = false;
-
 function startThemeListener(db) {
   if (themeListenStarted) return;
   themeListenStarted = true;
@@ -600,7 +792,6 @@ function startThemeListener(db) {
     }, err => console.warn('[Theme] listen', err));
   } catch(e) { console.warn('[Theme] init', e); }
 }
-
 window.saveTheme = async function() {
   const sel = document.getElementById('theme-select');
   const status = document.getElementById('theme-status');
@@ -615,13 +806,11 @@ window.saveTheme = async function() {
   } catch(e) { showThemeStatus('error', '❌ Lỗi: ' + e.message); }
   finally { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '💾 Lưu chủ đề'; }
 };
-
 window.previewTheme = function() {
   const sel = document.getElementById('theme-select');
   if (!sel) return;
   window.open(sel.value === 'auto' ? '/DolphinApp/' : '/DolphinApp/?theme=' + sel.value, '_blank');
 };
-
 function showThemeStatus(type, text) {
   const status = document.getElementById('theme-status');
   if (!status) return;
@@ -634,9 +823,8 @@ function showThemeStatus(type, text) {
   }
 }
 
-/* ═══════════════ ANNOUNCEMENT ═══════════════ */
+/* ═══ ANNOUNCEMENT ═══ */
 let announcementListenStarted = false;
-
 function startAnnouncementListener(db) {
   if (announcementListenStarted) return;
   announcementListenStarted = true;
@@ -657,13 +845,11 @@ function startAnnouncementListener(db) {
     }, err => console.warn('[Announcement] listen', err));
   } catch(e) { console.warn('[Announcement] init', e); }
 }
-
 window.updateAnnouncementCount = function() {
   const input = document.getElementById('announcement-input');
   const counter = document.getElementById('announcement-count');
   if (input && counter) counter.textContent = input.value.length + ' / 500 ký tự';
 };
-
 window.updateAnnouncementToggle = function() {
   const toggle = document.getElementById('announcement-active');
   const track = document.getElementById('toggle-track');
@@ -681,7 +867,6 @@ window.updateAnnouncementToggle = function() {
     thumb.style.background = '#98dccb';
   }
 };
-
 window.saveAnnouncement = async function() {
   const input = document.getElementById('announcement-input');
   const toggle = document.getElementById('announcement-active');
@@ -698,7 +883,6 @@ window.saveAnnouncement = async function() {
   } catch(e) { showAnnouncementStatus('error', '❌ Lỗi: ' + e.message); }
   finally { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '💾 Lưu thông báo'; }
 };
-
 window.clearAnnouncement = async function() {
   if (!confirm('🗑️ Xóa thông báo hiện tại?')) return;
   const input = document.getElementById('announcement-input');
@@ -709,7 +893,6 @@ window.clearAnnouncement = async function() {
   updateAnnouncementToggle();
   await saveAnnouncement();
 };
-
 function showAnnouncementStatus(type, text) {
   const status = document.getElementById('announcement-status');
   if (!status) return;
@@ -721,7 +904,6 @@ function showAnnouncementStatus(type, text) {
     status.style.background = 'rgba(16,185,129,.15)'; status.style.color = '#10b981'; status.style.border = '1px solid rgba(16,185,129,.4)';
   }
 }
-
 function startAnnouncementUIBindings() {
   const input = document.getElementById('announcement-input');
   if (input && !input.__announceBound) {
@@ -732,7 +914,435 @@ function startAnnouncementUIBindings() {
   updateAnnouncementToggle();
 }
 
-/* ═══════════════ REALTIME LISTENERS ═══════════════ */
+/* ═══════════════ NOTE (NEW) ═══════════════ */
+const COL_NOTES = 'shared_notes';
+const COL_REMINDERS = 'shared_reminders';
+const MAX_LEN = 1000;
+const AUTO_CLEAN_DAYS = 30;
+const REM_CLEAN_DAYS = 7;
+const SOON_THRESHOLD = 5 * 60 * 1000;
+
+let allNotes = [];
+let allReminders = [];
+let currentNoteFilter = 'all';
+let currentRemFilter = 'all';
+let noteListenStarted = false;
+let remListenStarted = false;
+
+function getManagerName(){
+  try {
+    if (typeof window.getSyncedStaffName === 'function'){
+      const n = window.getSyncedStaffName();
+      if (n && n.trim()) return n.trim();
+    }
+    return localStorage.getItem('dolphinStaffName') || 'Manager';
+  } catch(e){ return 'Manager'; }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+}
+function linkify(text){
+  return escapeHtml(text).replace(/(https?:\/\/[^\s<]+)/g, url => '<a href="' + url + '" target="_blank" rel="noopener">' + url + '</a>');
+}
+function timeAgo(ts){
+  if (!ts) return '';
+  const diff = Date.now() - ts;
+  const sec = Math.floor(diff / 1000);
+  if (sec < 30) return 'vừa xong';
+  if (sec < 60) return sec + 's trước';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return min + 'p trước';
+  const hr = Math.floor(min / 60);
+  if (hr < 24) return hr + 'h trước';
+  const day = Math.floor(hr / 24);
+  if (day < 7) return day + ' ngày trước';
+  const d = new Date(ts);
+  return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0');
+}
+function isTodayTs(ts){
+  if (!ts) return false;
+  const now = new Date(), d = new Date(ts);
+  return d.getDate() === now.getDate() && d.getMonth() === now.getMonth() && d.getFullYear() === now.getFullYear();
+}
+function formatTime(ts){
+  const d = new Date(ts);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  const dd = String(d.getDate()).padStart(2, '0');
+  const mo = String(d.getMonth() + 1).padStart(2, '0');
+  const today = new Date();
+  if (d.getDate() === today.getDate() && d.getMonth() === today.getMonth() && d.getFullYear() === today.getFullYear()){
+    return hh + ':' + mm + ' hôm nay';
+  }
+  return hh + ':' + mm + ' · ' + dd + '/' + mo;
+}
+function countdownText(fireAt){
+  const diff = fireAt - Date.now();
+  if (diff <= 0){
+    const past = -diff;
+    if (past < 60 * 1000) return 'Vừa xong';
+    if (past < 60 * 60 * 1000) return Math.floor(past / 60000) + ' phút trước';
+    if (past < 24 * 60 * 60 * 1000) return Math.floor(past / 3600000) + ' giờ trước';
+    return Math.floor(past / 86400000) + ' ngày trước';
+  }
+  const sec = Math.floor(diff / 1000);
+  if (sec < 60) return 'Còn ' + sec + ' giây';
+  const min = Math.floor(sec / 60);
+  if (min < 60) return 'Còn ' + min + ' phút';
+  const hr = Math.floor(min / 60);
+  const remMin = min % 60;
+  if (hr < 24) return 'Còn ' + hr + 'h' + (remMin > 0 ? ' ' + remMin + 'p' : '');
+  const day = Math.floor(hr / 24);
+  const remHr = hr % 24;
+  return 'Còn ' + day + ' ngày' + (remHr > 0 ? ' ' + remHr + 'h' : '');
+}
+
+/* ─── NOTE Listener ─── */
+function startNoteListener(db) {
+  if (noteListenStarted) return;
+  noteListenStarted = true;
+  try {
+    const q = query(collection(db, COL_NOTES), orderBy('timestamp', 'desc'));
+    onSnapshot(q, (snap) => {
+      allNotes = [];
+      snap.forEach(d => allNotes.push(Object.assign({ id: d.id }, d.data())));
+      allNotes.sort((a, b) => {
+        if (a.pinned && !b.pinned) return -1;
+        if (!a.pinned && b.pinned) return 1;
+        return (b.timestamp || 0) - (a.timestamp || 0);
+      });
+      renderNotes();
+    }, err => console.warn('[Mgr Notes] listen', err));
+  } catch(e){ console.warn('[Mgr Notes] init', e); }
+}
+
+window.renderNotes = function(){
+  const el = $('notesList');
+  if (!el) return;
+  const searchEl = $('noteSearchInput');
+  const kw = (searchEl && searchEl.value || '').trim().toLowerCase();
+  const me = getManagerName();
+
+  let list = allNotes.slice();
+  if (currentNoteFilter === 'pinned') list = list.filter(n => n.pinned);
+  else if (currentNoteFilter === 'mine') list = list.filter(n => n.author === me);
+  else if (currentNoteFilter === 'today') list = list.filter(n => isTodayTs(n.timestamp));
+  if (kw){
+    list = list.filter(n => (n.text || '').toLowerCase().includes(kw) || (n.author || '').toLowerCase().includes(kw));
+  }
+
+  if (!list.length){
+    let msg = 'Chưa có ghi chú nào', sub = 'Viết gì đó ở khung trên nhé!';
+    if (kw){ msg = 'Không tìm thấy'; sub = 'Thử từ khóa khác'; }
+    else if (currentNoteFilter === 'pinned'){ msg = 'Chưa có ghi chú quan trọng'; sub = 'Bấm 📌 để đánh dấu'; }
+    else if (currentNoteFilter === 'mine'){ msg = 'Bạn chưa có ghi chú nào'; sub = 'Viết gì đó ở khung trên nhé!'; }
+    else if (currentNoteFilter === 'today'){ msg = 'Hôm nay chưa có ghi chú'; sub = ''; }
+    el.innerHTML = '<div class="empty-notes"><div class="icon">📝</div><div class="t">' + msg + '</div><div class="d">' + sub + '</div></div>';
+    return;
+  }
+
+  el.innerHTML = list.map(n => {
+    const isMine = n.author === me;
+    const initial = (n.author || '?').charAt(0).toUpperCase();
+    const classes = ['note-card'];
+    if (n.pinned) classes.push('pinned');
+    if (isMine) classes.push('mine');
+    const pinBtnClass = n.pinned ? 'note-btn note-btn-pin active' : 'note-btn note-btn-pin';
+    const pinIcon = n.pinned ? '📌' : '📍';
+    return '<div class="' + classes.join(' ') + '">'
+      + '<div class="note-header">'
+      + '<div class="note-avatar' + (n.pinned ? ' system' : '') + '">' + initial + '</div>'
+      + '<div class="note-author">' + escapeHtml(n.author || 'Ẩn danh') + (isMine ? '<span class="me-tag">(BẠN)</span>' : '') + '</div>'
+      + '<div class="note-time">🕒 ' + timeAgo(n.timestamp) + '</div>'
+      + '</div>'
+      + '<div class="note-body">' + linkify(n.text || '') + '</div>'
+      + '<div class="note-actions">'
+      + '<button class="' + pinBtnClass + '" onclick="toggleNotePin(\'' + n.id + '\')">' + pinIcon + '<span>' + (n.pinned ? 'Bỏ ghim' : 'Ghim') + '</span></button>'
+      + '<button class="note-btn note-btn-del" onclick="deleteNote(\'' + n.id + '\')">🗑️<span>Xóa</span></button>'
+      + '</div></div>';
+  }).join('');
+};
+
+window.setNoteFilter = function(f){
+  currentNoteFilter = f;
+  document.querySelectorAll('.filter-btn[data-notefilter]').forEach(b => b.classList.toggle('active', b.dataset.notefilter === f));
+  renderNotes();
+};
+
+window.postNote = async function(){
+  const input = $('noteInput');
+  const btn = $('postNoteBtn');
+  const text = (input.value || '').trim();
+  if (!text){ alert('Nhập nội dung ghi chú'); return; }
+  if (text.length > MAX_LEN){ alert('Ghi chú quá dài'); return; }
+  const author = getManagerName();
+  if (!window.__db){ alert('Chưa kết nối'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>';
+  try {
+    await addDoc(collection(window.__db, COL_NOTES), { text, author, timestamp: Date.now(), pinned: false });
+    input.value = ''; updateNoteCharCount();
+  } catch(e){ alert('Lỗi: ' + (e.message || '')); }
+  finally { btn.disabled = false; btn.innerHTML = '📝 Đăng'; }
+};
+
+window.clearNoteInput = function(){
+  const input = $('noteInput');
+  if (!input.value) return;
+  if (!confirm('Xóa nội dung đang viết?')) return;
+  input.value = ''; updateNoteCharCount();
+};
+
+function updateNoteCharCount(){
+  const input = $('noteInput'), el = $('noteCharCount');
+  if (!input || !el) return;
+  const len = input.value.length;
+  el.textContent = len + '/' + MAX_LEN;
+  el.style.color = len > MAX_LEN ? '#ef5350' : len > MAX_LEN * 0.9 ? '#FBD77A' : '';
+}
+
+window.toggleNotePin = async function(id){
+  if (!window.__db) return;
+  const note = allNotes.find(n => n.id === id);
+  if (!note) return;
+  try { await updateDoc(doc(window.__db, COL_NOTES, id), { pinned: !note.pinned }); }
+  catch(e){ console.warn(e); }
+};
+
+window.deleteNote = async function(id){
+  if (!window.__db) return;
+  if (!confirm('Xóa ghi chú này?')) return;
+  try { await deleteDoc(doc(window.__db, COL_NOTES, id)); }
+  catch(e){ console.warn(e); }
+};
+
+/* ─── REMINDER Listener ─── */
+function startReminderListener(db) {
+  if (remListenStarted) return;
+  remListenStarted = true;
+  try {
+    const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'));
+    onSnapshot(q, (snap) => {
+      allReminders = [];
+      snap.forEach(d => allReminders.push(Object.assign({ id: d.id }, d.data())));
+      renderReminders();
+      updateReminderTabBadge();
+    }, err => console.warn('[Mgr Rem] listen', err));
+  } catch(e){ console.warn('[Mgr Rem] init', e); }
+}
+
+function updateReminderTabBadge(){
+  const now = Date.now();
+  const upcoming = allReminders.filter(r => r.fireAt > now);
+  const soon = allReminders.filter(r => r.fireAt > now && r.fireAt - now < SOON_THRESHOLD);
+  const badge = $('reminderTabBadge');
+  if (!badge) return;
+  const count = soon.length > 0 ? soon.length : upcoming.length;
+  if (count > 0){
+    badge.textContent = count > 99 ? '99+' : String(count);
+    badge.style.display = 'inline-block';
+  } else {
+    badge.style.display = 'none';
+  }
+}
+
+window.renderReminders = function(){
+  const el = $('remindersList');
+  if (!el) return;
+  const now = Date.now();
+  const me = getManagerName();
+
+  let list = allReminders.slice();
+  if (currentRemFilter === 'upcoming') list = list.filter(r => r.fireAt > now);
+  else if (currentRemFilter === 'today') list = list.filter(r => isTodayTs(r.fireAt));
+  else if (currentRemFilter === 'passed') list = list.filter(r => r.fireAt <= now);
+
+  list.sort((a, b) => {
+    const aP = a.fireAt <= now, bP = b.fireAt <= now;
+    if (aP !== bP) return aP ? 1 : -1;
+    return aP ? (b.fireAt - a.fireAt) : (a.fireAt - b.fireAt);
+  });
+
+  if (!list.length){
+    let msg = 'Chưa có báo thức nào', sub = 'Đặt báo thức để nhắc cả team!';
+    if (currentRemFilter === 'upcoming'){ msg = 'Không có báo thức sắp tới'; sub = ''; }
+    else if (currentRemFilter === 'today'){ msg = 'Hôm nay chưa có báo thức'; sub = ''; }
+    else if (currentRemFilter === 'passed'){ msg = 'Chưa có báo thức nào qua'; sub = ''; }
+    el.innerHTML = '<div class="empty-notes"><div class="icon">⏰</div><div class="t">' + msg + '</div><div class="d">' + sub + '</div></div>';
+    return;
+  }
+
+  el.innerHTML = list.map(r => {
+    const isPassed = r.fireAt <= now;
+    const isSoon = !isPassed && (r.fireAt - now) < SOON_THRESHOLD;
+    const isMine = r.author === me;
+    const classes = ['rem-card'];
+    if (isPassed) classes.push('passed');
+    else if (isSoon) classes.push('upcoming-soon');
+    else classes.push('upcoming');
+    if (isMine) classes.push('mine');
+
+    let tag = '<span class="tag upcoming">⏳ Sắp tới</span>';
+    if (isPassed) tag = '<span class="tag passed">✅ Đã qua</span>';
+    else if (isSoon) tag = '<span class="tag soon">🔥 Sắp tới!</span>';
+
+    return '<div class="' + classes.join(' ') + '">'
+      + '<div class="rem-top">'
+      + '<div class="rem-icon">' + (isPassed ? '✅' : isSoon ? '🔔' : '⏰') + '</div>'
+      + '<div class="rem-info">'
+      + '<div class="rem-text">' + escapeHtml(r.text || '') + '</div>'
+      + '<div class="rem-meta">' + tag
+      + '<span>🕒 ' + formatTime(r.fireAt) + '</span>'
+      + '<span>👤 ' + escapeHtml(r.author || 'Ẩn danh') + (isMine ? ' (BẠN)' : '') + '</span>'
+      + '</div></div></div>'
+      + '<div class="rem-countdown" data-fireat="' + r.fireAt + '">'
+      + (isPassed ? '⏱ ' : '⏳ ') + '<span class="cd-text">' + countdownText(r.fireAt) + '</span></div>'
+      + '<div class="rem-actions">'
+      + (isPassed ? '' : '<button class="note-btn" onclick="openRemEdit(\'' + r.id + '\')" style="background:rgba(34,211,238,.15);color:#22d3ee;border-color:rgba(34,211,238,.4)">✏️<span>Sửa giờ</span></button>')
+      + '<button class="note-btn note-btn-del" onclick="deleteReminder(\'' + r.id + '\')">🗑️<span>Xóa</span></button>'
+      + '</div></div>';
+  }).join('');
+};
+
+window.setRemFilter = function(f){
+  currentRemFilter = f;
+  document.querySelectorAll('.filter-btn[data-remfilter]').forEach(b => b.classList.toggle('active', b.dataset.remfilter === f));
+  renderReminders();
+};
+
+window.setQuickTime = function(minutes){
+  const target = new Date(Date.now() + minutes * 60 * 1000);
+  const y = target.getFullYear();
+  const mo = String(target.getMonth() + 1).padStart(2, '0');
+  const d = String(target.getDate()).padStart(2, '0');
+  const h = String(target.getHours()).padStart(2, '0');
+  const mi = String(target.getMinutes()).padStart(2, '0');
+  $('remTimeInput').value = y + '-' + mo + '-' + d + 'T' + h + ':' + mi;
+  updateRemHint();
+};
+
+function updateRemHint(){
+  const el = $('remHint'), inp = $('remTimeInput');
+  if (!el || !inp) return;
+  if (!inp.value){ el.textContent = 'Chưa chọn thời gian'; el.style.color = ''; return; }
+  const t = new Date(inp.value).getTime();
+  if (isNaN(t)){ el.textContent = 'Thời gian không hợp lệ'; el.style.color = '#ef5350'; return; }
+  if (t <= Date.now()){ el.textContent = '⚠️ Thời gian đã qua'; el.style.color = '#ef5350'; return; }
+  el.textContent = '⏳ ' + countdownText(t);
+  el.style.color = '#FBD77A';
+}
+
+window.clearRemInput = function(){
+  const inp = $('remInput'), time = $('remTimeInput');
+  if (!inp.value && !time.value) return;
+  if (!confirm('Xóa nội dung đang viết?')) return;
+  inp.value = ''; time.value = '';
+  updateRemHint();
+};
+
+window.postReminder = async function(){
+  const inp = $('remInput'), timeInp = $('remTimeInput');
+  const btn = $('postRemBtn');
+  const text = (inp.value || '').trim();
+  const timeVal = timeInp.value;
+  if (!text){ alert('Nhập nội dung'); return; }
+  if (!timeVal){ alert('Chọn thời gian'); return; }
+  const fireAt = new Date(timeVal).getTime();
+  if (isNaN(fireAt)){ alert('Thời gian không hợp lệ'); return; }
+  if (fireAt <= Date.now()){ alert('Thời gian đã qua'); return; }
+  const author = getManagerName();
+  if (!window.__db){ alert('Chưa kết nối'); return; }
+
+  btn.disabled = true; btn.innerHTML = '<span class="spinner-sm"></span>';
+  try {
+    await addDoc(collection(window.__db, COL_REMINDERS), { text, author, fireAt, createdAt: Date.now() });
+    inp.value = ''; timeInp.value = ''; updateRemHint();
+    alert('✅ Đã đặt — cả team sẽ nhận thông báo!');
+  } catch(e){ alert('Lỗi: ' + (e.message || '')); }
+  finally { btn.disabled = false; btn.innerHTML = '⏰ Đặt'; }
+};
+
+window.openRemEdit = function(id){
+  const r = allReminders.find(x => x.id === id);
+  if (!r) return;
+  const t = new Date(r.fireAt);
+  const cur = t.getFullYear() + '-' + String(t.getMonth()+1).padStart(2,'0') + '-' + String(t.getDate()).padStart(2,'0') + 'T' + String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
+  const newVal = prompt('Nhập giờ mới (YYYY-MM-DDTHH:MM)\n\nGiờ hiện tại: ' + cur, cur);
+  if (newVal === null || newVal === cur) return;
+  const newTime = new Date(newVal).getTime();
+  if (isNaN(newTime) || newTime <= Date.now()){ alert('Giờ không hợp lệ hoặc đã qua'); return; }
+  updateDoc(doc(window.__db, COL_REMINDERS, id), { fireAt: newTime }).catch(e => console.warn(e));
+};
+
+window.deleteReminder = async function(id){
+  if (!window.__db) return;
+  if (!confirm('Xóa báo thức này?')) return;
+  try { await deleteDoc(doc(window.__db, COL_REMINDERS, id)); }
+  catch(e){ console.warn(e); }
+};
+
+/* ─── Note/Reminder UI Bindings ─── */
+function startNoteUIBindings(){
+  const input = $('noteInput');
+  if (input && !input.__noteBound){
+    input.__noteBound = true;
+    input.addEventListener('input', updateNoteCharCount);
+    input.addEventListener('keydown', e => {
+      if ((e.ctrlKey || e.metaKey) && e.key === 'Enter'){ e.preventDefault(); postNote(); }
+    });
+    updateNoteCharCount();
+  }
+}
+function startReminderUIBindings(){
+  const timeInp = $('remTimeInput');
+  if (timeInp && !timeInp.__remBound){
+    timeInp.__remBound = true;
+    timeInp.addEventListener('input', updateRemHint);
+    timeInp.addEventListener('change', updateRemHint);
+  }
+  // Ticker countdown
+  setInterval(() => {
+    const els = document.querySelectorAll('.rem-countdown[data-fireat]');
+    els.forEach(el => {
+      const fireAt = parseInt(el.dataset.fireat, 10);
+      const txt = el.querySelector('.cd-text');
+      if (txt) txt.textContent = countdownText(fireAt);
+    });
+    updateRemHint();
+    updateReminderTabBadge();
+  }, 5000);
+}
+
+/* ─── AUTO CLEAN Note/Reminder ─── */
+async function autoCleanNotes(){
+  if (!window.__db) return;
+  const last = parseInt(localStorage.getItem('dolphin_mgr_notes_clean') || '0', 10);
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (Date.now() - last < dayMs) return;
+  try {
+    const cutoff = Date.now() - AUTO_CLEAN_DAYS * dayMs;
+    const toDel = allNotes.filter(n => (n.timestamp || 0) < cutoff && !n.pinned);
+    for (const n of toDel) await deleteDoc(doc(window.__db, COL_NOTES, n.id));
+    localStorage.setItem('dolphin_mgr_notes_clean', String(Date.now()));
+  } catch(e){ console.warn(e); }
+}
+async function autoCleanReminders(){
+  if (!window.__db) return;
+  const last = parseInt(localStorage.getItem('dolphin_mgr_rem_clean') || '0', 10);
+  const dayMs = 24 * 60 * 60 * 1000;
+  if (Date.now() - last < dayMs) return;
+  try {
+    const cutoff = Date.now() - REM_CLEAN_DAYS * dayMs;
+    const toDel = allReminders.filter(r => (r.fireAt || 0) < cutoff);
+    for (const r of toDel) await deleteDoc(doc(window.__db, COL_REMINDERS, r.id));
+    localStorage.setItem('dolphin_mgr_rem_clean', String(Date.now()));
+  } catch(e){ console.warn(e); }
+}
+setTimeout(autoCleanNotes, 8000);
+setTimeout(autoCleanReminders, 9000);
+
+/* ═══════════════ REALTIME LISTENERS (ORDERS) ═══════════════ */
 function startListeners(db) {
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     if (cfg.colOrders) {
@@ -763,7 +1373,7 @@ function startListeners(db) {
   });
 }
 
-/* ═══════════════ RENDER ═══════════════ */
+/* ═══════════════ RENDER ALL ═══════════════ */
 function renderAll() {
   renderStats();
   renderOutlets();
@@ -772,11 +1382,9 @@ function renderAll() {
 
 function renderStats() {
   let totalOrders = 0, totalPending = 0, totalOccupied = 0, totalTables = 0, totalGuests = 0;
-
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     const orders = state.orders[key] || [];
     const tables = state.tables[key] || {};
-
     const occupiedCount = Object.keys(tables).length;
     const todayOrders = orders.filter(o => isToday(getTs(o)));
     totalOrders += todayOrders.length;
@@ -789,7 +1397,6 @@ function renderStats() {
       else if (t.guests) totalGuests += parseInt(t.guests) || 0;
     });
   });
-
   $('s-orders').textContent = totalOrders;
   $('s-pending').textContent = totalPending;
   $('s-occupied').textContent = totalOccupied;
@@ -798,24 +1405,19 @@ function renderStats() {
   $('s-guests').textContent = totalGuests;
 }
 
-function formatMoney(n){ return (n || 0).toLocaleString('vi-VN') + 'đ'; }
-
 function renderOutlets() {
   const html = Object.entries(OUTLETS).map(([key, cfg]) => {
     const orders = state.orders[key] || [];
     const tables = state.tables[key] || {};
     const calls = state.calls[key] || [];
     const todayOrders = orders.filter(o => isToday(getTs(o)));
-
     const pending = todayOrders.filter(o => o.status === 'pending').length;
     const preparing = todayOrders.filter(o => o.status === 'preparing').length;
     const completed = todayOrders.filter(o => o.status === 'completed').length;
     const occupied = Object.keys(tables).length;
-
     let guests = 0;
     Object.values(tables).forEach(t => { guests += parseInt(t.pax) || parseInt(t.guests) || 0; });
     const tableInfo = cfg.totalTables ? `${occupied}/${cfg.totalTables}` : occupied;
-
     return `
       <div class="glass outlet-card" style="border-left:4px solid ${cfg.accent}">
         <div class="flex items-center justify-between mb-3">
@@ -848,7 +1450,6 @@ function renderOutlets() {
   $('outlet-grid').innerHTML = html;
 }
 
-/* ═══════════════ REALTIME ORDERS ═══════════════ */
 function renderOrders() {
   const all = [];
   ['bungalow', 'lounge', 'restaurant'].forEach(key => {
@@ -867,7 +1468,6 @@ function renderOrders() {
     });
   });
   all.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
-
   const today = all.filter(o => isToday(o.timestamp));
   const delayed = today.filter(o => o.status === 'pending' && (Date.now() - o.timestamp) > 300000);
   $('fc-all').textContent = today.length;
@@ -900,18 +1500,15 @@ function renderOrders() {
   const html = filtered.slice(0, 100).map(o => {
     const cfg = OUTLETS[o._outlet] || {};
     const isDelayed = o.status === 'pending' && o.timestamp && (Date.now() - o.timestamp) > 300000;
-
     let stateChip = '';
     if (o.status === 'pending') stateChip = '<span class="state-chip state-pending"><span class="dot"></span>Chờ</span>';
     else if (o.status === 'preparing') stateChip = '<span class="state-chip state-cooking"><span class="dot"></span>Đang làm</span>';
     else if (o.status === 'completed') stateChip = '<span class="state-chip state-ready">✅ Xong</span>';
-
     const itemsHtml = (o.items || []).filter(it => (it.qty - (it.cancelledQty || 0)) > 0).map(it => {
       const nm = (it.name && (it.name.VI || it.name.EN)) || 'Món';
       const qty = it.qty - (it.cancelledQty || 0);
       return `${nm} <span class="text-gold-400 font-black">x${qty}</span>`;
     }).join(' · ') || '<span class="text-teal-500 italic">Chưa có món</span>';
-
     return `
       <div class="order-row">
         <div class="flex items-start gap-3 flex-wrap">
@@ -935,7 +1532,6 @@ function renderOrders() {
         </div>
       </div>`;
   }).join('');
-
   $('orders-list').innerHTML = html;
 }
 
@@ -961,15 +1557,11 @@ $('h-search-btn').onclick = async () => {
   const shift = $('h-shift').value;
   const outlet = $('h-outlet').value;
   const search = ($('h-search').value || '').toLowerCase().trim();
-
   if (!date) { alert('Chọn ngày!'); return; }
-
   $('h-body').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gold-400 font-bold animate-pulse">Đang tải...</td></tr>`;
   $('h-summary').textContent = '';
-
   const targets = outlet ? [outlet] : ['bungalow', 'lounge', 'restaurant', 'show'];
   const allRows = [];
-
   for (const key of targets) {
     const cfg = OUTLETS[key];
     if (!cfg.colHistory) continue;
@@ -996,7 +1588,6 @@ $('h-search-btn').onclick = async () => {
       });
     } catch(e) { console.warn('History query failed for', key, e); }
   }
-
   let filtered = allRows;
   if (search) {
     filtered = filtered.filter(r => {
@@ -1004,15 +1595,12 @@ $('h-search-btn').onclick = async () => {
       return txt.includes(search);
     });
   }
-
   if (!filtered.length) {
     $('h-body').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-teal-500 font-bold">Không có dữ liệu</td></tr>`;
     return;
   }
-
   filtered.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
   $('h-summary').textContent = `Tìm thấy ${filtered.length} bản ghi`;
-
   $('h-body').innerHTML = filtered.map(r => {
     const cfg = OUTLETS[r._outlet];
     const items = (r.items || []).map(it => {
@@ -1024,7 +1612,6 @@ $('h-search-btn').onclick = async () => {
     }).join('<br>');
     let nv = r.preparedBy ? `Nấu: ${r.preparedBy}` : '';
     if (r.completedBy) nv += `${nv ? '<br>' : ''}Giao: ${r.completedBy}`;
-
     return `<tr class="hover:bg-white/5">
       <td class="py-2.5 px-3 font-mono text-teal-300 tabular">${r.time || '--'}</td>
       <td class="py-2.5 px-3 font-black" style="color:${cfg.accent}">${cfg.icon} ${cfg.name}</td>

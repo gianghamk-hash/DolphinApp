@@ -1,610 +1,351 @@
-/* ============================================================
-   DOLPHIN SOUNDSCAPE v2.0
-   ─────────────────────────────────────────────────────────────
-   • 15 theme — mỗi theme có 1 file nhạc riêng
-   • Nhạc CHỈ phát ở landing
-   • Vào app con → fade out 1.5s + pause (giữ vị trí)
-   • Quay lại landing → resume từ vị trí cũ
-   • Không phát trong iframe
-   • Loop vô hạn, fade in/out mượt
-   ============================================================ */
+/**
+ * Dolphin Soundscape v2.1
+ * - Chế độ AUTO: nhạc đổi theo theme (như v2.0)
+ * - Chế độ MANUAL: nhạc user chọn cố định
+ * - API đầy đủ cho landing + app Giải Trí
+ */
 (function(){
   'use strict';
 
-  /* ═══════════════ CONFIG — 15 THEME ═══════════════ */
-  var SOUND_MAP = {
-    default:       'sounds/soundscape-default.mp3',
-    tet:           'sounds/soundscape-tet.mp3',
-    valentine:     'sounds/soundscape-valentine.mp3',
-    womenday:      'sounds/soundscape-womenday.mp3',
-    reunification: 'sounds/soundscape-reunification.mp3',
-    children:      'sounds/soundscape-children.mp3',
-    nationalday:   'sounds/soundscape-nationalday.mp3',
-    midautumn:     'sounds/soundscape-midautumn.mp3',
-    halloween:     'sounds/soundscape-halloween.mp3',
-    christmas:     'sounds/soundscape-christmas.mp3',
-    newyear:       'sounds/soundscape-newyear.mp3',
-    spring:        'sounds/soundscape-spring.mp3',
-    summer:        'sounds/soundscape-summer.mp3',
-    autumn:        'sounds/soundscape-autumn.mp3',
-    winter:        'sounds/soundscape-winter.mp3'
-  };
+  var SOUND_BASE = '/DolphinApp/sounds/';
+  var STORAGE_ENABLED = 'dolphin_soundscape';
+  var STORAGE_VOL     = 'dolphin_soundscape_vol';
+  var STORAGE_ASKED   = 'dolphin_soundscape_asked';
+  var STORAGE_MODE    = 'dolphin_sound_mode';
+  var STORAGE_PICK    = 'dolphin_sound_pick';
 
-  var THEME_LABEL = {
-    default:       'Dolphin Cruise 🐬',
-    tet:           'Tết Nguyên Đán 🧧',
-    valentine:     'Valentine 💝',
-    womenday:      'Quốc Tế Phụ Nữ 🌷',
-    reunification: '30/4 Thống Nhất ⭐',
-    children:      'Tết Thiếu Nhi 🎈',
-    nationalday:   'Quốc Khánh 2/9 ⭐',
-    midautumn:     'Trung Thu 🏮',
-    halloween:     'Halloween 🎃',
-    christmas:     'Giáng Sinh 🎄',
-    newyear:       'Tết Dương Lịch 🎊',
-    spring:        'Mùa Xuân 🌸',
-    summer:        'Mùa Hè ☀️',
-    autumn:        'Mùa Thu 🍁',
-    winter:        'Mùa Đông ❄️'
-  };
+  var TRACKS = [
+    { key:'default',       label:'Dolphin',          icon:'🐬', file:'soundscape-default.mp3',       sub:'Quanh năm' },
+    { key:'tet',           label:'Tết Nguyên Đán',   icon:'🧧', file:'soundscape-tet.mp3',           sub:'15/1 – 20/2' },
+    { key:'valentine',     label:'Valentine',        icon:'💝', file:'soundscape-valentine.mp3',     sub:'10/2 – 15/2' },
+    { key:'womenday',      label:'8/3 & 20/10',      icon:'🌷', file:'soundscape-womenday.mp3',      sub:'Ngày Phụ nữ' },
+    { key:'reunification', label:'30/4',             icon:'⭐', file:'soundscape-reunification.mp3', sub:'Thống nhất' },
+    { key:'children',      label:'1/6',              icon:'🎈', file:'soundscape-children.mp3',      sub:'Thiếu nhi' },
+    { key:'nationalday',   label:'2/9',              icon:'⭐', file:'soundscape-nationalday.mp3',   sub:'Quốc khánh' },
+    { key:'midautumn',     label:'Trung Thu',        icon:'🏮', file:'soundscape-midautumn.mp3',     sub:'10/9 – 5/10' },
+    { key:'halloween',     label:'Halloween',        icon:'🎃', file:'soundscape-halloween.mp3',     sub:'25/10 – 1/11' },
+    { key:'christmas',     label:'Giáng Sinh',       icon:'🎄', file:'soundscape-christmas.mp3',     sub:'15/12 – 26/12' },
+    { key:'newyear',       label:'Tết Dương',        icon:'🎊', file:'soundscape-newyear.mp3',       sub:'29/12 – 2/1' },
+    { key:'spring',        label:'Mùa Xuân',         icon:'🌸', file:'soundscape-spring.mp3',        sub:'Tháng 3 – 5' },
+    { key:'summer',        label:'Mùa Hè',           icon:'☀️', file:'soundscape-summer.mp3',        sub:'Tháng 6 – 8' },
+    { key:'autumn',        label:'Mùa Thu',          icon:'🍁', file:'soundscape-autumn.mp3',        sub:'Tháng 9 – 11' },
+    { key:'winter',        label:'Mùa Đông',         icon:'❄️', file:'soundscape-winter.mp3',        sub:'Tháng 12 – 2' }
+  ];
 
-  var LS_ENABLED = 'dolphin_soundscape';
-  var LS_VOLUME  = 'dolphin_soundscape_vol';
-  var LS_ASKED   = 'dolphin_soundscape_asked';
+  var audio = null;
+  var currentKey = null;
+  var fadeInterval = null;
+  var isFading = false;
+  var widgetEl = null, popupEl = null, toastEl = null;
+  var initialized = false;
 
-  var FADE_IN_MS    = 1200;   /* fade in khi bật */
-  var FADE_OUT_MS   = 800;    /* fade out khi tắt */
-  var FADE_APP_MS   = 1500;   /* fade out khi vào app con */
-  var FADE_BACK_MS  = 1800;   /* fade in khi về landing */
+  function getEnabled(){ return localStorage.getItem(STORAGE_ENABLED) === '1'; }
+  function setEnabledStored(v){ localStorage.setItem(STORAGE_ENABLED, v ? '1' : '0'); }
+  function getVol(){ var v = parseFloat(localStorage.getItem(STORAGE_VOL)); return isNaN(v) ? 0.3 : Math.max(0, Math.min(1, v)); }
+  function setVolStored(v){ localStorage.setItem(STORAGE_VOL, String(v)); }
+  function getAsked(){ return localStorage.getItem(STORAGE_ASKED) === '1'; }
+  function setAskedStored(){ localStorage.setItem(STORAGE_ASKED, '1'); }
+  function getMode(){ return localStorage.getItem(STORAGE_MODE) === 'manual' ? 'manual' : 'auto'; }
+  function setModeStored(m){ localStorage.setItem(STORAGE_MODE, m === 'manual' ? 'manual' : 'auto'); }
+  function getPick(){ return localStorage.getItem(STORAGE_PICK) || 'default'; }
+  function setPickStored(k){ localStorage.setItem(STORAGE_PICK, k); }
 
-  /* ═══════════════ STATE ═══════════════ */
-  var state = {
-    enabled: false,
-    volume: 0.4,
-    currentTheme: null,
-    audio: null,
-    fadeTimer: null,
-    unlocked: false,
-    pausedTime: 0,           /* vị trí dừng để resume */
-    pausedBy: null,          /* 'visibility' | 'appmode' | 'user' | null */
-    inAppMode: false         /* true khi body.app-mode */
-  };
-
-  /* ═══════════════ UTILS ═══════════════ */
-  function getLS(key, fallback){
+  function findTrack(key){
+    for (var i = 0; i < TRACKS.length; i++) if (TRACKS[i].key === key) return TRACKS[i];
+    return TRACKS[0];
+  }
+  function themeKeyExists(k){
+    for (var i = 0; i < TRACKS.length; i++) if (TRACKS[i].key === k) return true;
+    return false;
+  }
+  function getThemeKey(){
     try {
-      var v = localStorage.getItem(key);
-      return v === null ? fallback : v;
-    } catch(e){ return fallback; }
+      if (window.ThemeSystem && typeof window.ThemeSystem.getCurrent === 'function'){
+        return window.ThemeSystem.getCurrent() || 'default';
+      }
+    } catch(e){}
+    var dt = document.body && document.body.getAttribute('data-theme');
+    return dt || 'default';
   }
-  function setLS(key, value){
-    try { localStorage.setItem(key, value); } catch(e){}
-  }
-  function isInIframe(){
-    try { return window.parent !== window; } catch(e){ return true; }
+  function resolveCurrentKey(){
+    if (getMode() === 'manual') return getPick();
+    var tk = getThemeKey();
+    return themeKeyExists(tk) ? tk : 'default';
   }
 
-  /* ═══════════════ AUDIO ═══════════════ */
   function ensureAudio(){
-    if (state.audio) return state.audio;
-    var audio = new Audio();
+    if (audio) return audio;
+    audio = new Audio();
     audio.loop = true;
-    audio.preload = 'metadata';
-    audio.volume = 0;
-    audio.crossOrigin = 'anonymous';
-    audio.addEventListener('error', function(e){
-      console.warn('[Sound] Audio error:', state.currentTheme, e);
+    audio.preload = 'auto';
+    audio.volume = getVol();
+    audio.addEventListener('error', function(){
+      console.warn('[DolphinSound] Audio 404 hoặc lỗi:', audio.src);
     });
-    state.audio = audio;
     return audio;
   }
 
-  /* ═══════════════ FADE ═══════════════ */
-  function fadeTo(targetVolume, duration, onDone){
-    var audio = state.audio;
-    if (!audio){ if (onDone) onDone(); return; }
-
-    if (state.fadeTimer){
-      clearInterval(state.fadeTimer);
-      state.fadeTimer = null;
-    }
-
-    targetVolume = Math.max(0, Math.min(1, targetVolume));
-    var startVolume = audio.volume;
-    var startTime = Date.now();
-
-    state.fadeTimer = setInterval(function(){
-      var elapsed = Date.now() - startTime;
-      var progress = Math.min(1, elapsed / duration);
-      var newVol = startVolume + (targetVolume - startVolume) * progress;
-      newVol = Math.max(0, Math.min(1, newVol));
-      try { audio.volume = newVol; } catch(e){}
-
-      if (progress >= 1){
-        clearInterval(state.fadeTimer);
-        state.fadeTimer = null;
-        if (onDone) onDone();
+  function fadeTo(targetVol, ms, cb){
+    if (fadeInterval) clearInterval(fadeInterval);
+    if (!audio) return;
+    var start = audio.volume;
+    var steps = Math.max(1, Math.floor(ms / 30));
+    var step = (targetVol - start) / steps;
+    var i = 0;
+    isFading = true;
+    fadeInterval = setInterval(function(){
+      i++;
+      audio.volume = Math.max(0, Math.min(1, start + step * i));
+      if (i >= steps){
+        clearInterval(fadeInterval); fadeInterval = null; isFading = false;
+        audio.volume = targetVol;
+        if (cb) cb();
       }
     }, 30);
   }
 
-  /* ═══════════════ PLAY / STOP ═══════════════ */
-  function playTheme(themeKey){
-    if (!SOUND_MAP[themeKey]){
-      stopAudio();
-      state.currentTheme = null;
-      updateUI();
-      return;
-    }
+  function playKey(key){
+    var track = findTrack(key);
+    ensureAudio();
+    var url = SOUND_BASE + track.file;
 
-    var audio = ensureAudio();
-    var newSrc = SOUND_MAP[themeKey];
-    var newSrcName = newSrc.split('/').pop();
-    var currentSrcName = audio.src ? decodeURIComponent(audio.src.split('/').pop().split('?')[0]) : '';
-
-    /* Nếu đang phát đúng theme và không pause → không làm gì */
-    if (state.currentTheme === themeKey && !audio.paused) return;
-
-    /* Nếu đang ở app mode → không phát, chỉ ghi nhớ theme */
-    if (state.inAppMode){
-      state.currentTheme = themeKey;
-      updateUI();
-      return;
-    }
-
-    state.currentTheme = themeKey;
-
-    /* Trường hợp đổi bài khác → fade out rồi đổi src */
-    if (currentSrcName && currentSrcName !== newSrcName){
-      fadeTo(0, FADE_OUT_MS, function(){
-        audio.src = newSrc;
-        audio.load();
-        audio.play().then(function(){
-          fadeTo(state.volume, FADE_IN_MS, null);
-        }).catch(function(err){
-          console.warn('[Sound] Play failed:', err);
-        });
-      });
-      return;
-    }
-
-    /* Cùng bài hoặc chưa có src */
-    if (!currentSrcName || currentSrcName !== newSrcName){
-      audio.src = newSrc;
-      audio.load();
-    }
-
-    if (audio.paused){
-      /* Resume từ vị trí cũ (nếu cùng bài) */
-      if (state.pausedTime > 0 && currentSrcName === newSrcName){
-        audio.currentTime = state.pausedTime;
+    // Cùng bài → resume
+    if (currentKey === key && audio.src && audio.src.indexOf(track.file) !== -1){
+      if (audio.paused){
+        fadeTo(getVol(), 1400);
+        var p = audio.play();
+        if (p && p.catch) p.catch(function(e){ console.warn('[DolphinSound] Play bị chặn:', e); });
       }
-      audio.play().then(function(){
-        fadeTo(state.volume, FADE_IN_MS, null);
-        state.pausedBy = null;
-      }).catch(function(err){
-        console.warn('[Sound] Play failed:', err);
-      });
-    } else {
-      fadeTo(state.volume, FADE_IN_MS, null);
+      return;
     }
 
-    updateUI();
-  }
-
-  function stopAudio(keepPosition){
-    var audio = state.audio;
-    if (!audio) return;
-
-    if (keepPosition){
-      state.pausedTime = audio.currentTime || 0;
+    // Đổi bài
+    currentKey = key;
+    audio.src = url;
+    audio.volume = 0;
+    var pr = audio.play();
+    if (pr && pr.then){
+      pr.then(function(){ fadeTo(getVol(), 1200); })
+        .catch(function(e){ console.warn('[DolphinSound] Play bị chặn:', e); audio.volume = getVol(); });
     } else {
-      state.pausedTime = 0;
+      fadeTo(getVol(), 1200);
     }
-
-    fadeTo(0, FADE_OUT_MS, function(){
-      try {
-        if (keepPosition){
-          audio.pause();  /* giữ currentTime */
-        } else {
-          audio.pause();
-          audio.currentTime = 0;
-        }
-      } catch(e){}
-    });
   }
 
-  /* ═══════════════ APP MODE HANDLING ═══════════════ */
-  function enterAppMode(){
-    if (state.inAppMode) return;
-    state.inAppMode = true;
-
-    var audio = state.audio;
+  function pauseKey(opts){
+    opts = opts || {};
     if (!audio || audio.paused) return;
-
-    /* Fade out dài hơn 1.5s để mượt */
-    state.pausedTime = audio.currentTime || 0;
-    fadeTo(0, FADE_APP_MS, function(){
-      try { audio.pause(); } catch(e){}
-      state.pausedBy = 'appmode';
-    });
+    var ms = opts.fast ? 400 : 1400;
+    fadeTo(0, ms, function(){ try { audio.pause(); } catch(e){} });
   }
 
-  function exitAppMode(){
-    if (!state.inAppMode) return;
-    state.inAppMode = false;
-
-    if (!state.enabled) return;
-    if (!state.currentTheme) return;
-
-    var audio = state.audio;
+  function resumeKey(){
     if (!audio) return;
-
-    /* Resume từ vị trí đã lưu */
-    if (state.pausedBy === 'appmode' || audio.paused){
-      if (state.pausedTime > 0){
-        audio.currentTime = state.pausedTime;
-      }
-      audio.play().then(function(){
-        fadeTo(state.volume, FADE_BACK_MS, null);
-        state.pausedBy = null;
-      }).catch(function(err){
-        console.warn('[Sound] Resume failed:', err);
-      });
+    if (!audio.src){ playKey(resolveCurrentKey()); return; }
+    if (audio.paused){
+      fadeTo(getVol(), 1600);
+      var p = audio.play();
+      if (p && p.catch) p.catch(function(e){ console.warn(e); });
     }
   }
 
-  /* ═══════════════ THEME CHANGE ═══════════════ */
-  function onThemeChange(themeKey){
-    if (!state.enabled) return;
+  // ============ PUBLIC API ============
+  var API = {
+    enable: function(){
+      setEnabledStored(true);
+      playKey(resolveCurrentKey());
+      updateWidgetUI();
+    },
+    disable: function(){
+      setEnabledStored(false);
+      pauseKey();
+      updateWidgetUI();
+    },
+    toggle: function(){
+      if (getEnabled()) API.disable(); else API.enable();
+    },
+    isEnabled: function(){ return getEnabled(); },
+    isPlaying: function(){ return audio && !audio.paused && getEnabled(); },
 
-    /* Nếu không có nhạc cho theme → tắt */
-    if (!SOUND_MAP[themeKey]){
-      stopAudio(true);
-      state.currentTheme = themeKey;
-      updateUI();
-      return;
-    }
-
-    /* Nếu đang ở app mode → chỉ ghi nhớ, chưa phát */
-    if (state.inAppMode){
-      state.currentTheme = themeKey;
-      /* Load sẵn src để khi về landing phát ngay */
-      var audio = ensureAudio();
-      var newSrc = SOUND_MAP[themeKey];
-      var newSrcName = newSrc.split('/').pop();
-      var currentSrcName = audio.src ? decodeURIComponent(audio.src.split('/').pop().split('?')[0]) : '';
-      if (currentSrcName !== newSrcName){
-        state.pausedTime = 0;
-        audio.src = newSrc;
-        audio.load();
+    setMode: function(m){
+      setModeStored(m);
+      if (getEnabled()){
+        var key = resolveCurrentKey();
+        if (key !== currentKey) playKey(key);
+      } else {
+        // Nếu chưa bật, bật luôn cho user nghe khi họ đổi mode
+        setEnabledStored(true);
+        playKey(resolveCurrentKey());
       }
-      updateUI();
-      return;
-    }
+      updateWidgetUI();
+    },
+    getMode: function(){ return getMode(); },
 
-    playTheme(themeKey);
-  }
+    setTrack: function(key){
+      if (!themeKeyExists(key)) key = 'default';
+      setModeStored('manual');
+      setPickStored(key);
+      setEnabledStored(true);
+      playKey(key);
+      updateWidgetUI();
+    },
+    getTrack: function(){ return currentKey || resolveCurrentKey(); },
+    getTracks: function(){ return TRACKS.slice(); },
 
-  /* ═══════════════ WATCH APP MODE (body.app-mode) ═══════════════ */
-  function watchAppMode(){
-    /* Ban đầu: kiểm tra ngay */
-    if (document.body.classList.contains('app-mode')){
-      state.inAppMode = true;
-    }
+    setVolume: function(v){
+      v = Math.max(0, Math.min(1, v));
+      setVolStored(v);
+      if (audio && !isFading) audio.volume = v;
+      updateWidgetUI();
+    },
+    getVolume: function(){ return getVol(); }
+  };
+  window.DolphinSound = API;
 
-    /* MutationObserver */
-    if (window.MutationObserver){
-      var obs = new MutationObserver(function(){
-        var isApp = document.body.classList.contains('app-mode');
-        if (isApp && !state.inAppMode){
-          enterAppMode();
-        } else if (!isApp && state.inAppMode){
-          exitAppMode();
-        }
-      });
-      obs.observe(document.body, { attributes: true, attributeFilter: ['class'] });
-    }
-  }
-
-  /* ═══════════════ VISIBILITY ═══════════════ */
-  document.addEventListener('visibilitychange', function(){
-    if (!state.enabled || !state.audio) return;
-    if (document.visibilityState === 'hidden'){
-      if (!state.audio.paused){
-        state.pausedTime = state.audio.currentTime || 0;
-        try { state.audio.pause(); } catch(e){}
-        state.pausedBy = 'visibility';
-      }
-    } else {
-      /* Chỉ resume nếu không phải app-mode */
-      if (state.pausedBy === 'visibility' && !state.inAppMode && state.currentTheme){
-        state.audio.currentTime = state.pausedTime;
-        state.audio.play().then(function(){
-          fadeTo(state.volume, FADE_IN_MS, null);
-          state.pausedBy = null;
-        }).catch(function(){});
-      }
-    }
-  });
-
-  /* ═══════════════ UI ═══════════════ */
-  function injectStyles(){
-    if (document.getElementById('dsound-styles')) return;
-    var s = document.createElement('style');
-    s.id = 'dsound-styles';
-    s.textContent = [
-      '#dsound-widget{ position:fixed; top:14px; right:14px; z-index:9998; font-family:"Nunito",-apple-system,sans-serif; user-select:none; -webkit-user-select:none; }',
-      '#dsound-btn{ position:relative; width:42px; height:42px; border-radius:50%; background:rgba(10,31,29,.9); border:1.5px solid var(--theme-border, rgba(244,184,66,.6)); color:var(--theme-accent, #FBD77A); font-size:18px; line-height:1; cursor:pointer; display:flex; align-items:center; justify-content:center; backdrop-filter:blur(12px); -webkit-backdrop-filter:blur(12px); box-shadow:0 4px 14px rgba(0,0,0,.4), 0 0 12px var(--theme-glow, rgba(244,184,66,.25)); transition:transform .2s, box-shadow .3s, border-color .3s; -webkit-appearance:none; padding:0; }',
-      '#dsound-btn:hover{ transform:scale(1.08); }',
-      '#dsound-btn:active{ transform:scale(.94); }',
-      '#dsound-btn.on{ background:linear-gradient(135deg, var(--theme-accent, #FBD77A), var(--theme-accent2, #bfe9dc)); color:#0a2b28; box-shadow:0 4px 14px rgba(0,0,0,.4), 0 0 20px var(--theme-glow, rgba(244,184,66,.6)); }',
-      '#dsound-btn.on::after{ content:""; position:absolute; inset:-4px; border-radius:50%; border:1.5px solid var(--theme-border, rgba(244,184,66,.6)); opacity:.6; animation:dsound-ring 1.8s ease-out infinite; pointer-events:none; }',
-      '@keyframes dsound-ring{ 0%{ transform:scale(1); opacity:.6; } 100%{ transform:scale(1.4); opacity:0; } }',
-      '#dsound-popup{ position:absolute; top:52px; right:0; width:240px; background:linear-gradient(160deg, rgba(15,61,56,.98), rgba(10,43,40,.98)); border:1.5px solid var(--theme-border, rgba(244,184,66,.55)); border-radius:16px; box-shadow:0 12px 40px rgba(0,0,0,.7), 0 0 30px var(--theme-glow, rgba(244,184,66,.3)); backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px); padding:14px; opacity:0; pointer-events:none; transform:translateY(-6px) scale(.96); transform-origin:top right; transition:opacity .25s, transform .3s cubic-bezier(.16,1,.3,1); }',
-      '#dsound-popup.show{ opacity:1; pointer-events:auto; transform:translateY(0) scale(1); }',
-      '#dsound-popup .dsound-title{ font-size:10.5px; font-weight:900; color:var(--theme-accent, #FBD77A); text-transform:uppercase; letter-spacing:.1em; margin-bottom:8px; text-align:center; }',
-      '#dsound-popup .dsound-info{ font-size:11px; color:#bfe9dc; text-align:center; margin-bottom:12px; padding:8px 10px; border-radius:10px; background:rgba(0,0,0,.25); border:1px solid var(--theme-border-soft, rgba(244,184,66,.2)); min-height:34px; display:flex; align-items:center; justify-content:center; }',
-      '#dsound-popup .dsound-volume{ display:flex; align-items:center; gap:8px; margin-bottom:12px; }',
-      '#dsound-popup .dsound-volume .icon{ font-size:14px; flex-shrink:0; }',
-      '#dsound-popup .dsound-volume input[type=range]{ flex:1; height:4px; -webkit-appearance:none; appearance:none; background:linear-gradient(90deg, var(--theme-accent, #FBD77A), var(--theme-accent2, #bfe9dc)); border-radius:99px; outline:none; cursor:pointer; }',
-      '#dsound-popup .dsound-volume input[type=range]::-webkit-slider-thumb{ -webkit-appearance:none; appearance:none; width:14px; height:14px; border-radius:50%; background:#fff; cursor:pointer; box-shadow:0 0 8px var(--theme-glow, rgba(244,184,66,.6)); }',
-      '#dsound-popup .dsound-volume .pct{ font-size:10px; font-weight:900; color:var(--theme-accent, #FBD77A); min-width:32px; text-align:right; font-variant-numeric:tabular-nums; }',
-      '#dsound-popup .dsound-toggle{ width:100%; padding:9px 12px; border-radius:10px; border:none; font-family:inherit; font-size:11px; font-weight:900; letter-spacing:.06em; text-transform:uppercase; cursor:pointer; background:linear-gradient(135deg, var(--theme-accent, #FBD77A), var(--theme-accent2, #bfe9dc)); color:#0a2b28; box-shadow:0 4px 12px var(--theme-glow, rgba(244,184,66,.4)); transition:transform .15s; }',
-      '#dsound-popup .dsound-toggle:active{ transform:scale(.97); }',
-      '#dsound-popup .dsound-toggle.off{ background:rgba(255,255,255,.06); color:#bfe9dc; border:1px solid var(--theme-border-soft, rgba(244,184,66,.3)); box-shadow:none; }',
-      '@media(max-width:480px){ #dsound-widget{ top:10px; right:10px; } #dsound-btn{ width:38px; height:38px; font-size:16px; } #dsound-popup{ width:220px; } }',
-      '@media(prefers-reduced-motion: reduce){ #dsound-btn.on::after{ animation:none; } }'
-    ].join('\n');
-    document.head.appendChild(s);
-  }
-
+  // ============ WIDGET (chỉ landing) ============
   function buildWidget(){
-    if (document.getElementById('dsound-widget')) return;
+    if (window.DOLPHIN_HIDE_SOUND_WIDGET) return;
+    if (document.getElementById('dolphin-sound-widget')) return;
 
     var w = document.createElement('div');
-    w.id = 'dsound-widget';
+    w.id = 'dolphin-sound-widget';
+    w.style.cssText = 'position:fixed;top:14px;right:14px;z-index:9997;font-family:inherit';
     w.innerHTML =
-      '<button id="dsound-btn" type="button" title="Nhạc theme">🔇</button>' +
-      '<div id="dsound-popup">' +
-      '  <div class="dsound-title">🎵 Nhạc Theme</div>' +
-      '  <div class="dsound-info" id="dsound-info">Nhạc đang tắt</div>' +
-      '  <div class="dsound-volume">' +
-      '    <span class="icon">🔊</span>' +
-      '    <input id="dsound-vol" type="range" min="0" max="100" value="' + Math.round(state.volume * 100) + '">' +
-      '    <span class="pct" id="dsound-pct">' + Math.round(state.volume * 100) + '%</span>' +
-      '  </div>' +
-      '  <button class="dsound-toggle" id="dsound-toggle" type="button">Bật nhạc</button>' +
-      '</div>';
+      '<button id="dsw-toggle" style="width:44px;height:44px;border-radius:50%;'
+      + 'background:rgba(18,54,52,.9);border:2px solid rgba(244,184,66,.7);'
+      + 'color:#FBD77A;font-size:20px;cursor:pointer;'
+      + 'display:flex;align-items:center;justify-content:center;'
+      + 'backdrop-filter:blur(12px);box-shadow:0 6px 20px rgba(0,0,0,.5);'
+      + 'transition:transform .15s">🔇</button>'
+      + '<div id="dsw-popup" style="display:none;position:absolute;top:52px;right:0;'
+      + 'background:rgba(18,54,52,.95);border:2px solid rgba(244,184,66,.5);'
+      + 'border-radius:14px;padding:14px;box-shadow:0 12px 40px rgba(0,0,0,.7);'
+      + 'min-width:240px;backdrop-filter:blur(16px)">'
+      + '<div style="font-size:11px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin-bottom:10px">🎵 Nhạc nền</div>'
+      + '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px">'
+      + '<span style="font-size:11px;color:#bfe9dc;font-weight:700">Âm lượng</span>'
+      + '<input id="dsw-vol" type="range" min="0" max="100" style="flex:1;height:4px;-webkit-appearance:none;background:linear-gradient(90deg,#FBD77A,#F4B842);border-radius:99px;outline:none">'
+      + '<span id="dsw-vol-pct" style="font-size:11px;color:#FBD77A;font-weight:900;min-width:32px;text-align:right">30%</span>'
+      + '</div>'
+      + '<div style="font-size:10px;color:#bfe9dc;opacity:.7;text-align:center;line-height:1.4">'
+      + 'Đổi bài hát trong app <b style="color:#FBD77A">🎮 Giải Trí</b>'
+      + '</div>'
+      + '</div>';
 
     document.body.appendChild(w);
+    widgetEl = w;
+    popupEl = document.getElementById('dsw-popup');
 
-    var btn      = document.getElementById('dsound-btn');
-    var popup    = document.getElementById('dsound-popup');
-    var toggleBtn= document.getElementById('dsound-toggle');
-    var volInput = document.getElementById('dsound-vol');
-    var pctLabel = document.getElementById('dsound-pct');
-
-    btn.addEventListener('click', function(e){
+    document.getElementById('dsw-toggle').addEventListener('click', function(e){
       e.stopPropagation();
-      popup.classList.toggle('show');
+      popupEl.style.display = popupEl.style.display === 'none' ? 'block' : 'none';
     });
-
-    toggleBtn.addEventListener('click', function(){
-      if (state.enabled) disableSound();
-      else enableSound();
+    document.getElementById('dsw-vol').addEventListener('input', function(){
+      API.setVolume(parseInt(this.value, 10) / 100);
     });
-
-    volInput.addEventListener('input', function(){
-      var v = parseInt(this.value, 10);
-      state.volume = v / 100;
-      pctLabel.textContent = v + '%';
-      setLS(LS_VOLUME, String(v));
-      if (state.audio && !state.audio.paused){
-        state.audio.volume = state.volume;
-      }
-    });
-
     document.addEventListener('click', function(e){
-      if (!w.contains(e.target)) popup.classList.remove('show');
-    });
-    document.addEventListener('keydown', function(e){
-      if (e.key === 'Escape') popup.classList.remove('show');
+      if (!widgetEl.contains(e.target)) popupEl.style.display = 'none';
     });
 
-    updateUI();
+    updateWidgetUI();
   }
 
-  function updateUI(){
-    var btn    = document.getElementById('dsound-btn');
-    var info   = document.getElementById('dsound-info');
-    var toggle = document.getElementById('dsound-toggle');
-    if (!btn) return;
-
-    if (state.enabled){
-      btn.textContent = '🔊';
-      btn.classList.add('on');
-      if (toggle){ toggle.textContent = 'Tắt nhạc'; toggle.classList.remove('off'); }
-    } else {
-      btn.textContent = '🔇';
-      btn.classList.remove('on');
-      if (toggle){ toggle.textContent = 'Bật nhạc'; toggle.classList.add('off'); }
-    }
-
-    if (info){
-      if (state.inAppMode && state.enabled){
-        info.textContent = 'Tạm dừng khi vào app con';
-      } else if (state.currentTheme && THEME_LABEL[state.currentTheme]){
-        info.textContent = 'Đang phát: ' + THEME_LABEL[state.currentTheme];
-      } else if (state.enabled){
-        info.textContent = 'Theme này không có nhạc';
-      } else {
-        info.textContent = 'Nhạc đang tắt';
-      }
+  function updateWidgetUI(){
+    var btn = document.getElementById('dsw-toggle');
+    var vol = document.getElementById('dsw-vol');
+    var pct = document.getElementById('dsw-vol-pct');
+    if (btn) btn.textContent = getEnabled() ? '🔊' : '🔇';
+    if (vol) vol.value = String(Math.round(getVol() * 100));
+    if (pct) pct.textContent = Math.round(getVol() * 100) + '%';
+    // Sync UI của app Giải Trí (nếu đang mở)
+    if (typeof window.__giaitriSyncMusicUI === 'function') {
+      try { window.__giaitriSyncMusicUI(); } catch(e){}
     }
   }
 
-  /* ═══════════════ ENABLE / DISABLE ═══════════════ */
-  function enableSound(){
-    state.enabled = true;
-    setLS(LS_ENABLED, '1');
-    state.unlocked = true;
-
-    var theme = getCurrentTheme();
-    if (theme && SOUND_MAP[theme]){
-      if (!state.inAppMode) playTheme(theme);
-      else state.currentTheme = theme;
-    }
-    updateUI();
-  }
-
-  function disableSound(){
-    state.enabled = false;
-    setLS(LS_ENABLED, '0');
-    stopAudio(false);
-    updateUI();
-  }
-
-  /* ═══════════════ THEME DETECTION ═══════════════ */
-  function getCurrentTheme(){
-    try {
-      var params = new URLSearchParams(location.search);
-      var urlTheme = params.get('theme');
-      if (urlTheme) return urlTheme;
-    } catch(e){}
-    var attr = document.body.getAttribute('data-theme');
-    if (attr) return attr;
-    try {
-      var ls = localStorage.getItem('dolphin_theme');
-      if (ls) return ls;
-    } catch(e){}
-    return 'default';
-  }
-
-  /* ═══════════════ UNLOCK ═══════════════ */
-  function setupUnlock(){
-    function unlockOnce(){
-      state.unlocked = true;
-      if (state.enabled && !state.inAppMode){
-        var theme = getCurrentTheme();
-        if (SOUND_MAP[theme] && state.audio && state.audio.paused){
-          playTheme(theme);
-        }
-      }
-      document.removeEventListener('click', unlockOnce, true);
-      document.removeEventListener('touchstart', unlockOnce, true);
-      document.removeEventListener('keydown', unlockOnce, true);
-    }
-    document.addEventListener('click', unlockOnce, true);
-    document.addEventListener('touchstart', unlockOnce, true);
-    document.addEventListener('keydown', unlockOnce, true);
-  }
-
-  /* ═══════════════ FIRST-TIME TOAST ═══════════════ */
+  // ============ TOAST NHẮC 1 LẦN ============
   function maybeShowToast(){
-    if (getLS(LS_ASKED) === '1') return;
-
+    if (getAsked() || window.DOLPHIN_HIDE_SOUND_WIDGET) return;
     setTimeout(function(){
-      var theme = getCurrentTheme();
-      if (!SOUND_MAP[theme]) return;
-
-      var toast = document.createElement('div');
-      toast.id = 'dsound-toast';
-      toast.style.cssText =
-        'position:fixed;top:70px;right:14px;z-index:9999;' +
-        'background:linear-gradient(135deg,rgba(15,61,56,.98),rgba(10,43,40,.98));' +
-        'border:1.5px solid var(--theme-border, rgba(244,184,66,.6));' +
-        'border-radius:14px;padding:12px 14px;' +
-        'box-shadow:0 10px 30px rgba(0,0,0,.6), 0 0 20px var(--theme-glow, rgba(244,184,66,.3));' +
-        'backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);' +
-        'font-family:"Nunito",sans-serif;font-size:12px;color:#fff;' +
-        'max-width:240px;animation:dsoundSlideIn .4s ease;';
-      toast.innerHTML =
-        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-        '  <span style="font-size:20px;">🔊</span>' +
-        '  <span style="font-weight:900;color:var(--theme-accent, #FBD77A);letter-spacing:.04em;">Bật nhạc theme?</span>' +
-        '</div>' +
-        '<div style="display:flex;gap:6px;">' +
-        '  <button id="dsound-toast-yes" style="flex:1;padding:8px;border-radius:9px;border:none;background:linear-gradient(135deg,var(--theme-accent, #FBD77A),var(--theme-accent2, #bfe9dc));color:#0a2b28;font-family:inherit;font-weight:900;font-size:11px;letter-spacing:.06em;cursor:pointer;">BẬT</button>' +
-        '  <button id="dsound-toast-no" style="padding:8px 12px;border-radius:9px;border:1px solid var(--theme-border-soft, rgba(244,184,66,.3));background:transparent;color:#bfe9dc;font-family:inherit;font-weight:700;font-size:11px;cursor:pointer;">ĐỂ SAU</button>' +
-        '</div>';
-
-      if (!document.getElementById('dsound-anim')){
-        var st = document.createElement('style');
-        st.id = 'dsound-anim';
-        st.textContent = '@keyframes dsoundSlideIn{from{opacity:0;transform:translateX(20px);}to{opacity:1;transform:translateX(0);}}';
-        document.head.appendChild(st);
-      }
-
-      document.body.appendChild(toast);
-
-      document.getElementById('dsound-toast-yes').addEventListener('click', function(){
-        enableSound();
-        setLS(LS_ASKED, '1');
-        toast.remove();
-      });
-      document.getElementById('dsound-toast-no').addEventListener('click', function(){
-        setLS(LS_ASKED, '1');
-        toast.remove();
-      });
-
-      setTimeout(function(){ if (toast.parentNode) toast.remove(); }, 15000);
+      if (getAsked() || getEnabled()) return;
+      showToast();
     }, 5000);
   }
 
-  /* ═══════════════ LISTEN THEME CHANGE ═══════════════ */
-  function listenThemeChange(){
-    try {
-      var bc = new BroadcastChannel('dolphin-theme');
-      bc.addEventListener('message', function(ev){
-        var d = ev.data || {};
-        if (d.type === 'theme' && d.key) onThemeChange(d.key);
-      });
-    } catch(e){}
-
-    if (window.MutationObserver){
-      var last = document.body.getAttribute('data-theme');
-      var obs = new MutationObserver(function(){
-        var cur = document.body.getAttribute('data-theme');
-        if (cur !== last){
-          last = cur;
-          if (cur) onThemeChange(cur);
-        }
-      });
-      obs.observe(document.body, { attributes: true, attributeFilter: ['data-theme'] });
+  function showToast(){
+    if (toastEl) return;
+    var style = document.createElement('style');
+    if (!document.getElementById('dsw-anim-style')){
+      style.id = 'dsw-anim-style';
+      style.textContent = '@keyframes dsw-slide-up{from{opacity:0;transform:translateX(-50%) translateY(20px)}to{opacity:1;transform:translateX(-50%) translateY(0)}}';
+      document.head.appendChild(style);
     }
+    toastEl = document.createElement('div');
+    toastEl.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);'
+      + 'background:linear-gradient(135deg,#1a4a45,#0d2a28);'
+      + 'border:2px solid #FBD77A;border-radius:14px;padding:12px 16px;'
+      + 'color:#FFE58F;font-size:13px;font-weight:800;'
+      + 'box-shadow:0 12px 40px rgba(0,0,0,.6),0 0 40px rgba(244,184,66,.3);'
+      + 'z-index:9999;display:flex;align-items:center;gap:12px;'
+      + 'max-width:90vw;font-family:inherit;'
+      + 'animation:dsw-slide-up .4s cubic-bezier(.16,1,.3,1)';
+    toastEl.innerHTML = '<span>🎵 Bật nhạc nền cho không khí thư giãn?</span>'
+      + '<button id="dsw-yes" style="background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border:none;padding:6px 12px;border-radius:8px;font-weight:900;font-size:12px;cursor:pointer">Bật ngay</button>'
+      + '<button id="dsw-no" style="background:transparent;color:#bfe9dc;border:1px solid rgba(191,233,220,.4);padding:6px 10px;border-radius:8px;font-size:11px;cursor:pointer">Để sau</button>';
+    document.body.appendChild(toastEl);
 
-    setInterval(function(){
-      if (!state.enabled) return;
-      var cur = getCurrentTheme();
-      if (cur && cur !== state.currentTheme) onThemeChange(cur);
-    }, 3000);
+    document.getElementById('dsw-yes').addEventListener('click', function(){
+      setAskedStored(); API.enable(); toastEl.remove(); toastEl = null;
+    });
+    document.getElementById('dsw-no').addEventListener('click', function(){
+      setAskedStored(); toastEl.remove(); toastEl = null;
+    });
+    setTimeout(function(){ if (toastEl){ toastEl.remove(); toastEl = null; } }, 15000);
   }
 
-  /* ═══════════════ INIT ═══════════════ */
+  // ============ THEME CHANGE → ĐỔI NHẠC (chỉ AUTO) ============
+  window.addEventListener('dolphin-theme-changed', function(){
+    if (getMode() !== 'auto') return;
+    if (!getEnabled()) return;
+    var key = resolveCurrentKey();
+    if (key !== currentKey) playKey(key);
+  });
+
+  // ============ VISIBILITY ============
+  function isInIframe(){
+    try { return window.self !== window.top; } catch(e){ return true; }
+  }
+
+  document.addEventListener('visibilitychange', function(){
+    if (document.hidden){
+      pauseKey({ fast: true });
+    } else {
+      // Chỉ resume ở landing hoặc giaitri
+      if (isInIframe() && !window.DOLPHIN_ALLOW_SOUND) return;
+      if (getEnabled()) resumeKey();
+    }
+  });
+
+  // ============ INIT ============
   function init(){
-    /* Không chạy trong iframe */
-    if (isInIframe()) return;
+    if (initialized) return;
+    initialized = true;
 
-    /* Chỉ chạy khi có #landing (trang chủ thật) */
-    if (!document.getElementById('landing')) return;
-
-    state.enabled = getLS(LS_ENABLED, '0') === '1';
-    var volStr = getLS(LS_VOLUME, '40');
-    var volInt = parseInt(volStr, 10);
-    if (isNaN(volInt) || volInt < 0 || volInt > 100) volInt = 40;
-    state.volume = volInt / 100;
-
-    injectStyles();
     buildWidget();
-    setupUnlock();
-    watchAppMode();
-    listenThemeChange();
+    maybeShowToast();
 
-    if (!state.enabled) maybeShowToast();
-
-    console.log('%c🎵 DOLPHIN SOUNDSCAPE v2.0 LOADED',
-      'background:linear-gradient(90deg,#FBD77A,#F4B842);color:#0a2b28;font-size:11px;padding:3px 8px;border-radius:4px;font-weight:900');
+    // Auto play nếu đã bật trước đó + cho phép phát
+    if (getEnabled() && (!isInIframe() || window.DOLPHIN_ALLOW_SOUND)){
+      var kick = function(){
+        playKey(resolveCurrentKey());
+        document.removeEventListener('click', kick);
+        document.removeEventListener('touchstart', kick);
+        document.removeEventListener('keydown', kick);
+      };
+      document.addEventListener('click', kick, { once: true });
+      document.addEventListener('touchstart', kick, { once: true });
+      document.addEventListener('keydown', kick, { once: true });
+    }
   }
 
   if (document.readyState === 'loading'){
@@ -613,11 +354,4 @@
     init();
   }
 
-  window.DolphinSound = {
-    enable:  enableSound,
-    disable: disableSound,
-    toggle:  function(){ state.enabled ? disableSound() : enableSound(); },
-    isOn:    function(){ return state.enabled; },
-    version: '2.0'
-  };
 })();

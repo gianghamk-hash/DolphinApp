@@ -1,22 +1,22 @@
 {
-  "version": "1.0.25",
-  "previousVersion": "1.0.24",
-  "commit": "78c2822",
-  "previousCommit": "1e30bbb",
-  "buildDate": "2026-10-14T09:56:32.611Z",
-  "summary": "Block Blast v6: ghost = preview chung 1 tọa độ",
+  "version": "1.0.26",
+  "previousVersion": "1.0.25",
+  "commit": "d2dffa1",
+  "previousCommit": "78c2822",
+  "buildDate": "2026-10-14T10:17:30.906Z",
+  "summary": "Xóa Block Blast, thêm Battleship vào tab GAME",
   "changes": {
-    "totalCommits": 29,
+    "totalCommits": 30,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Block Blast v6: ghost = preview chung 1 tọa độ"
+    "Xóa Block Blast, thêm Battleship vào tab GAME"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/block-blast.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

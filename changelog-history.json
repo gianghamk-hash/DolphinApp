@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.25",
+      "releaseDate": "2026-10-14T09:56:32.611Z",
+      "summary": "Block Blast v6: ghost = preview chung 1 tọa độ",
+      "details": [
+        "Block Blast v6: ghost = preview chung 1 tọa độ"
+      ]
+    },
+    {
       "version": "1.0.24",
       "releaseDate": "2026-10-14T09:52:09.545Z",
       "summary": "Block Blast v5: unified coordinate system",

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.25",
+  "version": "1.0.26",
   "releaseDate": "2026-10-14",
-  "notes": "Block Blast v6: ghost = preview chung 1 tọa độ"
+  "notes": "Xóa Block Blast, thêm Battleship vào tab GAME"
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.15",
-  "buildDate": "2026-10-14T05:43:09.211Z",
-  "commit": "fb2beb7",
-  "notes": "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc",
+  "version": "1.0.16",
+  "buildDate": "2026-10-14T05:52:26.812Z",
+  "commit": "2a2bbeb",
+  "notes": "Fix scan script chặt + encode URL an toàn",
   "forceUpdate": false
 }

@@ -1,22 +1,22 @@
 {
-  "version": "1.0.15",
-  "previousVersion": "1.0.14",
-  "commit": "fb2beb7",
-  "previousCommit": "9e9a42f",
-  "buildDate": "2026-10-14T05:43:09.211Z",
-  "summary": "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc",
+  "version": "1.0.16",
+  "previousVersion": "1.0.15",
+  "commit": "2a2bbeb",
+  "previousCommit": "fb2beb7",
+  "buildDate": "2026-10-14T05:52:26.812Z",
+  "summary": "Fix scan script chặt + encode URL an toàn",
   "changes": {
-    "totalCommits": 19,
+    "totalCommits": 20,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc"
+    "Fix scan script chặt + encode URL an toàn"
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": "dolphin-soundscape.js",
       "type": "update"
     }
   ]

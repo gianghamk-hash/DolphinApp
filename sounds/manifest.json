@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-14T05:45:57.824Z",
-  "count": 19,
+  "generated": "2026-10-14T05:51:34.287Z",
+  "count": 18,
   "tracks": [
     {
       "key": "default",
@@ -69,10 +69,6 @@
     {
       "key": "cham-hoa",
       "file": "soundscape-cham-hoa.mp3"
-    },
-    {
-      "key": "phepmau",
-      "file": "soundscape-phep mau.mp3"
     },
     {
       "key": "wrong-time",

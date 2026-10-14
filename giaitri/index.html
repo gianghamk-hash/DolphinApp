@@ -23,15 +23,15 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 /* === TAB SWITCHER === */
 .tab-switcher{display:flex;gap:5px;padding:6px;background:rgba(10,30,28,.6);border-radius:14px;border:1px solid rgba(255,255,255,.08);margin-bottom:16px}
-.tab-btn{flex:1;padding:10px 4px;border-radius:10px;font-weight:900;font-size:10.5px;letter-spacing:.03em;
+.tab-btn{flex:1;padding:10px 4px;border-radius:10px;font-weight:900;font-size:11.5px;letter-spacing:.03em;
   border:none;background:transparent;color:#7ec9be;cursor:pointer;font-family:inherit;transition:all .2s;
   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .tab-btn.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;box-shadow:0 4px 12px rgba(244,184,66,.4)}
 .tab-btn:active{transform:scale(.97)}
 .tab-btn span:first-child{font-size:16px}
 @media(min-width:520px){
-  .tab-btn{font-size:12px;padding:12px 8px;flex-direction:row;gap:6px}
-  .tab-btn span:first-child{font-size:14px}
+  .tab-btn{font-size:13px;padding:12px 8px;flex-direction:row;gap:6px}
+  .tab-btn span:first-child{font-size:15px}
 }
 
 /* === MUSIC TAB === */
@@ -239,20 +239,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   border:3px solid rgba(244,184,66,.2);border-top-color:#FBD77A;
   border-radius:50%;animation:spin 1s linear infinite;
 }
-
-/* === NOTES IFRAME === */
-.notes-frame-wrap{
-  width:100%;
-  height:calc(100vh - 200px);
-  min-height:500px;
-  border-radius:14px;overflow:hidden;
-  border:2px solid rgba(244,184,66,.3);
-  background:#0a1f1d;
-  box-shadow:0 8px 30px rgba(0,0,0,.5);
-}
-.notes-frame-wrap iframe{
-  width:100%;height:100%;border:0;display:block;background:#0a1f1d;
-}
 </style>
 </head>
 <body>
@@ -272,19 +258,16 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <div class="max-w-2xl mx-auto px-4 pt-5">
 
-  <!-- ═══════════ TAB SWITCHER (4 TAB) ═══════════ -->
+  <!-- ═══════════ TAB SWITCHER (3 TAB) ═══════════ -->
   <div class="tab-switcher">
     <button class="tab-btn active" data-tab="caro" onclick="showTab('caro')">
-      <span>🎮</span> CARO
+      <span>🎮</span> CỜ CARO
     </button>
     <button class="tab-btn" data-tab="music" onclick="showTab('music')">
-      <span>🎵</span> NHẠC
+      <span>🎵</span> NGHE NHẠC
     </button>
     <button class="tab-btn" data-tab="game" onclick="showTab('game')">
-      <span>🕹</span> GAME
-    </button>
-    <button class="tab-btn" data-tab="notes" onclick="showTab('notes')">
-      <span>📝</span> SỔ TAY
+      <span>🕹</span> KHO GAME
     </button>
   </div>
 
@@ -444,13 +427,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </div>
   </div>
 
-  <!-- ═══════════ TAB: SỔ TAY ═══════════ -->
-  <div id="tab-notes" class="tab-content hidden">
-    <div class="notes-frame-wrap">
-      <iframe id="notesFrame" src="about:blank" allow="autoplay"></iframe>
-    </div>
-  </div>
-
 </div>
 
 <!-- ═══════════ MINI PLAYER ═══════════ -->
@@ -506,7 +482,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 (function(){
   'use strict';
 
-  var notesLoaded = false;
   var currentGame = null;
   var GAME_URLS = {
     'chess': 'games/chess.html',
@@ -523,27 +498,17 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       el.classList.toggle('active', el.dataset.tab === name);
     });
 
-    // Rules button: chỉ hiện ở tab caro
     var rb = document.getElementById('rulesBtn');
     var pb = document.getElementById('placeholderBtn');
     if (rb) rb.style.display = name === 'caro' ? 'flex' : 'none';
     if (pb) pb.style.display = name === 'caro' ? 'none' : 'block';
 
-    // Re-render board khi quay về caro
     if (name === 'caro' && window.state && window.state.currentGame){
       setTimeout(function(){
         if (typeof window.renderBoard === 'function') window.renderBoard(window.state.currentGame);
       }, 60);
     }
 
-    // Load Sổ Tay lần đầu
-    if (name === 'notes' && !notesLoaded){
-      var nf = document.getElementById('notesFrame');
-      if (nf) nf.src = 'notes.html';
-      notesLoaded = true;
-    }
-
-    // Đóng game khi chuyển sang tab khác
     if (name !== 'game' && currentGame){
       closeGame();
     }
@@ -587,7 +552,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     document.getElementById('gameMenuView').classList.remove('hidden');
   };
 
-  // === Music UI ===
   function DS(){ return window.DolphinSound; }
 
   window.__giaitriSyncMusicUI = function(){ renderMusicUI(); };

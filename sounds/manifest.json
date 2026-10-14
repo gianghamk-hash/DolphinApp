@@ -1,6 +1,6 @@
 {
-  "generated": "2026-10-14T05:57:44.412Z",
-  "count": 19,
+  "generated": "2026-10-14T06:59:35.933Z",
+  "count": 16,
   "tracks": [
     {
       "key": "default",
@@ -63,20 +63,8 @@
       "file": "soundscape-winter.mp3"
     },
     {
-      "key": "banhmykhong",
-      "file": "soundscape-banhmykhong.mp3"
-    },
-    {
-      "key": "chamhoa",
-      "file": "soundscape-chamhoa.mp3"
-    },
-    {
       "key": "phepmau",
       "file": "soundscape-phepmau.mp3"
-    },
-    {
-      "key": "wrongtime",
-      "file": "soundscape-wrongtime.mp3"
     }
   ]
 }

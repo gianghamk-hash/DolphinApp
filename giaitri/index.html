@@ -22,12 +22,17 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .hidden{display:none!important}
 
 /* === TAB SWITCHER === */
-.tab-switcher{display:flex;gap:6px;padding:6px;background:rgba(10,30,28,.6);border-radius:14px;border:1px solid rgba(255,255,255,.08);margin-bottom:16px}
-.tab-btn{flex:1;padding:12px 8px;border-radius:10px;font-weight:900;font-size:12.5px;letter-spacing:.04em;
+.tab-switcher{display:flex;gap:5px;padding:6px;background:rgba(10,30,28,.6);border-radius:14px;border:1px solid rgba(255,255,255,.08);margin-bottom:16px}
+.tab-btn{flex:1;padding:10px 4px;border-radius:10px;font-weight:900;font-size:10.5px;letter-spacing:.03em;
   border:none;background:transparent;color:#7ec9be;cursor:pointer;font-family:inherit;transition:all .2s;
-  display:flex;align-items:center;justify-content:center;gap:6px}
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px}
 .tab-btn.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;box-shadow:0 4px 12px rgba(244,184,66,.4)}
 .tab-btn:active{transform:scale(.97)}
+.tab-btn span:first-child{font-size:16px}
+@media(min-width:520px){
+  .tab-btn{font-size:12px;padding:12px 8px;flex-direction:row;gap:6px}
+  .tab-btn span:first-child{font-size:14px}
+}
 
 /* === MUSIC TAB === */
 .mode-switcher{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
@@ -85,7 +90,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 #miniPlayer .mp-btn.mp-ghost{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);
   width:34px;height:34px;font-size:14px;box-shadow:none}
 
-/* === CARO STYLES (giữ nguyên) === */
+/* === CARO STYLES === */
 #boardWrapper{overflow-x:auto;overflow-y:auto;max-height:70vh;-webkit-overflow-scrolling:touch;padding:4px;border-radius:12px}
 #boardWrapper::-webkit-scrollbar{width:6px;height:6px}
 #boardWrapper::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
@@ -164,6 +169,90 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   -webkit-tap-highlight-color:transparent;
 }
 #caroZoomReset:active{transform:scale(.92)}
+
+/* === GAME MENU === */
+.game-menu-grid{
+  display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;
+}
+@media(min-width:520px){
+  .game-menu-grid{grid-template-columns:repeat(3,1fr)}
+}
+.game-menu-btn{
+  display:flex;flex-direction:column;align-items:center;gap:8px;
+  padding:22px 16px;
+  background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));
+  border:2px solid rgba(244,184,66,.35);
+  border-radius:16px;
+  cursor:pointer;font-family:inherit;
+  transition:all .25s cubic-bezier(.16,1,.3,1);
+  position:relative;overflow:hidden;text-align:center;
+}
+.game-menu-btn:hover{
+  transform:translateY(-3px);
+  border-color:rgba(244,184,66,.7);
+  box-shadow:0 8px 24px rgba(244,184,66,.25);
+}
+.game-menu-btn:active{transform:scale(.97)}
+.game-menu-btn .gm-icon{
+  font-size:44px;line-height:1;
+  filter:drop-shadow(0 4px 12px rgba(244,184,66,.5));
+}
+.game-menu-btn .gm-title{
+  font-size:16px;font-weight:900;color:#fff;
+  text-transform:uppercase;letter-spacing:.05em;
+}
+.game-menu-btn .gm-sub{
+  font-size:10.5px;color:#7ec9be;font-weight:700;font-style:italic;
+}
+
+/* === GAME IFRAME === */
+.game-frame-wrap{
+  position:relative;width:100%;
+  height:calc(100vh - 220px);
+  min-height:420px;
+  border-radius:14px;overflow:hidden;
+  border:2px solid rgba(244,184,66,.4);
+  background:#0a1f1d;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+}
+.game-frame-wrap iframe{
+  width:100%;height:100%;border:0;display:block;background:#0a1f1d;
+}
+.game-back-btn{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:10px 14px;border-radius:12px;
+  background:rgba(25,71,67,.6);
+  border:1px solid rgba(55,137,123,.5);
+  color:#bfe9dc;font-weight:800;font-size:12px;
+  cursor:pointer;font-family:inherit;transition:all .15s;
+  margin-bottom:10px;
+}
+.game-back-btn:active{transform:scale(.96)}
+.game-loading{
+  position:absolute;inset:0;
+  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;
+  background:#0a1f1d;z-index:2;transition:opacity .3s;
+}
+.game-loading.hide{opacity:0;pointer-events:none}
+.game-loading .spin{
+  width:48px;height:48px;
+  border:3px solid rgba(244,184,66,.2);border-top-color:#FBD77A;
+  border-radius:50%;animation:spin 1s linear infinite;
+}
+
+/* === NOTES IFRAME === */
+.notes-frame-wrap{
+  width:100%;
+  height:calc(100vh - 200px);
+  min-height:500px;
+  border-radius:14px;overflow:hidden;
+  border:2px solid rgba(244,184,66,.3);
+  background:#0a1f1d;
+  box-shadow:0 8px 30px rgba(0,0,0,.5);
+}
+.notes-frame-wrap iframe{
+  width:100%;height:100%;border:0;display:block;background:#0a1f1d;
+}
 </style>
 </head>
 <body>
@@ -183,13 +272,19 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <div class="max-w-2xl mx-auto px-4 pt-5">
 
-  <!-- ═══════════ TAB SWITCHER ═══════════ -->
+  <!-- ═══════════ TAB SWITCHER (4 TAB) ═══════════ -->
   <div class="tab-switcher">
     <button class="tab-btn active" data-tab="caro" onclick="showTab('caro')">
-      <span>🎮</span> CỜ CARO
+      <span>🎮</span> CARO
     </button>
     <button class="tab-btn" data-tab="music" onclick="showTab('music')">
-      <span>🎵</span> NGHE NHẠC
+      <span>🎵</span> NHẠC
+    </button>
+    <button class="tab-btn" data-tab="game" onclick="showTab('game')">
+      <span>🕹</span> GAME
+    </button>
+    <button class="tab-btn" data-tab="notes" onclick="showTab('notes')">
+      <span>📝</span> SỔ TAY
     </button>
   </div>
 
@@ -267,7 +362,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   <!-- ═══════════ TAB: NGHE NHẠC ═══════════ -->
   <div id="tab-music" class="tab-content hidden">
 
-    <!-- Now playing card -->
     <div class="glass rounded-2xl p-5 mb-4" style="background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));border:2px solid rgba(244,184,66,.4)">
       <div class="flex items-center gap-4">
         <div id="nowIcon" style="font-size:52px;filter:drop-shadow(0 4px 12px rgba(244,184,66,.5))">🎵</div>
@@ -285,7 +379,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       </div>
     </div>
 
-    <!-- Mode switcher -->
     <div class="mode-switcher">
       <button id="modeAuto" class="mode-btn" onclick="setMode('auto')">
         <span style="font-size:18px">🎵</span>
@@ -299,7 +392,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       </button>
     </div>
 
-    <!-- Track list -->
     <div class="glass rounded-2xl p-4">
       <div style="font-size:12px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px">
         <span>🎼</span> DANH SÁCH BÀI HÁT
@@ -311,6 +403,51 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="mt-4 text-center text-[10px] text-teal-500 leading-relaxed mb-4">
       💡 Chọn bài → tự chuyển sang chế độ "Tự chọn"<br>
       🎵 Chế độ "Theo chủ đề" — nhạc tự đổi khi đến dịp lễ
+    </div>
+  </div>
+
+  <!-- ═══════════ TAB: GAME ═══════════ -->
+  <div id="tab-game" class="tab-content hidden">
+    <div id="gameMenuView">
+      <div class="glass rounded-2xl p-5 mb-4 text-center">
+        <div class="text-5xl mb-2">🕹</div>
+        <h2 class="text-[15px] font-black text-gold-400 uppercase tracking-widest mb-1">KHO GAME</h2>
+        <p class="text-[12px] text-teal-300">Chọn 1 game để chơi</p>
+      </div>
+      <div class="game-menu-grid">
+        <button class="game-menu-btn" onclick="openGame('chess')">
+          <span class="gm-icon">♟</span>
+          <span class="gm-title">Cờ Vua</span>
+          <span class="gm-sub">Đấu máy · 2 người</span>
+        </button>
+        <button class="game-menu-btn" onclick="openGame('game2048')">
+          <span class="gm-icon">🔢</span>
+          <span class="gm-title">2048</span>
+          <span class="gm-sub">Ghép số đạt 2048</span>
+        </button>
+        <button class="game-menu-btn" onclick="openGame('blockblast')">
+          <span class="gm-icon">🧱</span>
+          <span class="gm-title">Block Blast</span>
+          <span class="gm-sub">Xếp khối · BXH</span>
+        </button>
+      </div>
+    </div>
+    <div id="gameIframeView" class="hidden">
+      <button class="game-back-btn" onclick="closeGame()">← Quay lại menu</button>
+      <div class="game-frame-wrap">
+        <div class="game-loading" id="gameLoading">
+          <div class="spin"></div>
+          <div class="text-gold-400 text-[12px] font-bold">Đang tải game...</div>
+        </div>
+        <iframe id="gameFrame" allow="autoplay"></iframe>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TAB: SỔ TAY ═══════════ -->
+  <div id="tab-notes" class="tab-content hidden">
+    <div class="notes-frame-wrap">
+      <iframe id="notesFrame" src="about:blank" allow="autoplay"></iframe>
     </div>
   </div>
 
@@ -369,7 +506,14 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 (function(){
   'use strict';
 
-  // === Tab switching ===
+  var notesLoaded = false;
+  var currentGame = null;
+  var GAME_URLS = {
+    'chess': 'games/chess.html',
+    'game2048': 'games/game2048.html',
+    'blockblast': 'games/block-blast.html'
+  };
+
   window.showTab = function(name){
     document.querySelectorAll('.tab-content').forEach(function(el){ el.classList.add('hidden'); });
     var target = document.getElementById('tab-' + name);
@@ -392,7 +536,55 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       }, 60);
     }
 
+    // Load Sổ Tay lần đầu
+    if (name === 'notes' && !notesLoaded){
+      var nf = document.getElementById('notesFrame');
+      if (nf) nf.src = 'notes.html';
+      notesLoaded = true;
+    }
+
+    // Đóng game khi chuyển sang tab khác
+    if (name !== 'game' && currentGame){
+      closeGame();
+    }
+
     updateMiniPlayer();
+  };
+
+  window.openGame = function(gameKey){
+    var url = GAME_URLS[gameKey];
+    if (!url) return;
+    currentGame = gameKey;
+
+    document.getElementById('gameMenuView').classList.add('hidden');
+    document.getElementById('gameIframeView').classList.remove('hidden');
+
+    var frame = document.getElementById('gameFrame');
+    var loading = document.getElementById('gameLoading');
+    loading.classList.remove('hide');
+
+    var done = false;
+    var onLoad = function(){
+      if (done) return; done = true;
+      frame.removeEventListener('load', onLoad);
+      setTimeout(function(){ loading.classList.add('hide'); }, 300);
+    };
+    frame.addEventListener('load', onLoad);
+    frame.src = url;
+
+    setTimeout(function(){
+      if (done) return; done = true;
+      loading.classList.add('hide');
+    }, 8000);
+  };
+
+  window.closeGame = function(){
+    if (!currentGame) return;
+    currentGame = null;
+    var frame = document.getElementById('gameFrame');
+    if (frame) frame.src = 'about:blank';
+    document.getElementById('gameIframeView').classList.add('hidden');
+    document.getElementById('gameMenuView').classList.remove('hidden');
   };
 
   // === Music UI ===
@@ -409,7 +601,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     var isPlaying = ds.isPlaying();
     var mode = ds.getMode();
 
-    // Now playing
     var nowTrack = tracks.find(function(t){ return t.key === currentKey; }) || tracks[0];
     var nowIcon = document.getElementById('nowIcon');
     var nowTitle = document.getElementById('nowTitle');
@@ -418,28 +609,23 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     if (nowTitle) nowTitle.textContent = nowTrack.label;
     if (nowSub) nowSub.textContent = nowTrack.sub + ' · ' + (isPlaying ? 'Đang phát' : 'Tạm dừng');
 
-    // Big play btn
     var big = document.getElementById('bigPlayBtn');
     if (big) big.textContent = isPlaying ? '⏸' : '▶';
 
-    // Mode switcher
     var mAuto = document.getElementById('modeAuto');
     var mManual = document.getElementById('modeManual');
     if (mAuto) mAuto.classList.toggle('active', mode === 'auto');
     if (mManual) mManual.classList.toggle('active', mode === 'manual');
 
-    // Volume
     var vol = document.getElementById('musicVol');
     var pct = document.getElementById('musicVolPct');
     var v = Math.round(ds.getVolume() * 100);
     if (vol && document.activeElement !== vol) vol.value = String(v);
     if (pct) pct.textContent = v + '%';
 
-    // Track count
     var cnt = document.getElementById('trackCountLbl');
     if (cnt) cnt.textContent = tracks.length + ' bài';
 
-    // Track list
     var list = document.getElementById('trackList');
     if (list){
       list.innerHTML = tracks.map(function(t){
@@ -462,57 +648,39 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   }
 
   window.pickTrack = function(key){
-    var ds = DS();
-    if (!ds) return;
-    ds.setTrack(key);
-    renderMusicUI();
+    var ds = DS(); if (!ds) return;
+    ds.setTrack(key); renderMusicUI();
   };
-
   window.setMode = function(m){
-    var ds = DS();
-    if (!ds) return;
-    ds.setMode(m);
-    renderMusicUI();
+    var ds = DS(); if (!ds) return;
+    ds.setMode(m); renderMusicUI();
   };
-
   window.toggleMusic = function(){
-    var ds = DS();
-    if (!ds) return;
-    if (ds.isEnabled() && ds.isPlaying()) ds.disable();
-    else ds.enable();
+    var ds = DS(); if (!ds) return;
+    if (ds.isEnabled() && ds.isPlaying()) ds.disable(); else ds.enable();
     renderMusicUI();
   };
-
   window.onVolChange = function(v){
-    var ds = DS();
-    if (!ds) return;
+    var ds = DS(); if (!ds) return;
     ds.setVolume(parseInt(v, 10) / 100);
     var pct = document.getElementById('musicVolPct');
     if (pct) pct.textContent = v + '%';
   };
-
   window.nextTrack = function(){
-    var ds = DS();
-    if (!ds) return;
-    var tracks = ds.getTracks();
-    var cur = ds.getTrack();
+    var ds = DS(); if (!ds) return;
+    var tracks = ds.getTracks(); var cur = ds.getTrack();
     var idx = tracks.findIndex(function(t){ return t.key === cur; });
     if (idx < 0) idx = 0;
     var nxt = tracks[(idx + 1) % tracks.length];
-    ds.setTrack(nxt.key);
-    renderMusicUI();
+    ds.setTrack(nxt.key); renderMusicUI();
   };
-
   window.prevTrack = function(){
-    var ds = DS();
-    if (!ds) return;
-    var tracks = ds.getTracks();
-    var cur = ds.getTrack();
+    var ds = DS(); if (!ds) return;
+    var tracks = ds.getTracks(); var cur = ds.getTrack();
     var idx = tracks.findIndex(function(t){ return t.key === cur; });
     if (idx < 0) idx = 0;
     var prv = tracks[(idx - 1 + tracks.length) % tracks.length];
-    ds.setTrack(prv.key);
-    renderMusicUI();
+    ds.setTrack(prv.key); renderMusicUI();
   };
 
   function updateMiniPlayer(){
@@ -524,7 +692,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     var isMusicTab = !document.getElementById('tab-music').classList.contains('hidden');
     var isPlaying = ds.isPlaying();
 
-    // Hiện mini player khi: đang phát VÀ không ở tab music
     if (isPlaying && !isMusicTab){
       var tracks = ds.getTracks();
       var cur = ds.getTrack();
@@ -543,7 +710,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     }
   }
 
-  // Poll sync UI mỗi 1.5s (để bắt trạng thái thay đổi)
   setInterval(function(){
     if (!document.getElementById('tab-music').classList.contains('hidden')){
       renderMusicUI();
@@ -552,7 +718,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     }
   }, 1500);
 
-  // Init UI sau khi soundscape sẵn sàng
   function initMusicUI(){
     if (!window.DolphinSound){ setTimeout(initMusicUI, 100); return; }
     renderMusicUI();

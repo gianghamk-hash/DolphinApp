@@ -1,0 +1,47 @@
+name: Scan Sounds Folder
+
+on:
+  push:
+    paths:
+      - 'sounds/*.mp3'
+      - 'sounds/**/*.mp3'
+      - 'scripts/scan-sounds.js'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: scan-sounds
+  cancel-in-progress: false
+
+jobs:
+  scan:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+
+      - name: Run scan script
+        run: node scripts/scan-sounds.js
+
+      - name: Commit manifest if changed
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add sounds/manifest.json
+          if git diff --staged --quiet; then
+            echo "ℹ️ Manifest không thay đổi"
+          else
+            git commit -m "[auto] Update sounds manifest [skip ci]"
+            git push
+            echo "✅ Đã commit manifest mới"
+          fi

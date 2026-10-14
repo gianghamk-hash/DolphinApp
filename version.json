@@ -1,7 +1,7 @@
 {
-  "version": "1.0.6",
-  "buildDate": "2026-10-13T17:09:16.463Z",
-  "commit": "21f2abc",
-  "notes": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
+  "version": "1.0.7",
+  "buildDate": "2026-10-14T01:20:10.605Z",
+  "commit": "e003d64",
+  "notes": "Folder navigation menu đồ uống + popup Ly/Chai",
   "forceUpdate": false
 }

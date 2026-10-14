@@ -1,0 +1,689 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · 2048</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;overflow-x:hidden;touch-action:manipulation}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:active{transform:scale(.96)}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(.96)}
+.btn-outline:disabled{opacity:.4;cursor:not-allowed}
+
+/* BOARD */
+#g2048{
+  position:relative;
+  width:100%;
+  max-width:min(94vw, 480px);
+  aspect-ratio:1;
+  margin:0 auto;
+  background:linear-gradient(135deg,#1a4a45,#0d2a28);
+  border:3px solid #8B6F3D;
+  border-radius:14px;
+  padding:10px;
+  box-shadow:0 8px 32px rgba(0,0,0,.5), inset 0 0 30px rgba(0,0,0,.3);
+  user-select:none;-webkit-user-select:none;
+  touch-action:none;
+}
+#grid2048{
+  display:grid;
+  grid-template-columns:repeat(4,1fr);
+  grid-template-rows:repeat(4,1fr);
+  gap:10px;
+  width:100%;
+  height:100%;
+}
+.cell2048{
+  position:relative;
+  border-radius:10px;
+  background:rgba(0,0,0,.25);
+  box-shadow:inset 0 0 0 1px rgba(255,255,255,.04);
+}
+.tile2048{
+  position:absolute;
+  top:0;left:0;width:100%;height:100%;
+  border-radius:10px;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;
+  font-family:'Fraunces',serif;
+  transition:transform .12s cubic-bezier(.16,1,.3,1), opacity .12s, background .12s;
+  will-change:transform;
+  pointer-events:none;
+  text-shadow:0 1px 3px rgba(0,0,0,.3);
+}
+.tile2048.new{animation:tileNew .18s ease-out}
+.tile2048.merged{animation:tileMerge .18s cubic-bezier(.16,1,.3,1)}
+@keyframes tileNew{
+  0%{transform:scale(0);opacity:0}
+  100%{transform:scale(1);opacity:1}
+}
+@keyframes tileMerge{
+  0%{transform:scale(1)}
+  50%{transform:scale(1.18)}
+  100%{transform:scale(1)}
+}
+
+/* COLOR THEMES cho từng giá trị */
+.v2   {background:#EEE4DA;color:#776E65;font-size:clamp(24px,7vw,42px)}
+.v4   {background:#EDE0C8;color:#776E65;font-size:clamp(24px,7vw,42px)}
+.v8   {background:#F2B179;color:#fff;    font-size:clamp(24px,7vw,42px)}
+.v16  {background:#F59563;color:#fff;    font-size:clamp(24px,7vw,42px)}
+.v32  {background:#F67C5F;color:#fff;    font-size:clamp(24px,7vw,42px)}
+.v64  {background:#F65E3B;color:#fff;    font-size:clamp(24px,7vw,42px)}
+.v128 {background:#EDCF72;color:#fff;    font-size:clamp(20px,6vw,36px);box-shadow:0 0 20px rgba(237,207,114,.6)}
+.v256 {background:#EDCC61;color:#fff;    font-size:clamp(20px,6vw,36px);box-shadow:0 0 24px rgba(237,204,97,.7)}
+.v512 {background:#EDC850;color:#fff;    font-size:clamp(20px,6vw,36px);box-shadow:0 0 28px rgba(237,200,80,.8)}
+.v1024{background:#EDC53F;color:#fff;    font-size:clamp(16px,5vw,30px);box-shadow:0 0 32px rgba(237,197,63,.9)}
+.v2048{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-size:clamp(16px,5vw,30px);box-shadow:0 0 36px rgba(244,184,66,1),0 0 60px rgba(244,184,66,.6)}
+.v4096{background:linear-gradient(135deg,#a78bfa,#7c3aed);color:#fff;font-size:clamp(14px,4.5vw,26px);box-shadow:0 0 36px rgba(167,139,250,1)}
+.v8192{background:linear-gradient(135deg,#f472b6,#be185d);color:#fff;font-size:clamp(14px,4.5vw,26px);box-shadow:0 0 36px rgba(244,114,182,1)}
+.vBig {background:linear-gradient(135deg,#22d3ee,#0891b2);color:#fff;font-size:clamp(14px,4.5vw,26px);box-shadow:0 0 36px rgba(34,211,238,1)}
+
+/* SCORE PANEL */
+.score-box{
+  flex:1;
+  background:rgba(10,30,28,.7);
+  border:1px solid rgba(55,137,123,.4);
+  border-radius:12px;
+  padding:8px 12px;
+  text-align:center;
+  min-width:0;
+}
+.score-box .lbl{
+  font-size:9px;font-weight:900;color:#7ec9be;
+  text-transform:uppercase;letter-spacing:.1em;
+  margin-bottom:2px;
+}
+.score-box .val{
+  font-size:18px;font-weight:900;color:#FBD77A;
+  font-family:'Fraunces',serif;
+  line-height:1;
+}
+.score-box.best .val{color:#bfe9dc}
+
+/* SCORE FLOAT */
+.score-float{
+  position:absolute;
+  font-size:20px;font-weight:900;color:#FBD77A;
+  pointer-events:none;
+  animation:scoreFloat 1s ease-out forwards;
+  text-shadow:0 2px 8px rgba(0,0,0,.6), 0 0 20px rgba(244,184,66,.8);
+  z-index:100;
+}
+@keyframes scoreFloat{
+  0%{opacity:0;transform:translateY(0) scale(.8)}
+  30%{opacity:1;transform:translateY(-14px) scale(1.15)}
+  100%{opacity:0;transform:translateY(-40px) scale(1)}
+}
+
+/* OVERLAY */
+.overlay2048{
+  position:absolute;inset:0;
+  background:rgba(10,31,29,.88);
+  backdrop-filter:blur(8px);
+  z-index:50;
+  border-radius:14px;
+  display:none;
+  align-items:center;justify-content:center;
+  flex-direction:column;
+  gap:14px;
+  padding:20px;
+  text-align:center;
+  animation:fadeIn .35s ease-out;
+}
+.overlay2048.show{display:flex}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);
+  z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;
+  padding:28px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);
+  animation:popIn .35s cubic-bezier(.16,1,.3,1)}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+</style>
+</head>
+<body class="pb-6">
+
+<!-- HEADER -->
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <div class="text-center flex-1">
+      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
+      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">2048</p>
+    </div>
+    <button onclick="openRules()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">❓</button>
+  </div>
+</div>
+
+<div class="max-w-2xl mx-auto px-4 pt-5">
+
+  <!-- SCORE PANEL -->
+  <div class="flex gap-2 mb-3">
+    <div class="score-box">
+      <div class="lbl">🏆 Điểm</div>
+      <div class="val" id="scoreVal">0</div>
+    </div>
+    <div class="score-box best">
+      <div class="lbl">👑 Kỷ lục</div>
+      <div class="val" id="bestVal">0</div>
+    </div>
+    <div class="score-box" style="flex:0 0 auto">
+      <div class="lbl">🔢 Ô</div>
+      <div class="val" id="tilesVal">2</div>
+    </div>
+  </div>
+
+  <!-- BOARD -->
+  <div id="g2048" class="mb-3">
+    <div id="grid2048"></div>
+    <div class="overlay2048" id="overlayWin">
+      <div style="font-size:56px">🏆</div>
+      <div style="font-size:22px;font-weight:900;color:#FBD77A;font-family:'Fraunces',serif">BẠN ĐÃ ĐẠT 2048!</div>
+      <div style="font-size:12px;color:#bfe9dc">Tiếp tục chơi để chinh phục 4096, 8192...?</div>
+      <div class="flex gap-2 w-full max-w-xs">
+        <button onclick="continueAfterWin()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">Tiếp tục</button>
+        <button onclick="restart()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">Ván mới</button>
+      </div>
+    </div>
+    <div class="overlay2048" id="overlayOver">
+      <div style="font-size:56px">😢</div>
+      <div style="font-size:22px;font-weight:900;color:#ef5350;font-family:'Fraunces',serif">GAME OVER!</div>
+      <div style="font-size:12px;color:#bfe9dc">Không còn nước đi nào hợp lệ</div>
+      <div style="font-size:14px;color:#FBD77A;font-weight:900">Điểm: <span id="finalScore">0</span></div>
+      <button onclick="restart()" class="btn-gold px-8 py-3 rounded-xl text-[13px] uppercase">🔄 Chơi lại</button>
+    </div>
+  </div>
+
+  <!-- ACTIONS -->
+  <div class="flex gap-2 mb-3">
+    <button onclick="undo()" id="undoBtn" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase" disabled>↩ Hoàn tác</button>
+    <button onclick="restart()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Ván mới</button>
+    <button onclick="goBack()" class="flex-1 py-3 rounded-xl text-[12px] uppercase" style="background:rgba(239,83,80,.15);color:#ef5350;border:1px solid rgba(239,83,80,.4);font-weight:800;cursor:pointer;font-family:inherit">🚪 Thoát</button>
+  </div>
+
+  <!-- HINT -->
+  <div class="glass rounded-2xl p-4">
+    <div class="text-[11px] font-black text-white uppercase tracking-wider mb-2">💡 Hướng dẫn</div>
+    <div class="text-[11.5px] text-teal-200 leading-relaxed space-y-1">
+      <div>📱 <b class="text-gold-400">Vuốt</b> trên bàn cờ để di chuyển ô</div>
+      <div>⌨️ PC: dùng <b class="text-gold-400">phím mũi tên ← ↑ → ↓</b></div>
+      <div>🎯 Ghép 2 ô cùng số → gộp thành 1 ô nhân đôi</div>
+      <div>🏆 Mục tiêu: đạt ô <b class="text-gold-400">2048</b></div>
+    </div>
+  </div>
+
+</div>
+
+<!-- RULES MODAL -->
+<div id="rulesModal" class="modal">
+  <div class="modal-card" style="max-width:440px;text-align:left">
+    <h3 class="text-[16px] font-black text-gold-400 uppercase tracking-widest mb-4 text-center">📖 Luật chơi 2048</h3>
+    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed">
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Di chuyển:</b> Vuốt (mobile) hoặc phím mũi tên (PC) để trượt tất cả ô về 1 hướng
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Gộp ô:</b> 2 ô cùng số khi va vào nhau → gộp thành 1 ô có giá trị ×2 (2+2=4, 4+4=8...)
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Sinh ô mới:</b> Sau mỗi nước đi hợp lệ, 1 ô mới (2 hoặc 4) xuất hiện ngẫu nhiên
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Thắng:</b> Đạt ô <b>2048</b> đầu tiên → có thể tiếp tục chơi lên 4096, 8192...
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Thua:</b> Bàn cờ đầy + không còn nước đi hợp lệ
+      </div>
+    </div>
+    <button onclick="closeRules()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">✓ ĐÃ HIỂU</button>
+  </div>
+</div>
+
+<!-- ═══════════ GAME LOGIC ═══════════ -->
+<script>
+(function(){
+  'use strict';
+
+  var SIZE = 4;
+  var STORAGE_BEST = 'dolphin_2048_best';
+
+  var board = [];        // mảng 2 chiều [r][c] = giá trị (0 = trống)
+  var score = 0;
+  var best = 0;
+  var history = [];      // lưu state để undo
+  var gameOver = false;
+  var won = false;       // đã đạt 2048
+  var continueAfterWinFlag = false;
+  var animating = false;
+
+  function $(id){ return document.getElementById(id); }
+
+  // ═══════════════════════ STATE MANAGEMENT ═══════════════════════
+  function emptyBoard(){
+    var b = [];
+    for (var r = 0; r < SIZE; r++){
+      b.push([0,0,0,0]);
+    }
+    return b;
+  }
+
+  function cloneBoard(b){
+    return b.map(function(row){ return row.slice(); });
+  }
+
+  function saveSnapshot(){
+    history.push({
+      board: cloneBoard(board),
+      score: score,
+      won: won,
+      continueAfterWinFlag: continueAfterWinFlag
+    });
+    if (history.length > 50) history.shift();
+  }
+
+  function loadBest(){
+    try {
+      var v = parseInt(localStorage.getItem(STORAGE_BEST), 10);
+      if (!isNaN(v) && v > 0) best = v;
+    } catch(e){}
+  }
+  function saveBest(){
+    try { localStorage.setItem(STORAGE_BEST, String(best)); } catch(e){}
+  }
+
+  // ═══════════════════════ RENDER ═══════════════════════
+  function getValueClass(v){
+    if (v === 0) return '';
+    if (v <= 2048) return 'v' + v;
+    if (v === 4096) return 'v4096';
+    if (v === 8192) return 'v8192';
+    return 'vBig';
+  }
+
+  function render(){
+    var grid = $('grid2048');
+    if (!grid) return;
+
+    // Tạo 16 ô cell cơ bản nếu chưa có
+    if (grid.children.length !== SIZE * SIZE){
+      var baseHtml = '';
+      for (var i = 0; i < SIZE * SIZE; i++){
+        baseHtml += '<div class="cell2048"></div>';
+      }
+      grid.innerHTML = baseHtml;
+    }
+
+    // Render tile vào từng cell
+    for (var r = 0; r < SIZE; r++){
+      for (var c = 0; c < SIZE; c++){
+        var idx = r * SIZE + c;
+        var cell = grid.children[idx];
+        if (!cell) continue;
+        var v = board[r][c];
+        var existing = cell.querySelector('.tile2048');
+        if (v === 0){
+          if (existing) existing.remove();
+        } else {
+          var cls = 'tile2048 ' + getValueClass(v);
+          if (existing){
+            if (existing.textContent !== String(v)){
+              existing.textContent = String(v);
+            }
+            if (existing.className !== cls){
+              existing.className = cls + ' merged';
+              setTimeout(function(el){
+                return function(){ if (el.className.indexOf('merged') !== -1) el.classList.remove('merged'); };
+              }(existing), 200);
+            }
+          } else {
+            var t = document.createElement('div');
+            t.className = cls + ' new';
+            t.textContent = String(v);
+            cell.appendChild(t);
+            setTimeout(function(el){
+              return function(){ if (el.className.indexOf('new') !== -1) el.classList.remove('new'); };
+            }(t), 200);
+          }
+        }
+      }
+    }
+
+    // Update score
+    $('scoreVal').textContent = score;
+    $('bestVal').textContent = best;
+    var tileCount = 0;
+    for (var r2 = 0; r2 < SIZE; r2++){
+      for (var c2 = 0; c2 < SIZE; c2++){
+        if (board[r2][c2] > 0) tileCount++;
+      }
+    }
+    $('tilesVal').textContent = tileCount;
+
+    // Update undo btn
+    var ub = $('undoBtn');
+    if (ub) ub.disabled = history.length === 0 || animating;
+  }
+
+  function showScoreFloat(delta){
+    var boardEl = $('g2048');
+    if (!boardEl || delta <= 0) return;
+    var floatEl = document.createElement('div');
+    floatEl.className = 'score-float';
+    floatEl.textContent = '+' + delta;
+    floatEl.style.left = '50%';
+    floatEl.style.top = '50%';
+    floatEl.style.transform = 'translate(-50%, -50%)';
+    boardEl.appendChild(floatEl);
+    setTimeout(function(){ floatEl.remove(); }, 1000);
+  }
+
+  // ═══════════════════════ GAME LOGIC ═══════════════════════
+  function spawnRandomTile(){
+    var empty = [];
+    for (var r = 0; r < SIZE; r++){
+      for (var c = 0; c < SIZE; c++){
+        if (board[r][c] === 0) empty.push({ r: r, c: c });
+      }
+    }
+    if (!empty.length) return;
+    var cell = empty[Math.floor(Math.random() * empty.length)];
+    // 90% ra 2, 10% ra 4
+    board[cell.r][cell.c] = Math.random() < 0.9 ? 2 : 4;
+  }
+
+  function startNewGame(){
+    board = emptyBoard();
+    score = 0;
+    history = [];
+    gameOver = false;
+    won = false;
+    continueAfterWinFlag = false;
+    animating = false;
+    spawnRandomTile();
+    spawnRandomTile();
+    $('overlayWin').classList.remove('show');
+    $('overlayOver').classList.remove('show');
+    render();
+  }
+
+  // Di chuyển 1 hàng về bên trái (đầu hàng là hướng move)
+  function moveRowLeft(row){
+    // Loại bỏ số 0
+    var newRow = row.filter(function(v){ return v !== 0; });
+    var gained = 0;
+    // Merge
+    var merged = [];
+    for (var i = 0; i < newRow.length; i++){
+      if (i + 1 < newRow.length && newRow[i] === newRow[i + 1]){
+        var sum = newRow[i] * 2;
+        merged.push(sum);
+        gained += sum;
+        i++; // bỏ qua phần tử đã merge
+      } else {
+        merged.push(newRow[i]);
+      }
+    }
+    // Padding 0
+    while (merged.length < SIZE) merged.push(0);
+    return { row: merged, gained: gained };
+  }
+
+  function moveLeft(){
+    var moved = false;
+    var totalGained = 0;
+    for (var r = 0; r < SIZE; r++){
+      var oldRow = board[r].slice();
+      var res = moveRowLeft(board[r]);
+      board[r] = res.row;
+      totalGained += res.gained;
+      if (oldRow.join(',') !== board[r].join(',')) moved = true;
+    }
+    return { moved: moved, gained: totalGained };
+  }
+
+  function rotateBoard(){
+    // Xoay 90 độ theo chiều kim đồng hồ
+    var newB = emptyBoard();
+    for (var r = 0; r < SIZE; r++){
+      for (var c = 0; c < SIZE; c++){
+        newB[c][SIZE - 1 - r] = board[r][c];
+      }
+    }
+    board = newB;
+  }
+
+  function move(direction){
+    if (animating || gameOver) return;
+    // direction: 'up', 'right', 'down', 'left'
+
+    saveSnapshot();
+
+    // Luôn xoay về LEFT để xử lý, sau đó xoay lại
+    var rotations = { 'left': 0, 'up': 1, 'right': 2, 'down': 3 };
+    var rot = rotations[direction];
+
+    // Xoay board về trạng thái "left"
+    for (var i = 0; i < rot; i++) rotateBoard();
+
+    var result = moveLeft();
+
+    // Xoay ngược lại
+    var backRot = (4 - rot) % 4;
+    for (var j = 0; j < backRot; j++) rotateBoard();
+
+    if (!result.moved){
+      // Không di chuyển được → bỏ snapshot vừa lưu
+      history.pop();
+      render();
+      return;
+    }
+
+    // Update score
+    if (result.gained > 0){
+      score += result.gained;
+      if (score > best){
+        best = score;
+        saveBest();
+      }
+      showScoreFloat(result.gained);
+    }
+
+    // Sinh ô mới
+    spawnRandomTile();
+
+    // Check win (2048)
+    if (!won && !continueAfterWinFlag){
+      for (var r = 0; r < SIZE; r++){
+        for (var c = 0; c < SIZE; c++){
+          if (board[r][c] >= 2048){
+            won = true;
+            render();
+            setTimeout(function(){
+              $('overlayWin').classList.add('show');
+            }, 250);
+            return;
+          }
+        }
+      }
+    }
+
+    // Check game over
+    render();
+    if (isGameOver()){
+      gameOver = true;
+      setTimeout(function(){
+        $('finalScore').textContent = score;
+        $('overlayOver').classList.add('show');
+      }, 250);
+    }
+  }
+
+  function isGameOver(){
+    // Còn ô trống → chưa over
+    for (var r = 0; r < SIZE; r++){
+      for (var c = 0; c < SIZE; c++){
+        if (board[r][c] === 0) return false;
+      }
+    }
+    // Kiểm tra có thể merge không
+    for (var r2 = 0; r2 < SIZE; r2++){
+      for (var c2 = 0; c2 < SIZE; c2++){
+        var v = board[r2][c2];
+        // Check right
+        if (c2 + 1 < SIZE && board[r2][c2 + 1] === v) return false;
+        // Check down
+        if (r2 + 1 < SIZE && board[r2 + 1][c2] === v) return false;
+      }
+    }
+    return true;
+  }
+
+  // ═══════════════════════ ACTIONS ═══════════════════════
+  window.restart = function(){
+    if (score > 0 && !gameOver){
+      if (!confirm('Ván đang chơi. Bắt đầu lại ván mới?')) return;
+    }
+    startNewGame();
+  };
+
+  window.undo = function(){
+    if (animating || !history.length) return;
+    var snap = history.pop();
+    board = snap.board;
+    score = snap.score;
+    won = snap.won;
+    continueAfterWinFlag = snap.continueAfterWinFlag;
+    gameOver = false;
+    $('overlayWin').classList.remove('show');
+    $('overlayOver').classList.remove('show');
+    render();
+  };
+
+  window.continueAfterWin = function(){
+    continueAfterWinFlag = true;
+    $('overlayWin').classList.remove('show');
+  };
+
+  window.goBack = function(){
+    if (score > 0 && !gameOver){
+      if (!confirm('Ván đang chơi. Thoát sẽ mất tiến trình. Tiếp tục?')) return;
+    }
+    window.location.href = '/DolphinApp/giaitri/index.html';
+  };
+
+  window.openRules = function(){ $('rulesModal').classList.add('show'); };
+  window.closeRules = function(){ $('rulesModal').classList.remove('show'); };
+
+  // ═══════════════════════ INPUT — SWIPE + KEYBOARD ═══════════════════════
+  function initSwipe(){
+    var boardEl = $('g2048');
+    if (!boardEl) return;
+
+    var startX = 0, startY = 0;
+    var startTime = 0;
+    var tracking = false;
+    var MIN_DIST = 25;     // px
+    var MAX_TIME = 800;    // ms
+
+    boardEl.addEventListener('touchstart', function(e){
+      if (e.touches.length !== 1) return;
+      var t = e.touches[0];
+      startX = t.clientX;
+      startY = t.clientY;
+      startTime = Date.now();
+      tracking = true;
+    }, { passive: true });
+
+    boardEl.addEventListener('touchmove', function(e){
+      if (!tracking) return;
+      // Không preventDefault để cho phép scroll tự nhiên nếu cần
+      // Nhưng board có touch-action:none nên OK
+    }, { passive: true });
+
+    boardEl.addEventListener('touchend', function(e){
+      if (!tracking) return;
+      tracking = false;
+      var elapsed = Date.now() - startTime;
+      if (elapsed > MAX_TIME) return;
+
+      var t = e.changedTouches[0];
+      var dx = t.clientX - startX;
+      var dy = t.clientY - startY;
+      var absDx = Math.abs(dx);
+      var absDy = Math.abs(dy);
+
+      if (Math.max(absDx, absDy) < MIN_DIST) return;
+
+      if (absDx > absDy){
+        move(dx > 0 ? 'right' : 'left');
+      } else {
+        move(dy > 0 ? 'down' : 'up');
+      }
+    }, { passive: true });
+  }
+
+  function initKeyboard(){
+    document.addEventListener('keydown', function(e){
+      var key = e.key;
+      var map = {
+        'ArrowLeft': 'left',
+        'ArrowRight': 'right',
+        'ArrowUp': 'up',
+        'ArrowDown': 'down',
+        'a': 'left', 'A': 'left',
+        'd': 'right', 'D': 'right',
+        'w': 'up', 'W': 'up',
+        's': 'down', 'S': 'down'
+      };
+      var dir = map[key];
+      if (dir){
+        e.preventDefault();
+        move(dir);
+      }
+      // Ctrl+Z = undo
+      if ((e.ctrlKey || e.metaKey) && (key === 'z' || key === 'Z')){
+        e.preventDefault();
+        undo();
+      }
+    });
+  }
+
+  // Chặn double-tap zoom
+  var lastTap = 0;
+  document.addEventListener('touchend', function(e){
+    var now = Date.now();
+    if (now - lastTap < 300) e.preventDefault();
+    lastTap = now;
+  }, { passive: false });
+
+  // ═══════════════════════ INIT ═══════════════════════
+  function init(){
+    loadBest();
+    startNewGame();
+    initSwipe();
+    initKeyboard();
+    console.log('%c🔢 2048 LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>

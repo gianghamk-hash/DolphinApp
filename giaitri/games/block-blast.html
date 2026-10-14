@@ -188,11 +188,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   opacity:.95;
   will-change:transform;
   transform-origin:center center;
-  animation:ghostIn .15s cubic-bezier(.16,1,.3,1);
-}
-@keyframes ghostIn{
-  0%{opacity:0;transform:scale(.5) translate(-50%,-50%)}
-  100%{opacity:.95;transform:scale(1) translate(-50%,-50%)}
 }
 #ghost.show{display:block}
 #ghost .shape-cell{
@@ -422,7 +417,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
@@ -446,18 +441,19 @@ try {
 
 // ═══════════════ CONFIG ═══════════════
 const SIZE = 8;
+const BOARD_GAP = 3; // gap giữa các ô (khớp CSS #board gap: 3px)
 
 const COLORS = [
-  { main: '#FF6B6B', light: '#FFA8A8' },  // đỏ
-  { main: '#FF9F43', light: '#FFC081' },  // cam
-  { main: '#FECA57', light: '#FFDD8B' },  // vàng
-  { main: '#48DBFB', light: '#95EAFD' },  // cyan
-  { main: '#0ABDE3', light: '#5DD0EF' },  // xanh biển
-  { main: '#1DD1A1', light: '#6FE6C2' },  // xanh lá
-  { main: '#A29BFE', light: '#C9C4FF' },  // tím
-  { main: '#FD79A8', light: '#FFABCB' },  // hồng
-  { main: '#F368E0', light: '#FFA1F0' },  // magenta
-  { main: '#EE5A24', light: '#FF8E6B' }   // cam đậm
+  { main: '#FF6B6B', light: '#FFA8A8' },
+  { main: '#FF9F43', light: '#FFC081' },
+  { main: '#FECA57', light: '#FFDD8B' },
+  { main: '#48DBFB', light: '#95EAFD' },
+  { main: '#0ABDE3', light: '#5DD0EF' },
+  { main: '#1DD1A1', light: '#6FE6C2' },
+  { main: '#A29BFE', light: '#C9C4FF' },
+  { main: '#FD79A8', light: '#FFABCB' },
+  { main: '#F368E0', light: '#FFA1F0' },
+  { main: '#EE5A24', light: '#FF8E6B' }
 ];
 
 const SHAPES = [
@@ -702,10 +698,10 @@ function canPlace(shape, baseR, baseC){
   return true;
 }
 
-// Tìm vị trí gần nhất có thể đặt — snap trong bán kính 1
+// Snap: tìm vị trí có thể đặt gần nhất — bán kính 1 ô
 function findSnapPosition(shape, targetR, targetC){
   if (canPlace(shape, targetR, targetC)) return { r: targetR, c: targetC };
-  for (let rad = 1; rad <= 2; rad++){
+  for (let rad = 1; rad <= 1; rad++){
     const offsets = [];
     for (let dr = -rad; dr <= rad; dr++){
       for (let dc = -rad; dc <= rad; dc++){
@@ -723,14 +719,12 @@ function findSnapPosition(shape, targetR, targetC){
 }
 
 function placeShape(item, baseR, baseC){
-  // Đặt khối vào board state
   for (const p of item.shape){
     state.board[baseR + p[0]][baseC + p[1]] = item.color;
   }
 
   state.score += item.shape.length;
 
-  // Render board + animation placed
   renderBoard();
   const boardEl = $('board');
   for (const p of item.shape){
@@ -739,7 +733,6 @@ function placeShape(item, baseR, baseC){
     setTimeout(function(el){ return function(){ el.classList.remove('placed'); }; }(cell), 300);
   }
 
-  // Tìm hàng/cột đầy
   const fullRows = [];
   const fullCols = [];
   for (let r = 0; r < SIZE; r++){
@@ -764,10 +757,8 @@ function placeShape(item, baseR, baseC){
     const gain = Math.round(lineScore * comboMult);
     state.score += gain;
 
-    // Sound
     playClearSound(totalLines, state.combo);
 
-    // Highlight cells
     const cellsToClear = new Set();
     fullRows.forEach(function(r){
       for (let c = 0; c < SIZE; c++) cellsToClear.add(r + ',' + c);
@@ -776,7 +767,6 @@ function placeShape(item, baseR, baseC){
       for (let r = 0; r < SIZE; r++) cellsToClear.add(r + ',' + c);
     });
 
-    // Delay từng ô để tạo hiệu ứng sóng
     let maxDelay = 0;
     cellsToClear.forEach(function(key){
       const parts = key.split(',');
@@ -788,15 +778,12 @@ function placeShape(item, baseR, baseC){
       setTimeout(function(el){ return function(){ el.classList.add('clearing'); }; }(cell), delay);
     });
 
-    // Show score float
     showScoreFloat(baseR, baseC, gain, state.combo, totalLines);
 
-    // Combo banner (từ combo x2)
     if (state.combo >= 2){
       showComboBanner(state.combo);
     }
 
-    // Xóa state sau khi animation xong
     setTimeout(function(){
       fullRows.forEach(function(r){
         for (let c = 0; c < SIZE; c++) state.board[r][c] = null;
@@ -880,7 +867,8 @@ function measureBoard(){
   const boardEl = $('board');
   if (!boardEl) return;
   boardRect = boardEl.getBoundingClientRect();
-  boardCellSize = boardRect.width / SIZE;
+  // Trừ tổng gap giữa các ô (7 gap cho 8 ô)
+  boardCellSize = (boardRect.width - (SIZE - 1) * BOARD_GAP) / SIZE;
 }
 
 function startDrag(e, slotIdx){
@@ -899,7 +887,6 @@ function startDrag(e, slotIdx){
   offR = Math.max(0, Math.min(b.rows - 1, offR));
   offC = Math.max(0, Math.min(b.cols - 1, offC));
 
-  // Nếu không phải ô solid → tìm ô gần nhất
   const shapeSet = new Set(item.shape.map(function(p){ return p[0] + ',' + p[1]; }));
   if (!shapeSet.has(offR + ',' + offC)){
     let best = null, bestDist = Infinity;
@@ -910,7 +897,6 @@ function startDrag(e, slotIdx){
     if (best){ offR = best[0]; offC = best[1]; }
   }
 
-  // Đo board
   measureBoard();
 
   state.drag = {
@@ -922,23 +908,20 @@ function startDrag(e, slotIdx){
     ghostSize: 0
   };
 
-  // Tạo ghost
   buildGhost(item, b);
   wrap.classList.add('dragging');
   document.querySelectorAll('.tray-slot')[slotIdx].classList.add('dragging-slot');
 
   playPickSound();
 
-  // Bắt đầu update
   state.pendingPointer = { x: e.clientX, y: e.clientY };
   processMove();
 }
 
 function buildGhost(item, b){
   const ghost = $('ghost');
-  // Tính cell size của ghost = cellSize board để khớp lúc đặt
   const cellSize = boardCellSize || 40;
-  const gap = 3;
+  const gap = BOARD_GAP;
   ghost.innerHTML = '';
   ghost.style.display = 'grid';
   ghost.style.gap = gap + 'px';
@@ -965,18 +948,14 @@ function buildGhost(item, b){
 
 function updateGhostPos(x, y){
   const ghost = $('ghost');
-  if (!ghost) return;
-  // Ghost center nằm tại vị trí "ô đang cầm" trong shape
-  // Tâm ô đó trong ghost: (offC + 0.5) * cellSize + offC*gap
-  // Nhưng cách đơn giản: di chuyển ghost sao cho ô (offR, offC) có tâm tại (x, y)
+  if (!ghost || !state.drag) return;
   const cellSize = state.drag.ghostSize;
-  const gap = 3;
+  const gap = BOARD_GAP;
+  // Offset của ô (offR, offC) trong ghost — từ góc trên-trái ghost đến tâm ô
   const innerX = state.drag.offC * (cellSize + gap) + cellSize / 2;
   const innerY = state.drag.offR * (cellSize + gap) + cellSize / 2;
   ghost.style.left = x + 'px';
   ghost.style.top = y + 'px';
-  ghost.style.transform = 'translate(' + (-innerX) + 'px, ' + (-innerY) + 'px)';
-  // Đè transform từ CSS animation
   ghost.style.setProperty('transform', 'translate(' + (-innerX) + 'px, ' + (-innerY) + 'px)', 'important');
 }
 
@@ -985,14 +964,16 @@ function updatePreview(x, y){
   if (!state.drag || !boardRect) return;
 
   const item = state.drag.item;
-  const b = state.drag.bounds;
   const cellSize = boardCellSize;
+  const gap = BOARD_GAP;
 
-  // Vị trí ô bàn cờ mà ô (offR, offC) của shape sẽ đặt vào
-  const targetC = Math.round((x - boardRect.left) / cellSize) - state.drag.offC;
-  const targetR = Math.round((y - boardRect.top) / cellSize) - state.drag.offR;
+  // Ô bàn cờ mà con trỏ chuột đang chỉ vào
+  const pointerC = Math.floor((x - boardRect.left) / (cellSize + gap));
+  const pointerR = Math.floor((y - boardRect.top) / (cellSize + gap));
 
-  // Tìm vị trí snap
+  const targetC = pointerC - state.drag.offC;
+  const targetR = pointerR - state.drag.offR;
+
   const snap = findSnapPosition(item.shape, targetR, targetC);
   const valid = !!snap;
 
@@ -1007,7 +988,6 @@ function updatePreview(x, y){
       }
     });
   } else {
-    // Không đặt được → hiện đỏ tại vị trí mong muốn
     item.shape.forEach(function(p){
       const r = targetR + p[0];
       const c = targetC + p[1];
@@ -1042,20 +1022,25 @@ function onPointerMove(e){
 }
 
 function onPointerUp(e){
-  if (!state.drag) return;
+  if (!state.drag || !boardRect){
+    return;
+  }
   const item = state.drag.item;
   const slotIdx = state.drag.slotIdx;
 
   const x = e.clientX;
   const y = e.clientY;
   const cellSize = boardCellSize;
+  const gap = BOARD_GAP;
 
-  const targetC = Math.round((x - boardRect.left) / cellSize) - state.drag.offC;
-  const targetR = Math.round((y - boardRect.top) / cellSize) - state.drag.offR;
+  const pointerC = Math.floor((x - boardRect.left) / (cellSize + gap));
+  const pointerR = Math.floor((y - boardRect.top) / (cellSize + gap));
+
+  const targetC = pointerC - state.drag.offC;
+  const targetR = pointerR - state.drag.offR;
 
   const snap = findSnapPosition(item.shape, targetR, targetC);
 
-  // Cleanup UI
   $('ghost').classList.remove('show');
   $('ghost').innerHTML = '';
   clearPreview();
@@ -1067,24 +1052,19 @@ function onPointerUp(e){
   state.pendingPointer = null;
 
   if (snap){
-    // Đặt khối
     state.tray[slotIdx] = null;
     placeShape(item, snap.r, snap.c);
 
-    // Refill sau khi animation nổ xong (nếu có)
     setTimeout(function(){
       const anyNew = refillTray();
       if (anyNew){
         renderTray();
-        // Check game over sau khi tray mới xuất hiện
         setTimeout(checkGameOver, 250);
       } else {
-        // Tray có thể còn khối cũ, check ngay
         setTimeout(checkGameOver, 250);
       }
     }, 450);
   } else {
-    // Không đặt được → khối về chỗ
     renderTray();
   }
 }
@@ -1141,6 +1121,9 @@ async function saveScore(score){
     });
     statusEl.textContent = '✅ Đã lưu lên bảng xếp hạng!';
     statusEl.style.color = '#66BB6A';
+    // Clear cache để lần mở BXH sau lấy data mới
+    lbCache.all = null;
+    lbCache.me = null;
   } catch(e){
     console.warn('[BlockBlast] Save fail:', e);
     statusEl.textContent = '❌ Lỗi lưu: ' + (e.message || 'unknown');
@@ -1169,6 +1152,9 @@ window.switchLbTab = function(tab){
     bAll.style.color = '#bfe9dc';
     bAll.style.border = '1px solid rgba(55,137,123,.5)';
   }
+  // Xóa cache cả 2 tab để fetch mới
+  lbCache.all = null;
+  lbCache.me = null;
   loadLeaderboard();
 };
 
@@ -1195,16 +1181,24 @@ async function loadLeaderboard(){
   }
 
   try {
-    let q;
+    // Fetch top 200 điểm cao nhất — KHÔNG dùng where để tránh cần composite index
+    const q = query(collection(db, COL_SCORES), orderBy('score', 'desc'), limit(200));
+    const snap = await getDocs(q);
+    let data = [];
+    snap.forEach(function(d){ data.push(d.data()); });
+
+    // Nếu tab "Của tôi" → filter client-side
     if (lbTab === 'me'){
       const meName = getStaffName();
-      q = query(collection(db, COL_SCORES), where('name', '==', meName), orderBy('score', 'desc'), limit(20));
-    } else {
-      q = query(collection(db, COL_SCORES), orderBy('score', 'desc'), limit(20));
+      const norm = function(s){
+        return String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
+      };
+      const meNorm = norm(meName);
+      data = data.filter(function(d){ return norm(d.name) === meNorm; });
     }
-    const snap = await getDocs(q);
-    const data = [];
-    snap.forEach(function(d){ data.push(d.data()); });
+
+    data = data.slice(0, 20);
+
     lbCache[cacheKey] = data;
     renderLbList(data);
   } catch(e){
@@ -1282,7 +1276,6 @@ function init(){
   loadBest();
   startNewGame();
 
-  // Gắn pointer listeners
   const trayEl = $('tray');
   trayEl.addEventListener('pointerdown', function(e){
     const wrap = e.target.closest('.shape-wrap');
@@ -1309,12 +1302,10 @@ function init(){
     state.pendingPointer = null;
   });
 
-  // Unlock audio
   ['click','touchstart','keydown'].forEach(function(ev){
     document.addEventListener(ev, initAudio, { once: true, passive: true });
   });
 
-  // Chặn double-tap zoom
   var lastTap = 0;
   document.addEventListener('touchend', function(e){
     var now = Date.now();
@@ -1331,7 +1322,7 @@ function init(){
     setTimeout(function(){ measureBoard(); renderTray(); }, 300);
   });
 
-  console.log('%c🧱 BLOCK BLAST v2 LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  console.log('%c🧱 BLOCK BLAST v2.1 LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 }
 
 if (document.readyState === 'loading'){

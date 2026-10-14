@@ -1,0 +1,21 @@
+{
+  "generated": "2026-10-14T00:00:00Z",
+  "count": 15,
+  "tracks": [
+    { "key": "default", "file": "soundscape-default.mp3" },
+    { "key": "tet", "file": "soundscape-tet.mp3" },
+    { "key": "valentine", "file": "soundscape-valentine.mp3" },
+    { "key": "womenday", "file": "soundscape-womenday.mp3" },
+    { "key": "reunification", "file": "soundscape-reunification.mp3" },
+    { "key": "children", "file": "soundscape-children.mp3" },
+    { "key": "nationalday", "file": "soundscape-nationalday.mp3" },
+    { "key": "midautumn", "file": "soundscape-midautumn.mp3" },
+    { "key": "halloween", "file": "soundscape-halloween.mp3" },
+    { "key": "christmas", "file": "soundscape-christmas.mp3" },
+    { "key": "newyear", "file": "soundscape-newyear.mp3" },
+    { "key": "spring", "file": "soundscape-spring.mp3" },
+    { "key": "summer", "file": "soundscape-summer.mp3" },
+    { "key": "autumn", "file": "soundscape-autumn.mp3" },
+    { "key": "winter", "file": "soundscape-winter.mp3" }
+  ]
+}

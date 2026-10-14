@@ -317,7 +317,7 @@
     var track = findTrack(key);
     if (!track){ console.warn('[Soundscape] Không có bài:', key); return; }
     ensureAudio();
-    var url = SOUND_BASE + track.file;
+    var url = SOUND_BASE + encodeURIComponent(track.file);
 
     if (currentKey === key && audio.src && audio.src.indexOf(track.file) !== -1){
       if (audio.paused){

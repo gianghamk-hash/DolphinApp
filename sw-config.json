@@ -1,5 +1,5 @@
 {
-  "version": "1.0.14",
+  "version": "1.0.15",
   "releaseDate": "2026-10-14",
-  "notes": "Thêm nhạc Lofi Chill"
+  "notes": "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc"
 }

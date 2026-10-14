@@ -1,7 +1,7 @@
 {
-  "version": "1.0.14",
-  "buildDate": "2026-10-14T05:08:32.086Z",
-  "commit": "9e9a42f",
-  "notes": "Thêm nhạc Lofi Chill",
+  "version": "1.0.15",
+  "buildDate": "2026-10-14T05:43:09.211Z",
+  "commit": "fb2beb7",
+  "notes": "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc",
   "forceUpdate": false
 }

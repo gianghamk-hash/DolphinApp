@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.10",
+      "releaseDate": "2026-10-14T01:45:08.696Z",
+      "summary": "Dashboard: thêm Drinks tracking + gom setting",
+      "details": [
+        "Dashboard: thêm Drinks tracking + gom setting"
+      ]
+    },
+    {
       "version": "1.0.9",
       "releaseDate": "2026-10-14T01:34:07.524Z",
       "summary": "Thêm app Thu ngân + cập nhật landing + menu đồ uống",

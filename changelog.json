@@ -1,18 +1,18 @@
 {
-  "version": "1.0.10",
-  "previousVersion": "1.0.9",
-  "commit": "3ba58c2",
-  "previousCommit": "bed6632",
-  "buildDate": "2026-10-14T01:45:08.696Z",
-  "summary": "Dashboard: thêm Drinks tracking + gom setting",
+  "version": "1.0.11",
+  "previousVersion": "1.0.10",
+  "commit": "63957de",
+  "previousCommit": "3ba58c2",
+  "buildDate": "2026-10-14T02:12:23.361Z",
+  "summary": "Gỡ toàn bộ tracking đồ uống khỏi dashboard",
   "changes": {
-    "totalCommits": 14,
+    "totalCommits": 15,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Dashboard: thêm Drinks tracking + gom setting"
+    "Gỡ toàn bộ tracking đồ uống khỏi dashboard"
   ],
   "fileChanges": [
     {

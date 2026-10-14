@@ -22,13 +22,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 .stat-box{
   flex:1;background:rgba(10,30,28,.7);border:1px solid rgba(55,137,123,.4);
   border-radius:12px;padding:8px 10px;text-align:center;min-width:0;
-  position:relative;overflow:hidden;transition:transform .2s;
-}
-.stat-box.bump{animation:statBump .4s cubic-bezier(.16,1,.3,1)}
-@keyframes statBump{
-  0%{transform:scale(1)}
-  40%{transform:scale(1.08)}
-  100%{transform:scale(1)}
+  position:relative;overflow:hidden;
 }
 .stat-box .lbl{font-size:9px;font-weight:900;color:#7ec9be;text-transform:uppercase;letter-spacing:.1em;margin-bottom:2px}
 .stat-box .val{font-size:20px;font-weight:900;color:#FBD77A;font-family:'Fraunces',serif;line-height:1}
@@ -37,98 +31,26 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 .stat-box.combo.hot .val{animation:comboGlow .8s ease-in-out infinite}
 @keyframes comboGlow{
   0%,100%{text-shadow:0 0 8px rgba(244,114,182,.6);transform:scale(1)}
-  50%{text-shadow:0 0 24px rgba(244,114,182,1);transform:scale(1.15)}
+  50%{text-shadow:0 0 20px rgba(244,114,182,1);transform:scale(1.15)}
 }
 
-/* ═══ SCORE FLOATS — ĐẸP ═══ */
+/* ═══ FLOATS ═══ */
 .float-text{
   position:fixed;pointer-events:none;z-index:9999;
+  font-family:'Fraunces',serif;font-weight:900;
   text-align:center;
-  animation:floatUp 1.4s cubic-bezier(.16,1,.3,1) forwards;
+  animation:floatUp 1.1s cubic-bezier(.16,1,.3,1) forwards;
+  text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px currentColor;
 }
 @keyframes floatUp{
-  0%{opacity:0;transform:translate(-50%,0) scale(.3) rotate(-5deg)}
-  15%{opacity:1;transform:translate(-50%,-10px) scale(1.25) rotate(3deg)}
-  30%{transform:translate(-50%,-20px) scale(1) rotate(-2deg)}
-  60%{opacity:1;transform:translate(-50%,-50px) scale(1) rotate(0)}
-  100%{opacity:0;transform:translate(-50%,-100px) scale(.85)}
+  0%{opacity:0;transform:translate(-50%,0) scale(.5)}
+  25%{opacity:1;transform:translate(-50%,-10px) scale(1.15)}
+  60%{opacity:1;transform:translate(-50%,-30px) scale(1)}
+  100%{opacity:0;transform:translate(-50%,-70px) scale(.9)}
 }
-.float-score{
-  font-family:'Fraunces',serif;font-weight:900;
-  font-size:44px;line-height:1;
-  background:linear-gradient(180deg,#FFF7D6 0%,#FBD77A 40%,#F4B842 100%);
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 12px rgba(244,184,66,.9)) drop-shadow(0 4px 12px rgba(0,0,0,.7));
-  letter-spacing:.02em;
-}
-.float-combo{
-  font-family:'Fraunces',serif;font-weight:900;
-  font-size:26px;margin-top:4px;line-height:1;
-  background:linear-gradient(180deg,#FFD6F0 0%,#f472b6 50%,#be185d 100%);
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 16px rgba(244,114,182,1)) drop-shadow(0 2px 8px rgba(0,0,0,.7));
-  letter-spacing:.05em;
-}
-.float-lines{
-  font-family:'Nunito',sans-serif;font-weight:900;
-  font-size:16px;margin-top:6px;line-height:1;
-  color:#4ade80;
-  text-shadow:0 0 12px rgba(74,222,128,.9),0 2px 8px rgba(0,0,0,.8);
-  letter-spacing:.1em;
-}
-
-/* ═══ PARTICLE BURST ═══ */
-.particle{
-  position:fixed;
-  width:10px;height:10px;
-  border-radius:50%;
-  pointer-events:none;
-  z-index:9998;
-  transform:translate(-50%,-50%);
-  animation:particleFly .9s cubic-bezier(.2,.6,.4,1) forwards;
-  box-shadow:0 0 12px currentColor,0 0 24px currentColor;
-}
-@keyframes particleFly{
-  0%{transform:translate(-50%,-50%) scale(1);opacity:1}
-  100%{transform:translate(calc(-50% + var(--vx)),calc(-50% + var(--vy))) scale(0);opacity:0}
-}
-.particle.star{
-  width:16px;height:16px;
-  border-radius:0;
-  clip-path:polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
-}
-
-/* ═══ SCREEN FLASH ═══ */
-#screenFlash{
-  position:fixed;inset:0;pointer-events:none;z-index:9997;
-  background:radial-gradient(circle at center,rgba(255,255,255,.9),rgba(244,184,66,.4),transparent 70%);
-  opacity:0;
-}
-#screenFlash.flash{
-  animation:flashAnim .5s ease-out;
-}
-@keyframes flashAnim{
-  0%{opacity:0}
-  20%{opacity:1}
-  100%{opacity:0}
-}
-
-/* ═══ SCREEN SHAKE ═══ */
-@keyframes screenShake{
-  0%,100%{transform:translate(0,0)}
-  10%{transform:translate(-4px,2px)}
-  20%{transform:translate(5px,-3px)}
-  30%{transform:translate(-5px,1px)}
-  40%{transform:translate(3px,4px)}
-  50%{transform:translate(-3px,-2px)}
-  60%{transform:translate(4px,1px)}
-  70%{transform:translate(-2px,3px)}
-  80%{transform:translate(2px,-2px)}
-  90%{transform:translate(-1px,1px)}
-}
-.shake{animation:screenShake .5s ease-out}
+.float-score{font-size:32px;color:#FBD77A}
+.float-combo{font-size:20px;color:#f472b6;margin-top:4px}
+.float-lines{font-size:14px;color:#4ade80;margin-top:2px;font-family:'Nunito';font-weight:800}
 
 /* ═══ BOARD ═══ */
 #boardWrap{
@@ -170,46 +92,31 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   pointer-events:none;
 }
 .cell.preview{
-  background:linear-gradient(135deg,var(--preview-light),var(--preview-color));
-  opacity:.75;
-  box-shadow:
-    inset 0 0 0 2px #FBD77A,
-    inset 0 2px 0 rgba(255,255,255,.4),
-    0 0 16px rgba(244,184,66,.7);
-  animation:previewPulse 1.2s ease-in-out infinite;
-}
-@keyframes previewPulse{
-  0%,100%{transform:scale(.94);opacity:.65}
-  50%{transform:scale(1);opacity:.85}
+  background:rgba(244,184,66,.4);
+  box-shadow:inset 0 0 0 2px rgba(244,184,66,.9),0 0 12px rgba(244,184,66,.6);
 }
 .cell.preview-invalid{
   background:rgba(239,68,68,.4);
-  box-shadow:inset 0 0 0 2px rgba(239,68,68,.9),0 0 12px rgba(239,68,68,.6);
-  animation:invalidShake .3s ease-in-out infinite;
-}
-@keyframes invalidShake{
-  0%,100%{transform:translate(0,0)}
-  25%{transform:translate(-1px,0)}
-  75%{transform:translate(1px,0)}
+  box-shadow:inset 0 0 0 2px rgba(239,68,68,.9),0 0 12px rgba(239,68,68,.5);
 }
 .cell.clearing{
-  animation:cellClear .5s cubic-bezier(.16,1,.3,1) forwards;
+  animation:cellClear .38s cubic-bezier(.16,1,.3,1) forwards;
   z-index:5;
   position:relative;
 }
 @keyframes cellClear{
-  0%{transform:scale(1);opacity:1}
-  25%{transform:scale(1.3);background:#fff;box-shadow:0 0 32px rgba(255,255,255,1),0 0 64px rgba(244,184,66,1)}
-  50%{transform:scale(1.15);background:#FBD77A;box-shadow:0 0 40px rgba(244,184,66,1);opacity:1}
-  100%{transform:scale(0) rotate(45deg);opacity:0}
+  0%{transform:scale(1);background:linear-gradient(135deg,var(--c-light),var(--c));opacity:1}
+  30%{transform:scale(1.18);background:#fff;box-shadow:0 0 24px rgba(255,255,255,1);opacity:1}
+  70%{transform:scale(1.05);background:#FBD77A;box-shadow:0 0 32px rgba(244,184,66,1);opacity:.9}
+  100%{transform:scale(0) rotate(20deg);opacity:0}
 }
 .cell.placed{
-  animation:cellPlace .35s cubic-bezier(.16,1,.3,1);
+  animation:cellPlace .28s cubic-bezier(.16,1,.3,1);
 }
 @keyframes cellPlace{
-  0%{transform:scale(.3) rotate(-15deg);opacity:.3}
-  60%{transform:scale(1.15) rotate(3deg)}
-  100%{transform:scale(1) rotate(0);opacity:1}
+  0%{transform:scale(.4);opacity:.3}
+  60%{transform:scale(1.1)}
+  100%{transform:scale(1);opacity:1}
 }
 
 /* ═══ TRAY ═══ */
@@ -260,7 +167,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   background:linear-gradient(180deg,rgba(255,255,255,.4),transparent 55%);
   pointer-events:none;
 }
-.shape-cell.hidden{background:transparent;box-shadow:none}
+.shape-cell.hidden{
+  background:transparent;
+  box-shadow:none;
+}
 .shape-cell.hidden::after{display:none}
 
 /* ═══ GHOST ═══ */
@@ -269,27 +179,30 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   pointer-events:none;
   z-index:10000;
   display:none;
-  filter:drop-shadow(0 12px 28px rgba(0,0,0,.75)) drop-shadow(0 0 20px rgba(244,184,66,.6));
-  opacity:.95;
-  will-change:transform,left,top;
+  filter:drop-shadow(0 10px 24px rgba(0,0,0,.7)) drop-shadow(0 0 16px rgba(244,184,66,.5));
+  opacity:0;
+  will-change:transform;
+  transition:opacity .1s ease-out;
 }
-#ghost.show{display:grid}
+#ghost.show{display:block;opacity:.95}
 #ghost .shape-cell{
   background:linear-gradient(135deg,var(--c-light),var(--c));
   border-radius:5px;
   position:relative;
   box-shadow:
-    inset 0 2px 0 rgba(255,255,255,.45),
+    inset 0 2px 0 rgba(255,255,255,.4),
     inset 0 -2px 4px rgba(0,0,0,.3),
     0 2px 4px rgba(0,0,0,.4);
 }
 #ghost .shape-cell::after{
   content:'';position:absolute;inset:2px;
   border-radius:3px;
-  background:linear-gradient(180deg,rgba(255,255,255,.5),transparent 55%);
+  background:linear-gradient(180deg,rgba(255,255,255,.45),transparent 55%);
   pointer-events:none;
 }
-#ghost .shape-cell.hidden{background:transparent;box-shadow:none}
+#ghost .shape-cell.hidden{
+  background:transparent;box-shadow:none;
+}
 #ghost .shape-cell.hidden::after{display:none}
 
 /* ═══ MODAL ═══ */
@@ -302,11 +215,23 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 @keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
 
 /* ═══ LEADERBOARD ═══ */
-.lb-row{display:flex;align-items:center;gap:10px;padding:10px 12px;background:rgba(10,30,28,.55);border-radius:10px;margin-bottom:6px;border:1px solid rgba(55,137,123,.3)}
+.lb-row{
+  display:flex;align-items:center;gap:10px;
+  padding:10px 12px;
+  background:rgba(10,30,28,.55);
+  border-radius:10px;
+  margin-bottom:6px;
+  border:1px solid rgba(55,137,123,.3);
+}
 .lb-row.top1{background:linear-gradient(135deg,rgba(244,184,66,.25),rgba(244,184,66,.08));border-color:rgba(244,184,66,.6)}
 .lb-row.top2{background:linear-gradient(135deg,rgba(191,233,220,.18),rgba(191,233,220,.05));border-color:rgba(191,233,220,.5)}
 .lb-row.top3{background:linear-gradient(135deg,rgba(205,127,50,.18),rgba(205,127,50,.05));border-color:rgba(205,127,50,.5)}
-.lb-rank{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:900;font-size:13px;flex-shrink:0;background:rgba(0,0,0,.4);color:#7ec9be}
+.lb-rank{
+  width:34px;height:34px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;font-size:13px;flex-shrink:0;
+  background:rgba(0,0,0,.4);color:#7ec9be;
+}
 .lb-row.top1 .lb-rank{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-size:17px}
 .lb-row.top2 .lb-rank{background:linear-gradient(135deg,#E5E7EB,#9CA3AF);color:#123634;font-size:15px}
 .lb-row.top3 .lb-rank{background:linear-gradient(135deg,#CD7F32,#92400E);color:#fff;font-size:15px}
@@ -320,34 +245,34 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 #comboBanner{
   position:fixed;left:50%;top:35%;
   transform:translate(-50%,-50%) scale(0);
-  z-index:10001;pointer-events:none;text-align:center;
+  z-index:10001;pointer-events:none;
+  text-align:center;
   font-family:'Fraunces',serif;
 }
-#comboBanner.show{animation:comboBanner 1.1s cubic-bezier(.16,1,.3,1) forwards}
+#comboBanner.show{
+  animation:comboBanner .9s cubic-bezier(.16,1,.3,1) forwards;
+}
 @keyframes comboBanner{
-  0%{transform:translate(-50%,-50%) scale(0) rotate(-15deg);opacity:0}
-  15%{transform:translate(-50%,-50%) scale(1.4) rotate(5deg);opacity:1}
-  35%{transform:translate(-50%,-50%) scale(1) rotate(-2deg);opacity:1}
-  60%{transform:translate(-50%,-50%) scale(1.05) rotate(0);opacity:1}
-  100%{transform:translate(-50%,-70%) scale(.8) rotate(0);opacity:0}
+  0%{transform:translate(-50%,-50%) scale(0) rotate(-10deg);opacity:0}
+  20%{transform:translate(-50%,-50%) scale(1.2) rotate(2deg);opacity:1}
+  50%{transform:translate(-50%,-50%) scale(1) rotate(0);opacity:1}
+  100%{transform:translate(-50%,-60%) scale(.9) rotate(0);opacity:0}
 }
 #comboBanner .cb-main{
-  font-size:64px;font-weight:900;line-height:1;
-  background:linear-gradient(180deg,#FFD6F0 0%,#f472b6 45%,#be185d 100%);
-  -webkit-background-clip:text;background-clip:text;
-  -webkit-text-fill-color:transparent;
-  filter:drop-shadow(0 0 24px rgba(244,114,182,1)) drop-shadow(0 4px 16px rgba(0,0,0,.8));
+  font-size:56px;font-weight:900;color:#f472b6;
+  text-shadow:0 0 20px rgba(244,114,182,1),0 4px 16px rgba(0,0,0,.8);
+  line-height:1;
 }
 #comboBanner .cb-sub{
-  font-size:18px;font-weight:900;color:#FBD77A;
-  margin-top:8px;font-family:'Nunito';letter-spacing:.2em;
-  text-shadow:0 0 16px rgba(244,184,66,1),0 2px 8px rgba(0,0,0,.8);
+  font-size:16px;font-weight:900;color:#FBD77A;
+  margin-top:8px;
+  text-shadow:0 0 12px rgba(244,184,66,.8),0 2px 8px rgba(0,0,0,.6);
+  font-family:'Nunito';
+  letter-spacing:.1em;
 }
 </style>
 </head>
 <body class="pb-6">
-
-<div id="screenFlash"></div>
 
 <!-- HEADER -->
 <div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
@@ -363,8 +288,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 </div>
 
 <div class="max-w-2xl mx-auto px-4 pt-5">
+
+  <!-- STATS -->
   <div class="flex gap-2 mb-3">
-    <div class="stat-box" id="scoreBox">
+    <div class="stat-box">
       <div class="lbl">🏆 Điểm</div>
       <div class="val" id="scoreVal">0</div>
     </div>
@@ -378,36 +305,50 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
     </div>
   </div>
 
-  <div id="boardWrap" class="mb-3"><div id="board"></div></div>
+  <!-- BOARD -->
+  <div id="boardWrap" class="mb-3">
+    <div id="board"></div>
+  </div>
 
+  <!-- TRAY -->
   <div id="tray">
     <div class="tray-slot" data-slot="0"></div>
     <div class="tray-slot" data-slot="1"></div>
     <div class="tray-slot" data-slot="2"></div>
   </div>
 
+  <!-- ACTIONS -->
   <div class="flex gap-2 mt-3">
     <button onclick="restart()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Ván mới</button>
     <button onclick="goBack()" class="flex-1 py-3 rounded-xl text-[12px] uppercase" style="background:rgba(239,83,80,.15);color:#ef5350;border:1px solid rgba(239,83,80,.4);font-weight:800;cursor:pointer;font-family:inherit">🚪 Thoát</button>
   </div>
+
 </div>
 
+<!-- GHOST -->
 <div id="ghost"></div>
 
-<div id="comboBanner"><div class="cb-main">COMBO x2</div><div class="cb-sub">BLAST!</div></div>
+<!-- COMBO BANNER -->
+<div id="comboBanner">
+  <div class="cb-main">COMBO x2</div>
+  <div class="cb-sub">BLAST!</div>
+</div>
 
-<!-- GAME OVER -->
+<!-- GAME OVER MODAL -->
 <div id="gameOverModal" class="modal">
   <div class="modal-card">
     <div class="text-6xl mb-3">💥</div>
     <h3 class="text-[22px] font-black text-red-400 uppercase tracking-widest mb-2">GAME OVER!</h3>
     <p class="text-[12.5px] text-teal-200 mb-4">Không còn chỗ đặt khối nào</p>
+
     <div class="bg-black/30 rounded-xl p-4 mb-4">
       <div class="text-[10px] font-black text-teal-400 uppercase tracking-widest mb-1">Điểm của bạn</div>
       <div class="text-[42px] font-black text-gold-400" style="font-family:'Fraunces',serif;line-height:1" id="finalScore">0</div>
       <div class="text-[11px] text-teal-300 font-bold mt-2" id="newRecordTag" style="display:none">🎉 KỶ LỤC MỚI!</div>
     </div>
+
     <div id="saveStatus" class="text-[11px] text-teal-300 mb-3"></div>
+
     <div class="flex gap-2">
       <button onclick="openLeaderboard()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">🏆 BXH</button>
       <button onclick="restart()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Chơi lại</button>
@@ -415,34 +356,56 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   </div>
 </div>
 
-<!-- LEADERBOARD -->
+<!-- LEADERBOARD MODAL -->
 <div id="leaderboardModal" class="modal">
   <div class="modal-card" style="max-width:440px">
     <div class="flex items-center justify-between mb-4">
       <h3 class="text-[16px] font-black text-gold-400 uppercase tracking-widest">🏆 Bảng Xếp Hạng</h3>
       <button onclick="closeLeaderboard()" class="text-teal-400 text-xl px-2">✕</button>
     </div>
+
     <div class="flex gap-2 mb-4 justify-center">
       <button id="lbTabAll" class="px-4 py-2 rounded-lg text-[11px] font-black uppercase active" style="background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border:none;cursor:pointer;font-family:inherit" onclick="switchLbTab('all')">👥 Tất cả</button>
       <button id="lbTabMe" class="px-4 py-2 rounded-lg text-[11px] font-black uppercase" style="background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);cursor:pointer;font-family:inherit" onclick="switchLbTab('me')">👤 Của tôi</button>
     </div>
+
     <div id="lbList" class="max-h-[50vh] overflow-y-auto pr-1">
-      <div class="text-center py-8 text-teal-500 text-[12px] font-bold"><div class="text-3xl mb-2 animate-pulse">⏳</div>Đang tải bảng xếp hạng...</div>
+      <div class="text-center py-8 text-teal-500 text-[12px] font-bold">
+        <div class="text-3xl mb-2 animate-pulse">⏳</div>
+        Đang tải bảng xếp hạng...
+      </div>
     </div>
+
     <button onclick="closeLeaderboard()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">✓ ĐÓNG</button>
   </div>
 </div>
 
-<!-- RULES -->
+<!-- RULES MODAL -->
 <div id="rulesModal" class="modal">
   <div class="modal-card" style="max-width:440px;text-align:left">
     <h3 class="text-[16px] font-black text-gold-400 uppercase tracking-widest mb-4 text-center">📖 Luật Block Blast</h3>
     <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed">
-      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A"><b class="text-gold-400">Bàn cờ:</b> 8×8 ô vuông</div>
-      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A"><b class="text-gold-400">Mỗi lượt:</b> Kéo 1 trong 3 khối ở dưới thả vào bàn cờ</div>
-      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A"><b class="text-gold-400">Nổ:</b> Điền đầy 1 hàng hoặc 1 cột → biến mất + ghi điểm</div>
-      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A"><b class="text-gold-400">Combo:</b> Nổ liên tiếp → nhân điểm</div>
-      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A"><b class="text-gold-400">Game over:</b> Không thể đặt bất kỳ khối nào</div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Bàn cờ:</b> 8×8 ô vuông
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Mỗi lượt:</b> Kéo 1 trong 3 khối ở dưới thả vào bàn cờ
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Vị trí đặt:</b> Ô vàng = hợp lệ · Ô đỏ = không đặt được, thả ra khối về tray
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Nổ:</b> Điền đầy 1 hàng hoặc 1 cột → biến mất + ghi điểm
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Combo:</b> Nổ liên tiếp nhiều lượt → nhân điểm
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Game over:</b> Không thể đặt bất kỳ khối nào
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Điểm:</b> Đặt khối +1/ô · Nổ N hàng = 5×N×(N+1) × combo
+      </div>
     </div>
     <button onclick="closeRules()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">✓ ĐÃ HIỂU</button>
   </div>
@@ -452,7 +415,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, query, orderBy, limit, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, query, orderBy, limit, where, getDocs } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
@@ -491,18 +454,28 @@ const COLORS = [
   { main: '#EE5A24', light: '#FF8E6B' }
 ];
 
+// ĐỊNH NGHĨA SHAPE — cố định, KHÔNG đổi khi kéo
 const SHAPES = [
+  // 1 ô
   [[0,0]],
+  // 2 ô
   [[0,0],[0,1]], [[0,0],[1,0]],
+  // 3 ô thẳng
   [[0,0],[0,1],[0,2]], [[0,0],[1,0],[2,0]],
+  // 4 ô thẳng
   [[0,0],[0,1],[0,2],[0,3]], [[0,0],[1,0],[2,0],[3,0]],
+  // 5 ô thẳng
   [[0,0],[0,1],[0,2],[0,3],[0,4]], [[0,0],[1,0],[2,0],[3,0],[4,0]],
+  // Vuông 2x2
   [[0,0],[0,1],[1,0],[1,1]],
+  // Vuông 3x3
   [[0,0],[0,1],[0,2],[1,0],[1,1],[1,2],[2,0],[2,1],[2,2]],
+  // L nhỏ
   [[0,0],[1,0],[1,1]],
   [[0,0],[0,1],[1,0]],
   [[0,0],[0,1],[1,1]],
   [[0,1],[1,0],[1,1]],
+  // L vừa
   [[0,0],[1,0],[2,0],[2,1]],
   [[0,0],[1,0],[2,0],[0,1]],
   [[0,0],[0,1],[0,2],[1,0]],
@@ -511,16 +484,19 @@ const SHAPES = [
   [[0,2],[1,0],[1,1],[1,2]],
   [[0,0],[0,1],[1,0],[2,0]],
   [[0,1],[1,1],[2,0],[2,1]],
+  // T
   [[0,0],[0,1],[0,2],[1,1]],
   [[0,1],[1,0],[1,1],[1,2]],
   [[0,0],[1,0],[2,0],[1,1]],
   [[0,1],[1,0],[1,1],[2,1]],
+  // S/Z
   [[0,1],[0,2],[1,0],[1,1]],
   [[0,0],[0,1],[1,1],[1,2]],
   [[0,0],[1,0],[1,1],[2,1]],
   [[0,1],[1,0],[1,1],[2,0]]
 ];
 
+// ═══════════════ STATE ═══════════════
 const state = {
   board: [],
   tray: [null, null, null],
@@ -531,8 +507,12 @@ const state = {
   gameOver: false,
   drag: null,
   rafPending: false,
-  pendingPointer: null
+  pendingPointer: null,
+  processing: false
 };
+
+let boardRect = null;
+let boardCellSize = 0;
 
 function $(id){ return document.getElementById(id); }
 
@@ -560,7 +540,8 @@ function initAudio(){
 function playPlaceSound(){
   initAudio(); if (!audioCtx) return;
   const t = audioCtx.currentTime;
-  const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
   o.type = 'sine';
   o.frequency.setValueAtTime(360, t);
   o.frequency.exponentialRampToValueAtTime(240, t + 0.08);
@@ -573,7 +554,8 @@ function playPlaceSound(){
 function playPickSound(){
   initAudio(); if (!audioCtx) return;
   const t = audioCtx.currentTime;
-  const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+  const o = audioCtx.createOscillator();
+  const g = audioCtx.createGain();
   o.type = 'sine';
   o.frequency.setValueAtTime(280, t);
   o.frequency.exponentialRampToValueAtTime(400, t + 0.06);
@@ -592,7 +574,8 @@ function playClearSound(lines, combo){
   notes.forEach(function(delay, i){
     const freq = baseFreq * Math.pow(1.26, i);
     [1, 2].forEach(function(mult, j){
-      const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
       o.type = 'triangle';
       o.frequency.setValueAtTime(freq * mult, t + delay);
       g.gain.setValueAtTime(0.0001, t + delay);
@@ -608,8 +591,10 @@ function playGameOverSound(){
   initAudio(); if (!audioCtx) return;
   const t = audioCtx.currentTime;
   [392, 330, 262, 196].forEach(function(f, i){
-    const o = audioCtx.createOscillator(); const g = audioCtx.createGain();
-    o.type = 'sine'; o.frequency.value = f;
+    const o = audioCtx.createOscillator();
+    const g = audioCtx.createGain();
+    o.type = 'sine';
+    o.frequency.value = f;
     g.gain.setValueAtTime(0.0001, t + i * 0.15);
     g.gain.exponentialRampToValueAtTime(0.14, t + i * 0.15 + 0.01);
     g.gain.exponentialRampToValueAtTime(0.0001, t + i * 0.15 + 0.3);
@@ -658,8 +643,6 @@ function renderBoard(){
         cell.style.removeProperty('--c');
         cell.style.removeProperty('--c-light');
       }
-      cell.style.removeProperty('--preview-color');
-      cell.style.removeProperty('--preview-light');
     }
   }
 }
@@ -729,38 +712,21 @@ function canPlace(shape, baseR, baseC){
   return true;
 }
 
-function findSnapPosition(shape, targetR, targetC){
-  if (canPlace(shape, targetR, targetC)) return { r: targetR, c: targetC, snapped: false };
-  for (let rad = 1; rad <= 1; rad++){
-    const offsets = [];
-    for (let dr = -rad; dr <= rad; dr++){
-      for (let dc = -rad; dc <= rad; dc++){
-        if (Math.abs(dr) + Math.abs(dc) !== rad) continue;
-        offsets.push({ dr: dr, dc: dc });
-      }
-    }
-    for (const o of offsets){
-      if (canPlace(shape, targetR + o.dr, targetC + o.dc)){
-        return { r: targetR + o.dr, c: targetC + o.dc, snapped: true };
-      }
-    }
-  }
-  return null;
-}
-
 function placeShape(item, baseR, baseC){
+  // Đặt khối vào board state
   for (const p of item.shape){
     state.board[baseR + p[0]][baseC + p[1]] = item.color;
   }
 
   state.score += item.shape.length;
 
+  // Render board + animation placed
   renderBoard();
   const boardEl = $('board');
   for (const p of item.shape){
     const cell = boardEl.children[(baseR + p[0]) * SIZE + (baseC + p[1])];
     cell.classList.add('placed');
-    setTimeout(function(el){ return function(){ el.classList.remove('placed'); }; }(cell), 400);
+    setTimeout(function(el){ return function(){ el.classList.remove('placed'); }; }(cell), 300);
   }
 
   // Tìm hàng/cột đầy
@@ -798,54 +764,22 @@ function placeShape(item, baseR, baseC){
       for (let r = 0; r < SIZE; r++) cellsToClear.add(r + ',' + c);
     });
 
-    // Tính tâm của cụm ô nổ
-    let sumR = 0, sumC = 0, cnt = 0;
-    cellsToClear.forEach(function(key){
-      const parts = key.split(',');
-      sumR += parseInt(parts[0], 10);
-      sumC += parseInt(parts[1], 10);
-      cnt++;
-    });
-    const centerR = sumR / cnt;
-    const centerC = sumC / cnt;
-
-    // Lấy vị trí pixel của tâm
-    const step = boardCellSize + BOARD_GAP;
-    const boardRectInner = $('board').getBoundingClientRect();
-    const centerX = boardRectInner.left + centerC * step + boardCellSize / 2;
-    const centerY = boardRectInner.top + centerR * step + boardCellSize / 2;
-
-    // Screen flash + shake cho combo lớn
-    if (totalLines >= 2){
-      const flash = $('screenFlash');
-      flash.classList.remove('flash');
-      void flash.offsetWidth;
-      flash.classList.add('flash');
-      $('boardWrap').classList.add('shake');
-      setTimeout(function(){ $('boardWrap').classList.remove('shake'); }, 500);
-    }
-
-    // Particle burst
-    spawnParticles(centerX, centerY, Math.min(totalLines * 12, 40), item.color);
-
-    // Score float
-    showScoreFloat(centerX, centerY, gain, state.combo, totalLines);
-
-    if (state.combo >= 2){
-      showComboBanner(state.combo);
-    }
-
-    // Animation clearing — theo thứ tự sóng
     let maxDelay = 0;
     cellsToClear.forEach(function(key){
       const parts = key.split(',');
       const r = parseInt(parts[0], 10);
       const c = parseInt(parts[1], 10);
       const cell = boardEl.children[r * SIZE + c];
-      const delay = (r + c) * 20;
+      const delay = (r + c) * 15;
       maxDelay = Math.max(maxDelay, delay);
       setTimeout(function(el){ return function(){ el.classList.add('clearing'); }; }(cell), delay);
     });
+
+    showScoreFloat(baseR, baseC, gain, state.combo, totalLines);
+
+    if (state.combo >= 2){
+      showComboBanner(state.combo);
+    }
 
     setTimeout(function(){
       fullRows.forEach(function(r){
@@ -856,7 +790,7 @@ function placeShape(item, baseR, baseC){
       });
       renderBoard();
       updateStats(true);
-    }, maxDelay + 500);
+    }, maxDelay + 400);
 
   } else {
     state.combo = 0;
@@ -865,48 +799,31 @@ function placeShape(item, baseR, baseC){
   }
 }
 
-// ═══════════════ PARTICLES ═══════════════
-function spawnParticles(x, y, count, color){
-  for (let i = 0; i < count; i++){
-    const p = document.createElement('div');
-    p.className = 'particle' + (Math.random() < 0.3 ? ' star' : '');
-    p.style.left = x + 'px';
-    p.style.top = y + 'px';
-    // Random giữa màu khối và vàng
-    const useGold = Math.random() < 0.5;
-    const c = useGold ? '#FBD77A' : (Math.random() < 0.5 ? color.main : color.light);
-    p.style.background = c;
-    p.style.color = c;
+// ═══════════════ SCORE FLOATS ═══════════════
+function showScoreFloat(r, c, gain, combo, lines){
+  const boardEl = $('board');
+  const cell = boardEl.children[r * SIZE + c];
+  if (!cell) return;
+  const rect = cell.getBoundingClientRect();
+  const cx = rect.left + rect.width / 2;
+  const cy = rect.top + rect.height / 2;
 
-    const angle = (Math.PI * 2 * i) / count + Math.random() * 0.8;
-    const velocity = 100 + Math.random() * 180;
-    const vx = Math.cos(angle) * velocity;
-    const vy = Math.sin(angle) * velocity - 80;
-
-    p.style.setProperty('--vx', vx + 'px');
-    p.style.setProperty('--vy', vy + 'px');
-    document.body.appendChild(p);
-    setTimeout(function(){ p.remove(); }, 1000);
-  }
-}
-
-// ═══════════════ SCORE FLOAT ═══════════════
-function showScoreFloat(x, y, gain, combo, lines){
   const el = document.createElement('div');
-  el.className = 'float-text';
-  el.style.left = x + 'px';
-  el.style.top = y + 'px';
-  let html = '<div class="float-score">+' + gain + '</div>';
+  el.className = 'float-text float-score';
+  el.style.left = cx + 'px';
+  el.style.top = cy + 'px';
+  let html = '+' + gain;
   if (combo > 1) html += '<div class="float-combo">COMBO x' + combo + '</div>';
   if (lines > 1) html += '<div class="float-lines">NỔ ' + lines + ' HÀNG!</div>';
   el.innerHTML = html;
   document.body.appendChild(el);
-  setTimeout(function(){ el.remove(); }, 1500);
+  setTimeout(function(){ el.remove(); }, 1300);
 }
 
 function showComboBanner(combo){
   const el = $('comboBanner');
-  el.querySelector('.cb-main').textContent = 'COMBO x' + combo;
+  const main = el.querySelector('.cb-main');
+  main.textContent = 'COMBO x' + combo;
   el.classList.remove('show');
   void el.offsetWidth;
   el.classList.add('show');
@@ -920,13 +837,6 @@ function updateStats(bounce){
   }
   $('scoreVal').textContent = state.score;
   $('bestVal').textContent = state.best;
-
-  if (bounce){
-    const box = $('scoreBox');
-    box.classList.remove('bump');
-    void box.offsetWidth;
-    box.classList.add('bump');
-  }
 
   const comboEl = $('comboVal');
   const comboBox = $('comboBox');
@@ -946,10 +856,7 @@ function loadBest(){
   } catch(e){}
 }
 
-// ═══════════════ DRAG SYSTEM — CHÍNH XÁC 100% ═══════════════
-let boardRect = null;
-let boardCellSize = 0;
-
+// ═══════════════ DRAG SYSTEM v4 — ĐƠN GIẢN, CHÍNH XÁC ═══════════════
 function measureBoard(){
   const boardEl = $('board');
   if (!boardEl) return;
@@ -958,65 +865,43 @@ function measureBoard(){
 }
 
 function startDrag(e, slotIdx){
-  if (state.gameOver) return;
+  if (state.gameOver || state.processing) return;
   const item = state.tray[slotIdx];
   if (!item) return;
 
   const wrap = document.querySelector('.tray-slot[data-slot="' + slotIdx + '"] .shape-wrap');
   if (!wrap) return;
 
-  const wrapRect = wrap.getBoundingClientRect();
-  const b = getBounds(item.shape);
-  const miniCell = wrapRect.width / b.cols;
-  let offR = Math.floor((e.clientY - wrapRect.top) / miniCell);
-  let offC = Math.floor((e.clientX - wrapRect.left) / miniCell);
-  offR = Math.max(0, Math.min(b.rows - 1, offR));
-  offC = Math.max(0, Math.min(b.cols - 1, offC));
-
-  const shapeSet = new Set(item.shape.map(function(p){ return p[0] + ',' + p[1]; }));
-  if (!shapeSet.has(offR + ',' + offC)){
-    let best = null, bestDist = Infinity;
-    item.shape.forEach(function(p){
-      const d = Math.abs(p[0] - offR) + Math.abs(p[1] - offC);
-      if (d < bestDist){ bestDist = d; best = p; }
-    });
-    if (best){ offR = best[0]; offC = best[1]; }
-  }
-
   measureBoard();
+  if (!boardRect) return;
 
-  // CHÌA KHOÁ: Lưu offset từ ghost top-left đến tâm ô đang cầm
-  // Khi biết pointer (x,y) → ghost top-left = (x - innerX, y - innerY)
-  const cellSize = boardCellSize;
-  const innerX = offC * (cellSize + BOARD_GAP) + cellSize / 2;
-  const innerY = offR * (cellSize + BOARD_GAP) + cellSize / 2;
+  const b = getBounds(item.shape);
 
   state.drag = {
     slotIdx: slotIdx,
     item: item,
     bounds: b,
-    offR: offR,
-    offC: offC,
-    innerX: innerX,
-    innerY: innerY,
-    ghostCellSize: cellSize
+    ghostW: b.cols * boardCellSize + (b.cols - 1) * BOARD_GAP,
+    ghostH: b.rows * boardCellSize + (b.rows - 1) * BOARD_GAP
   };
 
-  buildGhost(item, b, cellSize);
+  buildGhost(item, b);
   wrap.classList.add('dragging');
   document.querySelectorAll('.tray-slot')[slotIdx].classList.add('dragging-slot');
-
   playPickSound();
 
   state.pendingPointer = { x: e.clientX, y: e.clientY };
   processMove();
 }
 
-function buildGhost(item, b, cellSize){
+function buildGhost(item, b){
   const ghost = $('ghost');
+  const cellSize = Math.round(boardCellSize) || 40;
+  const gap = BOARD_GAP;
+
   ghost.innerHTML = '';
   ghost.style.display = 'grid';
-  ghost.style.gap = BOARD_GAP + 'px';
+  ghost.style.gap = gap + 'px';
   ghost.style.gridTemplateColumns = 'repeat(' + b.cols + ', ' + cellSize + 'px)';
   ghost.style.gridTemplateRows = 'repeat(' + b.rows + ', ' + cellSize + 'px)';
   ghost.style.setProperty('--c', item.color.main);
@@ -1034,70 +919,58 @@ function buildGhost(item, b, cellSize){
       ghost.appendChild(cEl);
     }
   }
+
   ghost.classList.add('show');
 }
 
 function updateGhostPos(x, y){
   const ghost = $('ghost');
   if (!ghost || !state.drag) return;
-  // ghost top-left = pointer - inner offset
-  const ghostLeft = x - state.drag.innerX;
-  const ghostTop = y - state.drag.innerY;
-  ghost.style.left = ghostLeft + 'px';
-  ghost.style.top = ghostTop + 'px';
-  ghost.style.transform = 'none';
-}
-
-// CORE: Tính ô bàn cờ từ ghost top-left
-function getBoardTargetFromGhost(x, y){
-  const step = boardCellSize + BOARD_GAP;
-  const ghostLeft = x - state.drag.innerX;
-  const ghostTop = y - state.drag.innerY;
-  // Ô bàn cờ mà ghost top-left sẽ align vào
-  const targetC = Math.round((ghostLeft - boardRect.left) / step);
-  const targetR = Math.round((ghostTop - boardRect.top) / step);
-  return { r: targetR, c: targetC };
+  const halfW = state.drag.ghostW / 2;
+  const halfH = state.drag.ghostH / 2;
+  ghost.style.left = x + 'px';
+  ghost.style.top = y + 'px';
+  ghost.style.setProperty(
+    'transform',
+    'translate(' + (-halfW) + 'px, ' + (-halfH) + 'px)',
+    'important'
+  );
 }
 
 function updatePreview(x, y){
   clearPreview();
-  if (!state.drag || !boardRect) return;
+  if (!state.drag) return;
+  measureBoard();
+  if (!boardRect) return;
 
   const item = state.drag.item;
-  const target = getBoardTargetFromGhost(x, y);
-  const snap = findSnapPosition(item.shape, target.r, target.c);
+  const b = state.drag.bounds;
+  const cellSize = boardCellSize;
+  const gap = BOARD_GAP;
+
+  // Tâm ghost = (x, y). Tính vị trí trên board theo đơn vị ô (số thực)
+  const centerColF = (x - boardRect.left) / (cellSize + gap) - 0.5;
+  const centerRowF = (y - boardRect.top) / (cellSize + gap) - 0.5;
+
+  // Top-left shape = tâm - (số cột - 1)/2
+  const targetC = Math.round(centerColF - (b.cols - 1) / 2);
+  const targetR = Math.round(centerRowF - (b.rows - 1) / 2);
 
   const boardEl = $('board');
+  const valid = canPlace(item.shape, targetR, targetC);
 
-  if (snap){
-    // Preview chính xác vị trí sẽ đặt — với MÀU KHỐI
-    item.shape.forEach(function(p){
-      const r = snap.r + p[0];
-      const c = snap.c + p[1];
-      if (r >= 0 && r < SIZE && c >= 0 && c < SIZE){
-        const cell = boardEl.children[r * SIZE + c];
-        cell.classList.add('preview');
-        cell.style.setProperty('--preview-color', item.color.main);
-        cell.style.setProperty('--preview-light', item.color.light);
-      }
-    });
-  } else {
-    // Không đặt được → hiện đỏ
-    item.shape.forEach(function(p){
-      const r = target.r + p[0];
-      const c = target.c + p[1];
-      if (r >= 0 && r < SIZE && c >= 0 && c < SIZE){
-        boardEl.children[r * SIZE + c].classList.add('preview-invalid');
-      }
-    });
-  }
+  item.shape.forEach(function(p){
+    const r = targetR + p[0];
+    const c = targetC + p[1];
+    if (r >= 0 && r < SIZE && c >= 0 && c < SIZE){
+      boardEl.children[r * SIZE + c].classList.add(valid ? 'preview' : 'preview-invalid');
+    }
+  });
 }
 
 function clearPreview(){
   document.querySelectorAll('.cell.preview, .cell.preview-invalid').forEach(function(c){
     c.classList.remove('preview', 'preview-invalid');
-    c.style.removeProperty('--preview-color');
-    c.style.removeProperty('--preview-light');
   });
 }
 
@@ -1119,19 +992,30 @@ function onPointerMove(e){
 }
 
 function onPointerUp(e){
-  if (!state.drag || !boardRect) return;
+  if (!state.drag) return;
+  measureBoard();
+  if (!boardRect){ state.drag = null; return; }
 
   const item = state.drag.item;
   const slotIdx = state.drag.slotIdx;
+  const b = state.drag.bounds;
+  const cellSize = boardCellSize;
+  const gap = BOARD_GAP;
   const x = e.clientX;
   const y = e.clientY;
 
-  const target = getBoardTargetFromGhost(x, y);
-  const snap = findSnapPosition(item.shape, target.r, target.c);
+  // Vị trí đặt — GIỐNG HỆT updatePreview
+  const centerColF = (x - boardRect.left) / (cellSize + gap) - 0.5;
+  const centerRowF = (y - boardRect.top) / (cellSize + gap) - 0.5;
+  const targetC = Math.round(centerColF - (b.cols - 1) / 2);
+  const targetR = Math.round(centerRowF - (b.rows - 1) / 2);
+
+  const valid = canPlace(item.shape, targetR, targetC);
 
   // Cleanup UI
-  $('ghost').classList.remove('show');
-  $('ghost').innerHTML = '';
+  const ghost = $('ghost');
+  ghost.classList.remove('show');
+  ghost.innerHTML = '';
   clearPreview();
   const wrap = document.querySelector('.tray-slot[data-slot="' + slotIdx + '"] .shape-wrap');
   if (wrap) wrap.classList.remove('dragging');
@@ -1140,14 +1024,17 @@ function onPointerUp(e){
   state.drag = null;
   state.pendingPointer = null;
 
-  if (snap){
+  if (valid){
+    state.processing = true;
     state.tray[slotIdx] = null;
-    placeShape(item, snap.r, snap.c);
-
+    placeShape(item, targetR, targetC);
     setTimeout(function(){
       const anyNew = refillTray();
       if (anyNew) renderTray();
-      setTimeout(checkGameOver, 250);
+      setTimeout(function(){
+        checkGameOver();
+        state.processing = false;
+      }, 250);
     }, 450);
   } else {
     renderTray();
@@ -1182,7 +1069,7 @@ function checkGameOver(){
   }, 300);
 }
 
-// ═══════════════ FIREBASE SAVE/LOAD ═══════════════
+// ═══════════════ FIREBASE ═══════════════
 async function saveScore(score){
   const statusEl = $('saveStatus');
   if (score <= 0){ statusEl.textContent = ''; return; }
@@ -1206,8 +1093,6 @@ async function saveScore(score){
     });
     statusEl.textContent = '✅ Đã lưu lên bảng xếp hạng!';
     statusEl.style.color = '#66BB6A';
-    lbCache.all = null;
-    lbCache.me = null;
   } catch(e){
     console.warn('[BlockBlast] Save fail:', e);
     statusEl.textContent = '❌ Lỗi lưu: ' + (e.message || 'unknown');
@@ -1236,8 +1121,6 @@ window.switchLbTab = function(tab){
     bAll.style.color = '#bfe9dc';
     bAll.style.border = '1px solid rgba(55,137,123,.5)';
   }
-  lbCache.all = null;
-  lbCache.me = null;
   loadLeaderboard();
 };
 
@@ -1264,21 +1147,16 @@ async function loadLeaderboard(){
   }
 
   try {
-    const q = query(collection(db, COL_SCORES), orderBy('score', 'desc'), limit(200));
-    const snap = await getDocs(q);
-    let data = [];
-    snap.forEach(function(d){ data.push(d.data()); });
-
+    let q;
     if (lbTab === 'me'){
       const meName = getStaffName();
-      const norm = function(s){
-        return String(s || '').trim().toLowerCase().replace(/\s+/g, ' ');
-      };
-      const meNorm = norm(meName);
-      data = data.filter(function(d){ return norm(d.name) === meNorm; });
+      q = query(collection(db, COL_SCORES), where('name', '==', meName), orderBy('score', 'desc'), limit(20));
+    } else {
+      q = query(collection(db, COL_SCORES), orderBy('score', 'desc'), limit(20));
     }
-
-    data = data.slice(0, 20);
+    const snap = await getDocs(q);
+    const data = [];
+    snap.forEach(function(d){ data.push(d.data()); });
     lbCache[cacheKey] = data;
     renderLbList(data);
   } catch(e){
@@ -1341,6 +1219,7 @@ function startNewGame(){
   state.maxCombo = 0;
   state.gameOver = false;
   state.drag = null;
+  state.processing = false;
 
   refillTray();
   renderBoard();
@@ -1360,7 +1239,7 @@ function init(){
   trayEl.addEventListener('pointerdown', function(e){
     const wrap = e.target.closest('.shape-wrap');
     if (!wrap) return;
-    if (state.gameOver) return;
+    if (state.gameOver || state.processing) return;
     const slotIdx = parseInt(wrap.dataset.slot, 10);
     if (isNaN(slotIdx)) return;
     e.preventDefault();
@@ -1371,8 +1250,9 @@ function init(){
   document.addEventListener('pointerup', onPointerUp);
   document.addEventListener('pointercancel', function(e){
     if (!state.drag) return;
-    $('ghost').classList.remove('show');
-    $('ghost').innerHTML = '';
+    const ghost = $('ghost');
+    ghost.classList.remove('show');
+    ghost.innerHTML = '';
     clearPreview();
     const slotIdx = state.drag.slotIdx;
     const wrap = document.querySelector('.tray-slot[data-slot="' + slotIdx + '"] .shape-wrap');
@@ -1402,7 +1282,7 @@ function init(){
     setTimeout(function(){ measureBoard(); renderTray(); }, 300);
   });
 
-  console.log('%c🧱 BLOCK BLAST v2.2 LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  console.log('%c🧱 BLOCK BLAST v4 LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 }
 
 if (document.readyState === 'loading'){

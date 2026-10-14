@@ -1,22 +1,22 @@
 {
-  "version": "1.0.26",
-  "previousVersion": "1.0.25",
-  "commit": "d2dffa1",
-  "previousCommit": "78c2822",
-  "buildDate": "2026-10-14T10:17:30.906Z",
-  "summary": "Xóa Block Blast, thêm Battleship vào tab GAME",
+  "version": "1.0.27",
+  "previousVersion": "1.0.26",
+  "commit": "0234d7e",
+  "previousCommit": "d2dffa1",
+  "buildDate": "2026-10-14T15:34:48.054Z",
+  "summary": "Manager Dashboard: thêm Note + Reminder vào Settings",
   "changes": {
-    "totalCommits": 30,
+    "totalCommits": 31,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Xóa Block Blast, thêm Battleship vào tab GAME"
+    "Manager Dashboard: thêm Note + Reminder vào Settings"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/index.html",
+      "file": "manager/dashboard.html",
       "type": "update"
     }
   ]

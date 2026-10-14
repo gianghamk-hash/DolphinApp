@@ -1,5 +1,5 @@
 {
-  "version": "1.0.26",
+  "version": "1.0.27",
   "releaseDate": "2026-10-14",
-  "notes": "Xóa Block Blast, thêm Battleship vào tab GAME"
+  "notes": "Manager Dashboard: thêm Note + Reminder vào Settings"
 }

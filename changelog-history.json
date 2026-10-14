@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.26",
+      "releaseDate": "2026-10-14T10:17:30.906Z",
+      "summary": "Xóa Block Blast, thêm Battleship vào tab GAME",
+      "details": [
+        "Xóa Block Blast, thêm Battleship vào tab GAME"
+      ]
+    },
+    {
       "version": "1.0.25",
       "releaseDate": "2026-10-14T09:56:32.611Z",
       "summary": "Block Blast v6: ghost = preview chung 1 tọa độ",

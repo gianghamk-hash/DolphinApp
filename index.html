@@ -471,6 +471,120 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   .area-card{min-height:160px;padding:1.4rem .7rem 1.2rem;gap:.3rem}
   .area-icon{font-size:2.2rem;margin-bottom:.5rem}
 }
+/* ═══ REMINDER ALARM POPUP (full-screen đỏ) ═══ */
+#reminderAlarm{
+  position:fixed;inset:0;z-index:10001;
+  background:rgba(0,0,0,.92);
+  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
+  display:none;align-items:center;justify-content:center;
+  padding:20px;
+  animation:alarmFadeIn .3s ease-out;
+}
+#reminderAlarm.show{display:flex}
+@keyframes alarmFadeIn{from{opacity:0}to{opacity:1}}
+
+#reminderAlarm .ralarm-card{
+  background:linear-gradient(135deg,#7f1d1d,#1a0a0a);
+  border:3px solid #ef4444;
+  border-radius:26px;
+  padding:28px 24px;
+  max-width:420px;width:100%;
+  text-align:center;
+  box-shadow:0 20px 80px rgba(239,68,68,.6),0 0 120px rgba(239,68,68,.4);
+  animation:alarmPop .4s cubic-bezier(.16,1,.3,1);
+}
+@keyframes alarmPop{
+  0%{transform:scale(.5) rotate(-5deg);opacity:0}
+  60%{transform:scale(1.08) rotate(2deg)}
+  100%{transform:scale(1) rotate(0);opacity:1}
+}
+
+#reminderAlarm .ralarm-icon{
+  font-size:76px;
+  display:inline-block;
+  animation:alarmShake .5s ease-in-out infinite;
+  filter:drop-shadow(0 0 24px rgba(239,68,68,1));
+}
+@keyframes alarmShake{
+  0%,100%{transform:rotate(-12deg) scale(1)}
+  50%{transform:rotate(12deg) scale(1.12)}
+}
+
+#reminderAlarm .ralarm-title{
+  font-size:22px;font-weight:900;color:#fca5a5;
+  text-transform:uppercase;letter-spacing:.14em;
+  margin:14px 0 6px;
+  text-shadow:0 0 20px rgba(239,68,68,.9);
+}
+
+#reminderAlarm .ralarm-sub{
+  font-size:11px;color:#fca5a5;font-weight:700;
+  margin-bottom:16px;
+}
+
+#reminderAlarm .ralarm-body{
+  font-size:16px;font-weight:800;color:#fff;
+  line-height:1.55;
+  padding:18px;
+  background:rgba(0,0,0,.45);
+  border-radius:16px;
+  border-left:5px solid #FBD77A;
+  text-align:left;
+  word-break:break-word;
+  max-height:40vh;
+  overflow-y:auto;
+  margin-bottom:18px;
+}
+
+#reminderAlarm .ralarm-time{
+  font-size:12px;color:#fca5a5;font-weight:800;
+  margin-bottom:18px;
+  display:flex;align-items:center;justify-content:center;gap:8px;
+}
+
+#reminderAlarm .ralarm-ok{
+  width:100%;
+  background:linear-gradient(135deg,#FCA5A5,#EF4444);
+  color:#fff;font-weight:900;
+  font-size:14px;
+  padding:16px;
+  border-radius:14px;
+  border:none;cursor:pointer;font-family:inherit;
+  text-transform:uppercase;letter-spacing:.1em;
+  box-shadow:0 8px 24px rgba(239,68,68,.5);
+  transition:transform .15s;
+}
+#reminderAlarm .ralarm-ok:active{transform:scale(.96)}
+
+/* ═══ NOTIF PERMISSION BTN ═══ */
+#notifPermBtn{
+  position:fixed;
+  top:14px;left:14px;
+  z-index:9997;
+  width:44px;height:44px;border-radius:50%;
+  background:rgba(18,54,52,.92);
+  border:2px solid rgba(244,184,66,.7);
+  color:#FBD77A;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;font-family:inherit;
+  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
+  box-shadow:0 6px 20px rgba(0,0,0,.5);
+  transition:transform .15s,background .2s,box-shadow .2s;
+  padding:0;
+  -webkit-tap-highlight-color:transparent;
+}
+#notifPermBtn:active{transform:scale(.92)}
+#notifPermBtn.granted{
+  background:linear-gradient(135deg,rgba(16,185,129,.9),rgba(5,150,105,.9));
+  color:#fff;
+  border-color:rgba(16,185,129,.9);
+  box-shadow:0 0 20px rgba(16,185,129,.7);
+}
+#notifPermBtn.denied{
+  background:rgba(239,83,80,.9);
+  color:#fff;
+  border-color:rgba(239,83,80,.9);
+}
 </style>
 <script src="staff-sync.js" defer></script>
 <script src="theme-system.js?v=1.0" defer></script>
@@ -528,6 +642,21 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   </div>
 </div>
 
+  <!-- ═══════ NÚT BẬT THÔNG BÁO ═══════ -->
+<button type="button" id="notifPermBtn" onclick="toggleNotifPerm()" title="Bật thông báo">🔕</button>
+
+<!-- ═══════ POPUP BÁO THỨC ĐỎ ═══════ -->
+<div id="reminderAlarm">
+  <div class="ralarm-card">
+    <div class="ralarm-icon">🔔</div>
+    <div class="ralarm-title">BÁO THỨC!</div>
+    <div class="ralarm-sub" id="ralarmSub">—</div>
+    <div class="ralarm-body" id="ralarmBody">—</div>
+    <div class="ralarm-time">🕒 <span id="ralarmTime">--:--</span></div>
+    <button type="button" class="ralarm-ok" onclick="closeReminderAlarm()">✓ ĐÃ HIỂU</button>
+  </div>
+</div>
+  
 <div id="landing">
   <div style="position:relative;z-index:10;width:100%;min-height:100vh;min-height:100dvh;display:flex;align-items:center;justify-content:center;padding:2rem 1rem">
     <div style="width:100%;max-width:1200px">
@@ -1527,5 +1656,231 @@ try {
 } catch(e){ console.warn('[Badge]', e); }
 </script>
 
+  <!-- ═══════ REMINDER WATCHER + NOTIF PERMISSION ═══════ -->
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const cfg = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+const COL_REMINDERS = 'shared_reminders';
+const FIRE_WINDOW = 24 * 60 * 60 * 1000;
+
+let allReminders = [];
+let currentAlarmId = null;
+
+/* ═══ NOTIF PERMISSION ═══ */
+window.toggleNotifPerm = async function(){
+  if (!('Notification' in window)){
+    if (window.showToast) window.showToast('Thiết bị không hỗ trợ', '⚠️');
+    return;
+  }
+  if (Notification.permission === 'granted'){
+    if (window.showToast) window.showToast('Đã bật rồi!', '🔔');
+    return;
+  }
+  if (Notification.permission === 'denied'){
+    if (window.showToast) window.showToast('Bị chặn — vào cài đặt trình duyệt', '🚫');
+    return;
+  }
+  try {
+    const perm = await Notification.requestPermission();
+    updateNotifBtn();
+    if (perm === 'granted'){
+      if (window.showToast) window.showToast('Đã bật thông báo!', '🔔');
+      setTimeout(function(){
+        try {
+          new Notification('Dolphin · Đã bật thông báo', {
+            body: 'Bạn sẽ nhận thông báo khi tab ẩn',
+            icon: '/DolphinApp/pwa-icons/icon-192.png',
+            tag: 'dolphin-test'
+          });
+        } catch(e){}
+      }, 500);
+    }
+  } catch(e){}
+};
+
+function updateNotifBtn(){
+  const btn = document.getElementById('notifPermBtn');
+  if (!btn) return;
+  if (!('Notification' in window)){
+    btn.textContent = '🚫';
+    btn.style.opacity = '.5';
+    return;
+  }
+  const p = Notification.permission;
+  if (p === 'granted'){
+    btn.textContent = '🔔';
+    btn.classList.add('granted');
+    btn.classList.remove('denied');
+  } else if (p === 'denied'){
+    btn.textContent = '🔕';
+    btn.classList.add('denied');
+    btn.classList.remove('granted');
+  } else {
+    btn.textContent = '🔕';
+    btn.classList.remove('granted','denied');
+  }
+}
+
+function showSystemNotif(title, body, tag){
+  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+  try {
+    const n = new Notification(title, {
+      body: body,
+      icon: '/DolphinApp/pwa-icons/icon-192.png',
+      badge: '/DolphinApp/pwa-icons/icon-96.png',
+      tag: tag,
+      requireInteraction: true
+    });
+    n.onclick = function(){ window.focus(); n.close(); };
+    return true;
+  } catch(e){ return false; }
+}
+
+/* ═══ SOUND (Web Audio Synth) ═══ */
+let alarmCtx = null;
+let alarmInterval = null;
+let alarmCount = 0;
+
+function initAlarmAudio(){
+  try {
+    if (!alarmCtx) alarmCtx = new (window.AudioContext || window.webkitAudioContext)();
+    if (alarmCtx.state === 'suspended') alarmCtx.resume();
+  } catch(e){}
+}
+
+function playAlarmSound(){
+  initAlarmAudio();
+  if (!alarmCtx) return;
+  stopAlarmSound();
+  alarmCount = 0;
+  function beep(){
+    if (!alarmCtx || alarmCount >= 8){ stopAlarmSound(); return; }
+    alarmCount++;
+    const t = alarmCtx.currentTime;
+    for (let i = 0; i < 3; i++){
+      const tt = t + i * 0.13;
+      [1,2].forEach(function(mult){
+        const o = alarmCtx.createOscillator();
+        const g = alarmCtx.createGain();
+        o.type = 'sine';
+        o.frequency.value = (mult === 1 ? 880 : 1760) * 1.5;
+        g.gain.setValueAtTime(0.0001, tt);
+        g.gain.exponentialRampToValueAtTime(mult === 1 ? 0.5 : 0.25, tt + 0.005);
+        g.gain.exponentialRampToValueAtTime(0.0001, tt + 0.12);
+        o.connect(g); g.connect(alarmCtx.destination);
+        o.start(tt); o.stop(tt + 0.15);
+      });
+    }
+  }
+  beep();
+  alarmInterval = setInterval(beep, 1000);
+}
+function stopAlarmSound(){
+  if (alarmInterval){ clearInterval(alarmInterval); alarmInterval = null; }
+}
+
+/* ═══ FIRE ALARM ═══ */
+function checkAndFire(){
+  const now = Date.now();
+  for (const r of allReminders){
+    if (r.fireAt > now) continue;
+    if (now - r.fireAt > FIRE_WINDOW) continue;
+    const firedKey = 'dolphin_rem_fired_' + r.id;
+    if (localStorage.getItem(firedKey)) continue;
+    localStorage.setItem(firedKey, String(now));
+    fireAlarm(r);
+    break;
+  }
+}
+
+function fireAlarm(r){
+  currentAlarmId = r.id;
+
+  // Nếu tab ẩn → system notification
+  if (document.hidden){
+    const shown = showSystemNotif(
+      '🔔 BÁO THỨC: ' + (r.author || 'Manager'),
+      r.text || '',
+      'alarm-' + r.id
+    );
+    if (shown){
+      playAlarmSound();
+      if (navigator.vibrate){
+        try { navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300]); } catch(e){}
+      }
+      return;
+    }
+  }
+
+  // Tab active → popup đỏ
+  const modal = document.getElementById('reminderAlarm');
+  if (!modal) return;
+  document.getElementById('ralarmBody').textContent = r.text || '';
+  document.getElementById('ralarmSub').innerHTML = '👤 ' + escapeHtml(r.author || 'Manager');
+  const d = new Date(r.fireAt);
+  const hh = String(d.getHours()).padStart(2, '0');
+  const mm = String(d.getMinutes()).padStart(2, '0');
+  document.getElementById('ralarmTime').textContent = hh + ':' + mm + ' hôm nay';
+  modal.classList.add('show');
+  playAlarmSound();
+  if (navigator.vibrate){
+    try { navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300]); } catch(e){}
+  }
+}
+
+function escapeHtml(s){
+  return String(s).replace(/[&<>"']/g, function(c){
+    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
+  });
+}
+
+window.closeReminderAlarm = function(){
+  const modal = document.getElementById('reminderAlarm');
+  if (modal) modal.classList.remove('show');
+  currentAlarmId = null;
+  stopAlarmSound();
+  setTimeout(checkAndFire, 800);
+};
+
+/* ═══ FIREBASE ═══ */
+try {
+  const app = initializeApp(cfg, 'landing-rem-app');
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  signInAnonymously(auth).then(function(){
+    const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'));
+    onSnapshot(q, function(snap){
+      allReminders = [];
+      snap.forEach(function(d){ allReminders.push(Object.assign({ id: d.id }, d.data())); });
+      checkAndFire();
+    }, function(err){ console.warn('[Landing Rem]', err); });
+  }).catch(function(err){ console.warn('[Landing Rem] auth', err); });
+} catch(e){ console.warn('[Landing Rem] init', e); }
+
+/* ═══ WATCHER LOOP ═══ */
+setInterval(checkAndFire, 5000);
+document.addEventListener('visibilitychange', function(){
+  if (!document.hidden) checkAndFire();
+});
+
+/* ═══ INIT UI ═══ */
+function initNotifUI(){
+  updateNotifBtn();
+  ['click','touchstart','keydown'].forEach(function(ev){
+    document.addEventListener(ev, initAlarmAudio, { once: true, passive: true });
+  });
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNotifUI);
+else initNotifUI();
+
+console.log('%c🔔 LANDING REMINDER WATCHER LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+</script>
 </body>
 </html>

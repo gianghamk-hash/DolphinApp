@@ -1,18 +1,18 @@
 {
-  "version": "1.0.23",
-  "previousVersion": "1.0.22",
-  "commit": "9c08694",
-  "previousCommit": "46e1cd0",
-  "buildDate": "2026-10-14T09:23:56.516Z",
-  "summary": "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp",
+  "version": "1.0.24",
+  "previousVersion": "1.0.23",
+  "commit": "1e30bbb",
+  "previousCommit": "9c08694",
+  "buildDate": "2026-10-14T09:52:09.545Z",
+  "summary": "Block Blast v5: unified coordinate system",
   "changes": {
-    "totalCommits": 27,
+    "totalCommits": 28,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp"
+    "Block Blast v5: unified coordinate system"
   ],
   "fileChanges": [
     {

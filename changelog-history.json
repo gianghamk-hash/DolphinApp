@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.23",
+      "releaseDate": "2026-10-14T09:23:56.516Z",
+      "summary": "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp",
+      "details": [
+        "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp"
+      ]
+    },
+    {
       "version": "1.0.22",
       "releaseDate": "2026-10-14T08:54:17.701Z",
       "summary": "Fix Block Blast cellSize + BXH không cần index",

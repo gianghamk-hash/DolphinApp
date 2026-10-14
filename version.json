@@ -1,7 +1,7 @@
 {
-  "version": "1.0.23",
-  "buildDate": "2026-10-14T09:23:56.516Z",
-  "commit": "9c08694",
-  "notes": "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp",
+  "version": "1.0.24",
+  "buildDate": "2026-10-14T09:52:09.545Z",
+  "commit": "1e30bbb",
+  "notes": "Block Blast v5: unified coordinate system",
   "forceUpdate": false
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.19",
-  "buildDate": "2026-10-14T07:11:56.789Z",
-  "commit": "f1a3af2",
-  "notes": "Caro pinch-zoom 0.8x-2x + soundscape v2.4",
+  "version": "1.0.20",
+  "buildDate": "2026-10-14T07:45:48.982Z",
+  "commit": "dcf8a0c",
+  "notes": "Sổ Tay: bật thông báo hệ thống (Mức 2)",
   "forceUpdate": false
 }

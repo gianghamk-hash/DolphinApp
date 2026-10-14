@@ -1,22 +1,22 @@
 {
-  "version": "1.0.19",
-  "previousVersion": "1.0.18",
-  "commit": "f1a3af2",
-  "previousCommit": "2d82dbe",
-  "buildDate": "2026-10-14T07:11:56.789Z",
-  "summary": "Caro pinch-zoom 0.8x-2x + soundscape v2.4",
+  "version": "1.0.20",
+  "previousVersion": "1.0.19",
+  "commit": "dcf8a0c",
+  "previousCommit": "f1a3af2",
+  "buildDate": "2026-10-14T07:45:48.982Z",
+  "summary": "Sổ Tay: bật thông báo hệ thống (Mức 2)",
   "changes": {
-    "totalCommits": 23,
+    "totalCommits": 24,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Caro pinch-zoom 0.8x-2x + soundscape v2.4"
+    "Sổ Tay: bật thông báo hệ thống (Mức 2)"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/index.html",
+      "file": "giaitri/notes.html",
       "type": "update"
     }
   ]

@@ -1,22 +1,22 @@
 {
-  "version": "1.0.17",
-  "previousVersion": "1.0.16",
-  "commit": "ba678e6",
-  "previousCommit": "2a2bbeb",
-  "buildDate": "2026-10-14T06:17:09.099Z",
-  "summary": "Fix PWA icons + soundscape v2.4",
+  "version": "1.0.18",
+  "previousVersion": "1.0.17",
+  "commit": "2d82dbe",
+  "previousCommit": "ba678e6",
+  "buildDate": "2026-10-14T06:53:41.021Z",
+  "summary": "Fix safe area iPhone",
   "changes": {
-    "totalCommits": 21,
+    "totalCommits": 22,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix PWA icons + soundscape v2.4"
+    "Fix safe area iPhone"
   ],
   "fileChanges": [
     {
-      "file": "manifest.json",
+      "file": "index.html",
       "type": "update"
     }
   ]

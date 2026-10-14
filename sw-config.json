@@ -1,5 +1,5 @@
 {
-  "version": "1.0.17",
+  "version": "1.0.18",
   "releaseDate": "2026-10-14",
-  "notes": "Fix PWA icons + soundscape v2.4"
+  "notes": "Fix safe area iPhone"
 }

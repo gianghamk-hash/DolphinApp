@@ -1,7 +1,7 @@
 {
-  "version": "1.0.17",
-  "buildDate": "2026-10-14T06:17:09.099Z",
-  "commit": "ba678e6",
-  "notes": "Fix PWA icons + soundscape v2.4",
+  "version": "1.0.18",
+  "buildDate": "2026-10-14T06:53:41.021Z",
+  "commit": "2d82dbe",
+  "notes": "Fix safe area iPhone",
   "forceUpdate": false
 }

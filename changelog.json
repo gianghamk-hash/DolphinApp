@@ -1,22 +1,22 @@
 {
-  "version": "1.0.28",
-  "previousVersion": "1.0.27",
-  "commit": "e314be0",
-  "previousCommit": "0234d7e",
-  "buildDate": "2026-10-14T15:49:25.117Z",
-  "summary": "Landing: Reminder watcher + popup đỏ + notif permission",
+  "version": "1.0.29",
+  "previousVersion": "1.0.28",
+  "commit": "dcdaaf3",
+  "previousCommit": "e314be0",
+  "buildDate": "2026-10-14T15:52:57.985Z",
+  "summary": "xóa note",
   "changes": {
-    "totalCommits": 32,
+    "totalCommits": 33,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Landing: Reminder watcher + popup đỏ + notif permission"
+    "xóa note"
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": "giaitri/notes.html",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.28",
+      "releaseDate": "2026-10-14T15:49:25.117Z",
+      "summary": "Landing: Reminder watcher + popup đỏ + notif permission",
+      "details": [
+        "Landing: Reminder watcher + popup đỏ + notif permission"
+      ]
+    },
+    {
       "version": "1.0.27",
       "releaseDate": "2026-10-14T15:34:48.054Z",
       "summary": "Manager Dashboard: thêm Note + Reminder vào Settings",

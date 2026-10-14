@@ -26,6 +26,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .state-cooking{color:#FF6B6B;background:rgba(255,107,107,.12);border-color:rgba(255,107,107,.4)}
 .state-ready{color:#66BB6A;background:rgba(102,187,106,.12);border-color:rgba(102,187,106,.4)}
 .state-alert{color:#EF5350;background:rgba(239,83,80,.12);border-color:rgba(239,83,80,.5)}
+.state-info{color:#818cf8;background:rgba(129,140,248,.12);border-color:rgba(129,140,248,.4)}
+.state-cyan{color:#22d3ee;background:rgba(34,211,238,.12);border-color:rgba(34,211,238,.4)}
 .stat-card{padding:14px;border-radius:16px;position:relative;overflow:hidden}
 .outlet-card{padding:16px;border-radius:18px;cursor:pointer;transition:transform .2s}
 .outlet-card:hover{transform:translateY(-3px)}
@@ -33,10 +35,30 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .order-row:hover{background:rgba(255,255,255,.03)}
 .dot{width:7px;height:7px;border-radius:50%;background:currentColor;box-shadow:0 0 8px currentColor;animation:pulse-dot 1.6s ease-in-out infinite}
 @keyframes pulse-dot{0%,100%{opacity:1}50%{opacity:.4}}
+.btn-icon{width:36px;height:36px;border-radius:12px;display:flex;align-items:center;justify-content:center;background:rgba(25,71,67,.7);border:1px solid rgba(55,137,123,.5);color:#bfe9dc;cursor:pointer;transition:all .15s}
+.btn-icon:active{transform:scale(.92)}
+.btn-icon.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
+/* Settings Modal */
+#settings-modal{position:fixed;inset:0;z-index:9999;display:none;background:rgba(0,0,0,.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);align-items:center;justify-content:center;padding:16px}
+#settings-modal.show{display:flex}
+.settings-panel{background:linear-gradient(160deg,#0f3d38,#0a2b28);border:2px solid rgba(244,184,66,.5);border-radius:20px;width:100%;max-width:680px;max-height:88vh;display:flex;flex-direction:column;box-shadow:0 24px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.25);overflow:hidden}
+.settings-tabs{display:flex;border-bottom:1px solid rgba(255,255,255,.1);background:rgba(0,0,0,.2);overflow-x:auto}
+.settings-tab{flex:1;min-width:100px;padding:12px 16px;font-size:11.5px;font-weight:800;text-transform:uppercase;letter-spacing:.05em;color:#98dccb;cursor:pointer;border:none;background:transparent;font-family:inherit;white-space:nowrap;border-bottom:2px solid transparent;transition:all .2s}
+.settings-tab:hover{background:rgba(255,255,255,.03);color:#FBD77A}
+.settings-tab.active{color:#FBD77A;border-bottom-color:#FBD77A;background:rgba(244,184,66,.08)}
+.settings-body{flex:1;overflow-y:auto;padding:16px 18px}
+/* Collapsible */
+.collapse-head{display:flex;align-items:center;justify-content:space-between;padding:14px 16px;cursor:pointer;user-select:none}
+.collapse-head:hover{background:rgba(255,255,255,.02)}
+.collapse-body{max-height:0;overflow:hidden;transition:max-height .35s ease-out}
+.collapse.open .collapse-body{max-height:2000px;transition:max-height .5s ease-in}
+.collapse-chevron{transition:transform .3s;font-size:12px;color:#7ea8c8}
+.collapse.open .collapse-chevron{transform:rotate(180deg)}
 </style>
 </head>
 <body class="pb-8">
 
+<!-- ═══════ HEADER ═══════ -->
 <div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
   <div class="max-w-7xl mx-auto px-3 md:px-6 py-3 flex items-center justify-between gap-2 flex-wrap">
     <div class="flex items-center gap-3">
@@ -49,37 +71,24 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="flex items-center gap-2 flex-wrap">
       <span class="chip !cursor-default"><span id="conn-dot" class="dot bg-gold-500"></span><span id="conn-text" class="text-[10px]">ĐANG KẾT NỐI</span></span>
       <span class="chip !cursor-default tabular" id="clock">--:--:--</span>
+      <button type="button" class="btn-icon" onclick="openSettings()" title="Cài đặt hệ thống">⚙️</button>
     </div>
   </div>
 </div>
 
 <main class="max-w-7xl mx-auto px-3 md:px-6 py-4 space-y-5">
 
-  <!-- CARO MONITOR -->
-  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
-    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center justify-between flex-wrap gap-2">
-      <span class="flex items-center gap-2"><span>🎮</span> ĐANG CHƠI CỜ CARO</span>
-      <span class="text-[10px] text-teal-400 font-bold normal-case">
-        <span id="caro-playing-count">0</span> đang đấu ·
-        <span id="caro-waiting-count">0</span> chờ ghép
-      </span>
-    </h2>
-    <div id="caro-games-list" class="space-y-2">
-      <div class="text-center text-teal-500 text-xs py-6">⏳ Đang tải...</div>
-    </div>
-  </div>
-
-  <!-- TOP STATS -->
-  <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
+  <!-- ═══════ TOP STATS (5 cards) ═══════ -->
+  <div class="grid grid-cols-2 md:grid-cols-5 gap-3">
     <div class="glass glass-premium stat-card">
       <div class="text-[10px] text-teal-300 font-black uppercase tracking-wider mb-1">📋 Đơn hôm nay</div>
       <div class="text-3xl md:text-4xl font-black text-white tabular" id="s-orders">0</div>
-      <div class="text-[10px] text-teal-400 mt-1" id="s-orders-sub">Tổng số đơn từ mọi outlet</div>
+      <div class="text-[10px] text-teal-400 mt-1">Tổng từ mọi outlet</div>
     </div>
     <div class="glass glass-premium stat-card">
       <div class="text-[10px] text-gold-400 font-black uppercase tracking-wider mb-1">⏳ Đang xử lý</div>
       <div class="text-3xl md:text-4xl font-black text-gold-400 tabular" id="s-pending">0</div>
-      <div class="text-[10px] text-teal-400 mt-1" id="s-pending-sub">Chờ + Đang nấu</div>
+      <div class="text-[10px] text-teal-400 mt-1">Chờ + Đang làm</div>
     </div>
     <div class="glass glass-premium stat-card">
       <div class="text-[10px] text-emerald-400 font-black uppercase tracking-wider mb-1">🪑 Bàn có khách</div>
@@ -89,145 +98,46 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="glass glass-premium stat-card">
       <div class="text-[10px] text-red-400 font-black uppercase tracking-wider mb-1">👥 Tổng khách</div>
       <div class="text-3xl md:text-4xl font-black text-red-400 tabular" id="s-guests">0</div>
-      <div class="text-[10px] text-teal-400 mt-1" id="s-guests-sub">Đang phục vụ</div>
+      <div class="text-[10px] text-teal-400 mt-1">Đang phục vụ</div>
+    </div>
+    <div class="glass glass-premium stat-card col-span-2 md:col-span-1" style="border-left:4px solid #a78bfa">
+      <div class="text-[10px] text-purple-300 font-black uppercase tracking-wider mb-1">🍹 Đồ uống hôm nay</div>
+      <div class="text-3xl md:text-4xl font-black tabular" style="color:#a78bfa" id="s-drinks">0</div>
+      <div class="text-[10px] text-teal-400 mt-1" id="s-drinks-sub">Doanh thu: <span id="s-drinks-revenue" class="text-purple-300 font-bold">0đ</span></div>
     </div>
   </div>
 
-  <!-- OUTLET OVERVIEW -->
+  <!-- ═══════ OUTLET OVERVIEW (5 outlets) ═══════ -->
   <div>
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>🏝️</span> KHU VỰC PHỤC VỤ</h2>
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3" id="outlet-grid"></div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-5 gap-3" id="outlet-grid"></div>
   </div>
 
-  <!-- VERSION INFO -->
-  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
-    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
-      <span>🔄</span> PHIÊN BẢN HIỆN TẠI
-    </h2>
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
-      <div class="bg-black/30 rounded-xl p-3 text-center">
-        <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Version</div>
-        <div class="text-lg font-black text-gold-400 tabular" id="ver-current">--</div>
-      </div>
-      <div class="bg-black/30 rounded-xl p-3 text-center">
-        <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Cập nhật lúc</div>
-        <div class="text-[12px] font-bold text-white tabular" id="ver-date">--</div>
-      </div>
-      <div class="bg-black/30 rounded-xl p-3 text-center">
-        <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Commit</div>
-        <div class="text-[12px] font-black text-emerald-400 tabular" id="ver-commit">--</div>
-      </div>
-    </div>
-    <div class="text-[11px] text-teal-300 mt-3 italic" id="ver-notes"></div>
-    <button onclick="checkVersionNow()" class="mt-3 w-full bg-teal-800/60 border border-teal-600/60 text-teal-200 font-bold rounded-xl px-4 py-2.5 text-[11.5px] uppercase tracking-wider">
-      🔄 Kiểm tra bản cập nhật
-    </button>
-  </div>
-
-  <!-- CHANGELOG VIEWER -->
-  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
-    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center justify-between flex-wrap gap-2">
-      <span class="flex items-center gap-2"><span>📋</span> LỊCH SỬ CẬP NHẬT</span>
-      <button onclick="loadChangelog()" class="text-[10px] bg-teal-800/60 border border-teal-600/60 text-teal-200 font-bold rounded-lg px-3 py-1.5 uppercase tracking-wider">🔄 Refresh</button>
-    </h2>
-    <div id="changelog-container" class="space-y-3">
-      <div class="text-center text-teal-500 text-xs py-6">⏳ Đang tải...</div>
-    </div>
-  </div>
-
-  <!-- THEME CONTROL -->
-  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
-    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
-      <span>🎨</span> CHỦ ĐỀ SỰ KIỆN
-    </h2>
-    <p class="text-[11px] text-teal-300 mb-4 leading-relaxed">
-      Chọn chủ đề cho landing page. <b class="text-gold-400">Auto</b> = tự động theo ngày VN (Lễ trước, Mùa sau).
-    </p>
-
-    <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Chủ đề</label>
-    <select id="theme-select" class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-3 text-[13px] text-white focus:outline-none focus:border-gold-500 mb-3">
-      <option value="auto">🔄 Auto (theo ngày VN)</option>
-      <option value="default">🐬 Mặc định</option>
-      <optgroup label="🇻🇳 Ngày Lễ Việt Nam">
-        <option value="tet">🌸 Tết Nguyên Đán</option>
-        <option value="valentine">💖 Valentine</option>
-        <option value="womenday">🌹 Quốc Tế Phụ Nữ 8/3</option>
-        <option value="reunification">🇻🇳 30/4 Thống Nhất</option>
-        <option value="children">🎈 Tết Thiếu Nhi 1/6</option>
-        <option value="nationalday">🇻🇳 Quốc Khánh 2/9</option>
-        <option value="midautumn">🏮 Trung Thu</option>
-        <option value="halloween">🎃 Halloween</option>
-        <option value="christmas">🎄 Giáng Sinh</option>
-        <option value="newyear">🎊 Tết Dương Lịch</option>
-      </optgroup>
-      <optgroup label="🌤️ Bốn Mùa">
-        <option value="spring">🌸 Mùa Xuân</option>
-        <option value="summer">☀️ Mùa Hè</option>
-        <option value="autumn">🍂 Mùa Thu</option>
-        <option value="winter">❄️ Mùa Đông</option>
-      </optgroup>
-    </select>
-
-    <div id="theme-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
-
-    <div class="flex gap-2 flex-wrap">
-      <button onclick="saveTheme()" id="theme-save-btn"
-        class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-3 text-[12px] uppercase tracking-wider">
-        💾 Lưu chủ đề
-      </button>
-      <button onclick="previewTheme()"
-        class="bg-teal-800/60 border border-teal-600/60 text-teal-200 font-black rounded-xl px-4 py-3 text-[11.5px] uppercase tracking-wider">
-        👁️ Xem trước
-      </button>
-    </div>
-    <div class="text-[10px] text-teal-500 mt-3 italic" id="theme-meta"></div>
-  </div>
-
-  <!-- ANNOUNCEMENT CONTROL -->
-  <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
-    <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2">
-      <span>📢</span> BẢNG TIN NỘI BỘ
-    </h2>
-    <p class="text-[11px] text-teal-300 mb-4 leading-relaxed">
-      Nội dung này sẽ <b class="text-gold-400">chạy chữ từ phải sang trái</b> trên màn hình landing của TẤT CẢ nhân viên (PWA + Staff APK).
-    </p>
-    <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Nội dung thông báo</label>
-    <textarea id="announcement-input" rows="3" maxlength="500"
-      placeholder="VD: Tối nay đoàn 30 khách bàn J5 — chuẩn bị trước 18:00."
-      class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12.5px] text-white focus:outline-none focus:border-gold-500 resize-none"
-      style="font-family:'Nunito',sans-serif"></textarea>
-    <div class="flex items-center justify-between mt-1 mb-4">
-      <span class="text-[10px] text-teal-500" id="announcement-count">0 / 500 ký tự</span>
-    </div>
-    <div class="flex items-center justify-between bg-black/30 rounded-xl px-3 py-3 mb-4 border border-teal-700/40">
-      <div class="flex items-center gap-3">
-        <span class="text-lg">👁️</span>
-        <div>
-          <div class="text-[11.5px] font-bold text-white">Hiển thị trên landing</div>
-          <div class="text-[10px] text-teal-400">Tắt để tạm ẩn thông báo</div>
+  <!-- ═══════ 🍹 DRINKS TRACKING (NEW) ═══════ -->
+  <div class="glass glass-premium rounded-2xl overflow-hidden" style="border-left:4px solid #a78bfa">
+    <div class="p-3.5 md:p-5 border-b border-white/10">
+      <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
+        <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest flex items-center gap-2">
+          <span>🍹</span> TRACKING ORDER ĐỒ UỐNG
+          <span class="text-[10px] font-normal text-purple-300 lowercase tracking-normal">(Phục vụ + Thu ngân)</span>
+        </h2>
+        <div class="flex items-center gap-2">
+          <span class="text-[10px] text-teal-400 font-bold">Hôm nay · <span id="drinks-total">0</span> đơn</span>
         </div>
       </div>
-      <label class="relative inline-block" style="width:52px;height:28px;cursor:pointer">
-        <input type="checkbox" id="announcement-active" class="hidden" onchange="updateAnnouncementToggle()" checked>
-        <span id="toggle-track" class="absolute rounded-full transition-all" style="inset:0;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2)"></span>
-        <span id="toggle-thumb" class="absolute rounded-full transition-all" style="top:3px;left:3px;width:22px;height:22px;background:#98dccb"></span>
-      </label>
+      <div class="flex gap-2 overflow-x-auto pb-1" id="drinks-filter-chips">
+        <button class="chip active" data-dfilter="all">📊 Tất cả <span class="count" id="dc-all">0</span></button>
+        <button class="chip" data-dfilter="pending">⏳ Chờ PV <span class="count" id="dc-pending">0</span></button>
+        <button class="chip" data-dfilter="served">☑️ Đã PV <span class="count" id="dc-served">0</span></button>
+        <button class="chip" data-dfilter="received">💰 Đã nhận <span class="count" id="dc-received">0</span></button>
+        <button class="chip" data-dfilter="invoiced">✅ Đã HĐ <span class="count" id="dc-invoiced">0</span></button>
+        <button class="chip" data-dfilter="cancelled">❌ Hủy <span class="count" id="dc-cancelled">0</span></button>
+      </div>
     </div>
-    <div id="announcement-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
-    <div class="flex gap-2 flex-wrap">
-      <button onclick="saveAnnouncement()" id="announcement-save-btn"
-        class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-3 text-[12px] uppercase tracking-wider">
-        💾 Lưu thông báo
-      </button>
-      <button onclick="clearAnnouncement()"
-        class="bg-red-900/60 border border-red-700/60 text-red-300 font-black rounded-xl px-4 py-3 text-[11.5px] uppercase tracking-wider">
-        🗑️ Xóa
-      </button>
-    </div>
-    <div class="text-[10px] text-teal-500 mt-3 italic" id="announcement-meta"></div>
+    <div class="max-h-[500px] overflow-y-auto" id="drinks-list"></div>
   </div>
 
-  <!-- REALTIME ORDERS -->
+  <!-- ═══════ REALTIME ORDERS (4 outlets cũ) ═══════ -->
   <div class="glass glass-premium rounded-2xl overflow-hidden">
     <div class="p-3.5 md:p-5 border-b border-white/10">
       <div class="flex items-center justify-between flex-wrap gap-2 mb-3">
@@ -248,7 +158,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="max-h-[500px] overflow-y-auto" id="orders-list"></div>
   </div>
 
-  <!-- HISTORY LOOKUP -->
+  <!-- ═══════ HISTORY LOOKUP ═══════ -->
   <div class="glass glass-premium rounded-2xl p-3.5 md:p-5">
     <h2 class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest mb-3 flex items-center gap-2"><span>📜</span> TRA CỨU LỊCH SỬ</h2>
     <div class="grid grid-cols-2 md:flex gap-2 mb-4">
@@ -289,32 +199,189 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </div>
   </div>
 
+  <!-- ═══════ CARO MONITOR (Collapsible) ═══════ -->
+  <div class="glass glass-premium rounded-2xl collapse" id="caro-collapse">
+    <div class="collapse-head" onclick="toggleCaro()">
+      <div class="flex items-center gap-2">
+        <span class="text-base">🎮</span>
+        <span class="text-[11px] md:text-sm font-black text-white uppercase tracking-widest">Đang chơi cờ Caro</span>
+        <span class="text-[10px] text-teal-400 font-bold normal-case">
+          <span id="caro-playing-count">0</span> đang đấu · <span id="caro-waiting-count">0</span> chờ
+        </span>
+      </div>
+      <span class="collapse-chevron">▼</span>
+    </div>
+    <div class="collapse-body">
+      <div class="px-3.5 md:px-5 pb-4">
+        <div id="caro-games-list" class="space-y-2">
+          <div class="text-center text-teal-500 text-xs py-6">⏳ Đang tải...</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
 </main>
+
+<!-- ═══════ SETTINGS MODAL ═══════ -->
+<div id="settings-modal" onclick="if(event.target===this)closeSettings()">
+  <div class="settings-panel">
+    <div class="flex items-center justify-between px-4 py-3 border-b border-white/10 bg-black/20">
+      <div class="flex items-center gap-2">
+        <span class="text-lg">⚙️</span>
+        <span class="font-black text-white text-[13px] uppercase tracking-widest">Cài đặt hệ thống</span>
+      </div>
+      <button type="button" onclick="closeSettings()" class="w-8 h-8 rounded-lg bg-white/5 border border-white/10 text-teal-300 text-base flex items-center justify-center active:scale-95">✕</button>
+    </div>
+    <div class="settings-tabs">
+      <button class="settings-tab active" data-stab="theme" onclick="switchSettingsTab('theme')">🎨 Chủ đề</button>
+      <button class="settings-tab" data-stab="announcement" onclick="switchSettingsTab('announcement')">📢 Thông báo</button>
+      <button class="settings-tab" data-stab="version" onclick="switchSettingsTab('version')">🔄 Phiên bản</button>
+      <button class="settings-tab" data-stab="changelog" onclick="switchSettingsTab('changelog')">📋 Lịch sử</button>
+    </div>
+    <div class="settings-body">
+
+      <!-- Tab: Theme -->
+      <div id="stab-theme">
+        <p class="text-[11px] text-teal-300 mb-3 leading-relaxed">
+          Chọn chủ đề cho landing page. <b class="text-gold-400">Auto</b> = tự động theo ngày VN.
+        </p>
+        <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Chủ đề</label>
+        <select id="theme-select" class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-3 text-[13px] text-white focus:outline-none focus:border-gold-500 mb-3">
+          <option value="auto">🔄 Auto (theo ngày VN)</option>
+          <option value="default">🐬 Mặc định</option>
+          <optgroup label="🇻🇳 Ngày Lễ Việt Nam">
+            <option value="tet">🌸 Tết Nguyên Đán</option>
+            <option value="valentine">💖 Valentine</option>
+            <option value="womenday">🌹 Quốc Tế Phụ Nữ</option>
+            <option value="reunification">🇻🇳 30/4 Thống Nhất</option>
+            <option value="children">🎈 Tết Thiếu Nhi</option>
+            <option value="nationalday">🇻🇳 Quốc Khánh 2/9</option>
+            <option value="midautumn">🏮 Trung Thu</option>
+            <option value="halloween">🎃 Halloween</option>
+            <option value="christmas">🎄 Giáng Sinh</option>
+            <option value="newyear">🎊 Tết Dương Lịch</option>
+          </optgroup>
+          <optgroup label="🌤️ Bốn Mùa">
+            <option value="spring">🌸 Mùa Xuân</option>
+            <option value="summer">☀️ Mùa Hè</option>
+            <option value="autumn">🍂 Mùa Thu</option>
+            <option value="winter">❄️ Mùa Đông</option>
+          </optgroup>
+        </select>
+        <div id="theme-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="saveTheme()" id="theme-save-btn" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-3 text-[12px] uppercase tracking-wider">💾 Lưu chủ đề</button>
+          <button onclick="previewTheme()" class="bg-teal-800/60 border border-teal-600/60 text-teal-200 font-black rounded-xl px-4 py-3 text-[11.5px] uppercase tracking-wider">👁️ Xem trước</button>
+        </div>
+        <div class="text-[10px] text-teal-500 mt-3 italic" id="theme-meta"></div>
+      </div>
+
+      <!-- Tab: Announcement -->
+      <div id="stab-announcement" class="hidden">
+        <p class="text-[11px] text-teal-300 mb-3 leading-relaxed">
+          Nội dung sẽ <b class="text-gold-400">chạy chữ</b> trên landing của tất cả nhân viên.
+        </p>
+        <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Nội dung thông báo</label>
+        <textarea id="announcement-input" rows="3" maxlength="500"
+          placeholder="VD: Tối nay đoàn 30 khách bàn J5 — chuẩn bị trước 18:00."
+          class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-2.5 text-[12.5px] text-white focus:outline-none focus:border-gold-500 resize-none"></textarea>
+        <div class="flex items-center justify-between mt-1 mb-3">
+          <span class="text-[10px] text-teal-500" id="announcement-count">0 / 500 ký tự</span>
+        </div>
+        <div class="flex items-center justify-between bg-black/30 rounded-xl px-3 py-3 mb-3 border border-teal-700/40">
+          <div class="flex items-center gap-3">
+            <span class="text-lg">👁️</span>
+            <div>
+              <div class="text-[11.5px] font-bold text-white">Hiển thị trên landing</div>
+              <div class="text-[10px] text-teal-400">Tắt để tạm ẩn</div>
+            </div>
+          </div>
+          <label class="relative inline-block" style="width:52px;height:28px;cursor:pointer">
+            <input type="checkbox" id="announcement-active" class="hidden" onchange="updateAnnouncementToggle()" checked>
+            <span id="toggle-track" class="absolute rounded-full transition-all" style="inset:0;background:rgba(255,255,255,.15);border:1px solid rgba(255,255,255,.2)"></span>
+            <span id="toggle-thumb" class="absolute rounded-full transition-all" style="top:3px;left:3px;width:22px;height:22px;background:#98dccb"></span>
+          </label>
+        </div>
+        <div id="announcement-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
+        <div class="flex gap-2 flex-wrap">
+          <button onclick="saveAnnouncement()" id="announcement-save-btn" class="flex-1 bg-gradient-to-r from-gold-400 to-gold-500 text-black font-black rounded-xl px-4 py-3 text-[12px] uppercase tracking-wider">💾 Lưu thông báo</button>
+          <button onclick="clearAnnouncement()" class="bg-red-900/60 border border-red-700/60 text-red-300 font-black rounded-xl px-4 py-3 text-[11.5px] uppercase tracking-wider">🗑️ Xóa</button>
+        </div>
+        <div class="text-[10px] text-teal-500 mt-3 italic" id="announcement-meta"></div>
+      </div>
+
+      <!-- Tab: Version -->
+      <div id="stab-version" class="hidden">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-3 mb-4">
+          <div class="bg-black/30 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Version</div>
+            <div class="text-lg font-black text-gold-400 tabular" id="ver-current">--</div>
+          </div>
+          <div class="bg-black/30 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Cập nhật lúc</div>
+            <div class="text-[12px] font-bold text-white tabular" id="ver-date">--</div>
+          </div>
+          <div class="bg-black/30 rounded-xl p-3 text-center">
+            <div class="text-[10px] text-teal-400 font-bold uppercase mb-1">Commit</div>
+            <div class="text-[12px] font-black text-emerald-400 tabular" id="ver-commit">--</div>
+          </div>
+        </div>
+        <div class="text-[11px] text-teal-300 mb-3 italic" id="ver-notes"></div>
+        <button onclick="checkVersionNow()" class="w-full bg-teal-800/60 border border-teal-600/60 text-teal-200 font-bold rounded-xl px-4 py-2.5 text-[11.5px] uppercase tracking-wider">🔄 Kiểm tra bản cập nhật</button>
+      </div>
+
+      <!-- Tab: Changelog -->
+      <div id="stab-changelog" class="hidden">
+        <div class="flex justify-end mb-3">
+          <button onclick="loadChangelog()" class="text-[10px] bg-teal-800/60 border border-teal-600/60 text-teal-200 font-bold rounded-lg px-3 py-1.5 uppercase tracking-wider">🔄 Refresh</button>
+        </div>
+        <div id="changelog-container" class="space-y-3">
+          <div class="text-center text-teal-500 text-xs py-6">⏳ Đang tải...</div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
 
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc, getDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
 
-// ──── OUTLETS CONFIG ────
+/* ═══════════════ OUTLETS CONFIG ═══════════════ */
 const OUTLETS = {
   bungalow:   { name: 'Bungalow',   icon: '🌴', color: 'emerald', accent: '#34d399', colOrders: 'bun_orders',    colCalls: 'bun_calls',    colTables: 'bun_tables',              colHistory: 'bun_history',               totalTables: 16, labelField: 'table' },
   lounge:     { name: 'Lounge',     icon: '🍸', color: 'amber',   accent: '#FBD77A', colOrders: 'lounge_orders', colCalls: 'lounge_calls', colTables: 'lounge_tables',           colHistory: 'lounge_history_sessions',   totalTables: 20, labelField: 'table' },
   restaurant: { name: 'Restaurant', icon: '🍽️', color: 'sky',     accent: '#60a5fa', colOrders: 'res_orders',    colCalls: 'res_calls',    colTables: 'res_tables',              colHistory: 'res_history',               totalTables: 38, labelField: 'table' },
-  show:       { name: 'Show',       icon: '🎭', color: 'rose',    accent: '#fb7185', colOrders: null,            colCalls: null,           colTables: 'show_tables',             colHistory: 'show_history',              totalTables: null, labelField: 'label' }
+  show:       { name: 'Show',       icon: '🎭', color: 'rose',    accent: '#fb7185', colOrders: null,            colCalls: null,           colTables: 'show_tables',             colHistory: 'show_history',              totalTables: null, labelField: 'label' },
+  drinks:     { name: 'Đồ Uống',    icon: '🍹', color: 'purple',  accent: '#a78bfa', colOrders: 'drink_orders',  colCalls: null,           colTables: null,                       colHistory: null,                        totalTables: null, labelField: 'table', isDrinks: true }
+};
+
+/* Drink status map */
+const DRINK_STATUS = {
+  pending:   { label: 'Chờ PV',   cls: 'state-pending' },
+  served:    { label: 'Đã PV',    cls: 'state-cyan' },
+  received:  { label: 'Đã nhận',  cls: 'state-info' },
+  invoiced:  { label: 'Đã HĐ',    cls: 'state-ready' },
+  cancelled: { label: 'Đã hủy',   cls: 'state-alert' }
 };
 
 const state = {
-  orders: { bungalow: [], lounge: [], restaurant: [], show: [] },
-  calls:  { bungalow: [], lounge: [], restaurant: [], show: [] },
-  tables: { bungalow: {}, lounge: {}, restaurant: {}, show: {} },
+  orders: { bungalow: [], lounge: [], restaurant: [], show: [], drinks: [] },
+  calls:  { bungalow: [], lounge: [], restaurant: [], show: [], drinks: [] },
+  tables: { bungalow: {}, lounge: {}, restaurant: {}, show: {}, drinks: {} },
   filter: 'all',
-  search: ''
+  search: '',
+  drinksFilter: 'all'
 };
 
 const $ = id => document.getElementById(id);
+
+/* Timestamp helper — drink_orders dùng createdAt */
+function getTs(o){ return o.createdAt || o.timestamp || 0; }
 
 function isToday(ts) {
   if (!ts) return false;
@@ -323,14 +390,14 @@ function isToday(ts) {
   return d.getFullYear() === n.getFullYear() && d.getMonth() === n.getMonth() && d.getDate() === n.getDate();
 }
 
-// ──── CLOCK ────
+/* ═══════════════ CLOCK ═══════════════ */
 function tick() {
   const s = new Intl.DateTimeFormat('en-US', { timeZone: 'Asia/Ho_Chi_Minh', hour12: false, hour: '2-digit', minute: '2-digit', second: '2-digit' }).format(new Date());
   $('clock').textContent = s;
 }
 setInterval(tick, 1000); tick();
 
-// ──── CONNECT ────
+/* ═══════════════ FIREBASE ═══════════════ */
 let dbRef = null;
 try {
   const app = initializeApp(firebaseConfig);
@@ -354,9 +421,29 @@ try {
   });
 } catch(e) { console.warn(e); }
 
-// ═══════════════════════════════════════════════════════════
-// CARO GAME MONITOR
-// ═══════════════════════════════════════════════════════════
+/* ═══════════════ SETTINGS MODAL ═══════════════ */
+window.openSettings = function(){
+  document.getElementById('settings-modal').classList.add('show');
+  document.body.style.overflow = 'hidden';
+};
+window.closeSettings = function(){
+  document.getElementById('settings-modal').classList.remove('show');
+  document.body.style.overflow = '';
+};
+window.switchSettingsTab = function(tab){
+  document.querySelectorAll('.settings-tab').forEach(b => b.classList.toggle('active', b.dataset.stab === tab));
+  ['theme','announcement','version','changelog'].forEach(t => {
+    document.getElementById('stab-' + t).classList.toggle('hidden', t !== tab);
+  });
+  if (tab === 'changelog') loadChangelog();
+};
+
+/* ═══════════════ CARO COLLAPSIBLE ═══════════════ */
+window.toggleCaro = function(){
+  document.getElementById('caro-collapse').classList.toggle('open');
+};
+
+/* ═══════════════ CARO MONITOR ═══════════════ */
 let caroGamesAll = [];
 let caroListenerStarted = false;
 
@@ -364,18 +451,13 @@ function startCaroListener(db) {
   if (caroListenerStarted) return;
   caroListenerStarted = true;
   try {
-    const ref = collection(db, 'caro_games');
-    onSnapshot(ref, (snap) => {
+    onSnapshot(collection(db, 'caro_games'), (snap) => {
       const arr = [];
       snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
       caroGamesAll = arr;
       renderCaroMonitor();
-    }, (err) => {
-      console.warn('[Caro Monitor]', err);
-    });
-  } catch(e){
-    console.warn('[Caro Monitor] init error', e);
-  }
+    }, (err) => console.warn('[Caro Monitor]', err));
+  } catch(e){ console.warn('[Caro Monitor] init error', e); }
 }
 
 function formatCaroElapsed(ms){
@@ -388,9 +470,7 @@ function formatCaroElapsed(ms){
 }
 
 function escapeCaroHtml(s){
-  return String(s).replace(/[&<>"']/g, c => ({
-    '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-  }[c]));
+  return String(s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 }
 
 function renderCaroMonitor(){
@@ -400,8 +480,7 @@ function renderCaroMonitor(){
   if (!list) return;
 
   const now = Date.now();
-  const twentyFourHoursAgo = now - 24 * 60 * 60 * 1000;
-  const recent = caroGamesAll.filter(g => (g.createdAt || 0) > twentyFourHoursAgo);
+  const recent = caroGamesAll.filter(g => (g.createdAt || 0) > now - 24 * 60 * 60 * 1000);
   const playing = recent.filter(g => g.status === 'playing');
   const waiting = recent.filter(g => g.status === 'waiting');
 
@@ -409,7 +488,7 @@ function renderCaroMonitor(){
   if (wCount) wCount.textContent = waiting.length;
 
   if (!playing.length && !waiting.length){
-    list.innerHTML = '<div class="text-center text-teal-500 text-xs py-6">Không có ván nào trong 24h qua</div>';
+    list.innerHTML = '<div class="text-center text-teal-500 text-xs py-4">Không có ván nào trong 24h qua</div>';
     return;
   }
 
@@ -421,54 +500,38 @@ function renderCaroMonitor(){
     const v = g.view || {};
     const cols = (v.maxC - v.minC + 1) || 20;
     const rows = (v.maxR - v.minR + 1) || 20;
-    const lastMove = (g.moves && g.moves.length) ? g.moves[g.moves.length - 1] : null;
-    const lastMoveTime = lastMove ? formatCaroElapsed(now - lastMove.t) + ' trước' : '--';
     const turnName = g.currentTurn === 1 ? g.player1 : g.player2;
 
     html += `
       <div class="bg-black/30 rounded-xl p-3 border border-emerald-700/40">
         <div class="flex items-center gap-3 flex-wrap">
-          <div class="w-10 h-10 rounded-full flex items-center justify-center font-black flex-shrink-0"
-               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
-            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
-          </div>
+          <div class="w-10 h-10 rounded-full flex items-center justify-center font-black flex-shrink-0" style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">${escapeCaroHtml((g.player1||'?').charAt(0).toUpperCase())}</div>
           <div class="flex-1 min-w-0">
             <div class="flex items-center gap-2 flex-wrap">
-              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</span>
+              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player1||'?')}</span>
               <span class="text-[10px] text-red-400 font-black">VS</span>
-              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player2 || '?')}</span>
+              <span class="text-[12.5px] font-black text-white truncate">${escapeCaroHtml(g.player2||'?')}</span>
             </div>
-            <div class="text-[10px] text-teal-400 font-bold mt-1">
-              📐 ${cols}×${rows} · 🎯 ${moves} nước · ⏱️ ${formatCaroElapsed(elapsed)}
-            </div>
+            <div class="text-[10px] text-teal-400 font-bold mt-1">📐 ${cols}×${rows} · 🎯 ${moves} nước · ⏱️ ${formatCaroElapsed(elapsed)}</div>
           </div>
-          <span class="bg-emerald-950/80 border border-emerald-500/40 text-emerald-300 px-2 py-1 rounded-lg text-[10px] font-black uppercase animate-pulse">🔥 ĐANG ĐẤU</span>
+          <span class="state-chip state-ready animate-pulse">🔥 ĐANG ĐẤU</span>
         </div>
-        <div class="text-[10px] text-teal-400 mt-2 pt-2 border-t border-white/10 flex justify-between flex-wrap gap-1">
-          <span>▶️ Lượt: <b class="text-gold-400">${escapeCaroHtml(turnName || '--')}</b></span>
-          <span>⏰ Nước cuối: ${lastMoveTime}</span>
-        </div>
+        <div class="text-[10px] text-teal-400 mt-2 pt-2 border-t border-white/10">▶️ Lượt: <b class="text-gold-400">${escapeCaroHtml(turnName||'--')}</b></div>
       </div>`;
   });
 
   if (waiting.length){
-    if (playing.length){
-      html += '<div class="text-[10px] text-teal-400 font-black uppercase mt-3 mb-1 px-1">⏳ Đang chờ đối thủ</div>';
-    }
     waiting.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
     waiting.forEach(g => {
       const elapsed = now - (g.createdAt || now);
       html += `
         <div class="bg-black/20 rounded-xl p-2.5 border border-teal-700/30 flex items-center gap-3 flex-wrap">
-          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-[11px] flex-shrink-0"
-               style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">
-            ${escapeCaroHtml((g.player1 || '?').charAt(0).toUpperCase())}
-          </div>
+          <div class="w-8 h-8 rounded-full flex items-center justify-center font-black text-[11px] flex-shrink-0" style="background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A">${escapeCaroHtml((g.player1||'?').charAt(0).toUpperCase())}</div>
           <div class="flex-1 min-w-0">
-            <div class="text-[12px] font-black text-white truncate">${escapeCaroHtml(g.player1 || '?')}</div>
+            <div class="text-[12px] font-black text-white truncate">${escapeCaroHtml(g.player1||'?')}</div>
             <div class="text-[10px] text-teal-400 font-bold">Chờ ghép · ${formatCaroElapsed(elapsed)}</div>
           </div>
-          <span class="bg-gold-500/20 border border-gold-500/40 text-gold-400 px-2 py-1 rounded-lg text-[10px] font-black uppercase">⏳ CHỜ</span>
+          <span class="state-chip state-pending">⏳ CHỜ</span>
         </div>`;
     });
   }
@@ -478,9 +541,7 @@ function renderCaroMonitor(){
 
 setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
 
-// ═══════════════════════════════════════════════════════════
-// VERSION INFO
-// ═══════════════════════════════════════════════════════════
+/* ═══════════════ VERSION INFO ═══════════════ */
 function loadVersionInfo() {
   fetch('/DolphinApp/version.json?t=' + Date.now(), { cache: 'no-store' })
     .then(r => r.json())
@@ -490,10 +551,7 @@ function loadVersionInfo() {
       document.getElementById('ver-notes').textContent = data.notes ? '📝 ' + data.notes : '';
       if (data.buildDate) {
         const d = new Date(data.buildDate);
-        document.getElementById('ver-date').textContent = d.toLocaleString('vi-VN', {
-          hour: '2-digit', minute: '2-digit',
-          day: '2-digit', month: '2-digit', year: 'numeric'
-        });
+        document.getElementById('ver-date').textContent = d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit', year: 'numeric' });
       }
     })
     .catch(e => console.warn('[Version] load error', e));
@@ -507,9 +565,7 @@ window.checkVersionNow = function() {
 setTimeout(loadVersionInfo, 800);
 setInterval(loadVersionInfo, 60000);
 
-// ═══════════════════════════════════════════════════════════
-// CHANGELOG VIEWER
-// ═══════════════════════════════════════════════════════════
+/* ═══════════════ CHANGELOG ═══════════════ */
 window.loadChangelog = function() {
   const container = document.getElementById('changelog-container');
   if (!container) return;
@@ -520,7 +576,6 @@ window.loadChangelog = function() {
   ]).then(([current, history]) => {
     let html = '';
 
-    // Current version
     if (current) {
       const c = current.changes || {};
       const summary = current.summary || 'Không có mô tả';
@@ -540,24 +595,10 @@ window.loadChangelog = function() {
             <span class="text-emerald-400">+${c.insertions || 0}</span>
             <span class="text-red-400">-${c.deletions || 0}</span>
           </div>
-          ${current.fileChanges && current.fileChanges.length ? `
-            <div class="mt-2 pt-2 border-t border-white/10 space-y-1">
-              ${current.fileChanges.slice(0, 8).map(f => `
-                <div class="flex justify-between text-[10.5px]">
-                  <span class="text-teal-200 truncate">📄 ${f.path}</span>
-                  <span class="flex gap-2 ml-2">
-                    <span class="text-emerald-400 font-bold">+${f.ins || 0}</span>
-                    <span class="text-red-400 font-bold">-${f.dels || 0}</span>
-                  </span>
-                </div>
-              `).join('')}
-            </div>
-          ` : ''}
         </div>
       `;
     }
 
-    // History
     if (history && history.versions && history.versions.length > 1) {
       const older = history.versions.slice(0, -1).reverse().slice(0, 10);
       html += `<div class="text-[10px] text-teal-400 font-black uppercase mt-3 mb-1 px-1">📜 Version cũ hơn</div>`;
@@ -570,11 +611,6 @@ window.loadChangelog = function() {
               <span class="text-[9.5px] text-teal-400">${v.date ? new Date(v.date).toLocaleString('vi-VN') : ''}</span>
             </div>
             <div class="text-[11px] text-teal-100 truncate">${v.summary || '(không có mô tả)'}</div>
-            <div class="flex gap-3 text-[9.5px] text-teal-400 mt-1">
-              <span>📁 ${c.filesChanged || 0}</span>
-              <span class="text-emerald-400">+${c.insertions || 0}</span>
-              <span class="text-red-400">-${c.deletions || 0}</span>
-            </div>
           </div>
         `;
       });
@@ -588,34 +624,25 @@ window.loadChangelog = function() {
 };
 
 setTimeout(loadChangelog, 1500);
-setInterval(loadChangelog, 5 * 60 * 1000);
 
-  // ═══════════════════════════════════════════════════════════
-// THEME MANAGEMENT
-// ═══════════════════════════════════════════════════════════
+/* ═══════════════ THEME ═══════════════ */
 let themeListenStarted = false;
 
 function startThemeListener(db) {
   if (themeListenStarted) return;
   themeListenStarted = true;
   try {
-    const ref = doc(db, 'master_config', 'theme');
-    onSnapshot(ref, (snap) => {
+    onSnapshot(doc(db, 'master_config', 'theme'), (snap) => {
       const data = snap.exists() ? snap.data() : { themeKey: 'auto' };
       const sel = document.getElementById('theme-select');
       const meta = document.getElementById('theme-meta');
       if (!sel) return;
       sel.value = data.themeKey || 'auto';
-      if (meta) {
-        if (data.updatedAt) {
-          const d = new Date(data.updatedAt);
-          const timeStr = d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
-          meta.textContent = '✏️ Cập nhật cuối: ' + timeStr + (data.updatedBy ? ' · ' + data.updatedBy : '');
-        } else {
-          meta.textContent = '';
-        }
+      if (meta && data.updatedAt) {
+        const d = new Date(data.updatedAt);
+        meta.textContent = '✏️ Cập nhật cuối: ' + d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
       }
-    }, (err) => { console.warn('[Theme] listen', err); });
+    }, err => console.warn('[Theme] listen', err));
   } catch(e) { console.warn('[Theme] init', e); }
 }
 
@@ -623,42 +650,21 @@ window.saveTheme = async function() {
   const sel = document.getElementById('theme-select');
   const status = document.getElementById('theme-status');
   const btn = document.getElementById('theme-save-btn');
-  if (!sel || !status || !btn || !window.__db){
-    showThemeStatus('error', '❌ Không tìm thấy Firebase');
-    return;
-  }
+  if (!sel || !status || !btn || !window.__db) return;
   const themeKey = sel.value;
-  btn.disabled = true;
-  btn.style.opacity = '.6';
-  btn.textContent = '⏳ Đang lưu...';
+  btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = '⏳ Đang lưu...';
   try {
-    const ref = doc(window.__db, 'master_config', 'theme');
-    await setDoc(ref, {
-      themeKey: themeKey,
-      updatedAt: Date.now(),
-      updatedBy: 'Manager'
-    }, { merge: true });
+    await setDoc(doc(window.__db, 'master_config', 'theme'), { themeKey, updatedAt: Date.now(), updatedBy: 'Manager' }, { merge: true });
     showThemeStatus('success', '✅ Đã lưu! Nhân viên sẽ thấy trong 1-2 giây');
     setTimeout(() => { status.classList.add('hidden'); }, 3500);
-  } catch(e) {
-    console.error(e);
-    showThemeStatus('error', '❌ Lỗi: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.textContent = '💾 Lưu chủ đề';
-  }
+  } catch(e) { showThemeStatus('error', '❌ Lỗi: ' + e.message); }
+  finally { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '💾 Lưu chủ đề'; }
 };
 
 window.previewTheme = function() {
   const sel = document.getElementById('theme-select');
   if (!sel) return;
-  const themeKey = sel.value;
-  if (themeKey === 'auto'){
-    window.open('/DolphinApp/', '_blank');
-  } else {
-    window.open('/DolphinApp/?theme=' + themeKey, '_blank');
-  }
+  window.open(sel.value === 'auto' ? '/DolphinApp/' : '/DolphinApp/?theme=' + sel.value, '_blank');
 };
 
 function showThemeStatus(type, text) {
@@ -667,62 +673,40 @@ function showThemeStatus(type, text) {
   status.classList.remove('hidden');
   status.textContent = text;
   if (type === 'error') {
-    status.style.background = 'rgba(239,83,80,.15)';
-    status.style.color = '#ef5350';
-    status.style.border = '1px solid rgba(239,83,80,.4)';
+    status.style.background = 'rgba(239,83,80,.15)'; status.style.color = '#ef5350'; status.style.border = '1px solid rgba(239,83,80,.4)';
   } else {
-    status.style.background = 'rgba(16,185,129,.15)';
-    status.style.color = '#10b981';
-    status.style.border = '1px solid rgba(16,185,129,.4)';
+    status.style.background = 'rgba(16,185,129,.15)'; status.style.color = '#10b981'; status.style.border = '1px solid rgba(16,185,129,.4)';
   }
 }
 
-  // ═══════════════════════════════════════════════════════════
-// ANNOUNCEMENT MANAGEMENT
-// ═══════════════════════════════════════════════════════════
+/* ═══════════════ ANNOUNCEMENT ═══════════════ */
 let announcementListenStarted = false;
 
 function startAnnouncementListener(db) {
   if (announcementListenStarted) return;
   announcementListenStarted = true;
   try {
-    const ref = doc(db, 'master_config', 'announcement');
-    onSnapshot(ref, (snap) => {
+    onSnapshot(doc(db, 'master_config', 'announcement'), (snap) => {
       const data = snap.exists() ? snap.data() : { text: '', active: false };
       const input = document.getElementById('announcement-input');
       const toggle = document.getElementById('announcement-active');
       const meta = document.getElementById('announcement-meta');
       if (!input || !toggle) return;
-
-      if (document.activeElement !== input) {
-        input.value = data.text || '';
-        updateAnnouncementCount();
-      }
+      if (document.activeElement !== input) { input.value = data.text || ''; updateAnnouncementCount(); }
       toggle.checked = data.active === true;
       updateAnnouncementToggle();
-
-      if (meta) {
-        if (data.updatedAt) {
-          const d = new Date(data.updatedAt);
-          const timeStr = d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
-          meta.textContent = '✏️ Cập nhật cuối: ' + timeStr + (data.updatedBy ? ' · ' + data.updatedBy : '');
-        } else {
-          meta.textContent = '';
-        }
+      if (meta && data.updatedAt) {
+        const d = new Date(data.updatedAt);
+        meta.textContent = '✏️ Cập nhật cuối: ' + d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
       }
-    }, (err) => {
-      console.warn('[Announcement] listen error', err);
-    });
-  } catch(e) {
-    console.warn('[Announcement] init error', e);
-  }
+    }, err => console.warn('[Announcement] listen', err));
+  } catch(e) { console.warn('[Announcement] init', e); }
 }
 
 window.updateAnnouncementCount = function() {
   const input = document.getElementById('announcement-input');
   const counter = document.getElementById('announcement-count');
-  if (!input || !counter) return;
-  counter.textContent = input.value.length + ' / 500 ký tự';
+  if (input && counter) counter.textContent = input.value.length + ' / 500 ký tự';
 };
 
 window.updateAnnouncementToggle = function() {
@@ -748,36 +732,16 @@ window.saveAnnouncement = async function() {
   const toggle = document.getElementById('announcement-active');
   const status = document.getElementById('announcement-status');
   const btn = document.getElementById('announcement-save-btn');
-  if (!input || !toggle || !status || !btn || !window.__db) {
-    showAnnouncementStatus('error', '❌ Không tìm thấy Firebase');
-    return;
-  }
+  if (!input || !toggle || !status || !btn || !window.__db) return;
   const text = input.value.trim();
-  if (!text) {
-    showAnnouncementStatus('error', '❌ Vui lòng nhập nội dung thông báo');
-    return;
-  }
-  btn.disabled = true;
-  btn.style.opacity = '.6';
-  btn.textContent = '⏳ Đang lưu...';
+  if (!text) { showAnnouncementStatus('error', '❌ Vui lòng nhập nội dung'); return; }
+  btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = '⏳ Đang lưu...';
   try {
-    const ref = doc(window.__db, 'master_config', 'announcement');
-    await setDoc(ref, {
-      text: text,
-      active: toggle.checked,
-      updatedAt: Date.now(),
-      updatedBy: 'Manager'
-    }, { merge: true });
+    await setDoc(doc(window.__db, 'master_config', 'announcement'), { text, active: toggle.checked, updatedAt: Date.now(), updatedBy: 'Manager' }, { merge: true });
     showAnnouncementStatus('success', '✅ Đã lưu! Nhân viên sẽ thấy trong 1-2 giây');
     setTimeout(() => { status.classList.add('hidden'); }, 3500);
-  } catch(e) {
-    console.error(e);
-    showAnnouncementStatus('error', '❌ Lỗi: ' + e.message);
-  } finally {
-    btn.disabled = false;
-    btn.style.opacity = '1';
-    btn.textContent = '💾 Lưu thông báo';
-  }
+  } catch(e) { showAnnouncementStatus('error', '❌ Lỗi: ' + e.message); }
+  finally { btn.disabled = false; btn.style.opacity = '1'; btn.textContent = '💾 Lưu thông báo'; }
 };
 
 window.clearAnnouncement = async function() {
@@ -797,13 +761,9 @@ function showAnnouncementStatus(type, text) {
   status.classList.remove('hidden');
   status.textContent = text;
   if (type === 'error') {
-    status.style.background = 'rgba(239,83,80,.15)';
-    status.style.color = '#ef5350';
-    status.style.border = '1px solid rgba(239,83,80,.4)';
+    status.style.background = 'rgba(239,83,80,.15)'; status.style.color = '#ef5350'; status.style.border = '1px solid rgba(239,83,80,.4)';
   } else {
-    status.style.background = 'rgba(16,185,129,.15)';
-    status.style.color = '#10b981';
-    status.style.border = '1px solid rgba(16,185,129,.4)';
+    status.style.background = 'rgba(16,185,129,.15)'; status.style.color = '#10b981'; status.style.border = '1px solid rgba(16,185,129,.4)';
   }
 }
 
@@ -817,16 +777,14 @@ function startAnnouncementUIBindings() {
   updateAnnouncementToggle();
 }
 
-// ═══════════════════════════════════════════════════════════
-// REALTIME LISTENERS
-// ═══════════════════════════════════════════════════════════
+/* ═══════════════ REALTIME LISTENERS ═══════════════ */
 function startListeners(db) {
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     if (cfg.colOrders) {
       onSnapshot(collection(db, cfg.colOrders), snap => {
         const arr = [];
         snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
-        arr.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+        arr.sort((a, b) => getTs(b) - getTs(a));
         state.orders[key] = arr;
         renderAll();
       });
@@ -839,41 +797,47 @@ function startListeners(db) {
         renderAll();
       });
     }
-    onSnapshot(collection(db, cfg.colTables), snap => {
-      const obj = {};
-      snap.forEach(d => obj[d.id] = { id: d.id, ...d.data() });
-      state.tables[key] = obj;
-      renderAll();
-    });
+    if (cfg.colTables) {
+      onSnapshot(collection(db, cfg.colTables), snap => {
+        const obj = {};
+        snap.forEach(d => obj[d.id] = { id: d.id, ...d.data() });
+        state.tables[key] = obj;
+        renderAll();
+      });
+    }
   });
 }
 
-// ═══════════════════════════════════════════════════════════
-// RENDER
-// ═══════════════════════════════════════════════════════════
+/* ═══════════════ RENDER ═══════════════ */
 function renderAll() {
   renderStats();
   renderOutlets();
+  renderDrinksTracking();
   renderOrders();
 }
 
 function renderStats() {
   let totalOrders = 0, totalPending = 0, totalOccupied = 0, totalTables = 0, totalGuests = 0;
+  let drinksToday = 0, drinksRevenue = 0;
 
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     const orders = state.orders[key] || [];
     const tables = state.tables[key] || {};
+
+    if (cfg.isDrinks) {
+      const today = orders.filter(o => isToday(getTs(o)));
+      drinksToday = today.length;
+      drinksRevenue = today.filter(o => o.status === 'invoiced').reduce((s, o) => s + (o.totalAmount || 0), 0);
+      return;
+    }
+
     const occupiedCount = Object.keys(tables).length;
-
-    const todayOrders = orders.filter(o => isToday(o.timestamp));
+    const todayOrders = orders.filter(o => isToday(getTs(o)));
     totalOrders += todayOrders.length;
-
     const activeOrders = todayOrders.filter(o => o.status === 'pending' || o.status === 'preparing');
     totalPending += activeOrders.length;
-
     totalOccupied += occupiedCount;
     if (cfg.totalTables) totalTables += cfg.totalTables;
-
     Object.values(tables).forEach(t => {
       if (t.pax) totalGuests += parseInt(t.pax) || 0;
       else if (t.guests) totalGuests += parseInt(t.guests) || 0;
@@ -881,33 +845,74 @@ function renderStats() {
   });
 
   $('s-orders').textContent = totalOrders;
-  $('s-orders-sub').textContent = `Tổng số đơn từ ${Object.keys(OUTLETS).length} outlet`;
   $('s-pending').textContent = totalPending;
-  $('s-pending-sub').textContent = totalPending > 0 ? `⚠️ Cần xử lý ngay` : 'Không có đơn tồn';
   $('s-occupied').textContent = totalOccupied;
   $('s-total-tables').textContent = totalTables || '?';
   $('s-occupied-sub').textContent = totalTables ? `${Math.round((totalOccupied / totalTables) * 100)}% công suất` : 'Trên tổng số bàn';
   $('s-guests').textContent = totalGuests;
-  $('s-guests-sub').textContent = 'Đang được phục vụ';
+  $('s-drinks').textContent = drinksToday;
+  $('s-drinks-revenue').textContent = formatMoney(drinksRevenue);
 }
+
+function formatMoney(n){ return (n || 0).toLocaleString('vi-VN') + 'đ'; }
 
 function renderOutlets() {
   const html = Object.entries(OUTLETS).map(([key, cfg]) => {
     const orders = state.orders[key] || [];
     const tables = state.tables[key] || {};
     const calls = state.calls[key] || [];
+    const todayOrders = orders.filter(o => isToday(getTs(o)));
 
-    const todayOrders = orders.filter(o => isToday(o.timestamp));
+    if (cfg.isDrinks) {
+      const pending = todayOrders.filter(o => o.status === 'pending').length;
+      const served = todayOrders.filter(o => o.status === 'served').length;
+      const received = todayOrders.filter(o => o.status === 'received').length;
+      const invoiced = todayOrders.filter(o => o.status === 'invoiced').length;
+      const revenue = todayOrders.filter(o => o.status === 'invoiced').reduce((s, o) => s + (o.totalAmount || 0), 0);
+      return `
+        <div class="glass outlet-card" style="border-left:4px solid ${cfg.accent}">
+          <div class="flex items-center justify-between mb-3">
+            <div class="flex items-center gap-2">
+              <span class="text-2xl">${cfg.icon}</span>
+              <div>
+                <div class="font-black text-white text-[13px] uppercase tracking-wide">${cfg.name}</div>
+                <div class="text-[10px]" style="color:${cfg.accent}">${todayOrders.length} đơn hôm nay</div>
+              </div>
+            </div>
+            ${pending > 0 ? `<span class="state-chip state-pending animate-pulse">${pending} CHỜ</span>` : ''}
+          </div>
+          <div class="grid grid-cols-2 gap-2 mb-2">
+            <div class="bg-black/30 rounded-lg p-2 text-center">
+              <div class="text-[9px] text-teal-400 font-bold uppercase">Chờ PV</div>
+              <div class="text-base font-black text-amber-400 tabular">${pending}</div>
+            </div>
+            <div class="bg-black/30 rounded-lg p-2 text-center">
+              <div class="text-[9px] text-teal-400 font-bold uppercase">Đã PV</div>
+              <div class="text-base font-black text-cyan-400 tabular">${served}</div>
+            </div>
+            <div class="bg-black/30 rounded-lg p-2 text-center">
+              <div class="text-[9px] text-teal-400 font-bold uppercase">Đã nhận</div>
+              <div class="text-base font-black text-indigo-400 tabular">${received}</div>
+            </div>
+            <div class="bg-black/30 rounded-lg p-2 text-center">
+              <div class="text-[9px] text-teal-400 font-bold uppercase">Hóa đơn</div>
+              <div class="text-base font-black text-emerald-400 tabular">${invoiced}</div>
+            </div>
+          </div>
+          <div class="bg-black/30 rounded-lg p-2 text-center">
+            <div class="text-[9px] text-teal-400 font-bold uppercase">Doanh thu</div>
+            <div class="text-sm font-black tabular" style="color:${cfg.accent}">${formatMoney(revenue)}</div>
+          </div>
+        </div>`;
+    }
+
     const pending = todayOrders.filter(o => o.status === 'pending').length;
     const preparing = todayOrders.filter(o => o.status === 'preparing').length;
     const completed = todayOrders.filter(o => o.status === 'completed').length;
     const occupied = Object.keys(tables).length;
 
     let guests = 0;
-    Object.values(tables).forEach(t => {
-      guests += parseInt(t.pax) || parseInt(t.guests) || 0;
-    });
-
+    Object.values(tables).forEach(t => { guests += parseInt(t.pax) || parseInt(t.guests) || 0; });
     const tableInfo = cfg.totalTables ? `${occupied}/${cfg.totalTables}` : occupied;
 
     return `
@@ -942,16 +947,86 @@ function renderOutlets() {
   $('outlet-grid').innerHTML = html;
 }
 
+/* ═══════════════ DRINKS TRACKING ═══════════════ */
+function renderDrinksTracking() {
+  const drinks = state.orders.drinks || [];
+  const today = drinks.filter(o => isToday(getTs(o)));
+
+  const counts = { pending: 0, served: 0, received: 0, invoiced: 0, cancelled: 0 };
+  today.forEach(o => { if (counts[o.status] !== undefined) counts[o.status]++; });
+
+  $('drinks-total').textContent = today.length;
+  $('dc-all').textContent = today.length;
+  $('dc-pending').textContent = counts.pending;
+  $('dc-served').textContent = counts.served;
+  $('dc-received').textContent = counts.received;
+  $('dc-invoiced').textContent = counts.invoiced;
+  $('dc-cancelled').textContent = counts.cancelled;
+
+  let filtered = today;
+  if (state.drinksFilter !== 'all') {
+    filtered = filtered.filter(o => o.status === state.drinksFilter);
+  }
+  filtered.sort((a, b) => getTs(b) - getTs(a));
+
+  const list = document.getElementById('drinks-list');
+  if (!filtered.length) {
+    list.innerHTML = '<div class="text-center py-10 text-teal-500 font-bold text-[12px]">Không có đơn đồ uống nào</div>';
+    return;
+  }
+
+  list.innerHTML = filtered.slice(0, 100).map(o => {
+    const st = DRINK_STATUS[o.status] || DRINK_STATUS.pending;
+    const itemsHtml = (o.items || []).map(it => {
+      const nm = it.displayName || it.name || 'Món';
+      return `${nm} <span class="text-gold-400 font-black">x${it.qty}</span>`;
+    }).join(' · ') || '<span class="text-teal-500 italic">Chưa có món</span>';
+
+    const staffName = (o.allStaffNames || [o.staffName]).join(', ');
+
+    return `
+      <div class="order-row" style="border-left:3px solid #a78bfa">
+        <div class="flex items-start gap-3 flex-wrap">
+          <div class="flex items-center gap-2 shrink-0">
+            <span class="text-lg">🍹</span>
+            <div>
+              <div class="text-[10px] text-purple-300 font-bold uppercase">${o.tableArea || 'Khu vực'}</div>
+              <div class="text-[13px] font-black text-white tabular">Bàn ${o.table || '--'}</div>
+            </div>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <div class="text-[11.5px] text-white/90 leading-snug">${itemsHtml}</div>
+            ${o.specialNotes ? `<div class="text-[10px] text-gold-400/80 mt-1 italic">📝 ${o.specialNotes}</div>` : ''}
+            <div class="text-[10px] text-teal-400 mt-1">👤 ${staffName}</div>
+          </div>
+          <div class="flex flex-col items-end gap-1 shrink-0">
+            <div class="text-[10px] text-teal-300 tabular">${o.createdTimeString || '--:--'}</div>
+            <span class="state-chip ${st.cls}">${st.label}</span>
+            <div class="text-[11px] font-black tabular" style="color:#a78bfa">${formatMoney(o.totalAmount || 0)}</div>
+          </div>
+        </div>
+      </div>`;
+  }).join('');
+}
+
+document.querySelectorAll('#drinks-filter-chips .chip').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('#drinks-filter-chips .chip').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    state.drinksFilter = btn.dataset.dfilter;
+    renderDrinksTracking();
+  };
+});
+
+/* ═══════════════ REALTIME ORDERS (4 outlets) ═══════════════ */
 function renderOrders() {
   const all = [];
-  Object.entries(state.orders).forEach(([key, arr]) => {
-    arr.forEach(o => all.push({ ...o, _outlet: key }));
+  ['bungalow', 'lounge', 'restaurant'].forEach(key => {
+    (state.orders[key] || []).forEach(o => all.push({ ...o, _outlet: key }));
   });
   Object.entries(state.tables.show || {}).forEach(([id, t]) => {
     all.push({
-      _outlet: 'show',
-      _isShow: true,
-      id: 'show-' + id,
+      _outlet: 'show', _isShow: true, id: 'show-' + id,
       table: t.label || id.replace(/-/g, ' '),
       time: t.service?.savedAt ? new Date(t.service.savedAt).toLocaleTimeString('en-US', { timeZone: 'Asia/Ho_Chi_Minh', hour: '2-digit', minute: '2-digit' }) : '--',
       timestamp: t.service?.savedAt || t.updatedAt || 0,
@@ -1034,7 +1109,6 @@ function renderOrders() {
   $('orders-list').innerHTML = html;
 }
 
-// ──── FILTER CHIPS ────
 document.querySelectorAll('#filter-chips .chip').forEach(btn => {
   btn.onclick = () => {
     document.querySelectorAll('#filter-chips .chip').forEach(b => b.classList.remove('active'));
@@ -1044,13 +1118,12 @@ document.querySelectorAll('#filter-chips .chip').forEach(btn => {
   };
 });
 
-// ──── SEARCH ────
 $('search-input').addEventListener('input', e => {
   state.search = e.target.value;
   renderOrders();
 });
 
-// ──── HISTORY LOOKUP ────
+/* ═══════════════ HISTORY LOOKUP ═══════════════ */
 $('h-search-btn').onclick = async () => {
   const db = window.__db;
   if (!db) return;
@@ -1064,19 +1137,17 @@ $('h-search-btn').onclick = async () => {
   $('h-body').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gold-400 font-bold animate-pulse">Đang tải...</td></tr>`;
   $('h-summary').textContent = '';
 
-  const targets = outlet ? [outlet] : Object.keys(OUTLETS);
+  const targets = outlet ? [outlet] : ['bungalow', 'lounge', 'restaurant', 'show'];
   const allRows = [];
 
   for (const key of targets) {
     const cfg = OUTLETS[key];
     if (!cfg.colHistory) continue;
     try {
-      let q = query(collection(db, cfg.colHistory), where('date', '==', date));
-      const snap = await getDocs(q);
+      const snap = await getDocs(query(collection(db, cfg.colHistory), where('date', '==', date)));
       snap.forEach(d => {
         const data = d.data();
         if (shift && data.shift && data.shift !== shift && shift !== 'Cả Ngày') return;
-
         if (data.orders && Array.isArray(data.orders)) {
           data.orders.forEach(o => allRows.push({ _outlet: key, ...o, _shift: data.shift }));
         }
@@ -1085,13 +1156,9 @@ $('h-search-btn').onclick = async () => {
             const items = Object.entries(b.service?.drinks || {}).map(([k, v]) => `${k} x${v}`)
               .concat(Object.entries(b.service?.foods || {}).map(([k, v]) => `${k} x${v}`));
             allRows.push({
-              _outlet: key,
-              _shift: data.shift,
-              table: b.label,
-              time: '--',
+              _outlet: key, _shift: data.shift, table: b.label, time: '--',
               items: items.map(t => ({ name: { VI: t }, qty: 1 })),
-              preparedBy: b.seller,
-              completedBy: b.leader,
+              preparedBy: b.seller, completedBy: b.leader,
               status: b.service ? 'completed' : 'pending'
             });
           });
@@ -1139,7 +1206,7 @@ $('h-search-btn').onclick = async () => {
   }).join('');
 };
 
-setInterval(renderOrders, 30000);
+setInterval(() => { renderOrders(); renderDrinksTracking(); }, 30000);
 </script>
 </body>
 </html>

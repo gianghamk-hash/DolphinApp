@@ -1,7 +1,7 @@
 {
-  "version": "1.0.9",
-  "buildDate": "2026-10-14T01:34:07.524Z",
-  "commit": "bed6632",
-  "notes": "Thêm app Thu ngân + cập nhật landing + menu đồ uống",
+  "version": "1.0.10",
+  "buildDate": "2026-10-14T01:45:08.696Z",
+  "commit": "3ba58c2",
+  "notes": "Dashboard: thêm Drinks tracking + gom setting",
   "forceUpdate": false
 }

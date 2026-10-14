@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.9",
+      "releaseDate": "2026-10-14T01:34:07.524Z",
+      "summary": "Thêm app Thu ngân + cập nhật landing + menu đồ uống",
+      "details": [
+        "Thêm app Thu ngân + cập nhật landing + menu đồ uống"
+      ]
+    },
+    {
       "version": "1.0.8",
       "releaseDate": "2026-10-14T01:23:56.502Z",
       "summary": "Bổ sung đầy đủ bàn Sun View Restaurant + bàn",

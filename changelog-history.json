@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.29",
+      "releaseDate": "2026-10-14T15:52:57.985Z",
+      "summary": "xóa note",
+      "details": [
+        "xóa note"
+      ]
+    },
+    {
       "version": "1.0.28",
       "releaseDate": "2026-10-14T15:49:25.117Z",
       "summary": "Landing: Reminder watcher + popup đỏ + notif permission",

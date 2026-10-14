@@ -1,22 +1,22 @@
 {
-  "version": "1.0.29",
-  "previousVersion": "1.0.28",
-  "commit": "dcdaaf3",
-  "previousCommit": "e314be0",
-  "buildDate": "2026-10-14T15:52:57.985Z",
-  "summary": "xóa note",
+  "version": "1.0.30",
+  "previousVersion": "1.0.29",
+  "commit": "15cb5ff",
+  "previousCommit": "dcdaaf3",
+  "buildDate": "2026-10-14T15:57:41.298Z",
+  "summary": "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard",
   "changes": {
-    "totalCommits": 33,
+    "totalCommits": 34,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "xóa note"
+    "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/notes.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

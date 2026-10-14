@@ -1,5 +1,5 @@
 {
-  "version": "1.0.11",
+  "version": "1.0.12",
   "releaseDate": "2026-10-14",
-  "notes": "Gỡ toàn bộ tracking đồ uống khỏi dashboard"
+  "notes": "Khôi phục 3 card Lounge/Bungalow/Restaurant"
 }

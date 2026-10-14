@@ -1,22 +1,22 @@
 {
-  "version": "1.0.11",
-  "previousVersion": "1.0.10",
-  "commit": "63957de",
-  "previousCommit": "3ba58c2",
-  "buildDate": "2026-10-14T02:12:23.361Z",
-  "summary": "Gỡ toàn bộ tracking đồ uống khỏi dashboard",
+  "version": "1.0.12",
+  "previousVersion": "1.0.11",
+  "commit": "9827dab",
+  "previousCommit": "63957de",
+  "buildDate": "2026-10-14T03:02:11.744Z",
+  "summary": "Khôi phục 3 card Lounge/Bungalow/Restaurant",
   "changes": {
-    "totalCommits": 15,
+    "totalCommits": 16,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Gỡ toàn bộ tracking đồ uống khỏi dashboard"
+    "Khôi phục 3 card Lounge/Bungalow/Restaurant"
   ],
   "fileChanges": [
     {
-      "file": "manager/dashboard.html",
+      "file": "index.html",
       "type": "update"
     }
   ]

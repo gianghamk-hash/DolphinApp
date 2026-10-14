@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.11",
+      "releaseDate": "2026-10-14T02:12:23.361Z",
+      "summary": "Gỡ toàn bộ tracking đồ uống khỏi dashboard",
+      "details": [
+        "Gỡ toàn bộ tracking đồ uống khỏi dashboard"
+      ]
+    },
+    {
       "version": "1.0.10",
       "releaseDate": "2026-10-14T01:45:08.696Z",
       "summary": "Dashboard: thêm Drinks tracking + gom setting",

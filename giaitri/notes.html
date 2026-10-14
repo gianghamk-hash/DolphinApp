@@ -60,7 +60,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   50%{transform:scale(1.15)}
 }
 
-/* ═══ NOTE CARD (giữ nguyên) ═══ */
+/* ═══ NOTE CARD ═══ */
 .note-card{
   background:linear-gradient(135deg,rgba(26,74,69,.85),rgba(13,42,40,.85));
   border:1px solid rgba(55,137,123,.4);
@@ -221,7 +221,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 #remInput::placeholder{color:rgba(126,201,190,.6)}
 #remTimeInput{color-scheme:dark;font-weight:800;font-size:14px}
 
-/* ═══ TEXTAREA NOTE (giữ nguyên) ═══ */
+/* ═══ TEXTAREA NOTE ═══ */
 #noteInput{
   width:100%;background:rgba(10,30,28,.7);
   border:2px solid rgba(55,137,123,.5);
@@ -294,7 +294,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 }
 .pin-input:focus{border-color:#FBD77A}
 
-/* ═══ ALARM FIRE MODAL — ĐẶC BIỆT ═══ */
+/* ═══ ALARM FIRE MODAL ═══ */
 #alarmModal{
   background:rgba(0,0,0,.92);
   z-index:10001;
@@ -343,6 +343,29 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   font-size:11px;color:#fca5a5;font-weight:700;
   margin-bottom:16px;
 }
+
+/* ═══ NOTIF PERMISSION BTN ═══ */
+.notif-btn{
+  display:inline-flex;align-items:center;justify-content:center;gap:5px;
+  padding:8px 12px;border-radius:10px;
+  background:rgba(244,184,66,.15);
+  border:1px solid rgba(244,184,66,.5);
+  color:#FBD77A;font-weight:800;font-size:11px;
+  cursor:pointer;font-family:inherit;
+  transition:all .15s;
+}
+.notif-btn:active{transform:scale(.95)}
+.notif-btn.granted{
+  background:linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.08));
+  border-color:rgba(16,185,129,.6);
+  color:#6ee7b7;
+  cursor:default;
+}
+.notif-btn.denied{
+  background:rgba(239,83,80,.15);
+  border-color:rgba(239,83,80,.5);
+  color:#ef5350;
+}
 </style>
 </head>
 <body class="pb-6">
@@ -355,6 +378,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
       <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
       <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Sổ Tay Chung</p>
     </div>
+    <button id="notifPermBtn" onclick="toggleNotifPermission()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95" title="Bật thông báo">🔕</button>
     <button onclick="openRules()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">❓</button>
   </div>
 </div>
@@ -425,7 +449,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   <!-- ═══════════════════════════════════ -->
   <div id="tab-reminders" class="tab-panel hidden">
 
-    <!-- FORM TẠO BÁO THỨC -->
     <div class="glass rounded-2xl p-4 mb-4">
       <div class="flex items-center gap-2 mb-3">
         <span class="text-[11px] font-black text-gold-400 uppercase tracking-widest">⏰ Báo thức mới</span>
@@ -458,7 +481,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
       </div>
     </div>
 
-    <!-- FILTERS -->
     <div class="flex gap-2 overflow-x-auto pb-2 mb-3">
       <button class="filter-btn active" data-remfilter="all" onclick="setRemFilter('all')">📋 Tất cả</button>
       <button class="filter-btn" data-remfilter="upcoming" onclick="setRemFilter('upcoming')">⏳ Sắp tới</button>
@@ -510,7 +532,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
     </div>
 
     <div class="text-[12px] font-black text-red-400 uppercase tracking-wider mb-2">⏰ Tab Báo Thức</div>
-    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed">
+    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed mb-4">
       <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
         <b class="text-red-400">Báo thức chung:</b> Khi đến giờ, <b>TẤT CẢ nhân viên</b> đang mở app sẽ cùng nhận thông báo — có chuông + rung + popup đỏ
       </div>
@@ -518,13 +540,23 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
         <b class="text-red-400">Chọn nhanh:</b> +5p / +10p / +30p / +1h / +2h — hoặc chọn giờ cụ thể
       </div>
       <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
-        <b class="text-red-400">Đếm ngược:</b> Hiện thời gian còn lại theo thời gian thực
-      </div>
-      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
         <b class="text-red-400">Tự dọn:</b> Báo thức cũ > 7 ngày tự xóa
       </div>
-      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #ef4444">
-        <b class="text-red-400">Chỉ chạy khi mở app:</b> Nếu tắt hẳn app → không nhận. Hãy để tab Sổ Tay mở trong ca trực để không bỏ lỡ.
+    </div>
+
+    <div class="text-[12px] font-black text-emerald-400 uppercase tracking-wider mb-2">🔔 Nút Chuông Trên Header</div>
+    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed">
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #10B981">
+        Bấm <b class="text-emerald-400">🔕</b> → cho phép thông báo → nút chuyển thành <b>🔔</b>
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #10B981">
+        Khi bật, tab ẩn vẫn nhận thông báo hệ thống (góc màn hình)
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #10B981">
+        <b>Cần giữ tab mở</b> — nếu tắt hẳn browser thì không nhận
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #10B981">
+        iPhone cần <b>cài PWA vào màn hình chính</b> + iOS 16.4+
       </div>
     </div>
 
@@ -532,7 +564,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   </div>
 </div>
 
-<!-- MODAL ALARM FIRE — POPUP ĐỎ KHI ĐẾN GIỜ -->
+<!-- MODAL ALARM FIRE -->
 <div id="alarmModal" class="modal">
   <div class="modal-card">
     <div class="alarm-icon">🔔</div>
@@ -561,8 +593,8 @@ const MANAGER_PIN = '451994';
 const MAX_LEN = 1000;
 const AUTO_CLEAN_DAYS = 30;
 const REM_CLEAN_DAYS = 7;
-const REM_FIRE_WINDOW = 24 * 60 * 60 * 1000; // 24h
-const SOON_THRESHOLD = 5 * 60 * 1000; // 5 phút
+const REM_FIRE_WINDOW = 24 * 60 * 60 * 1000;
+const SOON_THRESHOLD = 5 * 60 * 1000;
 
 let db = null;
 let fbReady = false;
@@ -574,6 +606,7 @@ let pendingDeleteId = null;
 let pendingDeleteType = 'note';
 let currentTab = 'notes';
 let currentAlarm = null;
+let firstNotesLoad = true;
 
 // ═══════════════════════ HELPERS ═══════════════════════
 function $(id){ return document.getElementById(id); }
@@ -656,6 +689,91 @@ function countdownText(fireAt){
   return 'Còn ' + day + ' ngày' + (remHr > 0 ? ' ' + remHr + 'h' : '');
 }
 
+// ═══════════════════════ NOTIFICATION PERMISSION (Mức 2) ═══════════════════════
+function updateNotifBtn(){
+  const btn = $('notifPermBtn');
+  if (!btn) return;
+  if (!('Notification' in window)){
+    btn.textContent = '🚫';
+    btn.title = 'Thiết bị không hỗ trợ thông báo';
+    btn.style.opacity = '.5';
+    return;
+  }
+  const perm = Notification.permission;
+  if (perm === 'granted'){
+    btn.textContent = '🔔';
+    btn.title = 'Thông báo đã bật';
+    btn.classList.add('granted');
+    btn.classList.remove('denied');
+  } else if (perm === 'denied'){
+    btn.textContent = '🔕';
+    btn.title = 'Thông báo bị chặn — bật lại trong cài đặt trình duyệt';
+    btn.classList.add('denied');
+    btn.classList.remove('granted');
+  } else {
+    btn.textContent = '🔕';
+    btn.title = 'Bấm để bật thông báo khi tab ẩn';
+    btn.classList.remove('granted', 'denied');
+  }
+}
+
+window.toggleNotifPermission = async function(){
+  if (!('Notification' in window)){
+    if (window.showToast) window.showToast('Thiết bị không hỗ trợ thông báo', '⚠️');
+    return;
+  }
+  if (Notification.permission === 'granted'){
+    if (window.showToast) window.showToast('Thông báo đã bật rồi!', '🔔');
+    return;
+  }
+  if (Notification.permission === 'denied'){
+    if (window.showToast) window.showToast('Bị chặn — vào cài đặt trình duyệt để bật lại', '🚫');
+    return;
+  }
+  try {
+    const perm = await Notification.requestPermission();
+    updateNotifBtn();
+    if (perm === 'granted'){
+      if (window.showToast) window.showToast('Đã bật thông báo!', '🔔');
+      setTimeout(function(){
+        try {
+          new Notification('Dolphin · Đã bật thông báo', {
+            body: 'Bạn sẽ nhận thông báo khi tab ẩn',
+            icon: '/DolphinApp/pwa-icons/icon-192.png',
+            tag: 'dolphin-test'
+          });
+        } catch(e){}
+      }, 500);
+    } else if (perm === 'denied'){
+      if (window.showToast) window.showToast('Bạn đã từ chối quyền thông báo', '⚠️');
+    }
+  } catch(e){
+    if (window.showToast) window.showToast('Lỗi yêu cầu quyền', '❌');
+  }
+};
+
+function showSystemNotification(title, body, tag){
+  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
+  if (!document.hidden) return false;
+  try {
+    const n = new Notification(title, {
+      body: body,
+      icon: '/DolphinApp/pwa-icons/icon-192.png',
+      badge: '/DolphinApp/pwa-icons/icon-96.png',
+      tag: tag || 'dolphin-notif',
+      requireInteraction: true
+    });
+    n.onclick = function(){
+      window.focus();
+      n.close();
+    };
+    return true;
+  } catch(e){
+    console.warn('[Notif] fail:', e);
+    return false;
+  }
+}
+
 // ═══════════════════════ FIREBASE INIT ═══════════════════════
 try {
   const app = initializeApp(firebaseConfig, 'notes-app');
@@ -708,6 +826,7 @@ function listenNotes(){
   if (!db) return;
   const q = query(collection(db, COL_NOTES), orderBy('timestamp', 'desc'));
   onSnapshot(q, function(snap){
+    const changes = snap.docChanges();
     allNotes = [];
     snap.forEach(function(d){ allNotes.push(Object.assign({ id: d.id }, d.data())); });
     allNotes.sort(function(a, b){
@@ -716,6 +835,24 @@ function listenNotes(){
       return (b.timestamp || 0) - (a.timestamp || 0);
     });
     renderNotes();
+
+    // Notif cho note mới (không phải lần load đầu)
+    if (!firstNotesLoad){
+      const me = getStaffName();
+      changes.forEach(function(ch){
+        if (ch.type === 'added'){
+          const n = ch.doc.data();
+          if (n.author !== me){
+            showSystemNotification(
+              '📝 ' + (n.author || 'Ai đó') + ' vừa ghi chú',
+              (n.text || '').substring(0, 80),
+              'note-' + ch.doc.id
+            );
+          }
+        }
+      });
+    }
+    firstNotesLoad = false;
   }, function(err){
     console.warn('[Notes] Listen fail:', err);
     updateCloudStatus('offline');
@@ -878,8 +1015,6 @@ function updateRemBadge(){
   if (count > 0){
     badge.textContent = count > 99 ? '99+' : String(count);
     badge.style.display = 'block';
-    // Nếu có reminder sắp tới trong 5p → badge đỏ pulse
-    // Nếu chỉ upcoming xa → màu vàng nhạt hơn
     if (soon.length > 0){
       badge.style.background = '#ef4444';
     } else {
@@ -903,7 +1038,6 @@ window.renderReminders = function(){
   else if (currentRemFilter === 'today') list = list.filter(function(r){ return isToday(r.fireAt); });
   else if (currentRemFilter === 'passed') list = list.filter(function(r){ return r.fireAt <= now; });
 
-  // Sắp xếp: upcoming theo fireAt tăng dần, passed theo fireAt giảm dần
   list.sort(function(a, b){
     const aPassed = a.fireAt <= now;
     const bPassed = b.fireAt <= now;
@@ -966,7 +1100,6 @@ window.setRemFilter = function(f){
 // ═══════════════════════ CREATE REMINDER ═══════════════════════
 window.setQuickTime = function(minutes){
   const target = new Date(Date.now() + minutes * 60 * 1000);
-  // Format YYYY-MM-DDTHH:MM (giờ local device)
   const y = target.getFullYear();
   const mo = String(target.getMonth() + 1).padStart(2, '0');
   const d = String(target.getDate()).padStart(2, '0');
@@ -1031,7 +1164,7 @@ window.postReminder = async function(){
   }
 };
 
-// ═══════════════════════ EDIT REMINDER (chỉ sửa giờ) ═══════════════════════
+// ═══════════════════════ EDIT REMINDER ═══════════════════════
 window.openRemEdit = function(id){
   const r = allReminders.find(function(x){ return x.id === id; });
   if (!r) return;
@@ -1102,21 +1235,17 @@ window.verifyPin = function(){
 
 // ═══════════════════════ ALARM WATCHER ═══════════════════════
 function startAlarmWatcher(){
-  // Kiểm tra mỗi 5s
   setInterval(function(){
     checkAndFireAlarms();
     updateCountdowns();
     updateRemBadge();
-    // Re-render list mỗi 30s để update tag sắp tới
     if (currentTab === 'reminders') renderReminders();
   }, 5000);
 
-  // Cũng check khi tab visible
   document.addEventListener('visibilitychange', function(){
     if (!document.hidden) checkAndFireAlarms();
   });
 
-  // Check ngay lập tức
   setTimeout(checkAndFireAlarms, 1500);
 }
 
@@ -1125,19 +1254,37 @@ function checkAndFireAlarms(){
   for (let i = 0; i < allReminders.length; i++){
     const r = allReminders[i];
     if (r.fireAt > now) continue;
-    if (now - r.fireAt > REM_FIRE_WINDOW) continue; // quá cũ > 24h
+    if (now - r.fireAt > REM_FIRE_WINDOW) continue;
     const firedKey = 'dolphin_rem_fired_' + r.id;
     if (localStorage.getItem(firedKey)) continue;
 
-    // Fire!
     localStorage.setItem(firedKey, String(now));
     showAlarmPopup(r);
-    break; // Chỉ fire 1 cái 1 lúc — tránh spam
+    break;
   }
 }
 
 function showAlarmPopup(r){
   currentAlarm = r;
+
+  // Nếu tab ẩn → hiện system notification thay vì modal
+  if (document.hidden){
+    const shown = showSystemNotification(
+      '🔔 BÁO THỨC: ' + (r.author || 'Team'),
+      r.text || '',
+      'alarm-' + r.id
+    );
+    if (shown){
+      initAlarmAudio();
+      playAlarmSound();
+      if (navigator.vibrate){
+        try { navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300]); } catch(e){}
+      }
+      return;
+    }
+  }
+
+  // Tab active → hiện modal
   const modal = $('alarmModal');
   $('alarmBody').textContent = r.text || '';
   $('alarmMeta').innerHTML = '👤 ' + escapeHtml(r.author || 'Ẩn danh') + ' · 🕒 ' + formatTime(r.fireAt);
@@ -1152,7 +1299,6 @@ window.closeAlarm = function(){
   $('alarmModal').classList.remove('show');
   currentAlarm = null;
   stopAlarmSound();
-  // Check cái tiếp theo nếu có
   setTimeout(checkAndFireAlarms, 800);
 };
 
@@ -1182,7 +1328,6 @@ function playAlarmSound(){
     const ctx = alarmAudioCtx;
     const now = ctx.currentTime;
 
-    // Pattern: 3 tiếng beep cao, cách nhau 0.12s
     for (let i = 0; i < 3; i++){
       const t = now + i * 0.13;
       [1, 2].forEach(function(mult){
@@ -1207,10 +1352,9 @@ function stopAlarmSound(){
   if (alarmInterval){ clearInterval(alarmInterval); alarmInterval = null; }
 }
 
-// ═══════════════════════ COUNTDOWN LIVE UPDATE ═══════════════════════
+// ═══════════════════════ COUNTDOWN LIVE ═══════════════════════
 function updateCountdowns(){
   const els = document.querySelectorAll('.rem-countdown[data-fireat]');
-  const now = Date.now();
   els.forEach(function(el){
     const fireAt = parseInt(el.dataset.fireat, 10);
     const txt = el.querySelector('.cd-text');
@@ -1263,6 +1407,8 @@ window.goBack = function(){
 
 // ═══════════════════════ INIT ═══════════════════════
 function init(){
+  updateNotifBtn();
+
   const name = getStaffName();
   const nameEl = $('authorName');
   const remNameEl = $('remAuthorName');
@@ -1301,7 +1447,7 @@ function init(){
     document.addEventListener(ev, initAlarmAudio, { once: true, passive: true });
   });
 
-  console.log('%c📝 SỔ TAY + BÁO THỨC LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  console.log('%c📝 SỔ TAY + BÁO THỨC + NOTIF LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 }
 
 if (document.readyState === 'loading'){

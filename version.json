@@ -1,7 +1,7 @@
 {
-  "version": "1.0.24",
-  "buildDate": "2026-10-14T09:52:09.545Z",
-  "commit": "1e30bbb",
-  "notes": "Block Blast v5: unified coordinate system",
+  "version": "1.0.25",
+  "buildDate": "2026-10-14T09:56:32.611Z",
+  "commit": "78c2822",
+  "notes": "Block Blast v6: ghost = preview chung 1 tọa độ",
   "forceUpdate": false
 }

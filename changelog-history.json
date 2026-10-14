@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.24",
+      "releaseDate": "2026-10-14T09:52:09.545Z",
+      "summary": "Block Blast v5: unified coordinate system",
+      "details": [
+        "Block Blast v5: unified coordinate system"
+      ]
+    },
+    {
       "version": "1.0.23",
       "releaseDate": "2026-10-14T09:23:56.516Z",
       "summary": "Block Blast v2.2: preview chính xác 100% + hiệu ứng đẹp",

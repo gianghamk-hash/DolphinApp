@@ -1,18 +1,18 @@
 {
-  "version": "1.0.24",
-  "previousVersion": "1.0.23",
-  "commit": "1e30bbb",
-  "previousCommit": "9c08694",
-  "buildDate": "2026-10-14T09:52:09.545Z",
-  "summary": "Block Blast v5: unified coordinate system",
+  "version": "1.0.25",
+  "previousVersion": "1.0.24",
+  "commit": "78c2822",
+  "previousCommit": "1e30bbb",
+  "buildDate": "2026-10-14T09:56:32.611Z",
+  "summary": "Block Blast v6: ghost = preview chung 1 tọa độ",
   "changes": {
-    "totalCommits": 28,
+    "totalCommits": 29,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Block Blast v5: unified coordinate system"
+    "Block Blast v6: ghost = preview chung 1 tọa độ"
   ],
   "fileChanges": [
     {

@@ -1,0 +1,719 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · Cờ Vua</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/chess.js/0.10.3/chess.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;overflow-x:hidden}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:active{transform:scale(.96)}
+.btn-gold:disabled{opacity:.45;cursor:not-allowed}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(.96)}
+.btn-outline:disabled{opacity:.45;cursor:not-allowed}
+
+/* BOARD */
+#chessBoard{
+  display:grid;
+  grid-template-columns:repeat(8,1fr);
+  grid-template-rows:repeat(8,1fr);
+  width:100%;
+  max-width:min(94vw, 500px);
+  aspect-ratio:1;
+  margin:0 auto;
+  border-radius:12px;
+  overflow:hidden;
+  border:3px solid #8B6F3D;
+  box-shadow:0 8px 32px rgba(0,0,0,.5), inset 0 0 30px rgba(139,111,61,.2);
+}
+.sq{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;user-select:none;
+  transition:background .15s;
+  font-size:clamp(24px, 7.5vw, 48px);
+  line-height:1;
+}
+.sq.light{background:#F0D9B5}
+.sq.dark{background:#B58863}
+.sq.sel{background:#FBD77A !important;box-shadow:inset 0 0 0 3px #F4B842}
+.sq.valid::after{
+  content:'';position:absolute;
+  width:28%;height:28%;border-radius:50%;
+  background:rgba(20,80,40,.55);
+  pointer-events:none;z-index:1;
+}
+.sq.valid.capture::after{
+  width:86%;height:86%;
+  background:transparent;
+  border:4px solid rgba(220,50,50,.75);
+  border-radius:50%;
+}
+.sq.check{background:radial-gradient(circle,rgba(220,38,38,.85) 0%,rgba(220,38,38,.35) 55%,transparent 100%) !important}
+.sq.lastmove{box-shadow:inset 0 0 0 3px rgba(244,184,66,.65)}
+.sq.lastmove.sel{box-shadow:inset 0 0 0 3px #F4B842}
+.pc{
+  position:relative;z-index:2;
+  pointer-events:none;
+  font-family:'Segoe UI Symbol','Apple Color Emoji',sans-serif;
+}
+.pc.w{color:#FFF;text-shadow:0 0 2px #000, 0 1px 2px rgba(0,0,0,.5), 0 2px 4px rgba(0,0,0,.4)}
+.pc.b{color:#1a1a1a;text-shadow:0 0 2px rgba(255,255,255,.25), 0 1px 3px rgba(255,255,255,.15)}
+
+.coord{position:absolute;font-size:9px;font-weight:800;font-family:'Nunito',sans-serif;pointer-events:none;z-index:3}
+.coord.rank{top:2px;left:4px}
+.coord.file{bottom:2px;right:4px}
+.sq.light .coord{color:#7A5A38}
+.sq.dark .coord{color:#F0D9B5;opacity:.9}
+
+/* MODE SELECT */
+.mode-btn{flex:1;padding:14px 8px;border-radius:12px;font-weight:900;font-size:12.5px;
+  border:2px solid rgba(55,137,123,.4);background:rgba(25,71,67,.5);color:#bfe9dc;
+  cursor:pointer;font-family:inherit;transition:all .2s;display:flex;flex-direction:column;
+  align-items:center;gap:4px;text-align:center}
+.mode-btn.active{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent;
+  box-shadow:0 4px 14px rgba(244,184,66,.5)}
+.mode-btn .sub{font-size:9.5px;font-weight:700;opacity:.75;font-style:italic}
+.mode-btn.active .sub{opacity:.9}
+
+/* MODAL */
+.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);
+  z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;
+  padding:28px;max-width:340px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);
+  animation:popIn .35s cubic-bezier(.16,1,.3,1)}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+
+/* PROMOTION */
+.promo-btn{width:64px;height:64px;border-radius:14px;background:rgba(25,71,67,.6);
+  border:2px solid rgba(244,184,66,.5);font-size:38px;line-height:1;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;transition:all .15s;
+  font-family:'Segoe UI Symbol','Apple Color Emoji',sans-serif;padding:0}
+.promo-btn:hover{background:rgba(244,184,66,.2);transform:scale(1.08)}
+.promo-btn:active{transform:scale(.95)}
+.promo-btn.w{color:#FFF;text-shadow:0 0 2px #000, 0 1px 2px rgba(0,0,0,.5)}
+.promo-btn.b{color:#1a1a1a}
+</style>
+</head>
+<body class="pb-6">
+
+<!-- HEADER -->
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <div class="text-center flex-1">
+      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
+      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Cờ Vua</p>
+    </div>
+    <button onclick="openRules()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">❓</button>
+  </div>
+</div>
+
+<div class="max-w-2xl mx-auto px-4 pt-5">
+
+  <!-- MENU VIEW -->
+  <div id="menuView">
+    <div class="glass rounded-2xl p-5 mb-4 text-center">
+      <div class="text-5xl mb-2">♞</div>
+      <h2 class="text-[16px] font-black text-gold-400 uppercase tracking-widest mb-1">CỜ VUA</h2>
+      <p class="text-[12px] text-teal-300 mb-5">Chơi với đồng nghiệp hoặc đấu với Máy</p>
+
+      <div class="text-left mb-4">
+        <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">🎮 Chế độ chơi</div>
+        <div class="flex gap-2" id="modeSelect">
+          <button class="mode-btn active" data-mode="pvp" onclick="setMode('pvp')">
+            <span style="font-size:18px">👥</span>
+            <span>2 Người</span>
+            <span class="sub">Cùng 1 máy</span>
+          </button>
+          <button class="mode-btn" data-mode="ai" onclick="setMode('ai')">
+            <span style="font-size:18px">🤖</span>
+            <span>Đấu Máy</span>
+            <span class="sub">Bạn cầm Trắng</span>
+          </button>
+        </div>
+      </div>
+
+      <div class="text-left mb-5" id="difficultyBox" style="display:none">
+        <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">⚙️ Độ khó</div>
+        <div class="flex gap-2" id="diffSelect">
+          <button class="mode-btn" data-diff="1" onclick="setDiff(1)">
+            <span style="font-size:16px">🌱</span>
+            <span>Dễ</span>
+            <span class="sub">Người mới</span>
+          </button>
+          <button class="mode-btn active" data-diff="2" onclick="setDiff(2)">
+            <span style="font-size:16px">⚡</span>
+            <span>Vừa</span>
+            <span class="sub">Cân bằng</span>
+          </button>
+          <button class="mode-btn" data-diff="3" onclick="setDiff(3)">
+            <span style="font-size:16px">🔥</span>
+            <span>Khó</span>
+            <span class="sub">Suy nghĩ lâu</span>
+          </button>
+        </div>
+      </div>
+
+      <button onclick="startGame()" class="btn-gold w-full py-4 rounded-xl text-[14px] font-black uppercase tracking-widest">
+        ♟ BẮT ĐẦU
+      </button>
+    </div>
+
+    <div class="glass rounded-2xl p-4">
+      <div class="text-[11px] font-black text-white uppercase tracking-wider mb-3">📖 Hướng dẫn nhanh</div>
+      <div class="text-[11.5px] text-teal-200 leading-relaxed space-y-1.5">
+        <div>• <b class="text-gold-400">Chạm quân</b> để chọn → ô xanh là nước đi hợp lệ</div>
+        <div>• <b class="text-gold-400">Chạm ô đích</b> để di chuyển</div>
+        <div>• Ô đỏ = vua đang bị chiếu</div>
+        <div>• Tốt đến hàng cuối → tự hiện bảng phong cấp</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- GAME VIEW -->
+  <div id="gameView" style="display:none">
+
+    <!-- Status -->
+    <div class="glass rounded-2xl p-3 mb-3 flex items-center justify-between gap-3">
+      <div>
+        <div class="text-[9px] text-teal-400 font-black uppercase tracking-widest mb-0.5">Lượt đi</div>
+        <div id="turnText" class="text-[14px] font-black text-white">⚪ Trắng</div>
+      </div>
+      <div id="statusText" class="text-right text-[12px] font-bold text-teal-300"></div>
+    </div>
+
+    <!-- Board -->
+    <div class="mb-3"><div id="chessBoard"></div></div>
+
+    <!-- Actions -->
+    <div class="flex gap-2 mb-3">
+      <button onclick="doUndo()" id="undoBtn" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">↩ Đi lại</button>
+      <button onclick="doRestart()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Chơi lại</button>
+      <button onclick="backToMenu()" class="flex-1 py-3 rounded-xl text-[12px] uppercase" style="background:rgba(239,83,80,.15);color:#ef5350;border:1px solid rgba(239,83,80,.4);font-weight:800;cursor:pointer;font-family:inherit">🚪 Thoát</button>
+    </div>
+
+    <!-- Move history -->
+    <div class="glass rounded-2xl p-4">
+      <div class="text-[11px] font-black text-white uppercase tracking-wider mb-2">📜 Lịch sử nước đi</div>
+      <div id="moveHistory" class="text-[11.5px] text-teal-200 font-mono leading-relaxed max-h-32 overflow-y-auto" style="min-height:40px">
+        <div class="text-teal-500 italic">Chưa có nước đi</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- RESULT MODAL -->
+<div id="resultModal" class="modal">
+  <div class="modal-card">
+    <div class="text-6xl mb-3" id="resultIcon">🏆</div>
+    <h3 class="text-[20px] font-black text-gold-400 uppercase tracking-widest mb-2" id="resultTitle">KẾT THÚC</h3>
+    <p class="text-[12.5px] text-teal-200 mb-5" id="resultSub"></p>
+    <div class="flex gap-2">
+      <button onclick="doRestart()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Ván mới</button>
+      <button onclick="closeResult()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">✓ Xem bàn</button>
+    </div>
+  </div>
+</div>
+
+<!-- PROMOTION MODAL -->
+<div id="promoModal" class="modal">
+  <div class="modal-card" style="max-width:auto">
+    <div class="text-[14px] font-black text-gold-400 uppercase tracking-widest mb-4">👑 Phong cấp</div>
+    <div class="flex gap-2 justify-center" id="promoOptions"></div>
+  </div>
+</div>
+
+<!-- RULES MODAL -->
+<div id="rulesModal" class="modal">
+  <div class="modal-card" style="max-width:440px;text-align:left">
+    <h3 class="text-[16px] font-black text-gold-400 uppercase tracking-widest mb-4 text-center">📖 Luật Cờ Vua</h3>
+    <div class="space-y-2 text-[12px] text-teal-100 leading-relaxed">
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Mục tiêu:</b> Chiếu hết vua đối phương (vua bị tấn công & không thể thoát)
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Quân cờ:</b> ♔ Vua · ♕ Hậu · ♖ Xe · ♗ Tượng · ♘ Mã · ♙ Tốt
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Đi trước:</b> Trắng luôn đi trước, sau đó luân phiên
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Phong cấp:</b> Tốt đến hàng cuối → chọn Hậu/Xe/Tượng/Mã
+      </div>
+      <div class="p-2.5 rounded-lg" style="background:rgba(10,30,28,.6);border-left:3px solid #FBD77A">
+        <b class="text-gold-400">Hòa:</b> Hết nước đi · Lặp 3 lần · 50 nước không tiến · Không đủ quân
+      </div>
+    </div>
+    <button onclick="closeRules()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase tracking-wider mt-4">✓ ĐÃ HIỂU</button>
+  </div>
+</div>
+
+<!-- ═══════════ GAME LOGIC ═══════════ -->
+<script>
+(function(){
+  'use strict';
+
+  if (!window.Chess){
+    document.body.innerHTML = '<div style="padding:40px;text-align:center;color:#fff;font-family:sans-serif">'
+      + '<div style="font-size:60px;margin-bottom:20px">⚠️</div>'
+      + '<div style="font-size:18px;font-weight:900;margin-bottom:10px">Không tải được thư viện Cờ Vua</div>'
+      + '<div style="font-size:13px;opacity:.8">Vui lòng kiểm tra kết nối mạng và thử lại</div></div>';
+    return;
+  }
+
+  var PIECE_UNICODE = {
+    w: { k:'♔', q:'♕', r:'♖', b:'♗', n:'♘', p:'♙' },
+    b: { k:'♚', q:'♛', r:'♜', b:'♝', n:'♞', p:'♟' }
+  };
+
+  var PIECE_VALUES = { p:100, n:320, b:330, r:500, q:900, k:20000 };
+
+  var game = null;
+  var selected = null;
+  var validMoves = [];
+  var lastMove = null;
+  var mode = 'pvp';
+  var difficulty = 2;
+  var aiThinking = false;
+  var gameOver = false;
+  var pendingPromo = null;
+
+  function $(id){ return document.getElementById(id); }
+
+  // ═══════════════════════ MODE / DIFFICULTY ═══════════════════════
+  window.setMode = function(m){
+    mode = m;
+    document.querySelectorAll('#modeSelect .mode-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.mode === m);
+    });
+    $('difficultyBox').style.display = m === 'ai' ? 'block' : 'none';
+  };
+
+  window.setDiff = function(d){
+    difficulty = d;
+    document.querySelectorAll('#diffSelect .mode-btn').forEach(function(b){
+      b.classList.toggle('active', parseInt(b.dataset.diff, 10) === d);
+    });
+  };
+
+  // ═══════════════════════ GAME FLOW ═══════════════════════
+  window.startGame = function(){
+    game = new Chess();
+    selected = null;
+    validMoves = [];
+    lastMove = null;
+    gameOver = false;
+    aiThinking = false;
+    pendingPromo = null;
+    $('menuView').style.display = 'none';
+    $('gameView').style.display = 'block';
+    render();
+    console.log('%c♟ Cờ Vua bắt đầu — Mode: ' + mode, 'background:#123634;color:#FBD77A;padding:3px 8px;border-radius:4px;font-weight:900');
+  };
+
+  window.backToMenu = function(){
+    if (!gameOver && game.history().length > 0){
+      if (!confirm('Ván đang chơi. Thoát sẽ mất tiến trình. Tiếp tục?')) return;
+    }
+    $('gameView').style.display = 'none';
+    $('menuView').style.display = 'block';
+  };
+
+  window.goBack = function(){
+    if (!gameOver && game && game.history().length > 0 && $('gameView').style.display !== 'none'){
+      if (!confirm('Ván đang chơi. Thoát sẽ mất tiến trình. Tiếp tục?')) return;
+    }
+    window.location.href = '/DolphinApp/giaitri/index.html';
+  };
+
+  window.doRestart = function(){
+    closeResult();
+    game = new Chess();
+    selected = null;
+    validMoves = [];
+    lastMove = null;
+    gameOver = false;
+    aiThinking = false;
+    pendingPromo = null;
+    render();
+  };
+
+  window.doUndo = function(){
+    if (aiThinking) return;
+    if (game.history().length === 0) return;
+
+    if (mode === 'ai'){
+      // Undo 2 nước: nước AI + nước user
+      game.undo();
+      if (game.turn() === 'b' && game.history().length > 0){
+        game.undo();
+      }
+    } else {
+      game.undo();
+    }
+    selected = null;
+    validMoves = [];
+    lastMove = null;
+    gameOver = false;
+    render();
+  };
+
+  // ═══════════════════════ RENDER ═══════════════════════
+  function sqName(r, c){
+    return 'abcdefgh'[c] + (8 - r);
+  }
+
+  function findKingInCheck(){
+    if (!game.in_check()) return null;
+    var turn = game.turn();
+    var board = game.board();
+    for (var r = 0; r < 8; r++){
+      for (var c = 0; c < 8; c++){
+        var p = board[r][c];
+        if (p && p.type === 'k' && p.color === turn) return p.square;
+      }
+    }
+    return null;
+  }
+
+  function render(){
+    var board = $('chessBoard');
+    var boardState = game.board();
+    var checkSq = findKingInCheck();
+
+    var html = '';
+    for (var r = 0; r < 8; r++){
+      for (var c = 0; c < 8; c++){
+        var sq = sqName(r, c);
+        var p = boardState[r][c];
+        var isLight = (r + c) % 2 === 0;
+        var classes = ['sq', isLight ? 'light' : 'dark'];
+
+        if (selected === sq) classes.push('sel');
+        if (checkSq === sq) classes.push('check');
+        if (lastMove && (lastMove.from === sq || lastMove.to === sq)) classes.push('lastmove');
+
+        var moveTo = validMoves.find(function(m){ return m.to === sq; });
+        if (moveTo){
+          classes.push('valid');
+          var isCapture = !!p || (moveTo.flags || '').indexOf('e') !== -1;
+          if (isCapture) classes.push('capture');
+        }
+
+        var pieceHtml = '';
+        if (p){
+          pieceHtml = '<span class="pc ' + p.color + '">' + PIECE_UNICODE[p.color][p.type] + '</span>';
+        }
+
+        var coordHtml = '';
+        if (c === 0) coordHtml += '<span class="coord rank">' + (8 - r) + '</span>';
+        if (r === 7) coordHtml += '<span class="coord file">' + 'abcdefgh'[c] + '</span>';
+
+        html += '<div class="' + classes.join(' ') + '" data-sq="' + sq + '">' + coordHtml + pieceHtml + '</div>';
+      }
+    }
+    board.innerHTML = html;
+
+    updateStatus();
+    updateHistory();
+    updateUndoBtn();
+  }
+
+  function updateStatus(){
+    var turnEl = $('turnText');
+    var statusEl = $('statusText');
+
+    if (gameOver) return;
+
+    if (game.turn() === 'w'){
+      turnEl.textContent = '⚪ Lượt Trắng';
+      turnEl.className = 'text-[14px] font-black text-white';
+    } else {
+      turnEl.textContent = '⚫ Lượt Đen';
+      turnEl.className = 'text-[14px] font-black text-white';
+    }
+
+    if (aiThinking){
+      statusEl.textContent = '🤖 Máy đang suy nghĩ...';
+      statusEl.className = 'text-right text-[12px] font-bold text-gold-400 animate-pulse';
+    } else if (game.in_check()){
+      statusEl.textContent = '⚠️ CHIẾU!';
+      statusEl.className = 'text-right text-[13px] font-black text-red-400 animate-pulse';
+    } else {
+      statusEl.textContent = '';
+      statusEl.className = '';
+    }
+  }
+
+  function updateHistory(){
+    var el = $('moveHistory');
+    var hist = game.history();
+    if (hist.length === 0){
+      el.innerHTML = '<div class="text-teal-500 italic">Chưa có nước đi</div>';
+      return;
+    }
+    var lines = [];
+    for (var i = 0; i < hist.length; i += 2){
+      var num = (i / 2) + 1;
+      var white = hist[i] || '';
+      var black = hist[i + 1] || '';
+      lines.push('<div><span class="text-gold-400 font-bold">' + num + '.</span> ' + white + (black ? '  ' + black : '') + '</div>');
+    }
+    el.innerHTML = lines.join('');
+    el.scrollTop = el.scrollHeight;
+  }
+
+  function updateUndoBtn(){
+    var btn = $('undoBtn');
+    if (!btn) return;
+    var canUndo = game.history().length > 0 && !aiThinking && !gameOver;
+    btn.disabled = !canUndo;
+  }
+
+  // ═══════════════════════ CLICK HANDLER ═══════════════════════
+  function handleClick(sq){
+    if (gameOver) return;
+    if (aiThinking) return;
+    if (mode === 'ai' && game.turn() === 'b') return;
+
+    var piece = game.get(sq);
+
+    // Chọn quân của mình
+    if (piece && piece.color === game.turn()){
+      selected = sq;
+      validMoves = game.moves({ square: sq, verbose: true });
+      render();
+      return;
+    }
+
+    // Đang chọn quân → thử đi
+    if (selected){
+      var matched = validMoves.filter(function(m){ return m.to === sq; });
+      if (matched.length > 0){
+        // Nếu là promotion (có 4 moves cùng to square)
+        if (matched[0].promotion){
+          showPromoModal(matched);
+        } else {
+          makeMove(matched[0].from, matched[0].to, null);
+        }
+        return;
+      }
+    }
+
+    // Bỏ chọn
+    selected = null;
+    validMoves = [];
+    render();
+  }
+
+  function makeMove(from, to, promo){
+    var result = game.move({ from: from, to: to, promotion: promo || 'q' });
+    if (!result) return;
+
+    selected = null;
+    validMoves = [];
+    lastMove = { from: from, to: to };
+
+    render();
+    checkGameEnd();
+
+    if (!gameOver && mode === 'ai' && game.turn() === 'b'){
+      scheduleAiMove();
+    }
+  }
+
+  // ═══════════════════════ PROMOTION ═══════════════════════
+  function showPromoModal(moves){
+    pendingPromo = moves;
+    var color = game.turn(); // 'w' hoặc 'b'
+    var opts = [
+      { type: 'q', label: PIECE_UNICODE[color].q, name: 'Hậu' },
+      { type: 'r', label: PIECE_UNICODE[color].r, name: 'Xe' },
+      { type: 'b', label: PIECE_UNICODE[color].b, name: 'Tượng' },
+      { type: 'n', label: PIECE_UNICODE[color].n, name: 'Mã' }
+    ];
+    var box = $('promoOptions');
+    box.innerHTML = opts.map(function(o){
+      return '<button class="promo-btn ' + color + '" data-promo="' + o.type + '" title="' + o.name + '">' + o.label + '</button>';
+    }).join('');
+    box.querySelectorAll('.promo-btn').forEach(function(b){
+      b.addEventListener('click', function(){
+        var type = this.dataset.promo;
+        var match = pendingPromo.find(function(m){ return m.promotion === type; });
+        $('promoModal').classList.remove('show');
+        pendingPromo = null;
+        if (match) makeMove(match.from, match.to, type);
+      });
+    });
+    $('promoModal').classList.add('show');
+  }
+
+  // ═══════════════════════ AI — MINIMAX + ALPHA-BETA ═══════════════════════
+  function evaluate(g){
+    if (g.in_checkmate()) return g.turn() === 'w' ? -100000 : 100000;
+    if (g.in_draw() || g.in_stalemate()) return 0;
+
+    var board = g.board();
+    var score = 0;
+    for (var r = 0; r < 8; r++){
+      for (var c = 0; c < 8; c++){
+        var p = board[r][c];
+        if (!p) continue;
+        var val = PIECE_VALUES[p.type];
+        // Position bonus cho quân (trừ Vua)
+        if (p.type !== 'k'){
+          var cd = Math.abs(3.5 - r) + Math.abs(3.5 - c);
+          val += Math.round((7 - cd) * 3);
+        }
+        if (p.color === 'w') score += val;
+        else score -= val;
+      }
+    }
+    return score;
+  }
+
+  function minimax(g, depth, alpha, beta, isMax){
+    if (depth === 0 || g.game_over()) return evaluate(g);
+
+    var moves = g.moves({ verbose: true });
+    if (isMax){
+      var best = -Infinity;
+      for (var i = 0; i < moves.length; i++){
+        g.move(moves[i]);
+        var s = minimax(g, depth - 1, alpha, beta, false);
+        g.undo();
+        if (s > best) best = s;
+        if (best > alpha) alpha = best;
+        if (beta <= alpha) break;
+      }
+      return best;
+    } else {
+      var best2 = Infinity;
+      for (var j = 0; j < moves.length; j++){
+        g.move(moves[j]);
+        var s2 = minimax(g, depth - 1, alpha, beta, true);
+        g.undo();
+        if (s2 < best2) best2 = s2;
+        if (best2 < beta) beta = best2;
+        if (beta <= alpha) break;
+      }
+      return best2;
+    }
+  }
+
+  function findBestMove(g, depth){
+    var moves = g.moves({ verbose: true });
+    if (!moves.length) return null;
+
+    // Random tie-break
+    for (var k = moves.length - 1; k > 0; k--){
+      var j = Math.floor(Math.random() * (k + 1));
+      var tmp = moves[k]; moves[k] = moves[j]; moves[j] = tmp;
+    }
+
+    var isWhite = g.turn() === 'w';
+    var bestMove = null;
+    var bestScore = isWhite ? -Infinity : Infinity;
+    var alpha = -Infinity, beta = Infinity;
+
+    for (var i = 0; i < moves.length; i++){
+      g.move(moves[i]);
+      var score = minimax(g, depth - 1, alpha, beta, !isWhite);
+      g.undo();
+
+      if (isWhite){
+        if (score > bestScore){ bestScore = score; bestMove = moves[i]; }
+        if (bestScore > alpha) alpha = bestScore;
+      } else {
+        if (score < bestScore){ bestScore = score; bestMove = moves[i]; }
+        if (bestScore < beta) beta = bestScore;
+      }
+    }
+    return bestMove;
+  }
+
+  function scheduleAiMove(){
+    aiThinking = true;
+    updateStatus();
+    updateUndoBtn();
+
+    setTimeout(function(){
+      var move = findBestMove(game, difficulty);
+      aiThinking = false;
+      if (move){
+        game.move(move);
+        lastMove = { from: move.from, to: move.to };
+      }
+      render();
+      checkGameEnd();
+    }, 80);
+  }
+
+  // ═══════════════════════ END GAME ═══════════════════════
+  function checkGameEnd(){
+    if (game.in_checkmate()){
+      gameOver = true;
+      var winner = game.turn() === 'w' ? 'Đen' : 'Trắng';
+      var icon = winner === 'Trắng' ? '⚪' : '⚫';
+      showResult('🏆', winner + ' THẮNG!', icon + ' Chiếu hết vua đối phương');
+    } else if (game.in_stalemate()){
+      gameOver = true;
+      showResult('🤝', 'HÒA!', 'Hết nước đi (Stalemate)');
+    } else if (game.in_threefold_repetition()){
+      gameOver = true;
+      showResult('🤝', 'HÒA!', 'Lặp lại thế cờ 3 lần');
+    } else if (game.insufficient_material()){
+      gameOver = true;
+      showResult('🤝', 'HÒA!', 'Không đủ quân để chiếu hết');
+    } else if (game.in_draw()){
+      gameOver = true;
+      showResult('🤝', 'HÒA!', 'Luật 50 nước không tiến');
+    }
+  }
+
+  function showResult(icon, title, sub){
+    $('resultIcon').textContent = icon;
+    $('resultTitle').textContent = title;
+    $('resultSub').textContent = sub;
+    $('resultModal').classList.add('show');
+  }
+
+  window.closeResult = function(){ $('resultModal').classList.remove('show'); };
+
+  window.openRules = function(){ $('rulesModal').classList.add('show'); };
+  window.closeRules = function(){ $('rulesModal').classList.remove('show'); };
+
+  // ═══════════════════════ INIT ═══════════════════════
+  function init(){
+    var board = $('chessBoard');
+    if (board){
+      board.addEventListener('click', function(e){
+        var sqEl = e.target.closest('.sq');
+        if (!sqEl) return;
+        handleClick(sqEl.dataset.sq);
+      });
+    }
+    console.log('%c♟ CHESS MODULE LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  }
+
+  if (document.readyState === 'loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  } else {
+    init();
+  }
+})();
+</script>
+
+</body>
+</html>

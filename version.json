@@ -1,7 +1,7 @@
 {
-  "version": "1.0.12",
-  "buildDate": "2026-10-14T03:02:11.744Z",
-  "commit": "9827dab",
-  "notes": "Khôi phục 3 card Lounge/Bungalow/Restaurant",
+  "version": "1.0.13",
+  "buildDate": "2026-10-14T03:09:14.763Z",
+  "commit": "ed595bf",
+  "notes": "Fix lỗi Service Worker block + dọn index.html",
   "forceUpdate": false
 }

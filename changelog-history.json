@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.20",
+      "releaseDate": "2026-10-14T07:45:48.982Z",
+      "summary": "Sổ Tay: bật thông báo hệ thống (Mức 2)",
+      "details": [
+        "Sổ Tay: bật thông báo hệ thống (Mức 2)"
+      ]
+    },
+    {
       "version": "1.0.19",
       "releaseDate": "2026-10-14T07:11:56.789Z",
       "summary": "Caro pinch-zoom 0.8x-2x + soundscape v2.4",

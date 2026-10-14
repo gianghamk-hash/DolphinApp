@@ -1,22 +1,22 @@
 {
-  "version": "1.0.20",
-  "previousVersion": "1.0.19",
-  "commit": "dcf8a0c",
-  "previousCommit": "f1a3af2",
-  "buildDate": "2026-10-14T07:45:48.982Z",
-  "summary": "Sổ Tay: bật thông báo hệ thống (Mức 2)",
+  "version": "1.0.21",
+  "previousVersion": "1.0.20",
+  "commit": "7db6a12",
+  "previousCommit": "dcf8a0c",
+  "buildDate": "2026-10-14T08:15:54.227Z",
+  "summary": "2048 v2: animation trượt + âm thanh + màu chuẩn",
   "changes": {
-    "totalCommits": 24,
+    "totalCommits": 25,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Sổ Tay: bật thông báo hệ thống (Mức 2)"
+    "2048 v2: animation trượt + âm thanh + màu chuẩn"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/notes.html",
+      "file": "giaitri/games/game2048.html",
       "type": "update"
     }
   ]

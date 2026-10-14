@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.16",
+      "releaseDate": "2026-10-14T05:52:26.812Z",
+      "summary": "Fix scan script chặt + encode URL an toàn",
+      "details": [
+        "Fix scan script chặt + encode URL an toàn"
+      ]
+    },
+    {
       "version": "1.0.15",
       "releaseDate": "2026-10-14T05:43:09.211Z",
       "summary": "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc",

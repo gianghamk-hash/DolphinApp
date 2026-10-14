@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.18",
+      "releaseDate": "2026-10-14T06:53:41.021Z",
+      "summary": "Fix safe area iPhone",
+      "details": [
+        "Fix safe area iPhone"
+      ]
+    },
+    {
       "version": "1.0.17",
       "releaseDate": "2026-10-14T06:17:09.099Z",
       "summary": "Fix PWA icons + soundscape v2.4",

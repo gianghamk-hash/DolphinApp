@@ -1,5 +1,5 @@
 {
-  "version": "1.0.18",
+  "version": "1.0.19",
   "releaseDate": "2026-10-14",
-  "notes": "Fix safe area iPhone"
+  "notes": "Caro pinch-zoom 0.8x-2x + soundscape v2.4"
 }

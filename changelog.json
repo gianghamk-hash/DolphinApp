@@ -1,22 +1,22 @@
 {
-  "version": "1.0.18",
-  "previousVersion": "1.0.17",
-  "commit": "2d82dbe",
-  "previousCommit": "ba678e6",
-  "buildDate": "2026-10-14T06:53:41.021Z",
-  "summary": "Fix safe area iPhone",
+  "version": "1.0.19",
+  "previousVersion": "1.0.18",
+  "commit": "f1a3af2",
+  "previousCommit": "2d82dbe",
+  "buildDate": "2026-10-14T07:11:56.789Z",
+  "summary": "Caro pinch-zoom 0.8x-2x + soundscape v2.4",
   "changes": {
-    "totalCommits": 22,
+    "totalCommits": 23,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix safe area iPhone"
+    "Caro pinch-zoom 0.8x-2x + soundscape v2.4"
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

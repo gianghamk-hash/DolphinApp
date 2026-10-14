@@ -1,22 +1,22 @@
 {
-  "version": "1.0.8",
-  "previousVersion": "1.0.7",
-  "commit": "b1cd9d9",
-  "previousCommit": "e003d64",
-  "buildDate": "2026-10-14T01:23:56.502Z",
-  "summary": "Bổ sung đầy đủ bàn Sun View Restaurant + bàn",
+  "version": "1.0.9",
+  "previousVersion": "1.0.8",
+  "commit": "bed6632",
+  "previousCommit": "b1cd9d9",
+  "buildDate": "2026-10-14T01:34:07.524Z",
+  "summary": "Thêm app Thu ngân + cập nhật landing + menu đồ uống",
   "changes": {
-    "totalCommits": 12,
+    "totalCommits": 13,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Bổ sung đầy đủ bàn Sun View Restaurant + bàn"
+    "Thêm app Thu ngân + cập nhật landing + menu đồ uống"
   ],
   "fileChanges": [
     {
-      "file": "drink-config.js",
+      "file": "index.html",
       "type": "update"
     }
   ]

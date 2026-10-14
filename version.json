@@ -1,7 +1,7 @@
 {
-  "version": "1.0.8",
-  "buildDate": "2026-10-14T01:23:56.502Z",
-  "commit": "b1cd9d9",
-  "notes": "Bổ sung đầy đủ bàn Sun View Restaurant + bàn",
+  "version": "1.0.9",
+  "buildDate": "2026-10-14T01:34:07.524Z",
+  "commit": "bed6632",
+  "notes": "Thêm app Thu ngân + cập nhật landing + menu đồ uống",
   "forceUpdate": false
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.32",
-  "buildDate": "2026-10-15T02:11:31.517Z",
-  "commit": "8f5b7d7",
-  "notes": "cập nhật lại danh sách khách",
+  "version": "1.0.33",
+  "buildDate": "2026-10-15T08:35:56.131Z",
+  "commit": "eabcc17",
+  "notes": "Dolphin Guests: modal push Bungalow đầy đủ trường payment + NV",
   "forceUpdate": false
 }

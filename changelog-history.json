@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.32",
+      "releaseDate": "2026-10-15T02:11:31.517Z",
+      "summary": "cập nhật lại danh sách khách",
+      "details": [
+        "cập nhật lại danh sách khách"
+      ]
+    },
+    {
       "version": "1.0.31",
       "releaseDate": "2026-10-15T02:05:17.882Z",
       "summary": "Bổ sung danh sách khách",

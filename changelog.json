@@ -1,18 +1,18 @@
 {
-  "version": "1.0.32",
-  "previousVersion": "1.0.31",
-  "commit": "8f5b7d7",
-  "previousCommit": "54668fd",
-  "buildDate": "2026-10-15T02:11:31.517Z",
-  "summary": "cập nhật lại danh sách khách",
+  "version": "1.0.33",
+  "previousVersion": "1.0.32",
+  "commit": "eabcc17",
+  "previousCommit": "8f5b7d7",
+  "buildDate": "2026-10-15T08:35:56.131Z",
+  "summary": "Dolphin Guests: modal push Bungalow đầy đủ trường payment + NV",
   "changes": {
-    "totalCommits": 36,
+    "totalCommits": 37,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "cập nhật lại danh sách khách"
+    "Dolphin Guests: modal push Bungalow đầy đủ trường payment + NV"
   ],
   "fileChanges": [
     {

@@ -1,22 +1,22 @@
 {
-  "version": "1.0.36",
-  "previousVersion": "1.0.35",
-  "commit": "6ba2618",
-  "previousCommit": "c0ac9a1",
-  "buildDate": "2026-10-15T11:21:14.480Z",
-  "summary": "Dolphin Guests: FOC + UI mềm mại hơn",
+  "version": "1.0.37",
+  "previousVersion": "1.0.36",
+  "commit": "46a64ad",
+  "previousCommit": "6ba2618",
+  "buildDate": "2026-10-15T12:11:16.256Z",
+  "summary": "BỔ SUNG FOC CHO BUNGALOW",
   "changes": {
-    "totalCommits": 40,
+    "totalCommits": 41,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Dolphin Guests: FOC + UI mềm mại hơn"
+    "BỔ SUNG FOC CHO BUNGALOW"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "dolphin-bungalow.html",
       "type": "update"
     }
   ]

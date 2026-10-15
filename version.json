@@ -1,7 +1,7 @@
 {
-  "version": "1.0.36",
-  "buildDate": "2026-10-15T11:21:14.480Z",
-  "commit": "6ba2618",
-  "notes": "Dolphin Guests: FOC + UI mềm mại hơn",
+  "version": "1.0.37",
+  "buildDate": "2026-10-15T12:11:16.256Z",
+  "commit": "46a64ad",
+  "notes": "BỔ SUNG FOC CHO BUNGALOW",
   "forceUpdate": false
 }

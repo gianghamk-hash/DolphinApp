@@ -159,6 +159,127 @@ body{color:#fff;font-family:Nunito,system-ui,sans-serif;padding:calc(10px + env(
 #toast{position:fixed;left:50%;top:calc(20px + env(safe-area-inset-top));transform:translate(-50%,-160%);background:linear-gradient(135deg,#1a4a45,#0d2a28);border:1.5px solid var(--gold);border-radius:14px;padding:12px 20px;font-weight:800;font-size:.85rem;z-index:90;max-width:90vw;box-shadow:0 14px 40px rgba(0,0,0,.6),0 0 30px rgba(244,184,66,.28);transition:transform .42s cubic-bezier(.16,1,.3,1);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 #toast.show{transform:translate(-50%,0)}
 
+/* ═══════════════════════════════════════════════════════════
+   A1 · HEADER THU GỌN KHI SCROLL
+   ═══════════════════════════════════════════════════════════ */
+.hd{transition:padding .22s cubic-bezier(.16,1,.3,1),box-shadow .22s,background .22s}
+.hd.compact{
+  padding-top:calc(6px + env(safe-area-inset-top));
+  padding-bottom:8px;
+  box-shadow:0 6px 20px -8px rgba(0,0,0,.5);
+  background:linear-gradient(180deg,rgba(13,43,40,.99),rgba(13,43,40,.94));
+  border-bottom-color:var(--line2);
+}
+.hd.compact .hd-r1{margin-bottom:6px;gap:8px}
+.hd.compact .hd-r1 h1{font-size:.9rem}
+.hd.compact .hd-meta{display:none}
+
+/* Ẩn tour + date + today khi compact (giữ search) */
+.hd.compact .tour-seg,
+.hd.compact .date-wrap,
+.hd.compact .today-btn{
+  display:none;
+}
+.hd.compact .hd-r2{gap:6px}
+.hd.compact .search-wrap{flex:1 1 100%}
+
+/* Smooth: fade nhẹ khi mở lại */
+.hd:not(.compact) .tour-seg,
+.hd:not(.compact) .date-wrap,
+.hd:not(.compact) .today-btn{
+  animation:hdFadeIn .25s ease-out;
+}
+@keyframes hdFadeIn{
+  from{opacity:0;transform:translateY(-4px)}
+  to{opacity:1;transform:translateY(0)}
+}
+
+/* Chip nhỏ hiện trạng thái khi compact */
+.hd-mini-stats{
+  display:none;
+  align-items:center;
+  gap:6px;
+  font-size:10px;
+  font-weight:800;
+  color:var(--mint2);
+  white-space:nowrap;
+  padding:4px 8px;
+  background:rgba(244,184,66,.1);
+  border:1px solid var(--line2);
+  border-radius:99px;
+  flex-shrink:0;
+}
+.hd.compact .hd-mini-stats{display:inline-flex}
+.hd-mini-stats b{color:var(--gold)}
+
+/* ═══════════════════════════════════════════════════════════
+   B4 · VIỀN MÀU CARD THEO ĐỘ ƯU TIÊN
+   🟢 bình thường · 🟡 có kiêng ăn · 🔴 có tôm hùm / VIP
+   ═══════════════════════════════════════════════════════════ */
+.bk::before{
+  content:'';
+  position:absolute;
+  left:0;
+  top:0;
+  bottom:0;
+  width:4px;
+  border-radius:18px 0 0 18px;
+  background:var(--grn);
+  opacity:.35;
+  transition:all .28s;
+  pointer-events:none;
+}
+.bk.pri-diet::before{
+  background:linear-gradient(180deg,var(--gold) 0%,var(--gold2) 100%);
+  opacity:1;
+  box-shadow:2px 0 12px -2px rgba(244,184,66,.5);
+}
+.bk.pri-vip::before{
+  background:linear-gradient(180deg,var(--rose) 0%,#e11d48 100%);
+  opacity:1;
+  box-shadow:2px 0 14px -2px rgba(251,113,133,.7);
+}
+.bk.pri-diet{
+  border-color:rgba(244,184,66,.32);
+  background:linear-gradient(180deg,rgba(244,184,66,.04),var(--glass));
+}
+.bk.pri-vip{
+  border-color:rgba(251,113,133,.4);
+  background:linear-gradient(180deg,rgba(251,113,133,.06),var(--glass));
+}
+.bk.pri-vip:hover{
+  box-shadow:var(--sh-h),0 0 24px -8px rgba(251,113,133,.5);
+}
+
+/* Badge nhỏ góc phải trên card cho VIP */
+.bk .pri-badge{
+  position:absolute;
+  top:10px;
+  right:10px;
+  font-size:9px;
+  font-weight:900;
+  letter-spacing:.05em;
+  padding:2px 7px;
+  border-radius:99px;
+  text-transform:uppercase;
+  pointer-events:none;
+  z-index:2;
+}
+.bk.pri-vip .pri-badge{
+  background:linear-gradient(135deg,var(--rose),#e11d48);
+  color:#fff;
+  box-shadow:0 2px 8px -2px rgba(251,113,133,.8);
+  animation:priPulse 2s ease-in-out infinite;
+}
+.bk.pri-diet .pri-badge{
+  background:linear-gradient(135deg,var(--gold),var(--gold2));
+  color:#0d2b28;
+}
+@keyframes priPulse{
+  0%,100%{transform:scale(1)}
+  50%{transform:scale(1.06)}
+}
+
 /* RESPONSIVE */
 @media(max-width:640px){
   body{padding-left:12px;padding-right:12px}
@@ -184,6 +305,9 @@ body{color:#fff;font-family:Nunito,system-ui,sans-serif;padding:calc(10px + env(
     <span class="sp"></span>
     <span class="hd-meta" id="upd"></span>
     <span class="hd-meta" id="sheetName"></span>
+    <span class="hd-mini-stats" id="hdMiniStats">
+      👥 <b id="hdMiniGuests">0</b> · 🔴 <b id="hdMiniVip">0</b> · 🟡 <b id="hdMiniDiet">0</b>
+    </span>
     <button class="icon-btn" id="reload" title="Tải lại">🔄</button>
   </div>
 
@@ -375,12 +499,32 @@ function tagHtml(b){
   b.bung.forEach(function(x){h+='<span class="tag o">🌴 '+esc(bungTxt(x))+'</span>'});
   return h?'<div class="tags">'+h+'</div>':'';
 }
+
+/* ═══ B4: Xác định mức ưu tiên card ═══ */
+function getPriority(b){
+  // 🔴 VIP: có tôm hùm HOẶC có keyword VIP trong tên/mã/đại lý
+  var txt = (b.name+' '+(b.code||'')+' '+(b.agent||'')).toLowerCase();
+  if (b.lob.length > 0) return 'pri-vip';
+  if (/\bvip\b|\bvvip\b/.test(txt)) return 'pri-vip';
+  // 🟡 Có kiêng ăn / chay / veg
+  if (b.diet.length > 0) return 'pri-diet';
+  // 🟢 Bình thường
+  return 'pri-normal';
+}
+
 function card(b){
   var meta='';
   if(b.agent) meta+='<span>🏢 '+esc(b.agent)+'</span>';
   if(b.nat) meta+='<span>🌍 '+esc(b.nat)+'</span>';
   if(b.code) meta+='<span>🎫 '+esc(b.code)+'</span>';
-  return '<div class="bk">'+
+
+  var pri = getPriority(b);
+  var badge = '';
+  if (pri === 'pri-vip') badge = '<span class="pri-badge">🔥 VIP</span>';
+  else if (pri === 'pri-diet') badge = '<span class="pri-badge">🥗 Kiêng</span>';
+
+  return '<div class="bk '+pri+'">'+
+    badge+
     '<div class="h"><span class="tb">'+esc(b.tbl||'Chưa xếp')+'</span><span class="pax">'+b.pax+' khách</span></div>'+
     '<div class="nm">'+esc(b.name)+'</div>'+
     '<div class="meta">'+meta+'</div>'+
@@ -602,7 +746,47 @@ function render(){
   var T=[['ov','🏠 Tổng quan'],['sp','🥗 Ăn đặc biệt · Tôm hùm'],['bg','🌴 Bungalow']];
   $('tabs').innerHTML=T.map(function(t){return '<button class="tab'+(tab===t[0]?' on':'')+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join('');
   renderFilter();
+  updateMiniStats();
 }
+
+/* ═══ A1: Cập nhật stats trên header compact ═══ */
+function updateMiniStats(){
+  var total = B.length;
+  var vip = 0, diet = 0;
+  B.forEach(function(b){
+    var pri = getPriority(b);
+    if (pri === 'pri-vip') vip++;
+    else if (pri === 'pri-diet') diet++;
+  });
+  var g = $('hdMiniGuests'), v = $('hdMiniVip'), d = $('hdMiniDiet');
+  if (g) g.textContent = total;
+  if (v) v.textContent = vip;
+  if (d) d.textContent = diet;
+}
+
+/* ═══ A1: Detect scroll để thu gọn header ═══ */
+(function(){
+  var hd = document.querySelector('.hd');
+  if (!hd) return;
+  var THRESHOLD = 100;   // px scroll thì bắt đầu compact
+  var THRESHOLD_OUT = 40; // px scroll để bỏ compact (hysteresis tránh giật)
+  var ticking = false;
+
+  function update(){
+    var y = window.scrollY || window.pageYOffset || 0;
+    var isC = hd.classList.contains('compact');
+    if (!isC && y > THRESHOLD) hd.classList.add('compact');
+    else if (isC && y < THRESHOLD_OUT) hd.classList.remove('compact');
+    ticking = false;
+  }
+
+  window.addEventListener('scroll', function(){
+    if (!ticking){
+      requestAnimationFrame(update);
+      ticking = true;
+    }
+  }, { passive: true });
+})();
 
 function gv(name){return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(name)+'&_='+Date.now()}
 function getTab(name){

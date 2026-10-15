@@ -7,58 +7,69 @@
 <title>Dolphin · Rắn Săn Mồi</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
 <style>
-*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none;-webkit-user-select:none}
+html,body{margin:0;padding:0;width:100%;height:100%;overflow:hidden;background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;overscroll-behavior:none;touch-action:manipulation}
+body{display:flex;flex-direction:column;height:100dvh;max-height:100dvh}
 
-/* 🔒 KHÓA CỨNG SCROLL TOÀN TRANG */
-html,body{
-  position:fixed;
-  top:0;left:0;right:0;bottom:0;
-  width:100%;height:100%;
-  margin:0;padding:0;
-  overflow:hidden!important;
-  overscroll-behavior:none!important;
-  touch-action:none;
-  -webkit-user-select:none;user-select:none;
-  -webkit-touch-callout:none;
+/* ═══ HEADER ═══ */
+.header{
+  flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:calc(6px + env(safe-area-inset-top)) 10px 6px;
+  background:rgba(10,31,29,.95);border-bottom:1px solid rgba(55,137,123,.35);
+  backdrop-filter:blur(10px);
 }
-body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;flex-direction:column}
-
-.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
-.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit;transition:transform .1s}
-.btn-gold:active{transform:scale(.96)}
-.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit;transition:transform .1s}
-.btn-outline:active{transform:scale(.96)}
+.header button{
+  width:34px;height:34px;border-radius:10px;flex-shrink:0;
+  background:rgba(25,71,67,.6);border:1px solid rgba(55,137,123,.5);
+  color:#7ec9be;font-size:15px;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+}
+.header button:active{transform:scale(.92)}
+.header .title{flex:1;text-align:center;min-width:0}
+.brand-title{
+  font-family:'Fraunces',serif;font-weight:900;letter-spacing:.2em;font-size:14px;line-height:1;
+  background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+  filter:drop-shadow(0 2px 8px rgba(244,184,66,.4));
+}
+.header .sub{
+  font-size:8px;color:#7ec9be;text-transform:uppercase;font-weight:800;
+  letter-spacing:.18em;margin-top:2px;
+}
 
 /* ═══ HUD ═══ */
-.hud{display:flex;gap:6px;padding:8px 10px;background:rgba(10,31,29,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(55,137,123,.3);flex-shrink:0;padding-top:calc(8px + env(safe-area-inset-top))}
-.hud .item{flex:1;text-align:center;padding:4px 2px;background:rgba(25,71,67,.5);border:1px solid rgba(55,137,123,.3);border-radius:9px}
-.hud .lbl{font-size:8.5px;color:#7ec9be;font-weight:800;text-transform:uppercase;letter-spacing:.05em;display:block}
-.hud .val{font-size:14px;color:#FBD77A;font-weight:900;font-family:'Fraunces',serif;margin-top:1px;display:block}
+.hud{
+  flex-shrink:0;display:grid;grid-template-columns:repeat(4,1fr);
+  gap:5px;padding:6px 8px;
+}
+.hud .item{
+  text-align:center;padding:4px 2px;
+  background:rgba(25,71,67,.5);border:1px solid rgba(55,137,123,.3);
+  border-radius:8px;
+}
+.hud .lbl{display:block;font-size:8px;color:#7ec9be;font-weight:800;text-transform:uppercase;letter-spacing:.05em}
+.hud .val{display:block;font-size:13px;color:#FBD77A;font-weight:900;font-family:'Fraunces',serif;margin-top:1px}
 
-/* ═══ GAME AREA ═══ */
+/* ═══ GAME AREA (JS sẽ fit board vào đây) ═══ */
 .game-area{
-  flex:1;display:flex;align-items:center;justify-content:center;
-  padding:8px;min-height:0;position:relative;
-  touch-action:none;
-  overscroll-behavior:contain;
+  flex:1 1 0;min-height:0;min-width:0;
+  display:flex;align-items:center;justify-content:center;
+  padding:4px 8px 8px;position:relative;overflow:hidden;
 }
 
 .board-wrap{
-  position:relative;
+  position:relative;flex-shrink:0;
   background:linear-gradient(135deg,rgba(10,50,80,.9),rgba(5,30,50,.95));
-  border:3px solid #8B6F3D;border-radius:16px;padding:6px;
-  max-width:min(96vw,520px);width:100%;
-  max-height:100%;aspect-ratio:1;
+  border:3px solid #8B6F3D;border-radius:14px;padding:5px;
   box-shadow:0 8px 30px rgba(0,0,0,.5),inset 0 0 30px rgba(0,0,0,.3);
-  touch-action:none;
-  overscroll-behavior:contain;
-  -webkit-user-select:none;user-select:none;
+  /* width + height sẽ được JS set */
 }
 #board{
+  width:100%;height:100%;
   display:grid;grid-template-columns:repeat(20,1fr);grid-template-rows:repeat(20,1fr);
-  gap:1px;aspect-ratio:1;background:rgba(0,15,30,.6);border-radius:8px;padding:2px;
+  gap:1px;background:rgba(0,15,30,.6);border-radius:8px;padding:2px;
   pointer-events:none;
 }
 .cell{background:rgba(0,20,40,.4);border-radius:2px;position:relative;transition:background .05s}
@@ -70,13 +81,9 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;
 @keyframes foodPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 
 /* ═══ TOUCH LAYER ═══ */
-#touchLayer{
-  position:absolute;inset:6px;border-radius:10px;z-index:5;
-  touch-action:none;
-  cursor:crosshair;
-}
+#touchLayer{position:absolute;inset:0;border-radius:10px;z-index:5;touch-action:none}
 #touchLayer::before{
-  content:'👆 Vuốt hoặc chạm để điều khiển';
+  content:'👆 Vuốt để điều khiển';
   position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
   font-size:9.5px;font-weight:800;color:rgba(191,233,220,.5);
   letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;
@@ -87,74 +94,63 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;
 /* ═══ D-PAD NỔI ═══ */
 .dpad-toggle{
   position:absolute;top:8px;right:8px;z-index:12;
-  width:34px;height:34px;border-radius:10px;
+  width:32px;height:32px;border-radius:9px;
   background:rgba(18,54,52,.85);border:1.5px solid rgba(244,184,66,.5);
-  color:#FBD77A;font-size:14px;cursor:pointer;font-family:inherit;
+  color:#FBD77A;font-size:13px;cursor:pointer;font-family:inherit;
   display:flex;align-items:center;justify-content:center;
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  box-shadow:0 3px 10px rgba(0,0,0,.4);
+  backdrop-filter:blur(6px);box-shadow:0 3px 10px rgba(0,0,0,.4);
   transition:transform .12s;
-  touch-action:manipulation;
 }
 .dpad-toggle:active{transform:scale(.9)}
 .dpad-toggle.on{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
 
 .dpad-float{
   position:absolute;bottom:10px;right:10px;z-index:11;
-  display:grid;grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;
-  gap:3px;
-  opacity:.88;
-  transition:opacity .2s,transform .2s;
-  touch-action:manipulation;
+  display:grid;grid-template-columns:42px 42px 42px;grid-template-rows:42px 42px 42px;
+  gap:3px;opacity:.9;transition:opacity .2s,transform .2s;
 }
 .dpad-float.hidden{opacity:0;pointer-events:none;transform:scale(.9) translateY(10px)}
 .dpad-float button{
-  background:rgba(20,60,58,.78);
-  border:1.5px solid rgba(120,220,200,.45);
-  border-radius:12px;
-  color:#FBD77A;font-size:18px;font-weight:900;cursor:pointer;font-family:inherit;
+  background:rgba(20,60,58,.78);border:1.5px solid rgba(120,220,200,.5);
+  border-radius:11px;color:#FBD77A;font-size:17px;font-weight:900;
+  cursor:pointer;font-family:inherit;padding:0;
   display:flex;align-items:center;justify-content:center;
-  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  backdrop-filter:blur(8px);
   box-shadow:0 3px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);
   transition:transform .08s,background .08s;
-  -webkit-tap-highlight-color:transparent;
-  touch-action:manipulation;
-  padding:0;
 }
 .dpad-float button:active{transform:scale(.88);background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634}
 .dpad-float .up{grid-column:2;grid-row:1}
 .dpad-float .left{grid-column:1;grid-row:2}
-.dpad-float .mid{grid-column:2;grid-row:2;background:rgba(10,30,28,.5);border-color:rgba(55,137,123,.35);color:#7ec9be;font-size:12px;cursor:default}
+.dpad-float .mid{grid-column:2;grid-row:2;background:rgba(10,30,28,.5);border-color:rgba(55,137,123,.35);color:#7ec9be;font-size:11px;cursor:default}
 .dpad-float .mid:active{transform:none;background:rgba(10,30,28,.5);color:#7ec9be}
 .dpad-float .right{grid-column:3;grid-row:2}
 .dpad-float .down{grid-column:2;grid-row:3}
 
+/* Ẩn D-pad trên màn hình lớn */
 @media (min-width:900px){
   .dpad-toggle,.dpad-float{display:none!important}
-  #touchLayer::before{content:'⌨️ Dùng phím mũi tên / WASD để điều khiển'}
+  #touchLayer::before{content:'⌨️ Dùng phím mũi tên / WASD'}
 }
 
 /* ═══ MODAL ═══ */
-.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto;touch-action:auto}
+.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
 .modal.show{display:flex}
-.modal-card{
-  background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;
-  padding:26px 24px;max-width:380px;width:100%;text-align:center;
-  box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.2);
-  animation:popIn .35s cubic-bezier(.16,1,.3,1);
-  max-height:92vh;overflow-y:auto;
-  touch-action:pan-y;
-}
+.modal-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:22px;padding:22px 20px;max-width:360px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7);animation:popIn .35s cubic-bezier(.16,1,.3,1);max-height:92vh;overflow-y:auto}
 @keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
-
-.stat{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(10,30,28,.5);border-radius:10px;margin-bottom:6px;font-size:13px;font-weight:800}
+.stat{display:flex;justify-content:space-between;padding:7px 11px;background:rgba(10,30,28,.5);border-radius:9px;margin-bottom:5px;font-size:12.5px;font-weight:800}
 .stat .lbl{color:#7ec9be}
 .stat .val{color:#FBD77A;font-weight:900}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:active{transform:scale(.96)}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(.96)}
 
-.float-text{position:fixed;pointer-events:none;z-index:9999;font-family:'Fraunces',serif;font-weight:900;color:#FBD77A;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(244,184,66,.8);font-size:24px;animation:floatUp .8s ease-out forwards}
-@keyframes floatUp{0%{opacity:0;transform:translate(-50%,0) scale(.5)}30%{opacity:1;transform:translate(-50%,-15px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-50px) scale(.9)}}
+/* ═══ FLOAT ═══ */
+.float-text{position:fixed;pointer-events:none;z-index:9999;font-family:'Fraunces',serif;font-weight:900;color:#FBD77A;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(244,184,66,.8);font-size:22px;animation:floatUp .8s ease-out forwards}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,0) scale(.5)}30%{opacity:1;transform:translate(-50%,-12px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-45px) scale(.9)}}
 
-.lb-status{font-size:10.5px;font-weight:800;margin-top:3px;min-height:14px;letter-spacing:.02em}
+.lb-status{font-size:10.5px;font-weight:800;margin-top:3px;min-height:14px}
 .lb-status.ok{color:#86efac}
 .lb-status.err{color:#fca5a5}
 .lb-status.loading{color:#FBD77A}
@@ -163,15 +159,13 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;
 <body>
 
 <!-- HEADER -->
-<div style="flex-shrink:0;background:rgba(10,31,29,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(55,137,123,.35)">
-  <div style="max-width:640px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px">
-    <button onclick="goBack()" style="width:38px;height:38px;border-radius:11px;background:rgba(25,71,67,.6);border:1px solid rgba(55,137,123,.5);color:#7ec9be;font-size:16px;cursor:pointer;font-family:inherit">←</button>
-    <div style="text-align:center;flex:1">
-      <div class="brand-title" style="font-size:16px;line-height:1">DOLPHIN</div>
-      <div style="font-size:9px;color:#7ec9be;text-transform:uppercase;font-weight:800;letter-spacing:.18em;margin-top:2px">Rắn Săn Mồi</div>
-    </div>
-    <button onclick="togglePause()" id="pauseBtn" style="width:38px;height:38px;border-radius:11px;background:rgba(25,71,67,.6);border:1px solid rgba(55,137,123,.5);color:#7ec9be;font-size:16px;cursor:pointer;font-family:inherit">⏸</button>
+<div class="header">
+  <button onclick="goBack()">←</button>
+  <div class="title">
+    <div class="brand-title">DOLPHIN</div>
+    <div class="sub">Rắn Săn Mồi</div>
   </div>
+  <button onclick="togglePause()" id="pauseBtn">⏸</button>
 </div>
 
 <!-- HUD -->
@@ -183,12 +177,12 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;
 </div>
 
 <!-- GAME AREA -->
-<div class="game-area">
-  <div class="board-wrap">
+<div class="game-area" id="gameArea">
+  <div class="board-wrap" id="boardWrap">
     <div id="board"></div>
     <div id="touchLayer"></div>
-    <button class="dpad-toggle" id="dpadToggle" onclick="toggleDpad()" title="Bật/tắt D-pad">🎮</button>
-    <div class="dpad-float hidden" id="dpadFloat">
+    <button class="dpad-toggle on" id="dpadToggle" onclick="toggleDpad()" title="Bật/tắt D-pad">🎮</button>
+    <div class="dpad-float" id="dpadFloat">
       <button class="up" data-dir="up">▲</button>
       <button class="left" data-dir="left">◀</button>
       <button class="mid">🎮</button>
@@ -201,38 +195,38 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;
 <!-- START MODAL -->
 <div id="startModal" class="modal show">
   <div class="modal-card">
-    <div style="font-size:56px;margin-bottom:8px">🐍</div>
-    <h2 style="font-size:20px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 10px">RẮN SĂN MỒI</h2>
-    <p style="font-size:12.5px;color:#bfe9dc;margin:0 0 16px;line-height:1.5">Điều khiển chú rắn ăn mồi.<br>Đụng tường hoặc tự cắn = Game Over!</p>
-    <div style="background:rgba(10,30,28,.6);border-radius:12px;padding:12px;margin-bottom:14px;text-align:left">
-      <div style="font-size:10.5px;color:#FBD77A;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎮 Điều khiển</div>
-      <div style="font-size:11.5px;color:#bfe9dc;line-height:1.7">
+    <div style="font-size:52px;margin-bottom:6px">🐍</div>
+    <h2 style="font-size:19px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 10px">RẮN SĂN MỒI</h2>
+    <p style="font-size:12px;color:#bfe9dc;margin:0 0 14px;line-height:1.5">Điều khiển chú rắn ăn mồi.<br>Đụng tường hoặc tự cắn = Game Over!</p>
+    <div style="background:rgba(10,30,28,.6);border-radius:12px;padding:10px 12px;margin-bottom:12px;text-align:left">
+      <div style="font-size:10px;color:#FBD77A;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px">🎮 Điều khiển</div>
+      <div style="font-size:11px;color:#bfe9dc;line-height:1.65">
         • <b style="color:#fff">Vuốt</b> trên bàn cờ theo hướng muốn đi<br>
-        • <b style="color:#fff">Chạm</b> vào ô bên phải/trái/trên/dưới đầu rắn<br>
-        • Bật <b style="color:#fff">D-pad nổi</b> 🎮 nếu thích bấm nút<br>
-        • Máy tính: dùng <b style="color:#fff">phím mũi tên / WASD</b>
+        • <b style="color:#fff">Chạm</b> ô bên cạnh đầu rắn<br>
+        • Bấm <b style="color:#fff">D-pad</b> 🎮 nếu muốn nút bấm<br>
+        • PC: <b style="color:#fff">phím mũi tên / WASD</b>
       </div>
     </div>
     <div class="stat"><span class="lbl">🏆 Kỷ lục</span><span class="val" id="startHighScore">0</span></div>
-    <button onclick="startGame()" class="btn-gold" style="width:100%;padding:14px;border-radius:12px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-top:10px">🎮 BẮT ĐẦU</button>
+    <button onclick="startGame()" class="btn-gold" style="width:100%;padding:13px;border-radius:12px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-top:10px">🎮 BẮT ĐẦU</button>
   </div>
 </div>
 
 <!-- GAME OVER MODAL -->
 <div id="overModal" class="modal">
   <div class="modal-card">
-    <div style="font-size:56px;margin-bottom:8px" id="overIcon">💀</div>
-    <h2 style="font-size:20px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px" id="overTitle">GAME OVER</h2>
+    <div style="font-size:52px;margin-bottom:6px" id="overIcon">💀</div>
+    <h2 style="font-size:19px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px" id="overTitle">GAME OVER</h2>
     <p style="font-size:12px;color:#bfe9dc;margin:0 0 6px" id="overSub"></p>
     <div class="lb-status" id="lbStatus"></div>
-    <div style="margin-top:12px">
+    <div style="margin-top:10px">
       <div class="stat"><span class="lbl">🎯 Điểm</span><span class="val" id="overScore">0</span></div>
       <div class="stat"><span class="lbl">🏆 Kỷ lục</span><span class="val" id="overHigh">0</span></div>
       <div class="stat"><span class="lbl">📏 Độ dài</span><span class="val" id="overLength">3</span></div>
     </div>
-    <div style="display:flex;gap:10px;margin-top:14px">
-      <button onclick="closeOver()" class="btn-outline" style="flex:1;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase">Đóng</button>
-      <button onclick="startGame()" class="btn-gold" style="flex:1;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase">🔄 Chơi lại</button>
+    <div style="display:flex;gap:8px;margin-top:12px">
+      <button onclick="closeOver()" class="btn-outline" style="flex:1;padding:11px;border-radius:11px;font-size:12px;text-transform:uppercase">Đóng</button>
+      <button onclick="startGame()" class="btn-gold" style="flex:1;padding:11px;border-radius:11px;font-size:12px;text-transform:uppercase">🔄 Chơi lại</button>
     </div>
   </div>
 </div>
@@ -240,10 +234,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;
 <!-- PAUSE MODAL -->
 <div id="pauseModal" class="modal">
   <div class="modal-card">
-    <div style="font-size:48px;margin-bottom:8px">⏸</div>
-    <h2 style="font-size:18px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 16px">TẠM DỪNG</h2>
-    <button onclick="resumeGame()" class="btn-gold" style="width:100%;padding:12px;border-radius:12px;font-size:13px;text-transform:uppercase;margin-bottom:8px">▶ TIẾP TỤC</button>
-    <button onclick="quitGame()" class="btn-outline" style="width:100%;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase">🚪 THOÁT VÁN</button>
+    <div style="font-size:46px;margin-bottom:8px">⏸</div>
+    <h2 style="font-size:17px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 14px">TẠM DỪNG</h2>
+    <button onclick="resumeGame()" class="btn-gold" style="width:100%;padding:11px;border-radius:11px;font-size:13px;text-transform:uppercase;margin-bottom:8px">▶ TIẾP TỤC</button>
+    <button onclick="quitGame()" class="btn-outline" style="width:100%;padding:11px;border-radius:11px;font-size:12px;text-transform:uppercase">🚪 THOÁT VÁN</button>
   </div>
 </div>
 
@@ -254,7 +248,6 @@ const SIZE = 20;
 const BASE_SPEED = 180;
 const MIN_SPEED = 70;
 const SPEED_STEP = 6;
-
 const $ = id => document.getElementById(id);
 
 let snake = [];
@@ -269,63 +262,57 @@ let paused = false;
 let gameOverFlag = false;
 let loopTimer = null;
 let submitted = false;
-let dpadVisible = false;
+let dpadVisible = true; // ✅ MẶC ĐỊNH BẬT
 
-// ═══════════════ AUDIO ═══════════════
+// ═══ FIT BOARD VÀO GAME-AREA (JS) ═══
+function fitBoard(){
+  const area = $('gameArea');
+  const wrap = $('boardWrap');
+  if (!area || !wrap) return;
+  const padding = 16;
+  const w = area.clientWidth - padding;
+  const h = area.clientHeight - padding;
+  const size = Math.max(180, Math.min(w, h));
+  wrap.style.width = size + 'px';
+  wrap.style.height = size + 'px';
+}
+
+// ═══ AUDIO ═══
 let audioCtx = null;
 function initAudio(){ try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){} }
-function playEat(){ initAudio(); if (!audioCtx) return; const t = audioCtx.currentTime; [659.25, 880].forEach((f,i) => { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,t+i*0.05); g.gain.exponentialRampToValueAtTime(0.12,t+i*0.05+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.05+0.12); o.connect(g); g.connect(audioCtx.destination); o.start(t+i*0.05); o.stop(t+i*0.05+0.15); }); }
-function playTurn(){ initAudio(); if (!audioCtx) return; const t = audioCtx.currentTime; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value = 300; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.03,t+0.005); g.gain.exponentialRampToValueAtTime(0.0001,t+0.05); o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.07); }
-function playDie(){ initAudio(); if (!audioCtx) return; const t = audioCtx.currentTime; [400,300,220,150].forEach((f,i) => { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sawtooth'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,t+i*0.1); g.gain.exponentialRampToValueAtTime(0.15,t+i*0.1+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.1+0.18); o.connect(g); g.connect(audioCtx.destination); o.start(t+i*0.1); o.stop(t+i*0.1+0.22); }); }
+function playEat(){ initAudio(); if (!audioCtx) return; const t = audioCtx.currentTime; [659.25, 880].forEach((f,i)=>{ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,t+i*0.05); g.gain.exponentialRampToValueAtTime(0.12,t+i*0.05+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.05+0.12); o.connect(g); g.connect(audioCtx.destination); o.start(t+i*0.05); o.stop(t+i*0.05+0.15); }); }
+function playTurn(){ initAudio(); if (!audioCtx) return; const t=audioCtx.currentTime; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=300; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.03,t+0.005); g.gain.exponentialRampToValueAtTime(0.0001,t+0.05); o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.07); }
+function playDie(){ initAudio(); if (!audioCtx) return; const t=audioCtx.currentTime; [400,300,220,150].forEach((f,i)=>{ const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sawtooth'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,t+i*0.1); g.gain.exponentialRampToValueAtTime(0.15,t+i*0.1+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.1+0.18); o.connect(g); g.connect(audioCtx.destination); o.start(t+i*0.1); o.stop(t+i*0.1+0.22); }); }
 
-// ═══════════════ BOARD ═══════════════
+// ═══ BOARD ═══
 function buildBoard(){
   const el = $('board');
   el.innerHTML = '';
-  for (let i = 0; i < SIZE * SIZE; i++){
-    const c = document.createElement('div');
-    c.className = 'cell';
-    el.appendChild(c);
-  }
+  for (let i=0;i<SIZE*SIZE;i++){ const c=document.createElement('div'); c.className='cell'; el.appendChild(c); }
 }
-function cellEl(r, c){ return $('board').children[r * SIZE + c]; }
+function cellEl(r,c){ return $('board').children[r*SIZE+c]; }
 
-// ═══════════════ LOGIC ═══════════════
+// ═══ LOGIC ═══
 function resetState(){
-  snake = [
-    { x: 8, y: 10 },
-    { x: 7, y: 10 },
-    { x: 6, y: 10 }
-  ];
-  dir = { x: 1, y: 0 };
-  nextDir = { x: 1, y: 0 };
-  score = 0;
-  speed = BASE_SPEED;
-  gameOverFlag = false;
-  submitted = false;
-  spawnFood();
-  render();
+  snake = [{x:8,y:10},{x:7,y:10},{x:6,y:10}];
+  dir = {x:1,y:0}; nextDir = {x:1,y:0};
+  score = 0; speed = BASE_SPEED; gameOverFlag = false; submitted = false;
+  spawnFood(); render();
 }
-
 function spawnFood(){
-  const occupied = new Set(snake.map(s => s.y * SIZE + s.x));
-  const empty = [];
-  for (let i = 0; i < SIZE * SIZE; i++) if (!occupied.has(i)) empty.push(i);
-  if (empty.length === 0){ food = null; return; }
-  const pick = empty[Math.floor(Math.random() * empty.length)];
-  food = { x: pick % SIZE, y: Math.floor(pick / SIZE) };
+  const occ = new Set(snake.map(s=>s.y*SIZE+s.x));
+  const empty = []; for (let i=0;i<SIZE*SIZE;i++) if (!occ.has(i)) empty.push(i);
+  if (!empty.length){ food=null; return; }
+  const pick = empty[Math.floor(Math.random()*empty.length)];
+  food = {x: pick%SIZE, y: Math.floor(pick/SIZE)};
 }
-
 function setDir(d){
-  const map = { up: {x:0,y:-1}, down: {x:0,y:1}, left: {x:-1,y:0}, right: {x:1,y:0} };
-  const nd = map[d];
-  if (!nd) return;
+  const map = { up:{x:0,y:-1}, down:{x:0,y:1}, left:{x:-1,y:0}, right:{x:1,y:0} };
+  const nd = map[d]; if (!nd) return;
   if (nd.x === -dir.x && nd.y === -dir.y) return;
   if (nd.x === dir.x && nd.y === dir.y) return;
-  nextDir = nd;
-  playTurn();
-  const tl = $('touchLayer');
-  if (tl) tl.classList.add('used');
+  nextDir = nd; playTurn();
+  const tl = $('touchLayer'); if (tl) tl.classList.add('used');
 }
 window.setDir = setDir;
 
@@ -334,11 +321,10 @@ function setDirByTap(clientX, clientY){
   const headEl = cellEl(snake[0].y, snake[0].x);
   if (!headEl) return;
   const rect = headEl.getBoundingClientRect();
-  const hx = rect.left + rect.width / 2;
-  const hy = rect.top + rect.height / 2;
-  const dx = clientX - hx;
-  const dy = clientY - hy;
-  if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) return;
+  const hx = rect.left + rect.width/2;
+  const hy = rect.top + rect.height/2;
+  const dx = clientX - hx, dy = clientY - hy;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 10) return;
   if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 'right' : 'left');
   else setDir(dy > 0 ? 'down' : 'up');
 }
@@ -347,39 +333,24 @@ function step(){
   if (!running || paused || gameOverFlag) return;
   dir = nextDir;
   const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
-
   if (head.x < 0 || head.x >= SIZE || head.y < 0 || head.y >= SIZE){ die(); return; }
-  for (let i = 0; i < snake.length - 1; i++){
+  for (let i=0;i<snake.length-1;i++){
     if (snake[i].x === head.x && snake[i].y === head.y){ die(); return; }
   }
-
   snake.unshift(head);
-
   if (food && head.x === food.x && head.y === food.y){
-    score += 10;
-    playEat();
-    showFloatAt(head.x, head.y);
-    spawnFood();
+    score += 10; playEat(); showFloatAt(head.x, head.y); spawnFood();
     speed = Math.max(MIN_SPEED, speed - SPEED_STEP);
-  } else {
-    snake.pop();
-  }
-
-  render();
-  updateHUD();
-  scheduleNext();
+  } else snake.pop();
+  render(); updateHUD(); scheduleNext();
 }
-
 function scheduleNext(){
   clearTimeout(loopTimer);
   if (!running || paused || gameOverFlag) return;
   loopTimer = setTimeout(step, speed);
 }
-
 function die(){
-  gameOverFlag = true;
-  running = false;
-  playDie();
+  gameOverFlag = true; running = false; playDie();
   const isNew = score > highScore;
   if (isNew){ highScore = score; localStorage.setItem('dolphin_snake_high', String(highScore)); }
   $('overIcon').textContent = isNew ? '🏆' : '💀';
@@ -388,132 +359,75 @@ function die(){
   $('overScore').textContent = score;
   $('overHigh').textContent = highScore;
   $('overLength').textContent = snake.length;
-  $('lbStatus').textContent = '';
-  $('lbStatus').className = 'lb-status';
+  $('lbStatus').textContent = ''; $('lbStatus').className = 'lb-status';
   $('overModal').classList.add('show');
-
   if (window.DolphinLeaderboard && score > 0 && !submitted){
     submitted = true;
     const st = $('lbStatus');
-    st.textContent = '⏳ Đang lưu bảng xếp hạng...';
-    st.className = 'lb-status loading';
+    st.textContent = '⏳ Đang lưu bảng xếp hạng...'; st.className = 'lb-status loading';
     window.DolphinLeaderboard.submit('snake', score, { length: snake.length }).then(function(ok){
-      if (ok){
-        st.textContent = '🏆 Đã lưu vào bảng xếp hạng!';
-        st.className = 'lb-status ok';
-      } else if (!window.DolphinLeaderboard.getStaffName()){
-        st.textContent = '⚠️ Nhập tên NV ở Lễ Tân để lưu BXH';
-        st.className = 'lb-status err';
-      } else {
-        st.textContent = '⚠️ Không lưu được (mất mạng?)';
-        st.className = 'lb-status err';
-      }
-    }).catch(function(){
-      st.textContent = '⚠️ Lỗi kết nối';
-      st.className = 'lb-status err';
-    });
+      if (ok){ st.textContent = '🏆 Đã lưu vào bảng xếp hạng!'; st.className = 'lb-status ok'; }
+      else if (!window.DolphinLeaderboard.getStaffName()){ st.textContent = '⚠️ Nhập tên NV ở Lễ Tân để lưu BXH'; st.className = 'lb-status err'; }
+      else { st.textContent = '⚠️ Không lưu được (mất mạng?)'; st.className = 'lb-status err'; }
+    }).catch(function(){ st.textContent = '⚠️ Lỗi kết nối'; st.className = 'lb-status err'; });
   } else if (window.DolphinLeaderboard && !window.DolphinLeaderboard.getStaffName() && score > 0){
-    const st = $('lbStatus');
-    st.textContent = '⚠️ Nhập tên NV ở Lễ Tân để lưu BXH';
-    st.className = 'lb-status err';
+    const st = $('lbStatus'); st.textContent = '⚠️ Nhập tên NV ở Lễ Tân để lưu BXH'; st.className = 'lb-status err';
   }
 }
-
 function render(){
   for (const c of $('board').children) c.className = 'cell';
-  snake.forEach((seg, i) => {
-    const el = cellEl(seg.y, seg.x);
-    if (!el) return;
-    if (i === 0) el.classList.add('snake-head');
-    else el.classList.add('snake-body');
-  });
-  if (food){
-    const el = cellEl(food.y, food.x);
-    if (el) el.classList.add('food');
-  }
+  snake.forEach((seg,i)=>{ const el = cellEl(seg.y,seg.x); if (!el) return; if (i===0) el.classList.add('snake-head'); else el.classList.add('snake-body'); });
+  if (food){ const el = cellEl(food.y, food.x); if (el) el.classList.add('food'); }
 }
-
 function updateHUD(){
   $('score').textContent = score;
   $('highScore').textContent = highScore;
   $('length').textContent = snake.length;
-  const mult = (BASE_SPEED / speed).toFixed(1);
-  $('speed').textContent = mult + 'x';
+  $('speed').textContent = (BASE_SPEED/speed).toFixed(1) + 'x';
 }
-
-function showFloatAt(x, y){
-  const el = cellEl(y, x);
-  if (!el) return;
+function showFloatAt(x,y){
+  const el = cellEl(y,x); if (!el) return;
   const rect = el.getBoundingClientRect();
   const f = document.createElement('div');
-  f.className = 'float-text';
-  f.textContent = '+10';
-  f.style.left = (rect.left + rect.width / 2) + 'px';
-  f.style.top = (rect.top + rect.height / 2) + 'px';
+  f.className = 'float-text'; f.textContent = '+10';
+  f.style.left = (rect.left + rect.width/2) + 'px';
+  f.style.top = (rect.top + rect.height/2) + 'px';
   document.body.appendChild(f);
-  setTimeout(() => f.remove(), 900);
+  setTimeout(()=>f.remove(),900);
 }
 
-// ═══════════════ CONTROLS ═══════════════
+// ═══ CONTROLS ═══
 function togglePause(){
   if (gameOverFlag || !running) return;
   paused = !paused;
-  if (paused){
-    $('pauseBtn').textContent = '▶';
-    $('pauseModal').classList.add('show');
-    clearTimeout(loopTimer);
-  } else {
-    $('pauseBtn').textContent = '⏸';
-    $('pauseModal').classList.remove('show');
-    scheduleNext();
-  }
+  if (paused){ $('pauseBtn').textContent='▶'; $('pauseModal').classList.add('show'); clearTimeout(loopTimer); }
+  else { $('pauseBtn').textContent='⏸'; $('pauseModal').classList.remove('show'); scheduleNext(); }
 }
 window.togglePause = togglePause;
-
-function resumeGame(){
-  paused = false;
-  $('pauseBtn').textContent = '⏸';
-  $('pauseModal').classList.remove('show');
-  scheduleNext();
-}
-function quitGame(){
-  paused = false;
-  running = false;
-  $('pauseBtn').textContent = '⏸';
-  $('pauseModal').classList.remove('show');
-  $('startModal').classList.add('show');
-  resetState();
-}
-window.resumeGame = resumeGame;
-window.quitGame = quitGame;
-
+function resumeGame(){ paused=false; $('pauseBtn').textContent='⏸'; $('pauseModal').classList.remove('show'); scheduleNext(); }
+function quitGame(){ paused=false; running=false; $('pauseBtn').textContent='⏸'; $('pauseModal').classList.remove('show'); $('startModal').classList.add('show'); resetState(); }
+window.resumeGame = resumeGame; window.quitGame = quitGame;
 function closeOver(){ $('overModal').classList.remove('show'); $('startModal').classList.add('show'); }
 window.closeOver = closeOver;
-
 function startGame(){
   $('startModal').classList.remove('show');
   $('overModal').classList.remove('show');
   $('pauseModal').classList.remove('show');
   clearTimeout(loopTimer);
-  running = true;
-  paused = false;
-  gameOverFlag = false;
-  submitted = false;
+  running = true; paused = false; gameOverFlag = false; submitted = false;
   $('pauseBtn').textContent = '⏸';
-  resetState();
-  updateHUD();
-  setTimeout(() => { if (running) scheduleNext(); }, 400);
+  resetState(); updateHUD();
+  fitBoard();
+  setTimeout(()=>{ if (running) scheduleNext(); }, 400);
 }
 window.startGame = startGame;
-
 function goBack(){
-  if (running && !gameOverFlag){
-    if (!confirm('Ván đang chơi. Thoát?')) return;
-  }
+  if (running && !gameOverFlag){ if (!confirm('Ván đang chơi. Thoát?')) return; }
   window.location.href = '/DolphinApp/giaitri/index.html';
 }
 window.goBack = goBack;
 
+// ═══ D-PAD TOGGLE ═══
 function toggleDpad(){
   dpadVisible = !dpadVisible;
   $('dpadFloat').classList.toggle('hidden', !dpadVisible);
@@ -522,56 +436,11 @@ function toggleDpad(){
 }
 window.toggleDpad = toggleDpad;
 
-// ═══════════════ 🔒 GLOBAL TOUCH LOCK ═══════════════
-// Chặn MỌI hành vi scroll/pull-refresh/zoom trên toàn document
+// ═══ TOUCH ═══
 (function(){
-  // Chặn touchmove (trừ khi trong modal-card cho phép cuộn nội dung)
-  document.addEventListener('touchmove', function(e){
-    if (e.target && e.target.closest && e.target.closest('.modal-card')) return;
-    if (e.cancelable) e.preventDefault();
-  }, { passive: false });
-
-  // Chặn đa điểm (pinch zoom)
-  document.addEventListener('touchstart', function(e){
-    if (e.touches.length > 1 && e.cancelable) e.preventDefault();
-  }, { passive: false });
-
-  // Chặn gesture Safari
-  ['gesturestart','gesturechange','gestureend'].forEach(function(ev){
-    document.addEventListener(ev, function(e){ if (e.cancelable) e.preventDefault(); }, { passive: false });
-  });
-
-  // Chặn double-tap zoom
-  var lastTap = 0;
-  document.addEventListener('touchend', function(e){
-    var now = Date.now();
-    if (now - lastTap < 300 && e.cancelable) e.preventDefault();
-    lastTap = now;
-  }, { passive: false });
-
-  // Chặn wheel zoom trackpad
-  document.addEventListener('wheel', function(e){
-    if (e.ctrlKey && e.cancelable) e.preventDefault();
-  }, { passive: false });
-
-  // Reset scroll nếu lỡ có gì cuộn
-  function killScroll(){
-    if (window.scrollY !== 0) window.scrollTo(0, 0);
-    if (document.documentElement.scrollTop !== 0) document.documentElement.scrollTop = 0;
-    if (document.body.scrollTop !== 0) document.body.scrollTop = 0;
-  }
-  window.addEventListener('scroll', killScroll, { passive: true });
-  setInterval(killScroll, 200);
-})();
-
-// ═══════════════ TOUCH LAYER: swipe + tap ═══════════════
-(function(){
-  const layer = $('touchLayer');
-  if (!layer) return;
-
+  const layer = $('touchLayer'); if (!layer) return;
   let tStart = null;
-  const MIN_SWIPE = 20;
-
+  const MIN_SWIPE = 18;
   function onStart(e){
     if (e.touches && e.touches.length !== 1) return;
     const t = e.touches ? e.touches[0] : e;
@@ -581,21 +450,16 @@ window.toggleDpad = toggleDpad;
   function onMove(e){
     if (!tStart) return;
     const t = e.touches ? e.touches[0] : e;
-    const dx = t.clientX - tStart.x;
-    const dy = t.clientY - tStart.y;
-    if (Math.max(Math.abs(dx), Math.abs(dy)) > MIN_SWIPE){
-      tStart.moved = true;
-    }
-    if (e.cancelable) e.preventDefault();
+    const dx = t.clientX - tStart.x, dy = t.clientY - tStart.y;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > MIN_SWIPE) tStart.moved = true;
+    e.preventDefault();
   }
   function onEnd(e){
     if (!tStart) return;
     const t = e.changedTouches ? e.changedTouches[0] : e;
-    const dx = t.clientX - tStart.x;
-    const dy = t.clientY - tStart.y;
+    const dx = t.clientX - tStart.x, dy = t.clientY - tStart.y;
     const adx = Math.abs(dx), ady = Math.abs(dy);
     const duration = Date.now() - tStart.t;
-
     if (Math.max(adx, ady) >= MIN_SWIPE){
       if (adx > ady) setDir(dx > 0 ? 'right' : 'left');
       else setDir(dy > 0 ? 'down' : 'up');
@@ -604,62 +468,70 @@ window.toggleDpad = toggleDpad;
     }
     tStart = null;
   }
-
   layer.addEventListener('touchstart', onStart, { passive: true });
   layer.addEventListener('touchmove', onMove, { passive: false });
   layer.addEventListener('touchend', onEnd, { passive: true });
-  layer.addEventListener('touchcancel', () => { tStart = null; });
-
+  layer.addEventListener('touchcancel', ()=>{ tStart = null; });
   layer.addEventListener('mousedown', onStart);
-  layer.addEventListener('mousemove', (e) => { if (tStart) onMove(e); });
+  layer.addEventListener('mousemove', (e)=>{ if (tStart) onMove(e); });
   layer.addEventListener('mouseup', onEnd);
-  layer.addEventListener('mouseleave', () => { tStart = null; });
+  layer.addEventListener('mouseleave', ()=>{ tStart = null; });
 })();
 
-// ═══════════════ D-PAD button handlers ═══════════════
-document.querySelectorAll('#dpadFloat button[data-dir]').forEach(btn => {
-  const fire = (e) => {
-    e.preventDefault();
-    e.stopPropagation();
-    const d = btn.dataset.dir;
-    if (d) setDir(d);
+// ═══ D-PAD BUTTONS ═══
+document.querySelectorAll('#dpadFloat button[data-dir]').forEach(btn=>{
+  const fire = (e)=>{
+    e.preventDefault(); e.stopPropagation();
+    const d = btn.dataset.dir; if (d) setDir(d);
   };
   btn.addEventListener('touchstart', fire, { passive: false });
   btn.addEventListener('mousedown', fire);
 });
 
-// ═══════════════ KEYBOARD ═══════════════
-document.addEventListener('keydown', e => {
+// ═══ KEYBOARD ═══
+document.addEventListener('keydown', e=>{
   const k = e.key.toLowerCase();
-  if (['arrowup','w'].includes(k)) { e.preventDefault(); setDir('up'); }
-  else if (['arrowdown','s'].includes(k)) { e.preventDefault(); setDir('down'); }
-  else if (['arrowleft','a'].includes(k)) { e.preventDefault(); setDir('left'); }
-  else if (['arrowright','d'].includes(k)) { e.preventDefault(); setDir('right'); }
+  if (['arrowup','w'].includes(k)){ e.preventDefault(); setDir('up'); }
+  else if (['arrowdown','s'].includes(k)){ e.preventDefault(); setDir('down'); }
+  else if (['arrowleft','a'].includes(k)){ e.preventDefault(); setDir('left'); }
+  else if (['arrowright','d'].includes(k)){ e.preventDefault(); setDir('right'); }
   else if (k === ' ' || k === 'p'){ e.preventDefault(); togglePause(); }
 });
 
-// ═══════════════ INIT ═══════════════
+// ═══ INIT ═══
 function init(){
   buildBoard();
   resetState();
   $('highScore').textContent = highScore;
   $('startHighScore').textContent = highScore;
   updateHUD();
+
+  // ✅ Fit board ngay
+  fitBoard();
+  setTimeout(fitBoard, 50);
+  setTimeout(fitBoard, 300);
+
+  // ✅ Theo dõi resize liên tục
+  window.addEventListener('resize', fitBoard);
+  window.addEventListener('orientationchange', ()=>setTimeout(fitBoard, 200));
+  if (window.ResizeObserver){
+    try { new ResizeObserver(fitBoard).observe($('gameArea')); } catch(e){}
+  }
+  // ✅ Fallback poll để bắt kịp iframe resize
+  setInterval(fitBoard, 800);
+
   ['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, initAudio, { once: true, passive: true }));
 
+  // ✅ Khôi phục trạng thái D-pad (mặc định ON)
   try {
-    if (localStorage.getItem('dolphin_snake_dpad') === '1'){
-      dpadVisible = true;
-      $('dpadFloat').classList.remove('hidden');
-      $('dpadToggle').classList.add('on');
-    }
+    const saved = localStorage.getItem('dolphin_snake_dpad');
+    if (saved === '0') { dpadVisible = false; $('dpadFloat').classList.add('hidden'); $('dpadToggle').classList.remove('on'); }
   } catch(e){}
 
-  document.addEventListener('visibilitychange', () => {
+  document.addEventListener('visibilitychange', ()=>{
     if (document.hidden && running && !paused && !gameOverFlag) togglePause();
   });
-
-  console.log('%c🐍 SNAKE v3 (scroll-locked)', 'background:#4aa896;color:#fff;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  console.log('%c🐍 SNAKE v4 LOADED (auto-fit + default D-pad)', 'background:#4aa896;color:#fff;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 else init();

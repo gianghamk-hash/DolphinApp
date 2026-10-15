@@ -1,18 +1,18 @@
 {
-  "version": "1.0.35",
-  "previousVersion": "1.0.34",
-  "commit": "c0ac9a1",
-  "previousCommit": "8ecea5d",
-  "buildDate": "2026-10-15T09:15:33.036Z",
-  "summary": "Dolphin Guests: UI Premium Glass + compact",
+  "version": "1.0.36",
+  "previousVersion": "1.0.35",
+  "commit": "6ba2618",
+  "previousCommit": "c0ac9a1",
+  "buildDate": "2026-10-15T11:21:14.480Z",
+  "summary": "Dolphin Guests: FOC + UI mềm mại hơn",
   "changes": {
-    "totalCommits": 39,
+    "totalCommits": 40,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Dolphin Guests: UI Premium Glass + compact"
+    "Dolphin Guests: FOC + UI mềm mại hơn"
   ],
   "fileChanges": [
     {

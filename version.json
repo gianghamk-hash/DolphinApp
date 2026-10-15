@@ -1,7 +1,7 @@
 {
-  "version": "1.0.35",
-  "buildDate": "2026-10-15T09:15:33.036Z",
-  "commit": "c0ac9a1",
-  "notes": "Dolphin Guests: UI Premium Glass + compact",
+  "version": "1.0.36",
+  "buildDate": "2026-10-15T11:21:14.480Z",
+  "commit": "6ba2618",
+  "notes": "Dolphin Guests: FOC + UI mềm mại hơn",
   "forceUpdate": false
 }

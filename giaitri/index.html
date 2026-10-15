@@ -133,6 +133,27 @@ html.game-locked, body.game-locked{
 .lb-table td.good{color:#86efac}
 .lb-table td.bad{color:#fca5a5}
 .lb-table td.gold{color:#FBD77A;font-weight:900;font-size:14px}
+  /* === FULLSCREEN CHO GAME (SNAKE) === */
+#gameIframeView.fullscreen{
+  position:fixed;inset:0;z-index:9999;
+  background:#0a1f1d;
+  display:flex;flex-direction:column;
+  padding:0;margin:0;
+}
+#gameIframeView.fullscreen .game-back-btn{
+  margin:0;border-radius:0;
+  padding:calc(8px + env(safe-area-inset-top)) 14px 8px;
+  border:none;border-bottom:1px solid rgba(55,137,123,.4);
+  background:rgba(10,31,29,.95);
+  flex-shrink:0;backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  color:#bfe9dc;font-size:13px;
+}
+#gameIframeView.fullscreen .game-frame-wrap{
+  flex:1;height:auto;min-height:0;
+  border:none;border-radius:0;box-shadow:none;
+  touch-action:none;overscroll-behavior:none;
+}
 </style>
 </head>
 <body>
@@ -329,17 +350,26 @@ html.game-locked, body.game-locked{
     updateMiniPlayer();
   };
 
-  window.openGame = function(gameKey){
+   window.openGame = function(gameKey){
     var url = GAME_URLS[gameKey];
     if (!url){ alert('Game không tồn tại: ' + gameKey); return; }
     currentGame = gameKey;
+
+    // ✅ Khóa scroll + fullscreen cho Snake
     if (LOCK_SCROLL_GAMES.indexOf(gameKey) !== -1){
       document.documentElement.classList.add('game-locked');
       document.body.classList.add('game-locked');
       window.scrollTo(0, 0);
+      document.getElementById('gameIframeView').classList.add('fullscreen');
     }
+
     document.getElementById('gameMenuView').classList.add('hidden');
     document.getElementById('gameIframeView').classList.remove('hidden');
+
+    // ✅ Ẩn mini player ngay
+    var mp = document.getElementById('miniPlayer');
+    if (mp) mp.classList.add('hide');
+
     var frame = document.getElementById('gameFrame');
     var loading = document.getElementById('gameLoading');
     if (loading) loading.classList.remove('hide');
@@ -357,16 +387,18 @@ html.game-locked, body.game-locked{
       if (loading) loading.classList.add('hide');
     }, 8000);
   };
-
   window.closeGame = function(){
     if (!currentGame) return;
     currentGame = null;
     var frame = document.getElementById('gameFrame');
     if (frame) frame.src = 'about:blank';
     document.getElementById('gameIframeView').classList.add('hidden');
+    document.getElementById('gameIframeView').classList.remove('fullscreen'); // ✅ tắt fullscreen
     document.getElementById('gameMenuView').classList.remove('hidden');
     document.documentElement.classList.remove('game-locked');
     document.body.classList.remove('game-locked');
+    // ✅ Khôi phục mini player nếu nhạc đang phát
+    if (typeof updateMiniPlayer === 'function') updateMiniPlayer();
   };
 
   function DS(){ return window.DolphinSound; }
@@ -446,6 +478,10 @@ html.game-locked, body.game-locked{
   function updateMiniPlayer(){
     var mp = document.getElementById('miniPlayer');
     if (!mp) return;
+
+    // ✅ Ẩn mini player khi đang mở bất kỳ game iframe nào
+    if (currentGame){ mp.classList.add('hide'); return; }
+
     var ds = DS();
     if (!ds){ mp.classList.add('hide'); return; }
     var tabMusic = document.getElementById('tab-music');

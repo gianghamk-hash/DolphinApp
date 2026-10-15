@@ -570,16 +570,21 @@ html.game-locked, body.game-locked{
     updateMiniPlayer();
   };
 
+  // ═══ DANH SÁCH GAME CẦN KHÓA SCROLL (chỉ snake) ═══
+  var LOCK_SCROLL_GAMES = ['snake'];
+
   // ═══ OPEN / CLOSE GAME (iframe) ═══
   window.openGame = function(gameKey){
     var url = GAME_URLS[gameKey];
     if (!url){ alert('Game không tồn tại: ' + gameKey); return; }
     currentGame = gameKey;
 
-    // 🔒 KHÓA SCROLL TRANG MẸ
-    document.documentElement.classList.add('game-locked');
-    document.body.classList.add('game-locked');
-    window.scrollTo(0, 0);
+    // 🔒 CHỈ KHÓA SCROLL với game trong danh sách LOCK_SCROLL_GAMES
+    if (LOCK_SCROLL_GAMES.indexOf(gameKey) !== -1){
+      document.documentElement.classList.add('game-locked');
+      document.body.classList.add('game-locked');
+      window.scrollTo(0, 0);
+    }
 
     var menuView = document.getElementById('gameMenuView');
     var iframeView = document.getElementById('gameIframeView');

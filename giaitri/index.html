@@ -10,6 +10,7 @@
 <script>window.DOLPHIN_HIDE_SOUND_WIDGET = true; window.DOLPHIN_ALLOW_SOUND = true;</script>
 <script src="/DolphinApp/dolphin-soundscape.js?v=2.4" defer></script>
 <script src="/DolphinApp/staff-sync.js" defer></script>
+<script src="/DolphinApp/dolphin-leaderboard.js?v=1.0"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;padding-bottom:64px}
@@ -266,10 +267,13 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <button class="tab-btn" data-tab="music" onclick="showTab('music')">
       <span>🎵</span> NGHE NHẠC
     </button>
-    <button class="tab-btn" data-tab="game" onclick="showTab('game')">
-      <span>🕹</span> KHO GAME
-    </button>
-  </div>
+<button class="tab-btn" data-tab="game" onclick="showTab('game')">
+  <span>🕹</span> KHO GAME
+</button>
+<button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">
+  <span>🏆</span> XẾP HẠNG
+</button>
+</div>
 
   <!-- ═══════════ TAB: CỜ CARO ═══════════ -->
   <div id="tab-caro" class="tab-content">
@@ -408,12 +412,17 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
           <span class="gm-title">2048</span>
           <span class="gm-sub">Ghép số đạt 2048</span>
         </button>
-        <button class="game-menu-btn" onclick="openGame('battleship')">
-          <span class="gm-icon">🚢</span>
-          <span class="gm-title">Battleship</span>
-          <span class="gm-sub">Bắn thuyền 1v1</span>
-        </button>
-      </div>
+<button class="game-menu-btn" onclick="openGame('battleship')">
+  <span class="gm-icon">🚢</span>
+  <span class="gm-title">Battleship</span>
+  <span class="gm-sub">Bắn thuyền 1v1</span>
+</button>
+<button class="game-menu-btn" onclick="openGame('snake')">
+  <span class="gm-icon">🐍</span>
+  <span class="gm-title">Rắn Săn Mồi</span>
+  <span class="gm-sub">Ăn mồi · phá kỷ lục</span>
+</button>
+</div>
     </div>
     <div id="gameIframeView" class="hidden">
       <button class="game-back-btn" onclick="closeGame()">← Quay lại menu</button>
@@ -423,6 +432,46 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
           <div class="text-gold-400 text-[12px] font-bold">Đang tải game...</div>
         </div>
         <iframe id="gameFrame" allow="autoplay"></iframe>
+      </div>
+       </div>
+    </div>
+  </div>
+
+  <!-- ═══════════ TAB: XẾP HẠNG ═══════════ -->
+  <div id="tab-leaderboard" class="tab-content hidden">
+    <div class="glass rounded-2xl p-5 mb-4 text-center" style="background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));border:2px solid rgba(244,184,66,.4)">
+      <div class="text-5xl mb-2">🏆</div>
+      <h2 class="text-[15px] font-black text-gold-400 uppercase tracking-widest mb-1">BẢNG XẾP HẠNG</h2>
+      <p class="text-[12px] text-teal-300">Thi đua cùng đồng nghiệp Dolphin</p>
+    </div>
+
+    <div class="tab-switcher" id="lbGameTabs">
+      <button class="tab-btn active" data-lb="snake" onclick="showLB('snake')">
+        <span>🐍</span> RẮN
+      </button>
+      <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')">
+        <span>🚢</span> BATTLESHIP
+      </button>
+      <button class="tab-btn" data-lb="chess" onclick="showLB('chess')">
+        <span>♟</span> CỜ VUA
+      </button>
+      <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')">
+        <span>🔢</span> 2048
+      </button>
+    </div>
+
+    <div class="glass rounded-2xl p-4">
+      <div class="flex items-center justify-between mb-3">
+        <h3 class="text-[11px] font-black text-white uppercase tracking-widest flex items-center gap-2">
+          <span id="lbGameIcon">🐍</span> <span id="lbGameTitle">RẮN SĂN MỒI</span>
+        </h3>
+        <button onclick="refreshLB()" class="btn-outline px-3 py-1.5 rounded-lg text-[10.5px] uppercase">🔄 Làm mới</button>
+      </div>
+      <div id="lbContent">
+        <div class="text-center py-8 text-teal-500 text-[12px] font-bold">Đang tải...</div>
+      </div>
+      <div class="text-center text-[10px] text-teal-500 mt-3 italic">
+        💡 Chỉ tính điểm khi có tên nhân viên · Cập nhật realtime
       </div>
     </div>
   </div>
@@ -486,7 +535,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   var GAME_URLS = {
     'chess': 'games/chess.html',
     'game2048': 'games/game2048.html',
-    'battleship': 'games/battleship.html'
+    'battleship': 'games/battleship.html',
+    'snake': 'games/snake.html'
   };
 
   window.showTab = function(name){
@@ -511,6 +561,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
     if (name !== 'game' && currentGame){
       closeGame();
+    }
+
+    if (name === 'leaderboard'){
+      refreshLB();
     }
 
     updateMiniPlayer();
@@ -1383,6 +1437,124 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   } else {
     init();
   }
+})();
+</script>
+
+<!-- ═══════════ LEADERBOARD LOGIC ═══════════ -->
+<script>
+(function(){
+  'use strict';
+
+  var currentLBGame = 'snake';
+  var LB_META = {
+    snake:      { icon: '🐍', title: 'RẮN SĂN MỒI',  type: 'score' },
+    battleship: { icon: '🚢', title: 'BATTLESHIP',   type: 'win' },
+    chess:      { icon: '♟',  title: 'CỜ VUA',       type: 'win' },
+    game2048:   { icon: '🔢', title: '2048',         type: 'score' }
+  };
+
+  function $(id){ return document.getElementById(id); }
+  function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, function(c){
+    return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];
+  }); }
+
+  function waitForLB(cb, tries){
+    tries = tries || 0;
+    if (window.DolphinLeaderboard) return cb();
+    if (tries > 40) return cb();
+    setTimeout(function(){ waitForLB(cb, tries + 1); }, 250);
+  }
+
+  window.showLB = function(game){
+    currentLBGame = game;
+    document.querySelectorAll('#lbGameTabs .tab-btn').forEach(function(b){
+      b.classList.toggle('active', b.dataset.lb === game);
+    });
+    var meta = LB_META[game] || LB_META.snake;
+    var icon = $('lbGameIcon'); if (icon) icon.textContent = meta.icon;
+    var title = $('lbGameTitle'); if (title) title.textContent = meta.title;
+    renderLB(game);
+  };
+
+  window.refreshLB = function(){
+    if (window.DolphinLeaderboard) window.DolphinLeaderboard.invalidate(currentLBGame);
+    renderLB(currentLBGame);
+  };
+
+  async function renderLB(game){
+    var el = $('lbContent');
+    if (!el) return;
+    el.innerHTML = '<div class="text-center py-8 text-teal-400 text-[12px] font-bold">Đang tải...</div>';
+
+    waitForLB(async function(){
+      var LB = window.DolphinLeaderboard;
+      if (!LB){
+        el.innerHTML = '<div class="text-center py-8 text-red-400 text-[12px] font-bold">⚠️ Chưa kết nối Firebase</div>';
+        return;
+      }
+      var rows = await LB.getLeaderboard(game, 30);
+      var meta = LB_META[game] || LB_META.snake;
+      var myName = LB.getStaffName();
+
+      if (!rows || !rows.length){
+        el.innerHTML = '<div class="text-center py-10 text-teal-500 text-[12px] font-bold leading-relaxed">'
+          + '<div style="font-size:40px;opacity:.6;margin-bottom:6px">' + meta.icon + '</div>'
+          + 'Chưa có ai chơi game này<br>'
+          + '<span style="font-size:10.5px;opacity:.7">Hãy là người đầu tiên!</span></div>';
+        return;
+      }
+
+      var html = '<div style="overflow-x:auto"><table style="width:100%;font-size:12px;border-collapse:collapse">';
+      html += '<thead><tr style="border-bottom:2px solid rgba(244,184,66,.35);color:#FBD77A;font-weight:900;font-size:10px;text-transform:uppercase">';
+      html += '<th style="text-align:left;padding:8px 6px;width:44px">#</th>';
+      html += '<th style="text-align:left;padding:8px 6px">Người chơi</th>';
+      if (meta.type === 'win'){
+        html += '<th style="text-align:center;padding:8px 4px">Thắng</th>';
+        html += '<th style="text-align:center;padding:8px 4px">Thua</th>';
+        html += '<th style="text-align:center;padding:8px 4px">Tỉ lệ</th>';
+      } else {
+        html += '<th style="text-align:right;padding:8px 6px">Cao nhất</th>';
+        html += '<th style="text-align:right;padding:8px 6px">Tổng</th>';
+        html += '<th style="text-align:right;padding:8px 6px">Ván</th>';
+      }
+      html += '</tr></thead><tbody>';
+
+      rows.forEach(function(r, i){
+        var isMe = r.player === myName;
+        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1);
+        var rowStyle = 'border-bottom:1px solid rgba(255,255,255,.06);'
+          + (isMe ? 'background:rgba(244,184,66,.14);' : '');
+        html += '<tr style="' + rowStyle + '">';
+        html += '<td style="padding:8px 6px;font-weight:900;color:#FBD77A;font-size:' + (i < 3 ? '16px' : '12px') + '">' + medal + '</td>';
+        html += '<td style="padding:8px 6px;font-weight:800;color:' + (isMe ? '#FBD77A' : '#fff') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">'
+          + esc(r.player) + (isMe ? ' <span style="font-size:9px;opacity:.7">(BẠN)</span>' : '') + '</td>';
+        if (meta.type === 'win'){
+          var total = (r.wins || 0) + (r.losses || 0);
+          var rate = total > 0 ? Math.round((r.wins || 0) / total * 100) : 0;
+          html += '<td style="text-align:center;padding:8px 4px;color:#86efac;font-weight:800">' + (r.wins || 0) + '</td>';
+          html += '<td style="text-align:center;padding:8px 4px;color:#fca5a5;font-weight:800">' + (r.losses || 0) + '</td>';
+          html += '<td style="text-align:center;padding:8px 4px;color:#FBD77A;font-weight:900">' + rate + '%</td>';
+        } else {
+          html += '<td style="text-align:right;padding:8px 6px;color:#FBD77A;font-weight:900;font-size:14px">' + (r.bestScore || 0) + '</td>';
+          html += '<td style="text-align:right;padding:8px 6px;color:#7ec9be;font-weight:700">' + (r.totalScore || 0) + '</td>';
+          html += '<td style="text-align:right;padding:8px 6px;color:#7ec9be;font-weight:700">' + (r.totalGames || 0) + '</td>';
+        }
+        html += '</tr>';
+      });
+
+      html += '</tbody></table></div>';
+      el.innerHTML = html;
+    });
+  }
+
+  // Auto refresh khi đang mở tab xếp hạng
+  setInterval(function(){
+    var tab = document.getElementById('tab-leaderboard');
+    if (tab && !tab.classList.contains('hidden')){
+      renderLB(currentLBGame);
+    }
+  }, 25000);
+
 })();
 </script>
 

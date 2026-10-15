@@ -1,22 +1,22 @@
 {
-  "version": "1.0.41",
-  "previousVersion": "1.0.40",
-  "commit": "ada4952",
-  "previousCommit": "0db6438",
-  "buildDate": "2026-10-15T12:47:55.845Z",
-  "summary": "CẬP NHẬT BATTLE SHIP",
+  "version": "1.0.42",
+  "previousVersion": "1.0.41",
+  "commit": "d7af63b",
+  "previousCommit": "ada4952",
+  "buildDate": "2026-10-15T12:56:07.282Z",
+  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
   "changes": {
-    "totalCommits": 45,
+    "totalCommits": 46,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "CẬP NHẬT BATTLE SHIP"
+    "Mô tả ngắn gọn việc bạn vừa làm"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/battleship.html",
+      "file": "giaitri/games/snake.html",
       "type": "update"
     }
   ]

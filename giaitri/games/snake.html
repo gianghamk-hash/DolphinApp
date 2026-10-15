@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · Rắn Săn Mồi</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit;transition:transform .1s}
+.btn-gold:active{transform:scale(.96)}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit;transition:transform .1s}
+.btn-outline:active{transform:scale(.96)}
+
+/* ═══ BOARD ═══ */
+.game-area{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;min-height:0}
+.board-wrap{
+  background:linear-gradient(135deg,rgba(10,50,80,.9),rgba(5,30,50,.95));
+  border:3px solid #8B6F3D;border-radius:16px;padding:8px;
+  max-width:min(94vw,520px);width:100%;
+  box-shadow:0 8px 30px rgba(0,0,0,.5),inset 0 0 30px rgba(0,0,0,.3);
+  position:relative;
+}
+#board{
+  display:grid;grid-template-columns:repeat(20,1fr);grid-template-rows:repeat(20,1fr);
+  gap:1px;aspect-ratio:1;background:rgba(0,15,30,.6);border-radius:8px;padding:2px;
+}
+.cell{background:rgba(0,20,40,.4);border-radius:2px;position:relative;transition:background .05s}
+.cell::after{content:'';position:absolute;inset:1px;border-radius:2px;background:transparent;transition:background .08s}
+.cell.snake-body::after{background:linear-gradient(135deg,#4aa896,#2a6e65);box-shadow:inset 0 1px 0 rgba(255,255,255,.3)}
+.cell.snake-head::after{background:linear-gradient(135deg,#FBD77A,#F4B842);box-shadow:0 0 8px rgba(244,184,66,.8);border-radius:3px}
+.cell.snake-head::before{content:'';position:absolute;top:50%;left:50%;width:4px;height:4px;background:#0a1f1d;border-radius:50%;transform:translate(-50%,-50%);z-index:2}
+.cell.food::after{background:radial-gradient(circle,#ef4444 30%,#991b1b 100%);border-radius:50%;box-shadow:0 0 10px rgba(239,68,68,.7);animation:foodPulse 1s ease-in-out infinite}
+@keyframes foodPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
+
+/* ═══ CONTROLS ═══ */
+.controls{padding:12px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
+.dpad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,58px);gap:6px}
+.dpad button{
+  background:linear-gradient(135deg,rgba(74,168,150,.9),rgba(42,110,101,.9));
+  border:2px solid rgba(120,220,200,.4);border-radius:14px;
+  color:#FBD77A;font-size:22px;font-weight:900;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 4px 12px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.2);
+  transition:transform .08s,box-shadow .08s;
+}
+.dpad button:active{transform:scale(.9);box-shadow:0 2px 6px rgba(0,0,0,.4),inset 0 2px 6px rgba(0,0,0,.3);background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634}
+.dpad .up{grid-column:2;grid-row:1}
+.dpad .left{grid-column:1;grid-row:2}
+.dpad .center{grid-column:2;grid-row:2;background:rgba(25,71,67,.4);border-color:rgba(55,137,123,.3);cursor:default;font-size:14px;color:#7ec9be}
+.dpad .center:active{transform:none;box-shadow:0 4px 12px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.2);background:rgba(25,71,67,.4);color:#7ec9be}
+.dpad .right{grid-column:3;grid-row:2}
+.dpad .down{grid-column:2;grid-row:3}
+
+/* ═══ MODAL ═══ */
+.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+.modal.show{display:flex}
+.modal-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;padding:28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.2);animation:popIn .35s cubic-bezier(.16,1,.3,1)}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.stat{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(10,30,28,.5);border-radius:10px;margin-bottom:6px;font-size:13px;font-weight:800}
+.stat .lbl{color:#7ec9be}
+.stat .val{color:#FBD77A;font-weight:900}
+
+/* ═══ HEADER STATS ═══ */
+.hud{display:flex;gap:8px;padding:10px 14px;background:rgba(10,31,29,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(55,137,123,.3)}
+.hud .item{flex:1;text-align:center;padding:6px 4px;background:rgba(25,71,67,.5);border:1px solid rgba(55,137,123,.3);border-radius:10px}
+.hud .lbl{font-size:9px;color:#7ec9be;font-weight:800;text-transform:uppercase;letter-spacing:.05em;display:block}
+.hud .val{font-size:16px;color:#FBD77A;font-weight:900;font-family:'Fraunces',serif;margin-top:2px;display:block}
+
+/* ═══ FLOAT ═══ */
+.float-text{position:fixed;pointer-events:none;z-index:9999;font-family:'Fraunces',serif;font-weight:900;color:#FBD77A;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(244,184,66,.8);font-size:24px;animation:floatUp .8s ease-out forwards}
+@keyframes floatUp{0%{opacity:0;transform:translate(-50%,0) scale(.5)}30%{opacity:1;transform:translate(-50%,-15px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-50px) scale(.9)}}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
+  <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <div class="text-center flex-1">
+      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
+      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Rắn Săn Mồi</p>
+    </div>
+    <button onclick="togglePause()" id="pauseBtn" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">⏸</button>
+  </div>
+</div>
+
+<!-- HUD -->
+<div class="hud">
+  <div class="item"><span class="lbl">Điểm</span><span class="val" id="score">0</span></div>
+  <div class="item"><span class="lbl">Kỷ lục</span><span class="val" id="highScore">0</span></div>
+  <div class="item"><span class="lbl">Độ dài</span><span class="val" id="length">3</span></div>
+  <div class="item"><span class="lbl">Tốc độ</span><span class="val" id="speed">1x</span></div>
+</div>
+
+<!-- GAME AREA -->
+<div class="game-area">
+  <div class="board-wrap"><div id="board"></div></div>
+</div>
+
+<!-- CONTROLS -->
+<div class="controls">
+  <div class="dpad">
+    <button class="up" onclick="setDir('up')">▲</button>
+    <button class="left" onclick="setDir('left')">◀</button>
+    <button class="center">🎮</button>
+    <button class="right" onclick="setDir('right')">▶</button>
+    <button class="down" onclick="setDir('down')">▼</button>
+  </div>
+</div>
+
+<div class="text-center text-[10px] text-teal-500 pb-4 px-4 leading-relaxed">
+  🎮 Dùng D-pad, phím mũi tên, WASD hoặc vuốt màn hình<br>
+  🍎 Ăn mồi đỏ để tăng điểm — đụng tường hoặc tự cắn = Game Over
+</div>
+
+<!-- START MODAL -->
+<div id="startModal" class="modal show">
+  <div class="modal-card">
+    <div class="text-6xl mb-3">🐍</div>
+    <h2 class="text-[20px] font-black text-gold-400 uppercase tracking-widest mb-3">RẮN SĂN MỒI</h2>
+    <p class="text-[12px] text-teal-300 mb-5">Điều khiển chú rắn ăn mồi, đừng đụng tường hay tự cắn vào đuôi!</p>
+    <div class="stat"><span class="lbl">🏆 Kỷ lục hiện tại</span><span class="val" id="startHighScore">0</span></div>
+    <button onclick="startGame()" class="btn-gold w-full py-3.5 rounded-xl text-[13px] uppercase tracking-wider mt-3">🎮 BẮT ĐẦU</button>
+  </div>
+</div>
+
+<!-- GAME OVER MODAL -->
+<div id="overModal" class="modal">
+  <div class="modal-card">
+    <div class="text-6xl mb-3" id="overIcon">💀</div>
+    <h2 class="text-[20px] font-black text-gold-400 uppercase tracking-widest mb-3" id="overTitle">GAME OVER</h2>
+    <p class="text-[12px] text-teal-200 mb-4" id="overSub"></p>
+    <div class="stat"><span class="lbl">🎯 Điểm</span><span class="val" id="overScore">0</span></div>
+    <div class="stat"><span class="lbl">🏆 Kỷ lục</span><span class="val" id="overHigh">0</span></div>
+    <div class="stat"><span class="lbl">📏 Độ dài</span><span class="val" id="overLength">3</span></div>
+    <div class="flex gap-2 mt-3">
+      <button onclick="closeOver()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">Đóng</button>
+      <button onclick="startGame()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Chơi lại</button>
+    </div>
+  </div>
+</div>
+
+<!-- PAUSE MODAL -->
+<div id="pauseModal" class="modal">
+  <div class="modal-card">
+    <div class="text-5xl mb-3">⏸</div>
+    <h2 class="text-[18px] font-black text-gold-400 uppercase tracking-widest mb-4">TẠM DỪNG</h2>
+    <button onclick="resumeGame()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase mb-2">▶ TIẾP TỤC</button>
+    <button onclick="quitGame()" class="btn-outline w-full py-3 rounded-xl text-[12px] uppercase">🚪 THOÁT VÁN</button>
+  </div>
+</div>
+
+<script>
+'use strict';
+const SIZE = 20;
+const BASE_SPEED = 180; // ms per step
+const MIN_SPEED = 70;
+const SPEED_STEP = 6;
+
+const $ = id => document.getElementById(id);
+
+let board = [];
+let snake = [];
+let dir = { x: 1, y: 0 };
+let nextDir = { x: 1, y: 0 };
+let food = null;
+let score = 0;
+let highScore = parseInt(localStorage.getItem('dolphin_snake_high') || '0', 10);
+let speed = BASE_SPEED;
+let running = false;
+let paused = false;
+let gameOverFlag = false;
+let loopTimer = null;
+let initialized = false;
+
+// ═══ AUDIO ═══
+let audioCtx = null;
+function initAudio(){ try { if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){} }
+function playEat(){ initAudio(); if (!audioCtx) return; const t = audioCtx.currentTime; [659.25, 880].forEach((f,i) => { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,t+i*0.05); g.gain.exponentialRampToValueAtTime(0.12,t+i*0.05+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.05+0.12); o.connect(g); g.connect(audioCtx.destination); o.start(t+i*0.05); o.stop(t+i*0.05+0.15); }); }
+function playTurn(){ initAudio(); if (!audioCtx) return; const t = audioCtx.currentTime; const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sine'; o.frequency.value = 300; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.03,t+0.005); g.gain.exponentialRampToValueAtTime(0.0001,t+0.05); o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.07); }
+function playDie(){ initAudio(); if (!audioCtx) return; const t = audioCtx.currentTime; [400,300,220,150].forEach((f,i) => { const o = audioCtx.createOscillator(); const g = audioCtx.createGain(); o.type='sawtooth'; o.frequency.value=f; g.gain.setValueAtTime(0.0001,t+i*0.1); g.gain.exponentialRampToValueAtTime(0.15,t+i*0.1+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.1+0.18); o.connect(g); g.connect(audioCtx.destination); o.start(t+i*0.1); o.stop(t+i*0.1+0.22); }); }
+
+// ═══ BOARD BUILD ═══
+function buildBoard(){
+  const el = $('board');
+  el.innerHTML = '';
+  for (let i = 0; i < SIZE * SIZE; i++){
+    const c = document.createElement('div');
+    c.className = 'cell';
+    c.dataset.i = i;
+    el.appendChild(c);
+  }
+}
+function cellEl(r, c){ return $('board').children[r * SIZE + c]; }
+
+// ═══ GAME LOGIC ═══
+function resetState(){
+  snake = [
+    { x: 8, y: 10 },
+    { x: 7, y: 10 },
+    { x: 6, y: 10 }
+  ];
+  dir = { x: 1, y: 0 };
+  nextDir = { x: 1, y: 0 };
+  score = 0;
+  speed = BASE_SPEED;
+  gameOverFlag = false;
+  spawnFood();
+  render();
+}
+
+function spawnFood(){
+  const occupied = new Set(snake.map(s => s.y * SIZE + s.x));
+  const empty = [];
+  for (let i = 0; i < SIZE * SIZE; i++) if (!occupied.has(i)) empty.push(i);
+  if (empty.length === 0){ food = null; return; }
+  const pick = empty[Math.floor(Math.random() * empty.length)];
+  food = { x: pick % SIZE, y: Math.floor(pick / SIZE) };
+}
+
+function setDir(d){
+  const map = { up: {x:0,y:-1}, down: {x:0,y:1}, left: {x:-1,y:0}, right: {x:1,y:0} };
+  const nd = map[d];
+  if (!nd) return;
+  // Không cho phép đổi ngược hướng
+  if (nd.x === -dir.x && nd.y === -dir.y) return;
+  if (nd.x === dir.x && nd.y === dir.y) return;
+  nextDir = nd;
+  playTurn();
+}
+window.setDir = setDir;
+
+function step(){
+  if (!running || paused || gameOverFlag) return;
+  dir = nextDir;
+  const head = { x: snake[0].x + dir.x, y: snake[0].y + dir.y };
+
+  // Va chạm tường
+  if (head.x < 0 || head.x >= SIZE || head.y < 0 || head.y >= SIZE){ die(); return; }
+  // Va chạm thân (trừ đuôi sẽ di chuyển)
+  for (let i = 0; i < snake.length - 1; i++){
+    if (snake[i].x === head.x && snake[i].y === head.y){ die(); return; }
+  }
+
+  snake.unshift(head);
+
+  // Ăn mồi?
+  if (food && head.x === food.x && head.y === food.y){
+    score += 10;
+    playEat();
+    showFloatAt(head.x, head.y, '+10');
+    spawnFood();
+    // Tăng tốc dần
+    speed = Math.max(MIN_SPEED, speed - SPEED_STEP);
+  } else {
+    snake.pop();
+  }
+
+  render();
+  updateHUD();
+  scheduleNext();
+}
+
+function scheduleNext(){
+  clearTimeout(loopTimer);
+  if (!running || paused || gameOverFlag) return;
+  loopTimer = setTimeout(step, speed);
+}
+
+function die(){
+  gameOverFlag = true;
+  running = false;
+  playDie();
+  const isNew = score > highScore;
+  if (isNew){ highScore = score; localStorage.setItem('dolphin_snake_high', String(highScore)); }
+  $('overIcon').textContent = isNew ? '🏆' : '💀';
+  $('overTitle').textContent = isNew ? 'KỶ LỤC MỚI!' : 'GAME OVER';
+  $('overSub').textContent = isNew ? 'Chúc mừng, bạn đã phá kỷ lục!' : 'Đừng bỏ cuộc — thử lại nhé!';
+  $('overScore').textContent = score;
+  $('overHigh').textContent = highScore;
+  $('overLength').textContent = snake.length;
+  $('overModal').classList.add('show');
+}
+
+function render(){
+  // Clear
+  for (const c of $('board').children) c.className = 'cell';
+  // Draw snake
+  snake.forEach((seg, i) => {
+    const el = cellEl(seg.y, seg.x);
+    if (!el) return;
+    if (i === 0) el.classList.add('snake-head');
+    else el.classList.add('snake-body');
+  });
+  // Draw food
+  if (food){
+    const el = cellEl(food.y, food.x);
+    if (el) el.classList.add('food');
+  }
+}
+
+function updateHUD(){
+  $('score').textContent = score;
+  $('highScore').textContent = highScore;
+  $('length').textContent = snake.length;
+  const mult = (BASE_SPEED / speed).toFixed(1);
+  $('speed').textContent = mult + 'x';
+}
+
+function showFloatAt(x, y){
+  const el = cellEl(y, x);
+  if (!el) return;
+  const rect = el.getBoundingClientRect();
+  const f = document.createElement('div');
+  f.className = 'float-text';
+  f.textContent = '+10';
+  f.style.left = (rect.left + rect.width / 2) + 'px';
+  f.style.top = (rect.top + rect.height / 2) + 'px';
+  document.body.appendChild(f);
+  setTimeout(() => f.remove(), 900);
+}
+
+// ═══ CONTROLS ═══
+function togglePause(){
+  if (gameOverFlag) return;
+  if (!running) return;
+  paused = !paused;
+  if (paused){
+    $('pauseBtn').textContent = '▶';
+    $('pauseModal').classList.add('show');
+    clearTimeout(loopTimer);
+  } else {
+    $('pauseBtn').textContent = '⏸';
+    $('pauseModal').classList.remove('show');
+    scheduleNext();
+  }
+}
+window.togglePause = togglePause;
+
+function resumeGame(){
+  paused = false;
+  $('pauseBtn').textContent = '⏸';
+  $('pauseModal').classList.remove('show');
+  scheduleNext();
+}
+function quitGame(){
+  paused = false;
+  running = false;
+  $('pauseBtn').textContent = '⏸';
+  $('pauseModal').classList.remove('show');
+  $('startModal').classList.add('show');
+  resetState();
+}
+window.resumeGame = resumeGame;
+window.quitGame = quitGame;
+
+function closeOver(){ $('overModal').classList.remove('show'); $('startModal').classList.add('show'); }
+window.closeOver = closeOver;
+
+function startGame(){
+  $('startModal').classList.remove('show');
+  $('overModal').classList.remove('show');
+  $('pauseModal').classList.remove('show');
+  clearTimeout(loopTimer);
+  running = true;
+  paused = false;
+  gameOverFlag = false;
+  $('pauseBtn').textContent = '⏸';
+  resetState();
+  updateHUD();
+  // Delay nhỏ để tránh ăn ngay frame đầu
+  setTimeout(() => { if (running) scheduleNext(); }, 400);
+}
+window.startGame = startGame;
+
+function goBack(){
+  if (running && !gameOverFlag){
+    if (!confirm('Ván đang chơi. Thoát?')) return;
+  }
+  window.location.href = '/DolphinApp/giaitri/index.html';
+}
+window.goBack = goBack;
+
+// ═══ KEYBOARD ═══
+document.addEventListener('keydown', e => {
+  const k = e.key.toLowerCase();
+  if (['arrowup','w'].includes(k)) { e.preventDefault(); setDir('up'); }
+  else if (['arrowdown','s'].includes(k)) { e.preventDefault(); setDir('down'); }
+  else if (['arrowleft','a'].includes(k)) { e.preventDefault(); setDir('left'); }
+  else if (['arrowright','d'].includes(k)) { e.preventDefault(); setDir('right'); }
+  else if (k === ' ' || k === 'p'){ e.preventDefault(); togglePause(); }
+});
+
+// ═══ SWIPE ═══
+let touchStart = null;
+document.addEventListener('touchstart', e => {
+  if (e.touches.length !== 1) return;
+  touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY, t: Date.now() };
+}, { passive: true });
+document.addEventListener('touchend', e => {
+  if (!touchStart) return;
+  const t = e.changedTouches[0];
+  const dx = t.clientX - touchStart.x;
+  const dy = t.clientY - touchStart.y;
+  const adx = Math.abs(dx), ady = Math.abs(dy);
+  if (Math.max(adx, ady) < 24) { touchStart = null; return; }
+  if (adx > ady){ setDir(dx > 0 ? 'right' : 'left'); }
+  else { setDir(dy > 0 ? 'down' : 'up'); }
+  touchStart = null;
+}, { passive: true });
+
+// ═══ INIT ═══
+function init(){
+  buildBoard();
+  resetState();
+  $('highScore').textContent = highScore;
+  $('startHighScore').textContent = highScore;
+  updateHUD();
+  ['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, initAudio, { once: true, passive: true }));
+  // Tự động pause khi ẩn tab
+  document.addEventListener('visibilitychange', () => {
+    if (document.hidden && running && !paused && !gameOverFlag) togglePause();
+  });
+  console.log('%c🐍 SNAKE LOADED', 'background:#4aa896;color:#fff;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+</body>
+</html>

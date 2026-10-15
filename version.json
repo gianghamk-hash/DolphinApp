@@ -1,7 +1,7 @@
 {
-  "version": "1.0.30",
-  "buildDate": "2026-10-14T15:57:41.298Z",
-  "commit": "15cb5ff",
-  "notes": "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard",
+  "version": "1.0.31",
+  "buildDate": "2026-10-15T02:05:17.882Z",
+  "commit": "54668fd",
+  "notes": "Bổ sung danh sách khách",
   "forceUpdate": false
 }

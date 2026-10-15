@@ -1,22 +1,22 @@
 {
-  "version": "1.0.30",
-  "previousVersion": "1.0.29",
-  "commit": "15cb5ff",
-  "previousCommit": "dcdaaf3",
-  "buildDate": "2026-10-14T15:57:41.298Z",
-  "summary": "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard",
+  "version": "1.0.31",
+  "previousVersion": "1.0.30",
+  "commit": "54668fd",
+  "previousCommit": "15cb5ff",
+  "buildDate": "2026-10-15T02:05:17.882Z",
+  "summary": "Bổ sung danh sách khách",
   "changes": {
-    "totalCommits": 34,
+    "totalCommits": 35,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard"
+    "Bổ sung danh sách khách"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/index.html",
+      "file": "index.html",
       "type": "update"
     }
   ]

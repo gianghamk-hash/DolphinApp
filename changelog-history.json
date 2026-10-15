@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.45",
+      "releaseDate": "2026-10-15T13:51:20.364Z",
+      "summary": "THAY ĐỔI UI SNAKE",
+      "details": [
+        "THAY ĐỔI UI SNAKE"
+      ]
+    },
+    {
       "version": "1.0.44",
       "releaseDate": "2026-10-15T13:23:19.587Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",

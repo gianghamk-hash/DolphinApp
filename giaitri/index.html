@@ -436,6 +436,11 @@ html.game-locked, body.game-locked{
           <span class="gm-title">Rắn Săn Mồi</span>
           <span class="gm-sub">Ăn mồi · phá kỷ lục</span>
         </button>
+        <button class="game-menu-btn" onclick="openGame('xiangqi')">
+          <span class="gm-icon">🎴</span>
+          <span class="gm-title">Cờ Tướng</span>
+          <span class="gm-sub">1v1 online · 2 điện thoại</span>
+        </button>
       </div>
     </div>
     <div id="gameIframeView" class="hidden">
@@ -470,6 +475,9 @@ html.game-locked, body.game-locked{
       </button>
       <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')">
         <span>🔢</span> 2048
+      </button>
+      <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')">
+        <span>🎴</span> CỜ TƯỚNG
       </button>
     </div>
 
@@ -544,12 +552,12 @@ html.game-locked, body.game-locked{
 (function(){
   'use strict';
 
-  var currentGame = null;
   var GAME_URLS = {
     'chess': 'games/chess.html',
     'game2048': 'games/game2048.html',
     'battleship': 'games/battleship.html',
-    'snake': 'games/snake.html'
+    'snake': 'games/snake.html',
+    'xiangqi': 'games/xiangqi.html'
   };
 
   window.showTab = function(name){
@@ -1473,7 +1481,8 @@ html.game-locked, body.game-locked{
     snake:      { icon: '🐍', title: 'RẮN SĂN MỒI',  type: 'score' },
     battleship: { icon: '🚢', title: 'BATTLESHIP',   type: 'win' },
     chess:      { icon: '♟',  title: 'CỜ VUA',       type: 'win' },
-    game2048:   { icon: '🔢', title: '2048',         type: 'score' }
+    game2048:   { icon: '🔢', title: '2048',         type: 'score' },
+    xiangqi:    { icon: '🎴', title: 'CỜ TƯỚNG',      type: 'win' }
   };
 
   function $(id){ return document.getElementById(id); }

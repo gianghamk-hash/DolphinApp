@@ -1,12 +1,12 @@
 {
-  "version": "1.0.42",
-  "previousVersion": "1.0.41",
-  "commit": "d7af63b",
-  "previousCommit": "ada4952",
-  "buildDate": "2026-10-15T12:56:07.282Z",
+  "version": "1.0.43",
+  "previousVersion": "1.0.42",
+  "commit": "e18da82",
+  "previousCommit": "d7af63b",
+  "buildDate": "2026-10-15T13:15:09.649Z",
   "summary": "Mô tả ngắn gọn việc bạn vừa làm",
   "changes": {
-    "totalCommits": 46,
+    "totalCommits": 47,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/snake.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

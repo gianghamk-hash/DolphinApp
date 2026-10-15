@@ -23,6 +23,9 @@ button{font:inherit;cursor:pointer}
 .tabs{display:flex;gap:6px;overflow-x:auto;margin:10px 0;padding-bottom:2px}
 .tab{background:rgba(0,0,0,.2);border:1px solid var(--line);color:var(--mint);border-radius:99px;padding:8px 14px;font-weight:800;font-size:.82rem;white-space:nowrap}
 .tab.on{background:var(--gold);color:#123634;border-color:var(--gold)}
+.tabs-sub{padding-left:14px;border-left:3px solid rgba(244,184,66,.4);margin-top:-4px}
+.tabs-sub .tab{background:rgba(0,0,0,.15);font-size:.78rem;padding:7px 12px}
+.tabs-sub .tab.on{background:var(--gold2);color:#123634;border-color:var(--gold2)}
 .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(130px,1fr));gap:8px;margin-bottom:12px}
 .st{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px}
 .st b{display:block;font-size:1.5rem;color:var(--gold);line-height:1.1}
@@ -32,7 +35,6 @@ button{font:inherit;cursor:pointer}
 .area{margin:12px 0 6px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .area h3{margin:0;font-size:.95rem;color:#fff}
 .area small{color:var(--mint);font-weight:700}
-.area select{padding:4px 8px;font-size:.75rem;margin-left:auto}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:8px}
 .bk{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:5px}
 .bk .h{display:flex;gap:8px;align-items:baseline}
@@ -40,12 +42,12 @@ button{font:inherit;cursor:pointer}
 .bk .pax{margin-left:auto;font-weight:900;background:rgba(0,0,0,.3);border-radius:8px;padding:2px 9px}
 .bk .nm{font-weight:800;font-size:.9rem;overflow-wrap:anywhere}
 .bk .meta{font-size:.74rem;color:var(--mint)}
-.tags{display:flex;flex-wrap:wrap;gap:4px}
-.tag{font-size:.72rem;font-weight:700;border-radius:8px;padding:3px 8px;background:rgba(255,255,255,.1);overflow-wrap:anywhere}
+.tags{display:flex;flex-direction:column;gap:4px;margin-top:2px}
+.tag{font-size:.75rem;font-weight:700;border-radius:8px;padding:5px 9px;background:rgba(255,255,255,.08);overflow-wrap:anywhere;line-height:1.4;word-break:break-word}
 .tag.d{background:rgba(134,239,172,.16);color:var(--grn)}
 .tag.m{background:rgba(252,165,165,.18);color:var(--red)}
-.tag.p{background:rgba(134,239,172,.16);color:var(--grn)}
 .tag.o{background:rgba(251,215,122,.15);color:var(--gold)}
+.tag b{color:#fff;font-weight:900}
 .empty{text-align:center;color:var(--mint);padding:32px 12px;line-height:1.6;border:1px dashed var(--line);border-radius:12px}
 .err{background:rgba(185,28,28,.35);border:1px solid #ef4444;border-radius:12px;padding:12px;margin:10px 0;font-size:.85rem;line-height:1.5}
 .upd{font-size:.7rem;color:var(--mint);opacity:.8}
@@ -97,7 +99,7 @@ input[type=date]{flex:0 1 160px;color-scheme:dark}
   <div class="upd" id="sheetName"></div>
 </div>
 <div class="tabs" id="tabs"></div>
-<div class="tabs" id="chips" aria-label="Lọc theo tầng và khu vực"></div>
+<div id="chips" aria-label="Lọc theo tầng và khu vực"></div>
 <div id="out"></div>
 
 <div id="toast" role="status"></div>
@@ -148,8 +150,16 @@ var store={
   get:function(k,d){try{var v=localStorage.getItem(k);return v==null?d:JSON.parse(v)}catch(e){return d}},
   set:function(k,v){try{localStorage.setItem(k,JSON.stringify(v))}catch(e){}}
 };
-var LAYOUT=[{f:'Tầng 1',a:['A','B','C','D','E']},{f:'Tầng 2',a:['J','Q']}];
-var B=[],tab='ov',query='',scope=store.get('dg_scope','all');
+
+// ─── LAYOUT: Tầng 1 (A-E) + Tầng 2 (J, Q, Lounge) ───
+var LAYOUT=[
+  {f:'Tầng 1', a:['A','B','C','D','E']},
+  {f:'Tầng 2', a:['J','Q','Lounge']}
+];
+
+var B=[],tab='ov',query='';
+var floor=store.get('dg_floor','all');   // 'all' | 'Tầng 1' | 'Tầng 2'
+var area=store.get('dg_area',null);       // null | 'A' | 'B' | ... | 'Lounge'
 function vnToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}).format(new Date())}
 function vnHour(){return parseInt(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',hour12:false}).format(new Date()),10)%24}
 var curDate=vnToday(),tour=vnHour()<15?'am':'dn',status='loading',foundName='',pick={},pushing=false;
@@ -164,7 +174,6 @@ function toast(m){var t=$('toast');t.textContent=m;t.style.display='block';clear
 
 /* ---------- tiện ích ---------- */
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
-function vnd(n){return n.toLocaleString('vi-VN')+'đ'}
 function csv(t){
   var r=[],row=[],f='',q=false,i,c;
   for(i=0;i<t.length;i++){c=t[i];
@@ -178,6 +187,11 @@ function csv(t){
 }
 
 /* ---------- phân tích dữ liệu ---------- */
+// Map "LOUNGE 1" → "L1", giữ nguyên "J1", "Q3", "A5"...
+function normalizeTables(s){
+  return (s||'').replace(/LOUNGE\s*/gi,'L');
+}
+// "D8-D9" → [D8,D9]; "A1-A5" → [A1..A5]; "L1-L5" → [L1..L5]
 function tables(s){
   var out=[],re=/([A-Z])(\d+)(?:\s*[-–]\s*[A-Z]?(\d+))?/gi,m,a,b,n;
   while((m=re.exec(s))){
@@ -186,12 +200,16 @@ function tables(s){
   }
   return out;
 }
+// Map ký tự khu → tên khu: 'L' → 'Lounge', còn lại giữ nguyên
+function areaName(letter){
+  if(letter==='L') return 'Lounge';
+  return letter;
+}
 function seg(s){
   return (s||'').split(/\n+|\s{3,}|\s\+\s(?=-)/).map(function(x){return x.replace(/^[\s\-–=>+]+/,'').trim()}).filter(Boolean);
 }
 var BUNG=/bungalow/i,LOB=/tôm hùm|lobster/i;
 var DIET=/chay|veg|không ăn|ko ăn|kiêng|no (beef|pork|cabbage|seafood|spicy|meat)|halal|dị ứng|allerg|không dùng/i;
-function clean(s){return s.replace(/(phụ\s*)?thu\s*\d[\d.,]*\s*k\b(\s*trên tàu)?[,;]?\s*/gi,'').replace(/^[\s,;+\-]+|[\s,;+]+$/g,'')}
 function dietType(s){
   if(/non[\s-]?veg/i.test(s))return 'Non-veg';
   if(/chay/i.test(s))return 'Chay Việt';
@@ -202,32 +220,41 @@ function dietType(s){
 function parse(rows){
   return rows.filter(function(r){return /^\d+$/.test((r[0]||'').trim())&&((r[3]||'').trim()||(r[1]||'').trim())}).map(function(r){
     var c=r.map(function(x){return (x||'').trim()});
-    var tb=tables(c[6]);
+    var rawTbl=normalizeTables(c[6]);
+    var tb=tables(rawTbl);
     var b={stt:c[0],code:c[1],agent:c[2],name:c[3],pax:parseInt(c[4],10)||0,nat:c[5],tbl:c[6],tb:tb,
-      areas:tb.map(function(t){return t[0]}).filter(function(v,i,a){return a.indexOf(v)===i}),
+      areas:tb.map(function(t){return areaName(t[0])}).filter(function(v,i,a){return a.indexOf(v)===i}),
       bung:[],lob:[],diet:[]};
     var segs=seg(c[7]).concat(seg(c[8]).filter(function(x){return BUNG.test(x)}));
     segs.forEach(function(s){
       if(BUNG.test(s)){
+        // Chỉ cần lưu nguyên câu note — không parse số nữa
         var n=s.match(/(\d+)\s*bungalow/i),num=s.match(/bungalow\s*(deck\s*\d+|\d+)/i),cnt=n?+n[1]:1,room=num?num[1]:'';
         if(n&&ROOMS.indexOf(n[1])>-1){room=n[1];cnt=1}
         if(cnt<1||cnt>10)cnt=1;
         b.bung.push({s:s,n:cnt,num:room});
       }
-      if(LOB.test(s)){b.lob.push(clean(s))}
-      else if(DIET.test(s)){b.diet.push({t:dietType(s),s:clean(s)})}
+      if(LOB.test(s)){b.lob.push(s)}
+      else if(DIET.test(s)){b.diet.push({t:dietType(s),s:s})}
     });
     return b;
   });
 }
+
+// Filter theo tầng + khu + query
+function floorAreas(){
+  var fl=LAYOUT.filter(function(x){return x.f===floor})[0];
+  return fl?fl.a:[];
+}
 function scopeOk(b){
-  if(scope==='all')return true;
-  var k=scope.slice(2);
-  if(scope[0]==='F'){
-    var fl=LAYOUT.filter(function(x){return x.f===k})[0];
-    return !!fl&&fl.a.some(function(a){return b.areas.indexOf(a)>-1});
-  }
-  return b.areas.indexOf(k)>-1;
+  if(floor==='all') return true;
+  var fl=LAYOUT.filter(function(x){return x.f===floor})[0];
+  if(!fl) return true;
+  // Khách không ngồi trong tầng này → loại
+  if(!fl.a.some(function(a){return b.areas.indexOf(a)>-1})) return false;
+  // Đã chọn khu cụ thể → lọc tiếp
+  if(area) return b.areas.indexOf(area)>-1;
+  return true;
 }
 function match(b){
   if(!scopeOk(b))return false;
@@ -236,10 +263,11 @@ function match(b){
 }
 
 /* ---------- hiển thị ---------- */
-function bungTxt(x){return 'Bungalow '+(x.num||'(chưa rõ số)')+(x.n>1?' ×'+x.n:'')}
+// Trả về NGUYÊN câu note gốc — giữ nguyên để NV đọc context
+function bungTxt(x){return x.s||'Bungalow'}
 function tagHtml(b){
   var h='';
-  b.diet.forEach(function(d){h+='<span class="tag d">🥗 '+esc(d.t)+(d.s?': '+esc(d.s):'')+'</span>'});
+  b.diet.forEach(function(d){h+='<span class="tag d">🥗 <b>'+esc(d.t)+'</b>: '+esc(d.s)+'</span>'});
   b.lob.forEach(function(t){h+='<span class="tag m">🦞 '+esc(t)+'</span>'});
   b.bung.forEach(function(x){h+='<span class="tag o">🌴 '+esc(bungTxt(x))+'</span>'});
   return h?'<div class="tags">'+h+'</div>':'';
@@ -257,35 +285,55 @@ function viewOverview(L){
   LAYOUT.forEach(function(f){f.a.forEach(function(a){known[a]=1})});
   L.forEach(function(b){
     var t=b.tb.length?b.tb:['?'],per=b.pax/t.length;
-    t.forEach(function(x){var A=areas[x[0]]||(areas[x[0]]={pax:0,tbl:{},bks:[]});A.pax+=per;A.tbl[x]=1;tset[x]=1});
-    (b.areas.length?b.areas:['?']).forEach(function(a){areas[a].bks.indexOf(b)<0&&areas[a].bks.push(b)});
+    t.forEach(function(x){
+      var an=areaName(x[0]);
+      var A=areas[an]||(areas[an]={pax:0,tbl:{},bks:[]});
+      A.pax+=per;A.tbl[x]=1;tset[x]=1;
+    });
+    (b.areas.length?b.areas:['?']).forEach(function(a){
+      var A=areas[a]||(areas[a]={pax:0,tbl:{},bks:[]});
+      if(A.bks.indexOf(b)<0) A.bks.push(b);
+    });
     tot+=b.pax;
   });
   var h='<div class="stats">'+statBox(tot,'tổng khách')+statBox(L.length,'booking')+statBox(Object.keys(tset).length,'bàn')+
         statBox(nBung(L),'bungalow đã đặt')+'</div>';
+
+  function areaLabel(a){
+    if(a==='?') return 'Chưa xếp bàn';
+    return 'Khu '+a;
+  }
   function areaBlock(a){
-    var title=a==='?'?'Chưa xếp bàn':'Khu '+esc(a);
-    var A=areas[a]||{pax:0,tbl:{},bks:[]};
-    var r='<div class="area"><h3>'+title+'</h3><small>'+Math.round(A.pax)+' khách · '+Object.keys(A.tbl).length+' bàn</small></div>';
-    if(!A.bks.length)return r+'<div class="empty" style="padding:12px">Chưa có khách</div>';
+    var A=areas[a];
+    if(!A||!A.bks.length) return ''; // ẨN khu không có khách
+    var r='<div class="area"><h3>'+esc(areaLabel(a))+'</h3><small>'+Math.round(A.pax)+' khách · '+Object.keys(A.tbl).length+' bàn</small></div>';
     r+='<div class="grid">';
     A.bks.slice().sort(function(x,y){return x.tbl.localeCompare(y.tbl,'vi',{numeric:true})}).forEach(function(b){r+=card(b)});
     return r+'</div>';
   }
+
   LAYOUT.forEach(function(fl){
-    var list=fl.a.filter(function(a){return scope==='all'||scope==='F:'+fl.f||scope==='A:'+a});
-    if(!list.length)return;
-    var fp=0;list.forEach(function(a){if(areas[a])fp+=areas[a].pax});
+    if(floor!=='all' && fl.f!==floor) return; // ẩn tầng khác khi filter
+    var list=fl.a.filter(function(a){return !area||area===a});
+    // Chỉ giữ khu CÓ KHÁCH
+    var visible=list.filter(function(a){return areas[a]&&areas[a].bks.length});
+    if(!visible.length) return; // ẩn tầng không có khu nào có khách
+    var fp=0; visible.forEach(function(a){fp+=areas[a].pax});
     h+='<div class="floor"><span>'+esc(fl.f)+'</span><span>'+Math.round(fp)+' khách tại bàn</span></div>';
-    list.forEach(function(a){h+=areaBlock(a)});
+    visible.forEach(function(a){h+=areaBlock(a)});
   });
-  var other=Object.keys(areas).filter(function(a){return !known[a]}).sort();
-  if(scope==='all'&&other.length){
-    h+='<div class="floor"><span>Khu chưa xếp tầng</span><span></span></div>';
-    other.forEach(function(a){h+=areaBlock(a)});
+
+  // Khu chưa xếp tầng (chỉ hiện khi xem Tất cả)
+  if(floor==='all' && !area){
+    var other=Object.keys(areas).filter(function(a){return !known[a]&&areas[a].bks.length}).sort();
+    if(other.length){
+      h+='<div class="floor"><span>Khu chưa xếp tầng</span><span></span></div>';
+      other.forEach(function(a){h+=areaBlock(a)});
+    }
   }
   return h;
 }
+
 function viewSpecial(L){
   var S=L.filter(function(b){return b.diet.length||b.lob.length});
   var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Kiêng ăn':0},lob=0;
@@ -297,6 +345,7 @@ function viewSpecial(L){
   S.forEach(function(b){h+=card(b)});
   return h+'</div>';
 }
+
 function pushKey(b,i,j){return curDate+'|'+tour+'|'+b.stt+'|'+i+'|'+j}
 function pushBlock(b,i,j,x){
   var k=pushKey(b,i,j),room=pick[k]!==undefined?pick[k]:(ROOMS.indexOf(x.num)>-1?x.num:'');
@@ -326,13 +375,6 @@ function viewBung(L){
     h+=card(b).replace(/<\/div>$/,p+'</div>');
   });
   return h+'</div>';
-}
-function ask(msg){
-  return new Promise(function(res){
-    var d=$('dlg');$('dlgMsg').textContent=msg;d.classList.add('show');
-    function end(v){d.classList.remove('show');$('dlgYes').onclick=$('dlgNo').onclick=null;res(v)}
-    $('dlgYes').onclick=function(){end(true)};$('dlgNo').onclick=function(){end(false)};
-  });
 }
 
 /* ---------- PUSH MODAL ---------- */
@@ -413,6 +455,42 @@ function submitPush(){
   }).then(function(){pushing=false});
 }
 
+/* ---------- RENDER CHIPS (3 tầng + sub-chips) ---------- */
+function renderChips(){
+  // Hàng 1: 3 nút lớn
+  var main=[
+    {id:'all',label:'Tất cả'},
+    {id:'Tầng 1',label:'Tầng 1'},
+    {id:'Tầng 2',label:'Tầng 2'}
+  ];
+  var h1='<div class="tabs">'+main.map(function(m){
+    return '<button class="tab'+(floor===m.id?' on':'')+'" data-f="'+esc(m.id)+'">'+esc(m.label)+'</button>';
+  }).join('')+'</div>';
+
+  // Hàng 2: sub-chips (chỉ hiện khi đã chọn tầng cụ thể)
+  var h2='';
+  if(floor!=='all'){
+    var fl=LAYOUT.filter(function(x){return x.f===floor})[0];
+    if(fl){
+      // Tìm khu nào ĐANG CÓ KHÁCH (từ toàn bộ B — không phụ thuộc query)
+      var hasBk={};
+      B.forEach(function(b){b.areas.forEach(function(a){hasBk[a]=1})});
+      var sub=fl.a.filter(function(a){return hasBk[a]});
+      if(sub.length){
+        var subHtml=sub.map(function(a){
+          return '<button class="tab'+(area===a?' on':'')+'" data-a="'+esc(a)+'">Khu '+esc(a)+'</button>';
+        }).join('');
+        // Nút "Bỏ lọc khu" — hiện khi đang chọn 1 khu
+        if(area){
+          subHtml='<button class="tab" data-a="">⟲ Bỏ lọc khu</button>'+subHtml;
+        }
+        h2='<div class="tabs tabs-sub">'+subHtml+'</div>';
+      }
+    }
+  }
+  $('chips').innerHTML=h1+h2;
+}
+
 function render(){
   var L=B.filter(match);
   var h;
@@ -428,10 +506,8 @@ function render(){
   $('tAm').classList.toggle('on',tour==='am');$('tDn').classList.toggle('on',tour==='dn');
   $('sheetName').textContent=(foundName?'Đang xem: '+foundName:'')+(titlesKnown?'':'  ⚠️ Chưa lọc được tab ẩn'+(titlesErr?' — '+titlesErr:''));
   var T=[['ov','🏠 Tổng quan'],['sp','🥗 Ăn đặc biệt · Tôm hùm'],['bg','🌴 Bungalow']];
-  var C=[['all','Tất cả']];
-  LAYOUT.forEach(function(f){C.push(['F:'+f.f,f.f]);f.a.forEach(function(a){C.push(['A:'+a,'Khu '+a])})});
-  $('chips').innerHTML=C.map(function(c){return '<button class="tab'+(scope===c[0]?' on':'')+'" data-s="'+esc(c[0])+'">'+esc(c[1])+'</button>'}).join('');
   $('tabs').innerHTML=T.map(function(t){return '<button class="tab'+(tab===t[0]?' on':'')+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join('');
+  renderChips();
 }
 
 /* ---------- tải dữ liệu ---------- */
@@ -508,8 +584,29 @@ $('dToday').onclick=function(){setDate(vnToday())};
 $('tAm').onclick=function(){setTour('am')};
 $('tDn').onclick=function(){setTour('dn')};
 $('q').oninput=function(){query=this.value.trim().toLowerCase();render()};
-$('chips').onclick=function(e){var t=e.target.closest('[data-s]');if(t){scope=t.dataset.s;store.set('dg_scope',scope);render()}};
 $('tabs').onclick=function(e){var t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;render()}};
+
+// Chips: 2 loại click — data-f (đổi tầng), data-a (đổi khu)
+$('chips').onclick=function(e){
+  var f=e.target.closest('[data-f]');
+  if(f){
+    floor=f.dataset.f;
+    area=null; // reset area khi đổi tầng
+    store.set('dg_floor',floor);
+    store.set('dg_area',area);
+    render();
+    return;
+  }
+  var a=e.target.closest('[data-a]');
+  if(a){
+    var v=a.dataset.a||null;
+    area=v||null;
+    store.set('dg_area',area);
+    render();
+    return;
+  }
+};
+
 $('out').onchange=function(e){var k=e.target.dataset&&e.target.dataset.pk;if(k){pick[k]=e.target.value;render()}};
 $('out').onclick=function(e){var t=e.target.closest('[data-push]');if(t)doPush(t.dataset.push)};
 function typing(){var a=document.activeElement;return !!(a&&a.closest&&a.closest('.push'))}

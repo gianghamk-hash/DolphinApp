@@ -22,6 +22,16 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .btn-outline:active{transform:scale(.96)}
 .hidden{display:none!important}
 
+/* 🔒 KHÓA SCROLL KHI ĐANG CHƠI GAME */
+html.game-locked, body.game-locked{
+  overflow:hidden!important;
+  overscroll-behavior:none!important;
+  touch-action:none!important;
+  position:fixed!important;
+  top:0;left:0;right:0;bottom:0;
+  width:100%;height:100%;
+}
+
 /* === TAB SWITCHER === */
 .tab-switcher{display:flex;gap:5px;padding:6px;background:rgba(10,30,28,.6);border-radius:14px;border:1px solid rgba(255,255,255,.08);margin-bottom:16px}
 .tab-btn{flex:1;padding:10px 4px;border-radius:10px;font-weight:900;font-size:11.5px;letter-spacing:.03em;
@@ -176,6 +186,9 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;
 }
 @media(min-width:520px){
+  .game-menu-grid{grid-template-columns:repeat(2,1fr)}
+}
+@media(min-width:780px){
   .game-menu-grid{grid-template-columns:repeat(3,1fr)}
 }
 .game-menu-btn{
@@ -215,9 +228,12 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   border:2px solid rgba(244,184,66,.4);
   background:#0a1f1d;
   box-shadow:0 8px 30px rgba(0,0,0,.5);
+  overscroll-behavior:contain;
+  touch-action:manipulation;
 }
 .game-frame-wrap iframe{
   width:100%;height:100%;border:0;display:block;background:#0a1f1d;
+  overscroll-behavior:contain;
 }
 .game-back-btn{
   display:inline-flex;align-items:center;gap:6px;
@@ -259,7 +275,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <div class="max-w-2xl mx-auto px-4 pt-5">
 
-  <!-- ═══════════ TAB SWITCHER (3 TAB) ═══════════ -->
+  <!-- ═══════════ TAB SWITCHER ═══════════ -->
   <div class="tab-switcher">
     <button class="tab-btn active" data-tab="caro" onclick="showTab('caro')">
       <span>🎮</span> CỜ CARO
@@ -267,17 +283,16 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <button class="tab-btn" data-tab="music" onclick="showTab('music')">
       <span>🎵</span> NGHE NHẠC
     </button>
-<button class="tab-btn" data-tab="game" onclick="showTab('game')">
-  <span>🕹</span> KHO GAME
-</button>
-<button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">
-  <span>🏆</span> XẾP HẠNG
-</button>
-</div>
+    <button class="tab-btn" data-tab="game" onclick="showTab('game')">
+      <span>🕹</span> KHO GAME
+    </button>
+    <button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">
+      <span>🏆</span> XẾP HẠNG
+    </button>
+  </div>
 
   <!-- ═══════════ TAB: CỜ CARO ═══════════ -->
   <div id="tab-caro" class="tab-content">
-
     <div id="lobbyView">
       <div class="glass rounded-2xl p-5 mb-5 text-center">
         <div class="text-5xl mb-2">🎮</div>
@@ -348,7 +363,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
   <!-- ═══════════ TAB: NGHE NHẠC ═══════════ -->
   <div id="tab-music" class="tab-content hidden">
-
     <div class="glass rounded-2xl p-5 mb-4" style="background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));border:2px solid rgba(244,184,66,.4)">
       <div class="flex items-center gap-4">
         <div id="nowIcon" style="font-size:52px;filter:drop-shadow(0 4px 12px rgba(244,184,66,.5))">🎵</div>
@@ -412,17 +426,17 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
           <span class="gm-title">2048</span>
           <span class="gm-sub">Ghép số đạt 2048</span>
         </button>
-<button class="game-menu-btn" onclick="openGame('battleship')">
-  <span class="gm-icon">🚢</span>
-  <span class="gm-title">Battleship</span>
-  <span class="gm-sub">Bắn thuyền 1v1</span>
-</button>
-<button class="game-menu-btn" onclick="openGame('snake')">
-  <span class="gm-icon">🐍</span>
-  <span class="gm-title">Rắn Săn Mồi</span>
-  <span class="gm-sub">Ăn mồi · phá kỷ lục</span>
-</button>
-</div>
+        <button class="game-menu-btn" onclick="openGame('battleship')">
+          <span class="gm-icon">🚢</span>
+          <span class="gm-title">Battleship</span>
+          <span class="gm-sub">Bắn thuyền 1v1</span>
+        </button>
+        <button class="game-menu-btn" onclick="openGame('snake')">
+          <span class="gm-icon">🐍</span>
+          <span class="gm-title">Rắn Săn Mồi</span>
+          <span class="gm-sub">Ăn mồi · phá kỷ lục</span>
+        </button>
+      </div>
     </div>
     <div id="gameIframeView" class="hidden">
       <button class="game-back-btn" onclick="closeGame()">← Quay lại menu</button>
@@ -433,7 +447,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
         </div>
         <iframe id="gameFrame" allow="autoplay"></iframe>
       </div>
-       </div>
     </div>
   </div>
 
@@ -526,7 +539,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   </div>
 </div>
 
-<!-- ═══════════ TAB SWITCHER + MUSIC UI LOGIC ═══════════ -->
+<!-- ═══════════ TAB SWITCHER + GAME IFRAME LOGIC ═══════════ -->
 <script>
 (function(){
   'use strict';
@@ -545,6 +558,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     if (target) target.classList.remove('hidden');
 
     document.querySelectorAll('.tab-btn').forEach(function(el){
+      if (el.closest('#lbGameTabs')) return;
       el.classList.toggle('active', el.dataset.tab === name);
     });
 
@@ -563,8 +577,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       closeGame();
     }
 
-    if (name === 'leaderboard'){
-      refreshLB();
+    if (name === 'leaderboard' && typeof window.refreshLB === 'function'){
+      window.refreshLB();
     }
 
     updateMiniPlayer();
@@ -574,6 +588,11 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     var url = GAME_URLS[gameKey];
     if (!url) return;
     currentGame = gameKey;
+
+    // 🔒 KHÓA SCROLL TRANG MẸ
+    document.documentElement.classList.add('game-locked');
+    document.body.classList.add('game-locked');
+    window.scrollTo(0, 0);
 
     document.getElementById('gameMenuView').classList.add('hidden');
     document.getElementById('gameIframeView').classList.remove('hidden');
@@ -604,6 +623,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     if (frame) frame.src = 'about:blank';
     document.getElementById('gameIframeView').classList.add('hidden');
     document.getElementById('gameMenuView').classList.remove('hidden');
+
+    // 🔓 MỞ KHÓA SCROLL TRANG MẸ
+    document.documentElement.classList.remove('game-locked');
+    document.body.classList.remove('game-locked');
   };
 
   function DS(){ return window.DolphinSound; }
@@ -1280,7 +1303,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 })();
 </script>
 
-<!-- ═══════════ CARO PINCH-ZOOM (0.8x – 2x) ═══════════ -->
+<!-- ═══════════ CARO PINCH-ZOOM ═══════════ -->
 <script>
 (function(){
   'use strict';
@@ -1547,7 +1570,6 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     });
   }
 
-  // Auto refresh khi đang mở tab xếp hạng
   setInterval(function(){
     var tab = document.getElementById('tab-leaderboard');
     if (tab && !tab.classList.contains('hidden')){

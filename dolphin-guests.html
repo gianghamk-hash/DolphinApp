@@ -64,6 +64,17 @@ input[type=date]{flex:0 1 160px;color-scheme:dark}
 .dbox p{margin:0 0 16px;white-space:pre-line;font-weight:700;line-height:1.5;overflow-wrap:anywhere}
 .drow{display:flex;gap:8px;justify-content:flex-end}
 #toast{position:fixed;left:50%;bottom:calc(24px + env(safe-area-inset-bottom));transform:translateX(-50%);background:#0a2b28;border:2px solid var(--gold);border-radius:12px;padding:10px 16px;font-weight:800;font-size:.85rem;z-index:50;display:none;max-width:90vw}
+#pushDlg{position:fixed;inset:0;background:rgba(0,0,0,.72);display:none;align-items:center;justify-content:center;padding:20px;z-index:70}
+#pushDlg.show{display:flex}
+#pushDlg .dbox{max-width:420px;max-height:92vh;overflow-y:auto}
+.pkf{margin-bottom:12px}
+.pkf label{display:block;font-size:.72rem;font-weight:800;color:var(--mint);margin-bottom:5px;text-transform:uppercase;letter-spacing:.05em}
+.pkf input,.pkf select{width:100%;background:rgba(0,0,0,.3);border:1px solid var(--line);color:#fff;border-radius:10px;padding:10px 12px;font:inherit;font-size:.88rem}
+.pkf input:focus,.pkf select:focus{outline:none;border-color:var(--gold)}
+.pkf input[readonly]{opacity:.7;cursor:not-allowed}
+.pkf .hint{font-size:.7rem;color:var(--mint);opacity:.8;margin-top:5px;line-height:1.4}
+.pkf .hint.warn{color:var(--red);font-weight:700;opacity:1;background:rgba(185,28,28,.18);border:1px solid rgba(239,68,68,.4);border-radius:8px;padding:7px 9px}
+.pkf .req{color:var(--red);font-weight:900}
 @media(prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -90,6 +101,40 @@ input[type=date]{flex:0 1 160px;color-scheme:dark}
 <div id="out"></div>
 
 <div id="toast" role="status"></div>
+<div id="pushDlg" role="dialog" aria-modal="true">
+  <div class="dbox">
+    <p style="margin-bottom:16px;font-size:1rem"><b>📤 Gửi vào Bungalow <span id="pkRoom" style="color:var(--gold)"></span></b></p>
+    <div class="pkf">
+      <label>Tên khách</label>
+      <input id="pkName" readonly>
+    </div>
+    <div class="pkf">
+      <label>Số bàn NH (bắt buộc)</label>
+      <input id="pkTable" readonly>
+    </div>
+    <div class="pkf">
+      <label>Phương thức thanh toán <span class="req">*</span></label>
+      <select id="pkPayment">
+        <option value="">-- Chọn --</option>
+        <option value="Tiền mặt">💵 Tiền mặt</option>
+        <option value="Chuyển khoản">🏦 Chuyển khoản</option>
+        <option value="Visa">💳 Visa</option>
+        <option value="TA chưa thanh toán">⏳ TA chưa thanh toán</option>
+        <option value="TA đã thanh toán">✅ TA đã thanh toán</option>
+      </select>
+    </div>
+    <div class="pkf">
+      <label>NV mở phòng <span class="req">*</span></label>
+      <input id="pkStaff" placeholder="Tên NV...">
+      <div id="pkStaffLock" class="hint warn" style="display:none">🔒 Đã khóa — phòng đã được mở bởi <b id="pkStaffLockName"></b></div>
+    </div>
+    <div id="pkWarn" class="pkf hint warn" style="display:none;margin-bottom:12px"></div>
+    <div class="drow">
+      <button type="button" class="tab" id="pkNo">Hủy</button>
+      <button type="button" class="btn" id="pkYes">✓ Xác nhận gửi</button>
+    </div>
+  </div>
+</div>
 <div id="dlg" role="dialog" aria-modal="true"><div class="dbox"><p id="dlgMsg"></p><div class="drow"><button class="tab" id="dlgNo">Hủy</button><button class="btn" id="dlgYes">Xác nhận</button></div></div></div>
 <script>
 (function(){
@@ -133,7 +178,6 @@ function csv(t){
 }
 
 /* ---------- phân tích dữ liệu ---------- */
-// "D8-D9" -> [D8,D9]; "A1-A3" -> [A1,A2,A3]
 function tables(s){
   var out=[],re=/([A-Z])(\d+)(?:\s*[-–]\s*[A-Z]?(\d+))?/gi,m,a,b,n;
   while((m=re.exec(s))){
@@ -147,7 +191,6 @@ function seg(s){
 }
 var BUNG=/bungalow/i,LOB=/tôm hùm|lobster/i;
 var DIET=/chay|veg|không ăn|ko ăn|kiêng|no (beef|pork|cabbage|seafood|spicy|meat)|halal|dị ứng|allerg|không dùng/i;
-// bỏ cụm tiền phụ thu khỏi nội dung hiển thị
 function clean(s){return s.replace(/(phụ\s*)?thu\s*\d[\d.,]*\s*k\b(\s*trên tàu)?[,;]?\s*/gi,'').replace(/^[\s,;+\-]+|[\s,;+]+$/g,'')}
 function dietType(s){
   if(/non[\s-]?veg/i.test(s))return 'Non-veg';
@@ -167,7 +210,7 @@ function parse(rows){
     segs.forEach(function(s){
       if(BUNG.test(s)){
         var n=s.match(/(\d+)\s*bungalow/i),num=s.match(/bungalow\s*(deck\s*\d+|\d+)/i),cnt=n?+n[1]:1,room=num?num[1]:'';
-        if(n&&ROOMS.indexOf(n[1])>-1){room=n[1];cnt=1}          // "301 bungalow"
+        if(n&&ROOMS.indexOf(n[1])>-1){room=n[1];cnt=1}
         if(cnt<1||cnt>10)cnt=1;
         b.bung.push({s:s,n:cnt,num:room});
       }
@@ -291,23 +334,83 @@ function ask(msg){
     $('dlgYes').onclick=function(){end(true)};$('dlgNo').onclick=function(){end(false)};
   });
 }
+
+/* ---------- PUSH MODAL ---------- */
+var pushCtx=null;
 function doPush(k){
   var m=k.split('|'),b=B.filter(function(x){return x.stt===m[2]})[0],room=pick[k],BS=window.BunSync;
   if(pushing||!b||!room||!BS||!BS.ready)return;
   if(curDate!==vnToday()){toast('Chỉ gửi được cho ngày hôm nay');return}
-  var ex=BS.rooms[room],before=(ex&&ex.customerName)||'';
-  var q=before?'P.'+room+' đang có khách “'+before+'”.\nGhi đè bằng “'+b.name+'” (bàn '+(b.tbl||'—')+')?'
-    :'Gửi vào P.'+room+':\nKhách: '+b.name+'\nBàn nhà hàng: '+(b.tbl||'—')+'\n\nXác nhận?';
+  var ex=BS.rooms[room];
+  var before=(ex&&ex.customerName)||'';
+  var beforeStaff=(ex&&ex.openedByStaff)||'';
+  var beforePayment=(ex&&ex.paymentMethod)||'';
+  var who='';try{who=localStorage.getItem('dolphinStaffName')||''}catch(e){}
+  pushCtx={b:b,room:room,before:before};
+
+  $('pkRoom').textContent='P.'+room;
+  $('pkName').value=b.name||'';
+  $('pkTable').value=b.tbl||'';
+  $('pkPayment').value=beforePayment;
+
+  var inp=$('pkStaff'),lock=$('pkStaffLock'),lockName=$('pkStaffLockName');
+  if(beforeStaff){
+    inp.value=beforeStaff;
+    inp.readOnly=true;
+    inp.style.opacity=.6;
+    lock.style.display='block';
+    lockName.textContent=beforeStaff;
+  }else{
+    inp.value=who;
+    inp.readOnly=false;
+    inp.style.opacity=1;
+    lock.style.display='none';
+  }
+
+  var w=$('pkWarn');
+  if(before){
+    w.style.display='block';
+    w.textContent='⚠️ P.'+room+' đang có khách "'+before+'". Gửi sẽ ghi đè thông tin cũ.';
+  }else{
+    w.style.display='none';
+  }
+
+  $('pushDlg').classList.add('show');
+  setTimeout(function(){if(!inp.readOnly)inp.focus()},100);
+}
+function closePushDlg(){
+  $('pushDlg').classList.remove('show');
+  pushCtx=null;
+}
+function submitPush(){
+  if(!pushCtx||pushing)return;
+  var pm=($('pkPayment').value||'').trim();
+  var sn=($('pkStaff').value||'').trim();
+  if(!pm){toast('Chọn phương thức thanh toán');$('pkPayment').focus();return}
+  if(!sn){toast('Nhập tên NV mở phòng');$('pkStaff').focus();return}
+  var BS=window.BunSync;
+  if(!BS||!BS.ready){toast('App Bungalow chưa kết nối');return}
+  var cur=BS.rooms[pushCtx.room],now=(cur&&cur.customerName)||'';
+  if(now!==pushCtx.before){toast('P.'+pushCtx.room+' vừa thay đổi, đóng và thử lại');closePushDlg();return}
   pushing=true;
-  ask(q).then(function(ok){
-    if(!ok)return;
-    var cur=BS.rooms[room],now=(cur&&cur.customerName)||'';
-    if(now!==before){toast('P.'+room+' vừa thay đổi, kiểm tra lại rồi gửi');return}
-    var who='';try{who=localStorage.getItem('dolphinStaffName')||''}catch(e){}
-    return BS.push(room,{customerName:b.name,restaurantTable:b.tbl,paymentMethod:(cur&&cur.paymentMethod)||'',openedByStaff:(cur&&cur.openedByStaff)||who||'Sheet',
-      updatedBy:who||'Sheet',updatedAt:Date.now(),source:'google-sheet',sheetCode:b.code})
-      .then(function(){toast('✅ Đã gửi vào P.'+room)});
-  }).catch(function(e){toast('❌ Lỗi gửi: '+e.message)}).then(function(){pushing=false});
+  var who='';try{who=localStorage.getItem('dolphinStaffName')||''}catch(e){}
+  var data={
+    customerName:pushCtx.b.name||'',
+    restaurantTable:pushCtx.b.tbl||'',
+    paymentMethod:pm,
+    openedByStaff:sn,
+    updatedBy:who||sn||'Sheet',
+    updatedAt:Date.now(),
+    source:'google-sheet',
+    sheetCode:pushCtx.b.code||''
+  };
+  var roomN=pushCtx.room;
+  BS.push(roomN,data).then(function(){
+    toast('✅ Đã gửi vào P.'+roomN);
+    closePushDlg();
+  }).catch(function(e){
+    toast('❌ Lỗi gửi: '+(e&&e.message||e));
+  }).then(function(){pushing=false});
 }
 
 function render(){
@@ -318,8 +421,8 @@ function render(){
   else if(status==='error')h=$('out').innerHTML;
   else if(status==='missing')h=tour==='dn'
     ?'<div class="big"><b>🚢 TÀU ĐỖ — KHÔNG CHẠY</b><span>Không có tour tối ngày '+dd+'.</span></div>'
-    :'<div class="big"><b>📄 Chưa có danh sách tour sáng</b><span>Ngày '+dd+' chưa có sheet “DOLPHIN '+dm(curDate)+'”.</span></div>';
-  else if(!B.length)h='<div class="empty">Sheet “'+esc(foundName)+'” chưa có khách.</div>';
+    :'<div class="big"><b>📄 Chưa có danh sách tour sáng</b><span>Ngày '+dd+' chưa có sheet "DOLPHIN '+dm(curDate)+'".</span></div>';
+  else if(!B.length)h='<div class="empty">Sheet "'+esc(foundName)+'" chưa có khách.</div>';
   else h=tab==='ov'?viewOverview(L):tab==='sp'?viewSpecial(L):viewBung(L);
   $('out').innerHTML=h;
   $('tAm').classList.toggle('on',tour==='am');$('tDn').classList.toggle('on',tour==='dn');
@@ -333,7 +436,6 @@ function render(){
 
 /* ---------- tải dữ liệu ---------- */
 function gv(name){return 'https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&sheet='+encodeURIComponent(name)+'&_='+Date.now()}
-// trả về text, null (không có tab), hoặc ném lỗi (mạng / chưa chia sẻ)
 function getTab(name){
   return fetch(gv(name)).then(function(r){return r.ok?r.text():null}).then(function(t){
     if(t&&/^\s*<(!doctype|html)/i.test(t))throw new Error('Sheet chưa được chia sẻ công khai');
@@ -342,7 +444,6 @@ function getTab(name){
 }
 var loadSeq=0,titlesKnown=true;
 var API_KEY='AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ';
-// Danh sách tab ĐANG HIỆN (bỏ tab ẩn) qua Google Sheets API
 var titlesErr='';
 function getTitles(){
   var u='https://sheets.googleapis.com/v4/spreadsheets/'+SHEET_ID+'?fields=sheets.properties(title,hidden)&key='+API_KEY;
@@ -361,16 +462,13 @@ function pickTitle(titles){
     return tour==='dn'?/dinner/.test(l):!/dinner/.test(l);
   })[0]||null;
 }
-// Phương án dự phòng khi chưa bật Sheets API: đoán tên tab (không phân biệt được tab ẩn)
 function findByGuess(){
   var cand=candidates();
   var probe='https://docs.google.com/spreadsheets/d/'+SHEET_ID+'/gviz/tq?tqx=out:csv&_='+Date.now();
-  // 1) kiểm tra kết nối + quyền xem bằng tab mặc định (luôn tồn tại)
   return fetch(probe).then(function(r){return r.text()},function(){throw new Error('Không kết nối được tới Google Sheets (mạng hoặc bị chặn)')}).then(function(t){
     if(/^\s*<(!doctype|html)/i.test(t))throw new Error('Sheet chưa được chia sẻ công khai');
     return getTab(BASE_NAME).catch(function(){return null});
   }).then(function(base){
-    // 2) tab không tồn tại có thể bị Google trả lỗi -> coi là "không có tab"
     function find(i){
       if(i>=cand.length)return Promise.resolve(null);
       return getTab(cand[i]).catch(function(){return null}).then(function(t){return(t!==null&&t!==base)?{name:cand[i],text:t}:find(i+1)});
@@ -393,7 +491,7 @@ function load(){
   }).catch(function(e){
     if(my!==loadSeq)return;
     status='error';B=[];foundName='';
-    $('out').innerHTML='<div class="err">⚠️ Không tải được dữ liệu ('+esc(e.message)+').<br>Kiểm tra: Google Sheet đang để <b>“Bất kỳ ai có đường liên kết đều xem được”</b> và mạng còn hoạt động.</div>';
+    $('out').innerHTML='<div class="err">⚠️ Không tải được dữ liệu ('+esc(e.message)+').<br>Kiểm tra: Google Sheet đang để <b>"Bất kỳ ai có đường liên kết đều xem được"</b> và mạng còn hoạt động.</div>';
   }).then(function(){if(my===loadSeq){btn.disabled=false;render()}});
 }
 
@@ -416,6 +514,13 @@ $('out').onchange=function(e){var k=e.target.dataset&&e.target.dataset.pk;if(k){
 $('out').onclick=function(e){var t=e.target.closest('[data-push]');if(t)doPush(t.dataset.push)};
 function typing(){var a=document.activeElement;return !!(a&&a.closest&&a.closest('.push'))}
 window.addEventListener('bunrooms',function(){if(tab==='bg'&&status==='ok'&&!typing())render()});
+
+/* Push modal events */
+$('pkNo').onclick=closePushDlg;
+$('pkYes').onclick=submitPush;
+$('pushDlg').addEventListener('click',function(e){if(e.target===this)closePushDlg()});
+document.addEventListener('keydown',function(e){if(e.key==='Escape'&&$('pushDlg').classList.contains('show'))closePushDlg()});
+
 load();
 setInterval(function(){if(!document.hidden&&!typing())load()},REFRESH_MS);
 })();

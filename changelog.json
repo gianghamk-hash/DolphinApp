@@ -1,22 +1,22 @@
 {
-  "version": "1.0.37",
-  "previousVersion": "1.0.36",
-  "commit": "46a64ad",
-  "previousCommit": "6ba2618",
-  "buildDate": "2026-10-15T12:11:16.256Z",
-  "summary": "BỔ SUNG FOC CHO BUNGALOW",
+  "version": "1.0.38",
+  "previousVersion": "1.0.37",
+  "commit": "a55d1e1",
+  "previousCommit": "46a64ad",
+  "buildDate": "2026-10-15T12:25:28.781Z",
+  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
   "changes": {
-    "totalCommits": 41,
+    "totalCommits": 42,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "BỔ SUNG FOC CHO BUNGALOW"
+    "Mô tả ngắn gọn việc bạn vừa làm"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-bungalow.html",
+      "file": "giaitri/games/battleship.html",
       "type": "update"
     }
   ]

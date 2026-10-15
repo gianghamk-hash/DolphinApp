@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.37",
+      "releaseDate": "2026-10-15T12:11:16.256Z",
+      "summary": "BỔ SUNG FOC CHO BUNGALOW",
+      "details": [
+        "BỔ SUNG FOC CHO BUNGALOW"
+      ]
+    },
+    {
       "version": "1.0.36",
       "releaseDate": "2026-10-15T11:21:14.480Z",
       "summary": "Dolphin Guests: FOC + UI mềm mại hơn",

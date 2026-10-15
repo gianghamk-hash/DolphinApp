@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.38",
+      "releaseDate": "2026-10-15T12:25:28.781Z",
+      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+      "details": [
+        "Mô tả ngắn gọn việc bạn vừa làm"
+      ]
+    },
+    {
       "version": "1.0.37",
       "releaseDate": "2026-10-15T12:11:16.256Z",
       "summary": "BỔ SUNG FOC CHO BUNGALOW",

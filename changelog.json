@@ -1,22 +1,22 @@
 {
-  "version": "1.0.38",
-  "previousVersion": "1.0.37",
-  "commit": "a55d1e1",
-  "previousCommit": "46a64ad",
-  "buildDate": "2026-10-15T12:25:28.781Z",
-  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.39",
+  "previousVersion": "1.0.38",
+  "commit": "a6969d2",
+  "previousCommit": "a55d1e1",
+  "buildDate": "2026-10-15T12:26:46.906Z",
+  "summary": "THAY ĐỔI GAME BATTLE SHIP VÀ THÊM RẮN SĂN MỒI",
   "changes": {
-    "totalCommits": 42,
+    "totalCommits": 43,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Mô tả ngắn gọn việc bạn vừa làm"
+    "THAY ĐỔI GAME BATTLE SHIP VÀ THÊM RẮN SĂN MỒI"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/battleship.html",
+      "file": "giaitri/games/snake.html",
       "type": "update"
     }
   ]

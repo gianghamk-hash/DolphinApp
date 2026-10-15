@@ -32,7 +32,7 @@ html.game-locked, body.game-locked{
   width:100%;height:100%;
 }
 
-/* === TAB SWITCHER === */
+/* TAB SWITCHER */
 .tab-switcher{display:flex;gap:5px;padding:6px;background:rgba(10,30,28,.6);border-radius:14px;border:1px solid rgba(255,255,255,.08);margin-bottom:16px}
 .tab-btn{flex:1;padding:10px 4px;border-radius:10px;font-weight:900;font-size:11.5px;letter-spacing:.03em;
   border:none;background:transparent;color:#7ec9be;cursor:pointer;font-family:inherit;transition:all .2s;
@@ -41,11 +41,11 @@ html.game-locked, body.game-locked{
 .tab-btn:active{transform:scale(.97)}
 .tab-btn span:first-child{font-size:16px}
 @media(min-width:520px){
-  .tab-btn{font-size:13px;padding:12px 8px;flex-direction:row;gap:6px}
+  .tab-btn{font-size:12px;padding:11px 6px;flex-direction:row;gap:5px}
   .tab-btn span:first-child{font-size:15px}
 }
 
-/* === MUSIC TAB === */
+/* MUSIC TAB */
 .mode-switcher{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px}
 .mode-btn{padding:12px 10px;border-radius:12px;font-weight:900;font-size:12px;letter-spacing:.03em;
   border:2px solid rgba(55,137,123,.4);background:rgba(25,71,67,.5);color:#bfe9dc;
@@ -54,7 +54,6 @@ html.game-locked, body.game-locked{
   box-shadow:0 4px 14px rgba(244,184,66,.5)}
 .mode-btn .mode-sub{font-size:9.5px;font-weight:700;opacity:.75;letter-spacing:.02em;font-style:italic}
 .mode-btn.active .mode-sub{opacity:.85}
-
 .track-row{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:12px;
   background:rgba(10,30,28,.5);border:1px solid rgba(255,255,255,.08);
   cursor:pointer;transition:all .2s;margin-bottom:8px}
@@ -75,13 +74,12 @@ html.game-locked, body.game-locked{
 .track-row .track-eq span:nth-child(3){animation-delay:.3s}
 .track-row .track-eq span:nth-child(4){animation-delay:.45s}
 @keyframes eqbar{0%,100%{height:4px}50%{height:16px}}
-
 .vol-slider{width:100%;height:5px;-webkit-appearance:none;background:linear-gradient(90deg,#FBD77A,#F4B842);
   border-radius:99px;outline:none;cursor:pointer}
 .vol-slider::-webkit-slider-thumb{-webkit-appearance:none;width:18px;height:18px;border-radius:50%;
   background:#fff;box-shadow:0 0 12px rgba(244,184,66,.9);cursor:pointer}
 
-/* === MINI PLAYER === */
+/* MINI PLAYER */
 #miniPlayer{position:fixed;left:0;right:0;bottom:0;z-index:60;
   background:linear-gradient(180deg,rgba(10,30,28,.75),rgba(10,30,28,.98));
   backdrop-filter:blur(16px);border-top:1px solid rgba(244,184,66,.4);
@@ -101,7 +99,7 @@ html.game-locked, body.game-locked{
 #miniPlayer .mp-btn.mp-ghost{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);
   width:34px;height:34px;font-size:14px;box-shadow:none}
 
-/* === CARO STYLES === */
+/* CARO STYLES */
 #boardWrapper{overflow-x:auto;overflow-y:auto;max-height:70vh;-webkit-overflow-scrolling:touch;padding:4px;border-radius:12px}
 #boardWrapper::-webkit-scrollbar{width:6px;height:6px}
 #boardWrapper::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
@@ -166,7 +164,6 @@ html.game-locked, body.game-locked{
 .rules-card .rule-desc{color:#bfe9dc;font-size:12.5px;line-height:1.55}
 .rules-card .rule-desc b{color:#fff}
 
-/* === CARO ZOOM RESET BTN === */
 #caroZoomReset{
   position:absolute;bottom:14px;right:14px;z-index:60;
   height:38px;min-width:38px;padding:0 12px;border-radius:19px;
@@ -181,86 +178,64 @@ html.game-locked, body.game-locked{
 }
 #caroZoomReset:active{transform:scale(.92)}
 
-/* === GAME MENU === */
-.game-menu-grid{
-  display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px;
-}
-@media(min-width:520px){
-  .game-menu-grid{grid-template-columns:repeat(2,1fr)}
-}
-@media(min-width:780px){
-  .game-menu-grid{grid-template-columns:repeat(3,1fr)}
-}
-.game-menu-btn{
-  display:flex;flex-direction:column;align-items:center;gap:8px;
+/* GAME MENU GRID */
+.game-menu-grid{display:grid;grid-template-columns:1fr;gap:12px;margin-bottom:16px}
+@media(min-width:520px){.game-menu-grid{grid-template-columns:repeat(2,1fr)}}
+@media(min-width:780px){.game-menu-grid{grid-template-columns:repeat(3,1fr)}}
+.game-menu-btn{display:flex;flex-direction:column;align-items:center;gap:8px;
   padding:22px 16px;
   background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));
   border:2px solid rgba(244,184,66,.35);
-  border-radius:16px;
-  cursor:pointer;font-family:inherit;
+  border-radius:16px;cursor:pointer;font-family:inherit;
   transition:all .25s cubic-bezier(.16,1,.3,1);
-  position:relative;overflow:hidden;text-align:center;
-}
-.game-menu-btn:hover{
-  transform:translateY(-3px);
-  border-color:rgba(244,184,66,.7);
-  box-shadow:0 8px 24px rgba(244,184,66,.25);
-}
+  position:relative;overflow:hidden;text-align:center}
+.game-menu-btn:hover{transform:translateY(-3px);border-color:rgba(244,184,66,.7);box-shadow:0 8px 24px rgba(244,184,66,.25)}
 .game-menu-btn:active{transform:scale(.97)}
-.game-menu-btn .gm-icon{
-  font-size:44px;line-height:1;
-  filter:drop-shadow(0 4px 12px rgba(244,184,66,.5));
-}
-.game-menu-btn .gm-title{
-  font-size:16px;font-weight:900;color:#fff;
-  text-transform:uppercase;letter-spacing:.05em;
-}
-.game-menu-btn .gm-sub{
-  font-size:10.5px;color:#7ec9be;font-weight:700;font-style:italic;
-}
+.game-menu-btn .gm-icon{font-size:44px;line-height:1;filter:drop-shadow(0 4px 12px rgba(244,184,66,.5))}
+.game-menu-btn .gm-title{font-size:16px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.05em}
+.game-menu-btn .gm-sub{font-size:10.5px;color:#7ec9be;font-weight:700;font-style:italic}
 
-/* === GAME IFRAME === */
-.game-frame-wrap{
-  position:relative;width:100%;
-  height:calc(100vh - 220px);
-  min-height:420px;
+/* GAME IFRAME */
+.game-frame-wrap{position:relative;width:100%;
+  height:calc(100vh - 220px);min-height:420px;
   border-radius:14px;overflow:hidden;
   border:2px solid rgba(244,184,66,.4);
   background:#0a1f1d;
   box-shadow:0 8px 30px rgba(0,0,0,.5);
-  overscroll-behavior:contain;
-  touch-action:manipulation;
-}
-.game-frame-wrap iframe{
-  width:100%;height:100%;border:0;display:block;background:#0a1f1d;
-  overscroll-behavior:contain;
-}
-.game-back-btn{
-  display:inline-flex;align-items:center;gap:6px;
+  overscroll-behavior:contain;touch-action:manipulation}
+.game-frame-wrap iframe{width:100%;height:100%;border:0;display:block;background:#0a1f1d;overscroll-behavior:contain}
+.game-back-btn{display:inline-flex;align-items:center;gap:6px;
   padding:10px 14px;border-radius:12px;
-  background:rgba(25,71,67,.6);
-  border:1px solid rgba(55,137,123,.5);
+  background:rgba(25,71,67,.6);border:1px solid rgba(55,137,123,.5);
   color:#bfe9dc;font-weight:800;font-size:12px;
-  cursor:pointer;font-family:inherit;transition:all .15s;
-  margin-bottom:10px;
-}
+  cursor:pointer;font-family:inherit;transition:all .15s;margin-bottom:10px}
 .game-back-btn:active{transform:scale(.96)}
-.game-loading{
-  position:absolute;inset:0;
-  display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;
-  background:#0a1f1d;z-index:2;transition:opacity .3s;
-}
+.game-loading{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:12px;
+  background:#0a1f1d;z-index:2;transition:opacity .3s}
 .game-loading.hide{opacity:0;pointer-events:none}
-.game-loading .spin{
-  width:48px;height:48px;
-  border:3px solid rgba(244,184,66,.2);border-top-color:#FBD77A;
-  border-radius:50%;animation:spin 1s linear infinite;
-}
+.game-loading .spin{width:48px;height:48px;border:3px solid rgba(244,184,66,.2);border-top-color:#FBD77A;
+  border-radius:50%;animation:spin 1s linear infinite}
+
+/* LB table */
+.lb-table{width:100%;font-size:12px;border-collapse:collapse}
+.lb-table thead tr{border-bottom:2px solid rgba(244,184,66,.35);color:#FBD77A;font-weight:900;font-size:10px;text-transform:uppercase}
+.lb-table th{padding:8px 6px;text-align:left}
+.lb-table th.num{text-align:right}
+.lb-table tbody tr{border-bottom:1px solid rgba(255,255,255,.06)}
+.lb-table tbody tr.me{background:rgba(244,184,66,.14)}
+.lb-table td{padding:8px 6px;font-weight:800;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px}
+.lb-table td.rank{font-weight:900;color:#FBD77A;width:44px;font-size:12px}
+.lb-table td.rank.top{font-size:16px}
+.lb-table td.me{color:#FBD77A}
+.lb-table td.num{text-align:right}
+.lb-table td.good{color:#86efac}
+.lb-table td.bad{color:#fca5a5}
+.lb-table td.gold{color:#FBD77A;font-weight:900;font-size:14px}
 </style>
 </head>
 <body>
 
-<!-- ═══════════ HEADER ═══════════ -->
+<!-- HEADER -->
 <div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
   <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
     <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
@@ -275,7 +250,7 @@ html.game-locked, body.game-locked{
 
 <div class="max-w-2xl mx-auto px-4 pt-5">
 
-  <!-- ═══════════ TAB SWITCHER ═══════════ -->
+  <!-- TAB SWITCHER -->
   <div class="tab-switcher">
     <button class="tab-btn active" data-tab="caro" onclick="showTab('caro')">
       <span>🎮</span> CỜ CARO
@@ -291,7 +266,7 @@ html.game-locked, body.game-locked{
     </button>
   </div>
 
-  <!-- ═══════════ TAB: CỜ CARO ═══════════ -->
+  <!-- TAB: CỜ CARO -->
   <div id="tab-caro" class="tab-content">
     <div id="lobbyView">
       <div class="glass rounded-2xl p-5 mb-5 text-center">
@@ -361,7 +336,7 @@ html.game-locked, body.game-locked{
     </div>
   </div>
 
-  <!-- ═══════════ TAB: NGHE NHẠC ═══════════ -->
+  <!-- TAB: NGHE NHẠC -->
   <div id="tab-music" class="tab-content hidden">
     <div class="glass rounded-2xl p-5 mb-4" style="background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));border:2px solid rgba(244,184,66,.4)">
       <div class="flex items-center gap-4">
@@ -407,7 +382,7 @@ html.game-locked, body.game-locked{
     </div>
   </div>
 
-  <!-- ═══════════ TAB: GAME ═══════════ -->
+  <!-- TAB: KHO GAME -->
   <div id="tab-game" class="tab-content hidden">
     <div id="gameMenuView">
       <div class="glass rounded-2xl p-5 mb-4 text-center">
@@ -455,7 +430,7 @@ html.game-locked, body.game-locked{
     </div>
   </div>
 
-  <!-- ═══════════ TAB: XẾP HẠNG ═══════════ -->
+  <!-- TAB: XẾP HẠNG -->
   <div id="tab-leaderboard" class="tab-content hidden">
     <div class="glass rounded-2xl p-5 mb-4 text-center" style="background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));border:2px solid rgba(244,184,66,.4)">
       <div class="text-5xl mb-2">🏆</div>
@@ -470,14 +445,14 @@ html.game-locked, body.game-locked{
       <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')">
         <span>🚢</span> BATTLESHIP
       </button>
+      <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')">
+        <span>🎴</span> CỜ TƯỚNG
+      </button>
       <button class="tab-btn" data-lb="chess" onclick="showLB('chess')">
         <span>♟</span> CỜ VUA
       </button>
       <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')">
         <span>🔢</span> 2048
-      </button>
-      <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')">
-        <span>🎴</span> CỜ TƯỚNG
       </button>
     </div>
 
@@ -499,7 +474,7 @@ html.game-locked, body.game-locked{
 
 </div>
 
-<!-- ═══════════ MINI PLAYER ═══════════ -->
+<!-- MINI PLAYER -->
 <div id="miniPlayer" class="hide">
   <div class="mp-inner">
     <div class="mp-icon" id="mpIcon">🎵</div>
@@ -513,7 +488,7 @@ html.game-locked, body.game-locked{
   </div>
 </div>
 
-<!-- ═══════════ MODALS ═══════════ -->
+<!-- MODALS -->
 <div id="rulesModal" class="rules-modal">
   <div class="rules-card">
     <h3>📖 Quy Tắc Chơi Cờ Caro</h3>
@@ -547,26 +522,29 @@ html.game-locked, body.game-locked{
   </div>
 </div>
 
-<!-- ═══════════ TAB SWITCHER + GAME IFRAME LOGIC ═══════════ -->
+<!-- ═══════════════════════════════════════════
+     SCRIPT 1 — TAB + GAME IFRAME + MUSIC
+     ═══════════════════════════════════════════ -->
 <script>
 (function(){
   'use strict';
 
+  var currentGame = null;
   var GAME_URLS = {
-    'chess': 'games/chess.html',
-    'game2048': 'games/game2048.html',
+    'chess':      'games/chess.html',
+    'game2048':   'games/game2048.html',
     'battleship': 'games/battleship.html',
-    'snake': 'games/snake.html',
-    'xiangqi': 'games/xiangqi.html'
+    'snake':      'games/snake.html',
+    'xiangqi':    'games/xiangqi.html'
   };
 
+  // ═══ TAB SWITCH ═══
   window.showTab = function(name){
     document.querySelectorAll('.tab-content').forEach(function(el){ el.classList.add('hidden'); });
     var target = document.getElementById('tab-' + name);
     if (target) target.classList.remove('hidden');
 
-    document.querySelectorAll('.tab-btn').forEach(function(el){
-      if (el.closest('#lbGameTabs')) return;
+    document.querySelectorAll('.tab-switcher > .tab-btn').forEach(function(el){
       el.classList.toggle('active', el.dataset.tab === name);
     });
 
@@ -592,9 +570,10 @@ html.game-locked, body.game-locked{
     updateMiniPlayer();
   };
 
+  // ═══ OPEN / CLOSE GAME (iframe) ═══
   window.openGame = function(gameKey){
     var url = GAME_URLS[gameKey];
-    if (!url) return;
+    if (!url){ alert('Game không tồn tại: ' + gameKey); return; }
     currentGame = gameKey;
 
     // 🔒 KHÓA SCROLL TRANG MẸ
@@ -602,25 +581,29 @@ html.game-locked, body.game-locked{
     document.body.classList.add('game-locked');
     window.scrollTo(0, 0);
 
-    document.getElementById('gameMenuView').classList.add('hidden');
-    document.getElementById('gameIframeView').classList.remove('hidden');
+    var menuView = document.getElementById('gameMenuView');
+    var iframeView = document.getElementById('gameIframeView');
+    if (menuView) menuView.classList.add('hidden');
+    if (iframeView) iframeView.classList.remove('hidden');
 
     var frame = document.getElementById('gameFrame');
     var loading = document.getElementById('gameLoading');
-    loading.classList.remove('hide');
+    if (loading) loading.classList.remove('hide');
+
+    if (!frame) return;
 
     var done = false;
     var onLoad = function(){
       if (done) return; done = true;
       frame.removeEventListener('load', onLoad);
-      setTimeout(function(){ loading.classList.add('hide'); }, 300);
+      setTimeout(function(){ if (loading) loading.classList.add('hide'); }, 300);
     };
     frame.addEventListener('load', onLoad);
     frame.src = url;
 
     setTimeout(function(){
       if (done) return; done = true;
-      loading.classList.add('hide');
+      if (loading) loading.classList.add('hide');
     }, 8000);
   };
 
@@ -629,14 +612,17 @@ html.game-locked, body.game-locked{
     currentGame = null;
     var frame = document.getElementById('gameFrame');
     if (frame) frame.src = 'about:blank';
-    document.getElementById('gameIframeView').classList.add('hidden');
-    document.getElementById('gameMenuView').classList.remove('hidden');
+    var iframeView = document.getElementById('gameIframeView');
+    var menuView = document.getElementById('gameMenuView');
+    if (iframeView) iframeView.classList.add('hidden');
+    if (menuView) menuView.classList.remove('hidden');
 
-    // 🔓 MỞ KHÓA SCROLL TRANG MẸ
+    // 🔓 MỞ KHÓA SCROLL
     document.documentElement.classList.remove('game-locked');
     document.body.classList.remove('game-locked');
   };
 
+  // ═══ MUSIC UI ═══
   function DS(){ return window.DolphinSound; }
 
   window.__giaitriSyncMusicUI = function(){ renderMusicUI(); };
@@ -738,7 +724,8 @@ html.game-locked, body.game-locked{
     var ds = DS();
     if (!ds){ mp.classList.add('hide'); return; }
 
-    var isMusicTab = !document.getElementById('tab-music').classList.contains('hidden');
+    var tabMusic = document.getElementById('tab-music');
+    var isMusicTab = tabMusic && !tabMusic.classList.contains('hidden');
     var isPlaying = ds.isPlaying();
 
     if (isPlaying && !isMusicTab){
@@ -760,7 +747,8 @@ html.game-locked, body.game-locked{
   }
 
   setInterval(function(){
-    if (!document.getElementById('tab-music').classList.contains('hidden')){
+    var tabMusic = document.getElementById('tab-music');
+    if (tabMusic && !tabMusic.classList.contains('hidden')){
       renderMusicUI();
     } else {
       updateMiniPlayer();
@@ -768,14 +756,18 @@ html.game-locked, body.game-locked{
   }, 1500);
 
   function initMusicUI(){
-    if (!window.DolphinSound){ setTimeout(initMusicUI, 100); return; }
+    if (!window.DolphinSound){ setTimeout(initMusicUI, 150); return; }
     renderMusicUI();
   }
   setTimeout(initMusicUI, 400);
+
+  console.log('%c🎮 GIAITRI INDEX LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 })();
 </script>
 
-<!-- ═══════════ CARO GAME LOGIC ═══════════ -->
+<!-- ═══════════════════════════════════════════
+     SCRIPT 2 — CARO GAME LOGIC
+     ═══════════════════════════════════════════ -->
 <script>
 (function(){
   'use strict';
@@ -793,7 +785,6 @@ html.game-locked, body.game-locked{
   var MAX_VIEW_SIZE = 60;
   var WIN_COUNT = 5;
   var MAX_MOVES = 500;
-
   var WAITING_TIMEOUT = 30 * 60 * 1000;
   var FINISHED_TIMEOUT = 2 * 60 * 60 * 1000;
 
@@ -830,11 +821,16 @@ html.game-locked, body.game-locked{
   function cellKey(r, c){ return r + ',' + c; }
   function getCell(cells, r, c){ return cells[cellKey(r, c)] || 0; }
 
-  function showLoading(text){ $('loadingText').textContent = text || 'Đang xử lý...'; $('loadingOverlay').classList.add('show'); }
-  function hideLoading(){ $('loadingOverlay').classList.remove('show'); }
+  function showLoading(text){
+    var el = $('loadingText'); if (el) el.textContent = text || 'Đang xử lý...';
+    var ov = $('loadingOverlay'); if (ov) ov.classList.add('show');
+  }
+  function hideLoading(){
+    var ov = $('loadingOverlay'); if (ov) ov.classList.remove('show');
+  }
 
-  window.openRules = function(){ $('rulesModal').classList.add('show'); };
-  window.closeRules = function(){ $('rulesModal').classList.remove('show'); };
+  window.openRules = function(){ var m = $('rulesModal'); if (m) m.classList.add('show'); };
+  window.closeRules = function(){ var m = $('rulesModal'); if (m) m.classList.remove('show'); };
 
   function initFirebase(){
     if (state.initialized) return;
@@ -859,7 +855,6 @@ html.game-locked, body.game-locked{
       if (gid) joinGameById(gid);
     }).catch(function(err){
       console.warn('[Caro] init:', err);
-      alert('Không kết nối được Firebase. Vui lòng thử lại.');
     });
   }
 
@@ -876,6 +871,7 @@ html.game-locked, body.game-locked{
   function startGamesListener(){
     if (state.unsubGames) state.unsubGames();
     var m = state.modules;
+    if (!m) return;
     var q = m.db.query(m.db.collection(state.db, COL_GAMES), m.db.where('status', '==', 'waiting'), m.db.limit(20));
     state.unsubGames = m.db.onSnapshot(q, function(snap){
       var games = [];
@@ -886,8 +882,9 @@ html.game-locked, body.game-locked{
   }
 
   function renderGamesList(games){
-    var el = $('gamesList');
-    $('gamesCount').textContent = games.length + ' ván';
+    var el = $('gamesList'); if (!el) return;
+    var cntEl = $('gamesCount');
+    if (cntEl) cntEl.textContent = games.length + ' ván';
     if (!games.length){
       el.innerHTML = '<div class="text-center py-8 text-teal-500 text-[12px] font-bold">Không có ván nào đang chờ<br><span class="text-[10.5px] opacity:.7">Bấm "TẠO VÁN MỚI" để bắt đầu</span></div>';
       return;
@@ -1007,7 +1004,8 @@ html.game-locked, body.game-locked{
 
   function renderBoard(g){
     var board = $('board');
-    if (!board || !g.view) return;
+    var wrapper = $('boardWrapper');
+    if (!board || !wrapper || !g.view) return;
 
     var v = g.view;
     var rows = Math.min(v.maxR - v.minR + 1, MAX_VIEW_SIZE);
@@ -1017,7 +1015,7 @@ html.game-locked, body.game-locked{
     var needRebuild = state.lastViewKey !== viewKey;
     state.lastViewKey = viewKey;
 
-    var wrapperWidth = $('boardWrapper').clientWidth - 10;
+    var wrapperWidth = wrapper.clientWidth - 10;
     var cellSize = Math.max(16, Math.min(Math.floor(wrapperWidth / cols), 40));
 
     board.style.gridTemplateColumns = 'repeat(' + cols + ',' + cellSize + 'px)';
@@ -1232,7 +1230,7 @@ html.game-locked, body.game-locked{
   };
 
   window.closeResultAndLeave = function(){
-    $('resultModal').classList.remove('show');
+    var m = $('resultModal'); if (m) m.classList.remove('show');
     showLobby();
   };
 
@@ -1303,7 +1301,6 @@ html.game-locked, body.game-locked{
     state.currentUser = getStaffName();
     updateMyNameDisplay();
     initFirebase();
-    console.log('%c🎮 GIẢI TRÍ LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
   }
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
@@ -1311,21 +1308,18 @@ html.game-locked, body.game-locked{
 })();
 </script>
 
-<!-- ═══════════ CARO PINCH-ZOOM ═══════════ -->
+<!-- ═══════════════════════════════════════════
+     SCRIPT 3 — CARO PINCH-ZOOM
+     ═══════════════════════════════════════════ -->
 <script>
 (function(){
   'use strict';
 
-  var MIN_SCALE  = 0.8;
-  var MAX_SCALE  = 2.0;
-  var SCALE_KEY  = 'dolphin_caro_zoom';
-  var DEFAULT    = 1.0;
+  var MIN_SCALE = 0.8, MAX_SCALE = 2.0;
+  var SCALE_KEY = 'dolphin_caro_zoom', DEFAULT = 1.0;
 
   var currentScale = DEFAULT;
-  var board = null;
-  var wrapper = null;
-  var pinchStart = null;
-  var attachTries = 0;
+  var board = null, wrapper = null, pinchStart = null, attachTries = 0;
 
   function $(id){ return document.getElementById(id); }
 
@@ -1335,10 +1329,7 @@ html.game-locked, body.game-locked{
       if (!isNaN(v) && v >= MIN_SCALE && v <= MAX_SCALE) currentScale = v;
     } catch(e){}
   }
-
-  function saveScale(s){
-    try { localStorage.setItem(SCALE_KEY, String(s)); } catch(e){}
-  }
+  function saveScale(s){ try { localStorage.setItem(SCALE_KEY, String(s)); } catch(e){} }
 
   function updateResetBtn(){
     var btn = $('caroZoomReset');
@@ -1357,17 +1348,12 @@ html.game-locked, body.game-locked{
     updateResetBtn();
   }
 
-  function resetZoom(){
-    applyScale(DEFAULT);
-    if (window.showToast) window.showToast('Đã reset zoom về 100%', '🔍');
-  }
+  function resetZoom(){ applyScale(DEFAULT); }
 
   function getDistance(t1, t2){
-    var dx = t1.clientX - t2.clientX;
-    var dy = t1.clientY - t2.clientY;
+    var dx = t1.clientX - t2.clientX, dy = t1.clientY - t2.clientY;
     return Math.sqrt(dx*dx + dy*dy);
   }
-
   function getMidpointPct(t1, t2){
     if (!board) return 'center center';
     var rect = board.getBoundingClientRect();
@@ -1375,12 +1361,10 @@ html.game-locked, body.game-locked{
     var my = (t1.clientY + t2.clientY) / 2;
     var px = ((mx - rect.left) / rect.width) * 100;
     var py = ((my - rect.top) / rect.height) * 100;
-    px = Math.max(0, Math.min(100, px));
-    py = Math.max(0, Math.min(100, py));
-    return px + '% ' + py + '%';
+    return Math.max(0, Math.min(100, px)) + '% ' + Math.max(0, Math.min(100, py)) + '%';
   }
 
-  function onTouchStart(e){
+  function onTS(e){
     if (e.touches.length === 2 && board){
       pinchStart = {
         distance: getDistance(e.touches[0], e.touches[1]),
@@ -1391,21 +1375,18 @@ html.game-locked, body.game-locked{
       e.preventDefault();
     }
   }
-
-  function onTouchMove(e){
+  function onTM(e){
     if (e.touches.length !== 2 || !pinchStart || !board) return;
     e.preventDefault();
     var d = getDistance(e.touches[0], e.touches[1]);
     if (pinchStart.distance < 5) return;
-    var ratio = d / pinchStart.distance;
-    var newScale = pinchStart.scale * ratio;
+    var newScale = pinchStart.scale * (d / pinchStart.distance);
     newScale = Math.max(MIN_SCALE, Math.min(MAX_SCALE, newScale));
     currentScale = newScale;
     board.style.transformOrigin = pinchStart.origin;
     board.style.transform = 'scale(' + newScale + ')';
   }
-
-  function onTouchEnd(e){
+  function onTE(e){
     if (e.touches.length < 2 && pinchStart){
       pinchStart = null;
       if (board) board.style.transition = 'transform 0.18s cubic-bezier(.16,1,.3,1)';
@@ -1418,16 +1399,11 @@ html.game-locked, body.game-locked{
     if ($('caroZoomReset')) return;
     var container = $('boardContainer');
     if (!container) return;
-
     var btn = document.createElement('button');
     btn.id = 'caroZoomReset';
     btn.type = 'button';
-    btn.title = 'Reset zoom về 100%';
     btn.innerHTML = '<span style="font-size:15px">🔍</span><span class="czr-label">100%</span>';
-    btn.addEventListener('click', function(e){
-      e.stopPropagation();
-      resetZoom();
-    });
+    btn.addEventListener('click', function(e){ e.stopPropagation(); resetZoom(); });
     container.appendChild(btn);
     updateResetBtn();
   }
@@ -1436,17 +1412,12 @@ html.game-locked, body.game-locked{
     wrapper = $('boardWrapper');
     board = $('board');
     if (!wrapper || !board) return false;
-
     loadScale();
-    if (Math.abs(currentScale - DEFAULT) > 0.01){
-      board.style.transform = 'scale(' + currentScale + ')';
-    }
-
-    wrapper.addEventListener('touchstart', onTouchStart, { passive: false });
-    wrapper.addEventListener('touchmove', onTouchMove, { passive: false });
-    wrapper.addEventListener('touchend', onTouchEnd);
-    wrapper.addEventListener('touchcancel', onTouchEnd);
-
+    if (Math.abs(currentScale - DEFAULT) > 0.01) board.style.transform = 'scale(' + currentScale + ')';
+    wrapper.addEventListener('touchstart', onTS, { passive: false });
+    wrapper.addEventListener('touchmove', onTM, { passive: false });
+    wrapper.addEventListener('touchend', onTE);
+    wrapper.addEventListener('touchcancel', onTE);
     createResetBtn();
     return true;
   }
@@ -1454,35 +1425,29 @@ html.game-locked, body.game-locked{
   function init(){
     var interval = setInterval(function(){
       attachTries++;
-      if (attachToBoard() || attachTries >= 100){
-        clearInterval(interval);
-        if (attachTries < 100){
-          console.log('%c🔍 Caro pinch-zoom ready (0.8× – 2×)', 'background:#123634;color:#FBD77A;padding:3px 8px;border-radius:4px;font-weight:900');
-        }
-      }
+      if (attachToBoard() || attachTries >= 100) clearInterval(interval);
     }, 300);
   }
 
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  else init();
 })();
 </script>
 
-<!-- ═══════════ LEADERBOARD LOGIC ═══════════ -->
+<!-- ═══════════════════════════════════════════
+     SCRIPT 4 — LEADERBOARD UI
+     ═══════════════════════════════════════════ -->
 <script>
 (function(){
   'use strict';
 
   var currentLBGame = 'snake';
   var LB_META = {
-    snake:      { icon: '🐍', title: 'RẮN SĂN MỒI',  type: 'score' },
-    battleship: { icon: '🚢', title: 'BATTLESHIP',   type: 'win' },
-    chess:      { icon: '♟',  title: 'CỜ VUA',       type: 'win' },
-    game2048:   { icon: '🔢', title: '2048',         type: 'score' },
-    xiangqi:    { icon: '🎴', title: 'CỜ TƯỚNG',      type: 'win' }
+    snake:      { icon: '🐍', title: 'RẮN SĂN MỒI', type: 'score' },
+    battleship: { icon: '🚢', title: 'BATTLESHIP',  type: 'win' },
+    chess:      { icon: '♟',  title: 'CỜ VUA',      type: 'win' },
+    game2048:   { icon: '🔢', title: '2048',        type: 'score' },
+    xiangqi:    { icon: '🎴', title: 'CỜ TƯỚNG',     type: 'win' }
   };
 
   function $(id){ return document.getElementById(id); }
@@ -1536,40 +1501,35 @@ html.game-locked, body.game-locked{
         return;
       }
 
-      var html = '<div style="overflow-x:auto"><table style="width:100%;font-size:12px;border-collapse:collapse">';
-      html += '<thead><tr style="border-bottom:2px solid rgba(244,184,66,.35);color:#FBD77A;font-weight:900;font-size:10px;text-transform:uppercase">';
-      html += '<th style="text-align:left;padding:8px 6px;width:44px">#</th>';
-      html += '<th style="text-align:left;padding:8px 6px">Người chơi</th>';
+      var html = '<div style="overflow-x:auto"><table class="lb-table"><thead><tr>';
+      html += '<th>#</th><th>Người chơi</th>';
       if (meta.type === 'win'){
-        html += '<th style="text-align:center;padding:8px 4px">Thắng</th>';
-        html += '<th style="text-align:center;padding:8px 4px">Thua</th>';
-        html += '<th style="text-align:center;padding:8px 4px">Tỉ lệ</th>';
+        html += '<th style="text-align:center">Thắng</th>';
+        html += '<th style="text-align:center">Thua</th>';
+        html += '<th style="text-align:center">Tỉ lệ</th>';
       } else {
-        html += '<th style="text-align:right;padding:8px 6px">Cao nhất</th>';
-        html += '<th style="text-align:right;padding:8px 6px">Tổng</th>';
-        html += '<th style="text-align:right;padding:8px 6px">Ván</th>';
+        html += '<th class="num">Cao nhất</th>';
+        html += '<th class="num">Tổng</th>';
+        html += '<th class="num">Ván</th>';
       }
       html += '</tr></thead><tbody>';
 
       rows.forEach(function(r, i){
         var isMe = r.player === myName;
         var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1);
-        var rowStyle = 'border-bottom:1px solid rgba(255,255,255,.06);'
-          + (isMe ? 'background:rgba(244,184,66,.14);' : '');
-        html += '<tr style="' + rowStyle + '">';
-        html += '<td style="padding:8px 6px;font-weight:900;color:#FBD77A;font-size:' + (i < 3 ? '16px' : '12px') + '">' + medal + '</td>';
-        html += '<td style="padding:8px 6px;font-weight:800;color:' + (isMe ? '#FBD77A' : '#fff') + ';overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:140px">'
-          + esc(r.player) + (isMe ? ' <span style="font-size:9px;opacity:.7">(BẠN)</span>' : '') + '</td>';
+        html += '<tr class="' + (isMe ? 'me' : '') + '">';
+        html += '<td class="rank ' + (i < 3 ? 'top' : '') + '">' + medal + '</td>';
+        html += '<td class="' + (isMe ? 'me' : '') + '">' + esc(r.player) + (isMe ? ' <span style="font-size:9px;opacity:.7">(BẠN)</span>' : '') + '</td>';
         if (meta.type === 'win'){
           var total = (r.wins || 0) + (r.losses || 0);
           var rate = total > 0 ? Math.round((r.wins || 0) / total * 100) : 0;
-          html += '<td style="text-align:center;padding:8px 4px;color:#86efac;font-weight:800">' + (r.wins || 0) + '</td>';
-          html += '<td style="text-align:center;padding:8px 4px;color:#fca5a5;font-weight:800">' + (r.losses || 0) + '</td>';
-          html += '<td style="text-align:center;padding:8px 4px;color:#FBD77A;font-weight:900">' + rate + '%</td>';
+          html += '<td class="num good">' + (r.wins || 0) + '</td>';
+          html += '<td class="num bad">' + (r.losses || 0) + '</td>';
+          html += '<td class="num gold">' + rate + '%</td>';
         } else {
-          html += '<td style="text-align:right;padding:8px 6px;color:#FBD77A;font-weight:900;font-size:14px">' + (r.bestScore || 0) + '</td>';
-          html += '<td style="text-align:right;padding:8px 6px;color:#7ec9be;font-weight:700">' + (r.totalScore || 0) + '</td>';
-          html += '<td style="text-align:right;padding:8px 6px;color:#7ec9be;font-weight:700">' + (r.totalGames || 0) + '</td>';
+          html += '<td class="num gold">' + (r.bestScore || 0) + '</td>';
+          html += '<td class="num" style="color:#7ec9be">' + (r.totalScore || 0) + '</td>';
+          html += '<td class="num" style="color:#7ec9be">' + (r.totalGames || 0) + '</td>';
         }
         html += '</tr>';
       });

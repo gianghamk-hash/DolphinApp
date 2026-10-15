@@ -1,7 +1,7 @@
 {
-  "version": "1.0.44",
-  "buildDate": "2026-10-15T13:23:19.587Z",
-  "commit": "7772863",
-  "notes": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.45",
+  "buildDate": "2026-10-15T13:51:20.364Z",
+  "commit": "c0798fe",
+  "notes": "THAY ĐỔI UI SNAKE",
   "forceUpdate": false
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.31",
-  "buildDate": "2026-10-15T02:05:17.882Z",
-  "commit": "54668fd",
-  "notes": "Bổ sung danh sách khách",
+  "version": "1.0.32",
+  "buildDate": "2026-10-15T02:11:31.517Z",
+  "commit": "8f5b7d7",
+  "notes": "cập nhật lại danh sách khách",
   "forceUpdate": false
 }

@@ -1,22 +1,22 @@
 {
-  "version": "1.0.31",
-  "previousVersion": "1.0.30",
-  "commit": "54668fd",
-  "previousCommit": "15cb5ff",
-  "buildDate": "2026-10-15T02:05:17.882Z",
-  "summary": "Bổ sung danh sách khách",
+  "version": "1.0.32",
+  "previousVersion": "1.0.31",
+  "commit": "8f5b7d7",
+  "previousCommit": "54668fd",
+  "buildDate": "2026-10-15T02:11:31.517Z",
+  "summary": "cập nhật lại danh sách khách",
   "changes": {
-    "totalCommits": 35,
+    "totalCommits": 36,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Bổ sung danh sách khách"
+    "cập nhật lại danh sách khách"
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": "dolphin-guests.html",
       "type": "update"
     }
   ]

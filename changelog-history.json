@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.31",
+      "releaseDate": "2026-10-15T02:05:17.882Z",
+      "summary": "Bổ sung danh sách khách",
+      "details": [
+        "Bổ sung danh sách khách"
+      ]
+    },
+    {
       "version": "1.0.30",
       "releaseDate": "2026-10-14T15:57:41.298Z",
       "summary": "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard",

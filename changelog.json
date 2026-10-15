@@ -1,12 +1,12 @@
 {
-  "version": "1.0.46",
-  "previousVersion": "1.0.45",
-  "commit": "416dc19",
-  "previousCommit": "c0798fe",
-  "buildDate": "2026-10-15T14:00:55.872Z",
+  "version": "1.0.47",
+  "previousVersion": "1.0.46",
+  "commit": "3e8b62d",
+  "previousCommit": "416dc19",
+  "buildDate": "2026-10-15T14:12:13.330Z",
   "summary": "Mô tả ngắn gọn việc bạn vừa làm",
   "changes": {
-    "totalCommits": 50,
+    "totalCommits": 51,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "giaitri/games/xiangqi.html",
       "type": "update"
     }
   ]

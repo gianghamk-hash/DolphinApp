@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.47",
+      "releaseDate": "2026-10-15T14:12:13.330Z",
+      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+      "details": [
+        "Mô tả ngắn gọn việc bạn vừa làm"
+      ]
+    },
+    {
       "version": "1.0.46",
       "releaseDate": "2026-10-15T14:00:55.872Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",

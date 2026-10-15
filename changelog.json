@@ -1,12 +1,12 @@
 {
-  "version": "1.0.43",
-  "previousVersion": "1.0.42",
-  "commit": "e18da82",
-  "previousCommit": "d7af63b",
-  "buildDate": "2026-10-15T13:15:09.649Z",
+  "version": "1.0.44",
+  "previousVersion": "1.0.43",
+  "commit": "7772863",
+  "previousCommit": "e18da82",
+  "buildDate": "2026-10-15T13:23:19.587Z",
   "summary": "Mô tả ngắn gọn việc bạn vừa làm",
   "changes": {
-    "totalCommits": 47,
+    "totalCommits": 48,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0

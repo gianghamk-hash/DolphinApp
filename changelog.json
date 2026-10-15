@@ -1,18 +1,18 @@
 {
-  "version": "1.0.34",
-  "previousVersion": "1.0.33",
-  "commit": "8ecea5d",
-  "previousCommit": "eabcc17",
-  "buildDate": "2026-10-15T08:46:31.144Z",
-  "summary": "Dolphin Guests: bungalow full note + filter 3 tầng + Lounge L1-L15",
+  "version": "1.0.35",
+  "previousVersion": "1.0.34",
+  "commit": "c0ac9a1",
+  "previousCommit": "8ecea5d",
+  "buildDate": "2026-10-15T09:15:33.036Z",
+  "summary": "Dolphin Guests: UI Premium Glass + compact",
   "changes": {
-    "totalCommits": 38,
+    "totalCommits": 39,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Dolphin Guests: bungalow full note + filter 3 tầng + Lounge L1-L15"
+    "Dolphin Guests: UI Premium Glass + compact"
   ],
   "fileChanges": [
     {

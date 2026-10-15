@@ -1,7 +1,7 @@
 {
-  "version": "1.0.34",
-  "buildDate": "2026-10-15T08:46:31.144Z",
-  "commit": "8ecea5d",
-  "notes": "Dolphin Guests: bungalow full note + filter 3 tầng + Lounge L1-L15",
+  "version": "1.0.35",
+  "buildDate": "2026-10-15T09:15:33.036Z",
+  "commit": "c0ac9a1",
+  "notes": "Dolphin Guests: UI Premium Glass + compact",
   "forceUpdate": false
 }

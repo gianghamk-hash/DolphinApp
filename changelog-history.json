@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.40",
+      "releaseDate": "2026-10-15T12:42:21.980Z",
+      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+      "details": [
+        "Mô tả ngắn gọn việc bạn vừa làm"
+      ]
+    },
+    {
       "version": "1.0.39",
       "releaseDate": "2026-10-15T12:26:46.906Z",
       "summary": "THAY ĐỔI GAME BATTLE SHIP VÀ THÊM RẮN SĂN MỒI",

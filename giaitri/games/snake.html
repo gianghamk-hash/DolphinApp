@@ -10,26 +10,36 @@
 <script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
-body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;overflow-x:hidden;display:flex;flex-direction:column;padding-bottom:env(safe-area-inset-bottom)}
+html,body{overscroll-behavior:none;touch-action:manipulation}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;min-height:100dvh;overflow:hidden;display:flex;flex-direction:column}
 .brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
-.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
 .btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit;transition:transform .1s}
 .btn-gold:active{transform:scale(.96)}
 .btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit;transition:transform .1s}
 .btn-outline:active{transform:scale(.96)}
 
-/* ═══ BOARD ═══ */
-.game-area{flex:1;display:flex;align-items:center;justify-content:center;padding:12px;min-height:0}
+/* ═══ HUD ═══ */
+.hud{display:flex;gap:6px;padding:8px 10px;background:rgba(10,31,29,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(55,137,123,.3);flex-shrink:0}
+.hud .item{flex:1;text-align:center;padding:4px 2px;background:rgba(25,71,67,.5);border:1px solid rgba(55,137,123,.3);border-radius:9px}
+.hud .lbl{font-size:8.5px;color:#7ec9be;font-weight:800;text-transform:uppercase;letter-spacing:.05em;display:block}
+.hud .val{font-size:14px;color:#FBD77A;font-weight:900;font-family:'Fraunces',serif;margin-top:1px;display:block}
+
+/* ═══ GAME AREA (fills remaining space) ═══ */
+.game-area{flex:1;display:flex;align-items:center;justify-content:center;padding:8px;min-height:0;position:relative}
+
 .board-wrap{
-  background:linear-gradient(135deg,rgba(10,50,80,.9),rgba(5,30,50,.95));
-  border:3px solid #8B6F3D;border-radius:16px;padding:8px;
-  max-width:min(94vw,520px);width:100%;
-  box-shadow:0 8px 30px rgba(0,0,0,.5),inset 0 0 30px rgba(0,0,0,.3);
   position:relative;
+  background:linear-gradient(135deg,rgba(10,50,80,.9),rgba(5,30,50,.95));
+  border:3px solid #8B6F3D;border-radius:16px;padding:6px;
+  max-width:min(96vw,520px);width:100%;
+  max-height:100%;aspect-ratio:1;
+  box-shadow:0 8px 30px rgba(0,0,0,.5),inset 0 0 30px rgba(0,0,0,.3);
+  touch-action:none; /* cho phép preventDefault trên mobile */
 }
 #board{
   display:grid;grid-template-columns:repeat(20,1fr);grid-template-rows:repeat(20,1fr);
   gap:1px;aspect-ratio:1;background:rgba(0,15,30,.6);border-radius:8px;padding:2px;
+  pointer-events:none; /* để touch layer xử lý */
 }
 .cell{background:rgba(0,20,40,.4);border-radius:2px;position:relative;transition:background .05s}
 .cell::after{content:'';position:absolute;inset:1px;border-radius:2px;background:transparent;transition:background .08s}
@@ -39,63 +49,100 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 .cell.food::after{background:radial-gradient(circle,#ef4444 30%,#991b1b 100%);border-radius:50%;box-shadow:0 0 10px rgba(239,68,68,.7);animation:foodPulse 1s ease-in-out infinite}
 @keyframes foodPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.25)}}
 
-/* ═══ CONTROLS ═══ */
-.controls{padding:12px;display:flex;justify-content:center;gap:8px;flex-wrap:wrap}
-.dpad{display:grid;grid-template-columns:repeat(3,58px);grid-template-rows:repeat(3,58px);gap:6px}
-.dpad button{
-  background:linear-gradient(135deg,rgba(74,168,150,.9),rgba(42,110,101,.9));
-  border:2px solid rgba(120,220,200,.4);border-radius:14px;
-  color:#FBD77A;font-size:22px;font-weight:900;cursor:pointer;font-family:inherit;
-  display:flex;align-items:center;justify-content:center;
-  box-shadow:0 4px 12px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.2);
-  transition:transform .08s,box-shadow .08s;
+/* ═══ TOUCH LAYER (nằm trên bàn cờ, nhận swipe/tap) ═══ */
+#touchLayer{position:absolute;inset:6px;border-radius:10px;z-index:5;touch-action:none;cursor:crosshair}
+#touchLayer::before{
+  content:'👆 Vuốt hoặc chạm để điều khiển';
+  position:absolute;bottom:6px;left:50%;transform:translateX(-50%);
+  font-size:9.5px;font-weight:800;color:rgba(191,233,220,.5);
+  letter-spacing:.05em;text-transform:uppercase;white-space:nowrap;
+  pointer-events:none;transition:opacity .3s;text-shadow:0 1px 4px rgba(0,0,0,.8);
 }
-.dpad button:active{transform:scale(.9);box-shadow:0 2px 6px rgba(0,0,0,.4),inset 0 2px 6px rgba(0,0,0,.3);background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634}
-.dpad .up{grid-column:2;grid-row:1}
-.dpad .left{grid-column:1;grid-row:2}
-.dpad .center{grid-column:2;grid-row:2;background:rgba(25,71,67,.4);border-color:rgba(55,137,123,.3);cursor:default;font-size:14px;color:#7ec9be}
-.dpad .center:active{transform:none;box-shadow:0 4px 12px rgba(0,0,0,.35),inset 0 1px 0 rgba(255,255,255,.2);background:rgba(25,71,67,.4);color:#7ec9be}
-.dpad .right{grid-column:3;grid-row:2}
-.dpad .down{grid-column:2;grid-row:3}
+#touchLayer.used::before{opacity:0}
+
+/* ═══ D-PAD NỔI (góc dưới phải bàn cờ) ═══ */
+.dpad-toggle{
+  position:absolute;top:8px;right:8px;z-index:12;
+  width:34px;height:34px;border-radius:10px;
+  background:rgba(18,54,52,.85);border:1.5px solid rgba(244,184,66,.5);
+  color:#FBD77A;font-size:14px;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 3px 10px rgba(0,0,0,.4);
+  transition:transform .12s;
+}
+.dpad-toggle:active{transform:scale(.9)}
+.dpad-toggle.on{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;border-color:transparent}
+
+.dpad-float{
+  position:absolute;bottom:10px;right:10px;z-index:11;
+  display:grid;grid-template-columns:44px 44px 44px;grid-template-rows:44px 44px 44px;
+  gap:3px;
+  opacity:.88;
+  transition:opacity .2s,transform .2s;
+}
+.dpad-float.hidden{opacity:0;pointer-events:none;transform:scale(.9) translateY(10px)}
+.dpad-float button{
+  background:rgba(20,60,58,.78);
+  border:1.5px solid rgba(120,220,200,.45);
+  border-radius:12px;
+  color:#FBD77A;font-size:18px;font-weight:900;cursor:pointer;font-family:inherit;
+  display:flex;align-items:center;justify-content:center;
+  backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);
+  box-shadow:0 3px 10px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.15);
+  transition:transform .08s,background .08s;
+  -webkit-tap-highlight-color:transparent;
+  padding:0;
+}
+.dpad-float button:active{transform:scale(.88);background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634}
+.dpad-float .up{grid-column:2;grid-row:1}
+.dpad-float .left{grid-column:1;grid-row:2}
+.dpad-float .mid{grid-column:2;grid-row:2;background:rgba(10,30,28,.5);border-color:rgba(55,137,123,.35);color:#7ec9be;font-size:12px;cursor:default}
+.dpad-float .mid:active{transform:none;background:rgba(10,30,28,.5);color:#7ec9be}
+.dpad-float .right{grid-column:3;grid-row:2}
+.dpad-float .down{grid-column:2;grid-row:3}
+
+/* Nút đổi hướng chỉ hiện trên mobile */
+@media (min-width:900px){
+  .dpad-toggle,.dpad-float{display:none!important}
+  #touchLayer::before{content:'⌨️ Dùng phím mũi tên / WASD để điều khiển'}
+}
 
 /* ═══ MODAL ═══ */
-.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px}
+.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);z-index:9998;display:none;align-items:center;justify-content:center;padding:20px;overflow-y:auto}
 .modal.show{display:flex}
-.modal-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;padding:28px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.2);animation:popIn .35s cubic-bezier(.16,1,.3,1)}
+.modal-card{background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:24px;padding:26px 24px;max-width:380px;width:100%;text-align:center;box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.2);animation:popIn .35s cubic-bezier(.16,1,.3,1);max-height:92vh;overflow-y:auto}
 @keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
 
 .stat{display:flex;justify-content:space-between;padding:8px 12px;background:rgba(10,30,28,.5);border-radius:10px;margin-bottom:6px;font-size:13px;font-weight:800}
 .stat .lbl{color:#7ec9be}
 .stat .val{color:#FBD77A;font-weight:900}
 
-/* ═══ HEADER STATS ═══ */
-.hud{display:flex;gap:8px;padding:10px 14px;background:rgba(10,31,29,.85);backdrop-filter:blur(10px);border-bottom:1px solid rgba(55,137,123,.3)}
-.hud .item{flex:1;text-align:center;padding:6px 4px;background:rgba(25,71,67,.5);border:1px solid rgba(55,137,123,.3);border-radius:10px}
-.hud .lbl{font-size:9px;color:#7ec9be;font-weight:800;text-transform:uppercase;letter-spacing:.05em;display:block}
-.hud .val{font-size:16px;color:#FBD77A;font-weight:900;font-family:'Fraunces',serif;margin-top:2px;display:block}
-
-/* ═══ FLOAT ═══ */
+/* ═══ FLOAT TEXT ═══ */
 .float-text{position:fixed;pointer-events:none;z-index:9999;font-family:'Fraunces',serif;font-weight:900;color:#FBD77A;text-shadow:0 2px 12px rgba(0,0,0,.8),0 0 24px rgba(244,184,66,.8);font-size:24px;animation:floatUp .8s ease-out forwards}
 @keyframes floatUp{0%{opacity:0;transform:translate(-50%,0) scale(.5)}30%{opacity:1;transform:translate(-50%,-15px) scale(1.2)}100%{opacity:0;transform:translate(-50%,-50px) scale(.9)}}
 
-/* ═══ SUBMIT STATUS ═══ */
-.lb-status{font-size:10px;font-weight:800;margin-top:3px;min-height:14px;letter-spacing:.02em}
+/* ═══ LB STATUS ═══ */
+.lb-status{font-size:10.5px;font-weight:800;margin-top:3px;min-height:14px;letter-spacing:.02em}
 .lb-status.ok{color:#86efac}
 .lb-status.err{color:#fca5a5}
 .lb-status.loading{color:#FBD77A}
+
+/* Safe-area padding */
+.hud{padding-top:calc(8px + env(safe-area-inset-top))}
 </style>
 </head>
 <body>
 
 <!-- HEADER -->
-<div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
-  <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
-    <div class="text-center flex-1">
-      <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
-      <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Rắn Săn Mồi</p>
+<div style="flex-shrink:0;background:rgba(10,31,29,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(55,137,123,.35)">
+  <div style="max-width:640px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px">
+    <button onclick="goBack()" style="width:38px;height:38px;border-radius:11px;background:rgba(25,71,67,.6);border:1px solid rgba(55,137,123,.5);color:#7ec9be;font-size:16px;cursor:pointer;font-family:inherit">←</button>
+    <div style="text-align:center;flex:1">
+      <div class="brand-title" style="font-size:16px;line-height:1">DOLPHIN</div>
+      <div style="font-size:9px;color:#7ec9be;text-transform:uppercase;font-weight:800;letter-spacing:.18em;margin-top:2px">Rắn Săn Mồi</div>
     </div>
-    <button onclick="togglePause()" id="pauseBtn" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">⏸</button>
+    <button onclick="togglePause()" id="pauseBtn" style="width:38px;height:38px;border-radius:11px;background:rgba(25,71,67,.6);border:1px solid rgba(55,137,123,.5);color:#7ec9be;font-size:16px;cursor:pointer;font-family:inherit">⏸</button>
   </div>
 </div>
 
@@ -103,55 +150,65 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 <div class="hud">
   <div class="item"><span class="lbl">Điểm</span><span class="val" id="score">0</span></div>
   <div class="item"><span class="lbl">Kỷ lục</span><span class="val" id="highScore">0</span></div>
-  <div class="item"><span class="lbl">Độ dài</span><span class="val" id="length">3</span></div>
-  <div class="item"><span class="lbl">Tốc độ</span><span class="val" id="speed">1x</span></div>
+  <div class="item"><span class="lbl">Dài</span><span class="val" id="length">3</span></div>
+  <div class="item"><span class="lbl">Tốc</span><span class="val" id="speed">1x</span></div>
 </div>
 
 <!-- GAME AREA -->
 <div class="game-area">
-  <div class="board-wrap"><div id="board"></div></div>
-</div>
+  <div class="board-wrap">
+    <div id="board"></div>
+    <div id="touchLayer"></div>
 
-<!-- CONTROLS -->
-<div class="controls">
-  <div class="dpad">
-    <button class="up" onclick="setDir('up')">▲</button>
-    <button class="left" onclick="setDir('left')">◀</button>
-    <button class="center">🎮</button>
-    <button class="right" onclick="setDir('right')">▶</button>
-    <button class="down" onclick="setDir('down')">▼</button>
+    <!-- Toggle D-pad -->
+    <button class="dpad-toggle" id="dpadToggle" onclick="toggleDpad()" title="Bật/tắt D-pad">🎮</button>
+
+    <!-- D-pad nổi -->
+    <div class="dpad-float hidden" id="dpadFloat">
+      <button class="up" data-dir="up">▲</button>
+      <button class="left" data-dir="left">◀</button>
+      <button class="mid">🎮</button>
+      <button class="right" data-dir="right">▶</button>
+      <button class="down" data-dir="down">▼</button>
+    </div>
   </div>
-</div>
-
-<div class="text-center text-[10px] text-teal-500 pb-4 px-4 leading-relaxed">
-  🎮 Dùng D-pad, phím mũi tên, WASD hoặc vuốt màn hình<br>
-  🍎 Ăn mồi đỏ để tăng điểm — đụng tường hoặc tự cắn = Game Over
 </div>
 
 <!-- START MODAL -->
 <div id="startModal" class="modal show">
   <div class="modal-card">
-    <div class="text-6xl mb-3">🐍</div>
-    <h2 class="text-[20px] font-black text-gold-400 uppercase tracking-widest mb-3">RẮN SĂN MỒI</h2>
-    <p class="text-[12px] text-teal-300 mb-5">Điều khiển chú rắn ăn mồi, đừng đụng tường hay tự cắn vào đuôi!</p>
-    <div class="stat"><span class="lbl">🏆 Kỷ lục hiện tại</span><span class="val" id="startHighScore">0</span></div>
-    <button onclick="startGame()" class="btn-gold w-full py-3.5 rounded-xl text-[13px] uppercase tracking-wider mt-3">🎮 BẮT ĐẦU</button>
+    <div style="font-size:56px;margin-bottom:8px">🐍</div>
+    <h2 style="font-size:20px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 10px">RẮN SĂN MỒI</h2>
+    <p style="font-size:12.5px;color:#bfe9dc;margin:0 0 16px;line-height:1.5">Điều khiển chú rắn ăn mồi.<br>Đụng tường hoặc tự cắn = Game Over!</p>
+    <div style="background:rgba(10,30,28,.6);border-radius:12px;padding:12px;margin-bottom:14px;text-align:left">
+      <div style="font-size:10.5px;color:#FBD77A;font-weight:900;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">🎮 Điều khiển</div>
+      <div style="font-size:11.5px;color:#bfe9dc;line-height:1.7">
+        • <b style="color:#fff">Vuốt</b> trên bàn cờ theo hướng muốn đi<br>
+        • <b style="color:#fff">Chạm</b> vào ô bên phải/trái/trên/dưới đầu rắn<br>
+        • Bật <b style="color:#fff">D-pad nổi</b> 🎮 nếu thích bấm nút<br>
+        • Máy tính: dùng <b style="color:#fff">phím mũi tên / WASD</b>
+      </div>
+    </div>
+    <div class="stat"><span class="lbl">🏆 Kỷ lục</span><span class="val" id="startHighScore">0</span></div>
+    <button onclick="startGame()" class="btn-gold" style="width:100%;padding:14px;border-radius:12px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-top:10px">🎮 BẮT ĐẦU</button>
   </div>
 </div>
 
 <!-- GAME OVER MODAL -->
 <div id="overModal" class="modal">
   <div class="modal-card">
-    <div class="text-6xl mb-3" id="overIcon">💀</div>
-    <h2 class="text-[20px] font-black text-gold-400 uppercase tracking-widest mb-3" id="overTitle">GAME OVER</h2>
-    <p class="text-[12px] text-teal-200 mb-4" id="overSub"></p>
+    <div style="font-size:56px;margin-bottom:8px" id="overIcon">💀</div>
+    <h2 style="font-size:20px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px" id="overTitle">GAME OVER</h2>
+    <p style="font-size:12px;color:#bfe9dc;margin:0 0 6px" id="overSub"></p>
     <div class="lb-status" id="lbStatus"></div>
-    <div class="stat"><span class="lbl">🎯 Điểm</span><span class="val" id="overScore">0</span></div>
-    <div class="stat"><span class="lbl">🏆 Kỷ lục</span><span class="val" id="overHigh">0</span></div>
-    <div class="stat"><span class="lbl">📏 Độ dài</span><span class="val" id="overLength">3</span></div>
-    <div class="flex gap-2 mt-3">
-      <button onclick="closeOver()" class="btn-outline flex-1 py-3 rounded-xl text-[12px] uppercase">Đóng</button>
-      <button onclick="startGame()" class="btn-gold flex-1 py-3 rounded-xl text-[12px] uppercase">🔄 Chơi lại</button>
+    <div style="margin-top:12px">
+      <div class="stat"><span class="lbl">🎯 Điểm</span><span class="val" id="overScore">0</span></div>
+      <div class="stat"><span class="lbl">🏆 Kỷ lục</span><span class="val" id="overHigh">0</span></div>
+      <div class="stat"><span class="lbl">📏 Độ dài</span><span class="val" id="overLength">3</span></div>
+    </div>
+    <div style="display:flex;gap:10px;margin-top:14px">
+      <button onclick="closeOver()" class="btn-outline" style="flex:1;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase">Đóng</button>
+      <button onclick="startGame()" class="btn-gold" style="flex:1;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase">🔄 Chơi lại</button>
     </div>
   </div>
 </div>
@@ -159,10 +216,10 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 <!-- PAUSE MODAL -->
 <div id="pauseModal" class="modal">
   <div class="modal-card">
-    <div class="text-5xl mb-3">⏸</div>
-    <h2 class="text-[18px] font-black text-gold-400 uppercase tracking-widest mb-4">TẠM DỪNG</h2>
-    <button onclick="resumeGame()" class="btn-gold w-full py-3 rounded-xl text-[13px] uppercase mb-2">▶ TIẾP TỤC</button>
-    <button onclick="quitGame()" class="btn-outline w-full py-3 rounded-xl text-[12px] uppercase">🚪 THOÁT VÁN</button>
+    <div style="font-size:48px;margin-bottom:8px">⏸</div>
+    <h2 style="font-size:18px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 16px">TẠM DỪNG</h2>
+    <button onclick="resumeGame()" class="btn-gold" style="width:100%;padding:12px;border-radius:12px;font-size:13px;text-transform:uppercase;margin-bottom:8px">▶ TIẾP TỤC</button>
+    <button onclick="quitGame()" class="btn-outline" style="width:100%;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase">🚪 THOÁT VÁN</button>
   </div>
 </div>
 
@@ -188,6 +245,7 @@ let paused = false;
 let gameOverFlag = false;
 let loopTimer = null;
 let submitted = false;
+let dpadVisible = false;
 
 // ═══ AUDIO ═══
 let audioCtx = null;
@@ -242,8 +300,27 @@ function setDir(d){
   if (nd.x === dir.x && nd.y === dir.y) return;
   nextDir = nd;
   playTurn();
+  // Mark touch layer used (hide hint)
+  const tl = $('touchLayer');
+  if (tl) tl.classList.add('used');
 }
 window.setDir = setDir;
+
+// ✅ Đổi hướng tương đối theo vị trí chạm so với đầu rắn
+function setDirByTap(clientX, clientY){
+  const board = $('board');
+  if (!board || !snake.length) return;
+  const headEl = cellEl(snake[0].y, snake[0].x);
+  if (!headEl) return;
+  const rect = headEl.getBoundingClientRect();
+  const hx = rect.left + rect.width / 2;
+  const hy = rect.top + rect.height / 2;
+  const dx = clientX - hx;
+  const dy = clientY - hy;
+  if (Math.max(Math.abs(dx), Math.abs(dy)) < 12) return; // quá gần → bỏ qua
+  if (Math.abs(dx) > Math.abs(dy)) setDir(dx > 0 ? 'right' : 'left');
+  else setDir(dy > 0 ? 'down' : 'up');
+}
 
 function step(){
   if (!running || paused || gameOverFlag) return;
@@ -294,7 +371,6 @@ function die(){
   $('lbStatus').className = 'lb-status';
   $('overModal').classList.add('show');
 
-  // ✅ Gửi điểm lên BXH chung
   if (window.DolphinLeaderboard && score > 0 && !submitted){
     submitted = true;
     const st = $('lbStatus');
@@ -417,6 +493,82 @@ function goBack(){
 }
 window.goBack = goBack;
 
+// ═══ D-PAD TOGGLE ═══
+function toggleDpad(){
+  dpadVisible = !dpadVisible;
+  $('dpadFloat').classList.toggle('hidden', !dpadVisible);
+  $('dpadToggle').classList.toggle('on', dpadVisible);
+  try { localStorage.setItem('dolphin_snake_dpad', dpadVisible ? '1' : '0'); } catch(e){}
+}
+window.toggleDpad = toggleDpad;
+
+// ═══ TOUCH: swipe + tap trên bàn cờ ═══
+(function(){
+  const layer = $('touchLayer');
+  if (!layer) return;
+
+  let tStart = null;
+  const MIN_SWIPE = 20; // px
+
+  function onStart(e){
+    if (e.touches && e.touches.length !== 1) return;
+    const t = e.touches ? e.touches[0] : e;
+    tStart = { x: t.clientX, y: t.clientY, t: Date.now(), moved: false };
+    initAudio();
+  }
+  function onMove(e){
+    if (!tStart) return;
+    const t = e.touches ? e.touches[0] : e;
+    const dx = t.clientX - tStart.x;
+    const dy = t.clientY - tStart.y;
+    if (Math.max(Math.abs(dx), Math.abs(dy)) > MIN_SWIPE){
+      tStart.moved = true;
+    }
+    e.preventDefault();
+  }
+  function onEnd(e){
+    if (!tStart) return;
+    const t = e.changedTouches ? e.changedTouches[0] : e;
+    const dx = t.clientX - tStart.x;
+    const dy = t.clientY - tStart.y;
+    const adx = Math.abs(dx), ady = Math.abs(dy);
+    const duration = Date.now() - tStart.t;
+
+    if (Math.max(adx, ady) >= MIN_SWIPE){
+      // SWIPE
+      if (adx > ady) setDir(dx > 0 ? 'right' : 'left');
+      else setDir(dy > 0 ? 'down' : 'up');
+    } else if (!tStart.moved && duration < 350){
+      // TAP → chuyển hướng theo góc phần tư so với đầu rắn
+      setDirByTap(t.clientX, t.clientY);
+    }
+    tStart = null;
+  }
+
+  layer.addEventListener('touchstart', onStart, { passive: true });
+  layer.addEventListener('touchmove', onMove, { passive: false });
+  layer.addEventListener('touchend', onEnd, { passive: true });
+  layer.addEventListener('touchcancel', () => { tStart = null; });
+
+  // Desktop: chuột
+  layer.addEventListener('mousedown', onStart);
+  layer.addEventListener('mousemove', (e) => { if (tStart) onMove(e); });
+  layer.addEventListener('mouseup', onEnd);
+  layer.addEventListener('mouseleave', () => { tStart = null; });
+})();
+
+// ═══ D-PAD button handlers ═══
+document.querySelectorAll('#dpadFloat button[data-dir]').forEach(btn => {
+  const fire = (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    const d = btn.dataset.dir;
+    if (d) setDir(d);
+  };
+  btn.addEventListener('touchstart', fire, { passive: false });
+  btn.addEventListener('mousedown', fire);
+});
+
 // ═══ KEYBOARD ═══
 document.addEventListener('keydown', e => {
   const k = e.key.toLowerCase();
@@ -427,24 +579,6 @@ document.addEventListener('keydown', e => {
   else if (k === ' ' || k === 'p'){ e.preventDefault(); togglePause(); }
 });
 
-// ═══ SWIPE ═══
-let touchStart = null;
-document.addEventListener('touchstart', e => {
-  if (e.touches.length !== 1) return;
-  touchStart = { x: e.touches[0].clientX, y: e.touches[0].clientY };
-}, { passive: true });
-document.addEventListener('touchend', e => {
-  if (!touchStart) return;
-  const t = e.changedTouches[0];
-  const dx = t.clientX - touchStart.x;
-  const dy = t.clientY - touchStart.y;
-  const adx = Math.abs(dx), ady = Math.abs(dy);
-  if (Math.max(adx, ady) < 24) { touchStart = null; return; }
-  if (adx > ady){ setDir(dx > 0 ? 'right' : 'left'); }
-  else { setDir(dy > 0 ? 'down' : 'up'); }
-  touchStart = null;
-}, { passive: true });
-
 // ═══ INIT ═══
 function init(){
   buildBoard();
@@ -453,10 +587,20 @@ function init(){
   $('startHighScore').textContent = highScore;
   updateHUD();
   ['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, initAudio, { once: true, passive: true }));
+
+  // Khôi phục trạng thái D-pad
+  try {
+    if (localStorage.getItem('dolphin_snake_dpad') === '1'){
+      dpadVisible = true;
+      $('dpadFloat').classList.remove('hidden');
+      $('dpadToggle').classList.add('on');
+    }
+  } catch(e){}
+
   document.addEventListener('visibilitychange', () => {
     if (document.hidden && running && !paused && !gameOverFlag) togglePause();
   });
-  console.log('%c🐍 SNAKE LOADED (Leaderboard ready)', 'background:#4aa896;color:#fff;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+  console.log('%c🐍 SNAKE v3 LOADED (touch-first)', 'background:#4aa896;color:#fff;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
 else init();

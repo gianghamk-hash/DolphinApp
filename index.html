@@ -741,6 +741,13 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <h3 class="area-title-en">GIẢI TRÍ</h3>
           <p class="area-title-vi">CỜ CARO · NGHE NHẠC</p>
         </button>
+        <button type="button" class="area-card" onclick="openApp('guests')" aria-label="Danh sách khách">
+          <span class="area-badge">HÔM NAY</span>
+          <span class="area-icon">📋</span>
+          <h3 class="area-title-en">DANH SÁCH KHÁCH</h3>
+          <p class="area-title-vi">BÀN · BUNGALOW · LOUNGE</p>
+        </button>
+
         <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;grid-column:1/-1;min-height:auto;padding:1.2rem;">
           <span class="area-badge">CHỈ MANAGER</span>
           <span class="area-icon" style="font-size:2rem;margin-bottom:.3rem;">📊</span>
@@ -1033,7 +1040,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     show:       'dolphin-show.html',
     giaitri:    'giaitri/index.html',
     dashboard:  'manager/dashboard.html',
-    ranking:    'ranking/index.html'
+    ranking:    'ranking/index.html',
+    guests:     'dolphin-guests.html'
   };
 
   var currentApp = null;

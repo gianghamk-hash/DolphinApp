@@ -1,26 +1,19 @@
-/* ═══════════════════════════════════════════════════════════════
-   DOLPHIN LEADERBOARD · Module dùng chung cho tất cả game
-   - Lưu điểm vào collection Firestore `game_scores`
-   - Mỗi (game, player) = 1 doc duy nhất (dùng transaction)
-   - API: submit(game, score, meta) · getLeaderboard(game, limit)
-   ═══════════════════════════════════════════════════════════════ */
+/* Dolphin Leaderboard · Module BXH dùng chung cho mọi game */
 (function(){
   'use strict';
-
-  const firebaseConfig = {
+  var firebaseConfig = {
     apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
     authDomain: "dolphin-f6d67.firebaseapp.com",
     projectId: "dolphin-f6d67"
   };
-  const COL = 'game_scores';
-
-  let modules = null, db = null, auth = null, ready = false, initPromise = null;
-  const cache = { lb: {}, ts: {} };
+  var COL = 'game_scores';
+  var modules = null, db = null, auth = null, ready = false, initPromise = null;
+  var cache = { lb: {}, ts: {} };
 
   function getStaffName(){
     try {
       if (typeof window.getSyncedStaffName === 'function'){
-        const n = window.getSyncedStaffName();
+        var n = window.getSyncedStaffName();
         if (n && n.trim()) return n.trim();
       }
       return localStorage.getItem('dolphinStaffName') || '';
@@ -29,18 +22,18 @@
 
   function init(){
     if (initPromise) return initPromise;
-    initPromise = (async () => {
+    initPromise = (async function(){
       try {
-        const [appMod, authMod, dbMod] = await Promise.all([
+        var mods = await Promise.all([
           import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
           import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
           import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
         ]);
-        modules = { app: appMod, auth: authMod, db: dbMod };
-        const app = appMod.initializeApp(firebaseConfig, 'dolphin-lb');
-        auth = authMod.getAuth(app);
-        db = dbMod.getFirestore(app);
-        await authMod.signInAnonymously(auth);
+        modules = { app: mods[0], auth: mods[1], db: mods[2] };
+        var app = mods[0].initializeApp(firebaseConfig, 'dolphin-lb');
+        auth = mods[1].getAuth(app);
+        db = mods[2].getFirestore(app);
+        await mods[1].signInAnonymously(auth);
         ready = true;
         return true;
       } catch(e){
@@ -52,47 +45,43 @@
   }
 
   function docId(game, player){
-    const safe = String(player).toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 40);
+    var safe = String(player).toLowerCase().replace(/[^a-z0-9]/g, '_').substring(0, 40);
     return game + '__' + safe;
   }
 
   async function submit(game, score, meta){
     if (!game || typeof score !== 'number' || !isFinite(score)) return false;
-    const ok = await init();
+    var ok = await init();
     if (!ok || !ready) return false;
-    const player = getStaffName();
+    var player = getStaffName();
     if (!player) return false;
 
-    const id = docId(game, player);
-    const ref = modules.db.doc(db, COL, id);
-    const safeScore = Math.max(0, Math.round(score));
+    var id = docId(game, player);
+    var ref = modules.db.doc(db, COL, id);
+    var safeScore = Math.max(0, Math.round(score));
 
     try {
-      await modules.db.runTransaction(db, async (tx) => {
-        const snap = await tx.get(ref);
-        const now = Date.now();
-        const winFlag = (meta && typeof meta.win === 'boolean') ? meta.win : null;
+      await modules.db.runTransaction(db, async function(tx){
+        var snap = await tx.get(ref);
+        var now = Date.now();
+        var winFlag = (meta && typeof meta.win === 'boolean') ? meta.win : null;
         if (!snap.exists()){
           tx.set(ref, {
-            game, player,
-            bestScore: safeScore,
-            totalScore: safeScore,
-            totalGames: 1,
+            game: game, player: player,
+            bestScore: safeScore, totalScore: safeScore, totalGames: 1,
             wins: winFlag === true ? 1 : 0,
             losses: winFlag === false ? 1 : 0,
-            lastPlayed: now,
-            lastMeta: meta || null
+            lastPlayed: now, lastMeta: meta || null
           });
         } else {
-          const cur = snap.data();
+          var cur = snap.data();
           tx.update(ref, {
             bestScore: Math.max(cur.bestScore || 0, safeScore),
             totalScore: (cur.totalScore || 0) + safeScore,
             totalGames: (cur.totalGames || 0) + 1,
             wins: (cur.wins || 0) + (winFlag === true ? 1 : 0),
             losses: (cur.losses || 0) + (winFlag === false ? 1 : 0),
-            lastPlayed: now,
-            lastMeta: meta || null
+            lastPlayed: now, lastMeta: meta || null
           });
         }
       });
@@ -110,20 +99,20 @@
     if (cache.lb[game] && (Date.now() - (cache.ts[game] || 0) < 30000)){
       return cache.lb[game].slice(0, limit);
     }
-    const ok = await init();
+    var ok = await init();
     if (!ok || !ready) return [];
     try {
-      const q = modules.db.query(
+      var q = modules.db.query(
         modules.db.collection(db, COL),
         modules.db.where('game', '==', game)
       );
-      const snap = await modules.db.getDocs(q);
-      const arr = [];
-      snap.forEach(d => arr.push(d.data()));
-      arr.sort((a, b) => {
-        const s = (b.bestScore || 0) - (a.bestScore || 0);
+      var snap = await modules.db.getDocs(q);
+      var arr = [];
+      snap.forEach(function(d){ arr.push(d.data()); });
+      arr.sort(function(a, b){
+        var s = (b.bestScore || 0) - (a.bestScore || 0);
         if (s !== 0) return s;
-        const w = (b.wins || 0) - (a.wins || 0);
+        var w = (b.wins || 0) - (a.wins || 0);
         if (w !== 0) return w;
         return (a.lastPlayed || 0) - (b.lastPlayed || 0);
       });
@@ -142,10 +131,10 @@
   }
 
   window.DolphinLeaderboard = {
-    init, submit, getLeaderboard, getStaffName, invalidate,
-    ready: () => ready
+    init: init, submit: submit, getLeaderboard: getLeaderboard,
+    getStaffName: getStaffName, invalidate: invalidate,
+    ready: function(){ return ready; }
   };
 
-  // Tự khởi động
   init();
 })();

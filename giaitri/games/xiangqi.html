@@ -1,0 +1,1155 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
+<meta name="theme-color" content="#123634">
+<title>Dolphin · Cờ Tướng</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
+<style>
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent;user-select:none}
+html,body{
+  position:fixed;top:0;left:0;right:0;bottom:0;width:100%;height:100%;
+  margin:0;padding:0;overflow:hidden!important;overscroll-behavior:none!important;
+  touch-action:none;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;
+}
+body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;display:flex;flex-direction:column}
+.brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
+.glass{background:rgba(25,71,67,.72);backdrop-filter:blur(14px);border:1px solid rgba(255,255,255,.12);box-shadow:0 4px 12px rgba(0,0,0,.2)}
+.btn-gold{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;border:none;cursor:pointer;font-family:inherit}
+.btn-gold:active{transform:scale(.96)}
+.btn-gold:disabled{opacity:.4;cursor:not-allowed}
+.btn-outline{background:rgba(25,71,67,.6);color:#bfe9dc;border:1px solid rgba(55,137,123,.5);font-weight:800;cursor:pointer;font-family:inherit}
+.btn-outline:active{transform:scale(.96)}
+.btn-danger{background:rgba(239,83,80,.15);color:#ef5350;border:1px solid rgba(239,83,80,.4);font-weight:800;cursor:pointer;font-family:inherit}
+.hidden{display:none!important}
+
+/* ═══ BOARD ═══ */
+.board-scroll{flex:1;overflow-y:auto;overflow-x:hidden;-webkit-overflow-scrolling:touch;padding:8px;display:flex;align-items:flex-start;justify-content:center;touch-action:pan-y}
+.board-scroll::-webkit-scrollbar{width:4px}
+.board-scroll::-webkit-scrollbar-thumb{background:#37897b;border-radius:99px}
+
+.xiangqi-board{
+  position:relative;
+  background:linear-gradient(135deg,#f0d99a 0%,#e6c47a 100%);
+  border:3px solid #8B6F3D;border-radius:10px;
+  padding:14px 10px;
+  box-shadow:0 8px 30px rgba(0,0,0,.6),inset 0 0 40px rgba(139,111,61,.3);
+  width:min(92vw,460px);
+  aspect-ratio:9/10;
+  display:grid;
+  grid-template-columns:repeat(9,1fr);
+  grid-template-rows:repeat(10,1fr);
+  gap:0;
+  touch-action:manipulation;
+}
+.xq-cell{
+  position:relative;
+  display:flex;align-items:center;justify-content:center;
+  cursor:pointer;
+  touch-action:manipulation;
+}
+/* Điểm giao nhau (intersection) */
+.xq-cell::before{
+  content:'';position:absolute;
+  width:5px;height:5px;border-radius:50%;
+  background:rgba(60,40,10,.35);
+  pointer-events:none;
+  z-index:1;
+}
+/* Lưới ngang/dọc */
+.xq-cell::after{
+  content:'';position:absolute;inset:0;
+  pointer-events:none;
+  background:
+    linear-gradient(to right, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+}
+/* Cột trái (0): bỏ nửa lưới bên trái */
+.xq-cell[data-c="0"]::after{background:linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),linear-gradient(to right, rgba(60,40,10,.55) 0, rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px))}
+/* Cột phải (8): bỏ nửa lưới bên phải */
+.xq-cell[data-c="8"]::after{background:linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),linear-gradient(to right, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) 100%)}
+/* Hàng trên (0): bỏ nửa lưới phía trên */
+.xq-cell[data-r="0"]::after{background:linear-gradient(to right, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),linear-gradient(to bottom, rgba(60,40,10,.55) 0, rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px))}
+/* Hàng dưới (9): bỏ nửa lưới phía dưới */
+.xq-cell[data-r="9"]::after{background:linear-gradient(to right, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) 100%)}
+/* Sông: khoảng trống giữa hàng 4 và 5 — bỏ lưới dọc ở hàng 4 */
+.xq-cell[data-r="4"]::after{background:linear-gradient(to right, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) 100%)}
+.xq-cell[data-r="5"]::after{background:linear-gradient(to right, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),linear-gradient(to bottom, rgba(60,40,10,.55) 0, rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px))}
+/* Cung tướng: vẽ chéo (dùng gradient chéo) — chỉ ở 4 ô của cung */
+.xq-cell.palace::after{
+  background-image:
+    linear-gradient(45deg, transparent calc(50% - 0.6px), rgba(180,50,30,.35) calc(50% - 0.6px), rgba(180,50,30,.35) calc(50% + 0.6px), transparent calc(50% + 0.6px)),
+    linear-gradient(-45deg, transparent calc(50% - 0.6px), rgba(180,50,30,.35) calc(50% - 0.6px), rgba(180,50,30,.35) calc(50% + 0.6px), transparent calc(50% + 0.6px)),
+    linear-gradient(to right, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px)),
+    linear-gradient(to bottom, transparent calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% - 0.5px), rgba(60,40,10,.55) calc(50% + 0.5px), transparent calc(50% + 0.5px));
+}
+
+/* Quân cờ */
+.piece{
+  position:relative;z-index:2;
+  width:82%;height:82%;aspect-ratio:1;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-weight:900;
+  font-family:'Nunito',sans-serif;
+  border:2px solid;
+  box-shadow:0 2px 6px rgba(0,0,0,.45),inset 0 -2px 4px rgba(0,0,0,.15),inset 0 2px 3px rgba(255,255,255,.4);
+  transition:transform .12s;
+  cursor:pointer;
+  font-size:clamp(14px,3.6vw,22px);
+}
+.piece.red{
+  background:radial-gradient(circle at 35% 30%,#fff5e0,#f5deb0 60%,#e0c070 100%);
+  color:#c41e1e;border-color:#8b1a1a;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+}
+.piece.black{
+  background:radial-gradient(circle at 35% 30%,#fff5e0,#f5deb0 60%,#e0c070 100%);
+  color:#1a1a1a;border-color:#333;
+  text-shadow:0 1px 0 rgba(255,255,255,.6);
+}
+.piece.selected{
+  transform:scale(1.12);
+  box-shadow:0 0 0 3px #FBD77A,0 0 20px rgba(244,184,66,.9),0 2px 6px rgba(0,0,0,.5);
+  z-index:5;
+}
+.piece.in-check{
+  box-shadow:0 0 0 3px #ef4444,0 0 20px rgba(239,68,68,.9),0 2px 6px rgba(0,0,0,.5);
+  animation:checkPulse 0.8s ease-in-out infinite;
+}
+@keyframes checkPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+
+/* Điểm hợp lệ (chấm xanh) */
+.valid-dot{
+  position:absolute;z-index:3;
+  width:26%;height:26%;border-radius:50%;
+  background:radial-gradient(circle,#4ade80 0%,#16a34a 100%);
+  box-shadow:0 0 10px rgba(74,222,128,.8);
+  pointer-events:none;
+  animation:dotPulse 1.2s ease-in-out infinite;
+}
+@keyframes dotPulse{0%,100%{transform:scale(1);opacity:.85}50%{transform:scale(1.2);opacity:1}}
+
+/* Ô có thể ăn được (viền đỏ) */
+.capture-target{
+  position:absolute;inset:5%;z-index:3;
+  border-radius:50%;
+  border:3px dashed #ef4444;
+  box-shadow:0 0 12px rgba(239,68,68,.7);
+  pointer-events:none;
+  animation:capturePulse 1s ease-in-out infinite;
+}
+@keyframes capturePulse{0%,100%{opacity:.7;transform:scale(1)}50%{opacity:1;transform:scale(1.08)}}
+
+/* Nước đi cuối */
+.piece.last-moved{animation:lastMove .5s ease}
+@keyframes lastMove{0%{transform:scale(1.3)}100%{transform:scale(1)}}
+
+/* ═══ HEADER ═══ */
+.xq-header{background:rgba(10,31,29,.95);backdrop-filter:blur(12px);border-bottom:1px solid rgba(55,137,123,.35);flex-shrink:0}
+.xq-header-inner{max-width:640px;margin:0 auto;padding:8px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+.xq-hbtn{width:38px;height:38px;border-radius:11px;background:rgba(25,71,67,.6);border:1px solid rgba(55,137,123,.5);color:#7ec9be;font-size:16px;cursor:pointer;font-family:inherit}
+.xq-hbtn:active{transform:scale(.92)}
+
+/* ═══ HUD ═══ */
+.xq-hud{display:flex;gap:6px;padding:6px 10px;background:rgba(10,31,29,.85);border-bottom:1px solid rgba(55,137,123,.3);flex-shrink:0}
+.xq-hud .item{flex:1;text-align:center;padding:4px 2px;background:rgba(25,71,67,.5);border:1px solid rgba(55,137,123,.3);border-radius:9px}
+.xq-hud .lbl{font-size:8.5px;color:#7ec9be;font-weight:800;text-transform:uppercase;letter-spacing:.05em;display:block}
+.xq-hud .val{font-size:13px;color:#FBD77A;font-weight:900;font-family:'Fraunces',serif;margin-top:1px;display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+
+/* ═══ PHASE BADGE ═══ */
+.phase-badge{display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:99px;font-size:10px;font-weight:900;text-transform:uppercase;letter-spacing:.06em;background:rgba(0,0,0,.35);color:#7ec9be}
+.phase-badge.waiting{background:rgba(148,163,184,.2);color:#cbd5e1}
+.phase-badge.playing{background:rgba(34,197,94,.25);color:#86efac}
+.phase-badge.finished{background:rgba(239,68,68,.25);color:#fca5a5}
+
+/* ═══ TURN BANNER ═══ */
+.turn-banner{max-width:min(96vw,500px);margin:8px auto;padding:10px 14px;border-radius:14px;text-align:center;font-weight:900;transition:all .3s;flex-shrink:0}
+.turn-banner.your-turn{background:linear-gradient(135deg,rgba(244,184,66,.25),rgba(244,184,66,.08));border:2px solid rgba(244,184,66,.7);box-shadow:0 0 24px rgba(244,184,66,.35);animation:turnPulse 1.6s ease-in-out infinite}
+.turn-banner.opponent-turn{background:rgba(25,71,67,.5);border:2px solid rgba(55,137,123,.4)}
+.turn-banner .tb-main{font-size:14px;color:#FBD77A;text-shadow:0 0 8px rgba(244,184,66,.5)}
+.turn-banner.opponent-turn .tb-main{color:#bfe9dc;text-shadow:none}
+.turn-banner .tb-sub{font-size:10.5px;color:#7ec9be;font-weight:700;margin-top:2px}
+@keyframes turnPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.01)}}
+
+/* ═══ PLAYER INFO ═══ */
+.player-info{max-width:min(96vw,500px);margin:0 auto 8px;display:flex;gap:6px;padding:0 8px}
+.player-info .p{flex:1;display:flex;align-items:center;gap:6px;padding:6px 10px;border-radius:10px;background:rgba(25,71,67,.55);border:1px solid rgba(55,137,123,.4);min-width:0}
+.player-info .p.active{border-color:#FBD77A;box-shadow:0 0 12px rgba(244,184,66,.4)}
+.player-info .dot{width:14px;height:14px;border-radius:50%;flex-shrink:0;border:2px solid}
+.player-info .dot.red{background:radial-gradient(circle at 35% 30%,#fff5e0,#e0c070);border-color:#8b1a1a}
+.player-info .dot.black{background:radial-gradient(circle at 35% 30%,#fff5e0,#e0c070);border-color:#333}
+.player-info .nm{font-size:11px;font-weight:800;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;flex:1}
+
+/* ═══ MODAL ═══ */
+.modal{position:fixed;inset:0;background:rgba(10,31,29,.92);backdrop-filter:blur(12px);z-index:9998;display:none;align-items:center;justify-content:center;padding:16px;overflow-y:auto;touch-action:auto}
+.modal.show{display:flex}
+.modal-card{
+  background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:22px;
+  padding:22px 20px;max-width:400px;width:100%;text-align:center;
+  box-shadow:0 20px 60px rgba(0,0,0,.7),0 0 60px rgba(244,184,66,.2);
+  animation:popIn .35s cubic-bezier(.16,1,.3,1);
+  max-height:92vh;overflow-y:auto;touch-action:pan-y;
+}
+@keyframes popIn{0%{transform:scale(.85);opacity:0}100%{transform:scale(1);opacity:1}}
+
+.game-row{padding:12px 14px;background:rgba(10,30,28,.5);border-radius:12px;border:1px solid rgba(255,255,255,.08);margin-bottom:8px;cursor:pointer;transition:all .2s}
+.game-row:active{transform:scale(.98);background:rgba(10,30,28,.8)}
+.avatar{width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:15px;font-weight:900;flex-shrink:0;background:linear-gradient(135deg,#1a4a45,#0d2a28);color:#FBD77A;border:2px solid #FBD77A}
+
+.lb-status{font-size:10.5px;font-weight:800;margin-top:6px;min-height:16px;letter-spacing:.02em}
+.lb-status.ok{color:#86efac}
+.lb-status.err{color:#fca5a5}
+.lb-status.loading{color:#FBD77A}
+
+/* Toast */
+.toast{position:fixed;top:80px;left:50%;transform:translate(-50%,-200%);background:linear-gradient(135deg,#1a4a45,#0d2a28);border:2px solid #FBD77A;border-radius:14px;padding:10px 20px;font-weight:900;font-size:13px;color:#FBD77A;z-index:10000;box-shadow:0 14px 40px rgba(0,0,0,.6),0 0 30px rgba(244,184,66,.3);transition:transform .4s cubic-bezier(.16,1,.3,1);white-space:nowrap;max-width:90vw;pointer-events:none}
+.toast.show{transform:translate(-50%,0)}
+
+/* Controls */
+.xq-controls{max-width:min(96vw,500px);margin:0 auto 8px;display:flex;gap:8px;padding:0 8px}
+.xq-controls button{flex:1;padding:11px;border-radius:12px;font-size:12px;text-transform:uppercase;letter-spacing:.03em;font-weight:900;font-family:inherit;cursor:pointer}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="xq-header">
+  <div class="xq-header-inner">
+    <button onclick="goBack()" class="xq-hbtn">←</button>
+    <div style="text-align:center;flex:1">
+      <div class="brand-title" style="font-size:16px;line-height:1">DOLPHIN</div>
+      <div style="font-size:9px;color:#7ec9be;text-transform:uppercase;font-weight:800;letter-spacing:.18em;margin-top:2px">Cờ Tướng</div>
+    </div>
+    <button onclick="openRules()" class="xq-hbtn">❓</button>
+  </div>
+</div>
+
+<!-- STATUS BAR -->
+<div style="padding:6px 14px;background:rgba(10,31,29,.85);border-bottom:1px solid rgba(55,137,123,.3);display:flex;justify-content:space-between;align-items:center;gap:8px;flex-shrink:0">
+  <div style="display:flex;align-items:center;gap:6px">
+    <span id="cloudDot" style="width:9px;height:9px;border-radius:50%;background:#FBD77A;animation:pulse 1.5s ease-in-out infinite"></span>
+    <span id="cloudText" style="font-size:10px;font-weight:800;color:#7ec9be;text-transform:uppercase;letter-spacing:.05em">Đang kết nối...</span>
+  </div>
+  <span id="phaseBadge" class="phase-badge waiting">CHỜ</span>
+</div>
+
+<style>@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}</style>
+
+<!-- LOBBY -->
+<div id="lobbyView" style="flex:1;overflow-y:auto;padding:14px;touch-action:pan-y">
+  <div class="glass rounded-2xl p-5 mb-4 text-center" style="max-width:480px;margin:0 auto 16px">
+    <div style="font-size:52px;margin-bottom:6px">🎴</div>
+    <h2 style="font-size:16px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 6px">CỜ TƯỚNG ONLINE</h2>
+    <p style="font-size:12px;color:#bfe9dc;margin:0 0 14px;line-height:1.5">Bàn 9×10 · 16 quân mỗi bên<br>Chơi 2 người trên 2 điện thoại</p>
+    <button onclick="createGame()" class="btn-gold" style="width:100%;padding:14px;border-radius:12px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">➕ TẠO VÁN MỚI (CẦM ĐỎ)</button>
+    <button onclick="autoJoinOrCreate()" class="btn-outline" style="width:100%;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">⚡ VÀO VÁN NHANH</button>
+    <button onclick="openRules()" class="btn-outline" style="width:100%;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase;letter-spacing:.06em">📖 XEM LUẬT</button>
+    <div style="font-size:10px;color:#7ec9be;margin-top:12px" id="myNameDisplay"></div>
+  </div>
+
+  <div class="glass rounded-2xl p-4" style="max-width:480px;margin:0 auto">
+    <h3 style="font-size:12px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;display:flex;align-items:center;gap:8px">
+      <span>⏳</span> VÁN ĐANG CHỜ
+      <span style="font-size:10px;color:#7ec9be;font-weight:700;text-transform:none;letter-spacing:0;margin-left:auto;opacity:.7" id="gamesCount"></span>
+    </h3>
+    <div id="gamesList"><div style="text-align:center;padding:28px 0;color:#4aa896;font-size:12px;font-weight:700">Đang tải...</div></div>
+  </div>
+
+  <div style="max-width:480px;margin:16px auto 4px;text-align:center;font-size:10px;color:#4aa896;line-height:1.6">
+    💡 Người TẠO ván cầm ĐỎ (đi trước) · Người VÀO cầm ĐEN<br>
+    🗑️ Ván chờ >30p tự xóa · Ván xong >2h tự xóa
+  </div>
+</div>
+
+<!-- GAME VIEW -->
+<div id="gameView" style="display:none;flex:1;flex-direction:column;min-height:0">
+
+  <div class="player-info" id="playerInfo">
+    <div class="p" id="pRedBox">
+      <div class="dot red"></div>
+      <div class="nm" id="pRedName">Đang chờ...</div>
+    </div>
+    <div class="p" id="pBlackBox">
+      <div class="dot black"></div>
+      <div class="nm" id="pBlackName">Đang chờ...</div>
+    </div>
+  </div>
+
+  <div id="turnBanner" class="turn-banner">
+    <div class="tb-main" id="turnText">Đang tải...</div>
+    <div class="tb-sub" id="turnSub"></div>
+  </div>
+
+  <div class="board-scroll" id="boardScroll">
+    <div class="xiangqi-board" id="xqBoard"></div>
+  </div>
+
+  <div class="xq-controls">
+    <button onclick="leaveGame()" class="btn-outline">🚪 Rời ván</button>
+    <button onclick="resignGame()" id="resignBtn" class="btn-danger" style="display:none">🏳️ Đầu hàng</button>
+  </div>
+</div>
+
+<!-- RESULT MODAL -->
+<div id="resultModal" class="modal">
+  <div class="modal-card">
+    <div style="font-size:56px;margin-bottom:8px" id="resultIcon">🏆</div>
+    <h3 style="font-size:20px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.1em;margin:0 0 8px" id="resultTitle">KẾT THÚC</h3>
+    <p style="font-size:13px;color:#bfe9dc;margin:0 0 8px" id="resultSub"></p>
+    <div class="lb-status" id="lbStatus"></div>
+    <button onclick="closeResultAndLeave()" class="btn-gold" style="width:100%;padding:12px;border-radius:12px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-top:14px">✓ VỀ SẢNH CHỜ</button>
+  </div>
+</div>
+
+<!-- RULES MODAL -->
+<div id="rulesModal" class="modal">
+  <div class="modal-card" style="max-width:480px;text-align:left">
+    <h3 style="font-size:16px;font-weight:900;color:#FBD77A;text-transform:uppercase;letter-spacing:.08em;margin:0 0 12px;text-align:center">📖 Luật Cờ Tướng</h3>
+    <div style="font-size:12px;color:#bfe9dc;line-height:1.6">
+      <div style="padding:8px 10px;background:rgba(10,30,28,.6);border-radius:8px;border-left:3px solid #FBD77A;margin-bottom:8px">
+        <b style="color:#FBD77A">Bàn cờ:</b> 9 cột × 10 hàng · Sông ngăn cách giữa hàng 5-6 · Cung 3×3 cho mỗi bên
+      </div>
+      <div style="padding:8px 10px;background:rgba(10,30,28,.6);border-radius:8px;border-left:3px solid #FBD77A;margin-bottom:8px">
+        <b style="color:#FBD77A">Quân cờ:</b><br>
+        • <b>帥/將 (Tướng):</b> 1 ô ngang/dọc, chỉ trong cung<br>
+        • <b>仕/士 (Sĩ):</b> 1 ô chéo, chỉ trong cung<br>
+        • <b>相/象 (Tượng):</b> 2 ô chéo, không qua sông, không bị cản<br>
+        • <b>俥/車 (Xe):</b> thẳng/ngang bất kỳ, đường phải trống<br>
+        • <b>炮/砲 (Pháo):</b> đi như Xe; ăn quân phải nhảy qua 1 quân<br>
+        • <b>傌/馬 (Mã):</b> đi chữ L, bị cản bởi "chân mã"<br>
+        • <b>兵/卒 (Tốt):</b> tiến 1 ô; qua sông có thể đi ngang
+      </div>
+      <div style="padding:8px 10px;background:rgba(10,30,28,.6);border-radius:8px;border-left:3px solid #FBD77A;margin-bottom:8px">
+        <b style="color:#FBD77A">Chiếu Tướng:</b> không được để Tướng mình bị tấn công<br>
+        <b style="color:#FBD77A">Tướng đối mặt:</b> 2 Tướng không được cùng cột mà không có quân chắn
+      </div>
+      <div style="padding:8px 10px;background:rgba(10,30,28,.6);border-radius:8px;border-left:3px solid #FBD77A">
+        <b style="color:#FBD77A">Thắng:</b> Chiếu bí hoặc đối phương hết nước đi
+      </div>
+    </div>
+    <button onclick="closeRules()" class="btn-gold" style="width:100%;padding:12px;border-radius:12px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-top:14px">✓ ĐÃ HIỂU</button>
+  </div>
+</div>
+
+<div id="toast" class="toast"></div>
+
+<script src="/DolphinApp/dolphin-leaderboard.js?v=1.0"></script>
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
+  authDomain: "dolphin-f6d67.firebaseapp.com",
+  projectId: "dolphin-f6d67"
+};
+const COL_GAMES = 'xiangqi_games';
+const ROWS = 10, COLS = 9;
+
+// Ký tự quân cờ
+const CHAR = {
+  r: { K:'帥', A:'仕', E:'相', R:'俥', C:'炮', H:'傌', P:'兵' },
+  b: { K:'將', A:'士', E:'象', R:'車', C:'砲', H:'馬', P:'卒' }
+};
+
+const WAITING_TIMEOUT = 30 * 60 * 1000;
+const FINISHED_TIMEOUT = 2 * 60 * 60 * 1000;
+
+let db = null, auth = null;
+let currentUser = '';
+let currentGame = null, currentGameId = null;
+let unsubGames = null, unsubGame = null;
+let myPlayerNum = 0;
+let mySide = '';
+let selectedPiece = null;
+let validMoves = [];
+let lastResultShown = null;
+let lbSubmitted = false;
+
+function $(id){ return document.getElementById(id); }
+function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c])); }
+
+function getStaffName(){
+  try {
+    if (typeof window.getSyncedStaffName === 'function'){
+      const n = window.getSyncedStaffName();
+      if (n && n.trim()) return n.trim();
+    }
+    return localStorage.getItem('dolphinStaffName') || '';
+  } catch(e){ return ''; }
+}
+function getVNDateStr(){
+  const parts = new Intl.DateTimeFormat('en-US', { timeZone:'Asia/Ho_Chi_Minh', year:'numeric', month:'2-digit', day:'2-digit' }).formatToParts(new Date());
+  const o = {}; parts.forEach(p => { if (p.type !== 'literal') o[p.type] = p.value; });
+  return o.year + '-' + o.month + '-' + o.day;
+}
+
+function showToast(msg){
+  const t = $('toast');
+  if (!t) return;
+  t.textContent = msg;
+  t.classList.add('show');
+  clearTimeout(showToast._t);
+  showToast._t = setTimeout(() => t.classList.remove('show'), 2200);
+}
+
+// ═══════════════════════════════════
+//   SOUND
+// ═══════════════════════════════════
+let audioCtx = null;
+function initAudio(){ try { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if (audioCtx.state==='suspended') audioCtx.resume(); } catch(e){} }
+function playMove(){ initAudio(); if (!audioCtx) return; const t=audioCtx.currentTime; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='sine'; o.frequency.value=520; g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.08,t+0.005); g.gain.exponentialRampToValueAtTime(0.0001,t+0.1); o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.12); }
+function playCapture(){ initAudio(); if (!audioCtx) return; const t=audioCtx.currentTime; const o=audioCtx.createOscillator(); const g=audioCtx.createGain(); o.type='square'; o.frequency.setValueAtTime(280,t); o.frequency.exponentialRampToValueAtTime(90,t+0.15); g.gain.setValueAtTime(0.0001,t); g.gain.exponentialRampToValueAtTime(0.18,t+0.01); g.gain.exponentialRampToValueAtTime(0.0001,t+0.2); o.connect(g); g.connect(audioCtx.destination); o.start(t); o.stop(t+0.25); }
+function playCheck(){ initAudio(); if (!audioCtx) return; const t=audioCtx.currentTime; [660,880].forEach((f,i)=>{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t+i*0.1);g.gain.exponentialRampToValueAtTime(0.15,t+i*0.1+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.1+0.2);o.connect(g);g.connect(audioCtx.destination);o.start(t+i*0.1);o.stop(t+i*0.1+0.25);});}
+function playWin(){ initAudio(); if (!audioCtx) return; const t=audioCtx.currentTime; [523,659,784,1046].forEach((f,i)=>{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t+i*0.1);g.gain.exponentialRampToValueAtTime(0.18,t+i*0.1+0.02);g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.1+0.45);o.connect(g);g.connect(audioCtx.destination);o.start(t+i*0.1);o.stop(t+i*0.1+0.5);});}
+function playLose(){ initAudio(); if (!audioCtx) return; const t=audioCtx.currentTime; [392,330,262,196].forEach((f,i)=>{const o=audioCtx.createOscillator();const g=audioCtx.createGain();o.type='sine';o.frequency.value=f;g.gain.setValueAtTime(0.0001,t+i*0.15);g.gain.exponentialRampToValueAtTime(0.15,t+i*0.15+0.01);g.gain.exponentialRampToValueAtTime(0.0001,t+i*0.15+0.35);o.connect(g);g.connect(audioCtx.destination);o.start(t+i*0.15);o.stop(t+i*0.15+0.4);});}
+
+// ═══════════════════════════════════
+//   BOARD DATA
+// ═══════════════════════════════════
+function emptyBoard(){
+  const b = [];
+  for (let r = 0; r < ROWS; r++) b.push(new Array(COLS).fill(null));
+  return b;
+}
+function initialBoard(){
+  const b = emptyBoard();
+  // Black back rank (row 0)
+  b[0] = [
+    {t:'R',s:'b'}, {t:'H',s:'b'}, {t:'E',s:'b'}, {t:'A',s:'b'}, {t:'K',s:'b'}, {t:'A',s:'b'}, {t:'E',s:'b'}, {t:'H',s:'b'}, {t:'R',s:'b'}
+  ];
+  // Black cannons (row 2, col 1 & 7)
+  b[2][1] = {t:'C',s:'b'};
+  b[2][7] = {t:'C',s:'b'};
+  // Black pawns (row 3, cols 0,2,4,6,8)
+  [0,2,4,6,8].forEach(c => b[3][c] = {t:'P',s:'b'});
+  // Red pawns (row 6)
+  [0,2,4,6,8].forEach(c => b[6][c] = {t:'P',s:'r'});
+  // Red cannons (row 7)
+  b[7][1] = {t:'C',s:'r'};
+  b[7][7] = {t:'C',s:'r'};
+  // Red back rank (row 9)
+  b[9] = [
+    {t:'R',s:'r'}, {t:'H',s:'r'}, {t:'E',s:'r'}, {t:'A',s:'r'}, {t:'K',s:'r'}, {t:'A',s:'r'}, {t:'E',s:'r'}, {t:'H',s:'r'}, {t:'R',s:'r'}
+  ];
+  return b;
+}
+function boardToData(board){
+  // Flatten to plain array with {t,s} or null
+  return board.map(row => row.map(cell => cell ? { t: cell.t, s: cell.s } : null));
+}
+function dataToBoard(data){
+  if (!data) return initialBoard();
+  const b = emptyBoard();
+  for (let r = 0; r < ROWS; r++){
+    for (let c = 0; c < COLS; c++){
+      const cell = data[r] && data[r][c];
+      if (cell && cell.t && cell.s) b[r][c] = { t: cell.t, s: cell.s };
+    }
+  }
+  return b;
+}
+function cloneBoard(board){
+  return board.map(row => row.map(cell => cell ? { t: cell.t, s: cell.s } : null));
+}
+
+// ═══════════════════════════════════
+//   RULES
+// ═══════════════════════════════════
+function inPalace(side, r, c){
+  if (c < 3 || c > 5) return false;
+  if (side === 'r') return r >= 7 && r <= 9;
+  return r >= 0 && r <= 2;
+}
+function acrossRiver(side, r){
+  if (side === 'r') return r <= 4;
+  return r >= 5;
+}
+function inBounds(r, c){ return r >= 0 && r < ROWS && c >= 0 && c < COLS; }
+
+function getPseudoMoves(board, r, c){
+  const piece = board[r][c];
+  if (!piece) return [];
+  const moves = [];
+  const side = piece.s;
+  const tryPush = (rr, cc) => {
+    if (!inBounds(rr, cc)) return false;
+    const target = board[rr][cc];
+    if (target && target.s === side) return false;
+    moves.push({ r: rr, c: cc });
+    return !target;
+  };
+
+  switch (piece.t){
+    case 'K':
+      [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr,dc]) => {
+        const rr = r + dr, cc = c + dc;
+        if (inPalace(side, rr, cc)) tryPush(rr, cc);
+      });
+      break;
+    case 'A':
+      [[-1,-1],[-1,1],[1,-1],[1,1]].forEach(([dr,dc]) => {
+        const rr = r + dr, cc = c + dc;
+        if (inPalace(side, rr, cc)) tryPush(rr, cc);
+      });
+      break;
+    case 'E':
+      [[-2,-2],[-2,2],[2,-2],[2,2]].forEach(([dr,dc]) => {
+        const rr = r + dr, cc = c + dc;
+        if (!inBounds(rr, cc)) return;
+        // Không qua sông
+        if (side === 'r' && rr <= 4) return;
+        if (side === 'b' && rr >= 5) return;
+        // Cản tượng: điểm giữa
+        const mr = r + dr/2, mc = c + dc/2;
+        if (board[mr][mc]) return;
+        tryPush(rr, cc);
+      });
+      break;
+    case 'R':
+      [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr,dc]) => {
+        for (let i = 1; i < 10; i++){
+          const rr = r + dr*i, cc = c + dc*i;
+          if (!inBounds(rr, cc)) break;
+          const target = board[rr][cc];
+          if (target && target.s === side) break;
+          moves.push({ r: rr, c: cc });
+          if (target) break;
+        }
+      });
+      break;
+    case 'C':
+      [[-1,0],[1,0],[0,-1],[0,1]].forEach(([dr,dc]) => {
+        let jumped = false;
+        for (let i = 1; i < 10; i++){
+          const rr = r + dr*i, cc = c + dc*i;
+          if (!inBounds(rr, cc)) break;
+          const target = board[rr][cc];
+          if (!jumped){
+            if (!target){ moves.push({ r: rr, c: cc }); continue; }
+            jumped = true;
+            continue;
+          } else {
+            if (target){
+              if (target.s !== side) moves.push({ r: rr, c: cc });
+              break;
+            }
+          }
+        }
+      });
+      break;
+    case 'H': {
+      // 8 hướng mã; cặp [dr,dc,blockR,blockC]
+      const horseMoves = [
+        [-2,-1,-1,0],[-2,1,-1,0],
+        [2,-1,1,0],[2,1,1,0],
+        [-1,-2,0,-1],[1,-2,0,-1],
+        [-1,2,0,1],[1,2,0,1]
+      ];
+      horseMoves.forEach(([dr,dc,br,bc]) => {
+        const rr = r + dr, cc = c + dc;
+        if (!inBounds(rr, cc)) return;
+        // Chân mã
+        const legR = r + br, legC = c + bc;
+        if (!inBounds(legR, legC)) return;
+        if (board[legR][legC]) return;
+        const target = board[rr][cc];
+        if (target && target.s === side) return;
+        moves.push({ r: rr, c: cc });
+      });
+      break;
+    }
+    case 'P': {
+      const dir = side === 'r' ? -1 : 1;
+      tryPush(r + dir, c);
+      if (acrossRiver(side, r)){
+        tryPush(r, c - 1);
+        tryPush(r, c + 1);
+      }
+      break;
+    }
+  }
+  return moves;
+}
+
+function findGeneral(board, side){
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
+    const p = board[r][c];
+    if (p && p.t === 'K' && p.s === side) return { r, c };
+  }
+  return null;
+}
+
+function isInCheck(board, side){
+  const gen = findGeneral(board, side);
+  if (!gen) return true;
+  const opp = side === 'r' ? 'b' : 'r';
+
+  // Kiểm tra mọi quân đối phương có thể ăn tướng không
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
+    const p = board[r][c];
+    if (!p || p.s !== opp) continue;
+    // Nếu là tướng đối phương, kiểm tra đối mặt riêng bên dưới
+    if (p.t === 'K') continue;
+    const moves = getPseudoMoves(board, r, c);
+    if (moves.some(m => m.r === gen.r && m.c === gen.c)) return true;
+  }
+
+  // Luật đối mặt (flying general)
+  const oppGen = findGeneral(board, opp);
+  if (oppGen && oppGen.c === gen.c){
+    const minR = Math.min(gen.r, oppGen.r), maxR = Math.max(gen.r, oppGen.r);
+    let blocked = false;
+    for (let rr = minR + 1; rr < maxR; rr++) if (board[rr][gen.c]) { blocked = true; break; }
+    if (!blocked) return true;
+  }
+  return false;
+}
+
+function getLegalMoves(board, r, c){
+  const piece = board[r][c];
+  if (!piece) return [];
+  const side = piece.s;
+  const pseudo = getPseudoMoves(board, r, c);
+  const legal = [];
+  for (const m of pseudo){
+    const test = cloneBoard(board);
+    test[m.r][m.c] = test[r][c];
+    test[r][c] = null;
+    if (!isInCheck(test, side)) legal.push(m);
+  }
+  return legal;
+}
+
+function hasAnyLegalMove(board, side){
+  for (let r = 0; r < ROWS; r++) for (let c = 0; c < COLS; c++){
+    const p = board[r][c];
+    if (!p || p.s !== side) continue;
+    if (getLegalMoves(board, r, c).length > 0) return true;
+  }
+  return false;
+}
+
+// ═══════════════════════════════════
+//   FIREBASE
+// ═══════════════════════════════════
+function initFirebase(){
+  const app = initializeApp(firebaseConfig, 'xiangqi-app');
+  auth = getAuth(app);
+  db = getFirestore(app);
+  signInAnonymously(auth).then(() => {
+    updateCloudStatus('online');
+    currentUser = getStaffName();
+    updateMyNameDisplay();
+    startGamesListener();
+    setTimeout(cleanupOldGames, 3000);
+    const savedGameId = localStorage.getItem('dolphin_xq_game');
+    if (savedGameId) checkAndRejoin(savedGameId);
+  }).catch(err => { console.warn('[Xiangqi] init:', err); updateCloudStatus('offline'); });
+}
+
+async function checkAndRejoin(gameId){
+  try {
+    const snap = await getDoc(doc(db, COL_GAMES, gameId));
+    if (snap.exists()){
+      const g = snap.data();
+      if (g.player1 === currentUser){ myPlayerNum = 1; mySide = 'r'; currentGameId = gameId; subscribeGame(gameId); }
+      else if (g.player2 === currentUser){ myPlayerNum = 2; mySide = 'b'; currentGameId = gameId; subscribeGame(gameId); }
+      else localStorage.removeItem('dolphin_xq_game');
+    } else localStorage.removeItem('dolphin_xq_game');
+  } catch(e){ console.warn(e); }
+}
+
+function updateCloudStatus(s){
+  const dot = $('cloudDot'), text = $('cloudText');
+  if (!dot || !text) return;
+  if (s === 'online'){
+    dot.style.background = '#10b981';
+    text.textContent = '🌐 Online · Real-time';
+    text.style.color = '#10b981';
+  } else {
+    dot.style.background = '#ef4444';
+    text.textContent = '⚠️ Mất kết nối';
+    text.style.color = '#ef4444';
+  }
+}
+function updateMyNameDisplay(){
+  const el = $('myNameDisplay');
+  if (!el) return;
+  if (currentUser) el.innerHTML = '👤 Bạn chơi với tên: <b style="color:#FBD77A">' + esc(currentUser) + '</b>';
+  else el.innerHTML = '<span style="color:#ef4444;font-weight:700">⚠️ Chưa có tên — vào Lễ Tân để nhập tên!</span>';
+}
+
+function startGamesListener(){
+  if (unsubGames) unsubGames();
+  const q = query(collection(db, COL_GAMES), where('status', '==', 'waiting'));
+  unsubGames = onSnapshot(q, snap => {
+    const games = [];
+    snap.forEach(d => games.push(Object.assign({ id: d.id }, d.data())));
+    games.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
+    renderGamesList(games);
+  }, err => console.warn('[Xiangqi] listen:', err));
+}
+function renderGamesList(games){
+  const el = $('gamesList');
+  $('gamesCount').textContent = games.length + ' ván';
+  if (!games.length){
+    el.innerHTML = '<div style="text-align:center;padding:28px 0;color:#4aa896;font-size:12px;font-weight:700">Không có ván nào đang chờ<br><span style="font-size:10.5px;opacity:.7">Bấm "TẠO VÁN MỚI" để bắt đầu</span></div>';
+    return;
+  }
+  el.innerHTML = games.map(g => {
+    const isMine = g.player1 === currentUser;
+    const ageMin = Math.floor((Date.now() - (g.createdAt || 0)) / 60000);
+    const ageText = ageMin < 1 ? 'vừa xong' : (ageMin + ' phút trước');
+    return '<div class="game-row" onclick="joinGame(\'' + g.id + '\')">'
+      + '<div style="display:flex;align-items:center;gap:10px">'
+      + '<div class="avatar">' + esc((g.player1 || '?').charAt(0).toUpperCase()) + '</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:13px;font-weight:900;color:#fff;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">' + esc(g.player1 || 'Ẩn danh') + ' <span style="font-size:10px;color:#c41e1e">(ĐỎ)</span>' + (isMine ? ' <span style="color:#FBD77A;font-size:10px">(BẠN)</span>' : '') + '</div>'
+      + '<div style="font-size:10px;color:#7ec9be;font-weight:700">Đang chờ đối thủ · ' + ageText + '</div>'
+      + '</div><div style="font-size:22px;opacity:.7">👉</div></div></div>';
+  }).join('');
+}
+
+// ═══════════════════════════════════
+//   CREATE / JOIN
+// ═══════════════════════════════════
+window.createGame = async function(){
+  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
+  if (!db){ alert('Đang kết nối... vui lòng thử lại sau'); return; }
+  try {
+    const board = initialBoard();
+    const gameData = {
+      player1: currentUser, player2: null,
+      board: boardToData(board),
+      turn: 1,          // 1 = đỏ, 2 = đen
+      status: 'waiting',
+      winner: null,
+      lastMove: null,
+      createdAt: Date.now(), updatedAt: Date.now(),
+      dateVN: getVNDateStr(), finishedAt: null
+    };
+    const ref = await addDoc(collection(db, COL_GAMES), gameData);
+    currentGameId = ref.id; myPlayerNum = 1; mySide = 'r';
+    localStorage.setItem('dolphin_xq_game', ref.id);
+    subscribeGame(ref.id);
+  } catch(e){ console.error(e); alert('Lỗi tạo ván: ' + e.message); }
+};
+
+window.autoJoinOrCreate = async function(){
+  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
+  const snap = await getDocs(query(collection(db, COL_GAMES), where('status', '==', 'waiting')));
+  let found = null;
+  snap.forEach(d => { const g = d.data(); if (g.player1 !== currentUser && !found) found = d.id; });
+  if (found) joinGame(found); else createGame();
+};
+
+window.joinGame = async function(gameId){
+  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
+  currentGameId = gameId;
+  try {
+    const docRef = doc(db, COL_GAMES, gameId);
+    const snap = await getDoc(docRef);
+    if (!snap.exists()) throw new Error('Ván không tồn tại');
+    const g = snap.data();
+    if (g.player1 === currentUser){ myPlayerNum = 1; mySide = 'r'; }
+    else if (g.player2 === currentUser){ myPlayerNum = 2; mySide = 'b'; }
+    else if (!g.player2 && g.status === 'waiting'){
+      await updateDoc(docRef, { player2: currentUser, status: 'playing', updatedAt: Date.now() });
+      myPlayerNum = 2; mySide = 'b';
+    } else throw new Error('Ván đã đầy hoặc đã kết thúc');
+    localStorage.setItem('dolphin_xq_game', gameId);
+    subscribeGame(gameId);
+  } catch(e){
+    console.error(e); alert('Không thể vào ván: ' + e.message);
+    currentGameId = null; localStorage.removeItem('dolphin_xq_game');
+  }
+};
+
+function subscribeGame(gameId){
+  if (unsubGame) unsubGame();
+  unsubGame = onSnapshot(doc(db, COL_GAMES, gameId), snap => {
+    if (!snap.exists()){ showLobby(); return; }
+    currentGame = snap.data();
+    showGameView();
+    renderGame();
+    if (currentGame.status === 'finished') checkResultModal();
+  }, err => {
+    console.warn('[Xiangqi] subscribe:', err);
+    alert('Mất kết nối với ván.'); showLobby();
+  });
+}
+
+// ═══════════════════════════════════
+//   VIEW
+// ═══════════════════════════════════
+function showLobby(){
+  $('lobbyView').style.display = 'block';
+  $('gameView').style.display = 'none';
+  currentGameId = null; currentGame = null;
+  myPlayerNum = 0; mySide = '';
+  selectedPiece = null; validMoves = [];
+  lbSubmitted = false;
+  if (unsubGame){ unsubGame(); unsubGame = null; }
+  localStorage.removeItem('dolphin_xq_game');
+}
+function showGameView(){
+  $('lobbyView').style.display = 'none';
+  $('gameView').style.display = 'flex';
+}
+function updatePhaseBadge(status){
+  const el = $('phaseBadge');
+  if (!el) return;
+  el.className = 'phase-badge ' + status;
+  el.textContent = { waiting: 'CHỜ', playing: 'ĐANG CHƠI', finished: 'KẾT THÚC' }[status] || status;
+}
+
+// ═══════════════════════════════════
+//   RENDER
+// ═══════════════════════════════════
+function renderGame(){
+  const g = currentGame;
+  if (!g) return;
+  updatePhaseBadge(g.status);
+
+  // Player info
+  $('pRedName').textContent = g.player1 || 'Đang chờ...';
+  $('pBlackName').textContent = g.player2 || 'Đang chờ...';
+  const isRedTurn = g.turn === 1 && g.status === 'playing';
+  $('pRedBox').classList.toggle('active', isRedTurn);
+  $('pBlackBox').classList.toggle('active', g.turn === 2 && g.status === 'playing');
+
+  // Turn banner
+  const isMyTurn = g.status === 'playing' && g.turn === myPlayerNum;
+  if (g.status === 'waiting'){
+    $('turnBanner').className = 'turn-banner opponent-turn';
+    $('turnText').textContent = '⏳ Chờ đối thủ tham gia...';
+    $('turnSub').textContent = 'Chia sẻ ván để mời bạn';
+  } else if (g.status === 'finished'){
+    $('turnBanner').className = 'turn-banner opponent-turn';
+    if (g.winner === myPlayerNum){ $('turnText').textContent = '🏆 BẠN THẮNG!'; $('turnSub').textContent = 'Chiếu bí đối phương'; }
+    else if (g.winner){ $('turnText').textContent = '😢 BẠN THUA'; $('turnSub').textContent = 'Đối thủ đã thắng'; }
+    else { $('turnText').textContent = '🤝 HÒA!'; $('turnSub').textContent = ''; }
+  } else if (isMyTurn){
+    $('turnBanner').className = 'turn-banner your-turn';
+    $('turnText').textContent = mySide === 'r' ? '⭐ LƯỢT ĐỎ (BẠN)' : '⭐ LƯỢT ĐEN (BẠN)';
+    $('turnSub').textContent = 'Chọn quân → chọn ô đi';
+  } else {
+    $('turnBanner').className = 'turn-banner opponent-turn';
+    $('turnText').textContent = g.turn === 1 ? '⏳ Lượt ĐỎ' : '⏳ Lượt ĐEN';
+    $('turnSub').textContent = 'Chờ đối thủ đi...';
+  }
+
+  // Resign
+  $('resignBtn').style.display = g.status === 'playing' ? 'block' : 'none';
+
+  renderBoard(g);
+}
+
+function renderBoard(g){
+  const boardEl = $('xqBoard');
+  const board = dataToBoard(g.board);
+  const mySideLocal = mySide;
+  const isMyTurn = g.status === 'playing' && g.turn === myPlayerNum;
+
+  // Detect check
+  const redInCheck = g.status === 'playing' && isInCheck(board, 'r');
+  const blackInCheck = g.status === 'playing' && isInCheck(board, 'b');
+  const checkSide = redInCheck ? 'r' : (blackInCheck ? 'b' : null);
+
+  // Rebuild DOM nếu chưa có
+  if (boardEl.children.length !== ROWS * COLS){
+    boardEl.innerHTML = '';
+    for (let r = 0; r < ROWS; r++){
+      for (let c = 0; c < COLS; c++){
+        const cell = document.createElement('div');
+        cell.className = 'xq-cell';
+        cell.dataset.r = r;
+        cell.dataset.c = c;
+        // Đánh dấu cung
+        const inRedPalace = r >= 7 && r <= 9 && c >= 3 && c <= 5;
+        const inBlackPalace = r >= 0 && r <= 2 && c >= 3 && c <= 5;
+        if (inRedPalace || inBlackPalace) cell.classList.add('palace');
+        // Bỏ lưới vùng sông (giữa row 4 và 5)
+        boardEl.appendChild(cell);
+      }
+    }
+  }
+
+  // Update từng ô
+  for (let r = 0; r < ROWS; r++){
+    for (let c = 0; c < COLS; c++){
+      const cellEl = boardEl.children[r * COLS + c];
+      // Clear children ngoài piece
+      [...cellEl.children].forEach(ch => ch.remove());
+
+      const piece = board[r][c];
+      if (piece){
+        const pieceEl = document.createElement('div');
+        pieceEl.className = 'piece ' + (piece.s === 'r' ? 'red' : 'black');
+        pieceEl.textContent = CHAR[piece.s][piece.t];
+        if (selectedPiece && selectedPiece.r === r && selectedPiece.c === c){
+          pieceEl.classList.add('selected');
+        }
+        if (checkSide === piece.s && piece.t === 'K'){
+          pieceEl.classList.add('in-check');
+        }
+        if (g.lastMove && g.lastMove.to && g.lastMove.to.r === r && g.lastMove.to.c === c){
+          pieceEl.classList.add('last-moved');
+        }
+        cellEl.appendChild(pieceEl);
+      }
+
+      // Valid moves overlay
+      if (selectedPiece){
+        const isValid = validMoves.some(m => m.r === r && m.c === c);
+        if (isValid){
+          const marker = document.createElement('div');
+          if (piece && piece.s !== (mySideLocal === 'r' ? 'r' : 'b')){
+            marker.className = 'capture-target';
+          } else {
+            marker.className = 'valid-dot';
+          }
+          cellEl.appendChild(marker);
+        }
+      }
+
+      // Click handler
+      cellEl.onclick = () => onCellClick(r, c);
+    }
+  }
+}
+
+function onCellClick(r, c){
+  const g = currentGame;
+  if (!g || g.status !== 'playing') return;
+  if (g.turn !== myPlayerNum) return;
+
+  const board = dataToBoard(g.board);
+  const piece = board[r][c];
+
+  // Nếu click vào quân mình → chọn
+  if (piece && piece.s === mySide){
+    selectedPiece = { r, c };
+    validMoves = getLegalMoves(board, r, c);
+    initAudio();
+    renderGame();
+    return;
+  }
+
+  // Nếu đang chọn quân và click vào nước đi hợp lệ → đi
+  if (selectedPiece){
+    const isValid = validMoves.some(m => m.r === r && m.c === c);
+    if (isValid){
+      makeMove(selectedPiece, { r, c });
+      return;
+    }
+  }
+
+  // Click ra ngoài → bỏ chọn
+  selectedPiece = null;
+  validMoves = [];
+  renderGame();
+}
+
+async function makeMove(from, to){
+  const g = currentGame;
+  if (!g) return;
+  const board = dataToBoard(g.board);
+  const piece = board[from.r][from.c];
+  if (!piece) return;
+
+  const captured = board[to.r][to.c];
+  const newBoard = cloneBoard(board);
+  newBoard[to.r][to.c] = newBoard[from.r][from.c];
+  newBoard[from.r][from.c] = null;
+
+  // Kiểm tra chiếu đối phương
+  const oppSide = mySide === 'r' ? 'b' : 'r';
+  const oppInCheck = isInCheck(newBoard, oppSide);
+  const oppHasMove = hasAnyLegalMove(newBoard, oppSide);
+
+  const upd = {
+    board: boardToData(newBoard),
+    turn: myPlayerNum === 1 ? 2 : 1,
+    lastMove: { from, to, by: myPlayerNum, ts: Date.now() },
+    updatedAt: Date.now()
+  };
+
+  let gameEnd = false;
+  if (!oppHasMove){
+    // Chiếu bí hoặc hết nước → thắng
+    upd.status = 'finished';
+    upd.winner = myPlayerNum;
+    upd.finishedAt = Date.now();
+    gameEnd = true;
+  }
+
+  try {
+    // Sound
+    if (captured) playCapture(); else playMove();
+    if (oppInCheck && !gameEnd) setTimeout(playCheck, 200);
+
+    selectedPiece = null;
+    validMoves = [];
+
+    await updateDoc(doc(db, COL_GAMES, currentGameId), upd);
+
+    if (oppInCheck && !gameEnd){
+      setTimeout(() => showToast('⚠️ CHIẾU TƯỚNG!'), 250);
+    }
+    if (gameEnd){
+      setTimeout(() => showToast('🏆 CHIẾU BÍ!'), 250);
+    }
+  } catch(e){ console.warn(e); showToast('❌ Lỗi gửi nước đi'); }
+}
+
+// ═══════════════════════════════════
+//   RESULT
+// ═══════════════════════════════════
+function checkResultModal(){
+  const g = currentGame;
+  if (!g || g.status !== 'finished') return;
+  const key = currentGameId + ':' + g.finishedAt;
+  if (lastResultShown === key) return;
+  lastResultShown = key;
+
+  const myWin = g.winner === myPlayerNum;
+
+  if (myWin){
+    $('resultIcon').textContent = '🏆';
+    $('resultTitle').textContent = 'BẠN THẮNG!';
+    $('resultSub').textContent = 'Chiếu bí đối phương — quá đỉnh!';
+    playWin();
+  } else if (g.winner){
+    $('resultIcon').textContent = '😢';
+    $('resultTitle').textContent = 'BẠN THUA';
+    $('resultSub').textContent = 'Đối thủ đã chiếu bí bạn';
+    playLose();
+  } else {
+    $('resultIcon').textContent = '🤝';
+    $('resultTitle').textContent = 'HÒA!';
+    $('resultSub').textContent = '';
+  }
+  $('lbStatus').textContent = '';
+  $('lbStatus').className = 'lb-status';
+  $('resultModal').classList.add('show');
+
+  if (window.DolphinLeaderboard && g.player1 && g.player2 && !lbSubmitted){
+    lbSubmitted = true;
+    const st = $('lbStatus');
+    st.textContent = '⏳ Đang lưu BXH...';
+    st.className = 'lb-status loading';
+    window.DolphinLeaderboard.submit('xiangqi', myWin ? 100 : 0, {
+      win: myWin,
+      opponent: myPlayerNum === 1 ? g.player2 : g.player1,
+      resigned: !!g.resigned
+    }).then(function(ok){
+      if (ok){
+        st.textContent = '🏆 Đã lưu vào bảng xếp hạng!';
+        st.className = 'lb-status ok';
+      } else if (!window.DolphinLeaderboard.getStaffName()){
+        st.textContent = '⚠️ Nhập tên NV ở Lễ Tân để lưu BXH';
+        st.className = 'lb-status err';
+      } else {
+        st.textContent = '⚠️ Không lưu được (mất mạng?)';
+        st.className = 'lb-status err';
+      }
+    }).catch(function(){
+      st.textContent = '⚠️ Lỗi kết nối';
+      st.className = 'lb-status err';
+    });
+  }
+}
+
+window.closeResultAndLeave = function(){
+  $('resultModal').classList.remove('show');
+  showLobby();
+};
+window.leaveGame = function(){
+  if (currentGame && currentGame.status === 'playing'){
+    if (!confirm('Ván đang chơi. Rời ván sẽ tính là đầu hàng?')) return;
+    resignGame();
+  }
+  showLobby();
+};
+window.resignGame = async function(){
+  if (!currentGame || currentGame.status !== 'playing') return;
+  if (!confirm('Bạn chắc chắn muốn đầu hàng?')) return;
+  try {
+    await updateDoc(doc(db, COL_GAMES, currentGameId), {
+      status: 'finished',
+      winner: myPlayerNum === 1 ? 2 : 1,
+      finishedAt: Date.now(),
+      resigned: true, resignedBy: currentUser
+    });
+  } catch(e){ console.warn(e); }
+};
+
+// ═══════════════════════════════════
+//   CLEANUP
+// ═══════════════════════════════════
+async function cleanupOldGames(){
+  if (!db) return;
+  try {
+    const now = Date.now();
+    const snap = await getDocs(query(collection(db, COL_GAMES)));
+    for (const d of snap.docs){
+      const g = d.data();
+      const age = now - (g.createdAt || 0);
+      let del = false;
+      if (g.status === 'waiting' && age > WAITING_TIMEOUT) del = true;
+      if (g.status === 'finished' && g.finishedAt && (now - g.finishedAt) > FINISHED_TIMEOUT) del = true;
+      if (age > 24 * 60 * 60 * 1000) del = true;
+      if (del) await deleteDoc(d.ref);
+    }
+  } catch(e){ console.warn(e); }
+}
+
+// ═══════════════════════════════════
+//   MODALS
+// ═══════════════════════════════════
+window.openRules = () => $('rulesModal').classList.add('show');
+window.closeRules = () => $('rulesModal').classList.remove('show');
+window.goBack = function(){
+  if (currentGame && currentGame.status === 'playing'){
+    if (!confirm('Ván đang chơi. Thoát?')) return;
+  }
+  window.location.href = '/DolphinApp/giaitri/index.html';
+};
+
+// ═══════════════════════════════════
+//   SCROLL LOCK
+// ═══════════════════════════════════
+(function(){
+  document.addEventListener('touchmove', function(e){
+    if (e.target && e.target.closest && (e.target.closest('.modal-card') || e.target.closest('.board-scroll') || e.target.closest('#lobbyView'))) return;
+    if (e.cancelable) e.preventDefault();
+  }, { passive: false });
+  document.addEventListener('touchstart', function(e){
+    if (e.touches.length > 1 && e.cancelable) e.preventDefault();
+  }, { passive: false });
+  ['gesturestart','gesturechange','gestureend'].forEach(function(ev){
+    document.addEventListener(ev, function(e){ if (e.cancelable) e.preventDefault(); }, { passive: false });
+  });
+})();
+
+// ═══════════════════════════════════
+//   INIT
+// ═══════════════════════════════════
+function init(){
+  currentUser = getStaffName();
+  updateMyNameDisplay();
+  initFirebase();
+  ['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, initAudio, { once: true, passive: true }));
+  console.log('%c🎴 XIANGQI LOADED', 'background:#c41e1e;color:#fff;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+}
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+else init();
+</script>
+</body>
+</html>

@@ -11,6 +11,7 @@
 <script src="/DolphinApp/dolphin-soundscape.js?v=2.4" defer></script>
 <script src="/DolphinApp/staff-sync.js" defer></script>
 <script src="/DolphinApp/dolphin-leaderboard.js?v=1.0"></script>
+<script src="/DolphinApp/dolphin-multiplayer.js?v=1.0" defer></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;padding-bottom:64px}
@@ -256,6 +257,16 @@ html.game-locked, body.game-locked{
           <span class="gm-title">Rắn Săn Mồi</span>
           <span class="gm-sub">Ăn mồi · phá kỷ lục</span>
         </button>
+        <button class="game-menu-btn" onclick="openGame('snake-coop')" style="border-color:rgba(74,222,128,.45)">
+          <span class="gm-icon">🐍🐍</span>
+          <span class="gm-title">Rắn Đôi</span>
+          <span class="gm-sub">2 người chung máy · Co-op</span>
+        </button>
+        <button class="game-menu-btn" onclick="openGame('snake-coop-online')" style="border-color:rgba(244,114,182,.55);background:linear-gradient(135deg,rgba(60,20,40,.55),rgba(26,74,69,.9))">
+          <span class="gm-icon">🌐</span>
+          <span class="gm-title">Rắn Đôi Online</span>
+          <span class="gm-sub">2 điện thoại · Qua mã phòng</span>
+        </button>
         <button class="game-menu-btn" onclick="openGame('xiangqi')">
           <span class="gm-icon">🎴</span>
           <span class="gm-title">Cờ Tướng</span>
@@ -283,7 +294,8 @@ html.game-locked, body.game-locked{
     </div>
 
     <div class="tab-switcher" id="lbGameTabs" style="flex-wrap:wrap">
-      <button class="tab-btn active" data-lb="snake" onclick="showLB('snake')"><span>🐍</span> RẮN</button>
+      <button class="tab-btn" data-lb="snake-coop" onclick="showLB('snake-coop')"><span>🐍🐍</span> ĐÔI</button>
+      <button class="tab-btn" data-lb="snake-coop-online" onclick="showLB('snake-coop-online')"><span>🌐</span> ONLINE</button>
       <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')"><span>🚢</span> BS</button>
       <button class="tab-btn" data-lb="caro" onclick="showLB('caro')"><span>🎮</span> CARO</button>
       <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')"><span>🎴</span> TƯỚNG</button>
@@ -328,14 +340,16 @@ html.game-locked, body.game-locked{
 
   var currentGame = null;
   var GAME_URLS = {
-    'caro':       'games/caro.html',
-    'chess':      'games/chess.html',
-    'game2048':   'games/game2048.html',
-    'battleship': 'games/battleship.html',
-    'snake':      'games/snake.html',
-    'xiangqi':    'games/xiangqi.html'
+    'caro':              'games/caro.html',
+    'chess':             'games/chess.html',
+    'game2048':          'games/game2048.html',
+    'battleship':        'games/battleship.html',
+    'snake':             'games/snake.html',
+    'snake-coop':        'games/snake-coop.html',
+    'snake-coop-online': 'games/snake-coop-online.html',
+    'xiangqi':           'games/xiangqi.html'
   };
-  var LOCK_SCROLL_GAMES = ['snake', 'xiangqi'];
+  var LOCK_SCROLL_GAMES = ['snake', 'snake-coop', 'snake-coop-online', 'xiangqi'];
 
   window.showTab = function(name){
     document.querySelectorAll('.tab-content').forEach(function(el){ el.classList.add('hidden'); });
@@ -524,12 +538,14 @@ html.game-locked, body.game-locked{
   'use strict';
   var currentLBGame = 'snake';
   var LB_META = {
-    snake:      { icon: '🐍', title: 'RẮN SĂN MỒI', type: 'score' },
-    battleship: { icon: '🚢', title: 'BATTLESHIP',  type: 'win' },
-    chess:      { icon: '♟',  title: 'CỜ VUA',      type: 'win' },
-    game2048:   { icon: '🔢', title: '2048',        type: 'score' },
-    xiangqi:    { icon: '🎴', title: 'CỜ TƯỚNG',     type: 'win' },
-    caro:       { icon: '🎮', title: 'CỜ CARO',     type: 'win' }
+    snake:              { icon: '🐍',   title: 'RẮN SĂN MỒI',      type: 'score' },
+    'snake-coop':       { icon: '🐍🐍', title: 'RẮN ĐÔI (Co-op)',  type: 'score' },
+    'snake-coop-online':{ icon: '🌐',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
+    battleship:         { icon: '🚢',   title: 'BATTLESHIP',        type: 'win' },
+    chess:              { icon: '♟',    title: 'CỜ VUA',            type: 'win' },
+    game2048:           { icon: '🔢',   title: '2048',              type: 'score' },
+    xiangqi:            { icon: '🎴',   title: 'CỜ TƯỚNG',          type: 'win' },
+    caro:               { icon: '🎮',   title: 'CỜ CARO',           type: 'win' }
   };
 
   function $(id){ return document.getElementById(id); }

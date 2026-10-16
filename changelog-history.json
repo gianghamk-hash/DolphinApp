@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.65",
+      "releaseDate": "2026-10-16T06:40:16.954Z",
+      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+      "details": [
+        "Mô tả ngắn gọn việc bạn vừa làm"
+      ]
+    },
+    {
       "version": "1.0.64",
       "releaseDate": "2026-10-16T06:35:19.255Z",
       "summary": "FIX LỖI staff sync",
@@ -390,14 +398,6 @@
       "summary": "Fix scan script chặt + encode URL an toàn",
       "details": [
         "Fix scan script chặt + encode URL an toàn"
-      ]
-    },
-    {
-      "version": "1.0.15",
-      "releaseDate": "2026-10-14T05:43:09.211Z",
-      "summary": "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc",
-      "details": [
-        "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc"
       ]
     }
   ]

@@ -748,12 +748,108 @@
       console.warn('[DolphinUI] staff listen error:', err);
     });
   }
+  /* ============================================================
+     ✅ ẨN WIDGET NHẠC + THÔNG BÁO TRÊN MANAGER.APK
+     ============================================================ */
+  function hideManagerWidgets(){
+    if (!isManager()) return;
+
+    // ─── CSS-based hide (phòng widget render sau) ───
+    if (!document.getElementById('mgrHideWidgetsStyle')) {
+      var s = document.createElement('style');
+      s.id = 'mgrHideWidgetsStyle';
+      s.textContent = [
+        /* Sound widget */
+        '#sound-widget, #soundWidget, .sound-widget,',
+        '#dolphin-sound-widget, #dolphinSoundWidget,',
+        '[data-dolphin="sound-widget"], [data-dolphin="sound"],',
+        '[class*="soundscape-widget"], [class*="sound-widget"],',
+        /* Notification toggle */
+        '#notif-toggle, #notifToggle, .notif-toggle,',
+        '#notification-toggle, #notificationToggle,',
+        '.notification-toggle, [data-dolphin="notification"],',
+        '[class*="notif-toggle"], [id*="notif-toggle"],',
+        /* Music play button */
+        '#music-btn, #musicBtn, .music-play-btn,',
+        '#play-music, #playMusicBtn, [data-dolphin="music"],',
+        '[class*="music-play"], [id*="music-play"],',
+        '[id*="musicBtn"], [class*="musicBtn"] {',
+        '  display: none !important;',
+        '  visibility: hidden !important;',
+        '  pointer-events: none !important;',
+        '  opacity: 0 !important;',
+        '}',
+        /* Sound button dạng chung */
+        'button[onclick*="sound"], button[onclick*="Sound"],',
+        'button[onclick*="music"], button[onclick*="Music"],',
+        'button[onclick*="notif"], button[onclick*="Notif"] {',
+        '  display: none !important;',
+        '}'
+      ].join(' ');
+      document.head.appendChild(s);
+    }
+
+    // ─── DOM-based hide với retry (widget render muộn) ───
+    var selectors = [
+      '#sound-widget', '#soundWidget', '.sound-widget',
+      '#dolphin-sound-widget', '#dolphinSoundWidget',
+      '#notif-toggle', '#notifToggle', '#notification-toggle',
+      '.notif-toggle', '.notification-toggle',
+      '#music-btn', '#musicBtn', '#play-music', '#playMusicBtn',
+      '.music-play-btn'
+    ];
+
+    function hideAll(){
+      selectors.forEach(function(sel){
+        try {
+          document.querySelectorAll(sel).forEach(function(el){
+            el.style.setProperty('display', 'none', 'important');
+            el.style.setProperty('visibility', 'hidden', 'important');
+            el.setAttribute('aria-hidden', 'true');
+          });
+        } catch(e){}
+      });
+
+      // Fallback: ẩn button có text "Thiết bị không hỗ trợ" hoặc icon 🔕 🔊 🎵
+      try {
+        document.querySelectorAll('button, div[role="button"]').forEach(function(el){
+          var txt = (el.textContent || '').trim();
+          var hasEmoji = /[🔕🔔🔊🎵🎶🎧]/.test(txt);
+          if (hasEmoji && txt.length < 10) {
+            el.style.setProperty('display', 'none', 'important');
+          }
+        });
+      } catch(e){}
+    }
+
+    hideAll();
+    setTimeout(hideAll, 500);
+    setTimeout(hideAll, 1500);
+    setTimeout(hideAll, 3000);
+    setTimeout(hideAll, 6000);
+
+    // MutationObserver — bắt widget thêm vào DOM sau này
+    try {
+      var obs = new MutationObserver(function(mutations){
+        var needs = false;
+        mutations.forEach(function(m){
+          if (m.addedNodes && m.addedNodes.length) needs = true;
+        });
+        if (needs) hideAll();
+      });
+      obs.observe(document.body, { childList: true, subtree: true });
+      setTimeout(function(){ obs.disconnect(); }, 15000);
+    } catch(e){}
+  }
 
   /* ============================================================
      INIT
      ============================================================ */
   function init(){
     if (hasLanding() && !isIframe()){
+      // ✅ Ẩn widget nhạc + thông báo trên Manager.apk
+      if (isManager()) hideManagerWidgets();
+
       injectAlertStyles();
       injectDashboardStyles();
       ensureAlertEl();

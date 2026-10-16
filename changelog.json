@@ -1,22 +1,22 @@
 {
-  "version": "1.0.59",
-  "previousVersion": "1.0.58",
-  "commit": "bc417cb",
-  "previousCommit": "b4bc8e5",
-  "buildDate": "2026-10-16T05:57:06.875Z",
-  "summary": "HỆ THỐNG MULTIPLAYER",
+  "version": "1.0.60",
+  "previousVersion": "1.0.59",
+  "commit": "821ff38",
+  "previousCommit": "bc417cb",
+  "buildDate": "2026-10-16T06:04:14.168Z",
+  "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 63,
+    "totalCommits": 64,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "HỆ THỐNG MULTIPLAYER"
+    "FIX LỖI"
   ],
   "fileChanges": [
     {
-      "file": "DolphinApp/dolphin-multiplayer.js",
+      "file": "DolphinApp/giaitri/games/snake-coop-online.html",
       "type": "update"
     }
   ]

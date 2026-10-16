@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.59",
+      "releaseDate": "2026-10-16T05:57:06.875Z",
+      "summary": "HỆ THỐNG MULTIPLAYER",
+      "details": [
+        "HỆ THỐNG MULTIPLAYER"
+      ]
+    },
+    {
       "version": "1.0.58",
       "releaseDate": "2026-10-16T05:38:54.621Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Dashboard: thêm Drinks tracking + gom setting",
       "details": [
         "Dashboard: thêm Drinks tracking + gom setting"
-      ]
-    },
-    {
-      "version": "1.0.9",
-      "releaseDate": "2026-10-14T01:34:07.524Z",
-      "summary": "Thêm app Thu ngân + cập nhật landing + menu đồ uống",
-      "details": [
-        "Thêm app Thu ngân + cập nhật landing + menu đồ uống"
       ]
     }
   ]

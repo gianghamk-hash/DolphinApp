@@ -1,12 +1,12 @@
 {
-  "version": "1.0.53",
-  "previousVersion": "1.0.52",
-  "commit": "7d2e571",
-  "previousCommit": "efc4e0b",
-  "buildDate": "2026-10-16T01:37:29.337Z",
+  "version": "1.0.54",
+  "previousVersion": "1.0.53",
+  "commit": "a2405d2",
+  "previousCommit": "7d2e571",
+  "buildDate": "2026-10-16T01:54:28.140Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 57,
+    "totalCommits": 58,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0

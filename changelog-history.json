@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.53",
+      "releaseDate": "2026-10-16T01:37:29.337Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.52",
       "releaseDate": "2026-10-16T01:26:05.897Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Thêm 5 file nhạc theme",
       "details": [
         "Thêm 5 file nhạc theme"
-      ]
-    },
-    {
-      "version": "1.0.3",
-      "releaseDate": "2026-10-13T06:56:53.329Z",
-      "summary": "Tạo folder sounds ● Commit directly to the main branch ○ Create a new branch... [Commit new file]",
-      "details": [
-        "Tạo folder sounds ● Commit directly to the main branch ○ Create a new branch... [Commit new file]"
       ]
     }
   ]

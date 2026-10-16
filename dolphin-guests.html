@@ -53,30 +53,13 @@ body::after{
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--mint3),#2a6e65);border-radius:99px}
 ::-webkit-scrollbar-thumb:hover{background:linear-gradient(180deg,var(--gold2),var(--gold3))}
 
-/* ═══ HEADER ═══ */
-.hd{
-  position:sticky;top:0;z-index:30;
-  background:linear-gradient(180deg,rgba(8,23,26,.97),rgba(8,23,26,.72));
-  backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);
-  padding:12px 0 14px;margin:-14px -14px 18px;padding-left:14px;padding-right:14px;
-  transition:padding .25s cubic-bezier(.16,1,.3,1),box-shadow .25s,background .25s;
-}
-.hd::after{
-  content:'';position:absolute;left:0;right:0;bottom:0;height:1px;
-  background:linear-gradient(90deg,transparent,rgba(244,184,66,.45) 20%,rgba(244,184,66,.45) 80%,transparent);
-  pointer-events:none;
-}
+.hd{position:sticky;top:0;z-index:30;background:linear-gradient(180deg,rgba(8,23,26,.97),rgba(8,23,26,.72));backdrop-filter:blur(24px) saturate(160%);-webkit-backdrop-filter:blur(24px) saturate(160%);padding:12px 0 14px;margin:-14px -14px 18px;padding-left:14px;padding-right:14px;transition:padding .25s cubic-bezier(.16,1,.3,1),box-shadow .25s,background .25s}
+.hd::after{content:'';position:absolute;left:0;right:0;bottom:0;height:1px;background:linear-gradient(90deg,transparent,rgba(244,184,66,.45) 20%,rgba(244,184,66,.45) 80%,transparent);pointer-events:none}
 .hd-r1{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:12px}
 .hd-r1 h1{font-size:1.08rem;margin:0;color:var(--gold);font-weight:900;letter-spacing:.01em;white-space:nowrap;text-shadow:0 2px 10px rgba(244,184,66,.25)}
 .hd-r1 .sp{flex:1}
 .hd-meta{font-size:.7rem;color:var(--mint2);opacity:.85;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:180px;font-weight:700;letter-spacing:.01em}
-.icon-btn{
-  width:40px;height:40px;border-radius:13px;
-  background:linear-gradient(145deg,rgba(25,71,67,.85),rgba(15,45,42,.75));
-  border:1px solid rgba(244,184,66,.18);color:var(--mint);font-size:1.05rem;
-  display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr);padding:0;
-  box-shadow:var(--sh-sm),inset 0 1px 0 rgba(255,255,255,.05);
-}
+.icon-btn{width:40px;height:40px;border-radius:13px;background:linear-gradient(145deg,rgba(25,71,67,.85),rgba(15,45,42,.75));border:1px solid rgba(244,184,66,.18);color:var(--mint);font-size:1.05rem;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:all var(--tr);padding:0;box-shadow:var(--sh-sm),inset 0 1px 0 rgba(255,255,255,.05)}
 .icon-btn:hover{background:linear-gradient(145deg,rgba(30,85,80,.95),rgba(20,55,52,.85));border-color:var(--line2);color:var(--gold);transform:translateY(-2px);box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,.08)}
 .icon-btn:active{transform:scale(.94)}
 .hd-r2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
@@ -121,7 +104,6 @@ body::after{
 .hd.compact .hd-mini-stats{display:inline-flex}
 .hd-mini-stats b{color:var(--gold);font-weight:900}
 
-/* ═══ FILTER CHIPS ═══ */
 .seg-main{display:flex;background:linear-gradient(145deg,rgba(18,50,47,.55),rgba(10,30,28,.45));border:1px solid rgba(244,184,66,.14);border-radius:16px;padding:5px;gap:4px;margin-bottom:10px;box-shadow:inset 0 1px 0 rgba(255,255,255,.03)}
 .seg-main button{flex:1;padding:11px 8px;border-radius:12px;background:transparent;border:0;color:var(--mint);font:inherit;font-size:.86rem;font-weight:800;cursor:pointer;transition:all var(--tr);white-space:nowrap;letter-spacing:.01em}
 .seg-main button:hover{color:var(--gold)}
@@ -141,7 +123,6 @@ body::after{
 .tabs-main .tab:hover{border-color:var(--line2);color:var(--gold);transform:translateY(-2px);box-shadow:0 4px 12px -4px rgba(0,0,0,.4)}
 .tabs-main .tab.on{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d2b28;border-color:transparent;box-shadow:0 6px 18px -6px rgba(244,184,66,.7),inset 0 1px 0 rgba(255,255,255,.4)}
 
-/* ═══ STATS ═══ */
 .stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin-bottom:16px}
 .st{background:linear-gradient(145deg,rgba(18,50,47,.65),rgba(10,30,28,.55));border:1px solid rgba(244,184,66,.12);border-radius:14px;padding:10px 12px;display:flex;align-items:center;gap:10px;transition:all var(--tr);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--sh-sm),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
 .st::before{content:'';position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle at 100% 0%, rgba(244,184,66,.08), transparent 60%);opacity:0;transition:opacity .3s}
@@ -160,7 +141,6 @@ body::after{
 .area::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:3px;flex-shrink:0;box-shadow:0 0 10px rgba(244,184,66,.5)}
 .area small{color:var(--mint2);font-weight:700;font-size:.73rem}
 
-/* ═══ CARDS ═══ */
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
 .bk{background:linear-gradient(155deg,rgba(18,50,47,.7),rgba(10,30,28,.6));border:1px solid rgba(244,184,66,.12);border-radius:16px;padding:13px 15px 12px 18px;display:flex;flex-direction:column;gap:8px;transition:all var(--tr);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--sh-sm),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
 .bk::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:16px;background:radial-gradient(circle at 100% 0%, rgba(244,184,66,.06), transparent 55%);opacity:0;transition:opacity .35s}
@@ -187,6 +167,7 @@ body::after{
 .tag.d{background:linear-gradient(135deg,rgba(134,239,172,.15),rgba(134,239,172,.05));border-color:rgba(134,239,172,.35);color:var(--grn)}
 .tag.m{background:linear-gradient(135deg,rgba(251,113,133,.15),rgba(251,113,133,.05));border-color:rgba(251,113,133,.4);color:var(--rose)}
 .tag.o{background:linear-gradient(135deg,rgba(251,215,122,.15),rgba(251,215,122,.05));border-color:rgba(251,215,122,.35);color:var(--gold)}
+.tag.s{background:linear-gradient(135deg,rgba(167,139,250,.18),rgba(167,139,250,.06));border-color:rgba(167,139,250,.45);color:#c4b5fd}
 .tag:hover{transform:translateY(-1px)}
 
 .bk .pri-badge{position:absolute;top:10px;right:10px;font-size:9px;font-weight:900;letter-spacing:.06em;padding:3px 8px;border-radius:99px;text-transform:uppercase;pointer-events:none;z-index:2}
@@ -200,7 +181,6 @@ body::after{
 .big b{display:block;font-size:1.5rem;color:var(--gold);margin-bottom:10px;letter-spacing:.02em;text-shadow:0 2px 10px rgba(244,184,66,.35)}
 .big span{color:var(--mint);font-size:.9rem;line-height:1.6}
 
-/* ═══ PUSH UI ═══ */
 .push{display:flex;gap:6px;align-items:center;flex-wrap:wrap;border-top:1px dashed rgba(244,184,66,.16);padding-top:10px;margin-top:6px}
 .push select{padding:9px 12px;font-size:.8rem;background:rgba(0,0,0,.35);border:1px solid rgba(244,184,66,.2);color:#fff;border-radius:11px;flex:1 1 auto;min-width:0;transition:all var(--tr-fast);font-family:inherit;font-weight:700}
 .push select:focus{outline:none;border-color:var(--gold);background:rgba(0,0,0,.5);box-shadow:0 0 0 3px rgba(244,184,66,.15)}
@@ -210,6 +190,11 @@ body::after{
 .push .msg{flex:1 1 100%;font-size:.71rem;color:var(--mint2);line-height:1.5;font-weight:700}
 .push .msg.ok{color:var(--grn)}
 .push .msg.warn{color:var(--red)}
+.push .msg.hint{color:var(--gold)}
+
+/* Hint gợi ý từ note */
+.push .note-hint{flex:1 1 100%;font-size:.71rem;color:#c4b5fd;line-height:1.5;font-weight:800;background:rgba(167,139,250,.1);border:1px dashed rgba(167,139,250,.4);border-radius:9px;padding:6px 10px;display:flex;align-items:center;gap:6px}
+.push .note-hint b{color:#e9d5ff}
 
 .btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d2b28;border:0;border-radius:11px;padding:11px 16px;font-weight:900;font-size:.83rem;cursor:pointer;transition:all var(--tr-fast);font-family:inherit;letter-spacing:.01em;box-shadow:0 4px 12px -4px rgba(244,184,66,.5),inset 0 1px 0 rgba(255,255,255,.4)}
 .btn:hover{filter:brightness(1.08);box-shadow:0 8px 22px -8px rgba(244,184,66,.7),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
@@ -219,7 +204,6 @@ body::after{
 .btn-ghost:hover{border-color:var(--line2);color:var(--gold);background:linear-gradient(145deg,rgba(30,85,80,.7),rgba(20,55,52,.6));transform:translateY(-1px)}
 .btn-ghost:active{transform:scale(.96)}
 
-/* ═══ MODAL ═══ */
 #dlg,#pushDlg{position:fixed;inset:0;background:rgba(4,13,20,.78);backdrop-filter:blur(14px) saturate(120%);-webkit-backdrop-filter:blur(14px) saturate(120%);display:none;align-items:center;justify-content:center;padding:20px;z-index:80;animation:fadeIn .25s ease-out}
 #dlg.show,#pushDlg.show{display:flex}
 @keyframes fadeIn{from{opacity:0}to{opacity:1}}
@@ -387,7 +371,7 @@ var LAYOUT=[
 ];
 
 /* ═══════════════════════════════════════════════════════════
-   SHOW LAYOUT (dùng cho tour TỐI — push sang Dolphin Show)
+   SHOW LAYOUT — dùng cho tour TỐI (push Dolphin Show)
    ═══════════════════════════════════════════════════════════ */
 var SHOW_GROUPS = [
   { floor: 'Tầng 2', groups: [
@@ -403,6 +387,13 @@ var SHOW_TABLES = SHOW_GROUPS.reduce(function(acc, f){
   return acc;
 }, []);
 var showKey = function(l){ return String(l).replace(/ /g, '-'); };
+
+/* ✅ Fallback list cho từng nhóm — dùng khi build suggestions */
+var SHOW_FAMILY = {
+  'BGL': ['BGL 201','BGL 202','BGL 203','BGL 204','BGL 301','BGL 302','BGL 303','BGL 304','BGL 305','BGL 306','BGL 401','BGL 402','BGL 403','BGL 404','BGL 405','BGL 406'],
+  'VPS': ['VPS 1','VPS 2','VPS 3','VPS 4','VPS 5','VPS 6','VPS 7','VPS 8','VPS 9','VPS 10','VPS 11','VPS 12','VPS 13','VPS 14'],
+  'BAR VIEW': ['BAR VIEW 1','BAR VIEW 2','BAR VIEW 3','BAR VIEW 4','BAR VIEW 5','BAR VIEW 6','BAR VIEW 7','BAR VIEW 8','BAR VIEW 9','BAR VIEW 10','BAR VIEW 11','BAR VIEW 12']
+};
 
 var B=[],tab='ov',query='';
 var floor=store.get('dg_floor','all');
@@ -450,6 +441,72 @@ function dietType(s){
   if(/veg/i.test(s))return 'Veg';
   return 'Kiêng ăn';
 }
+
+/* ═══════════════════════════════════════════════════════════
+   ✅ DETECT SHOW SLOT TỪ NOTE (tour tối)
+   BGL / VPS / VIP POOLSIDE / VIP BAR VIEW / BAR VIEW
+   ═══════════════════════════════════════════════════════════ */
+function detectShowSlots(raw){
+  var text = String(raw || '').toUpperCase();
+  var out = [], seen = {};
+
+  function push(type, num){
+    var k = type + '|' + (num || '');
+    if (seen[k]) return;
+    seen[k] = 1;
+    out.push({ type: type, num: num || null });
+  }
+
+  // VIP POOLSIDE + số (ưu tiên cao)
+  var reVps = /VIP\s*POOLSIDE(?:\s*[#:]?\s*(\d{1,2}))?/gi;
+  var mV;
+  while ((mV = reVps.exec(text))){
+    push('VPS', mV[1] ? parseInt(mV[1],10) : null);
+  }
+  // VPS + số (nếu chưa có)
+  var reVps2 = /\bVPS\s*[#:]?\s*(\d{1,2})\b/gi;
+  var mV2;
+  while ((mV2 = reVps2.exec(text))){
+    push('VPS', parseInt(mV2[1],10));
+  }
+  // Nếu có chữ VPS nhưng không có số → đánh dấu "cả family"
+  if (!out.some(function(x){return x.type==='VPS';}) && /\bVPS\b/.test(text)){
+    push('VPS', null);
+  }
+
+  // VIP BAR VIEW + số
+  var reBv = /VIP\s*BAR\s*VIEW(?:\s*[#:]?\s*(\d{1,2}))?/gi;
+  var mB;
+  while ((mB = reBv.exec(text))){
+    push('BAR VIEW', mB[1] ? parseInt(mB[1],10) : null);
+  }
+  var reBv2 = /\bBAR\s*VIEW\s*[#:]?\s*(\d{1,2})\b/gi;
+  var mB2;
+  while ((mB2 = reBv2.exec(text))){
+    push('BAR VIEW', parseInt(mB2[1],10));
+  }
+  if (!out.some(function(x){return x.type==='BAR VIEW';}) && /\bBAR\s*VIEW\b/.test(text)){
+    push('BAR VIEW', null);
+  }
+
+  // BGL / Bungalow + số
+  var reBgl = /\bBGL\s*[#:]?\s*(\d{3})\b/gi;
+  var mBgl;
+  while ((mBgl = reBgl.exec(text))){
+    push('BGL', parseInt(mBgl[1],10));
+  }
+  var reBgl2 = /\bBUNGALOW\s*[#:]?\s*(\d{3})\b/gi;
+  var mBgl2;
+  while ((mBgl2 = reBgl2.exec(text))){
+    push('BGL', parseInt(mBgl2[1],10));
+  }
+  if (!out.some(function(x){return x.type==='BGL';}) && /\b(?:BGL|BUNGALOW)\b/.test(text)){
+    push('BGL', null);
+  }
+
+  return out;
+}
+
 function parse(rows){
   return rows.filter(function(r){return /^\d+$/.test((r[0]||'').trim())&&((r[3]||'').trim()||(r[1]||'').trim())}).map(function(r){
     var c=r.map(function(x){return (x||'').trim()});
@@ -457,7 +514,11 @@ function parse(rows){
     var tb=tables(rawTbl);
     var b={stt:c[0],code:c[1],agent:c[2],name:c[3],pax:parseInt(c[4],10)||0,nat:c[5],tbl:c[6],tb:tb,
       areas:tb.map(function(t){return areaName(t[0])}).filter(function(v,i,a){return a.indexOf(v)===i}),
-      bung:[],lob:[],diet:[]};
+      bung:[],lob:[],diet:[],showSlots:[],noteRaw:''};
+
+    var allNotes = (c[7] || '') + ' | ' + (c[8] || '');
+    b.noteRaw = allNotes.trim();
+
     var segs=seg(c[7]).concat(seg(c[8]).filter(function(x){return BUNG.test(x)}));
     segs.forEach(function(s){
       if(BUNG.test(s)){
@@ -469,6 +530,10 @@ function parse(rows){
       if(LOB.test(s)){b.lob.push(s)}
       else if(DIET.test(s)){b.diet.push({t:dietType(s),s:s})}
     });
+
+    // ✅ Detect vị trí bàn show từ note (dùng cho tour tối)
+    b.showSlots = detectShowSlots(allNotes);
+
     return b;
   });
 }
@@ -492,6 +557,23 @@ function tagHtml(b){
   b.diet.forEach(function(d){h+='<span class="tag d">🥗 <b>'+esc(d.t)+'</b> '+esc(d.s)+'</span>'});
   b.lob.forEach(function(t){h+='<span class="tag m">🦞 '+esc(t)+'</span>'});
   b.bung.forEach(function(x){h+='<span class="tag o">🌴 '+esc(bungTxt(x))+'</span>'});
+
+  // ✅ Badge show slot cho tour tối
+  if (tour === 'dn' && b.showSlots && b.showSlots.length){
+    b.showSlots.forEach(function(slot){
+      var label;
+      if (slot.num){
+        label = slot.type === 'BGL' ? ('🛏 ' + slot.type + ' ' + slot.num)
+              : slot.type === 'VPS' ? ('🏊 VPS ' + slot.num)
+              : ('🌅 BAR VIEW ' + slot.num);
+      } else {
+        label = slot.type === 'BGL' ? '🛏 ' + slot.type
+              : slot.type === 'VPS' ? '🏊 VIP POOLSIDE'
+              : '🌅 VIP BAR VIEW';
+      }
+      h += '<span class="tag s">' + esc(label) + '</span>';
+    });
+  }
   return h?'<div class="tags">'+h+'</div>':'';
 }
 function getPriority(b){
@@ -590,7 +672,7 @@ function viewSpecial(L){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   BUNGALOW: push tour SÁNG → bun_tables
+   BUNGALOW push (tour SÁNG)
    ═══════════════════════════════════════════════════════════ */
 function pushKey(b,i,j){return curDate+'|'+tour+'|'+b.stt+'|'+i+'|'+j}
 function pushBlock(b,i,j,x){
@@ -626,18 +708,55 @@ function viewBung(L){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   SHOW: push tour TỐI → show_tables
+   ✅ SHOW push (tour TỐI) — CÓ GỢI Ý TỪ NOTE
    ═══════════════════════════════════════════════════════════ */
 function pushKeyShow(b){ return curDate + '|dn|' + b.stt; }
+
+/* Build suggestions từ showSlots */
+function buildSuggestions(b, S){
+  var out = [], seen = {};
+  if (!b.showSlots || !b.showSlots.length) return out;
+
+  b.showSlots.forEach(function(slot){
+    var pool = SHOW_FAMILY[slot.type] || [];
+    var matches = slot.num
+      ? pool.filter(function(t){
+          var m = t.match(/(\d+)$/);
+          return m && parseInt(m[1],10) === slot.num;
+        })
+      : pool.slice();
+
+    matches.forEach(function(t){
+      if (seen[t]) return;
+      seen[t] = 1;
+      var rk = showKey(t);
+      var cur = S && S.rooms && S.rooms[rk];
+      out.push({ id: t, busy: !!(cur && cur.leader), type: slot.type });
+    });
+  });
+  return out;
+}
+
 function pushBlockShow(b){
   var k = pushKeyShow(b);
-  var room = pick[k] !== undefined ? pick[k] : '';
+  var S = window.ShowSync;
+  var ready = S && S.ready;
+  var suggestions = buildSuggestions(b, S);
+
+  // Auto-select: nếu có đúng 1 gợi ý chưa bị chiếm → chọn luôn
+  var autoId = '';
+  if (suggestions.length === 1 && !suggestions[0].busy) autoId = suggestions[0].id;
+  else if (suggestions.length > 1){
+    var freeOnes = suggestions.filter(function(x){ return !x.busy; });
+    if (freeOnes.length === 1) autoId = freeOnes[0].id;
+  }
+  var room = pick[k] !== undefined ? pick[k] : autoId;
   pick[k] = room;
 
-  var S = window.ShowSync;
   var roomKey = room ? showKey(room) : '';
   var ex = roomKey && S && S.rooms[roomKey];
-  var isToday = curDate === vnToday(), ready = S && S.ready, msg = '', cls = '';
+  var isToday = curDate === vnToday();
+  var msg = '', cls = '';
 
   if (!S || (!ready && !S.error)){ msg = '⏳ Đang kết nối...'; }
   else if (S.error){ msg = '❌ Không kết nối'; cls = 'warn'; }
@@ -645,15 +764,28 @@ function pushBlockShow(b){
   else if (ex && ex.leader){
     if (ex.leader === b.name && ex.dining === b.tbl){ msg = '✅ Đã có trong app'; cls = 'ok'; }
     else { msg = '⚠️ Bàn ' + room + ' đang có: ' + ex.leader; cls = 'warn'; }
-  } else if (room){ msg = 'Bàn ' + room + ' đang trống'; }
+  } else if (room){ msg = 'Bàn ' + room + ' đang trống'; cls = 'ok'; }
 
-  // Options theo nhóm tầng/khu — kèm trạng thái bàn đã có người
+  // Build dropdown — gợi ý lên đầu
   var opts = '<option value="">— chọn bàn show —</option>';
+  var suggestIds = {};
+  if (suggestions.length){
+    opts += '<optgroup label="🎯 Gợi ý từ sheet (Note)">';
+    suggestions.forEach(function(s){
+      suggestIds[s.id] = 1;
+      var suffix = s.busy ? ' ⚠ ĐÃ CÓ KHÁCH' : ' ✓ Trống';
+      opts += '<option value="' + esc(s.id) + '"' + (s.id === room ? ' selected' : '') + '>' + esc(s.id) + suffix + '</option>';
+    });
+    opts += '</optgroup>';
+  }
+
   SHOW_GROUPS.forEach(function(f){
     f.groups.forEach(function(g){
+      var list = g.ids.filter(function(id){ return !suggestIds[id]; });
+      if (!list.length) return;
       opts += '<optgroup label="' + esc(f.floor + ' · ' + g.name) + '">';
-      g.ids.forEach(function(id){
-        var busy = S && S.rooms[showKey(id)];
+      list.forEach(function(id){
+        var busy = S && S.rooms && S.rooms[showKey(id)];
         var suffix = (busy && busy.leader) ? ' ⚠ ' + String(busy.leader).substring(0,12) : '';
         opts += '<option value="' + esc(id) + '"' + (id === room ? ' selected' : '') + '>' + esc(id) + suffix + '</option>';
       });
@@ -662,17 +794,28 @@ function pushBlockShow(b){
   });
 
   var dis = (!ready || (S && S.error) || !isToday || !room) ? ' disabled' : '';
-  return '<div class="push"><select data-pk="' + esc(k) + '">' + opts + '</select>' +
+
+  // Hint từ note
+  var hintHtml = '';
+  if (suggestions.length){
+    var hintText = '🎯 Sheet có ghi: <b>' + esc(suggestions.map(function(s){return s.id;}).join(', ')) + '</b>';
+    if (autoId) hintText += ' — đã tự chọn <b>' + esc(autoId) + '</b>';
+    hintHtml = '<div class="note-hint">' + hintText + '</div>';
+  }
+
+  return '<div class="push">' + hintHtml + '<select data-pk="' + esc(k) + '">' + opts + '</select>' +
     '<button class="btn" data-push="' + esc(k) + '"' + dis + '>📤 Gửi</button>' +
     (msg ? '<div class="msg ' + cls + '">' + esc(msg) + '</div>' : '') + '</div>';
 }
+
 function viewShow(L){
   var totalGuests = L.reduce(function(s,b){ return s + (b.pax || 0); }, 0);
+  var sent = Object.keys((window.ShowSync && window.ShowSync.rooms) || {}).length;
   var h = '<div class="stats">' +
     statBox('👥', totalGuests, 'tổng khách') +
     statBox('📋', L.length, 'booking') +
     statBox('🎭', SHOW_TABLES.length, 'bàn show') +
-    statBox('✅', Object.keys((window.ShowSync && window.ShowSync.rooms) || {}).length, 'đã gửi') +
+    statBox('✅', sent, 'đã gửi') +
     '</div>';
   if (!L.length) return h + '<div class="empty">Chưa có khách trong danh sách.</div>';
   h += '<div class="grid">';
@@ -715,7 +858,6 @@ function doPush(k){
   $('pkFocReason').value = isShow ? ((ex && ex.focNote) || '') : ((ex && ex.focReason) || '');
   togglePkFocReason();
 
-  // Hiện field "Số lượng khách" khi push show
   var gWrap = $('pkGuestsWrap');
   if (gWrap){
     gWrap.style.display = isShow ? 'block' : 'none';
@@ -1014,20 +1156,17 @@ const app = initializeApp({
 const db = getFirestore(app);
 const fire = () => window.dispatchEvent(new Event('bunrooms'));
 
-/* ✅ BunSync — Tour sáng (Bungalow) */
 const BS = window.BunSync = {
   rooms: {}, ready: false, error: null,
   push: (room, data) => setDoc(doc(db, 'bun_tables', room), data, { merge: true })
 };
 
-/* ✅ ShowSync — Tour tối (Dolphin Show) */
 const SS = window.ShowSync = {
   rooms: {}, ready: false, error: null,
   push: (roomKey, data) => setDoc(doc(db, 'show_tables', roomKey), data, { merge: true })
 };
 
 signInAnonymously(getAuth(app)).then(() => {
-  // Bungalow realtime
   onSnapshot(collection(db, 'bun_tables'), s => {
     const r = {};
     s.forEach(d => { r[d.id] = d.data(); });
@@ -1035,7 +1174,6 @@ signInAnonymously(getAuth(app)).then(() => {
     fire();
   }, e => { BS.error = e.message; fire(); });
 
-  // Show realtime
   onSnapshot(collection(db, 'show_tables'), s => {
     const r = {};
     s.forEach(d => { r[d.id] = d.data(); });

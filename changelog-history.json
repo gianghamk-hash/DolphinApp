@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.54",
+      "releaseDate": "2026-10-16T01:54:28.140Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.53",
       "releaseDate": "2026-10-16T01:37:29.337Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
       "details": [
         "Nhạc theme v2.0 — 15 file + auto fade khi vào app"
-      ]
-    },
-    {
-      "version": "1.0.4",
-      "releaseDate": "2026-10-13T06:57:53.960Z",
-      "summary": "Thêm 5 file nhạc theme",
-      "details": [
-        "Thêm 5 file nhạc theme"
       ]
     }
   ]

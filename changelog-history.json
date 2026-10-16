@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.50",
+      "releaseDate": "2026-10-16T00:49:57.228Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.49",
       "releaseDate": "2026-10-16T00:42:58.928Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "NÂNG CẤP LÊN GÓI HIỆU ỨNG 7.1 BỐ ĐỜI",
       "details": [
         "NÂNG CẤP LÊN GÓI HIỆU ỨNG 7.1 BỐ ĐỜI"
-      ]
-    },
-    {
-      "version": "1.0.0",
-      "releaseDate": "2026-10-13T02:38:13.141Z",
-      "summary": "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG",
-      "details": [
-        "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG"
       ]
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.49",
+      "releaseDate": "2026-10-16T00:42:58.928Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.48",
       "releaseDate": "2026-10-15T14:19:33.147Z",
       "summary": "FIX LỖI",
@@ -390,16 +398,6 @@
       "summary": "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG",
       "details": [
         "CẬP NHẬT GIAO DIỆN TOÀN HỆ THỐNG"
-      ]
-    },
-    {
-      "version": "5.1",
-      "releaseDate": "2026-10-13T00:00:00Z",
-      "summary": "Fix lỗi Service Worker + đồng bộ version",
-      "details": [
-        "Fix syntax error trong service-worker.js (dấu ; thừa)",
-        "Đồng bộ version giữa 3 file JSON (sw-config, version, changelog)",
-        "Thêm cache cho các file mới (dolphin-ui.js, dolphin-clock-extras.js, staff-online.js)"
       ]
     }
   ]

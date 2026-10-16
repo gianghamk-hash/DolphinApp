@@ -1,7 +1,7 @@
 {
-  "version": "1.0.58",
-  "buildDate": "2026-10-16T05:38:54.621Z",
-  "commit": "b4bc8e5",
-  "notes": "FIX LỖI",
+  "version": "1.0.59",
+  "buildDate": "2026-10-16T05:57:06.875Z",
+  "commit": "bc417cb",
+  "notes": "HỆ THỐNG MULTIPLAYER",
   "forceUpdate": false
 }

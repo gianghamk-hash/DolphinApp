@@ -1,22 +1,22 @@
 {
-  "version": "1.0.58",
-  "previousVersion": "1.0.57",
-  "commit": "b4bc8e5",
-  "previousCommit": "566de44",
-  "buildDate": "2026-10-16T05:38:54.621Z",
-  "summary": "FIX LỖI",
+  "version": "1.0.59",
+  "previousVersion": "1.0.58",
+  "commit": "bc417cb",
+  "previousCommit": "b4bc8e5",
+  "buildDate": "2026-10-16T05:57:06.875Z",
+  "summary": "HỆ THỐNG MULTIPLAYER",
   "changes": {
-    "totalCommits": 62,
+    "totalCommits": 63,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX LỖI"
+    "HỆ THỐNG MULTIPLAYER"
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": "DolphinApp/dolphin-multiplayer.js",
       "type": "update"
     }
   ]

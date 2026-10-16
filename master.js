@@ -22,6 +22,14 @@
   function isMasterDevice(){
     try { return localStorage.getItem(MASTER_KEY) === 'true'; } catch(e){ return false; }
   }
+     /* ✅ Detect đang chạy trong app Manager.apk */
+  function isManagerApp(){
+    try {
+      return navigator.userAgent.indexOf('DolphinManager') >= 0 ||
+             window.DOLPHIN_APP_TYPE === 'manager' ||
+             document.documentElement.getAttribute('data-app') === 'manager';
+    } catch(e){ return false; }
+  }
   function getCachedCode(){
     try { return localStorage.getItem(MASTER_CODE_CACHE); } catch(e){ return null; }
   }
@@ -260,6 +268,7 @@
   // ═══════════════════════════════════════════════════════════
   function injectCrownBadge(){
     if (!isMasterDevice()) return;
+    if (isManagerApp()) return;  // ✅ Ẩn trên Manager.apk
     if (document.getElementById('masterCrownBadge')) return;
     if (!document.body) return;
     var badge = document.createElement('div');
@@ -279,6 +288,7 @@
 
   function injectActivateButton(){
     if (isMasterDevice()) return;
+    if (isManagerApp()) return;  // ✅ Ẩn trên Manager.apk
     if (document.getElementById('masterActivateBtn')) return;
     if (!document.body) return;
     var btn = document.createElement('div');

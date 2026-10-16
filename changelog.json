@@ -1,22 +1,22 @@
 {
-  "version": "1.0.63",
-  "previousVersion": "1.0.62",
-  "commit": "46677f4",
-  "previousCommit": "0e28583",
-  "buildDate": "2026-10-16T06:33:49.441Z",
-  "summary": "FIX LỖI",
+  "version": "1.0.64",
+  "previousVersion": "1.0.63",
+  "commit": "61eff3b",
+  "previousCommit": "46677f4",
+  "buildDate": "2026-10-16T06:35:19.255Z",
+  "summary": "FIX LỖI staff sync",
   "changes": {
-    "totalCommits": 67,
+    "totalCommits": 68,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX LỖI"
+    "FIX LỖI staff sync"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-multiplayer.js",
+      "file": "giaitri/games/snake-coop-online.html",
       "type": "update"
     }
   ]

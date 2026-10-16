@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.63",
+      "releaseDate": "2026-10-16T06:33:49.441Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.62",
       "releaseDate": "2026-10-16T06:26:49.811Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Thêm nhạc Lofi Chill",
       "details": [
         "Thêm nhạc Lofi Chill"
-      ]
-    },
-    {
-      "version": "1.0.13",
-      "releaseDate": "2026-10-14T03:09:14.763Z",
-      "summary": "Fix lỗi Service Worker block + dọn index.html",
-      "details": [
-        "Fix lỗi Service Worker block + dọn index.html"
       ]
     }
   ]

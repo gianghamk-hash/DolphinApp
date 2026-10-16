@@ -14,7 +14,7 @@
   --line:rgba(244,184,66,.12);--line2:rgba(244,184,66,.32);
   --gold:#FBD77A;--gold2:#F4B842;--gold3:#D99A2B;
   --mint:#bfe9dc;--mint2:#7ec9be;--mint3:#4aa896;
-  --red:#fca5a5;--grn:#86efac;--rose:#fb7185;
+  --red:#fca5a5;--grn:#86efac;--rose:#fb7185;--violet:#c4b5fd;
   --sh-sm:0 2px 8px -2px rgba(0,0,0,.35),0 1px 3px rgba(0,0,0,.15);
   --sh:0 8px 24px -10px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.18);
   --sh-h:0 16px 38px -14px rgba(0,0,0,.65),0 4px 12px rgba(0,0,0,.22);
@@ -23,31 +23,9 @@
 }
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html{background:var(--bg-deep)}
-body{
-  color:#fff;font-family:Nunito,system-ui,-apple-system,sans-serif;
-  padding:calc(10px + env(safe-area-inset-top)) 14px calc(90px + env(safe-area-inset-bottom));
-  max-width:1100px;margin:0 auto;-webkit-font-smoothing:antialiased;
-  position:relative;min-height:100vh;overflow-x:hidden;background:var(--bg-deep);
-}
-body::before{
-  content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;
-  background:
-    radial-gradient(ellipse 90% 60% at 0% 0%, rgba(74,168,150,.24), transparent 60%),
-    radial-gradient(ellipse 80% 55% at 100% 5%, rgba(244,184,66,.10), transparent 55%),
-    radial-gradient(ellipse 100% 70% at 50% 105%, rgba(42,110,101,.30), transparent 62%),
-    linear-gradient(170deg,#0f2e2a 0%,#08171a 55%,#040d14 100%);
-  background-attachment:fixed;
-}
-body::after{
-  content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;
-  background-image:
-    radial-gradient(circle, rgba(255,255,255,.018) 1px, transparent 1px),
-    radial-gradient(circle, rgba(244,184,66,.02) 1px, transparent 1px);
-  background-size:180px 180px,240px 240px;
-  background-position:0 0,90px 90px;opacity:.8;
-  mask-image:radial-gradient(ellipse at 50% 30%, #000 30%, transparent 80%);
-  -webkit-mask-image:radial-gradient(ellipse at 50% 30%, #000 30%, transparent 80%);
-}
+body{color:#fff;font-family:Nunito,system-ui,-apple-system,sans-serif;padding:calc(10px + env(safe-area-inset-top)) 14px calc(90px + env(safe-area-inset-bottom));max-width:1100px;margin:0 auto;-webkit-font-smoothing:antialiased;position:relative;min-height:100vh;overflow-x:hidden;background:var(--bg-deep)}
+body::before{content:'';position:fixed;inset:0;z-index:-2;pointer-events:none;background:radial-gradient(ellipse 90% 60% at 0% 0%, rgba(74,168,150,.24), transparent 60%),radial-gradient(ellipse 80% 55% at 100% 5%, rgba(244,184,66,.10), transparent 55%),radial-gradient(ellipse 100% 70% at 50% 105%, rgba(42,110,101,.30), transparent 62%),linear-gradient(170deg,#0f2e2a 0%,#08171a 55%,#040d14 100%);background-attachment:fixed}
+body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;background-image:radial-gradient(circle, rgba(255,255,255,.018) 1px, transparent 1px),radial-gradient(circle, rgba(244,184,66,.02) 1px, transparent 1px);background-size:180px 180px,240px 240px;background-position:0 0,90px 90px;opacity:.8;mask-image:radial-gradient(ellipse at 50% 30%, #000 30%, transparent 80%);-webkit-mask-image:radial-gradient(ellipse at 50% 30%, #000 30%, transparent 80%)}
 ::-webkit-scrollbar{width:6px;height:6px}
 ::-webkit-scrollbar-track{background:rgba(0,0,0,.15)}
 ::-webkit-scrollbar-thumb{background:linear-gradient(180deg,var(--mint3),#2a6e65);border-radius:99px}
@@ -63,12 +41,10 @@ body::after{
 .icon-btn:hover{background:linear-gradient(145deg,rgba(30,85,80,.95),rgba(20,55,52,.85));border-color:var(--line2);color:var(--gold);transform:translateY(-2px);box-shadow:var(--sh),inset 0 1px 0 rgba(255,255,255,.08)}
 .icon-btn:active{transform:scale(.94)}
 .hd-r2{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-
 .tour-seg{display:flex;background:linear-gradient(145deg,rgba(25,71,67,.75),rgba(15,45,42,.65));border:1px solid rgba(244,184,66,.16);border-radius:13px;padding:3px;gap:2px;flex:0 0 auto;box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
 .tour-seg button{padding:8px 14px;border-radius:10px;background:transparent;border:0;color:var(--mint);font:inherit;font-size:.78rem;font-weight:800;cursor:pointer;white-space:nowrap;transition:all var(--tr);letter-spacing:.01em}
 .tour-seg button:hover{color:var(--gold)}
 .tour-seg button.on{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d2b28;box-shadow:0 4px 14px -4px rgba(244,184,66,.6),inset 0 1px 0 rgba(255,255,255,.4)}
-
 .date-wrap{display:flex;align-items:center;gap:2px;background:linear-gradient(145deg,rgba(25,71,67,.75),rgba(15,45,42,.65));border:1px solid rgba(244,184,66,.16);border-radius:13px;padding:4px;flex:0 1 auto;transition:border-color var(--tr);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
 .date-wrap:hover{border-color:var(--line2)}
 .date-wrap button{width:30px;height:30px;border-radius:9px;background:transparent;border:0;color:var(--mint);font-size:1.05rem;cursor:pointer;padding:0;display:flex;align-items:center;justify-content:center;transition:all var(--tr-fast)}
@@ -76,12 +52,10 @@ body::after{
 .date-wrap button:active{transform:scale(.9)}
 .date-wrap input[type=date]{background:transparent;border:0;color:#fff;padding:5px 6px;font:inherit;font-size:.82rem;font-weight:800;min-width:0;color-scheme:dark;cursor:pointer}
 .date-wrap input[type=date]:focus{outline:none}
-
 .today-btn{padding:9px 14px;border-radius:13px;background:linear-gradient(145deg,rgba(25,71,67,.75),rgba(15,45,42,.65));border:1px solid rgba(244,184,66,.16);color:var(--mint);font:inherit;font-size:.78rem;font-weight:800;cursor:pointer;white-space:nowrap;transition:all var(--tr);box-shadow:inset 0 1px 0 rgba(255,255,255,.04)}
 .today-btn:hover{border-color:var(--line2);color:var(--gold);transform:translateY(-1px)}
 .today-btn:active{transform:scale(.96)}
 .today-btn.on{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d2b28;border-color:transparent;box-shadow:0 4px 14px -4px rgba(244,184,66,.6),inset 0 1px 0 rgba(255,255,255,.4)}
-
 .search-wrap{position:relative;flex:1 1 220px;min-width:0}
 .search-wrap input{width:100%;background:linear-gradient(145deg,rgba(8,23,26,.92),rgba(6,18,26,.85));border:1.5px solid rgba(244,184,66,.28);color:#fff;border-radius:14px;padding:12px 14px 12px 44px;font:inherit;font-size:.9rem;font-weight:700;letter-spacing:.01em;transition:all .25s cubic-bezier(.16,1,.3,1);box-shadow:inset 0 2px 6px rgba(0,0,0,.35),0 1px 0 rgba(255,255,255,.03)}
 .search-wrap input::placeholder{color:rgba(191,233,220,.5);font-weight:600;font-style:italic}
@@ -99,7 +73,6 @@ body::after{
 .hd.compact .search-wrap{flex:1 1 100%}
 .hd:not(.compact) .tour-seg,.hd:not(.compact) .date-wrap,.hd:not(.compact) .today-btn{animation:hdFadeIn .25s ease-out}
 @keyframes hdFadeIn{from{opacity:0;transform:translateY(-4px)}to{opacity:1;transform:translateY(0)}}
-
 .hd-mini-stats{display:none;align-items:center;gap:6px;font-size:10px;font-weight:800;color:var(--mint2);white-space:nowrap;padding:5px 10px;background:linear-gradient(135deg,rgba(244,184,66,.14),rgba(244,184,66,.05));border:1px solid var(--line2);border-radius:99px;flex-shrink:0;box-shadow:inset 0 1px 0 rgba(255,255,255,.05)}
 .hd.compact .hd-mini-stats{display:inline-flex}
 .hd-mini-stats b{color:var(--gold);font-weight:900}
@@ -116,6 +89,8 @@ body::after{
 .sub-chip:hover{color:var(--gold);background:rgba(244,184,66,.08)}
 .sub-chip.on{color:var(--gold);background:rgba(244,184,66,.16);border-color:var(--line2);box-shadow:0 3px 12px -4px rgba(244,184,66,.4),inset 0 1px 0 rgba(255,255,255,.05)}
 .sub-chip.reset{color:var(--mint2);opacity:.75;font-style:italic}
+.sub-chip.gift.on{color:#fef3c7;background:linear-gradient(135deg,rgba(244,184,66,.28),rgba(244,184,66,.12));border-color:rgba(244,184,66,.6);box-shadow:0 3px 14px -4px rgba(244,184,66,.6)}
+.sub-chip.free.on{color:#e2e8f0;background:linear-gradient(135deg,rgba(148,163,184,.28),rgba(148,163,184,.12));border-color:rgba(148,163,184,.6);box-shadow:0 3px 14px -4px rgba(148,163,184,.55)}
 
 .tabs-main{display:flex;gap:6px;overflow-x:auto;margin-bottom:14px;padding-bottom:2px;scrollbar-width:none}
 .tabs-main::-webkit-scrollbar{display:none}
@@ -140,6 +115,145 @@ body::after{
 .area h3{margin:0;font-size:.85rem;color:#fff;font-weight:800;letter-spacing:.02em}
 .area::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:3px;flex-shrink:0;box-shadow:0 0 10px rgba(244,184,66,.5)}
 .area small{color:var(--mint2);font-weight:700;font-size:.73rem}
+
+/* ═══ SECTION HEADER (Show tab) ═══ */
+.section-header{
+  display:flex;align-items:center;gap:10px;
+  margin: 22px 0 12px;padding: 13px 18px;
+  border-radius: 15px;
+  font-weight: 900;text-transform: uppercase;
+  letter-spacing: .06em;font-size: .84rem;
+  position: relative;
+}
+.section-header:first-child{margin-top:8px}
+.section-header.gift{
+  background: linear-gradient(135deg, rgba(244,184,66,.20), rgba(244,184,66,.05));
+  border: 1.5px solid rgba(244,184,66,.5);
+  color: var(--gold);
+  box-shadow: 0 6px 20px -8px rgba(244,184,66,.4), inset 0 1px 0 rgba(255,255,255,.06);
+}
+.section-header.free{
+  background: linear-gradient(135deg, rgba(148,163,184,.18), rgba(148,163,184,.05));
+  border: 1.5px solid rgba(148,163,184,.45);
+  color: #cbd5e1;
+  box-shadow: 0 6px 20px -8px rgba(148,163,184,.3), inset 0 1px 0 rgba(255,255,255,.04);
+}
+.section-header .badge{
+  margin-left: auto;
+  padding: 5px 12px;
+  border-radius: 99px;
+  font-size: .72rem;
+  font-weight: 900;
+  background: rgba(0,0,0,.35);
+  letter-spacing: .02em;
+}
+.section-header.gift .badge{background: rgba(244,184,66,.28);color: #fff8e1;}
+.section-header.free .badge{background: rgba(148,163,184,.28);color: #f1f5f9;}
+
+/* ═══ SLOT ROW (nhiều bàn cho 1 khách) ═══ */
+.slots-section{
+  border-top: 1px dashed rgba(244,184,66,.18);
+  padding-top: 10px;
+  margin-top: 4px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+.slot-row{
+  background: linear-gradient(145deg, rgba(244,184,66,.10), rgba(244,184,66,.03));
+  border: 1px solid rgba(244,184,66,.28);
+  border-radius: 12px;
+  padding: 10px 12px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.slot-row.slot-vps{
+  background: linear-gradient(145deg, rgba(56,189,248,.12), rgba(56,189,248,.03));
+  border-color: rgba(56,189,248,.35);
+}
+.slot-row.slot-barview{
+  background: linear-gradient(145deg, rgba(251,113,133,.12), rgba(251,113,133,.03));
+  border-color: rgba(251,113,133,.35);
+}
+.slot-row.slot-foc{
+  background: linear-gradient(145deg, rgba(167,139,250,.14), rgba(167,139,250,.04));
+  border-color: rgba(167,139,250,.4);
+}
+.slot-head{
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: .73rem;
+  font-weight: 900;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+.slot-head .slot-badge{
+  padding: 3px 9px;
+  border-radius: 99px;
+  font-size: .68rem;
+  font-weight: 900;
+  background: linear-gradient(135deg, var(--gold), var(--gold2));
+  color: #0d2b28;
+  box-shadow: 0 2px 8px -3px rgba(244,184,66,.7);
+}
+.slot-row.slot-vps .slot-head .slot-badge{background: linear-gradient(135deg,#38bdf8,#0284c7);color:#fff;box-shadow:0 2px 8px -3px rgba(56,189,248,.7)}
+.slot-row.slot-barview .slot-head .slot-badge{background: linear-gradient(135deg,var(--rose),#e11d48);color:#fff;box-shadow:0 2px 8px -3px rgba(251,113,133,.7)}
+.slot-row.slot-foc .slot-head .slot-badge{background: linear-gradient(135deg,var(--violet),#7c3aed);color:#fff;box-shadow:0 2px 8px -3px rgba(167,139,250,.7)}
+.slot-head .slot-label{
+  color: var(--gold);
+  font-weight: 900;
+  flex: 1;
+  text-align: right;
+  font-size: .7rem;
+  letter-spacing: 0;
+  text-transform: none;
+  font-style: italic;
+  opacity: .85;
+}
+.slot-row.slot-vps .slot-head .slot-label{color: #7dd3fc}
+.slot-row.slot-barview .slot-head .slot-label{color: var(--rose)}
+.slot-row.slot-foc .slot-head .slot-label{color: var(--violet)}
+
+.slot-actions{
+  display: flex;
+  gap: 6px;
+  align-items: stretch;
+}
+.slot-actions select{
+  flex: 1 1 auto;
+  padding: 9px 12px;
+  font-size: .8rem;
+  background: rgba(0,0,0,.42);
+  border: 1px solid rgba(244,184,66,.22);
+  color: #fff;
+  border-radius: 11px;
+  font-family: inherit;
+  font-weight: 700;
+  min-width: 0;
+  transition: all var(--tr-fast);
+}
+.slot-actions select:focus{
+  outline: none;
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(244,184,66,.15);
+}
+.slot-actions select optgroup{background:rgba(8,23,26,.95);color:var(--gold);font-weight:900;font-style:normal;padding:4px}
+.slot-actions select option{background:rgba(8,23,26,.98);color:#fff;font-weight:600;padding:6px}
+.slot-actions .btn{
+  padding: 9px 14px;
+  font-size: .76rem;
+  flex: 0 0 auto;
+}
+.slot-msg{
+  font-size: .7rem;
+  line-height: 1.5;
+  font-weight: 700;
+  color: var(--mint2);
+}
+.slot-msg.ok{color:var(--grn)}
+.slot-msg.warn{color:var(--red)}
 
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
 .bk{background:linear-gradient(155deg,rgba(18,50,47,.7),rgba(10,30,28,.6));border:1px solid rgba(244,184,66,.12);border-radius:16px;padding:13px 15px 12px 18px;display:flex;flex-direction:column;gap:8px;transition:all var(--tr);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--sh-sm),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
@@ -192,10 +306,6 @@ body::after{
 .push .msg.warn{color:var(--red)}
 .push .msg.hint{color:var(--gold)}
 
-/* Hint gợi ý từ note */
-.push .note-hint{flex:1 1 100%;font-size:.71rem;color:#c4b5fd;line-height:1.5;font-weight:800;background:rgba(167,139,250,.1);border:1px dashed rgba(167,139,250,.4);border-radius:9px;padding:6px 10px;display:flex;align-items:center;gap:6px}
-.push .note-hint b{color:#e9d5ff}
-
 .btn{background:linear-gradient(135deg,var(--gold),var(--gold2));color:#0d2b28;border:0;border-radius:11px;padding:11px 16px;font-weight:900;font-size:.83rem;cursor:pointer;transition:all var(--tr-fast);font-family:inherit;letter-spacing:.01em;box-shadow:0 4px 12px -4px rgba(244,184,66,.5),inset 0 1px 0 rgba(255,255,255,.4)}
 .btn:hover{filter:brightness(1.08);box-shadow:0 8px 22px -8px rgba(244,184,66,.7),inset 0 1px 0 rgba(255,255,255,.4);transform:translateY(-1px)}
 .btn:active{transform:scale(.96)}
@@ -245,6 +355,7 @@ body::after{
   .bk{padding:12px 14px 11px 17px}
   .bk .tb{font-size:1.05rem}
   .bk .nm{font-size:.94rem}
+  .section-header{font-size:.78rem;padding:11px 14px}
 }
 @media(max-width:380px){
   .hd-r1 h1{font-size:.95rem}
@@ -371,7 +482,7 @@ var LAYOUT=[
 ];
 
 /* ═══════════════════════════════════════════════════════════
-   SHOW LAYOUT — dùng cho tour TỐI (push Dolphin Show)
+   SHOW LAYOUT — dùng cho tour TỐI
    ═══════════════════════════════════════════════════════════ */
 var SHOW_GROUPS = [
   { floor: 'Tầng 2', groups: [
@@ -388,7 +499,6 @@ var SHOW_TABLES = SHOW_GROUPS.reduce(function(acc, f){
 }, []);
 var showKey = function(l){ return String(l).replace(/ /g, '-'); };
 
-/* ✅ Fallback list cho từng nhóm — dùng khi build suggestions */
 var SHOW_FAMILY = {
   'BGL': ['BGL 201','BGL 202','BGL 203','BGL 204','BGL 301','BGL 302','BGL 303','BGL 304','BGL 305','BGL 306','BGL 401','BGL 402','BGL 403','BGL 404','BGL 405','BGL 406'],
   'VPS': ['VPS 1','VPS 2','VPS 3','VPS 4','VPS 5','VPS 6','VPS 7','VPS 8','VPS 9','VPS 10','VPS 11','VPS 12','VPS 13','VPS 14'],
@@ -398,6 +508,7 @@ var SHOW_FAMILY = {
 var B=[],tab='ov',query='';
 var floor=store.get('dg_floor','all');
 var area=store.get('dg_area',null);
+var showSectionFilter = 'all';  // 'all' | 'gift' | 'noslot'
 function vnToday(){return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}).format(new Date())}
 function vnHour(){return parseInt(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',hour12:false}).format(new Date()),10)%24}
 var curDate=vnToday(),tour=vnHour()<15?'am':'dn',status='loading',foundName='',pick={},pushing=false;
@@ -443,68 +554,108 @@ function dietType(s){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ✅ DETECT SHOW SLOT TỪ NOTE (tour tối)
-   BGL / VPS / VIP POOLSIDE / VIP BAR VIEW / BAR VIEW
+   ✅ DETECT SHOW SLOTS — ĐẾM ĐÚNG SỐ LƯỢNG
+   Đọc cột Note, bỏ qua dòng mô tả/hỗ trợ
    ═══════════════════════════════════════════════════════════ */
-function detectShowSlots(raw){
-  var text = String(raw || '').toUpperCase();
-  var out = [], seen = {};
+function shouldSkipLine(line){
+  var l = String(line || '').trim().toLowerCase();
+  if (!l) return true;
+  // Dòng ghi chú / hỗ trợ / mô tả ở đầu
+  if (/^(hỗ trợ|lưu ý|note|ghi chú|chú ý|áp dụng|điều kiện|không\s+bao\s+gồm|chỉ\s+bao\s+gồm|miễn\s+phí)/i.test(l)) return true;
+  // Dòng bắt đầu bằng keyword (không có số theo sau) → mô tả
+  if (/^(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\s+(?:tầng|chỉ|không|bao\s+gồm|sát|nằm|ở|tại)/i.test(l)) return true;
+  return false;
+}
 
-  function push(type, num){
-    var k = type + '|' + (num || '');
-    if (seen[k]) return;
-    seen[k] = 1;
-    out.push({ type: type, num: num || null });
-  }
+function detectShowSlots(noteText){
+  var slots = [];
+  if (!noteText) return slots;
+  var text = String(noteText);
+  var lines = text.split(/[\n\r]+/).map(function(l){return l.trim()}).filter(Boolean);
 
-  // VIP POOLSIDE + số (ưu tiên cao)
-  var reVps = /VIP\s*POOLSIDE(?:\s*[#:]?\s*(\d{1,2}))?/gi;
-  var mV;
-  while ((mV = reVps.exec(text))){
-    push('VPS', mV[1] ? parseInt(mV[1],10) : null);
-  }
-  // VPS + số (nếu chưa có)
-  var reVps2 = /\bVPS\s*[#:]?\s*(\d{1,2})\b/gi;
-  var mV2;
-  while ((mV2 = reVps2.exec(text))){
-    push('VPS', parseInt(mV2[1],10));
-  }
-  // Nếu có chữ VPS nhưng không có số → đánh dấu "cả family"
-  if (!out.some(function(x){return x.type==='VPS';}) && /\bVPS\b/.test(text)){
-    push('VPS', null);
-  }
+  var collected = { BGL: [], VPS: [], 'BAR VIEW': [], FOC: [] };
 
-  // VIP BAR VIEW + số
-  var reBv = /VIP\s*BAR\s*VIEW(?:\s*[#:]?\s*(\d{1,2}))?/gi;
-  var mB;
-  while ((mB = reBv.exec(text))){
-    push('BAR VIEW', mB[1] ? parseInt(mB[1],10) : null);
-  }
-  var reBv2 = /\bBAR\s*VIEW\s*[#:]?\s*(\d{1,2})\b/gi;
-  var mB2;
-  while ((mB2 = reBv2.exec(text))){
-    push('BAR VIEW', parseInt(mB2[1],10));
-  }
-  if (!out.some(function(x){return x.type==='BAR VIEW';}) && /\bBAR\s*VIEW\b/.test(text)){
-    push('BAR VIEW', null);
-  }
+  lines.forEach(function(line){
+    if (shouldSkipLine(line)) return;
 
-  // BGL / Bungalow + số
-  var reBgl = /\bBGL\s*[#:]?\s*(\d{3})\b/gi;
-  var mBgl;
-  while ((mBgl = reBgl.exec(text))){
-    push('BGL', parseInt(mBgl[1],10));
-  }
-  var reBgl2 = /\bBUNGALOW\s*[#:]?\s*(\d{3})\b/gi;
-  var mBgl2;
-  while ((mBgl2 = reBgl2.exec(text))){
-    push('BGL', parseInt(mBgl2[1],10));
-  }
-  if (!out.some(function(x){return x.type==='BGL';}) && /\b(?:BGL|BUNGALOW)\b/.test(text)){
-    push('BGL', null);
-  }
+    // ─── BGL: số cụ thể (BGL 302) ───
+    var found = false;
+    var reSpecBgl = /\b(?:bgl|bungalow)\s*[#:]?\s*(\d{3})\b/gi;
+    var m;
+    while ((m = reSpecBgl.exec(line))){
+      collected.BGL.push({ num: parseInt(m[1],10) });
+      found = true;
+    }
+    // ─── BGL: số lượng (2 bungalow) ───
+    if (!found){
+      var reCountBgl = /(?:^|[\s+:+\-])(\d+)\s*(?:bungalow|bgl)\b/gi;
+      while ((m = reCountBgl.exec(line))){
+        var n = parseInt(m[1],10);
+        for (var i = 0; i < n; i++) collected.BGL.push({ num: null });
+        found = true;
+      }
+    }
+    // ─── BGL: chỉ có chữ (cả family) ───
+    if (!found && /\b(?:bgl|bungalow)\b/i.test(line)){
+      collected.BGL.push({ num: null, family: true });
+    }
 
-  return out;
+    // ─── VPS: số cụ thể ───
+    found = false;
+    var reSpecVps = /\b(?:vps|vip\s*poolside)\s*[#:]?\s*(\d{1,2})\b/gi;
+    while ((m = reSpecVps.exec(line))){
+      collected.VPS.push({ num: parseInt(m[1],10) });
+      found = true;
+    }
+    if (!found){
+      var reCountVps = /(?:^|[\s+:+\-])(\d+)\s*(?:vps|vip\s*poolside)\b/gi;
+      while ((m = reCountVps.exec(line))){
+        var n2 = parseInt(m[1],10);
+        for (var j = 0; j < n2; j++) collected.VPS.push({ num: null });
+        found = true;
+      }
+    }
+    if (!found && /\b(?:vps|vip\s*poolside)\b/i.test(line)){
+      collected.VPS.push({ num: null, family: true });
+    }
+
+    // ─── BAR VIEW: số cụ thể ───
+    found = false;
+    var reSpecBv = /\b(?:bar\s*view|vip\s*bar\s*view)\s*[#:]?\s*(\d{1,2})\b/gi;
+    while ((m = reSpecBv.exec(line))){
+      collected['BAR VIEW'].push({ num: parseInt(m[1],10) });
+      found = true;
+    }
+    if (!found){
+      var reCountBv = /(?:^|[\s+:+\-])(\d+)\s*(?:bar\s*view|vip\s*bar\s*view)\b/gi;
+      while ((m = reCountBv.exec(line))){
+        var n3 = parseInt(m[1],10);
+        for (var k = 0; k < n3; k++) collected['BAR VIEW'].push({ num: null });
+        found = true;
+      }
+    }
+    if (!found && /\b(?:bar\s*view|vip\s*bar\s*view)\b/i.test(line)){
+      collected['BAR VIEW'].push({ num: null, family: true });
+    }
+
+    // ─── FOC: N FOC ───
+    var reFoc = /(?:^|[\s+:+\-])(\d+)\s*foc\b/gi;
+    while ((m = reFoc.exec(line))){
+      var n4 = parseInt(m[1],10);
+      for (var f = 0; f < n4; f++) collected.FOC.push({ num: null });
+    }
+    // "Tặng FOC" không có số → 1
+    if (!collected.FOC.length && /\btặng\b.*\bfoc\b|\bfoc\b.*\btặng\b/i.test(line)){
+      collected.FOC.push({ num: null });
+    }
+  });
+
+  ['BGL', 'VPS', 'BAR VIEW', 'FOC'].forEach(function(type){
+    collected[type].forEach(function(s){
+      slots.push({ type: type, num: s.num, family: !!s.family });
+    });
+  });
+  return slots;
 }
 
 function parse(rows){
@@ -516,7 +667,7 @@ function parse(rows){
       areas:tb.map(function(t){return areaName(t[0])}).filter(function(v,i,a){return a.indexOf(v)===i}),
       bung:[],lob:[],diet:[],showSlots:[],noteRaw:''};
 
-    var allNotes = (c[7] || '') + ' | ' + (c[8] || '');
+    var allNotes = (c[7] || '') + '\n' + (c[8] || '');
     b.noteRaw = allNotes.trim();
 
     var segs=seg(c[7]).concat(seg(c[8]).filter(function(x){return BUNG.test(x)}));
@@ -531,9 +682,7 @@ function parse(rows){
       else if(DIET.test(s)){b.diet.push({t:dietType(s),s:s})}
     });
 
-    // ✅ Detect vị trí bàn show từ note (dùng cho tour tối)
     b.showSlots = detectShowSlots(allNotes);
-
     return b;
   });
 }
@@ -552,26 +701,29 @@ function match(b){
 }
 
 function bungTxt(x){return x.s||'Bungalow'}
+function slotBadgeText(slot){
+  if (slot.type === 'BGL') return slot.num ? ('BGL ' + slot.num) : 'Bungalow';
+  if (slot.type === 'VPS') return slot.num ? ('VPS ' + slot.num) : 'VIP Poolside';
+  if (slot.type === 'BAR VIEW') return slot.num ? ('BAR VIEW ' + slot.num) : 'VIP Bar View';
+  if (slot.type === 'FOC') return 'FOC';
+  return slot.type;
+}
+function slotIcon(type){
+  if (type === 'BGL') return '🛏';
+  if (type === 'VPS') return '🏊';
+  if (type === 'BAR VIEW') return '🌅';
+  if (type === 'FOC') return '🎁';
+  return '🎭';
+}
 function tagHtml(b){
   var h='';
   b.diet.forEach(function(d){h+='<span class="tag d">🥗 <b>'+esc(d.t)+'</b> '+esc(d.s)+'</span>'});
   b.lob.forEach(function(t){h+='<span class="tag m">🦞 '+esc(t)+'</span>'});
   b.bung.forEach(function(x){h+='<span class="tag o">🌴 '+esc(bungTxt(x))+'</span>'});
 
-  // ✅ Badge show slot cho tour tối
   if (tour === 'dn' && b.showSlots && b.showSlots.length){
     b.showSlots.forEach(function(slot){
-      var label;
-      if (slot.num){
-        label = slot.type === 'BGL' ? ('🛏 ' + slot.type + ' ' + slot.num)
-              : slot.type === 'VPS' ? ('🏊 VPS ' + slot.num)
-              : ('🌅 BAR VIEW ' + slot.num);
-      } else {
-        label = slot.type === 'BGL' ? '🛏 ' + slot.type
-              : slot.type === 'VPS' ? '🏊 VIP POOLSIDE'
-              : '🌅 VIP BAR VIEW';
-      }
-      h += '<span class="tag s">' + esc(label) + '</span>';
+      h += '<span class="tag s">' + slotIcon(slot.type) + ' ' + esc(slotBadgeText(slot)) + '</span>';
     });
   }
   return h?'<div class="tags">'+h+'</div>':'';
@@ -624,7 +776,7 @@ function viewOverview(L){
     statBox('👥',tot,'tổng khách')+
     statBox('📋',L.length,'booking')+
     statBox('🪑',Object.keys(tset).length,'bàn')+
-    statBox(tour==='am'?'🌴':'🎭',tour==='am'?nBung(L):SHOW_TABLES.length,tour==='am'?'bungalow đã đặt':'bàn show')+'</div>';
+    statBox(tour==='am'?'🌴':'🎭',tour==='am'?nBung(L):L.reduce(function(s,b){return s+(b.showSlots?b.showSlots.length:0)},0),tour==='am'?'bungalow đã đặt':'slot show được tặng')+'</div>';
 
   function areaLabel(a){if(a==='?') return 'Chưa xếp bàn';return 'Khu '+a}
   function areaBlock(a){
@@ -708,54 +860,73 @@ function viewBung(L){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ✅ SHOW push (tour TỐI) — CÓ GỢI Ý TỪ NOTE
+   ✅ SHOW push (tour TỐI) — CHIA 2 SECTION + ĐẾM ĐÚNG SLOT
    ═══════════════════════════════════════════════════════════ */
-function pushKeyShow(b){ return curDate + '|dn|' + b.stt; }
-
-/* Build suggestions từ showSlots */
-function buildSuggestions(b, S){
-  var out = [], seen = {};
-  if (!b.showSlots || !b.showSlots.length) return out;
-
-  b.showSlots.forEach(function(slot){
-    var pool = SHOW_FAMILY[slot.type] || [];
-    var matches = slot.num
-      ? pool.filter(function(t){
-          var m = t.match(/(\d+)$/);
-          return m && parseInt(m[1],10) === slot.num;
-        })
-      : pool.slice();
-
-    matches.forEach(function(t){
-      if (seen[t]) return;
-      seen[t] = 1;
-      var rk = showKey(t);
-      var cur = S && S.rooms && S.rooms[rk];
-      out.push({ id: t, busy: !!(cur && cur.leader), type: slot.type });
-    });
-  });
-  return out;
+function pushKeyShow(b, slotIdx){
+  return curDate + '|dn|' + b.stt + '|' + (slotIdx || 0);
 }
 
-function pushBlockShow(b){
-  var k = pushKeyShow(b);
+/* Build options dropdown cho 1 slot */
+function buildShowOptions(filterType, currentVal, autoNum){
+  var opts = '<option value="">— chọn bàn show —</option>';
+  var families = filterType === 'ALL' || filterType === 'FOC'
+    ? ['BGL', 'VPS', 'BAR VIEW']
+    : [filterType];
+
+  SHOW_GROUPS.forEach(function(f){
+    f.groups.forEach(function(g){
+      var ids = g.ids.filter(function(id){
+        return families.some(function(fam){
+          if (fam === 'BGL') return /^BGL/.test(id);
+          if (fam === 'VPS') return /^VPS/.test(id);
+          if (fam === 'BAR VIEW') return /^BAR/.test(id);
+          return true;
+        });
+      });
+      if (!ids.length) return;
+
+      opts += '<optgroup label="' + esc(f.floor + ' · ' + g.name) + '">';
+      ids.forEach(function(id){
+        var busy = window.ShowSync && window.ShowSync.rooms && window.ShowSync.rooms[showKey(id)];
+        var suffix = (busy && busy.leader) ? ' ⚠ ĐÃ CÓ KHÁCH' : ' ✓';
+        // Auto-select nếu có số cụ thể khớp
+        var isAuto = false;
+        if (autoNum){
+          var m = id.match(/(\d+)$/);
+          if (m && parseInt(m[1],10) === autoNum) isAuto = true;
+        }
+        var sel = (id === currentVal || (!currentVal && isAuto)) ? ' selected' : '';
+        opts += '<option value="' + esc(id) + '"' + sel + '>' + esc(id) + suffix + '</option>';
+      });
+      opts += '</optgroup>';
+    });
+  });
+  return opts;
+}
+
+/* Render 1 slot row (gift slot) */
+function renderSlotRow(b, slot, slotIdx){
+  var k = pushKeyShow(b, slotIdx);
   var S = window.ShowSync;
   var ready = S && S.ready;
-  var suggestions = buildSuggestions(b, S);
+  var isToday = curDate === vnToday();
 
-  // Auto-select: nếu có đúng 1 gợi ý chưa bị chiếm → chọn luôn
-  var autoId = '';
-  if (suggestions.length === 1 && !suggestions[0].busy) autoId = suggestions[0].id;
-  else if (suggestions.length > 1){
-    var freeOnes = suggestions.filter(function(x){ return !x.busy; });
-    if (freeOnes.length === 1) autoId = freeOnes[0].id;
+  // Chuẩn bị auto-select
+  var autoVal = '';
+  if (slot.num){
+    var fam = SHOW_FAMILY[slot.type] || [];
+    var found = fam.filter(function(id){
+      var m = id.match(/(\d+)$/);
+      return m && parseInt(m[1],10) === slot.num;
+    })[0];
+    if (found) autoVal = found;
   }
-  var room = pick[k] !== undefined ? pick[k] : autoId;
+
+  var room = pick[k] !== undefined ? pick[k] : autoVal;
   pick[k] = room;
 
   var roomKey = room ? showKey(room) : '';
   var ex = roomKey && S && S.rooms[roomKey];
-  var isToday = curDate === vnToday();
   var msg = '', cls = '';
 
   if (!S || (!ready && !S.error)){ msg = '⏳ Đang kết nối...'; }
@@ -766,64 +937,124 @@ function pushBlockShow(b){
     else { msg = '⚠️ Bàn ' + room + ' đang có: ' + ex.leader; cls = 'warn'; }
   } else if (room){ msg = 'Bàn ' + room + ' đang trống'; cls = 'ok'; }
 
-  // Build dropdown — gợi ý lên đầu
-  var opts = '<option value="">— chọn bàn show —</option>';
-  var suggestIds = {};
-  if (suggestions.length){
-    opts += '<optgroup label="🎯 Gợi ý từ sheet (Note)">';
-    suggestions.forEach(function(s){
-      suggestIds[s.id] = 1;
-      var suffix = s.busy ? ' ⚠ ĐÃ CÓ KHÁCH' : ' ✓ Trống';
-      opts += '<option value="' + esc(s.id) + '"' + (s.id === room ? ' selected' : '') + '>' + esc(s.id) + suffix + '</option>';
-    });
-    opts += '</optgroup>';
-  }
-
-  SHOW_GROUPS.forEach(function(f){
-    f.groups.forEach(function(g){
-      var list = g.ids.filter(function(id){ return !suggestIds[id]; });
-      if (!list.length) return;
-      opts += '<optgroup label="' + esc(f.floor + ' · ' + g.name) + '">';
-      list.forEach(function(id){
-        var busy = S && S.rooms && S.rooms[showKey(id)];
-        var suffix = (busy && busy.leader) ? ' ⚠ ' + String(busy.leader).substring(0,12) : '';
-        opts += '<option value="' + esc(id) + '"' + (id === room ? ' selected' : '') + '>' + esc(id) + suffix + '</option>';
-      });
-      opts += '</optgroup>';
-    });
-  });
-
+  var opts = buildShowOptions(slot.type, room, slot.num);
   var dis = (!ready || (S && S.error) || !isToday || !room) ? ' disabled' : '';
 
-  // Hint từ note
-  var hintHtml = '';
-  if (suggestions.length){
-    var hintText = '🎯 Sheet có ghi: <b>' + esc(suggestions.map(function(s){return s.id;}).join(', ')) + '</b>';
-    if (autoId) hintText += ' — đã tự chọn <b>' + esc(autoId) + '</b>';
-    hintHtml = '<div class="note-hint">' + hintText + '</div>';
-  }
+  // Badge color class theo type
+  var rowClass = 'slot-row';
+  if (slot.type === 'VPS') rowClass += ' slot-vps';
+  else if (slot.type === 'BAR VIEW') rowClass += ' slot-barview';
+  else if (slot.type === 'FOC') rowClass += ' slot-foc';
 
-  return '<div class="push">' + hintHtml + '<select data-pk="' + esc(k) + '">' + opts + '</select>' +
-    '<button class="btn" data-push="' + esc(k) + '"' + dis + '>📤 Gửi</button>' +
-    (msg ? '<div class="msg ' + cls + '">' + esc(msg) + '</div>' : '') + '</div>';
+  var slotLabel;
+  if (slot.type === 'BGL') slotLabel = '🛏 Bungalow tại Show';
+  else if (slot.type === 'VPS') slotLabel = '🏊 VIP Poolside';
+  else if (slot.type === 'BAR VIEW') slotLabel = '🌅 VIP Bar View';
+  else if (slot.type === 'FOC') slotLabel = '🎁 FOC (chọn bàn bất kỳ)';
+  else slotLabel = slot.type;
+
+  var badgeTxt = slot.num ? (slot.type + ' ' + slot.num) : ('#' + (slotIdx + 1));
+
+  return '<div class="' + rowClass + '">' +
+    '<div class="slot-head">' +
+      '<span class="slot-badge">' + badgeTxt + '</span>' +
+      '<span class="slot-label">' + esc(slotLabel) + '</span>' +
+    '</div>' +
+    '<div class="slot-actions">' +
+      '<select data-pk="' + esc(k) + '">' + opts + '</select>' +
+      '<button class="btn" data-push="' + esc(k) + '"' + dis + '>📤</button>' +
+    '</div>' +
+    (msg ? '<div class="slot-msg ' + cls + '">' + esc(msg) + '</div>' : '') +
+  '</div>';
 }
 
+/* Render card khách có slot được tặng */
+function renderGiftCard(b){
+  var base = card(b);
+  var slotsHtml = '';
+  b.showSlots.forEach(function(slot, idx){
+    slotsHtml += renderSlotRow(b, slot, idx);
+  });
+  // Chèn slots-section vào trước </div> cuối cùng của card
+  return base.replace(/<\/div>$/, '<div class="slots-section">' + slotsHtml + '</div></div>');
+}
+
+/* Render card khách chưa mua show — 1 dropdown tự do */
+function renderFreeCard(b){
+  var base = card(b);
+  var k = pushKeyShow(b, 0);
+  var S = window.ShowSync;
+  var ready = S && S.ready;
+  var isToday = curDate === vnToday();
+
+  var room = pick[k] !== undefined ? pick[k] : '';
+  pick[k] = room;
+
+  var roomKey = room ? showKey(room) : '';
+  var ex = roomKey && S && S.rooms[roomKey];
+  var msg = '', cls = '';
+
+  if (!S || (!ready && !S.error)){ msg = '⏳ Đang kết nối...'; }
+  else if (S.error){ msg = '❌ Không kết nối'; cls = 'warn'; }
+  else if (!isToday){ msg = 'Chỉ gửi cho hôm nay'; cls = 'warn'; }
+  else if (ex && ex.leader){
+    if (ex.leader === b.name && ex.dining === b.tbl){ msg = '✅ Đã có trong app'; cls = 'ok'; }
+    else { msg = '⚠️ Bàn ' + room + ' đang có: ' + ex.leader; cls = 'warn'; }
+  } else if (room){ msg = 'Bàn ' + room + ' đang trống'; cls = 'ok'; }
+
+  var opts = buildShowOptions('ALL', room, null);
+  var dis = (!ready || (S && S.error) || !isToday || !room) ? ' disabled' : '';
+
+  var push = '<div class="push">' +
+    '<select data-pk="' + esc(k) + '">' + opts + '</select>' +
+    '<button class="btn" data-push="' + esc(k) + '"' + dis + '>📤 Gửi</button>' +
+    (msg ? '<div class="msg ' + cls + '">' + esc(msg) + '</div>' : '') +
+  '</div>';
+
+  return base.replace(/<\/div>$/, push + '</div>');
+}
+
+/* View chính tab 🎭 Bàn Show */
 function viewShow(L){
+  var withSlots = L.filter(function(b){ return b.showSlots && b.showSlots.length > 0; });
+  var noSlots = L.filter(function(b){ return !b.showSlots || b.showSlots.length === 0; });
+
   var totalGuests = L.reduce(function(s,b){ return s + (b.pax || 0); }, 0);
+  var totalSlots = withSlots.reduce(function(s,b){ return s + b.showSlots.length; }, 0);
   var sent = Object.keys((window.ShowSync && window.ShowSync.rooms) || {}).length;
+
   var h = '<div class="stats">' +
     statBox('👥', totalGuests, 'tổng khách') +
     statBox('📋', L.length, 'booking') +
-    statBox('🎭', SHOW_TABLES.length, 'bàn show') +
+    statBox('🎁', totalSlots, 'slot được tặng') +
     statBox('✅', sent, 'đã gửi') +
-    '</div>';
-  if (!L.length) return h + '<div class="empty">Chưa có khách trong danh sách.</div>';
-  h += '<div class="grid">';
-  L.forEach(function(b){
-    var push = pushBlockShow(b);
-    h += card(b).replace(/<\/div>$/, push + '</div>');
-  });
-  return h + '</div>';
+  '</div>';
+
+  // Section 1: Được tặng / FOC
+  if (showSectionFilter === 'all' || showSectionFilter === 'gift'){
+    h += '<div class="section-header gift">🎁 Bàn Show — Được tặng / FOC <span class="badge">' + withSlots.length + ' đoàn</span></div>';
+    if (!withSlots.length){
+      h += '<div class="empty">Không có khách nào được tặng bàn show hôm nay.</div>';
+    } else {
+      h += '<div class="grid">';
+      withSlots.forEach(function(b){ h += renderGiftCard(b); });
+      h += '</div>';
+    }
+  }
+
+  // Section 2: Chưa mua show
+  if (showSectionFilter === 'all' || showSectionFilter === 'noslot'){
+    h += '<div class="section-header free">🆓 Bàn Chưa Mua Show <span class="badge">' + noSlots.length + ' đoàn</span></div>';
+    if (!noSlots.length){
+      h += '<div class="empty">Tất cả khách đều có slot bàn show được tặng.</div>';
+    } else {
+      h += '<div class="grid">';
+      noSlots.forEach(function(b){ h += renderFreeCard(b); });
+      h += '</div>';
+    }
+  }
+
+  return h;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -835,6 +1066,7 @@ function doPush(k){
   var b = B.filter(function(x){ return x.stt === m[2]; })[0];
   var room = pick[k];
   var isShow = (m[1] === 'dn');
+  var slotIdx = parseInt(m[3], 10) || 0;
   var sync = isShow ? window.ShowSync : window.BunSync;
   if (pushing || !b || !room || !sync || !sync.ready) return;
   if (curDate !== vnToday()){ toast('Chỉ gửi được cho ngày hôm nay'); return; }
@@ -848,9 +1080,17 @@ function doPush(k){
   var who = '';
   try { who = localStorage.getItem('dolphinStaffName') || ''; } catch(e){}
 
-  pushCtx = { b: b, room: room, before: before, isShow: isShow };
+  var slot = null;
+  if (isShow && b.showSlots && b.showSlots[slotIdx]) slot = b.showSlots[slotIdx];
 
-  $('pkTitle').textContent = isShow ? '📤 Gửi vào Bàn Show' : '📤 Gửi vào Bungalow';
+  pushCtx = { b: b, room: room, before: before, isShow: isShow, slotIdx: slotIdx, slot: slot };
+
+  var title = '📤 Gửi vào Bungalow';
+  if (isShow){
+    if (slot) title = '📤 Gửi vào ' + slotIcon(slot.type) + ' ' + slotBadgeText(slot);
+    else title = '📤 Gửi vào Bàn Show';
+  }
+  $('pkTitle').textContent = title;
   $('pkRoom').textContent = isShow ? room : 'P.' + room;
   $('pkName').value = b.name || '';
   $('pkTable').value = b.tbl || '';
@@ -861,7 +1101,14 @@ function doPush(k){
   var gWrap = $('pkGuestsWrap');
   if (gWrap){
     gWrap.style.display = isShow ? 'block' : 'none';
-    if (isShow) $('pkGuests').value = (ex && ex.guests) || b.pax || '';
+    if (isShow){
+      // Số khách mặc định: chia đều theo số slot
+      var defaultGuests = b.pax || 0;
+      if (b.showSlots && b.showSlots.length > 1){
+        defaultGuests = Math.ceil((b.pax || 0) / b.showSlots.length);
+      }
+      $('pkGuests').value = (ex && ex.guests) || defaultGuests || '';
+    }
   }
 
   var inp = $('pkStaff'), lock = $('pkStaffLock'), lockName = $('pkStaffLockName');
@@ -940,6 +1187,13 @@ function submitPush(){
       source: 'google-sheet',
       sheetCode: pushCtx.b.code || ''
     };
+    // Đánh dấu slot được tặng
+    if (pushCtx.slot){
+      data.giftType = pushCtx.slot.type;
+      data.giftFromSheet = true;
+      data.slotIndex = pushCtx.slotIdx;
+      if (pushCtx.slot.num) data.giftNum = pushCtx.slot.num;
+    }
   } else {
     data = {
       customerName: pushCtx.b.name || '',
@@ -964,8 +1218,15 @@ function submitPush(){
 
 function renderFilter(){
   document.querySelectorAll('#segMain button').forEach(function(b){b.classList.toggle('on',b.dataset.f===floor)});
-  var h='';
-  if(floor!=='all'){
+  var h = '';
+
+  // Tour tối + tab Bàn Show → filter 2 nhóm
+  if (tab === 'bg' && tour === 'dn'){
+    h += '<button class="sub-chip' + (showSectionFilter === 'all' ? ' on' : '') + '" data-show-filter="all">🎭 Tất cả</button>';
+    h += '<button class="sub-chip gift' + (showSectionFilter === 'gift' ? ' on' : '') + '" data-show-filter="gift">🎁 Được tặng / FOC</button>';
+    h += '<button class="sub-chip free' + (showSectionFilter === 'noslot' ? ' on' : '') + '" data-show-filter="noslot">🆓 Chưa mua show</button>';
+  } else if (floor !== 'all'){
+    // Các tab khác → filter theo khu area
     var fl=LAYOUT.filter(function(x){return x.f===floor})[0];
     if(fl){
       var hasBk={};
@@ -977,6 +1238,7 @@ function renderFilter(){
       }
     }
   }
+
   $('subRow').innerHTML=h;
   $('subRow').style.display=h?'flex':'none';
 }
@@ -1120,17 +1382,26 @@ $('segMain').onclick=function(e){
   render();
 };
 $('subRow').onclick=function(e){
+  // Filter khu area
   var b=e.target.closest('[data-a]');
-  if(!b)return;
-  var v=b.dataset.a;
-  area=(v==='all'||!v)?null:v;
-  store.set('dg_area',area);
-  render();
+  if(b){
+    var v=b.dataset.a;
+    area=(v==='all'||!v)?null:v;
+    store.set('dg_area',area);
+    render();
+    return;
+  }
+  // Filter section show
+  var f=e.target.closest('[data-show-filter]');
+  if(f){
+    showSectionFilter = f.dataset.showFilter;
+    render();
+  }
 };
 
 $('out').onchange=function(e){var k=e.target.dataset&&e.target.dataset.pk;if(k){pick[k]=e.target.value;render()}};
 $('out').onclick=function(e){var t=e.target.closest('[data-push]');if(t)doPush(t.dataset.push)};
-function typing(){var a=document.activeElement;return !!(a&&a.closest&&a.closest('.push'))}
+function typing(){var a=document.activeElement;return !!(a&&a.closest&&(a.closest('.push')||a.closest('.slot-actions')));}
 window.addEventListener('bunrooms',function(){if(tab==='bg'&&status==='ok'&&!typing())render()});
 
 $('pkNo').onclick=closePushDlg;

@@ -1,18 +1,18 @@
 {
-  "version": "1.0.61",
-  "previousVersion": "1.0.60",
-  "commit": "18e57a5",
-  "previousCommit": "821ff38",
-  "buildDate": "2026-10-16T06:14:40.922Z",
-  "summary": "FIX BỐ ĐỜI",
+  "version": "1.0.62",
+  "previousVersion": "1.0.61",
+  "commit": "0e28583",
+  "previousCommit": "18e57a5",
+  "buildDate": "2026-10-16T06:26:49.811Z",
+  "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 65,
+    "totalCommits": 66,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX BỐ ĐỜI"
+    "FIX LỖI"
   ],
   "fileChanges": [
     {

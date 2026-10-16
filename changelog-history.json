@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.61",
+      "releaseDate": "2026-10-16T06:14:40.922Z",
+      "summary": "FIX BỐ ĐỜI",
+      "details": [
+        "FIX BỐ ĐỜI"
+      ]
+    },
+    {
       "version": "1.0.60",
       "releaseDate": "2026-10-16T06:04:14.168Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Khôi phục 3 card Lounge/Bungalow/Restaurant",
       "details": [
         "Khôi phục 3 card Lounge/Bungalow/Restaurant"
-      ]
-    },
-    {
-      "version": "1.0.11",
-      "releaseDate": "2026-10-14T02:12:23.361Z",
-      "summary": "Gỡ toàn bộ tracking đồ uống khỏi dashboard",
-      "details": [
-        "Gỡ toàn bộ tracking đồ uống khỏi dashboard"
       ]
     }
   ]

@@ -38,28 +38,23 @@ function getDeviceId(){
 
 function getName(){
   try {
-    // 1. Ưu tiên staff-sync.js (đã override toàn hệ thống)
     if (typeof window.getSyncedStaffName === 'function'){
       var n1 = window.getSyncedStaffName();
       if (n1 && n1.trim()) return n1.trim();
     }
-    // 2. Fallback getStaffName (cũng do staff-sync override)
     if (typeof window.getStaffName === 'function'){
       var n2 = window.getStaffName();
       if (n2 && n2.trim()) return n2.trim();
     }
-    // 3. Fallback module cũ
     if (window.DolphinStaff && window.DolphinStaff.getName){
       var n3 = window.DolphinStaff.getName();
       if (n3 && n3.trim()) return n3.trim();
     }
-    // 4. Fallback localStorage — ĐÚNG KEY của staff-sync
     return localStorage.getItem('dolphinStaffName')
         || localStorage.getItem('dolphinShowSeller')
         || 'Khách';
   } catch(e){ return 'Khách'; }
 }
-
 function genCode(){
   // Bỏ ký tự dễ nhầm: 0 O 1 I L
   const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';

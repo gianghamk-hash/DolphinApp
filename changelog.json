@@ -1,12 +1,12 @@
 {
-  "version": "1.0.57",
-  "previousVersion": "1.0.56",
-  "commit": "566de44",
-  "previousCommit": "dd42c04",
-  "buildDate": "2026-10-16T05:35:30.073Z",
+  "version": "1.0.58",
+  "previousVersion": "1.0.57",
+  "commit": "b4bc8e5",
+  "previousCommit": "566de44",
+  "buildDate": "2026-10-16T05:38:54.621Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 61,
+    "totalCommits": 62,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "dolphin-ui.js",
+      "file": "index.html",
       "type": "update"
     }
   ]

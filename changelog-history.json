@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.57",
+      "releaseDate": "2026-10-16T05:35:30.073Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.56",
       "releaseDate": "2026-10-16T05:33:48.336Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
@@ -390,14 +398,6 @@
       "summary": "Bổ sung đầy đủ bàn Sun View Restaurant + bàn",
       "details": [
         "Bổ sung đầy đủ bàn Sun View Restaurant + bàn"
-      ]
-    },
-    {
-      "version": "1.0.7",
-      "releaseDate": "2026-10-14T01:20:10.605Z",
-      "summary": "Folder navigation menu đồ uống + popup Ly/Chai",
-      "details": [
-        "Folder navigation menu đồ uống + popup Ly/Chai"
       ]
     }
   ]

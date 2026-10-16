@@ -265,14 +265,15 @@ body{display:flex;flex-direction:column;height:100dvh;max-height:100dvh}
     <div id="paneCreate">
       <div style="font-size:11px;color:#bfe9dc;text-align:left;margin-bottom:6px;font-weight:800">👤 Tên của bạn</div>
       <input class="inp" id="inpNameCreate" maxlength="16" placeholder="VD: AN" style="letter-spacing:.05em;font-size:14px;text-align:left;text-transform:none">
+      <div id="staffHintCreate" style="display:none;font-size:10px;color:#86efac;font-weight:800;margin-top:4px;text-align:left">✅ Đã dùng tên NV từ hệ thống</div>
       <button class="btn-gold" id="btnCreate" onclick="doCreateRoom()" style="width:100%;padding:12px;border-radius:11px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-top:12px">🎮 TẠO PHÒNG</button>
       <div class="status" id="createStatus"></div>
     </div>
 
     <!-- JOIN -->
-    <div id="paneJoin" style="display:none">
       <div style="font-size:11px;color:#bfe9dc;text-align:left;margin-bottom:6px;font-weight:800">👤 Tên của bạn</div>
       <input class="inp" id="inpNameJoin" maxlength="16" placeholder="VD: BÌNH" style="letter-spacing:.05em;font-size:14px;text-align:left;text-transform:none">
+      <div id="staffHintJoin" style="display:none;font-size:10px;color:#86efac;font-weight:800;margin-top:4px;text-align:left">✅ Đã dùng tên NV từ hệ thống</div>
       <div style="font-size:11px;color:#bfe9dc;text-align:left;margin:10px 0 6px;font-weight:800">🔑 Mã phòng (6 ký tự)</div>
       <input class="inp" id="inpCode" maxlength="6" placeholder="ABC123" autocomplete="off" inputmode="text">
       <button class="btn-gold" id="btnJoin" onclick="doJoinRoom()" style="width:100%;padding:12px;border-radius:11px;font-size:13px;text-transform:uppercase;letter-spacing:.08em;margin-top:12px">🚪 VÀO PHÒNG</button>
@@ -1297,13 +1298,40 @@ function init(){
 
   ['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, initAudio, { once: true, passive: true }));
 
-  // Preload name from staff
-  try {
-    const n = localStorage.getItem('dolphin_staff_name') || localStorage.getItem('staffName');
-    if (n){
-      $('inpNameCreate').value = n;
-      $('inpNameJoin').value = n;
+  // Preload name from staff-sync (đồng bộ toàn hệ thống)
+  function preloadStaffName(){
+    var n = '';
+    try {
+      if (typeof window.getSyncedStaffName === 'function') n = window.getSyncedStaffName() || '';
+      if (!n && typeof window.getStaffName === 'function') n = window.getStaffName() || '';
+      if (!n) n = localStorage.getItem('dolphinStaffName')
+             || localStorage.getItem('dolphinShowSeller') || '';
+    } catch(e){}
+    if (n && n.trim()){
+      n = n.trim();
+      if ($('inpNameCreate') && !$('inpNameCreate').value){
+        $('inpNameCreate').value = n;
+        if ($('staffHintCreate')) $('staffHintCreate').style.display = 'block';
+      }
+      if ($('inpNameJoin') && !$('inpNameJoin').value){
+        $('inpNameJoin').value = n;
+        if ($('staffHintJoin')) $('staffHintJoin').style.display = 'block';
+      }
     }
+  preloadStaffName();
+  // Retry vì staff-sync.js load defer → có thể chưa sẵn sàng lúc init
+  setTimeout(preloadStaffName, 300);
+  setTimeout(preloadStaffName, 1000);
+  setTimeout(preloadStaffName, 2500);
+
+  // Lắng nghe sự kiện đổi tên từ staff-sync
+  try {
+    window.addEventListener('dolphinStaffNameChanged', function(e){
+      var n = e && e.detail && e.detail.name;
+      if (!n) return;
+      if ($('inpNameCreate') && !$('inpNameCreate').value) $('inpNameCreate').value = n;
+      if ($('inpNameJoin')   && !$('inpNameJoin').value)   $('inpNameJoin').value   = n;
+    });
   } catch(e){}
 
   console.log('%c🐍🐍 SNAKE CO-OP ONLINE LOADED', 'background:#4aa896;color:#fff;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');

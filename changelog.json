@@ -1,12 +1,12 @@
 {
-  "version": "1.0.66",
-  "previousVersion": "1.0.65",
-  "commit": "398c71a",
-  "previousCommit": "ef14b1f",
-  "buildDate": "2026-10-16T06:47:07.536Z",
+  "version": "1.0.67",
+  "previousVersion": "1.0.66",
+  "commit": "6e5acb7",
+  "previousCommit": "398c71a",
+  "buildDate": "2026-10-16T06:48:47.758Z",
   "summary": "Mô tả ngắn gọn việc bạn vừa làm",
   "changes": {
-    "totalCommits": 70,
+    "totalCommits": 71,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/snake-coop-online.html",
+      "file": "dolphin-multiplayer.js",
       "type": "update"
     }
   ]

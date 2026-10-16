@@ -5,6 +5,29 @@
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
 <title>Dolphin HaLong Cruise</title>
+  <!-- ✅ Detect Manager.apk — ẩn widget không cần thiết -->
+<script>
+  (function(){
+    try {
+      var ua = navigator.userAgent || '';
+      if (ua.indexOf('DolphinManager') >= 0 ||
+          window.DOLPHIN_APP_TYPE === 'manager') {
+        document.documentElement.setAttribute('data-app', 'manager');
+      }
+    } catch(e){}
+  })();
+</script>
+<style>
+  /* ═══ ẨN WIDGET TRÊN MANAGER.APK ═══ */
+  html[data-app="manager"] #notifPermBtn,
+  html[data-app="manager"] #dolphinMusicBtn,
+  html[data-app="manager"] #dolphinMusicPopup {
+    display: none !important;
+    visibility: hidden !important;
+    pointer-events: none !important;
+    opacity: 0 !important;
+  }
+</style>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>

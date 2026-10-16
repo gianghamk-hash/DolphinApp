@@ -1,7 +1,7 @@
 {
-  "version": "1.0.56",
-  "buildDate": "2026-10-16T05:33:48.336Z",
-  "commit": "dd42c04",
-  "notes": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.57",
+  "buildDate": "2026-10-16T05:35:30.073Z",
+  "commit": "566de44",
+  "notes": "FIX LỖI",
   "forceUpdate": false
 }

@@ -1,22 +1,22 @@
 {
-  "version": "1.0.56",
-  "previousVersion": "1.0.55",
-  "commit": "dd42c04",
-  "previousCommit": "959b1ac",
-  "buildDate": "2026-10-16T05:33:48.336Z",
-  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.57",
+  "previousVersion": "1.0.56",
+  "commit": "566de44",
+  "previousCommit": "dd42c04",
+  "buildDate": "2026-10-16T05:35:30.073Z",
+  "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 60,
+    "totalCommits": 61,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Mô tả ngắn gọn việc bạn vừa làm"
+    "FIX LỖI"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/game2048.html",
+      "file": "dolphin-ui.js",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.64",
+      "releaseDate": "2026-10-16T06:35:19.255Z",
+      "summary": "FIX LỖI staff sync",
+      "details": [
+        "FIX LỖI staff sync"
+      ]
+    },
+    {
       "version": "1.0.63",
       "releaseDate": "2026-10-16T06:33:49.441Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc",
       "details": [
         "Tách nút nhạc khỏi đồng hồ + kéo thả tự do + nút cập nhật nhạc"
-      ]
-    },
-    {
-      "version": "1.0.14",
-      "releaseDate": "2026-10-14T05:08:32.086Z",
-      "summary": "Thêm nhạc Lofi Chill",
-      "details": [
-        "Thêm nhạc Lofi Chill"
       ]
     }
   ]

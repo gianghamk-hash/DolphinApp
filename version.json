@@ -1,7 +1,7 @@
 {
-  "version": "1.0.64",
-  "buildDate": "2026-10-16T06:35:19.255Z",
-  "commit": "61eff3b",
-  "notes": "FIX LỖI staff sync",
+  "version": "1.0.65",
+  "buildDate": "2026-10-16T06:40:16.954Z",
+  "commit": "ef14b1f",
+  "notes": "Mô tả ngắn gọn việc bạn vừa làm",
   "forceUpdate": false
 }

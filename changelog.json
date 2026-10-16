@@ -1,18 +1,18 @@
 {
-  "version": "1.0.64",
-  "previousVersion": "1.0.63",
-  "commit": "61eff3b",
-  "previousCommit": "46677f4",
-  "buildDate": "2026-10-16T06:35:19.255Z",
-  "summary": "FIX LỖI staff sync",
+  "version": "1.0.65",
+  "previousVersion": "1.0.64",
+  "commit": "ef14b1f",
+  "previousCommit": "61eff3b",
+  "buildDate": "2026-10-16T06:40:16.954Z",
+  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
   "changes": {
-    "totalCommits": 68,
+    "totalCommits": 69,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX LỖI staff sync"
+    "Mô tả ngắn gọn việc bạn vừa làm"
   ],
   "fileChanges": [
     {

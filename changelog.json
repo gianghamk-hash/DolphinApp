@@ -1,22 +1,22 @@
 {
-  "version": "1.0.60",
-  "previousVersion": "1.0.59",
-  "commit": "821ff38",
-  "previousCommit": "bc417cb",
-  "buildDate": "2026-10-16T06:04:14.168Z",
-  "summary": "FIX LỖI",
+  "version": "1.0.61",
+  "previousVersion": "1.0.60",
+  "commit": "18e57a5",
+  "previousCommit": "821ff38",
+  "buildDate": "2026-10-16T06:14:40.922Z",
+  "summary": "FIX BỐ ĐỜI",
   "changes": {
-    "totalCommits": 64,
+    "totalCommits": 65,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX LỖI"
+    "FIX BỐ ĐỜI"
   ],
   "fileChanges": [
     {
-      "file": "DolphinApp/giaitri/games/snake-coop-online.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.60",
+      "releaseDate": "2026-10-16T06:04:14.168Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.59",
       "releaseDate": "2026-10-16T05:57:06.875Z",
       "summary": "HỆ THỐNG MULTIPLAYER",
@@ -390,14 +398,6 @@
       "summary": "Gỡ toàn bộ tracking đồ uống khỏi dashboard",
       "details": [
         "Gỡ toàn bộ tracking đồ uống khỏi dashboard"
-      ]
-    },
-    {
-      "version": "1.0.10",
-      "releaseDate": "2026-10-14T01:45:08.696Z",
-      "summary": "Dashboard: thêm Drinks tracking + gom setting",
-      "details": [
-        "Dashboard: thêm Drinks tracking + gom setting"
       ]
     }
   ]

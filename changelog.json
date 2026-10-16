@@ -1,12 +1,12 @@
 {
-  "version": "1.0.48",
-  "previousVersion": "1.0.47",
-  "commit": "0adf913",
-  "previousCommit": "3e8b62d",
-  "buildDate": "2026-10-15T14:19:33.147Z",
+  "version": "1.0.49",
+  "previousVersion": "1.0.48",
+  "commit": "e7be9b5",
+  "previousCommit": "0adf913",
+  "buildDate": "2026-10-16T00:42:58.928Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 52,
+    "totalCommits": 53,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/battleship.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

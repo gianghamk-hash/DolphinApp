@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.52",
+      "releaseDate": "2026-10-16T01:26:05.897Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.51",
       "releaseDate": "2026-10-16T01:22:11.972Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Tạo folder sounds ● Commit directly to the main branch ○ Create a new branch... [Commit new file]",
       "details": [
         "Tạo folder sounds ● Commit directly to the main branch ○ Create a new branch... [Commit new file]"
-      ]
-    },
-    {
-      "version": "1.0.2",
-      "releaseDate": "2026-10-13T03:46:27.136Z",
-      "summary": "Nâng theme v7.2 REVOLUTIONARY",
-      "details": [
-        "Nâng theme v7.2 REVOLUTIONARY"
       ]
     }
   ]

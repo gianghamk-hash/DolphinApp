@@ -8,6 +8,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <script>tailwind.config={theme:{extend:{fontFamily:{serif:['Fraunces','serif'],sans:['Nunito','sans-serif']}}}}</script>
+<script src="/DolphinApp/dolphin-leaderboard.js?v=1.0"></script>
 <style>
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-height:100vh;overflow-x:hidden;touch-action:manipulation}
@@ -330,6 +331,19 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
   }
   function playGameOver(){
     initAudio();
+    // ✅ Submit điểm lên bảng xếp hạng (chạy 1 lần khi game over)
+    if (window.DolphinLeaderboard && score > 0){
+      try {
+        var maxTile = tiles.reduce(function(m, t){ return Math.max(m, t.value); }, 0);
+        window.DolphinLeaderboard.submit('game2048', score, { bestTile: maxTile })
+          .then(function(ok){
+            if (!ok && !window.DolphinLeaderboard.getStaffName()){
+              console.warn('[2048] Chưa có tên NV — không lưu được BXH');
+            }
+          }).catch(function(){});
+      } catch(e){ console.warn('[2048] leaderboard submit error:', e); }
+    }
+
     if (!audioCtx) return;
     var t = audioCtx.currentTime;
     [523.25, 415.3, 329.63, 261.63].forEach(function(f, i){

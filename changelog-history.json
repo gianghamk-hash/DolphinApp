@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.62",
+      "releaseDate": "2026-10-16T06:26:49.811Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.61",
       "releaseDate": "2026-10-16T06:14:40.922Z",
       "summary": "FIX BỐ ĐỜI",
@@ -390,14 +398,6 @@
       "summary": "Fix lỗi Service Worker block + dọn index.html",
       "details": [
         "Fix lỗi Service Worker block + dọn index.html"
-      ]
-    },
-    {
-      "version": "1.0.12",
-      "releaseDate": "2026-10-14T03:02:11.744Z",
-      "summary": "Khôi phục 3 card Lounge/Bungalow/Restaurant",
-      "details": [
-        "Khôi phục 3 card Lounge/Bungalow/Restaurant"
       ]
     }
   ]

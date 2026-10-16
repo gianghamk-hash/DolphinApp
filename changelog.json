@@ -1,12 +1,12 @@
 {
-  "version": "1.0.62",
-  "previousVersion": "1.0.61",
-  "commit": "0e28583",
-  "previousCommit": "18e57a5",
-  "buildDate": "2026-10-16T06:26:49.811Z",
+  "version": "1.0.63",
+  "previousVersion": "1.0.62",
+  "commit": "46677f4",
+  "previousCommit": "0e28583",
+  "buildDate": "2026-10-16T06:33:49.441Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 66,
+    "totalCommits": 67,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "giaitri/index.html",
+      "file": "dolphin-multiplayer.js",
       "type": "update"
     }
   ]

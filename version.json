@@ -1,7 +1,7 @@
 {
-  "version": "1.0.62",
-  "buildDate": "2026-10-16T06:26:49.811Z",
-  "commit": "0e28583",
+  "version": "1.0.63",
+  "buildDate": "2026-10-16T06:33:49.441Z",
+  "commit": "46677f4",
   "notes": "FIX LỖI",
   "forceUpdate": false
 }

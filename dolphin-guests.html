@@ -418,14 +418,18 @@ function dietType(s){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ✅ DETECT SHOW SLOTS — BẢN ĐÃ SỬA
-   CHỈ NHẬN KHI CÓ "Tặng"/"FOC" + KHU VỰC CỤ THỂ
-   ❌ BỎ "Tặng 1 FOC" đơn thuần, "2 FOC giá du thuyền" (không khu vực)
+   ✅ DETECT SHOW SLOTS — ĐÃ CẬP NHẬT CHUẨN XÁC
+   Nhận diện cả "Tặng", "FOC", "xem show", và tự động nhận Bungalow
    ═══════════════════════════════════════════════════════════ */
 function shouldSkipLine(line){
   var l = String(line || '').trim();
   if (!l) return true;
   var low = l.toLowerCase();
+
+  // Nếu dòng chứa các từ khóa liên quan đến show/tặng/foc/bungalow/vps/bar view thì KHÔNG skip
+  var hasRelevant = /\btặng\b|\bfoc\b|\bxem\s*show\b|\bshow\b|\bbungalow\b|\bbgl\b|\bvps\b|\bbar\s*view\b/i.test(low);
+  if (hasRelevant) return false;
+
   // Dòng bắt đầu bằng keyword mô tả/hỗ trợ
   if (/^(hỗ trợ|lưu ý|note|ghi chú|chú ý|áp dụng|điều kiện|không\s+bao\s+gồm|chỉ\s+bao\s+gồm|miễn\s+phí|check)/i.test(low)) return true;
   // Dòng bắt đầu bằng khu vực + trạng từ mô tả (Bungalow tầng..., VPS tầng..., v.v.)
@@ -441,49 +445,65 @@ function typeFromKeyword(kw){
   return null;
 }
 
-function detectShowSlots(noteText){
+function detectShowSlots(noteText, bungalowData){
   var slots = [];
-  if (!noteText) return slots;
-  var lines = String(noteText).split(/[\n\r]+/).map(function(l){return l.trim()}).filter(Boolean);
+  if (noteText) {
+    var lines = String(noteText).split(/[\n\r]+/).map(function(l){return l.trim()}).filter(Boolean);
 
-  lines.forEach(function(line){
-    if (shouldSkipLine(line)) return;
+    lines.forEach(function(line){
+      if (shouldSkipLine(line)) return;
 
-    var hasTang = /\btặng\b/i.test(line);
-    var hasFoc = /\bfoc\b/i.test(line);
-    // ❌ Không có "tặng" và không có "foc" → bỏ qua (VD: "team xếp giúp em...")
-    if (!hasTang && !hasFoc) return;
+      var hasTang = /\btặng\b/i.test(line);
+      var hasFoc = /\bfoc\b/i.test(line);
+      var hasShow = /\bxem\s*show\b|\bshow\b/i.test(line);
+      var hasBung = /bungalow|bgl/i.test(line);
 
-    var m, foundSpecific = false;
+      // Nếu không chứa từ khóa nào liên quan, bỏ qua
+      if (!hasTang && !hasFoc && !hasShow && !hasBung) return;
 
-    // ─── Pattern 1: Số cụ thể sau khu vực (BGL 302, VPS 5, BAR VIEW 3) ───
-    var reSpec = /\b(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\s*[#:]?\s*(\d{1,3})\b/gi;
-    while ((m = reSpec.exec(line))){
-      var typeSpec = typeFromKeyword(m[1]);
-      if (!typeSpec) continue;
-      slots.push({ type: typeSpec, num: parseInt(m[2],10) });
-      foundSpecific = true;
-    }
+      var m, foundSpecific = false;
 
-    // ─── Pattern 2: Số lượng + khu vực (2 bungalow, 3 vps) ───
-    if (!foundSpecific){
-      var reCount = /(\d+)\s*(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\b/gi;
-      while ((m = reCount.exec(line))){
-        var n = parseInt(m[1],10);
-        var typeC = typeFromKeyword(m[2]);
-        if (!typeC) continue;
-        for (var i = 0; i < n; i++) slots.push({ type: typeC, num: null });
+      // ─── Pattern 1: Số cụ thể sau khu vực (BGL 302, VPS 5, BAR VIEW 3) ───
+      var reSpec = /\b(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\s*[#:]?\s*(\d{1,3})\b/gi;
+      while ((m = reSpec.exec(line))){
+        var typeSpec = typeFromKeyword(m[1]);
+        if (!typeSpec) continue;
+        slots.push({ type: typeSpec, num: parseInt(m[2],10) });
+        foundSpecific = true;
       }
-    }
 
-    // ─── Pattern 3: "Tặng Bungalow" / "FOC VPS" (không số) ───
-    var reNoNum = /\b(?:tặng|foc)\s+(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\b(?!\s*\d)/gi;
-    while ((m = reNoNum.exec(line))){
-      var typeN = typeFromKeyword(m[1]);
-      if (!typeN) continue;
-      slots.push({ type: typeN, num: null, family: true });
-    }
-  });
+      // ─── Pattern 2: Số lượng + khu vực (2 bungalow, 3 vps) ───
+      if (!foundSpecific){
+        var reCount = /(\d+)\s*(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\b/gi;
+        while ((m = reCount.exec(line))){
+          var n = parseInt(m[1],10);
+          var typeC = typeFromKeyword(m[2]);
+          if (!typeC) continue;
+          for (var i = 0; i < n; i++) slots.push({ type: typeC, num: null });
+          foundSpecific = true;
+        }
+      }
+
+      // ─── Pattern 3: "Tặng Bungalow" / "FOC VPS" / "xem show Vip Bar view" ───
+      var reNoNum = /\b(?:tặng|foc|xem\s*show)\s+(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\b(?!\s*\d)/gi;
+      while ((m = reNoNum.exec(line))){
+        var typeN = typeFromKeyword(m[1]);
+        if (!typeN) continue;
+        var exists = slots.some(function(s){ return s.type === typeN && s.num === null; });
+        if (!exists) {
+          slots.push({ type: typeN, num: null, family: true });
+        }
+      }
+    });
+  }
+
+  // Bổ sung: Nếu khách có đặt Bungalow mà chưa được detect ở trên -> Thêm slot BGL
+  var hasBglSlot = slots.some(function(s){ return s.type === 'BGL' });
+  if (!hasBglSlot && bungalowData && bungalowData.length > 0) {
+    bungalowData.forEach(function(x) {
+      slots.push({ type: 'BGL', num: x.num ? parseInt(x.num, 10) : null });
+    });
+  }
 
   return slots;
 }
@@ -512,7 +532,7 @@ function parse(rows){
       else if(DIET.test(s)){b.diet.push({t:dietType(s),s:s})}
     });
 
-    b.showSlots = detectShowSlots(allNotes);
+    b.showSlots = detectShowSlots(allNotes, b.bung);
     return b;
   });
 }
@@ -532,14 +552,12 @@ function match(b){
 
 function bungTxt(x){return x.s||'Bungalow'}
 
-/* ✅ slotBadgeText — BỎ nhánh FOC */
 function slotBadgeText(slot){
   if (slot.type === 'BGL') return slot.num ? ('BGL ' + slot.num) : 'Bungalow';
   if (slot.type === 'VPS') return slot.num ? ('VPS ' + slot.num) : 'VIP Poolside';
   if (slot.type === 'BAR VIEW') return slot.num ? ('BAR VIEW ' + slot.num) : 'VIP Bar View';
   return slot.type;
 }
-/* ✅ slotIcon — BỎ nhánh FOC */
 function slotIcon(type){
   if (type === 'BGL') return '🛏';
   if (type === 'VPS') return '🏊';
@@ -725,7 +743,6 @@ function buildShowOptions(filterType, currentVal, autoNum){
   return opts;
 }
 
-/* Render 1 slot row — BỎ nhánh FOC */
 function renderSlotRow(b, slot, slotIdx){
   var k = pushKeyShow(b, slotIdx);
   var S = window.ShowSync;
@@ -844,9 +861,9 @@ function viewShow(L){
   '</div>';
 
   if (showSectionFilter === 'all' || showSectionFilter === 'gift'){
-    h += '<div class="section-header gift">🎁 Bàn Show — Được tặng / FOC <span class="badge">' + withSlots.length + ' đoàn</span></div>';
+    h += '<div class="section-header gift">🎁 Đã có bàn show <span class="badge">' + withSlots.length + ' đoàn</span></div>';
     if (!withSlots.length){
-      h += '<div class="empty">Không có khách nào được tặng bàn show hôm nay.</div>';
+      h += '<div class="empty">Không có khách nào đã có bàn show hôm nay.</div>';
     } else {
       h += '<div class="grid">';
       withSlots.forEach(function(b){ h += renderGiftCard(b); });
@@ -1027,7 +1044,7 @@ function renderFilter(){
   var h = '';
   if (tab === 'bg' && tour === 'dn'){
     h += '<button class="sub-chip' + (showSectionFilter === 'all' ? ' on' : '') + '" data-show-filter="all">🎭 Tất cả</button>';
-    h += '<button class="sub-chip gift' + (showSectionFilter === 'gift' ? ' on' : '') + '" data-show-filter="gift">🎁 Được tặng / FOC</button>';
+    h += '<button class="sub-chip gift' + (showSectionFilter === 'gift' ? ' on' : '') + '" data-show-filter="gift">🎁 Đã có bàn show</button>';
     h += '<button class="sub-chip free' + (showSectionFilter === 'noslot' ? ' on' : '') + '" data-show-filter="noslot">🆓 Chưa mua show</button>';
   } else if (floor !== 'all'){
     var fl=LAYOUT.filter(function(x){return x.f===floor})[0];

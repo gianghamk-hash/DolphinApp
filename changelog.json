@@ -1,12 +1,12 @@
 {
-  "version": "1.0.77",
-  "previousVersion": "1.0.76",
-  "commit": "053bf65",
-  "previousCommit": "5f97659",
-  "buildDate": "2026-10-17T14:55:54.917Z",
+  "version": "1.0.78",
+  "previousVersion": "1.0.77",
+  "commit": "18c6f15",
+  "previousCommit": "053bf65",
+  "buildDate": "2026-10-17T14:57:23.511Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 81,
+    "totalCommits": 82,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "dolphin-show.html",
+      "file": "manager/dashboard.html",
       "type": "update"
     }
   ]

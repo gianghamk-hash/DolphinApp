@@ -477,6 +477,8 @@ function hostStep(){
     if (!s.alive) continue;
     if (dying.has(s.id)){
       s.alive = false; s.lives--;
+      playDie();
+      showFloatAt(s.body[0].x, s.body[0].y, '💀 -1❤️', s.id, false, true);
       broadcastEvent({ type: 'die', id: s.id, x: s.body[0].x, y: s.body[0].y });
       if (s.lives > 0) s.respawnAt = now + RESPAWN_DELAY;
       continue;
@@ -498,6 +500,8 @@ function hostStep(){
         s.body.push({ x: s.body[s.body.length-1].x, y: s.body[s.body.length-1].y });
         s.body.push({ x: s.body[s.body.length-1].x, y: s.body[s.body.length-1].y });
       }
+      playEat(f.type === 'golden');
+      showFloatAt(h.x, h.y, '+' + earned + (isCombo ? ' 🔥' : ''), s.id, f.type === 'golden', false);
       broadcastEvent({ type: 'eat', id: s.id, x: h.x, y: h.y, earned: earned, golden: f.type === 'golden', combo: isCombo });
       hostState.foods.splice(foodIdx, 1);
       spawnFoodHost();
@@ -526,19 +530,21 @@ function hostStep(){
       s.body = body;
       s.dir = { x: dir.x, y: dir.y };
       s.nextDir = { x: dir.x, y: dir.y };
-      s.alive = true;
+            s.alive = true;
+      playRespawn();
+      broadcastEvent({ type: 'respawn', id: s.id });
       broadcastEvent({ type: 'respawn', id: s.id });
     }
   }
   if (hostState.snakes[0].lives <= 0 && hostState.snakes[1].lives <= 0){ hostGameOver(); return; }
   hostState.tick++;
+  hostRender();
   publishState();
   loopTimer = setTimeout(hostStep, hostState.speed);
 }
 
-async function publishState(){
-  if (!hostState || !isHost) return;
-  var snap = {
+function buildSnap(){
+  return {
     tick: hostState.tick,
     speed: hostState.speed,
     status: hostState.status,
@@ -554,12 +560,24 @@ async function publishState(){
     foods: hostState.foods,
     ts: Date.now()
   };
-  try { await window.DolphinMP.sendState(snap); } catch(e){}
+}
+
+function hostRender(){
+  if (!hostState || !isHost) return;
+  gameState = buildSnap();
+  renderState(gameState);
+}
+
+async function publishState(){
+  if (!hostState || !isHost) return;
+  try { await window.DolphinMP.sendState(buildSnap()); } catch(e){}
 }
 
 async function broadcastEvent(ev){
-  if (!isHost) return;
-  try { await window.DolphinMP.sendState({ __event: ev, ts: Date.now() }); } catch(e){}
+  if (!isHost || !hostState) return;
+  var snap = buildSnap();
+  snap.__event = ev;
+  try { await window.DolphinMP.sendState(snap); } catch(e){}
 }
 
 function hostGameOver(){
@@ -775,10 +793,7 @@ function handleRoomUpdate(room){
 
 function handleStateUpdate(st){
   if (isHost) return;
-  if (st.__event){
-    applyEvent(st.__event);
-    return;
-  }
+  if (st.__event){ applyEvent(st.__event); }
   gameState = st;
   if (st.status === 'playing' && !running && !gameOverFlag){
     enterGameUI();
@@ -898,6 +913,7 @@ function startHostGame(){
   enterGameUI();
   running = true;
   $('pauseBtn').disabled = false;
+  hostRender();
   loopTimer = setTimeout(hostStep, hostState.speed);
 }
 
@@ -914,6 +930,21 @@ function enterGameUI(){
 function sendMyDir(d){
   if (!running || paused || gameOverFlag) return;
   if (!window.DolphinMP.getRoomId()) return;
+
+  // 🎯 HOST: áp dụng input TRỰC TIẾP vào hostState (vì module bỏ qua input của chính mình)
+  if (isHost && hostState){
+    var s = hostState.snakes.find(function(x){ return x.id === mySide; });
+    if (s){
+      var map = { up:{x:0,y:-1}, down:{x:0,y:1}, left:{x:-1,y:0}, right:{x:1,y:0} };
+      var nd = map[d];
+      if (nd && !(nd.x === -s.dir.x && nd.y === -s.dir.y) && !(nd.x === s.dir.x && nd.y === s.dir.y)){
+        s.nextDir = nd;
+      }
+    }
+    return;
+  }
+
+  // 🎯 GUEST: gửi input qua Firestore → host nhận
   window.DolphinMP.sendInput({ dir: d });
 }
 

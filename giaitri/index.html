@@ -289,8 +289,8 @@ html.game-locked, body.game-locked{
     </div>
 
     <div class="tab-switcher" id="lbGameTabs" style="flex-wrap:wrap">
-      <button class="tab-btn" data-lb="snake-coop" onclick="showLB('snake-coop')"><span>🐍🐍</span> ĐÔI</button>
-      <button class="tab-btn" data-lb="snake-coop-online" onclick="showLB('snake-coop-online')"><span>🌐</span> ONLINE</button>
+      <button class="tab-btn active" data-lb="snake" onclick="showLB('snake')"><span>🐍</span> RẮN ĐƠN</button>
+      <button class="tab-btn" data-lb="snake-coop-online" onclick="showLB('snake-coop-online')"><span>🐍🐍</span> ONLINE</button>
       <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')"><span>🚢</span> BS</button>
       <button class="tab-btn" data-lb="caro" onclick="showLB('caro')"><span>🎮</span> CARO</button>
       <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')"><span>🎴</span> TƯỚNG</button>
@@ -340,7 +340,6 @@ html.game-locked, body.game-locked{
     'game2048':          'games/game2048.html',
     'battleship':        'games/battleship.html',
     'snake':             'games/snake.html',
-    'snake-coop':        'games/snake-coop.html',
     'snake-coop-online': 'games/snake-coop-online.html',
     'xiangqi':           'games/xiangqi.html'
   };
@@ -534,8 +533,7 @@ html.game-locked, body.game-locked{
   var currentLBGame = 'snake';
   var LB_META = {
     snake:              { icon: '🐍',   title: 'RẮN SĂN MỒI',      type: 'score' },
-    'snake-coop':       { icon: '🐍🐍', title: 'RẮN ĐÔI (Co-op)',  type: 'score' },
-    'snake-coop-online':{ icon: '🌐',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
+    'snake-coop-online':{ icon: '🐍🐍',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
     battleship:         { icon: '🚢',   title: 'BATTLESHIP',        type: 'win' },
     chess:              { icon: '♟',    title: 'CỜ VUA',            type: 'win' },
     game2048:           { icon: '🔢',   title: '2048',              type: 'score' },

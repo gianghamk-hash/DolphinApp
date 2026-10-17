@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.68",
+      "releaseDate": "2026-10-17T00:30:21.760Z",
+      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+      "details": [
+        "Mô tả ngắn gọn việc bạn vừa làm"
+      ]
+    },
+    {
       "version": "1.0.67",
       "releaseDate": "2026-10-16T06:48:47.758Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
@@ -390,14 +398,6 @@
       "summary": "Caro pinch-zoom 0.8x-2x + soundscape v2.4",
       "details": [
         "Caro pinch-zoom 0.8x-2x + soundscape v2.4"
-      ]
-    },
-    {
-      "version": "1.0.18",
-      "releaseDate": "2026-10-14T06:53:41.021Z",
-      "summary": "Fix safe area iPhone",
-      "details": [
-        "Fix safe area iPhone"
       ]
     }
   ]

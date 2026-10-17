@@ -1,22 +1,22 @@
 {
-  "version": "1.0.68",
-  "previousVersion": "1.0.67",
-  "commit": "9c23324",
-  "previousCommit": "6e5acb7",
-  "buildDate": "2026-10-17T00:30:21.760Z",
-  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.69",
+  "previousVersion": "1.0.68",
+  "commit": "2a7e4e8",
+  "previousCommit": "9c23324",
+  "buildDate": "2026-10-17T02:04:53.867Z",
+  "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 72,
+    "totalCommits": 73,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Mô tả ngắn gọn việc bạn vừa làm"
+    "FIX LỖI"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/snake-coop-online.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

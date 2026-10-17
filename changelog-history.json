@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.76",
+      "releaseDate": "2026-10-17T14:50:48.032Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.75",
       "releaseDate": "2026-10-17T14:47:08.137Z",
       "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
@@ -390,14 +398,6 @@
       "summary": "Manager Dashboard: thêm Note + Reminder vào Settings",
       "details": [
         "Manager Dashboard: thêm Note + Reminder vào Settings"
-      ]
-    },
-    {
-      "version": "1.0.26",
-      "releaseDate": "2026-10-14T10:17:30.906Z",
-      "summary": "Xóa Block Blast, thêm Battleship vào tab GAME",
-      "details": [
-        "Xóa Block Blast, thêm Battleship vào tab GAME"
       ]
     }
   ]

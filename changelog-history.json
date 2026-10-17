@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.69",
+      "releaseDate": "2026-10-17T02:04:53.867Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.68",
       "releaseDate": "2026-10-17T00:30:21.760Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
@@ -390,14 +398,6 @@
       "summary": "Sổ Tay: bật thông báo hệ thống (Mức 2)",
       "details": [
         "Sổ Tay: bật thông báo hệ thống (Mức 2)"
-      ]
-    },
-    {
-      "version": "1.0.19",
-      "releaseDate": "2026-10-14T07:11:56.789Z",
-      "summary": "Caro pinch-zoom 0.8x-2x + soundscape v2.4",
-      "details": [
-        "Caro pinch-zoom 0.8x-2x + soundscape v2.4"
       ]
     }
   ]

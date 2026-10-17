@@ -135,6 +135,8 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .slot-msg{font-size: .7rem;line-height: 1.5;font-weight: 700;color: var(--mint2)}
 .slot-msg.ok{color:var(--grn)}
 .slot-msg.warn{color:var(--red)}
+/* ✅ Thêm CSS cho phần ghi chú của Slot */
+.slot-note{font-size:0.71rem;color:var(--mint2);margin-top:2px;font-style:italic;line-height:1.4;background:rgba(0,0,0,0.25);padding:6px 10px;border-radius:8px;border-left:3px solid var(--gold);word-break:break-word;}
 .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(270px,1fr));gap:10px}
 .bk{background:linear-gradient(155deg,rgba(18,50,47,.7),rgba(10,30,28,.6));border:1px solid rgba(244,184,66,.12);border-radius:16px;padding:13px 15px 12px 18px;display:flex;flex-direction:column;gap:8px;transition:all var(--tr);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);box-shadow:var(--sh-sm),inset 0 1px 0 rgba(255,255,255,.04);position:relative;overflow:hidden}
 .bk::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:16px;background:radial-gradient(circle at 100% 0%, rgba(244,184,66,.06), transparent 55%);opacity:0;transition:opacity .35s}
@@ -418,27 +420,22 @@ function dietType(s){
 }
 
 /* ═══════════════════════════════════════════════════════════
-   ✅ DETECT SHOW SLOTS — ĐÃ CẬP NHẬT CHUẨN XÁC
-   Nhận diện cả Vipoolside (viết liền) và Pool side
+   ✅ DETECT SHOW SLOTS — ĐÃ CẬP NHẬT GHI CHÚ
    ═══════════════════════════════════════════════════════════ */
 function shouldSkipLine(line){
   var l = String(line || '').trim();
   if (!l) return true;
   var low = l.toLowerCase();
 
-  // Nếu dòng chứa các từ khóa liên quan đến show/tặng/foc/đặt/combo/khu vực thì KHÔNG skip
   var hasRelevant = /\btặng\b|\bfoc\b|\bxem\s*show\b|\bshow\b|\bbungalow\b|\bbgl\b|\bvps\b|\bvip\s*pool\s*side\b|\bvipoolside\b|\bpool\s*side\b|\bbar\s*view\b|\bđặt\b|\bcombo\b/i.test(low);
   if (hasRelevant) return false;
 
-  // Dòng bắt đầu bằng keyword mô tả/hỗ trợ
   if (/^(hỗ trợ|lưu ý|note|ghi chú|chú ý|áp dụng|điều kiện|không\s+bao\s+gồm|chỉ\s+bao\s+gồm|miễn\s+phí|check)/i.test(low)) return true;
-  // Dòng bắt đầu bằng khu vực + trạng từ mô tả (Bungalow tầng..., VPS tầng..., v.v.)
   if (/^(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\s+(tầng|chỉ|không|bao\s+gồm|sát|nằm|ở|tại|đã)/i.test(low)) return true;
   return false;
 }
 
 function typeFromKeyword(kw){
-  // Loại bỏ khoảng trắng để nhận diện cả "vip poolside" và "vipoolside"
   var t = kw.toLowerCase().replace(/\s+/g, '');
   if (/bungalow|bgl/.test(t)) return 'BGL';
   if (/vps|vippoolside|poolside/.test(t)) return 'VPS';
@@ -456,45 +453,41 @@ function detectShowSlots(noteText, bungalowData){
 
       var m, foundSpecific = false;
 
-      // ─── Pattern 1: Số cụ thể sau khu vực (BGL 302, VPS 5, BAR VIEW 3) ───
       var reSpec = /\b(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\s*[#:]?\s*(\d{1,3})\b/gi;
       while ((m = reSpec.exec(line))){
         var typeSpec = typeFromKeyword(m[1]);
         if (!typeSpec) continue;
-        slots.push({ type: typeSpec, num: parseInt(m[2],10) });
+        slots.push({ type: typeSpec, num: parseInt(m[2],10), note: line });
         foundSpecific = true;
       }
 
-      // ─── Pattern 2: Số lượng + khu vực (2 bungalow, 3 vps, 01 Vipoolside) ───
       if (!foundSpecific){
         var reCount = /(\d+)\s*(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\b/gi;
         while ((m = reCount.exec(line))){
           var n = parseInt(m[1],10);
           var typeC = typeFromKeyword(m[2]);
           if (!typeC) continue;
-          for (var i = 0; i < n; i++) slots.push({ type: typeC, num: null });
+          for (var i = 0; i < n; i++) slots.push({ type: typeC, num: null, note: line });
           foundSpecific = true;
         }
       }
 
-      // ─── Pattern 3: "Tặng Bungalow" / "FOC VPS" / "xem show Vip Bar view" ───
       var reNoNum = /\b(?:tặng|foc|xem\s*show)\s+(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\b(?!\s*\d)/gi;
       while ((m = reNoNum.exec(line))){
         var typeN = typeFromKeyword(m[1]);
         if (!typeN) continue;
-        var exists = slots.some(function(s){ return s.type === typeN && s.num === null; });
+        var exists = slots.some(function(s){ return s.type === typeN && s.num === null && s.note === line; });
         if (!exists) {
-          slots.push({ type: typeN, num: null, family: true });
+          slots.push({ type: typeN, num: null, family: true, note: line });
         }
       }
     });
   }
 
-  // Bổ sung: Nếu khách có đặt Bungalow mà chưa được detect ở trên -> Thêm slot BGL
   var hasBglSlot = slots.some(function(s){ return s.type === 'BGL' });
   if (!hasBglSlot && bungalowData && bungalowData.length > 0) {
     bungalowData.forEach(function(x) {
-      slots.push({ type: 'BGL', num: x.num ? parseInt(x.num, 10) : null });
+      slots.push({ type: 'BGL', num: x.num ? parseInt(x.num, 10) : null, note: x.s });
     });
   }
 
@@ -565,7 +558,8 @@ function tagHtml(b){
 
   if (tour === 'dn' && b.showSlots && b.showSlots.length){
     b.showSlots.forEach(function(slot){
-      h += '<span class="tag s">' + slotIcon(slot.type) + ' ' + esc(slotBadgeText(slot)) + '</span>';
+      var noteDisplay = slot.note ? ' - ' + esc(slot.note) : '';
+      h += '<span class="tag s" title="' + esc(slot.note || '') + '">' + slotIcon(slot.type) + ' ' + esc(slotBadgeText(slot)) + noteDisplay + '</span>';
     });
   }
   return h?'<div class="tags">'+h+'</div>':'';
@@ -781,12 +775,14 @@ function renderSlotRow(b, slot, slotIdx){
   else slotLabel = slot.type;
 
   var badgeTxt = slot.num ? (slot.type + ' ' + slot.num) : ('#' + (slotIdx + 1));
+  var noteHtml = slot.note ? '<div class="slot-note">📝 ' + esc(slot.note) + '</div>' : '';
 
   return '<div class="' + rowClass + '">' +
     '<div class="slot-head">' +
       '<span class="slot-badge">' + badgeTxt + '</span>' +
       '<span class="slot-label">' + esc(slotLabel) + '</span>' +
     '</div>' +
+    noteHtml +
     '<div class="slot-actions">' +
       '<select data-pk="' + esc(k) + '">' + opts + '</select>' +
       '<button class="btn" data-push="' + esc(k) + '"' + dis + '>📤</button>' +
@@ -1009,6 +1005,7 @@ function submitPush(){
       data.giftFromSheet = true;
       data.slotIndex = pushCtx.slotIdx;
       if (pushCtx.slot.num) data.giftNum = pushCtx.slot.num;
+      if (pushCtx.slot.note) data.sheetNote = pushCtx.slot.note;
     }
   } else {
     data = {

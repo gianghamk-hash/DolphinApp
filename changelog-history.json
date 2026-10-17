@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.71",
+      "releaseDate": "2026-10-17T02:21:50.393Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.70",
       "releaseDate": "2026-10-17T02:13:55.258Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
@@ -390,14 +398,6 @@
       "summary": "Fix Block Blast cellSize + BXH không cần index",
       "details": [
         "Fix Block Blast cellSize + BXH không cần index"
-      ]
-    },
-    {
-      "version": "1.0.21",
-      "releaseDate": "2026-10-14T08:15:54.227Z",
-      "summary": "2048 v2: animation trượt + âm thanh + màu chuẩn",
-      "details": [
-        "2048 v2: animation trượt + âm thanh + màu chuẩn"
       ]
     }
   ]

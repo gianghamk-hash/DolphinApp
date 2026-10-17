@@ -1,12 +1,12 @@
 {
-  "version": "1.0.78",
-  "previousVersion": "1.0.77",
-  "commit": "18c6f15",
-  "previousCommit": "053bf65",
-  "buildDate": "2026-10-17T14:57:23.511Z",
+  "version": "1.0.79",
+  "previousVersion": "1.0.78",
+  "commit": "06c63a3",
+  "previousCommit": "18c6f15",
+  "buildDate": "2026-10-17T14:58:32.035Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 82,
+    "totalCommits": 83,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0

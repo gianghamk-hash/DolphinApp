@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.78",
+      "releaseDate": "2026-10-17T14:57:23.511Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.77",
       "releaseDate": "2026-10-17T14:55:54.917Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "xóa note",
       "details": [
         "xóa note"
-      ]
-    },
-    {
-      "version": "1.0.28",
-      "releaseDate": "2026-10-14T15:49:25.117Z",
-      "summary": "Landing: Reminder watcher + popup đỏ + notif permission",
-      "details": [
-        "Landing: Reminder watcher + popup đỏ + notif permission"
       ]
     }
   ]

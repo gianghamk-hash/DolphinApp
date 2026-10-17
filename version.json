@@ -1,7 +1,7 @@
 {
-  "version": "1.0.73",
-  "buildDate": "2026-10-17T05:58:08.332Z",
-  "commit": "81f6cc0",
-  "notes": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.74",
+  "buildDate": "2026-10-17T06:06:43.392Z",
+  "commit": "f06c3b4",
+  "notes": "FIX LỖI BUNGALOW VÀ VPS",
   "forceUpdate": false
 }

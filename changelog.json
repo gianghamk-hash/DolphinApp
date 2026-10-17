@@ -1,18 +1,18 @@
 {
-  "version": "1.0.73",
-  "previousVersion": "1.0.72",
-  "commit": "81f6cc0",
-  "previousCommit": "3ad55eb",
-  "buildDate": "2026-10-17T05:58:08.332Z",
-  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.74",
+  "previousVersion": "1.0.73",
+  "commit": "f06c3b4",
+  "previousCommit": "81f6cc0",
+  "buildDate": "2026-10-17T06:06:43.392Z",
+  "summary": "FIX LỖI BUNGALOW VÀ VPS",
   "changes": {
-    "totalCommits": 77,
+    "totalCommits": 78,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Mô tả ngắn gọn việc bạn vừa làm"
+    "FIX LỖI BUNGALOW VÀ VPS"
   ],
   "fileChanges": [
     {

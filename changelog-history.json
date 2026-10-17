@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.70",
+      "releaseDate": "2026-10-17T02:13:55.258Z",
+      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+      "details": [
+        "Mô tả ngắn gọn việc bạn vừa làm"
+      ]
+    },
+    {
       "version": "1.0.69",
       "releaseDate": "2026-10-17T02:04:53.867Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "2048 v2: animation trượt + âm thanh + màu chuẩn",
       "details": [
         "2048 v2: animation trượt + âm thanh + màu chuẩn"
-      ]
-    },
-    {
-      "version": "1.0.20",
-      "releaseDate": "2026-10-14T07:45:48.982Z",
-      "summary": "Sổ Tay: bật thông báo hệ thống (Mức 2)",
-      "details": [
-        "Sổ Tay: bật thông báo hệ thống (Mức 2)"
       ]
     }
   ]

@@ -1,18 +1,18 @@
 {
-  "version": "1.0.70",
-  "previousVersion": "1.0.69",
-  "commit": "82de332",
-  "previousCommit": "2a7e4e8",
-  "buildDate": "2026-10-17T02:13:55.258Z",
-  "summary": "Mô tả ngắn gọn việc bạn vừa làm",
+  "version": "1.0.71",
+  "previousVersion": "1.0.70",
+  "commit": "6642e67",
+  "previousCommit": "82de332",
+  "buildDate": "2026-10-17T02:21:50.393Z",
+  "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 74,
+    "totalCommits": 75,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Mô tả ngắn gọn việc bạn vừa làm"
+    "FIX LỖI"
   ],
   "fileChanges": [
     {

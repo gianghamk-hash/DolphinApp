@@ -419,29 +419,30 @@ function dietType(s){
 
 /* ═══════════════════════════════════════════════════════════
    ✅ DETECT SHOW SLOTS — ĐÃ CẬP NHẬT CHUẨN XÁC
-   Nhận diện cả "Tặng", "FOC", "xem show", và tự động nhận Bungalow
+   Nhận diện cả Vipoolside (viết liền) và Pool side
    ═══════════════════════════════════════════════════════════ */
 function shouldSkipLine(line){
   var l = String(line || '').trim();
   if (!l) return true;
   var low = l.toLowerCase();
 
-  // Nếu dòng chứa các từ khóa liên quan đến show/tặng/foc/bungalow/vps/bar view thì KHÔNG skip
-  var hasRelevant = /\btặng\b|\bfoc\b|\bxem\s*show\b|\bshow\b|\bbungalow\b|\bbgl\b|\bvps\b|\bbar\s*view\b/i.test(low);
+  // Nếu dòng chứa các từ khóa liên quan đến show/tặng/foc/đặt/combo/khu vực thì KHÔNG skip
+  var hasRelevant = /\btặng\b|\bfoc\b|\bxem\s*show\b|\bshow\b|\bbungalow\b|\bbgl\b|\bvps\b|\bvip\s*pool\s*side\b|\bvipoolside\b|\bpool\s*side\b|\bbar\s*view\b|\bđặt\b|\bcombo\b/i.test(low);
   if (hasRelevant) return false;
 
   // Dòng bắt đầu bằng keyword mô tả/hỗ trợ
   if (/^(hỗ trợ|lưu ý|note|ghi chú|chú ý|áp dụng|điều kiện|không\s+bao\s+gồm|chỉ\s+bao\s+gồm|miễn\s+phí|check)/i.test(low)) return true;
   // Dòng bắt đầu bằng khu vực + trạng từ mô tả (Bungalow tầng..., VPS tầng..., v.v.)
-  if (/^(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\s+(tầng|chỉ|không|bao\s+gồm|sát|nằm|ở|tại|đã)/i.test(low)) return true;
+  if (/^(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\s+(tầng|chỉ|không|bao\s+gồm|sát|nằm|ở|tại|đã)/i.test(low)) return true;
   return false;
 }
 
 function typeFromKeyword(kw){
-  var t = kw.toLowerCase();
+  // Loại bỏ khoảng trắng để nhận diện cả "vip poolside" và "vipoolside"
+  var t = kw.toLowerCase().replace(/\s+/g, '');
   if (/bungalow|bgl/.test(t)) return 'BGL';
-  if (/vps|vip\s*poolside/.test(t)) return 'VPS';
-  if (/bar\s*view|vip\s*bar\s*view/.test(t)) return 'BAR VIEW';
+  if (/vps|vippoolside|poolside/.test(t)) return 'VPS';
+  if (/barview|vipbarview/.test(t)) return 'BAR VIEW';
   return null;
 }
 
@@ -453,18 +454,10 @@ function detectShowSlots(noteText, bungalowData){
     lines.forEach(function(line){
       if (shouldSkipLine(line)) return;
 
-      var hasTang = /\btặng\b/i.test(line);
-      var hasFoc = /\bfoc\b/i.test(line);
-      var hasShow = /\bxem\s*show\b|\bshow\b/i.test(line);
-      var hasBung = /bungalow|bgl/i.test(line);
-
-      // Nếu không chứa từ khóa nào liên quan, bỏ qua
-      if (!hasTang && !hasFoc && !hasShow && !hasBung) return;
-
       var m, foundSpecific = false;
 
       // ─── Pattern 1: Số cụ thể sau khu vực (BGL 302, VPS 5, BAR VIEW 3) ───
-      var reSpec = /\b(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\s*[#:]?\s*(\d{1,3})\b/gi;
+      var reSpec = /\b(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\s*[#:]?\s*(\d{1,3})\b/gi;
       while ((m = reSpec.exec(line))){
         var typeSpec = typeFromKeyword(m[1]);
         if (!typeSpec) continue;
@@ -472,9 +465,9 @@ function detectShowSlots(noteText, bungalowData){
         foundSpecific = true;
       }
 
-      // ─── Pattern 2: Số lượng + khu vực (2 bungalow, 3 vps) ───
+      // ─── Pattern 2: Số lượng + khu vực (2 bungalow, 3 vps, 01 Vipoolside) ───
       if (!foundSpecific){
-        var reCount = /(\d+)\s*(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\b/gi;
+        var reCount = /(\d+)\s*(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\b/gi;
         while ((m = reCount.exec(line))){
           var n = parseInt(m[1],10);
           var typeC = typeFromKeyword(m[2]);
@@ -485,7 +478,7 @@ function detectShowSlots(noteText, bungalowData){
       }
 
       // ─── Pattern 3: "Tặng Bungalow" / "FOC VPS" / "xem show Vip Bar view" ───
-      var reNoNum = /\b(?:tặng|foc|xem\s*show)\s+(bungalow|bgl|vps|vip\s*poolside|bar\s*view|vip\s*bar\s*view)\b(?!\s*\d)/gi;
+      var reNoNum = /\b(?:tặng|foc|xem\s*show)\s+(bungalow|bgl|vps|vip\s*pool\s*side|vipoolside|pool\s*side|bar\s*view|vip\s*bar\s*view)\b(?!\s*\d)/gi;
       while ((m = reNoNum.exec(line))){
         var typeN = typeFromKeyword(m[1]);
         if (!typeN) continue;

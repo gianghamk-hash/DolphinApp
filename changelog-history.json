@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.75",
+      "releaseDate": "2026-10-17T14:47:08.137Z",
+      "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
+      "details": [
+        "Nhạc theme v2.0 — 15 file + auto fade khi vào app"
+      ]
+    },
+    {
       "version": "1.0.74",
       "releaseDate": "2026-10-17T06:06:43.392Z",
       "summary": "FIX LỖI BUNGALOW VÀ VPS",
@@ -390,14 +398,6 @@
       "summary": "Xóa Block Blast, thêm Battleship vào tab GAME",
       "details": [
         "Xóa Block Blast, thêm Battleship vào tab GAME"
-      ]
-    },
-    {
-      "version": "1.0.25",
-      "releaseDate": "2026-10-14T09:56:32.611Z",
-      "summary": "Block Blast v6: ghost = preview chung 1 tọa độ",
-      "details": [
-        "Block Blast v6: ghost = preview chung 1 tọa độ"
       ]
     }
   ]

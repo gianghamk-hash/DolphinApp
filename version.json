@@ -1,7 +1,7 @@
 {
-  "version": "1.0.75",
-  "buildDate": "2026-10-17T14:47:08.137Z",
-  "commit": "a67bb04",
-  "notes": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
+  "version": "1.0.76",
+  "buildDate": "2026-10-17T14:50:48.032Z",
+  "commit": "5f97659",
+  "notes": "FIX LỖI",
   "forceUpdate": false
 }

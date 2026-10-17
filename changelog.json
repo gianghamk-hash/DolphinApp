@@ -1,22 +1,22 @@
 {
-  "version": "1.0.75",
-  "previousVersion": "1.0.74",
-  "commit": "a67bb04",
-  "previousCommit": "f06c3b4",
-  "buildDate": "2026-10-17T14:47:08.137Z",
-  "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
+  "version": "1.0.76",
+  "previousVersion": "1.0.75",
+  "commit": "5f97659",
+  "previousCommit": "a67bb04",
+  "buildDate": "2026-10-17T14:50:48.032Z",
+  "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 79,
+    "totalCommits": 80,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Nhạc theme v2.0 — 15 file + auto fade khi vào app"
+    "FIX LỖI"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-show.html",
+      "file": "manager/dashboard.html",
       "type": "update"
     }
   ]

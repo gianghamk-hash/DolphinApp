@@ -168,10 +168,11 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
       <div id="s-drinks" class="grid grid-cols-2 sm:grid-cols-3 gap-2"></div>
 
       <div class="flex justify-between items-center mb-2 mt-4">
-        <span class="lbl !m-0 !text-gold-400 text-sm">🍢 Đồ ăn kèm</span>
+        <span class="lbl !m-0 !text-gold-400 text-sm">🍢 Set Đồ ăn kèm</span>
         <span id="s-foods-count" class="text-xs font-black text-emerald-400 bg-black/40 px-2 py-1 rounded">0/0</span>
       </div>
-      <div id="s-foods" class="grid grid-cols-2 gap-2"></div>
+      <!-- SẼ RENDER 1 Ô INPUT CHO SET ĐỒ ĂN -->
+      <div id="s-foods"></div>
     </div>
 
     <div class="flex gap-3 mt-6">
@@ -275,7 +276,7 @@ const COMBOS = {
   },
   'combo3': {
     name: 'COMBO 3', price: '2000K', icon: '🥉',
-    maxDrinks: 10, maxFoods: 1, // Đã cập nhật thành 10
+    maxDrinks: 10, maxFoods: 1,
     allowedDrinks: ['COKE', 'FANTA', 'SPRITE', 'I-ON WATER', 'BIA HẠ LONG'],
     allowedFoods: ['MỰC KHÔ', 'HẠT ĐIỀU', 'PHÔ MAI']
   }
@@ -363,14 +364,27 @@ function cell(label) {
     <span class="text-[9px] opacity-80">🍽 ${esc(b.dining)} • ${esc(b.seller)}</span></div>`;
 }
 
+// Hàm hỗ trợ hiển thị list foods gọn gàng
+function renderFoodList(foodsObj) {
+  if (!foodsObj || !Object.keys(foodsObj).length) return '<i class="opacity-70">Chưa chọn</i>';
+  const vals = Object.values(foodsObj);
+  const allSame = vals.every(v => v === vals[0]);
+  if (allSame) {
+    const names = Object.keys(foodsObj).join(', ');
+    return `<b>Set</b> (${esc(names)}) <b>x${vals[0]}</b>`;
+  }
+  return Object.entries(foodsObj).map(([k, v]) => `${esc(k)} <b>x${v}</b>`).join(' • ');
+}
+
 function showCell(label) {
   const b = bookings[key(label)];
   if (!b) return `<div class="tbl free !min-h-[110px]" onclick="openService('${label}')"><b class="text-sm">${label}</b><span class="text-[10px] opacity-70">Trống</span></div>`;
   const sv = b.service;
   const comboName = sv && COMBOS[sv.combo] ? COMBOS[sv.combo].name : 'Chưa chọn';
   
-  const list = o => Object.entries(o || {}).map(([k, v]) => `${esc(k)} <b>x${v}</b>`).join(' • ');
-  const dr = sv && list(sv.drinks), fd = sv && list(sv.foods);
+  const listDr = o => Object.entries(o || {}).map(([k, v]) => `${esc(k)} <b>x${v}</b>`).join(' • ');
+  const dr = sv && listDr(sv.drinks);
+  const fd = sv ? renderFoodList(sv.foods) : null;
   const none = '<i class="opacity-70">Chưa chọn</i>';
   
   return `<div class="tbl ${sv ? '!bg-black/55 !border-gold-400 !text-gold-400' : 'mine'} !text-left !items-stretch !gap-1 !p-3" onclick="openService('${label}')">
@@ -503,7 +517,6 @@ window.openService = label => {
   const isOwner = norm(b.seller) === norm(me());
   svcLocked = b.service && !isOwner && !isManager();
   
-  // Xử lý hiển thị khóa
   $('s-lock').classList.toggle('hidden', !svcLocked);
   if (svcLocked) {
     $('s-lock').innerText = `🔒 Bàn này do "${b.seller}" nhập. Bạn không thể thay đổi.`;
@@ -512,10 +525,8 @@ window.openService = label => {
     $('s-save').classList.remove('hidden');
   }
   
-  // Nút xóa dữ liệu (chỉ hiện khi có service)
   $('s-del-btn').classList.toggle('hidden', !b.service);
 
-  // Render danh sách Combo
   $('s-combo-list').innerHTML = Object.entries(COMBOS).map(([id, c]) => `
     <div class="combo-card" id="c-${id}" onclick="selectCombo('${id}', ${!!b.service})">
       <div class="text-xl">${c.icon}</div>
@@ -525,21 +536,29 @@ window.openService = label => {
     </div>
   `).join('');
 
-  // Tải dữ liệu cũ (nếu có)
   currentCombo = null;
   if (b.service && b.service.combo) {
-    selectCombo(b.service.combo, false); // false = không reset input
-    // Fill data
-    document.querySelectorAll('.s-inp').forEach(i => {
-      const v = b.service[i.dataset.g]?.[i.dataset.k];
+    selectCombo(b.service.combo, false);
+    
+    // Fill đồ uống
+    document.querySelectorAll('.s-inp[data-g="drinks"]').forEach(i => {
+      const v = b.service.drinks?.[i.dataset.k];
       i.value = v || '';
     });
+    
+    // Fill đồ ăn (chỉ có 1 ô Set)
+    const foodSetInp = document.querySelector('.s-inp[data-g="foods_set"]');
+    if (foodSetInp) {
+      const foodsObj = b.service.foods || {};
+      const firstVal = Object.values(foodsObj)[0] || 0;
+      foodSetInp.value = firstVal;
+    }
+
     updCounters();
   } else {
     $('s-detail-wrap').classList.add('hidden');
   }
 
-  // Khóa input nếu không có quyền
   document.querySelectorAll('.s-inp').forEach(i => i.disabled = svcLocked);
   document.querySelectorAll('.combo-card').forEach(c => { if(svcLocked) c.style.pointerEvents = 'none'; });
 
@@ -563,12 +582,18 @@ window.selectCombo = (comboId, resetInputs = true) => {
     </label>
   `).join('');
 
-  // Render Đồ ăn
-  $('s-foods').innerHTML = c.allowedFoods.map(n => `
-    <label class="text-[10px] font-bold text-teal-200 uppercase">${n}
-      <input type="number" min="0" data-k="${n}" data-g="foods" oninput="updCounters()" class="s-inp inp mt-1" placeholder="0">
-    </label>
-  `).join('');
+  // Render Đồ ăn (Gộp thành 1 Set)
+  const foodList = c.allowedFoods.join(', ');
+  $('s-foods').innerHTML = `
+    <div class="bg-black/30 border border-teal-700/50 rounded-xl p-3 mt-1">
+      <div class="text-[11px] text-teal-300 font-bold mb-1">Set đồ ăn kèm bao gồm:</div>
+      <div class="text-[11px] text-gold-400 font-bold mb-3">${foodList}</div>
+      <label class="text-[10px] font-bold text-teal-200 uppercase flex items-center justify-between">
+        <span>Số lượng Set (Đĩa)</span>
+        <input type="number" min="0" max="${c.maxFoods}" data-g="foods_set" oninput="updCounters()" class="s-inp inp !w-24 text-center" placeholder="0">
+      </label>
+    </div>
+  `;
 
   if (resetInputs) {
     document.querySelectorAll('.s-inp').forEach(i => i.value = '');
@@ -586,7 +611,6 @@ window.updCounters = () => {
   document.querySelectorAll('.s-inp[data-g="drinks"]').forEach(i => { dTotal += parseInt(i.value) || 0; });
   if (dTotal > c.maxDrinks) {
     toast(`Combo này tối đa ${c.maxDrinks} đồ uống!`, '⚠️');
-    // Rollback
     const lastInput = document.activeElement;
     if (lastInput && lastInput.dataset.g === 'drinks') {
       lastInput.value = Math.max(0, parseInt(lastInput.value) - (dTotal - c.maxDrinks));
@@ -597,15 +621,12 @@ window.updCounters = () => {
   $('s-drinks-count').className = `text-xs font-black px-2 py-1 rounded ${dTotal === c.maxDrinks ? 'text-red-400 bg-red-900/40' : 'text-emerald-400 bg-black/40'}`;
 
   // Đếm Đồ ăn
-  let fTotal = 0;
-  document.querySelectorAll('.s-inp[data-g="foods"]').forEach(i => { fTotal += parseInt(i.value) || 0; });
+  const foodSetInp = document.querySelector('.s-inp[data-g="foods_set"]');
+  let fTotal = foodSetInp ? parseInt(foodSetInp.value) || 0 : 0;
   if (fTotal > c.maxFoods) {
-    toast(`Combo này tối đa ${c.maxFoods} đồ ăn!`, '⚠️');
-    const lastInput = document.activeElement;
-    if (lastInput && lastInput.dataset.g === 'foods') {
-      lastInput.value = Math.max(0, parseInt(lastInput.value) - (fTotal - c.maxFoods));
-      fTotal = c.maxFoods;
-    }
+    toast(`Combo này tối đa ${c.maxFoods} đĩa đồ ăn kèm!`, '⚠️');
+    if (foodSetInp) foodSetInp.value = c.maxFoods;
+    fTotal = c.maxFoods;
   }
   $('s-foods-count').innerText = `${fTotal}/${c.maxFoods}`;
   $('s-foods-count').className = `text-xs font-black px-2 py-1 rounded ${fTotal === c.maxFoods ? 'text-red-400 bg-red-900/40' : 'text-emerald-400 bg-black/40'}`;
@@ -618,10 +639,18 @@ window.saveService = async () => {
   const label = $('s-id').value;
   const service = { combo: currentCombo, drinks: {}, foods: {}, savedAt: Date.now() };
   
-  document.querySelectorAll('.s-inp').forEach(i => {
+  document.querySelectorAll('.s-inp[data-g="drinks"]').forEach(i => {
     const n = parseInt(i.value) || 0;
-    if (n > 0) service[i.dataset.g][i.dataset.k] = n;
+    if (n > 0) service.drinks[i.dataset.k] = n;
   });
+
+  const foodSetInp = document.querySelector('.s-inp[data-g="foods_set"]');
+  const fQty = foodSetInp ? parseInt(foodSetInp.value) || 0 : 0;
+  if (fQty > 0) {
+    COMBOS[currentCombo].allowedFoods.forEach(f => {
+      service.foods[f] = fQty;
+    });
+  }
   
   if (!Object.keys(service.drinks).length && !Object.keys(service.foods).length) {
     return toast('Vui lòng nhập ít nhất 1 món!', '⚠️');
@@ -686,7 +715,6 @@ window.executeArchive = async () => {
   } catch (e) { toast('Lỗi lưu trữ: ' + e.message, '❌'); }
 };
 
-const fmt = o => Object.entries(o || {}).map(([k, v]) => `${esc(k)}: <b class="text-gold-400">${v}</b>`).join('<br>') || '-';
 window.fetchHistory = async () => {
   if (!db) return;
   const date = $('h-date').value, shift = $('h-shift').value, kw = norm($('h-search').value), body = $('h-body');
@@ -708,8 +736,8 @@ window.fetchHistory = async () => {
       <td class="p-3 font-black text-gold-400 whitespace-nowrap">${esc(r.label)}</td><td class="p-3 font-bold">${esc(r.leader)}</td>
       <td class="p-3">${esc(r.dining)}</td><td class="p-3">${esc(r.guests)}</td><td class="p-3">${esc(payTxt(r))}</td>
       <td class="p-3 text-teal-200">${esc(r.seller)}</td>
-      <td class="p-3"><b class="text-yellow-400 text-[10px] block">${esc(comboName)}</b>${fmt(sv.drinks)}</td>
-      <td class="p-3">${fmt(sv.foods)}</td>
+      <td class="p-3"><b class="text-yellow-400 text-[10px] block">${esc(comboName)}</b>${sv.drinks ? Object.entries(sv.drinks).map(([k,v])=>`${esc(k)}: <b class="text-gold-400">${v}</b>`).join('<br>') : '-'}</td>
+      <td class="p-3">${sv.foods ? renderFoodList(sv.foods) : '-'}</td>
       <td class="p-3 text-teal-400">${esc(r.shift)}</td></tr>`;
     }).join('')
       : '<tr><td colspan="9" class="text-center py-10 text-teal-400 font-bold">Không tìm thấy dữ liệu.</td></tr>';

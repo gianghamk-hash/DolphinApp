@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.74",
+      "releaseDate": "2026-10-17T06:06:43.392Z",
+      "summary": "FIX LỖI BUNGALOW VÀ VPS",
+      "details": [
+        "FIX LỖI BUNGALOW VÀ VPS"
+      ]
+    },
+    {
       "version": "1.0.73",
       "releaseDate": "2026-10-17T05:58:08.332Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
@@ -390,14 +398,6 @@
       "summary": "Block Blast v6: ghost = preview chung 1 tọa độ",
       "details": [
         "Block Blast v6: ghost = preview chung 1 tọa độ"
-      ]
-    },
-    {
-      "version": "1.0.24",
-      "releaseDate": "2026-10-14T09:52:09.545Z",
-      "summary": "Block Blast v5: unified coordinate system",
-      "details": [
-        "Block Blast v5: unified coordinate system"
       ]
     }
   ]

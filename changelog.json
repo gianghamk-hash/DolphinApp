@@ -1,22 +1,22 @@
 {
-  "version": "1.0.74",
-  "previousVersion": "1.0.73",
-  "commit": "f06c3b4",
-  "previousCommit": "81f6cc0",
-  "buildDate": "2026-10-17T06:06:43.392Z",
-  "summary": "FIX LỖI BUNGALOW VÀ VPS",
+  "version": "1.0.75",
+  "previousVersion": "1.0.74",
+  "commit": "a67bb04",
+  "previousCommit": "f06c3b4",
+  "buildDate": "2026-10-17T14:47:08.137Z",
+  "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
   "changes": {
-    "totalCommits": 78,
+    "totalCommits": 79,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX LỖI BUNGALOW VÀ VPS"
+    "Nhạc theme v2.0 — 15 file + auto fade khi vào app"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "dolphin-show.html",
       "type": "update"
     }
   ]

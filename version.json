@@ -1,7 +1,7 @@
 {
-  "version": "1.0.74",
-  "buildDate": "2026-10-17T06:06:43.392Z",
-  "commit": "f06c3b4",
-  "notes": "FIX LỖI BUNGALOW VÀ VPS",
+  "version": "1.0.75",
+  "buildDate": "2026-10-17T14:47:08.137Z",
+  "commit": "a67bb04",
+  "notes": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
   "forceUpdate": false
 }

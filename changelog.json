@@ -1,12 +1,12 @@
 {
-  "version": "1.0.86",
-  "previousVersion": "1.0.85",
-  "commit": "6fcee69",
-  "previousCommit": "013d5c0",
-  "buildDate": "2026-10-18T13:29:38.337Z",
+  "version": "1.0.87",
+  "previousVersion": "1.0.86",
+  "commit": "ecd7a9f",
+  "previousCommit": "6fcee69",
+  "buildDate": "2026-10-18T13:30:34.373Z",
   "summary": "UPDATE 2",
   "changes": {
-    "totalCommits": 90,
+    "totalCommits": 91,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "dolphin-ui.js",
+      "file": "index.html",
       "type": "update"
     }
   ]

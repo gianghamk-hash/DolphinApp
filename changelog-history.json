@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.80",
+      "releaseDate": "2026-10-18T01:39:24.558Z",
+      "summary": "ĐỔI MÀU",
+      "details": [
+        "ĐỔI MÀU"
+      ]
+    },
+    {
       "version": "1.0.79",
       "releaseDate": "2026-10-17T14:58:32.035Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Bổ sung danh sách khách",
       "details": [
         "Bổ sung danh sách khách"
-      ]
-    },
-    {
-      "version": "1.0.30",
-      "releaseDate": "2026-10-14T15:57:41.298Z",
-      "summary": "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard",
-      "details": [
-        "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard"
       ]
     }
   ]

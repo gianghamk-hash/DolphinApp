@@ -1,22 +1,22 @@
 {
-  "version": "1.0.80",
-  "previousVersion": "1.0.79",
-  "commit": "079248f",
-  "previousCommit": "06c63a3",
-  "buildDate": "2026-10-18T01:39:24.558Z",
-  "summary": "ĐỔI MÀU",
+  "version": "1.0.81",
+  "previousVersion": "1.0.80",
+  "commit": "09f35e7",
+  "previousCommit": "079248f",
+  "buildDate": "2026-10-18T09:26:07.757Z",
+  "summary": "KHÓA BGL",
   "changes": {
-    "totalCommits": 84,
+    "totalCommits": 85,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "ĐỔI MÀU"
+    "KHÓA BGL"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "dolphin-bungalow.html",
       "type": "update"
     }
   ]

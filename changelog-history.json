@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.83",
+      "releaseDate": "2026-10-18T12:56:24.845Z",
+      "summary": "UPDATE 1",
+      "details": [
+        "UPDATE 1"
+      ]
+    },
+    {
       "version": "1.0.82",
       "releaseDate": "2026-10-18T12:55:13.535Z",
       "summary": "UPDATE 1",
@@ -390,14 +398,6 @@
       "summary": "Dolphin Guests: bungalow full note + filter 3 tầng + Lounge L1-L15",
       "details": [
         "Dolphin Guests: bungalow full note + filter 3 tầng + Lounge L1-L15"
-      ]
-    },
-    {
-      "version": "1.0.33",
-      "releaseDate": "2026-10-15T08:35:56.131Z",
-      "summary": "Dolphin Guests: modal push Bungalow đầy đủ trường payment + NV",
-      "details": [
-        "Dolphin Guests: modal push Bungalow đầy đủ trường payment + NV"
       ]
     }
   ]

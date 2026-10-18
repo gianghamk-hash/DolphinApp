@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.82",
+      "releaseDate": "2026-10-18T12:55:13.535Z",
+      "summary": "UPDATE 1",
+      "details": [
+        "UPDATE 1"
+      ]
+    },
+    {
       "version": "1.0.81",
       "releaseDate": "2026-10-18T09:26:07.757Z",
       "summary": "KHÓA BGL",
@@ -390,14 +398,6 @@
       "summary": "Dolphin Guests: modal push Bungalow đầy đủ trường payment + NV",
       "details": [
         "Dolphin Guests: modal push Bungalow đầy đủ trường payment + NV"
-      ]
-    },
-    {
-      "version": "1.0.32",
-      "releaseDate": "2026-10-15T02:11:31.517Z",
-      "summary": "cập nhật lại danh sách khách",
-      "details": [
-        "cập nhật lại danh sách khách"
       ]
     }
   ]

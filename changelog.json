@@ -1,22 +1,22 @@
 {
-  "version": "1.0.79",
-  "previousVersion": "1.0.78",
-  "commit": "06c63a3",
-  "previousCommit": "18c6f15",
-  "buildDate": "2026-10-17T14:58:32.035Z",
-  "summary": "FIX LỖI",
+  "version": "1.0.80",
+  "previousVersion": "1.0.79",
+  "commit": "079248f",
+  "previousCommit": "06c63a3",
+  "buildDate": "2026-10-18T01:39:24.558Z",
+  "summary": "ĐỔI MÀU",
   "changes": {
-    "totalCommits": 83,
+    "totalCommits": 84,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX LỖI"
+    "ĐỔI MÀU"
   ],
   "fileChanges": [
     {
-      "file": "manager/dashboard.html",
+      "file": "dolphin-guests.html",
       "type": "update"
     }
   ]

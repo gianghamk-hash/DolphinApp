@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.79",
+      "releaseDate": "2026-10-17T14:58:32.035Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.78",
       "releaseDate": "2026-10-17T14:57:23.511Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard",
       "details": [
         "Giải Trí: bỏ tab SỔ TAY — chuyển vào Manager Dashboard"
-      ]
-    },
-    {
-      "version": "1.0.29",
-      "releaseDate": "2026-10-14T15:52:57.985Z",
-      "summary": "xóa note",
-      "details": [
-        "xóa note"
       ]
     }
   ]

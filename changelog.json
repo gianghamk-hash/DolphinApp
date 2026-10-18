@@ -1,12 +1,12 @@
 {
-  "version": "1.0.87",
-  "previousVersion": "1.0.86",
-  "commit": "ecd7a9f",
-  "previousCommit": "6fcee69",
-  "buildDate": "2026-10-18T13:30:34.373Z",
+  "version": "1.0.88",
+  "previousVersion": "1.0.87",
+  "commit": "a6ea864",
+  "previousCommit": "ecd7a9f",
+  "buildDate": "2026-10-18T13:33:08.009Z",
   "summary": "UPDATE 2",
   "changes": {
-    "totalCommits": 91,
+    "totalCommits": 92,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

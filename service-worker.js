@@ -1,11 +1,10 @@
-/* BUILD: 2026-10-18-1333 */
+/* BUILD: 2026-10-13-00 */
 /* ============================================================
-   🚀 DOLPHIN SERVICE WORKER v5.1 — Network-First cho code
+   🚀 DOLPHIN SERVICE WORKER v5 — Network-First cho code
    - HTML/JS/CSS/JSON: Network First → luôn lấy bản mới
    - Ảnh/font: Cache First → nhanh
-   - Fallback cache khi offline
+   - Fallback cache khi offlinVe
    - Đọc version từ sw-config.json (single source of truth)
-   - v5.1: FIX lỗi 206 Partial Content (Range requests)
    ============================================================ */
 
 const BASE = '/DolphinApp';
@@ -111,12 +110,9 @@ self.addEventListener('fetch', event => {
     event.respondWith(
       fetch(request)
         .then(response => {
-          // ✅ FIX 206: chỉ cache khi status === 200 (loại bỏ 206, 304, 3xx...)
-          if (response.status === 200) {
+          if (response.ok) {
             const clone = response.clone();
-            caches.open(CACHE_NAME)
-              .then(c => c.put(request, clone))
-              .catch(err => console.warn('[SW] cache.put skipped:', err.message));
+            caches.open(CACHE_NAME).then(c => c.put(request, clone));
           }
           return response;
         })
@@ -128,12 +124,9 @@ self.addEventListener('fetch', event => {
       caches.match(request).then(cached => {
         if (cached) return cached;
         return fetch(request).then(response => {
-          // ✅ FIX 206: chỉ cache khi status === 200
-          if (response.status === 200) {
+          if (response.ok) {
             const clone = response.clone();
-            caches.open(CACHE_NAME)
-              .then(c => c.put(request, clone))
-              .catch(err => console.warn('[SW] cache.put skipped:', err.message));
+            caches.open(CACHE_NAME).then(c => c.put(request, clone));
           }
           return response;
         });

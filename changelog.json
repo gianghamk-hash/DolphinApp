@@ -1,12 +1,12 @@
 {
-  "version": "1.0.88",
-  "previousVersion": "1.0.87",
-  "commit": "a6ea864",
-  "previousCommit": "ecd7a9f",
-  "buildDate": "2026-10-18T13:33:08.009Z",
+  "version": "1.0.89",
+  "previousVersion": "1.0.88",
+  "commit": "bb9da1c",
+  "previousCommit": "a6ea864",
+  "buildDate": "2026-10-18T13:34:43.970Z",
   "summary": "UPDATE 2",
   "changes": {
-    "totalCommits": 92,
+    "totalCommits": 93,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "theme-system.js",
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

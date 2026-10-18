@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.81",
+      "releaseDate": "2026-10-18T09:26:07.757Z",
+      "summary": "KHÓA BGL",
+      "details": [
+        "KHÓA BGL"
+      ]
+    },
+    {
       "version": "1.0.80",
       "releaseDate": "2026-10-18T01:39:24.558Z",
       "summary": "ĐỔI MÀU",
@@ -390,14 +398,6 @@
       "summary": "cập nhật lại danh sách khách",
       "details": [
         "cập nhật lại danh sách khách"
-      ]
-    },
-    {
-      "version": "1.0.31",
-      "releaseDate": "2026-10-15T02:05:17.882Z",
-      "summary": "Bổ sung danh sách khách",
-      "details": [
-        "Bổ sung danh sách khách"
       ]
     }
   ]

@@ -1,22 +1,22 @@
 {
-  "version": "1.0.81",
-  "previousVersion": "1.0.80",
-  "commit": "09f35e7",
-  "previousCommit": "079248f",
-  "buildDate": "2026-10-18T09:26:07.757Z",
-  "summary": "KHÓA BGL",
+  "version": "1.0.82",
+  "previousVersion": "1.0.81",
+  "commit": "0dc5534",
+  "previousCommit": "09f35e7",
+  "buildDate": "2026-10-18T12:55:13.535Z",
+  "summary": "UPDATE 1",
   "changes": {
-    "totalCommits": 85,
+    "totalCommits": 86,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "KHÓA BGL"
+    "UPDATE 1"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-bungalow.html",
+      "file": "index.html",
       "type": "update"
     }
   ]

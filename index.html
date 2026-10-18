@@ -3,629 +3,217 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#123634">
+<meta name="theme-color" content="#050505">
 <title>Dolphin HaLong Cruise</title>
-  <!-- ✅ Detect Manager.apk — ẩn widget không cần thiết -->
 <script>
-  (function(){
-    try {
-      var ua = navigator.userAgent || '';
-      if (ua.indexOf('DolphinManager') >= 0 ||
-          window.DOLPHIN_APP_TYPE === 'manager') {
-        document.documentElement.setAttribute('data-app', 'manager');
-      }
-    } catch(e){}
-  })();
+(function(){try{var ua=navigator.userAgent||'';if(ua.indexOf('DolphinManager')>=0||window.DOLPHIN_APP_TYPE==='manager'){document.documentElement.setAttribute('data-app','manager')}}catch(e){}})();
 </script>
 <style>
-  /* ═══ ẨN WIDGET TRÊN MANAGER.APK ═══ */
-  html[data-app="manager"] #notifPermBtn,
-  html[data-app="manager"] #dolphinMusicBtn,
-  html[data-app="manager"] #dolphinMusicPopup {
-    display: none !important;
-    visibility: hidden !important;
-    pointer-events: none !important;
-    opacity: 0 !important;
-  }
+html[data-app="manager"] #notifPermBtn,
+html[data-app="manager"] #dolphinMusicBtn,
+html[data-app="manager"] #dolphinMusicPopup{
+  display:none!important;visibility:hidden!important;pointer-events:none!important;opacity:0!important;
+}
 </style>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-/* ============ LOGO ============ */
-.logo-img{
-  animation: logoIn 1.2s cubic-bezier(.16,1,.3,1) both,
-             logoBreathe 5s ease-in-out infinite 1.5s;
+:root{
+  --bg-deep:#050505;
+  --bg-panel:rgba(20,20,20,.6);
+  --gold:var(--theme-accent,#D4AF37);
+  --gold-glow:var(--theme-glow,rgba(212,175,55,.4));
+  --text-main:#F4F4F5;
+  --text-muted:#94A3B8;
 }
-@keyframes logoIn{
-  0%{opacity:0;transform:scale(.85) translateY(20px);filter:blur(10px) brightness(1.5)}
-  100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0) brightness(1.05)}
-}
-@keyframes logoBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.025)}}
-@media(prefers-reduced-motion:reduce){ .logo-img{animation:none} }
-
-/* ============ SKELETON ============ */
-.area-card.skeleton{
-  pointer-events:none;
-  background:rgba(25,71,67,.35)!important;
-  border:1px dashed rgba(244,184,66,.15)!important;
-  position:relative;overflow:hidden;
-}
-.area-card.skeleton > *{ visibility:hidden!important; }
-.area-card.skeleton::after{
-  content:'';position:absolute;inset:0;border-radius:inherit;
-  background:linear-gradient(90deg,
-    rgba(25,71,67,0) 0%,
-    rgba(78,205,196,.14) 45%,
-    rgba(244,184,66,.10) 55%,
-    rgba(25,71,67,0) 100%);
-  background-size:200% 100%;
-  animation:skeletonShimmer 1.5s ease-in-out infinite;
-  pointer-events:none;z-index:3;
-}
-@keyframes skeletonShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
-
-/* ============ NOTIF BADGE ============ */
-.area-notif-badge{
-  position:absolute;top:.6rem;left:.85rem;
-  background:linear-gradient(135deg,#EF4444,#B91C1C);
-  color:#fff;font-size:.6rem;font-weight:900;letter-spacing:.06em;
-  padding:4px 9px;border-radius:99px;
-  display:none;align-items:center;gap:5px;
-  box-shadow:0 4px 12px rgba(239,68,68,.6),0 0 0 2px rgba(239,68,68,.25);
-  z-index:6;text-transform:uppercase;font-family:'Nunito',sans-serif;
-  animation:notifPulse 1.4s ease-in-out infinite;
-}
-.area-notif-badge.show{display:inline-flex}
-.area-notif-badge .nb-dot{width:7px;height:7px;border-radius:50%;background:#fff;box-shadow:0 0 8px #fff}
-@keyframes notifPulse{
-  0%,100%{transform:scale(1);box-shadow:0 4px 12px rgba(239,68,68,.6),0 0 0 2px rgba(239,68,68,.25)}
-  50%{transform:scale(1.08);box-shadow:0 6px 20px rgba(239,68,68,.9),0 0 0 4px rgba(239,68,68,.35)}
-}
-@media(prefers-reduced-motion:reduce){ .area-notif-badge{animation:none} }
-
-/* ============ HALONG CLOCK (cố định — không kéo thả) ============ */
-#halongClock{
-  position:relative;display:flex;align-items:center;gap:12px;
-  max-width:min(92vw,560px);
-  margin:0 auto clamp(0.75rem, 1.5vw, 1rem); /* 💡 Đã thu hẹp margin-bottom */
-  padding:12px 20px;border-radius:18px;
-  background:linear-gradient(135deg,rgba(15,61,56,.75),rgba(10,43,40,.85));
-  border:2px solid rgba(244,184,66,.55);
-  box-shadow:0 8px 32px rgba(0,0,0,.5),0 0 40px rgba(244,184,66,.25),
-             inset 0 0 30px rgba(244,184,66,.06);
-  backdrop-filter:blur(16px) saturate(140%);
-  -webkit-backdrop-filter:blur(16px) saturate(140%);
-  overflow:hidden;isolation:isolate;font-family:'Nunito',sans-serif;
-}
-#halongClock .hclock-glow{
-  position:absolute;inset:-50%;pointer-events:none;z-index:-1;
-  background:radial-gradient(circle at 30% 50%,rgba(244,184,66,.18),transparent 60%),
-             radial-gradient(circle at 70% 50%,rgba(78,205,196,.12),transparent 60%);
-}
-#halongClock .hclock-icon{
-  font-size:28px;line-height:1;flex-shrink:0;
-  filter:drop-shadow(0 0 12px rgba(244,184,66,.8));
-}
-#halongClock .hclock-body{flex:1;min-width:0;text-align:left}
-#halongClock .hclock-time{
-  display:flex;align-items:baseline;gap:2px;
-  font-weight:900;line-height:1;font-variant-numeric:tabular-nums;
-  color:#FBD77A;letter-spacing:.02em;
-  text-shadow:0 0 12px rgba(244,184,66,.65),0 0 24px rgba(244,184,66,.35);
-  font-size:clamp(1.6rem,4.5vw,2.4rem);
-}
-#halongClock .hclock-h,
-#halongClock .hclock-m,
-#halongClock .hclock-s{
-  font-family:'Fraunces','Nunito',serif;font-weight:900;
-}
-#halongClock .hclock-s{font-size:.55em;opacity:.85;margin-left:2px;color:#bfe9dc}
-#halongClock .hclock-sep{opacity:.55;font-weight:700;font-size:.85em}
-#halongClock .hclock-sep-s{font-size:.55em;opacity:.5}
-#halongClock .hclock-date{
-  font-size:clamp(.7rem,1.6vw,.82rem);
-  color:#bfe9dc;font-weight:700;margin-top:5px;
-  letter-spacing:.03em;opacity:.92;
-}
-#halongClock .hclock-loc{
-  display:flex;align-items:center;gap:6px;
-  padding-left:12px;border-left:1px solid rgba(244,184,66,.3);
-  flex-shrink:0;text-align:left;
-}
-#halongClock .hclock-loc-icon{font-size:18px;filter:drop-shadow(0 0 6px rgba(244,184,66,.7))}
-#halongClock .hclock-loc-text{
-  font-size:clamp(.62rem,1.4vw,.72rem);
-  font-weight:800;color:#FBD77A;letter-spacing:.04em;
-  text-transform:uppercase;line-height:1.3;
-  text-shadow:0 0 8px rgba(244,184,66,.5);
-}
-@media(max-width:480px){
-  #halongClock{padding:10px 14px;gap:8px}
-  #halongClock .hclock-icon{font-size:22px}
-  #halongClock .hclock-loc{padding-left:8px}
-  #halongClock .hclock-loc-text{font-size:.6rem}
-}
-
-/* ============ NÚT NHẠC FLOATING (kéo thả tự do) ============ */
-#dolphinMusicBtn{
-  position:fixed;top:14px;right:14px;z-index:9997;
-  width:52px;height:52px;border-radius:50%;
-  background:rgba(18,54,52,.92);
-  border:2px solid rgba(244,184,66,.7);
-  color:#FBD77A;font-size:22px;
-  cursor:grab;
-  display:flex;align-items:center;justify-content:center;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 6px 20px rgba(0,0,0,.5);
-  transition:transform .15s,box-shadow .15s,background .2s;
-  padding:0;
-  user-select:none;-webkit-user-select:none;touch-action:none;
-  -webkit-tap-highlight-color:transparent;
-  font-family:inherit;
-}
-#dolphinMusicBtn:active{cursor:grabbing}
-#dolphinMusicBtn.dragging{
-  cursor:grabbing;
-  transform:scale(1.12);
-  box-shadow:0 12px 32px rgba(0,0,0,.7),0 0 0 4px rgba(244,184,66,.35);
-  transition:none;
-}
-#dolphinMusicBtn.active{
-  background:linear-gradient(135deg,#FBD77A,#F4B842);
-  color:#123634;font-weight:900;
-  box-shadow:0 0 20px rgba(244,184,66,.9);
-  animation:musicPulse 1.6s ease-in-out infinite;
-}
-@keyframes musicPulse{
-  0%,100%{box-shadow:0 0 20px rgba(244,184,66,.9),0 0 0 0 rgba(244,184,66,.5)}
-  50%{box-shadow:0 0 28px rgba(244,184,66,1),0 0 0 6px rgba(244,184,66,.15)}
-}
-@media(prefers-reduced-motion:reduce){ #dolphinMusicBtn.active{animation:none} }
-
-/* ============ MUSIC POPUP ============ */
-#dolphinMusicPopup{
-  display:none;
-  position:fixed;
-  background:rgba(18,54,52,.97);
-  border:2px solid rgba(244,184,66,.5);
-  border-radius:14px;padding:14px;
-  box-shadow:0 12px 40px rgba(0,0,0,.75),0 0 30px rgba(244,184,66,.2);
-  min-width:250px;max-width:88vw;
-  backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);
-  z-index:9998;
-  animation:popupIn .2s ease-out;
-  font-family:'Nunito',sans-serif;
-}
-@keyframes popupIn{from{opacity:0;transform:translateY(-6px)}to{opacity:1;transform:translateY(0)}}
-#dolphinMusicPopup.show{display:block}
-#dolphinMusicPopup .dmp-title{
-  font-size:11px;font-weight:900;color:#FBD77A;
-  text-transform:uppercase;letter-spacing:.1em;margin-bottom:12px;
-  display:flex;align-items:center;gap:6px;
-}
-#dolphinMusicPopup .dmp-row{
-  display:flex;align-items:center;gap:10px;margin-bottom:10px;
-}
-#dolphinMusicPopup .dmp-row input[type=range]{
-  flex:1;height:4px;-webkit-appearance:none;appearance:none;
-  background:linear-gradient(90deg,#FBD77A,#F4B842);
-  border-radius:99px;outline:none;cursor:pointer;
-}
-#dolphinMusicPopup .dmp-row input[type=range]::-webkit-slider-thumb{
-  -webkit-appearance:none;width:14px;height:14px;border-radius:50%;
-  background:#fff;box-shadow:0 0 10px rgba(244,184,66,.9);cursor:pointer;
-}
-#dolphinMusicPopup .dmp-pct{
-  font-size:11px;color:#FBD77A;font-weight:900;min-width:36px;text-align:right;
-}
-#dolphinMusicPopup .dmp-hint{
-  font-size:10px;color:#bfe9dc;opacity:.75;text-align:center;line-height:1.45;
-  margin-bottom:10px;
-}
-#dolphinMusicPopup .dmp-hint b{color:#FBD77A}
-#dolphinMusicPopup .dmp-btn{
-  display:flex;align-items:center;justify-content:center;gap:6px;
-  width:100%;padding:9px;
-  border-radius:9px;font-weight:800;font-size:11px;
-  cursor:pointer;font-family:inherit;
-  transition:background .15s,transform .1s;
-  margin-top:8px;
-  border:1px solid transparent;
-}
-#dolphinMusicPopup .dmp-btn:active{transform:scale(.97)}
-#dolphinMusicPopup .dmp-btn-refresh{
-  background:rgba(55,137,123,.4);
-  border-color:rgba(55,137,123,.6);
-  color:#bfe9dc;
-}
-#dolphinMusicPopup .dmp-btn-refresh:hover{background:rgba(55,137,123,.6)}
-#dolphinMusicPopup .dmp-btn-refresh:disabled{opacity:.5;cursor:wait}
-#dolphinMusicPopup .dmp-btn-reset{
-  background:rgba(244,184,66,.12);
-  border-color:rgba(244,184,66,.4);
-  color:#FBD77A;
-}
-#dolphinMusicPopup .dmp-btn-reset:hover{background:rgba(244,184,66,.25)}
-
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 html,body{margin:0;padding:0;height:100%;overflow:hidden}
-body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
-
-/* 💡 Đã giảm padding top/bottom tổng thể */
-#landing > div:first-child{
-  padding-top: calc(1rem + env(safe-area-inset-top, 0px)) !important;
-  padding-bottom: calc(1rem + env(safe-area-inset-bottom, 0px)) !important;
+body{
+  background:var(--bg-deep);color:var(--text-main);font-family:'Nunito',sans-serif;
+  background-image:
+    radial-gradient(circle at 15% 50%, rgba(212,175,55,.04), transparent 25%),
+    radial-gradient(circle at 85% 30%, rgba(14,165,233,.04), transparent 25%);
+  background-attachment:fixed;
 }
 
-/* ============ WELCOME ============ */
-.welcome-lbl{
-  text-align:center;font-size:clamp(.95rem,2vw,1.25rem);font-weight:900;
-  color:#e6f7f2;margin:0 0 clamp(0.75rem, 1.5vw, 1rem); /* 💡 Thu hẹp margin */
-  text-shadow:0 2px 10px rgba(0,0,0,.7);letter-spacing:.04em;line-height:1.5;
-}
-.welcome-lbl .wlc-vi{
-  display:block;color:#FBD77A;font-family:'Fraunces',serif;
-  font-size:clamp(1.05rem,2.4vw,1.5rem);letter-spacing:.06em;margin-bottom:.35em;
-}
-.welcome-lbl .wlc-vi #wlcStaffName{
-  display:inline-block;color:#fff;
-  text-shadow:0 0 24px rgba(244,184,66,.8),0 0 40px rgba(244,184,66,.5),0 2px 6px rgba(0,0,0,.6);
-  font-weight:900;letter-spacing:.08em;margin:0 .15em;
-  animation:staffGlow 2.5s ease-in-out infinite;
-}
-@keyframes staffGlow{
-  0%,100%{text-shadow:0 0 24px rgba(244,184,66,.8),0 0 40px rgba(244,184,66,.5),0 2px 6px rgba(0,0,0,.6)}
-  50%{text-shadow:0 0 36px rgba(244,184,66,1),0 0 60px rgba(244,184,66,.8),0 2px 6px rgba(0,0,0,.6)}
-}
-.welcome-lbl .wlc-en{
-  display:block;font-size:.85em;color:#bfe9dc;font-weight:800;
-  margin-top:.55em;letter-spacing:.14em;text-transform:uppercase;opacity:.92;
-}
+/* LOGO */
+.logo-img{animation:logoIn 1.2s cubic-bezier(.16,1,.3,1) both,logoBreathe 6s ease-in-out infinite 1.5s}
+@keyframes logoIn{0%{opacity:0;transform:scale(.9) translateY(20px);filter:blur(10px) brightness(1.2)}100%{opacity:1;transform:scale(1) translateY(0);filter:blur(0) brightness(1.05)}}
+@keyframes logoBreathe{0%,100%{transform:scale(1)}50%{transform:scale(1.02)}}
+@media(prefers-reduced-motion:reduce){.logo-img{animation:none}}
 
-/* ============ AREA CARDS ============ */
-/* 💡 Thu hẹp grid gap */
-.area-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:clamp(.5rem, 1.5vw, 1rem)}
-@media(min-width:900px){.area-grid{grid-template-columns:repeat(4,1fr)}}
+/* SKELETON */
+.area-card.skeleton{pointer-events:none;background:rgba(255,255,255,.02)!important;border:1px dashed rgba(255,255,255,.1)!important;position:relative;overflow:hidden}
+.area-card.skeleton>*{visibility:hidden!important}
+.area-card.skeleton::after{content:'';position:absolute;inset:0;border-radius:inherit;background:linear-gradient(90deg,transparent 0%,rgba(255,255,255,.05) 45%,rgba(255,255,255,.08) 55%,transparent 100%);background-size:200% 100%;animation:skeletonShimmer 1.5s ease-in-out infinite;pointer-events:none;z-index:3}
+@keyframes skeletonShimmer{0%{background-position:200% 0}100%{background-position:-200% 0}}
 
-/* 💡 Giảm padding, min-height để gọn gàng hơn */
-.area-card{
-  position:relative;padding:1.25rem 1rem 1rem;text-align:center;cursor:pointer;
-  transition:transform .45s cubic-bezier(.16,1,.3,1);
-  isolation:isolate;font-family:'Nunito',sans-serif;color:#fff;
-  display:flex;flex-direction:column;align-items:center;justify-content:center;
-  width:100%;min-height:160px;gap:.3rem;
-  -webkit-appearance:none;appearance:none;outline:none;
-  background:transparent;border:none;
-}
-.area-card:hover{transform:translateY(-8px) scale(1.03)}
-.area-card:active{transform:translateY(-2px) scale(.99)}
-.area-card:hover .area-icon{transform:scale(1.2) rotate(-8deg)}
-.area-icon{
-  font-size:clamp(2.2rem,5vw,3rem);line-height:1; /* 💡 Thu nhỏ icon */
-  display:block;margin-bottom:.5rem;
-  transition:transform .5s cubic-bezier(.16,1,.3,1);
-  filter:drop-shadow(0 8px 16px rgba(0,0,0,.5));
-  position:relative;z-index:2;
-}
-.area-card:hover .area-icon{
-  filter:drop-shadow(0 8px 16px rgba(0,0,0,.5)) drop-shadow(0 0 20px var(--theme-glow, rgba(244,184,66,.9)));
-}
-.area-title-en{
-  font-weight:900;font-size:clamp(.85rem,1.9vw,1.1rem);
-  letter-spacing:.06em;text-transform:uppercase;
-  color:#fff;margin:0;transition:color 1s ease, text-shadow 1s ease;
-  line-height:1.15;position:relative;z-index:2;
-}
-.area-title-vi{
-  font-weight:700;font-size:clamp(.7rem,1.5vw,.9rem);
-  color:#bfe9dc;margin:0;letter-spacing:.04em;
-  opacity:.9;font-style:italic;transition:color 1s ease;
-  position:relative;z-index:2;
-}
-.area-badge{
-  position:absolute;top:.75rem;right:.85rem;
-  background:linear-gradient(135deg,#FBD77A,#D99A2B);
-  color:#123634;font-size:.55rem;font-weight:900;letter-spacing:.12em;
-  padding:3px 8px;border-radius:99px;text-transform:uppercase;
-  box-shadow:0 3px 10px rgba(244,184,66,.5);z-index:5;
-}
+/* NOTIF BADGE */
+.area-notif-badge{position:absolute;top:1rem;right:1rem;background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff;font-size:.65rem;font-weight:900;letter-spacing:.06em;padding:4px 10px;border-radius:99px;display:none;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(239,68,68,.4);z-index:6;font-family:'Nunito',sans-serif;animation:notifPulse 2s ease-in-out infinite}
+.area-notif-badge.show{display:inline-flex}
+.area-notif-badge .nb-dot{width:6px;height:6px;border-radius:50%;background:#fff}
+@keyframes notifPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.05)}}
 
-@keyframes float-up{0%{transform:translateY(28px);opacity:0}100%{transform:translateY(0);opacity:1}}
-.fade-up{animation:float-up .85s cubic-bezier(.16,1,.3,1) both}
-.d-1{animation-delay:.08s}.d-2{animation-delay:.22s}
+/* CLOCK */
+#halongClock{position:relative;display:flex;align-items:center;gap:16px;max-width:min(92vw,600px);margin:0 auto 1.5rem;padding:16px 24px;border-radius:24px;background:var(--bg-panel);border:1px solid rgba(255,255,255,.08);backdrop-filter:blur(20px) saturate(150%);-webkit-backdrop-filter:blur(20px) saturate(150%);box-shadow:0 20px 40px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1);overflow:hidden;isolation:isolate;font-family:'Nunito',sans-serif;transition:transform .3s ease,border-color .5s ease,box-shadow .5s ease}
+#halongClock:hover{transform:translateY(-2px)}
+#halongClock .hclock-icon{font-size:32px;line-height:1;flex-shrink:0;filter:drop-shadow(0 0 12px var(--gold-glow))}
+#halongClock .hclock-body{flex:1;min-width:0;text-align:left}
+#halongClock .hclock-time{display:flex;align-items:baseline;gap:4px;font-weight:900;line-height:1;font-variant-numeric:tabular-nums;color:var(--gold);letter-spacing:.02em;font-size:clamp(1.8rem,5vw,2.6rem);transition:color .5s ease}
+#halongClock .hclock-h,#halongClock .hclock-m,#halongClock .hclock-s{font-family:'Fraunces',serif;font-weight:900}
+#halongClock .hclock-s{font-size:.55em;opacity:.7;margin-left:2px;color:var(--text-muted)}
+#halongClock .hclock-sep{opacity:.4;font-weight:700;font-size:.85em}
+#halongClock .hclock-date{font-size:clamp(.75rem,1.8vw,.9rem);color:var(--text-muted);font-weight:700;margin-top:6px;letter-spacing:.05em}
+#halongClock .hclock-loc{display:flex;align-items:center;gap:8px;padding-left:16px;border-left:1px solid rgba(255,255,255,.1);flex-shrink:0;text-align:left}
+#halongClock .hclock-loc-icon{font-size:20px;filter:drop-shadow(0 0 8px var(--gold-glow))}
+#halongClock .hclock-loc-text{font-size:clamp(.65rem,1.5vw,.8rem);font-weight:800;color:var(--gold);letter-spacing:.05em;text-transform:uppercase;line-height:1.3;transition:color .5s ease}
+@media(max-width:480px){#halongClock{padding:14px 18px;gap:12px;border-radius:20px}#halongClock .hclock-loc{padding-left:12px}}
 
-/* ============ ANNOUNCEMENT ============ */
-/* 💡 Thu hẹp margin bottom */
-#announcementBar{
-  display:none;max-width:900px;margin:0 auto clamp(0.75rem, 1.5vw, 1rem);
-  background:linear-gradient(135deg,#0f3d38 0%,#0a2b28 100%);
-  border:2px solid #FBD77A;border-radius:14px;padding:14px 0;
-  position:relative;overflow:hidden;
-  box-shadow:0 6px 28px rgba(244,184,66,.45),inset 0 0 30px rgba(244,184,66,.08);
-}
-#announcementBar.show{display:block;animation:announce-fade-in .6s ease-out}
-@keyframes announce-fade-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
-.announcement-icon{
-  position:absolute;left:14px;top:50%;transform:translateY(-50%);
-  font-size:22px;z-index:5;filter:drop-shadow(0 0 10px rgba(244,184,66,1));
-}
-.announcement-viewport{overflow:hidden;padding-left:48px;padding-right:20px;position:relative}
-.announcement-track{
-  display:inline-flex;white-space:nowrap;
-  animation:announce-marquee 25s linear infinite;will-change:transform;
-}
-.announcement-text{
-  padding-right:100px;color:#FFE58F;font-weight:900;font-size:14px;letter-spacing:.04em;
-  text-shadow:0 0 4px rgba(0,0,0,.9),0 0 8px rgba(0,0,0,.7),0 0 16px rgba(255,229,143,.6);
-  font-family:'Nunito',sans-serif;-webkit-text-stroke:0.3px rgba(0,0,0,.3);
-}
+/* MUSIC BTN */
+#dolphinMusicBtn{position:fixed;top:20px;right:20px;z-index:9997;width:56px;height:56px;border-radius:50%;background:var(--bg-panel);border:1px solid rgba(255,255,255,.1);color:var(--text-muted);font-size:24px;cursor:grab;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);box-shadow:0 10px 24px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.1);transition:all .3s cubic-bezier(.16,1,.3,1);padding:0;user-select:none;-webkit-user-select:none;touch-action:none;-webkit-tap-highlight-color:transparent}
+#dolphinMusicBtn.dragging{cursor:grabbing;transform:scale(1.1);transition:none;box-shadow:0 15px 35px rgba(0,0,0,.8)}
+#dolphinMusicBtn.active{background:linear-gradient(135deg,var(--gold),#B8860B);color:#050505;box-shadow:0 0 24px var(--gold-glow);border-color:transparent}
+#dolphinMusicBtn:hover:not(.active){background:rgba(40,40,40,.8);color:var(--text-main)}
+
+/* MUSIC POPUP */
+#dolphinMusicPopup{display:none;position:fixed;background:rgba(15,15,15,.95);border:1px solid rgba(255,255,255,.1);border-radius:20px;padding:18px;box-shadow:0 20px 50px rgba(0,0,0,.8);min-width:260px;max-width:88vw;backdrop-filter:blur(24px);-webkit-backdrop-filter:blur(24px);z-index:9998;animation:popupIn .3s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif}
+@keyframes popupIn{from{opacity:0;transform:translateY(10px) scale(.98)}to{opacity:1;transform:translateY(0) scale(1)}}
+#dolphinMusicPopup.show{display:block}
+#dolphinMusicPopup .dmp-title{font-size:12px;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:.1em;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+#dolphinMusicPopup .dmp-row{display:flex;align-items:center;gap:12px;margin-bottom:14px}
+#dolphinMusicPopup .dmp-row input[type=range]{flex:1;height:4px;-webkit-appearance:none;appearance:none;background:rgba(255,255,255,.1);border-radius:99px;outline:none;cursor:pointer}
+#dolphinMusicPopup .dmp-row input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:16px;height:16px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold-glow);cursor:pointer}
+#dolphinMusicPopup .dmp-pct{font-size:12px;color:var(--text-main);font-weight:800;min-width:40px;text-align:right}
+#dolphinMusicPopup .dmp-hint{font-size:11px;color:var(--text-muted);text-align:center;line-height:1.5;margin-bottom:14px}
+#dolphinMusicPopup .dmp-hint b{color:var(--gold)}
+#dolphinMusicPopup .dmp-btn{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:12px;border-radius:12px;font-weight:800;font-size:12px;cursor:pointer;font-family:inherit;transition:all .2s;margin-top:8px;border:1px solid rgba(255,255,255,.05);background:rgba(255,255,255,.03);color:var(--text-main)}
+#dolphinMusicPopup .dmp-btn:hover{background:rgba(255,255,255,.08)}
+#dolphinMusicPopup .dmp-btn-refresh:disabled{opacity:.5;cursor:wait}
+
+/* LAYOUT */
+#landing>div:first-child{padding-top:calc(2rem + env(safe-area-inset-top,0px))!important;padding-bottom:calc(2rem + env(safe-area-inset-bottom,0px))!important}
+
+/* WELCOME */
+.welcome-lbl{text-align:center;font-size:clamp(.95rem,2vw,1.25rem);font-weight:900;color:var(--text-main);margin:0 0 1.5rem;letter-spacing:.04em;line-height:1.5}
+.welcome-lbl .wlc-vi{display:block;color:var(--gold);font-family:'Fraunces',serif;font-size:clamp(1.2rem,2.8vw,1.8rem);letter-spacing:.06em;margin-bottom:.4em;transition:color .5s ease}
+.welcome-lbl .wlc-vi #wlcStaffName{display:inline-block;color:#fff;text-shadow:0 0 24px var(--gold-glow);font-weight:900;letter-spacing:.08em;margin:0 .15em}
+.welcome-lbl .wlc-en{display:block;font-size:.85em;color:var(--text-muted);font-weight:800;margin-top:.5em;letter-spacing:.15em;text-transform:uppercase}
+
+/* BENTO GRID */
+.area-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;grid-auto-rows:1fr}
+@media(min-width:768px){.area-grid{grid-template-columns:repeat(3,1fr);gap:16px}.area-card.large{grid-column:span 2}.area-card.full{grid-column:span 3}}
+.area-card{position:relative;padding:2rem 1.5rem;text-align:center;cursor:pointer;transition:all .4s cubic-bezier(.16,1,.3,1);isolation:isolate;font-family:'Nunito',sans-serif;color:var(--text-main);display:flex;flex-direction:column;align-items:center;justify-content:center;width:100%;min-height:180px;gap:.5rem;background:linear-gradient(145deg,rgba(30,30,30,.4),rgba(10,10,10,.6));border:1px solid rgba(255,255,255,.06);border-radius:24px;box-shadow:0 10px 30px rgba(0,0,0,.3),inset 0 1px 0 rgba(255,255,255,.05);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px)}
+.area-card:hover{transform:translateY(-5px);border-color:var(--gold-glow);background:linear-gradient(145deg,rgba(40,40,40,.6),rgba(15,15,15,.8));box-shadow:0 20px 40px rgba(0,0,0,.5),0 0 20px var(--gold-glow),inset 0 1px 0 rgba(255,255,255,.1)}
+.area-card:active{transform:translateY(-2px) scale(.98)}
+.area-card::before{content:'';position:absolute;inset:0;border-radius:24px;pointer-events:none;background:radial-gradient(circle at 100% 0%,var(--gold-glow),transparent 50%);opacity:0;transition:opacity .4s ease}
+.area-card:hover::before{opacity:.5}
+.area-icon{font-size:clamp(2.5rem,6vw,3.5rem);line-height:1;display:block;margin-bottom:.8rem;transition:transform .5s cubic-bezier(.16,1,.3,1);filter:drop-shadow(0 10px 20px rgba(0,0,0,.6));position:relative;z-index:2}
+.area-card:hover .area-icon{transform:scale(1.1) rotate(-5deg)}
+.area-title-en{font-weight:900;font-size:clamp(.9rem,2vw,1.1rem);letter-spacing:.05em;text-transform:uppercase;color:#fff;margin:0;line-height:1.2;position:relative;z-index:2}
+.area-title-vi{font-weight:700;font-size:clamp(.75rem,1.6vw,.85rem);color:var(--text-muted);margin:0;letter-spacing:.03em;position:relative;z-index:2}
+.area-badge{position:absolute;top:1rem;right:1rem;background:linear-gradient(135deg,var(--gold),#B8860B);color:#050505;font-size:.6rem;font-weight:900;letter-spacing:.1em;padding:4px 10px;border-radius:99px;text-transform:uppercase;box-shadow:0 4px 12px var(--gold-glow);z-index:5;transition:background .5s ease}
+
+/* ANNOUNCEMENT */
+#announcementBar{display:none;max-width:900px;margin:0 auto 1.5rem;background:var(--bg-panel);border:1px solid rgba(255,255,255,.08);border-radius:16px;padding:16px 0;position:relative;overflow:hidden;box-shadow:0 10px 30px rgba(0,0,0,.4)}
+#announcementBar.show{display:block;animation:announce-fade-in .6s cubic-bezier(.16,1,.3,1)}
+@keyframes announce-fade-in{from{opacity:0;transform:translateY(-10px)}to{opacity:1;transform:translateY(0)}}
+.announcement-icon{position:absolute;left:16px;top:50%;transform:translateY(-50%);font-size:24px;z-index:5;filter:drop-shadow(0 0 10px var(--gold-glow))}
+.announcement-viewport{overflow:hidden;padding-left:52px;padding-right:24px;position:relative}
+.announcement-track{display:inline-flex;white-space:nowrap;animation:announce-marquee 25s linear infinite;will-change:transform}
+.announcement-text{padding-right:100px;color:var(--gold);font-weight:800;font-size:14px;letter-spacing:.05em;font-family:'Nunito',sans-serif;transition:color .5s ease}
 @keyframes announce-marquee{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
-@media(min-width:768px){
-  .announcement-text{font-size:17px;padding-right:160px}
-  .announcement-icon{font-size:26px;left:18px}
-  .announcement-viewport{padding-left:60px}
-  #announcementBar{padding:16px 0}
-}
-@media(prefers-reduced-motion:reduce){.announcement-track{animation-duration:60s}}
+@media(min-width:768px){.announcement-text{font-size:16px}#announcementBar{padding:18px 0}}
 
-/* ============ UPDATE BANNER ============ */
-#updateBanner{
-  display:none;position:fixed;top:0;left:0;right:0;z-index:9999;
-  background:linear-gradient(135deg,#1a4a45 0%,#123634 100%);
-  border-bottom:3px solid #FBD77A;padding:12px 16px;
-  box-shadow:0 8px 32px rgba(244,184,66,.5);
-  animation:update-slide-down .5s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif;
-}
+/* UPDATE BANNER */
+#updateBanner{display:none;position:fixed;top:0;left:0;right:0;z-index:9999;background:rgba(15,15,15,.95);backdrop-filter:blur(20px);border-bottom:1px solid var(--gold);padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.6);animation:update-slide-down .5s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif}
 #updateBanner.show{display:block}
 @keyframes update-slide-down{from{transform:translateY(-100%);opacity:0}to{transform:translateY(0);opacity:1}}
-.update-content{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
-.update-icon{font-size:32px;filter:drop-shadow(0 0 12px rgba(244,184,66,.9))}
+.update-content{max-width:900px;margin:0 auto;display:flex;align-items:center;gap:16px;flex-wrap:wrap}
+.update-icon{font-size:32px;filter:drop-shadow(0 0 12px var(--gold-glow))}
 .update-info{flex:1;min-width:180px}
-.update-title{font-size:15px;font-weight:900;color:#FFE58F;text-transform:uppercase;
-  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9);margin-bottom:2px}
-.update-notes{font-size:11.5px;color:#bfe9dc;font-weight:600;line-height:1.4;opacity:.9}
-.update-actions{display:flex;gap:8px;flex-wrap:wrap}
-.update-btn{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;font-weight:900;
-  font-size:13px;text-transform:uppercase;letter-spacing:.05em;padding:12px 22px;
-  border-radius:12px;border:none;cursor:pointer;
-  box-shadow:0 4px 16px rgba(244,184,66,.5);font-family:inherit;white-space:nowrap}
-.update-btn:active{transform:scale(.96)}
+.update-title{font-size:16px;font-weight:900;color:var(--gold);text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.update-notes{font-size:12px;color:var(--text-muted);font-weight:600;line-height:1.4}
+.update-actions{display:flex;gap:12px;flex-wrap:wrap}
+.update-btn{background:var(--gold);color:#050505;font-weight:900;font-size:13px;text-transform:uppercase;letter-spacing:.05em;padding:12px 24px;border-radius:12px;border:none;cursor:pointer;box-shadow:0 4px 16px var(--gold-glow);font-family:inherit;white-space:nowrap;transition:all .2s}
+.update-btn:hover{filter:brightness(1.1);transform:translateY(-1px)}
 .update-btn:disabled{opacity:.5;cursor:wait}
-.update-skip{background:transparent;color:#98dccb;font-weight:700;font-size:11.5px;
-  padding:12px 14px;border-radius:12px;border:1px solid rgba(152,220,203,.3);
-  cursor:pointer;font-family:inherit;white-space:nowrap}
-@media(min-width:768px){.update-btn{padding:14px 28px;font-size:14px}}
-@media(max-width:480px){
-  #updateBanner{padding:10px 12px}
-  .update-actions{width:100%}
-  .update-btn,.update-skip{flex:1;text-align:center}
-}
+.update-skip{background:transparent;color:var(--text-muted);font-weight:700;font-size:12px;padding:12px 16px;border-radius:12px;border:1px solid rgba(255,255,255,.1);cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s}
+.update-skip:hover{background:rgba(255,255,255,.05);color:var(--text-main)}
+@media(max-width:480px){.update-actions{width:100%}.update-btn,.update-skip{flex:1;text-align:center}}
 
-/* ============ TRANSITIONS ============ */
-#landing{
-  transition:opacity .55s ease,transform .7s cubic-bezier(.16,1,.3,1);
-  position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden;
-  background:transparent !important;
-}
-#landing.fade-out{opacity:0;transform:scale(1.06);pointer-events:none}
-#app-view{opacity:0;transition:opacity .45s ease;position:fixed;inset:0;z-index:40;background:#123634}
+/* TRANSITIONS */
+#landing{transition:opacity .5s ease,transform .6s cubic-bezier(.16,1,.3,1);position:fixed;inset:0;z-index:50;overflow-y:auto;overflow-x:hidden;background:transparent!important}
+#landing.fade-out{opacity:0;transform:scale(1.02);pointer-events:none}
+#app-view{opacity:0;transition:opacity .4s ease;position:fixed;inset:0;z-index:40;background:var(--bg-deep)}
 #app-view.show{opacity:1}
 #app-view.hidden{display:none}
-#app-frame{width:100%;height:100%;border:0;display:block;background:#123634;position:absolute;inset:0;z-index:1}
+#app-frame{width:100%;height:100%;border:0;display:block;background:var(--bg-deep);position:absolute;inset:0;z-index:1}
 #app-frame.hidden-frame{opacity:0}
-#app-loading{
-  position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;
-  flex-direction:column;gap:1rem;background:#123634;transition:opacity .4s;pointer-events:none;
-}
+#app-loading{position:absolute;inset:0;z-index:5;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1.5rem;background:var(--bg-deep);transition:opacity .4s;pointer-events:none}
 #app-loading.hide{opacity:0}
-.loader-ring{
-  width:56px;height:56px;border:4px solid rgba(244,184,66,.2);
-  border-top-color:#F4B842;border-radius:50%;animation:spin 1s linear infinite;
-}
+.loader-ring{width:60px;height:60px;border:3px solid rgba(255,255,255,.05);border-top-color:var(--gold);border-radius:50%;animation:spin 1s cubic-bezier(.5,0,.5,1) infinite}
 @keyframes spin{to{transform:rotate(360deg)}}
-.loader-text{color:#FBD77A;font-weight:800;font-size:.85rem;letter-spacing:.15em;text-transform:uppercase}
+.loader-text{color:var(--gold);font-weight:800;font-size:.85rem;letter-spacing:.2em;text-transform:uppercase}
 
-/* ============ HOME CONTROLS ============ */
-#home-controls{
-  position:fixed;bottom:20px;right:15px;z-index:1000;
-  display:flex;flex-direction:column-reverse;gap:8px;align-items:center;
-  user-select:none;-webkit-user-select:none;touch-action:none;
-}
-#home-controls.dragging{opacity:.85}
-#home-controls.dragging #btn-home{
-  transform:scale(1.08);
-  box-shadow:0 10px 30px rgba(0,0,0,.7), 0 0 0 4px rgba(244,184,66,.35);
-}
-#btn-home{
-  width:52px;height:52px;border-radius:50%;background:rgba(18,54,52,.9);
-  border:2px solid rgba(244,184,66,.7);color:#FBD77A;display:flex;align-items:center;justify-content:center;
-  cursor:grab;backdrop-filter:blur(12px);
-  box-shadow:0 6px 20px rgba(0,0,0,.5);transition:transform .15s,box-shadow .15s;
-  padding:0;touch-action:none;-webkit-tap-highlight-color:transparent;
-}
+/* HOME CONTROLS */
+#home-controls{position:fixed;bottom:24px;right:24px;z-index:1000;display:flex;flex-direction:column-reverse;gap:12px;align-items:center;user-select:none;-webkit-user-select:none;touch-action:none}
+#home-controls.dragging{opacity:.9}
+#home-controls.dragging #btn-home{transform:scale(1.1);box-shadow:0 15px 40px rgba(0,0,0,.6)}
+#btn-home{width:56px;height:56px;border-radius:50%;background:var(--bg-panel);border:1px solid rgba(255,255,255,.1);color:var(--text-main);display:flex;align-items:center;justify-content:center;cursor:grab;backdrop-filter:blur(16px);box-shadow:0 10px 24px rgba(0,0,0,.4),inset 0 1px 0 rgba(255,255,255,.1);transition:all .3s cubic-bezier(.16,1,.3,1);padding:0;touch-action:none;-webkit-tap-highlight-color:transparent}
+#btn-home:hover{background:rgba(40,40,40,.8);transform:translateY(-2px)}
 #btn-home svg{width:24px;height:24px;pointer-events:none}
-#btn-toggle{
-  width:34px;height:34px;border-radius:50%;background:rgba(18,54,52,.8);
-  border:1px solid rgba(244,184,66,.4);color:rgba(251,215,122,.95);
-  display:flex;align-items:center;justify-content:center;cursor:pointer;
-  backdrop-filter:blur(8px);
-  box-shadow:0 3px 10px rgba(0,0,0,.3);font-size:14px;
-  padding:0;line-height:1;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
-}
-#home-controls.minimized #btn-home{
-  width:18px;height:18px;opacity:.5;
-  border-color:rgba(244,184,66,.5);box-shadow:0 3px 10px rgba(0,0,0,.4);
-}
+#btn-toggle{width:32px;height:32px;border-radius:50%;background:var(--bg-panel);border:1px solid rgba(255,255,255,.1);color:var(--text-muted);display:flex;align-items:center;justify-content:center;cursor:pointer;backdrop-filter:blur(8px);box-shadow:0 4px 12px rgba(0,0,0,.3);font-size:14px;padding:0;line-height:1;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#home-controls.minimized #btn-home{width:20px;height:20px;opacity:.5;border-color:rgba(255,255,255,.2);box-shadow:none}
 #home-controls.minimized #btn-home svg{display:none}
 #home-controls.minimized #btn-toggle{display:none}
-#home-controls.minimized #btn-home::after{
-  content:'';width:8px;height:8px;border-radius:50%;
-  background:#FBD77A;box-shadow:0 0 10px rgba(244,184,66,.9);
-}
+#home-controls.minimized #btn-home::after{content:'';width:8px;height:8px;border-radius:50%;background:var(--gold);box-shadow:0 0 10px var(--gold-glow)}
 
-/* ============ ORDER NOTIFICATION ============ */
-#orderNotif{
-  display:none;position:fixed;top:20px;left:50%;
-  transform:translateX(-50%) translateY(-120%);z-index:9998;
-  background:linear-gradient(135deg,#B91C1C 0%,#7F1D1D 100%);
-  border:2px solid #FBD77A;border-radius:16px;padding:14px 18px;
-  min-width:280px;max-width:90vw;
-  box-shadow:0 12px 40px rgba(185,28,28,.6),0 0 60px rgba(244,184,66,.3);
-  transition:transform .5s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif;
-}
+/* ORDER NOTIFICATION */
+#orderNotif{display:none;position:fixed;top:24px;left:50%;transform:translateX(-50%) translateY(-120%);z-index:9998;background:rgba(20,20,20,.95);backdrop-filter:blur(20px);border:1px solid rgba(239,68,68,.5);border-radius:20px;padding:16px 20px;min-width:300px;max-width:90vw;box-shadow:0 20px 50px rgba(0,0,0,.6),0 0 30px rgba(239,68,68,.2);transition:transform .5s cubic-bezier(.16,1,.3,1);font-family:'Nunito',sans-serif}
 #orderNotif.show{display:block;transform:translateX(-50%) translateY(0)}
-.order-notif-content{display:flex;align-items:center;gap:12px}
-.order-notif-icon{font-size:32px;filter:drop-shadow(0 0 12px rgba(251,215,122,.9))}
+.order-notif-content{display:flex;align-items:center;gap:16px}
+.order-notif-icon{font-size:36px;filter:drop-shadow(0 0 12px rgba(239,68,68,.5))}
 .order-notif-info{flex:1;min-width:0}
-.order-notif-title{color:#FFE58F;font-size:15px;font-weight:900;text-transform:uppercase;
-  letter-spacing:.04em;text-shadow:0 0 8px rgba(0,0,0,.9);margin-bottom:3px}
-.order-notif-sub{color:#fff;font-size:12px;font-weight:700;
-  white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.order-notif-sub .table-hl{background:rgba(255,229,143,.2);color:#FFE58F;
-  padding:1px 6px;border-radius:6px;font-weight:900}
-.order-notif-actions{display:flex;gap:6px;flex-direction:column}
-.order-notif-btn{background:linear-gradient(135deg,#FBD77A,#F4B842);color:#123634;
-  font-weight:900;font-size:11px;padding:8px 12px;border-radius:9px;border:none;
-  cursor:pointer;font-family:inherit;white-space:nowrap}
-.order-notif-close{background:transparent;color:#FFE58F;font-size:11px;font-weight:700;
-  border:none;cursor:pointer;padding:4px;font-family:inherit}
-@media(min-width:768px){
-  #orderNotif{min-width:360px;padding:16px 22px}
-  .order-notif-icon{font-size:38px}
-  .order-notif-title{font-size:17px}
-  .order-notif-sub{font-size:13.5px}
-}
+.order-notif-title{color:#FCA5A5;font-size:15px;font-weight:900;text-transform:uppercase;letter-spacing:.05em;margin-bottom:4px}
+.order-notif-sub{color:var(--text-muted);font-size:12px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.order-notif-sub .table-hl{background:rgba(239,68,68,.2);color:#FCA5A5;padding:2px 8px;border-radius:6px;font-weight:900}
+.order-notif-actions{display:flex;gap:8px;flex-direction:column}
+.order-notif-btn{background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff;font-weight:900;font-size:12px;padding:10px 14px;border-radius:10px;border:none;cursor:pointer;font-family:inherit;white-space:nowrap;transition:all .2s}
+.order-notif-btn:hover{filter:brightness(1.1)}
+.order-notif-close{background:transparent;color:var(--text-muted);font-size:12px;font-weight:700;border:none;cursor:pointer;padding:4px;font-family:inherit;transition:color .2s}
+.order-notif-close:hover{color:#fff}
 
-@media (max-width:380px){
-  .area-card{min-height:140px;padding:1rem .7rem .8rem;gap:.2rem}
-  .area-icon{font-size:2rem;margin-bottom:.4rem}
-}
-/* ═══ REMINDER ALARM POPUP (full-screen đỏ) ═══ */
-#reminderAlarm{
-  position:fixed;inset:0;z-index:10001;
-  background:rgba(0,0,0,.92);
-  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);
-  display:none;align-items:center;justify-content:center;
-  padding:20px;
-  animation:alarmFadeIn .3s ease-out;
-}
+/* REMINDER ALARM */
+#reminderAlarm{position:fixed;inset:0;z-index:10001;background:rgba(0,0,0,.85);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:none;align-items:center;justify-content:center;padding:24px;animation:alarmFadeIn .3s ease-out}
 #reminderAlarm.show{display:flex}
 @keyframes alarmFadeIn{from{opacity:0}to{opacity:1}}
-
-#reminderAlarm .ralarm-card{
-  background:linear-gradient(135deg,#7f1d1d,#1a0a0a);
-  border:3px solid #ef4444;
-  border-radius:26px;
-  padding:28px 24px;
-  max-width:420px;width:100%;
-  text-align:center;
-  box-shadow:0 20px 80px rgba(239,68,68,.6),0 0 120px rgba(239,68,68,.4);
-  animation:alarmPop .4s cubic-bezier(.16,1,.3,1);
-}
-@keyframes alarmPop{
-  0%{transform:scale(.5) rotate(-5deg);opacity:0}
-  60%{transform:scale(1.08) rotate(2deg)}
-  100%{transform:scale(1) rotate(0);opacity:1}
-}
-
-#reminderAlarm .ralarm-icon{
-  font-size:76px;
-  display:inline-block;
-  animation:alarmShake .5s ease-in-out infinite;
-  filter:drop-shadow(0 0 24px rgba(239,68,68,1));
-}
-@keyframes alarmShake{
-  0%,100%{transform:rotate(-12deg) scale(1)}
-  50%{transform:rotate(12deg) scale(1.12)}
-}
-
-#reminderAlarm .ralarm-title{
-  font-size:22px;font-weight:900;color:#fca5a5;
-  text-transform:uppercase;letter-spacing:.14em;
-  margin:14px 0 6px;
-  text-shadow:0 0 20px rgba(239,68,68,.9);
-}
-
-#reminderAlarm .ralarm-sub{
-  font-size:11px;color:#fca5a5;font-weight:700;
-  margin-bottom:16px;
-}
-
-#reminderAlarm .ralarm-body{
-  font-size:16px;font-weight:800;color:#fff;
-  line-height:1.55;
-  padding:18px;
-  background:rgba(0,0,0,.45);
-  border-radius:16px;
-  border-left:5px solid #FBD77A;
-  text-align:left;
-  word-break:break-word;
-  max-height:40vh;
-  overflow-y:auto;
-  margin-bottom:18px;
-}
-
-#reminderAlarm .ralarm-time{
-  font-size:12px;color:#fca5a5;font-weight:800;
-  margin-bottom:18px;
-  display:flex;align-items:center;justify-content:center;gap:8px;
-}
-
-#reminderAlarm .ralarm-ok{
-  width:100%;
-  background:linear-gradient(135deg,#FCA5A5,#EF4444);
-  color:#fff;font-weight:900;
-  font-size:14px;
-  padding:16px;
-  border-radius:14px;
-  border:none;cursor:pointer;font-family:inherit;
-  text-transform:uppercase;letter-spacing:.1em;
-  box-shadow:0 8px 24px rgba(239,68,68,.5);
-  transition:transform .15s;
-}
+#reminderAlarm .ralarm-card{background:linear-gradient(145deg,#1A0A0A,#050505);border:1px solid rgba(239,68,68,.4);border-radius:28px;padding:32px 28px;max-width:440px;width:100%;text-align:center;box-shadow:0 30px 80px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.05);animation:alarmPop .4s cubic-bezier(.16,1,.3,1)}
+@keyframes alarmPop{0%{transform:scale(.9);opacity:0}100%{transform:scale(1);opacity:1}}
+#reminderAlarm .ralarm-icon{font-size:64px;display:inline-block;animation:alarmShake .6s ease-in-out infinite;filter:drop-shadow(0 0 24px rgba(239,68,68,.8))}
+@keyframes alarmShake{0%,100%{transform:rotate(-10deg) scale(1)}50%{transform:rotate(10deg) scale(1.1)}}
+#reminderAlarm .ralarm-title{font-size:24px;font-weight:900;color:#FCA5A5;text-transform:uppercase;letter-spacing:.15em;margin:20px 0 8px}
+#reminderAlarm .ralarm-sub{font-size:12px;color:var(--text-muted);font-weight:700;margin-bottom:20px}
+#reminderAlarm .ralarm-body{font-size:16px;font-weight:700;color:#fff;line-height:1.6;padding:20px;background:rgba(0,0,0,.4);border-radius:16px;border-left:4px solid #EF4444;text-align:left;word-break:break-word;max-height:40vh;overflow-y:auto;margin-bottom:20px}
+#reminderAlarm .ralarm-time{font-size:13px;color:#FCA5A5;font-weight:800;margin-bottom:24px;display:flex;align-items:center;justify-content:center;gap:8px}
+#reminderAlarm .ralarm-ok{width:100%;background:linear-gradient(135deg,#EF4444,#B91C1C);color:#fff;font-weight:900;font-size:15px;padding:18px;border-radius:16px;border:none;cursor:pointer;font-family:inherit;text-transform:uppercase;letter-spacing:.1em;box-shadow:0 10px 30px rgba(239,68,68,.4);transition:transform .15s}
 #reminderAlarm .ralarm-ok:active{transform:scale(.96)}
 
-/* ═══ NOTIF PERMISSION BTN ═══ */
-#notifPermBtn{
-  position:fixed;
-  top:14px;left:14px;
-  z-index:9997;
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(18,54,52,.92);
-  border:2px solid rgba(244,184,66,.7);
-  color:#FBD77A;font-size:18px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-family:inherit;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 6px 20px rgba(0,0,0,.5);
-  transition:transform .15s,background .2s,box-shadow .2s;
-  padding:0;
-  -webkit-tap-highlight-color:transparent;
-}
-#notifPermBtn:active{transform:scale(.92)}
-#notifPermBtn.granted{
-  background:linear-gradient(135deg,rgba(16,185,129,.9),rgba(5,150,105,.9));
-  color:#fff;
-  border-color:rgba(16,185,129,.9);
-  box-shadow:0 0 20px rgba(16,185,129,.7);
-}
-#notifPermBtn.denied{
-  background:rgba(239,83,80,.9);
-  color:#fff;
-  border-color:rgba(239,83,80,.9);
-}
+/* NOTIF PERMISSION BTN */
+#notifPermBtn{position:fixed;top:20px;left:20px;z-index:9997;width:48px;height:48px;border-radius:50%;background:var(--bg-panel);border:1px solid rgba(255,255,255,.1);color:var(--text-muted);font-size:20px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-family:inherit;backdrop-filter:blur(16px);box-shadow:0 10px 24px rgba(0,0,0,.4);transition:all .3s;padding:0;-webkit-tap-highlight-color:transparent}
+#notifPermBtn:hover{background:rgba(40,40,40,.8);color:var(--text-main)}
+#notifPermBtn.granted{background:rgba(16,185,129,.15);color:#10B981;border-color:rgba(16,185,129,.3);box-shadow:0 0 20px rgba(16,185,129,.2)}
+#notifPermBtn.denied{background:rgba(239,68,68,.15);color:#EF4444;border-color:rgba(239,68,68,.3)}
 </style>
 <script src="staff-sync.js" defer></script>
-<script src="theme-system.js?v=1.0" defer></script>
+<script src="theme-system.js?v=8.0" defer></script>
 <script src="dolphin-clock-extras.js?v=1.0" defer></script>
 <script src="avatar-system.js" defer></script>
 <script src="master.js" defer></script>
-<script src="dolphin-ui.js?v=1.0" defer></script>
+<script src="dolphin-ui.js?v=8.0" defer></script>
 <script src="changelog-popup.js?v=1.0" defer></script>
 <script src="staff-online.js?v=1.0" defer></script>
 <script src="dolphin-soundscape.js?v=1.0" defer></script>
 <link rel="manifest" href="/DolphinApp/manifest.json">
-<meta name="theme-color" content="#123634">
 <meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
@@ -671,10 +259,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   </div>
 </div>
 
-  <!-- ═══════ NÚT BẬT THÔNG BÁO ═══════ -->
 <button type="button" id="notifPermBtn" onclick="toggleNotifPerm()" title="Bật thông báo">🔕</button>
 
-<!-- ═══════ POPUP BÁO THỨC ĐỎ ═══════ -->
 <div id="reminderAlarm">
   <div class="ralarm-card">
     <div class="ralarm-icon">🔔</div>
@@ -685,22 +271,15 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     <button type="button" class="ralarm-ok" onclick="closeReminderAlarm()">✓ ĐÃ HIỂU</button>
   </div>
 </div>
-  
-<div id="landing">
-  <div style="position:relative;z-index:10;width:100%;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-start;justify-content:center;padding:1rem">
-    <div style="width:100%;max-width:1200px;margin:auto">
 
-      <!-- ═══════ CLOCK (cố định) ═══════ -->
+<div id="landing">
+  <div style="position:relative;z-index:10;width:100%;min-height:100vh;min-height:100dvh;display:flex;align-items:flex-start;justify-content:center;padding:1.5rem">
+    <div style="width:100%;max-width:1200px;margin:auto">
       <div id="halongClock" class="fade-up">
-        <div class="hclock-glow"></div>
         <div class="hclock-icon">🕐</div>
         <div class="hclock-body">
           <div class="hclock-time" aria-live="polite">
-            <span class="hclock-h" id="hclockH">00</span>
-            <span class="hclock-sep">:</span>
-            <span class="hclock-m" id="hclockM">00</span>
-            <span class="hclock-sep hclock-sep-s">:</span>
-            <span class="hclock-s" id="hclockS">00</span>
+            <span class="hclock-h" id="hclockH">00</span><span class="hclock-sep">:</span><span class="hclock-m" id="hclockM">00</span><span class="hclock-sep hclock-sep-s">:</span><span class="hclock-s" id="hclockS">00</span>
           </div>
           <div class="hclock-date" id="hclockDate">Đang tải...</div>
         </div>
@@ -709,15 +288,9 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <span class="hclock-loc-text">Vịnh Hạ Long<br>Quảng Ninh</span>
         </div>
       </div>
-
-      <!-- ═══════ LOGO ═══════ -->
-      <div class="text-center fade-up" style="margin-bottom:clamp(0.5rem, 1.5vw, 1rem)">
-        <img src="/DolphinApp/logo-dolphin.png"
-             alt="Dolphin Ha Long Cruise"
-             class="logo-img"
-             style="max-width:min(75vw,380px);width:100%;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 8px 32px rgba(244,184,66,.35)) brightness(1.05);">
+      <div class="text-center fade-up" style="margin-bottom:1.5rem">
+        <img src="/DolphinApp/logo-dolphin.png" alt="Dolphin Ha Long Cruise" class="logo-img" style="max-width:min(75vw,380px);width:100%;height:auto;margin:0 auto;display:block;filter:drop-shadow(0 15px 40px rgba(0,0,0,.6)) brightness(1.05);">
       </div>
-
       <div id="announcementBar" class="fade-up">
         <span class="announcement-icon">📢</span>
         <div class="announcement-viewport">
@@ -727,12 +300,10 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           </div>
         </div>
       </div>
-
       <p class="fade-up d-1 welcome-lbl">
         <span class="wlc-vi" id="wlcGreeting">XIN CHÀO <span id="wlcStaffName">BẠN</span> 👋</span>
         <span class="wlc-en" id="wlcGreetingSub">CÙNG CỐ GẮNG LÀM VIỆC NHÉ! 💪</span>
       </p>
-
       <div class="fade-up d-2 area-grid">
         <button type="button" class="area-card" onclick="openApp('lounge')" aria-label="Premium Lounge">
           <span class="area-badge">VIP</span>
@@ -741,7 +312,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <h3 class="area-title-en">PREMIUM LOUNGE ACCESS</h3>
           <p class="area-title-vi">Phòng LOUNGE</p>
         </button>
-        <button type="button" class="area-card" onclick="openApp('bungalow')" aria-label="Bungalow">
+        <button type="button" class="area-card large" onclick="openApp('bungalow')" aria-label="Bungalow">
           <span class="area-notif-badge" id="badge-bungalow"><span class="nb-dot"></span><span class="nb-text">0</span></span>
           <span class="area-icon">🌴</span>
           <h3 class="area-title-en">BUNGALOW</h3>
@@ -777,8 +348,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <h3 class="area-title-en">DANH SÁCH KHÁCH</h3>
           <p class="area-title-vi">BÀN · BUNGALOW · LOUNGE</p>
         </button>
-
-        <!-- 💡 NÚT DASHBOARD ĐÃ ĐƯỢC ĐƯA LÊN CÙNG HÀNG -->
         <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;">
           <span class="area-badge">CHỈ MANAGER</span>
           <span class="area-icon">📊</span>
@@ -790,1136 +359,454 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   </div>
 </div>
 
-<!-- ═══════ NÚT NHẠC FLOATING (kéo thả tự do) ═══════ -->
 <button type="button" id="dolphinMusicBtn" title="Nhạc nền">🔇</button>
 
 <div id="dolphinMusicPopup">
   <div class="dmp-title">🎵 Nhạc nền</div>
   <div class="dmp-row">
-    <span style="font-size:14px">🔊</span>
+    <span style="font-size:16px;color:var(--text-muted)">🔊</span>
     <input type="range" id="dmpVol" min="0" max="100" value="30">
     <span class="dmp-pct" id="dmpVolPct">30%</span>
   </div>
   <div class="dmp-hint">Đổi bài hát trong app <b>🎮 Giải Trí</b></div>
-  <button type="button" class="dmp-btn dmp-btn-refresh" id="dmpRefresh">
-    <span>🔄</span><span>Cập nhật danh sách nhạc</span>
-  </button>
-  <button type="button" class="dmp-btn dmp-btn-reset" id="dmpReset">
-    <span>↺</span><span>Về vị trí mặc định</span>
-  </button>
+  <button type="button" class="dmp-btn dmp-btn-refresh" id="dmpRefresh"><span>🔄</span><span>Cập nhật danh sách nhạc</span></button>
+  <button type="button" class="dmp-btn dmp-btn-reset" id="dmpReset"><span>↺</span><span>Về vị trí mặc định</span></button>
 </div>
 
 <div id="app-view" class="hidden">
   <div id="home-controls">
     <button type="button" id="btn-home" onclick="goHome()" title="Quay lại trang chủ">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>
-      </svg>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/></svg>
     </button>
     <button type="button" id="btn-toggle" onclick="toggleHomeBtn()" title="Ẩn nút">
-      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-        <path d="M9 12l2 2 4-4"/>
-      </svg>
+      <svg viewBox="0 0 24 24" width="12" height="12" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M9 12l2 2 4-4"/></svg>
     </button>
   </div>
   <div id="app-loading"><div class="loader-ring"></div><div class="loader-text">Đang tải...</div></div>
   <iframe id="app-frame" allow="microphone; camera; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen" title="Dolphin App"></iframe>
 </div>
 
-<!-- ═══════ MUSIC BUTTON — DRAG + POPUP ═══════ -->
+<!-- SCRIPT 1: MUSIC DRAG + POPUP -->
 <script>
 (function(){
-  'use strict';
-  var BTN = null, POPUP = null;
-  var POS_KEY = 'dolphinMusicBtnPos';
-  var popupOpen = false;
-
-  function $(id){ return document.getElementById(id); }
-  function loadPos(){
-    try { var s = localStorage.getItem(POS_KEY); return s ? JSON.parse(s) : null; }
-    catch(e){ return null; }
-  }
-  function savePos(x, y){
-    try { localStorage.setItem(POS_KEY, JSON.stringify({ x: x, y: y })); } catch(e){}
-  }
-  function clearPos(){
-    try { localStorage.removeItem(POS_KEY); } catch(e){}
-  }
-  function clampPos(x, y){
-    var w = BTN.offsetWidth, h = BTN.offsetHeight;
-    var vw = window.innerWidth, vh = window.innerHeight;
-    x = Math.max(6, Math.min(x, vw - w - 6));
-    y = Math.max(6, Math.min(y, vh - h - 6));
-    return { x: x, y: y };
-  }
-  function applyPos(x, y){
-    var c = clampPos(x, y);
-    BTN.style.left = c.x + 'px';
-    BTN.style.top = c.y + 'px';
-    BTN.style.right = 'auto';
-    BTN.style.bottom = 'auto';
-  }
-  function resetPos(){
-    clearPos();
-    BTN.style.left = '';
-    BTN.style.top = '';
-    BTN.style.right = '14px';
-    BTN.style.top = '14px';
-    BTN.style.bottom = 'auto';
-  }
-
-  function positionPopup(){
-    if (!POPUP || !BTN) return;
-    var rect = BTN.getBoundingClientRect();
-    var pw = POPUP.offsetWidth || 250;
-    var ph = POPUP.offsetHeight || 200;
-    var vw = window.innerWidth, vh = window.innerHeight;
-    var px = rect.left + rect.width - pw;
-    var py = rect.top + rect.height + 10;
-    if (px < 8) px = 8;
-    if (px + pw > vw - 8) px = vw - pw - 8;
-    if (py + ph > vh - 8) py = rect.top - ph - 10;
-    if (py < 8) py = 8;
-    POPUP.style.left = px + 'px';
-    POPUP.style.top = py + 'px';
-    POPUP.style.right = 'auto';
-    POPUP.style.bottom = 'auto';
-  }
-
-  function openPopup(){
-    POPUP.classList.add('show');
-    popupOpen = true;
-    positionPopup();
-    syncPopupUI();
-  }
-  function closePopup(){
-    POPUP.classList.remove('show');
-    popupOpen = false;
-  }
-
-  function syncBtn(){
-    if (!BTN || !window.DolphinSound) return;
-    var on = window.DolphinSound.isEnabled();
-    BTN.textContent = on ? '🔊' : '🔇';
-    BTN.classList.toggle('active', on);
-  }
-
-  function syncPopupUI(){
-    if (!window.DolphinSound) return;
-    var v = Math.round(window.DolphinSound.getVolume() * 100);
-    var inp = $('dmpVol');
-    var pct = $('dmpVolPct');
-    if (inp && document.activeElement !== inp) inp.value = v;
-    if (pct) pct.textContent = v + '%';
-  }
-
-  window.__giaitriSyncMusicUI = function(){
-    syncBtn();
-    if (popupOpen) syncPopupUI();
-  };
-
-  function getPoint(e){
-    if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-    if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-    return { x: e.clientX, y: e.clientY };
-  }
-
-  function init(){
-    BTN = $('dolphinMusicBtn');
-    POPUP = $('dolphinMusicPopup');
-    if (!BTN || !POPUP) return;
-
-    var saved = loadPos();
-    if (saved) applyPos(saved.x, saved.y);
-
-    var volInp = $('dmpVol');
-    if (volInp){
-      volInp.addEventListener('input', function(){
-        if (!window.DolphinSound) return;
-        var v = parseInt(this.value, 10);
-        window.DolphinSound.setVolume(v / 100);
-        var pct = $('dmpVolPct');
-        if (pct) pct.textContent = v + '%';
-      });
-    }
-
-    var refreshBtn = $('dmpRefresh');
-    if (refreshBtn){
-      refreshBtn.addEventListener('click', function(e){
-        e.stopPropagation();
-        if (!window.DolphinSound || !window.DolphinSound.refreshTracks) return;
-        refreshBtn.disabled = true;
-        refreshBtn.innerHTML = '<span>⏳</span><span>Đang cập nhật...</span>';
-        window.DolphinSound.refreshTracks().then(function(tracks){
-          refreshBtn.disabled = false;
-          refreshBtn.innerHTML = '<span>🔄</span><span>Cập nhật danh sách nhạc</span>';
-          if (window.showToast){
-            window.showToast('Đã cập nhật ' + (tracks ? tracks.length : 0) + ' bài', '✅');
-          }
-        }).catch(function(){
-          refreshBtn.disabled = false;
-          refreshBtn.innerHTML = '<span>🔄</span><span>Cập nhật danh sách nhạc</span>';
-          if (window.showToast) window.showToast('Cập nhật thất bại', '❌');
-        });
-      });
-    }
-
-    var resetBtn = $('dmpReset');
-    if (resetBtn){
-      resetBtn.addEventListener('click', function(e){
-        e.stopPropagation();
-        resetPos();
-        if (popupOpen) positionPopup();
-        if (window.showToast) window.showToast('Đã về vị trí mặc định', '↺');
-      });
-    }
-
-    var drag = { active: false, moved: false, startX: 0, startY: 0, origX: 0, origY: 0 };
-
-    function onStart(e){
-      var pt = getPoint(e);
-      drag.active = true;
-      drag.moved = false;
-      drag.startX = pt.x;
-      drag.startY = pt.y;
-      var rect = BTN.getBoundingClientRect();
-      drag.origX = rect.left;
-      drag.origY = rect.top;
-      BTN.style.transition = 'none';
-    }
-    function onMove(e){
-      if (!drag.active) return;
-      var pt = getPoint(e);
-      var dx = pt.x - drag.startX;
-      var dy = pt.y - drag.startY;
-      if (!drag.moved && (Math.abs(dx) + Math.abs(dy)) < 8) return;
-      drag.moved = true;
-      if (e.cancelable) e.preventDefault();
-      var c = clampPos(drag.origX + dx, drag.origY + dy);
-      BTN.style.left = c.x + 'px';
-      BTN.style.top = c.y + 'px';
-      BTN.style.right = 'auto';
-      BTN.classList.add('dragging');
-    }
-    function onEnd(){
-      if (!drag.active) return;
-      drag.active = false;
-      BTN.style.transition = '';
-      BTN.classList.remove('dragging');
-      if (!drag.moved) return;
-      savePos(BTN.offsetLeft, BTN.offsetTop);
-      if (popupOpen) positionPopup();
-    }
-
-    BTN.addEventListener('touchstart', onStart, { passive: true });
-    document.addEventListener('touchmove', onMove, { passive: false });
-    document.addEventListener('touchend', onEnd);
-    document.addEventListener('touchcancel', onEnd);
-
-    BTN.addEventListener('mousedown', function(e){
-      e.preventDefault();
-      onStart(e);
-    });
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onEnd);
-
-    BTN.addEventListener('click', function(e){
-      if (drag.moved){ e.preventDefault(); e.stopPropagation(); drag.moved = false; return; }
-      e.stopPropagation();
-      if (window.DolphinSound && !window.DolphinSound.isEnabled()){
-        window.DolphinSound.enable();
-        syncBtn();
-      }
-      if (popupOpen) closePopup();
-      else openPopup();
-    });
-
-    document.addEventListener('click', function(e){
-      if (!popupOpen) return;
-      if (e.target.closest('#dolphinMusicPopup')) return;
-      if (e.target.closest('#dolphinMusicBtn')) return;
-      closePopup();
-    });
-
-    window.addEventListener('resize', function(){
-      var pos = loadPos();
-      if (pos) applyPos(pos.x, pos.y);
-      if (popupOpen) positionPopup();
-    });
-
-    syncBtn();
-    setInterval(syncBtn, 1500);
-  }
-
-  if (document.readyState === 'loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  } else {
-    init();
-  }
+'use strict';
+var BTN=null,POPUP=null,POS_KEY='dolphinMusicBtnPos',popupOpen=false;
+function $(id){return document.getElementById(id)}
+function loadPos(){try{var s=localStorage.getItem(POS_KEY);return s?JSON.parse(s):null}catch(e){return null}}
+function savePos(x,y){try{localStorage.setItem(POS_KEY,JSON.stringify({x:x,y:y}))}catch(e){}}
+function clearPos(){try{localStorage.removeItem(POS_KEY)}catch(e){}}
+function clampPos(x,y){var w=BTN.offsetWidth,h=BTN.offsetHeight,vw=window.innerWidth,vh=window.innerHeight;x=Math.max(6,Math.min(x,vw-w-6));y=Math.max(6,Math.min(y,vh-h-6));return{x:x,y:y}}
+function applyPos(x,y){var c=clampPos(x,y);BTN.style.left=c.x+'px';BTN.style.top=c.y+'px';BTN.style.right='auto';BTN.style.bottom='auto'}
+function resetPos(){clearPos();BTN.style.left='';BTN.style.top='';BTN.style.right='20px';BTN.style.top='20px';BTN.style.bottom='auto'}
+function positionPopup(){if(!POPUP||!BTN)return;var rect=BTN.getBoundingClientRect(),pw=POPUP.offsetWidth||260,ph=POPUP.offsetHeight||200,vw=window.innerWidth,vh=window.innerHeight,px=rect.left+rect.width-pw,py=rect.top+rect.height+12;if(px<12)px=12;if(px+pw>vw-12)px=vw-pw-12;if(py+ph>vh-12)py=rect.top-ph-12;if(py<12)py=12;POPUP.style.left=px+'px';POPUP.style.top=py+'px';POPUP.style.right='auto';POPUP.style.bottom='auto'}
+function openPopup(){POPUP.classList.add('show');popupOpen=true;positionPopup();syncPopupUI()}
+function closePopup(){POPUP.classList.remove('show');popupOpen=false}
+function syncBtn(){if(!BTN||!window.DolphinSound)return;var on=window.DolphinSound.isEnabled();BTN.textContent=on?'🔊':'🔇';BTN.classList.toggle('active',on)}
+function syncPopupUI(){if(!window.DolphinSound)return;var v=Math.round(window.DolphinSound.getVolume()*100),inp=$('dmpVol'),pct=$('dmpVolPct');if(inp&&document.activeElement!==inp)inp.value=v;if(pct)pct.textContent=v+'%'}
+window.__giaitriSyncMusicUI=function(){syncBtn();if(popupOpen)syncPopupUI()};
+function getPoint(e){if(e.touches&&e.touches[0])return{x:e.touches[0].clientX,y:e.touches[0].clientY};if(e.changedTouches&&e.changedTouches[0])return{x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY};return{x:e.clientX,y:e.clientY}}
+function init(){
+  BTN=$('dolphinMusicBtn');POPUP=$('dolphinMusicPopup');
+  if(!BTN||!POPUP)return;
+  var saved=loadPos();if(saved)applyPos(saved.x,saved.y);
+  var volInp=$('dmpVol');
+  if(volInp)volInp.addEventListener('input',function(){if(!window.DolphinSound)return;var v=parseInt(this.value,10);window.DolphinSound.setVolume(v/100);var pct=$('dmpVolPct');if(pct)pct.textContent=v+'%'});
+  var refreshBtn=$('dmpRefresh');
+  if(refreshBtn)refreshBtn.addEventListener('click',function(e){e.stopPropagation();if(!window.DolphinSound||!window.DolphinSound.refreshTracks)return;refreshBtn.disabled=true;refreshBtn.innerHTML='<span>⏳</span><span>Đang cập nhật...</span>';window.DolphinSound.refreshTracks().then(function(tracks){refreshBtn.disabled=false;refreshBtn.innerHTML='<span>🔄</span><span>Cập nhật danh sách nhạc</span>';if(window.showToast)window.showToast('Đã cập nhật '+(tracks?tracks.length:0)+' bài','✅')}).catch(function(){refreshBtn.disabled=false;refreshBtn.innerHTML='<span>🔄</span><span>Cập nhật danh sách nhạc</span>';if(window.showToast)window.showToast('Cập nhật thất bại','❌')})});
+  var resetBtn=$('dmpReset');
+  if(resetBtn)resetBtn.addEventListener('click',function(e){e.stopPropagation();resetPos();if(popupOpen)positionPopup();if(window.showToast)window.showToast('Đã về vị trí mặc định','↺')});
+  var drag={active:false,moved:false,startX:0,startY:0,origX:0,origY:0};
+  function onStart(e){var pt=getPoint(e);drag.active=true;drag.moved=false;drag.startX=pt.x;drag.startY=pt.y;var rect=BTN.getBoundingClientRect();drag.origX=rect.left;drag.origY=rect.top;BTN.style.transition='none'}
+  function onMove(e){if(!drag.active)return;var pt=getPoint(e),dx=pt.x-drag.startX,dy=pt.y-drag.startY;if(!drag.moved&&(Math.abs(dx)+Math.abs(dy))<8)return;drag.moved=true;if(e.cancelable)e.preventDefault();var c=clampPos(drag.origX+dx,drag.origY+dy);BTN.style.left=c.x+'px';BTN.style.top=c.y+'px';BTN.style.right='auto';BTN.classList.add('dragging')}
+  function onEnd(){if(!drag.active)return;drag.active=false;BTN.style.transition='';BTN.classList.remove('dragging');if(!drag.moved)return;savePos(BTN.offsetLeft,BTN.offsetTop);if(popupOpen)positionPopup()}
+  BTN.addEventListener('touchstart',onStart,{passive:true});document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onEnd);document.addEventListener('touchcancel',onEnd);
+  BTN.addEventListener('mousedown',function(e){e.preventDefault();onStart(e)});document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onEnd);
+  BTN.addEventListener('click',function(e){if(drag.moved){e.preventDefault();e.stopPropagation();drag.moved=false;return}e.stopPropagation();if(window.DolphinSound&&!window.DolphinSound.isEnabled()){window.DolphinSound.enable();syncBtn()}if(popupOpen)closePopup();else openPopup()});
+  document.addEventListener('click',function(e){if(!popupOpen)return;if(e.target.closest('#dolphinMusicPopup'))return;if(e.target.closest('#dolphinMusicBtn'))return;closePopup()});
+  window.addEventListener('resize',function(){var pos=loadPos();if(pos)applyPos(pos.x,pos.y);if(popupOpen)positionPopup()});
+  syncBtn();setInterval(syncBtn,1500);
+}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
 </script>
 
-<!-- ═══════ APP LOGIC ═══════ -->
+<!-- SCRIPT 2: APP LOGIC + GREETING + HOME DRAG (FIXED goHome) -->
 <script>
 (function(){
-  'use strict';
-
-  var APP_MAP = {
-    lounge:     'dolphin-lounge.html',
-    bungalow:   'dolphin-bungalow.html',
-    restaurant: 'dolphin-restaurant.html',
-    show:       'dolphin-show.html',
-    giaitri:    'giaitri/index.html',
-    dashboard:  'manager/dashboard.html',
-    ranking:    'ranking/index.html',
-    guests:     'dolphin-guests.html'
-  };
-
-  var currentApp = null;
-  var transitionLock = false;
-
-  var HOME_KEY = 'dolphinHomeBtnHidden';
-  function applyHomeBtnState(){
-    var ctrl = document.getElementById('home-controls');
-    if (!ctrl) return;
-    ctrl.classList.toggle('minimized', localStorage.getItem(HOME_KEY) === '1');
+'use strict';
+var APP_MAP={lounge:'dolphin-lounge.html',bungalow:'dolphin-bungalow.html',restaurant:'dolphin-restaurant.html',show:'dolphin-show.html',giaitri:'giaitri/index.html',dashboard:'manager/dashboard.html',ranking:'ranking/index.html',guests:'dolphin-guests.html'};
+var currentApp=null,transitionLock=false;
+var HOME_KEY='dolphinHomeBtnHidden';
+function applyHomeBtnState(){var ctrl=document.getElementById('home-controls');if(!ctrl)return;ctrl.classList.toggle('minimized',localStorage.getItem(HOME_KEY)==='1')}
+window.toggleHomeBtn=function(){var ctrl=document.getElementById('home-controls');if(!ctrl)return;var h=!ctrl.classList.contains('minimized');localStorage.setItem(HOME_KEY,h?'1':'0');ctrl.classList.toggle('minimized',h)};
+var DRAG_POS_KEY='dolphinHomeBtnPos',ctrl=null;
+function saveHomePos(x,y){try{localStorage.setItem(DRAG_POS_KEY,JSON.stringify({x:x,y:y}))}catch(e){}}
+function loadHomePos(){try{var s=localStorage.getItem(DRAG_POS_KEY);return s?JSON.parse(s):null}catch(e){return null}}
+function applyHomePos(x,y){if(!ctrl)return;ctrl.style.left=x+'px';ctrl.style.top=y+'px';ctrl.style.right='auto';ctrl.style.bottom='auto'}
+function clampHomePos(x,y){var vw=window.innerWidth,vh=window.innerHeight,w=ctrl.offsetWidth||60,h=ctrl.offsetHeight||100;x=Math.max(4,Math.min(x,vw-w-4));y=Math.max(4,Math.min(y,vh-h-4));return{x:x,y:y}}
+function snapHomeToEdge(){if(!ctrl)return;var vw=window.innerWidth,w=ctrl.offsetWidth||60,cur={x:ctrl.offsetLeft,y:ctrl.offsetTop},snapLeft=cur.x<(vw-w)/2,nx=snapLeft?12:(vw-w-12),ny=clampHomePos(nx,cur.y).y;ctrl.style.transition='left .3s cubic-bezier(.16,1,.3,1),top .3s cubic-bezier(.16,1,.3,1)';applyHomePos(nx,ny);setTimeout(function(){ctrl.style.transition=''},320);saveHomePos(nx,ny)}
+function initHomeDrag(){
+  ctrl=document.getElementById('home-controls');if(!ctrl)return;
+  var saved=loadHomePos();if(saved){var c=clampHomePos(saved.x,saved.y);applyHomePos(c.x,c.y)}
+  var btnHome=document.getElementById('btn-home');if(!btnHome)return;
+  var drag={active:false,moved:false,startX:0,startY:0,origX:0,origY:0};
+  function getPoint(e){if(e.touches&&e.touches[0])return{x:e.touches[0].clientX,y:e.touches[0].clientY};if(e.changedTouches&&e.changedTouches[0])return{x:e.changedTouches[0].clientX,y:e.changedTouches[0].clientY};return{x:e.clientX,y:e.clientY}}
+  function onStart(e){if(e.target.closest('#btn-toggle'))return;var pt=getPoint(e);drag.active=true;drag.moved=false;drag.startX=pt.x;drag.startY=pt.y;drag.origX=ctrl.offsetLeft;drag.origY=ctrl.offsetTop;ctrl.classList.add('dragging');ctrl.style.transition=''}
+  function onMove(e){if(!drag.active)return;var pt=getPoint(e),dx=pt.x-drag.startX,dy=pt.y-drag.startY;if(!drag.moved&&Math.abs(dx)+Math.abs(dy)<8)return;drag.moved=true;if(e.cancelable)e.preventDefault();var c=clampHomePos(drag.origX+dx,drag.origY+dy);applyHomePos(c.x,c.y)}
+  function onEnd(){if(!drag.active)return;drag.active=false;ctrl.classList.remove('dragging');if(!drag.moved)return;snapHomeToEdge()}
+  btnHome.addEventListener('touchstart',onStart,{passive:true});document.addEventListener('touchmove',onMove,{passive:false});document.addEventListener('touchend',onEnd);document.addEventListener('touchcancel',onEnd);
+  btnHome.addEventListener('mousedown',function(e){onStart(e);e.preventDefault()});document.addEventListener('mousemove',onMove);document.addEventListener('mouseup',onEnd);
+  window.addEventListener('resize',function(){var pos=loadHomePos();if(pos){var c=clampHomePos(pos.x,pos.y);applyHomePos(c.x,c.y)}});
+  btnHome.addEventListener('click',function(e){if(drag.moved){e.preventDefault();e.stopPropagation();drag.moved=false}},true);
+}
+applyHomeBtnState();setTimeout(initHomeDrag,100);
+(function(){var cards=document.querySelectorAll('.area-card');if(!cards.length)return;cards.forEach(function(c){c.classList.add('skeleton')});setTimeout(function(){cards.forEach(function(c){c.classList.remove('skeleton');c.style.opacity='0';c.style.transform='translateY(15px)';c.style.transition='opacity .6s ease, transform .6s cubic-bezier(.16,1,.3,1)';requestAnimationFrame(function(){requestAnimationFrame(function(){c.style.opacity='1';c.style.transform=''})})})},600)})();
+window.clearAreaBadge=function(area){var el=document.getElementById('badge-'+area);if(el)el.classList.remove('show')};
+if(navigator.userAgent.indexOf('DolphinManager')>=0){var cardDash=document.getElementById('card-dashboard');if(cardDash)cardDash.style.display='flex'}
+window.openApp=function(area){if(transitionLock)return;if(!APP_MAP[area])return;doOpenApp(area)};
+function doOpenApp(area){
+  if(transitionLock)return;
+  var baseUrl=APP_MAP[area];if(!baseUrl)return;
+  try{if(window.DolphinSound)window.DolphinSound.pause()}catch(e){}
+  var themeKey=(window.ThemeSystem&&window.ThemeSystem.getCurrent)?window.ThemeSystem.getCurrent():'default';
+  var sep=baseUrl.indexOf('?')===-1?'?':'&';
+  var url=baseUrl+sep+'theme='+themeKey;
+  transitionLock=true;
+  if(location.hash!=='#'+area){try{history.pushState({area:area},'','#'+area)}catch(e){location.hash=area}}
+  currentApp=area;
+  if(window.clearAreaBadge)window.clearAreaBadge(area);
+  var frame=document.getElementById('app-frame'),view=document.getElementById('app-view'),landing=document.getElementById('landing'),loading=document.getElementById('app-loading');
+  loading.classList.remove('hide');frame.classList.add('hidden-frame');
+  var done=false;
+  var onLoaded=function(){if(done)return;done=true;frame.removeEventListener('load',onLoaded);setTimeout(function(){loading.classList.add('hide');frame.classList.remove('hidden-frame');transitionLock=false},300)};
+  frame.addEventListener('load',onLoaded);
+  frame.src=url;
+  setTimeout(function(){if(done)return;done=true;loading.classList.add('hide');frame.classList.remove('hidden-frame');transitionLock=false},10000);
+  landing.classList.add('fade-out');document.body.classList.add('app-mode');
+  setTimeout(function(){landing.style.display='none';view.classList.remove('hidden');void view.offsetWidth;requestAnimationFrame(function(){view.classList.add('show')})},420);
+}
+window.goHome=function(){
+  if(transitionLock)return;
+  transitionLock=true;
+  try{if(window.DolphinSound)window.DolphinSound.resume()}catch(e){}
+  if(window.renderGreeting)window.renderGreeting();
+  if(location.hash){
+    try{history.pushState({},'',''+location.pathname+location.search)}
+    catch(e){location.hash=''}
   }
-  window.toggleHomeBtn = function(){
-    var ctrl = document.getElementById('home-controls');
-    if (!ctrl) return;
-    var h = !ctrl.classList.contains('minimized');
-    localStorage.setItem(HOME_KEY, h ? '1' : '0');
-    ctrl.classList.toggle('minimized', h);
-  };
-
-  var DRAG_POS_KEY = 'dolphinHomeBtnPos';
-  var ctrl = null;
-
-  function saveHomePos(x, y){
-    try { localStorage.setItem(DRAG_POS_KEY, JSON.stringify({ x: x, y: y })); } catch(e){}
-  }
-  function loadHomePos(){
-    try { var s = localStorage.getItem(DRAG_POS_KEY); return s ? JSON.parse(s) : null; }
-    catch(e){ return null; }
-  }
-  function applyHomePos(x, y){
-    if (!ctrl) return;
-    ctrl.style.left = x + 'px';
-    ctrl.style.top = y + 'px';
-    ctrl.style.right = 'auto';
-    ctrl.style.bottom = 'auto';
-  }
-  function clampHomePos(x, y){
-    var vw = window.innerWidth, vh = window.innerHeight;
-    var w = ctrl.offsetWidth || 60, h = ctrl.offsetHeight || 100;
-    x = Math.max(4, Math.min(x, vw - w - 4));
-    y = Math.max(4, Math.min(y, vh - h - 4));
-    return { x: x, y: y };
-  }
-  function snapHomeToEdge(){
-    if (!ctrl) return;
-    var vw = window.innerWidth, w = ctrl.offsetWidth || 60;
-    var cur = { x: ctrl.offsetLeft, y: ctrl.offsetTop };
-    var snapLeft = cur.x < (vw - w) / 2;
-    var nx = snapLeft ? 12 : (vw - w - 12);
-    var ny = clampHomePos(nx, cur.y).y;
-    ctrl.style.transition = 'left .3s cubic-bezier(.16,1,.3,1), top .3s cubic-bezier(.16,1,.3,1)';
-    applyHomePos(nx, ny);
-    setTimeout(function(){ ctrl.style.transition = ''; }, 320);
-    saveHomePos(nx, ny);
-  }
-  function initHomeDrag(){
-    ctrl = document.getElementById('home-controls');
-    if (!ctrl) return;
-    var saved = loadHomePos();
-    if (saved){
-      var c = clampHomePos(saved.x, saved.y);
-      applyHomePos(c.x, c.y);
-    }
-    var btnHome = document.getElementById('btn-home');
-    if (!btnHome) return;
-    var drag = { active: false, moved: false, startX: 0, startY: 0, origX: 0, origY: 0 };
-    function getPoint(e){
-      if (e.touches && e.touches[0]) return { x: e.touches[0].clientX, y: e.touches[0].clientY };
-      if (e.changedTouches && e.changedTouches[0]) return { x: e.changedTouches[0].clientX, y: e.changedTouches[0].clientY };
-      return { x: e.clientX, y: e.clientY };
-    }
-    function onStart(e){
-      if (e.target.closest('#btn-toggle')) return;
-      var pt = getPoint(e);
-      drag.active = true; drag.moved = false;
-      drag.startX = pt.x; drag.startY = pt.y;
-      drag.origX = ctrl.offsetLeft; drag.origY = ctrl.offsetTop;
-      ctrl.classList.add('dragging');
-      ctrl.style.transition = '';
-    }
-    function onMove(e){
-      if (!drag.active) return;
-      var pt = getPoint(e);
-      var dx = pt.x - drag.startX, dy = pt.y - drag.startY;
-      if (!drag.moved && Math.abs(dx) + Math.abs(dy) < 8) return;
-      drag.moved = true;
-      if (e.cancelable) e.preventDefault();
-      var c = clampHomePos(drag.origX + dx, drag.origY + dy);
-      applyHomePos(c.x, c.y);
-    }
-    function onEnd(){
-      if (!drag.active) return;
-      drag.active = false;
-      ctrl.classList.remove('dragging');
-      if (!drag.moved) return;
-      snapHomeToEdge();
-    }
-    btnHome.addEventListener('touchstart', onStart, { passive: true });
-    document.addEventListener('touchmove', onMove, { passive: false });
-    document.addEventListener('touchend', onEnd);
-    document.addEventListener('touchcancel', onEnd);
-    btnHome.addEventListener('mousedown', function(e){ onStart(e); e.preventDefault(); });
-    document.addEventListener('mousemove', onMove);
-    document.addEventListener('mouseup', onEnd);
-    window.addEventListener('resize', function(){
-      var pos = loadHomePos();
-      if (pos){ var c = clampHomePos(pos.x, pos.y); applyHomePos(c.x, c.y); }
-    });
-    btnHome.addEventListener('click', function(e){
-      if (drag.moved) { e.preventDefault(); e.stopPropagation(); drag.moved = false; }
-    }, true);
-  }
-
-  applyHomeBtnState();
-  setTimeout(initHomeDrag, 100);
-
-  (function(){
-    var cards = document.querySelectorAll('.area-card');
-    if (!cards.length) return;
-    cards.forEach(function(c){ c.classList.add('skeleton'); });
-    setTimeout(function(){
-      cards.forEach(function(c){
-        c.classList.remove('skeleton');
-        c.style.opacity = '0';
-        c.style.transform = 'translateY(8px)';
-        c.style.transition = 'opacity .5s ease, transform .5s cubic-bezier(.16,1,.3,1)';
-        requestAnimationFrame(function(){
-          requestAnimationFrame(function(){
-            c.style.opacity = '1';
-            c.style.transform = '';
-          });
-        });
-      });
-    }, 600);
-  })();
-
-  window.clearAreaBadge = function(area){
-    var el = document.getElementById('badge-' + area);
-    if (el) el.classList.remove('show');
-  };
-
-  if (navigator.userAgent.indexOf('DolphinManager') >= 0) {
-    var cardDash = document.getElementById('card-dashboard');
-    if (cardDash) cardDash.style.display = 'flex';
-  }
-
-  window.openApp = function(area){
-    if (transitionLock) return;
-    if (!APP_MAP[area]) return;
-    doOpenApp(area);
-  };
-
-  function doOpenApp(area){
-    if (transitionLock) return;
-    var baseUrl = APP_MAP[area];
-    if (!baseUrl) return;
-
-    try { if (window.DolphinSound) window.DolphinSound.pause(); } catch(e){}
-
-    var themeKey = (window.ThemeSystem && window.ThemeSystem.getCurrent)
-                   ? window.ThemeSystem.getCurrent() : 'default';
-    var sep = baseUrl.indexOf('?') === -1 ? '?' : '&';
-    var url = baseUrl + sep + 'theme=' + themeKey;
-
-    transitionLock = true;
-    if (location.hash !== '#' + area) {
-      try { history.pushState({area: area}, '', '#' + area); } catch(e) { location.hash = area; }
-    }
-    currentApp = area;
-    if (window.clearAreaBadge) window.clearAreaBadge(area);
-
-    var frame = document.getElementById('app-frame');
-    var view = document.getElementById('app-view');
-    var landing = document.getElementById('landing');
-    var loading = document.getElementById('app-loading');
-    loading.classList.remove('hide');
-    frame.classList.add('hidden-frame');
-    var done = false;
-    var onLoaded = function(){
-      if (done) return; done = true;
-      frame.removeEventListener('load', onLoaded);
-      setTimeout(function(){
-        loading.classList.add('hide');
-        frame.classList.remove('hidden-frame');
-        transitionLock = false;
-      }, 300);
-    };
-    frame.addEventListener('load', onLoaded);
-    frame.src = url;
-    setTimeout(function(){
-      if (done) return; done = true;
-      loading.classList.add('hide');
-      frame.classList.remove('hidden-frame');
-      transitionLock = false;
-    }, 10000);
-    landing.classList.add('fade-out');
-    document.body.classList.add('app-mode');
-    setTimeout(function(){
-      landing.style.display = 'none';
-      view.classList.remove('hidden');
-      void view.offsetWidth;
-      requestAnimationFrame(function(){ view.classList.add('show'); });
-    }, 420);
-  }
-
-  window.goHome = function(){
-    if (transitionLock) return;
-    transitionLock = true;
-
-    try { if (window.DolphinSound) window.DolphinSound.resume(); } catch(e){}
-
-    if (window.renderGreeting) window.renderGreeting();
-    if (location.hash) {
-      try { history.pushState({}, '', location.pathname + location.search); }
-      catch(e){ location.hash = ''; }
-    }
-    currentApp = null;
-    var frame = document.getElementById('app-frame');
-    var view = document.getElementById('app-view');
-    var landing = document.getElementById('landing');
-    var loading = document.getElementById('app-loading');
-    view.classList.remove('show');
-    document.body.classList.remove('app-mode');
-    setTimeout(function(){
-      view.classList.add('hidden');
-      frame.src = 'about:blank';
-      loading.classList.remove('hide');
-      frame.classList.remove('hidden-frame');
-      landing.style.display = '';
-      void landing.offsetWidth;
-      requestAnimationFrame(function(){
-        landing.classList.remove('fade-out');
-        transitionLock = false;
-      });
-    }, 420);
-  };
-
-  function renderGreeting(){
-    try {
-      var name = (localStorage.getItem('dolphinStaffName') || '').trim();
-      var nameEl = document.getElementById('wlcStaffName');
-      var subEl  = document.getElementById('wlcGreetingSub');
-      var greetEl = document.getElementById('wlcGreeting');
-      if (!nameEl || !subEl || !greetEl) return;
-      if (name){
-        var display = name.charAt(0).toUpperCase() + name.slice(1);
-        var hour = parseInt(new Intl.DateTimeFormat('en-US', {
-          timeZone:'Asia/Ho_Chi_Minh', hour:'2-digit', hour12:false
-        }).format(new Date()), 10);
-        var greeting, emoji;
-        if (hour >= 5 && hour < 11)       { greeting = 'CHÀO BUỔI SÁNG';  emoji = '🌅'; }
-        else if (hour >= 11 && hour < 14) { greeting = 'CHÀO BUỔI TRƯA';   emoji = '☀️'; }
-        else if (hour >= 14 && hour < 18) { greeting = 'CHÀO BUỔI CHIỀU';  emoji = '🌤️'; }
-        else if (hour >= 18 && hour < 22) { greeting = 'CHÀO BUỔI TỐI';    emoji = '🌆'; }
-        else                              { greeting = 'CHÀO BUỔI ĐÊM';    emoji = '🌙'; }
-        greetEl.innerHTML = greeting + ' <span id="wlcStaffName" style="color:#FBD77A;text-shadow:0 0 20px rgba(244,184,66,.7);font-weight:900;">' + display + '</span> ' + emoji;
-      } else {
-        nameEl.textContent = 'BẠN';
-      }
-    } catch(e){}
-  }
-  window.renderGreeting = renderGreeting;
+  currentApp=null;
+  var frame=document.getElementById('app-frame'),view=document.getElementById('app-view'),landing=document.getElementById('landing'),loading=document.getElementById('app-loading');
+  view.classList.remove('show');document.body.classList.remove('app-mode');
+  setTimeout(function(){view.classList.add('hidden');frame.src='about:blank';loading.classList.remove('hide');frame.classList.remove('hidden-frame');landing.style.display='';void landing.offsetWidth;requestAnimationFrame(function(){landing.classList.remove('fade-out');transitionLock=false})},420);
+};
+function renderGreeting(){
+  try{
+    var name=(localStorage.getItem('dolphinStaffName')||'').trim();
+    var nameEl=document.getElementById('wlcStaffName'),subEl=document.getElementById('wlcGreetingSub'),greetEl=document.getElementById('wlcGreeting');
+    if(!nameEl||!subEl||!greetEl)return;
+    if(name){
+      var display=name.charAt(0).toUpperCase()+name.slice(1);
+      var hour=parseInt(new Intl.DateTimeFormat('en-US',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',hour12:false}).format(new Date()),10);
+      var greeting,emoji;
+      if(hour>=5&&hour<11){greeting='CHÀO BUỔI SÁNG';emoji='🌅'}
+      else if(hour>=11&&hour<14){greeting='CHÀO BUỔI TRƯA';emoji='☀️'}
+      else if(hour>=14&&hour<18){greeting='CHÀO BUỔI CHIỀU';emoji='🌤️'}
+      else if(hour>=18&&hour<22){greeting='CHÀO BUỔI TỐI';emoji='🌆'}
+      else{greeting='CHÀO BUỔI ĐÊM';emoji='🌙'}
+      greetEl.innerHTML=greeting+' <span id="wlcStaffName" style="color:var(--gold);text-shadow:0 0 24px var(--gold-glow);font-weight:900;">'+display+'</span> '+emoji;
+    }else{nameEl.textContent='BẠN'}
+  }catch(e){}
+}
+window.renderGreeting=renderGreeting;renderGreeting();
+window.addEventListener('popstate',function(){
+  if(transitionLock)return;
+  var hash=(location.hash||'').replace('#','');
+  if(hash&&APP_MAP[hash]){if(currentApp!==hash)window.openApp(hash)}
+  else{if(currentApp)window.goHome()}
+});
+window.addEventListener('DOMContentLoaded',function(){
   renderGreeting();
-
-  window.addEventListener('popstate', function(){
-    if (transitionLock) return;
-    var hash = (location.hash || '').replace('#', '');
-    if (hash && APP_MAP[hash]) {
-      if (currentApp !== hash) window.openApp(hash);
-    } else {
-      if (currentApp) window.goHome();
-    }
-  });
-
-  window.addEventListener('DOMContentLoaded', function(){
-    renderGreeting();
-    var hash = (location.hash || '').replace('#', '');
-    if (hash && APP_MAP[hash]) setTimeout(function(){ window.openApp(hash); }, 350);
-  });
-
-  var lastTouch = 0;
-  document.addEventListener('touchend', function(e){
-    var now = Date.now();
-    if (now - lastTouch <= 320) e.preventDefault();
-    lastTouch = now;
-  }, { passive: false });
-
+  var hash=(location.hash||'').replace('#','');
+  if(hash&&APP_MAP[hash])setTimeout(function(){window.openApp(hash)},350);
+});
+var lastTouch=0;
+document.addEventListener('touchend',function(e){var now=Date.now();if(now-lastTouch<=320)e.preventDefault();lastTouch=now},{passive:false});
 })();
 </script>
 
+<!-- SCRIPT 3: UPDATE HELPERS -->
 <script>
-window.dismissUpdate = function(){
-  var banner = document.getElementById('updateBanner');
-  if (banner) banner.classList.remove('show');
-};
-window.performUpdate = function(){
-  var btn = document.getElementById('updateBtn');
-  if (btn){ btn.disabled = true; btn.innerHTML = '⏳ Đang cập nhật...'; }
-  try {
-    if ('serviceWorker' in navigator && navigator.serviceWorker.controller){
-      navigator.serviceWorker.controller.postMessage({ type: 'SKIP_WAITING' });
-    }
-  } catch(e){}
-  setTimeout(function(){ window.location.reload(); }, 900);
-};
+window.dismissUpdate=function(){var banner=document.getElementById('updateBanner');if(banner)banner.classList.remove('show')};
+window.performUpdate=function(){var btn=document.getElementById('updateBtn');if(btn){btn.disabled=true;btn.innerHTML='⏳ Đang cập nhật...'}try{if('serviceWorker' in navigator&&navigator.serviceWorker.controller){navigator.serviceWorker.controller.postMessage({type:'SKIP_WAITING'})}}catch(e){}setTimeout(function(){window.location.reload()},900)};
 </script>
 
+<!-- SCRIPT 4: SERVICE WORKER -->
 <script>
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', function(){
-    navigator.serviceWorker.register('/DolphinApp/service-worker.js', {
-      scope: '/DolphinApp/', updateViaCache: 'none'
-    }).then(function(reg){
-      setInterval(function(){
-        reg.update();
-        if (reg.active) reg.active.postMessage({ type: 'CHECK_UPDATE' });
-      }, 5 * 60 * 1000);
-      document.addEventListener('visibilitychange', function(){
-        if (document.visibilityState === 'visible'){
-          reg.update();
-          if (reg.active) reg.active.postMessage({ type: 'CHECK_UPDATE' });
-        }
-      });
-      reg.addEventListener('updatefound', function(){
-        var nw = reg.installing;
-        if (!nw) return;
-        nw.addEventListener('statechange', function(){
-          if (nw.state === 'installed' && navigator.serviceWorker.controller){
-            nw.postMessage({ type: 'SKIP_WAITING' });
-          }
-        });
-      });
-    }).catch(function(err){ console.warn('❌ SW failed:', err); });
-
-    navigator.serviceWorker.addEventListener('message', function(e){
-      var data = e.data || {};
-      if (data.type === 'NEW_VERSION'){
-        var banner = document.getElementById('updateBanner');
-        if (banner){
-          var t = banner.querySelector('.update-title');
-          var n = banner.querySelector('.update-notes');
-          if (t) t.textContent = '🎉 Phiên bản ' + (data.newVersion || 'mới') + ' sẵn sàng!';
-          if (n) n.textContent = 'Bấm "Cập nhật ngay" để nhận tính năng mới.';
+if('serviceWorker' in navigator){
+  window.addEventListener('load',function(){
+    navigator.serviceWorker.register('/DolphinApp/service-worker.js',{scope:'/DolphinApp/',updateViaCache:'none'}).then(function(reg){
+      setInterval(function(){reg.update();if(reg.active)reg.active.postMessage({type:'CHECK_UPDATE'})},5*60*1000);
+      document.addEventListener('visibilitychange',function(){if(document.visibilityState==='visible'){reg.update();if(reg.active)reg.active.postMessage({type:'CHECK_UPDATE'})}});
+      reg.addEventListener('updatefound',function(){var nw=reg.installing;if(!nw)return;nw.addEventListener('statechange',function(){if(nw.state==='installed'&&navigator.serviceWorker.controller){nw.postMessage({type:'SKIP_WAITING'})}})});
+    }).catch(function(err){console.warn('❌ SW failed:',err)});
+    navigator.serviceWorker.addEventListener('message',function(e){
+      var data=e.data||{};
+      if(data.type==='NEW_VERSION'){
+        var banner=document.getElementById('updateBanner');
+        if(banner){
+          var t=banner.querySelector('.update-title'),n=banner.querySelector('.update-notes');
+          if(t)t.textContent='🎉 Phiên bản '+(data.newVersion||'mới')+' sẵn sàng!';
+          if(n)n.textContent='Bấm "Cập nhật ngay" để nhận tính năng mới.';
           banner.classList.add('show');
         }
       }
     });
-
-    var pendingUpdate = false;
-    navigator.serviceWorker.addEventListener('controllerchange', function(){
-      if (pendingUpdate) return;
-      pendingUpdate = true;
-      var banner = document.getElementById('updateBanner');
-      if (banner) banner.classList.add('show');
-    });
+    var pendingUpdate=false;
+    navigator.serviceWorker.addEventListener('controllerchange',function(){if(pendingUpdate)return;pendingUpdate=true;var banner=document.getElementById('updateBanner');if(banner)banner.classList.add('show')});
   });
 }
 </script>
 
+<!-- SCRIPT 5: CLOCK -->
 <script>
 function initHalongClock(){
-  var elH = document.getElementById('hclockH');
-  var elM = document.getElementById('hclockM');
-  var elS = document.getElementById('hclockS');
-  var elDate = document.getElementById('hclockDate');
-  if (!elH || !elM || !elS || !elDate) return;
-  var fmtTime = new Intl.DateTimeFormat('en-GB', {
-    timeZone:'Asia/Ho_Chi_Minh', hour:'2-digit', minute:'2-digit', second:'2-digit', hour12:false
-  });
-  var fmtDate = new Intl.DateTimeFormat('en-GB', {
-    timeZone:'Asia/Ho_Chi_Minh', day:'2-digit', month:'2-digit', year:'numeric', weekday:'short'
-  });
+  var elH=document.getElementById('hclockH'),elM=document.getElementById('hclockM'),elS=document.getElementById('hclockS'),elDate=document.getElementById('hclockDate');
+  if(!elH||!elM||!elS||!elDate)return;
+  var fmtTime=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Ho_Chi_Minh',hour:'2-digit',minute:'2-digit',second:'2-digit',hour12:false});
+  var fmtDate=new Intl.DateTimeFormat('en-GB',{timeZone:'Asia/Ho_Chi_Minh',day:'2-digit',month:'2-digit',year:'numeric',weekday:'short'});
   function tick(){
-    var now = new Date();
-    var p = fmtTime.formatToParts(now);
-    var h = '00', m = '00', s = '00';
-    p.forEach(function(x){
-      if (x.type === 'hour') h = x.value;
-      if (x.type === 'minute') m = x.value;
-      if (x.type === 'second') s = x.value;
-    });
-    elH.textContent = h; elM.textContent = m; elS.textContent = s;
-    var dp = fmtDate.formatToParts(now);
-    var d = '01', mo = '01', y = '2026', dow = '';
-    dp.forEach(function(x){
-      if (x.type === 'day') d = x.value;
-      if (x.type === 'month') mo = x.value;
-      if (x.type === 'year') y = x.value;
-      if (x.type === 'weekday') dow = x.value;
-    });
-    var map = { Sun:'Chủ Nhật', Mon:'Thứ Hai', Tue:'Thứ Ba', Wed:'Thứ Tư', Thu:'Thứ Năm', Fri:'Thứ Sáu', Sat:'Thứ Bảy' };
-    elDate.textContent = (map[dow] || dow) + ', ' + d + ' tháng ' + mo + ', ' + y;
+    var now=new Date();
+    var p=fmtTime.formatToParts(now);
+    var h='00',m='00',s='00';
+    p.forEach(function(x){if(x.type==='hour')h=x.value;if(x.type==='minute')m=x.value;if(x.type==='second')s=x.value});
+    elH.textContent=h;elM.textContent=m;elS.textContent=s;
+    var dp=fmtDate.formatToParts(now);
+    var d='01',mo='01',y='2026',dow='';
+    dp.forEach(function(x){if(x.type==='day')d=x.value;if(x.type==='month')mo=x.value;if(x.type==='year')y=x.value;if(x.type==='weekday')dow=x.value});
+    var map={Sun:'Chủ Nhật',Mon:'Thứ Hai',Tue:'Thứ Ba',Wed:'Thứ Tư',Thu:'Thứ Năm',Fri:'Thứ Sáu',Sat:'Thứ Bảy'};
+    elDate.textContent=(map[dow]||dow)+', '+d+' tháng '+mo+', '+y;
   }
-  tick();
-  setInterval(tick, 1000);
+  tick();setInterval(tick,1000);
 }
-if (document.readyState === 'loading'){
-  document.addEventListener('DOMContentLoaded', function(){ setTimeout(initHalongClock, 200); });
-} else {
-  setTimeout(initHalongClock, 200);
-}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',function(){setTimeout(initHalongClock,200)});else setTimeout(initHalongClock,200);
 </script>
 
+<!-- SCRIPT 6: THEME LISTENER -->
 <script>
-window.addEventListener('dolphin-theme-changed', function(e){
-  var f = document.getElementById('app-frame');
-  if (f && f.contentWindow && f.contentWindow.ThemeSystem){
-    try { f.contentWindow.ThemeSystem.setTheme(e.detail.key); } catch(err){}
-  }
+window.addEventListener('dolphin-theme-changed',function(e){
+  var f=document.getElementById('app-frame');
+  if(f&&f.contentWindow&&f.contentWindow.ThemeSystem){try{f.contentWindow.ThemeSystem.setTheme(e.detail.key)}catch(err){}}
 });
 </script>
 
+<!-- SCRIPT 7: ANNOUNCEMENT FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, doc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const firebaseConfig = {
-  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
-  authDomain: "dolphin-f6d67.firebaseapp.com",
-  projectId: "dolphin-f6d67"
-};
-try {
-  const app = initializeApp(firebaseConfig, 'announcement-app');
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
-    const ref = doc(db, 'master_config', 'announcement');
-    onSnapshot(ref, (snap) => {
-      updateAnnouncement(snap.exists() ? snap.data() : null);
-    }, (err) => { console.warn('[Announcement]', err); });
-  }).catch(err => { console.warn('[Announcement]', err); });
-
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,signInAnonymously}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,doc,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
+try{
+  const app=initializeApp(firebaseConfig,'announcement-app');
+  const auth=getAuth(app);const db=getFirestore(app);
+  signInAnonymously(auth).then(()=>{
+    const ref=doc(db,'master_config','announcement');
+    onSnapshot(ref,(snap)=>{updateAnnouncement(snap.exists()?snap.data():null)},(err)=>{console.warn('[Announcement]',err)});
+  }).catch(err=>{console.warn('[Announcement]',err)});
   function updateAnnouncement(data){
-    const bar = document.getElementById('announcementBar');
-    const t1 = document.getElementById('announcementText');
-    const t2 = document.getElementById('announcementText2');
-    const track = document.getElementById('announcementTrack');
-    if (!bar || !t1 || !t2 || !track) return;
-    const active = data && data.active === true;
-    const text = data && data.text ? String(data.text).trim() : '';
-    if (!active || !text){ bar.classList.remove('show'); return; }
-    const fullText = '📢 ' + text + '   •   📢 ' + text + '   •   ';
-    t1.textContent = fullText;
-    t2.textContent = fullText;
+    const bar=document.getElementById('announcementBar'),t1=document.getElementById('announcementText'),t2=document.getElementById('announcementText2'),track=document.getElementById('announcementTrack');
+    if(!bar||!t1||!t2||!track)return;
+    const active=data&&data.active===true;
+    const text=data&&data.text?String(data.text).trim():'';
+    if(!active||!text){bar.classList.remove('show');return}
+    const fullText='📢 '+text+'   •   📢 '+text+'   •   ';
+    t1.textContent=fullText;t2.textContent=fullText;
     bar.classList.add('show');
-    requestAnimationFrame(() => {
-      const w = t1.offsetWidth;
-      if (w > 0){
-        const speed = 80;
-        const duration = Math.max(15, Math.min(120, w / speed));
-        track.style.animation = 'none';
-        void track.offsetWidth;
-        track.style.animation = 'announce-marquee ' + duration + 's linear infinite';
-      }
+    requestAnimationFrame(()=>{
+      const w=t1.offsetWidth;
+      if(w>0){const speed=80;const duration=Math.max(15,Math.min(120,w/speed));track.style.animation='none';void track.offsetWidth;track.style.animation='announce-marquee '+duration+'s linear infinite'}
     });
   }
-} catch(e){ console.warn('[Announcement]', e); }
+}catch(e){console.warn('[Announcement]',e)}
 </script>
 
+<!-- SCRIPT 8: ORDER NOTIFICATION FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const cfg = {
-  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
-  authDomain: "dolphin-f6d67.firebaseapp.com",
-  projectId: "dolphin-f6d67"
-};
-const WATCH_ORDERS = [
-  { name: 'bun_orders', label: 'Bungalow', icon: '🌴' },
-  { name: 'lounge_orders', label: 'Lounge', icon: '🍸' },
-  { name: 'res_orders', label: 'Restaurant', icon: '🍽️' }
-];
-const WATCH_CALLS = [
-  { name: 'bun_calls', label: 'Bungalow', icon: '🌴' },
-  { name: 'lounge_calls', label: 'Lounge', icon: '🍸' },
-  { name: 'res_calls', label: 'Restaurant', icon: '🍽️' }
-];
-let audioCtx = null, hideTimer = null;
-function unlock(){ try { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){} }
-['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, unlock, { passive: true }));
-
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,signInAnonymously}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,collection,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
+const WATCH_ORDERS=[{name:'bun_orders',label:'Bungalow',icon:'🌴'},{name:'lounge_orders',label:'Lounge',icon:'🍸'},{name:'res_orders',label:'Restaurant',icon:'🍽️'}];
+const WATCH_CALLS=[{name:'bun_calls',label:'Bungalow',icon:'🌴'},{name:'lounge_calls',label:'Lounge',icon:'🍸'},{name:'res_calls',label:'Restaurant',icon:'🍽️'}];
+let audioCtx=null,hideTimer=null;
+function unlock(){try{if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();if(audioCtx.state==='suspended')audioCtx.resume()}catch(e){}}
+['click','touchstart','keydown'].forEach(ev=>document.addEventListener(ev,unlock,{passive:true}));
 function bell(){
-  try {
-    if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-    if (audioCtx.state === 'suspended') audioCtx.resume();
-    const ctx = audioCtx, now = ctx.currentTime;
-    const master = ctx.createGain(); master.gain.value = 0.8; master.connect(ctx.destination);
-    const comp = ctx.createDynamicsCompressor(); comp.threshold.value = -18; comp.ratio.value = 4; comp.connect(master);
-    const delay = ctx.createDelay(); delay.delayTime.value = 0.02;
-    const dg = ctx.createGain(); dg.gain.value = 0.3; delay.connect(dg); dg.connect(master);
-    function strike(freq, time, g, dec){
-      [{r:1,g:1,d:1},{r:2,g:0.6,d:0.85},{r:2.76,g:0.4,d:0.7},{r:4.07,g:0.25,d:0.55},{r:5.43,g:0.15,d:0.4}].forEach(p => {
-        const o = ctx.createOscillator(), gg = ctx.createGain();
-        o.type = 'sine'; o.frequency.value = freq * p.r;
-        o.detune.value = (Math.random() - 0.5) * 4;
-        const peak = g * p.g, d = dec * p.d;
-        gg.gain.setValueAtTime(0.0001, time);
-        gg.gain.exponentialRampToValueAtTime(peak, time + 0.005);
-        gg.gain.exponentialRampToValueAtTime(0.0001, time + d);
-        o.connect(gg); gg.connect(comp); gg.connect(delay);
-        o.start(time); o.stop(time + d + 0.05);
+  try{
+    if(!audioCtx)audioCtx=new(window.AudioContext||window.webkitAudioContext)();
+    if(audioCtx.state==='suspended')audioCtx.resume();
+    const ctx=audioCtx,now=ctx.currentTime;
+    const master=ctx.createGain();master.gain.value=0.8;master.connect(ctx.destination);
+    const comp=ctx.createDynamicsCompressor();comp.threshold.value=-18;comp.ratio.value=4;comp.connect(master);
+    const delay=ctx.createDelay();delay.delayTime.value=0.02;
+    const dg=ctx.createGain();dg.gain.value=0.3;delay.connect(dg);dg.connect(master);
+    function strike(freq,time,g,dec){
+      [{r:1,g:1,d:1},{r:2,g:0.6,d:0.85},{r:2.76,g:0.4,d:0.7},{r:4.07,g:0.25,d:0.55},{r:5.43,g:0.15,d:0.4}].forEach(p=>{
+        const o=ctx.createOscillator(),gg=ctx.createGain();
+        o.type='sine';o.frequency.value=freq*p.r;o.detune.value=(Math.random()-0.5)*4;
+        const peak=g*p.g,d=dec*p.d;
+        gg.gain.setValueAtTime(0.0001,time);gg.gain.exponentialRampToValueAtTime(peak,time+0.005);gg.gain.exponentialRampToValueAtTime(0.0001,time+d);
+        o.connect(gg);gg.connect(comp);gg.connect(delay);
+        o.start(time);o.stop(time+d+0.05);
       });
     }
-    const base = 1046.5;
-    strike(base, now + 0.0, 0.5, 1.2);
-    strike(base, now + 0.35, 0.5, 1.2);
-    strike(base, now + 0.70, 0.5, 2.5);
-    strike(base * 0.75, now + 0.70, 0.35, 2.5);
-    strike(base * 0.5, now + 0.72, 0.25, 2.5);
-    if (navigator.vibrate){ try { navigator.vibrate([200,100,200,100,400]); } catch(e){} }
-  } catch(e){ console.warn('[Notif]', e); }
+    const base=1046.5;
+    strike(base,now+0.0,0.5,1.2);strike(base,now+0.35,0.5,1.2);strike(base,now+0.70,0.5,2.5);strike(base*0.75,now+0.70,0.35,2.5);strike(base*0.5,now+0.72,0.25,2.5);
+    if(navigator.vibrate){try{navigator.vibrate([200,100,200,100,400])}catch(e){}}
+  }catch(e){console.warn('[Notif]',e)}
 }
-
-function showNotif(cfg, data, type){
-  const n = document.getElementById('orderNotif');
-  const t = document.getElementById('orderNotifTitle');
-  const s = document.getElementById('orderNotifSub');
-  if (!n || !t || !s) return;
-  const col = cfg.icon + ' ' + cfg.label;
-  const table = data.table || '--';
-  const customer = data.customerName || '';
-  if (type === 'call'){
-    t.textContent = '🛎️ KHÁCH GỌI PHỤC VỤ!';
-    s.innerHTML = col + ' · Bàn <span class="table-hl">' + table + '</span>' + (customer ? ' · ' + customer : '');
-  } else {
-    const c = Array.isArray(data.items) ? data.items.length : 0;
-    t.textContent = '🔔 CÓ ĐƠN MỚI!';
-    s.innerHTML = col + ' · Bàn <span class="table-hl">' + table + '</span> · ' + (c > 0 ? c + ' món' : 'đơn mới') + (customer ? ' · ' + customer : '');
-  }
-  n.dataset.collection = cfg.name;
-  n.classList.add('show');
-  if (hideTimer) clearTimeout(hideTimer);
-  hideTimer = setTimeout(() => { window.closeOrderNotif(); }, 12000);
+function showNotif(cfg,data,type){
+  const n=document.getElementById('orderNotif'),t=document.getElementById('orderNotifTitle'),s=document.getElementById('orderNotifSub');
+  if(!n||!t||!s)return;
+  const col=cfg.icon+' '+cfg.label;
+  const table=data.table||'--';
+  const customer=data.customerName||'';
+  if(type==='call'){t.textContent='🛎️ KHÁCH GỌI PHỤC VỤ!';s.innerHTML=col+' · Bàn <span class="table-hl">'+table+'</span>'+(customer?' · '+customer:'')}
+  else{const c=Array.isArray(data.items)?data.items.length:0;t.textContent='🔔 CÓ ĐƠN MỚI!';s.innerHTML=col+' · Bàn <span class="table-hl">'+table+'</span> · '+(c>0?c+' món':'đơn mới')+(customer?' · '+customer:'')}
+  n.dataset.collection=cfg.name;n.classList.add('show');
+  if(hideTimer)clearTimeout(hideTimer);
+  hideTimer=setTimeout(()=>{window.closeOrderNotif()},12000);
 }
-
-window.closeOrderNotif = function(){ var n = document.getElementById('orderNotif'); if (n) n.classList.remove('show'); };
-window.openOrderFromNotif = function(){
-  var n = document.getElementById('orderNotif');
-  if (!n) return;
-  var map = {
-    'bun_orders': 'bungalow', 'lounge_orders': 'lounge', 'res_orders': 'restaurant',
-    'bun_calls': 'bungalow', 'lounge_calls': 'lounge', 'res_calls': 'restaurant'
-  };
-  var k = map[n.dataset.collection];
-  if (k && window.openApp) window.openApp(k);
+window.closeOrderNotif=function(){var n=document.getElementById('orderNotif');if(n)n.classList.remove('show')};
+window.openOrderFromNotif=function(){
+  var n=document.getElementById('orderNotif');if(!n)return;
+  var map={'bun_orders':'bungalow','lounge_orders':'lounge','res_orders':'restaurant','bun_calls':'bungalow','lounge_calls':'lounge','res_calls':'restaurant'};
+  var k=map[n.dataset.collection];
+  if(k&&window.openApp)window.openApp(k);
   window.closeOrderNotif();
 };
-
-try {
-  const app = initializeApp(cfg, 'notif-app');
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
-    WATCH_ORDERS.forEach(c => {
-      const init = { f: true };
-      onSnapshot(collection(db, c.name), snap => {
-        if (init.f){ init.f = false; return; }
-        snap.docChanges().forEach(ch => {
-          if (ch.type === 'added'){
-            const d = ch.doc.data();
-            if (d.status === 'pending'){ bell(); showNotif(c, d, 'order'); }
-          }
-        });
-      }, err => console.warn('[Notif]', c.name, err));
+try{
+  const app=initializeApp(cfg,'notif-app');
+  const auth=getAuth(app);const db=getFirestore(app);
+  signInAnonymously(auth).then(()=>{
+    WATCH_ORDERS.forEach(c=>{
+      const init={f:true};
+      onSnapshot(collection(db,c.name),snap=>{
+        if(init.f){init.f=false;return}
+        snap.docChanges().forEach(ch=>{if(ch.type==='added'){const d=ch.doc.data();if(d.status==='pending'){bell();showNotif(c,d,'order')}}});
+      },err=>console.warn('[Notif]',c.name,err));
     });
-    WATCH_CALLS.forEach(c => {
-      const init = { f: true };
-      onSnapshot(collection(db, c.name), snap => {
-        if (init.f){ init.f = false; return; }
-        snap.docChanges().forEach(ch => {
-          if (ch.type === 'added'){
-            const d = ch.doc.data();
-            if (d.status === 'pending'){ bell(); showNotif(c, d, 'call'); }
-          }
-        });
-      }, err => console.warn('[Notif]', c.name, err));
+    WATCH_CALLS.forEach(c=>{
+      const init={f:true};
+      onSnapshot(collection(db,c.name),snap=>{
+        if(init.f){init.f=false;return}
+        snap.docChanges().forEach(ch=>{if(ch.type==='added'){const d=ch.doc.data();if(d.status==='pending'){bell();showNotif(c,d,'call')}}});
+      },err=>console.warn('[Notif]',c.name,err));
     });
-  }).catch(err => console.warn('[Notif]', err));
-} catch(e){ console.warn('[Notif]', e); }
+  }).catch(err=>console.warn('[Notif]',err));
+}catch(e){console.warn('[Notif]',e)}
 </script>
 
+<!-- SCRIPT 9: BADGE FIREBASE -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, query, where, onSnapshot }
-  from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const cfg = {
-  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
-  authDomain: "dolphin-f6d67.firebaseapp.com",
-  projectId: "dolphin-f6d67"
-};
-const MAP = { 'bun_orders': 'bungalow', 'lounge_orders': 'lounge', 'res_orders': 'restaurant' };
-
-function setBadge(area, count){
-  const el = document.getElementById('badge-' + area);
-  if (!el) return;
-  if (document.body.classList.contains('app-mode')){ el.classList.remove('show'); return; }
-  const t = el.querySelector('.nb-text');
-  if (count > 0){
-    if (t) t.textContent = count > 99 ? '99+' : String(count);
-    el.classList.add('show');
-  } else el.classList.remove('show');
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,signInAnonymously}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,collection,query,where,onSnapshot}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
+const MAP={'bun_orders':'bungalow','lounge_orders':'lounge','res_orders':'restaurant'};
+function setBadge(area,count){
+  const el=document.getElementById('badge-'+area);if(!el)return;
+  if(document.body.classList.contains('app-mode')){el.classList.remove('show');return}
+  const t=el.querySelector('.nb-text');
+  if(count>0){if(t)t.textContent=count>99?'99+':String(count);el.classList.add('show')}else el.classList.remove('show');
 }
-
-try {
-  const app = initializeApp(cfg, 'badge-app');
-  const auth = getAuth(app);
-  const db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
-    Object.keys(MAP).forEach(col => {
-      const q = query(collection(db, col), where('status', '==', 'pending'));
-      onSnapshot(q, snap => setBadge(MAP[col], snap.size),
-        err => console.warn('[Badge]', col, err));
+try{
+  const app=initializeApp(cfg,'badge-app');
+  const auth=getAuth(app);const db=getFirestore(app);
+  signInAnonymously(auth).then(()=>{
+    Object.keys(MAP).forEach(col=>{
+      const q=query(collection(db,col),where('status','==','pending'));
+      onSnapshot(q,snap=>setBadge(MAP[col],snap.size),err=>console.warn('[Badge]',col,err));
     });
-  }).catch(err => console.warn('[Badge]', err));
-} catch(e){ console.warn('[Badge]', e); }
+  }).catch(err=>console.warn('[Badge]',err));
+}catch(e){console.warn('[Badge]',e)}
 </script>
 
-  <!-- ═══════ REMINDER WATCHER + NOTIF PERMISSION ═══════ -->
+<!-- SCRIPT 10: REMINDER WATCHER + NOTIF PERMISSION -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, query, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
-
-const cfg = {
-  apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
-  authDomain: "dolphin-f6d67.firebaseapp.com",
-  projectId: "dolphin-f6d67"
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,signInAnonymously}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getFirestore,collection,onSnapshot,query,orderBy}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+const cfg={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
+const COL_REMINDERS='shared_reminders',FIRE_WINDOW=24*60*60*1000;
+let allReminders=[],currentAlarmId=null;
+window.toggleNotifPerm=async function(){
+  if(!('Notification' in window)){if(window.showToast)window.showToast('Thiết bị không hỗ trợ','⚠️');return}
+  if(Notification.permission==='granted'){if(window.showToast)window.showToast('Đã bật rồi!','🔔');return}
+  if(Notification.permission==='denied'){if(window.showToast)window.showToast('Bị chặn — vào cài đặt trình duyệt','🚫');return}
+  try{const perm=await Notification.requestPermission();updateNotifBtn();if(perm==='granted'){if(window.showToast)window.showToast('Đã bật thông báo!','🔔');setTimeout(function(){try{new Notification('Dolphin · Đã bật thông báo',{body:'Bạn sẽ nhận thông báo khi tab ẩn',icon:'/DolphinApp/pwa-icons/icon-192.png',tag:'dolphin-test'})}catch(e){}},500)}}catch(e){}
 };
-const COL_REMINDERS = 'shared_reminders';
-const FIRE_WINDOW = 24 * 60 * 60 * 1000;
-
-let allReminders = [];
-let currentAlarmId = null;
-
-/* ═══ NOTIF PERMISSION ═══ */
-window.toggleNotifPerm = async function(){
-  if (!('Notification' in window)){
-    if (window.showToast) window.showToast('Thiết bị không hỗ trợ', '⚠️');
-    return;
-  }
-  if (Notification.permission === 'granted'){
-    if (window.showToast) window.showToast('Đã bật rồi!', '🔔');
-    return;
-  }
-  if (Notification.permission === 'denied'){
-    if (window.showToast) window.showToast('Bị chặn — vào cài đặt trình duyệt', '🚫');
-    return;
-  }
-  try {
-    const perm = await Notification.requestPermission();
-    updateNotifBtn();
-    if (perm === 'granted'){
-      if (window.showToast) window.showToast('Đã bật thông báo!', '🔔');
-      setTimeout(function(){
-        try {
-          new Notification('Dolphin · Đã bật thông báo', {
-            body: 'Bạn sẽ nhận thông báo khi tab ẩn',
-            icon: '/DolphinApp/pwa-icons/icon-192.png',
-            tag: 'dolphin-test'
-          });
-        } catch(e){}
-      }, 500);
-    }
-  } catch(e){}
-};
-
 function updateNotifBtn(){
-  const btn = document.getElementById('notifPermBtn');
-  if (!btn) return;
-  if (!('Notification' in window)){
-    btn.textContent = '🚫';
-    btn.style.opacity = '.5';
-    return;
-  }
-  const p = Notification.permission;
-  if (p === 'granted'){
-    btn.textContent = '🔔';
-    btn.classList.add('granted');
-    btn.classList.remove('denied');
-  } else if (p === 'denied'){
-    btn.textContent = '🔕';
-    btn.classList.add('denied');
-    btn.classList.remove('granted');
-  } else {
-    btn.textContent = '🔕';
-    btn.classList.remove('granted','denied');
-  }
+  const btn=document.getElementById('notifPermBtn');if(!btn)return;
+  if(!('Notification' in window)){btn.textContent='🚫';btn.style.opacity='.5';return}
+  const p=Notification.permission;
+  if(p==='granted'){btn.textContent='🔔';btn.classList.add('granted');btn.classList.remove('denied')}
+  else if(p==='denied'){btn.textContent='🔕';btn.classList.add('denied');btn.classList.remove('granted')}
+  else{btn.textContent='🔕';btn.classList.remove('granted','denied')}
 }
-
-function showSystemNotif(title, body, tag){
-  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
-  try {
-    const n = new Notification(title, {
-      body: body,
-      icon: '/DolphinApp/pwa-icons/icon-192.png',
-      badge: '/DolphinApp/pwa-icons/icon-96.png',
-      tag: tag,
-      requireInteraction: true
-    });
-    n.onclick = function(){ window.focus(); n.close(); };
-    return true;
-  } catch(e){ return false; }
+function showSystemNotif(title,body,tag){
+  if(!('Notification' in window)||Notification.permission!=='granted')return false;
+  try{const n=new Notification(title,{body:body,icon:'/DolphinApp/pwa-icons/icon-192.png',badge:'/DolphinApp/pwa-icons/icon-96.png',tag:tag,requireInteraction:true});n.onclick=function(){window.focus();n.close()};return true}catch(e){return false}
 }
-
-/* ═══ SOUND (Web Audio Synth) ═══ */
-let alarmCtx = null;
-let alarmInterval = null;
-let alarmCount = 0;
-
-function initAlarmAudio(){
-  try {
-    if (!alarmCtx) alarmCtx = new (window.AudioContext || window.webkitAudioContext)();
-    if (alarmCtx.state === 'suspended') alarmCtx.resume();
-  } catch(e){}
-}
-
+let alarmCtx=null,alarmInterval=null,alarmCount=0;
+function initAlarmAudio(){try{if(!alarmCtx)alarmCtx=new(window.AudioContext||window.webkitAudioContext)();if(alarmCtx.state==='suspended')alarmCtx.resume()}catch(e){}}
 function playAlarmSound(){
-  initAlarmAudio();
-  if (!alarmCtx) return;
-  stopAlarmSound();
-  alarmCount = 0;
+  initAlarmAudio();if(!alarmCtx)return;
+  stopAlarmSound();alarmCount=0;
   function beep(){
-    if (!alarmCtx || alarmCount >= 8){ stopAlarmSound(); return; }
-    alarmCount++;
-    const t = alarmCtx.currentTime;
-    for (let i = 0; i < 3; i++){
-      const tt = t + i * 0.13;
-      [1,2].forEach(function(mult){
-        const o = alarmCtx.createOscillator();
-        const g = alarmCtx.createGain();
-        o.type = 'sine';
-        o.frequency.value = (mult === 1 ? 880 : 1760) * 1.5;
-        g.gain.setValueAtTime(0.0001, tt);
-        g.gain.exponentialRampToValueAtTime(mult === 1 ? 0.5 : 0.25, tt + 0.005);
-        g.gain.exponentialRampToValueAtTime(0.0001, tt + 0.12);
-        o.connect(g); g.connect(alarmCtx.destination);
-        o.start(tt); o.stop(tt + 0.15);
-      });
-    }
+    if(!alarmCtx||alarmCount>=8){stopAlarmSound();return}
+    alarmCount++;const t=alarmCtx.currentTime;
+    for(let i=0;i<3;i++){const tt=t+i*0.13;[1,2].forEach(function(mult){const o=alarmCtx.createOscillator(),g=alarmCtx.createGain();o.type='sine';o.frequency.value=(mult===1?880:1760)*1.5;g.gain.setValueAtTime(0.0001,tt);g.gain.exponentialRampToValueAtTime(mult===1?0.5:0.25,tt+0.005);g.gain.exponentialRampToValueAtTime(0.0001,tt+0.12);o.connect(g);g.connect(alarmCtx.destination);o.start(tt);o.stop(tt+0.15)})}
   }
-  beep();
-  alarmInterval = setInterval(beep, 1000);
+  beep();alarmInterval=setInterval(beep,1000);
 }
-function stopAlarmSound(){
-  if (alarmInterval){ clearInterval(alarmInterval); alarmInterval = null; }
-}
-
-/* ═══ FIRE ALARM ═══ */
+function stopAlarmSound(){if(alarmInterval){clearInterval(alarmInterval);alarmInterval=null}}
 function checkAndFire(){
-  const now = Date.now();
-  for (const r of allReminders){
-    if (r.fireAt > now) continue;
-    if (now - r.fireAt > FIRE_WINDOW) continue;
-    const firedKey = 'dolphin_rem_fired_' + r.id;
-    if (localStorage.getItem(firedKey)) continue;
-    localStorage.setItem(firedKey, String(now));
-    fireAlarm(r);
-    break;
+  const now=Date.now();
+  for(const r of allReminders){
+    if(r.fireAt>now)continue;
+    if(now-r.fireAt>FIRE_WINDOW)continue;
+    const firedKey='dolphin_rem_fired_'+r.id;
+    if(localStorage.getItem(firedKey))continue;
+    localStorage.setItem(firedKey,String(now));
+    fireAlarm(r);break;
   }
 }
-
 function fireAlarm(r){
-  currentAlarmId = r.id;
-
-  // Nếu tab ẩn → system notification
-  if (document.hidden){
-    const shown = showSystemNotif(
-      '🔔 BÁO THỨC: ' + (r.author || 'Manager'),
-      r.text || '',
-      'alarm-' + r.id
-    );
-    if (shown){
-      playAlarmSound();
-      if (navigator.vibrate){
-        try { navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300]); } catch(e){}
-      }
-      return;
-    }
-  }
-
-  // Tab active → popup đỏ
-  const modal = document.getElementById('reminderAlarm');
-  if (!modal) return;
-  document.getElementById('ralarmBody').textContent = r.text || '';
-  document.getElementById('ralarmSub').innerHTML = '👤 ' + escapeHtml(r.author || 'Manager');
-  const d = new Date(r.fireAt);
-  const hh = String(d.getHours()).padStart(2, '0');
-  const mm = String(d.getMinutes()).padStart(2, '0');
-  document.getElementById('ralarmTime').textContent = hh + ':' + mm + ' hôm nay';
-  modal.classList.add('show');
-  playAlarmSound();
-  if (navigator.vibrate){
-    try { navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300]); } catch(e){}
-  }
+  currentAlarmId=r.id;
+  if(document.hidden){const shown=showSystemNotif('🔔 BÁO THỨC: '+(r.author||'Manager'),r.text||'','alarm-'+r.id);if(shown){playAlarmSound();if(navigator.vibrate){try{navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300])}catch(e){}}return}}
+  const modal=document.getElementById('reminderAlarm');if(!modal)return;
+  document.getElementById('ralarmBody').textContent=r.text||'';
+  document.getElementById('ralarmSub').innerHTML='👤 '+escapeHtml(r.author||'Manager');
+  const d=new Date(r.fireAt);const hh=String(d.getHours()).padStart(2,'0');const mm=String(d.getMinutes()).padStart(2,'0');
+  document.getElementById('ralarmTime').textContent=hh+':'+mm+' hôm nay';
+  modal.classList.add('show');playAlarmSound();
+  if(navigator.vibrate){try{navigator.vibrate([300,100,300,100,300,500,300,100,300,100,300])}catch(e){}}
 }
-
-function escapeHtml(s){
-  return String(s).replace(/[&<>"']/g, function(c){
-    return { '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[c];
-  });
-}
-
-window.closeReminderAlarm = function(){
-  const modal = document.getElementById('reminderAlarm');
-  if (modal) modal.classList.remove('show');
-  currentAlarmId = null;
-  stopAlarmSound();
-  setTimeout(checkAndFire, 800);
-};
-
-/* ═══ FIREBASE ═══ */
-try {
-  const app = initializeApp(cfg, 'landing-rem-app');
-  const auth = getAuth(app);
-  const db = getFirestore(app);
+function escapeHtml(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]})}
+window.closeReminderAlarm=function(){const modal=document.getElementById('reminderAlarm');if(modal)modal.classList.remove('show');currentAlarmId=null;stopAlarmSound();setTimeout(checkAndFire,800)};
+try{
+  const app=initializeApp(cfg,'landing-rem-app');
+  const auth=getAuth(app);const db=getFirestore(app);
   signInAnonymously(auth).then(function(){
-    const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'));
-    onSnapshot(q, function(snap){
-      allReminders = [];
-      snap.forEach(function(d){ allReminders.push(Object.assign({ id: d.id }, d.data())); });
-      checkAndFire();
-    }, function(err){ console.warn('[Landing Rem]', err); });
-  }).catch(function(err){ console.warn('[Landing Rem] auth', err); });
-} catch(e){ console.warn('[Landing Rem] init', e); }
-
-/* ═══ WATCHER LOOP ═══ */
-setInterval(checkAndFire, 5000);
-document.addEventListener('visibilitychange', function(){
-  if (!document.hidden) checkAndFire();
-});
-
-/* ═══ INIT UI ═══ */
-function initNotifUI(){
-  updateNotifBtn();
-  ['click','touchstart','keydown'].forEach(function(ev){
-    document.addEventListener(ev, initAlarmAudio, { once: true, passive: true });
-  });
-}
-if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', initNotifUI);
-else initNotifUI();
-
-console.log('%c🔔 LANDING REMINDER WATCHER LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+    const q=query(collection(db,COL_REMINDERS),orderBy('fireAt','asc'));
+    onSnapshot(q,function(snap){allReminders=[];snap.forEach(function(d){allReminders.push(Object.assign({id:d.id},d.data()))});checkAndFire()},function(err){console.warn('[Landing Rem]',err)});
+  }).catch(function(err){console.warn('[Landing Rem] auth',err)});
+}catch(e){console.warn('[Landing Rem] init',e)}
+setInterval(checkAndFire,5000);
+document.addEventListener('visibilitychange',function(){if(!document.hidden)checkAndFire()});
+function initNotifUI(){updateNotifBtn();['click','touchstart','keydown'].forEach(function(ev){document.addEventListener(ev,initAlarmAudio,{once:true,passive:true})})}
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',initNotifUI);else initNotifUI();
+console.log('%c🔔 LANDING REMINDER WATCHER LOADED','background:#D4AF37;color:#050505;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 </script>
 </body>
 </html>

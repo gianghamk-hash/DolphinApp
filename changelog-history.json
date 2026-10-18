@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.84",
+      "releaseDate": "2026-10-18T12:57:14.955Z",
+      "summary": "UPDATE 1",
+      "details": [
+        "UPDATE 1"
+      ]
+    },
+    {
       "version": "1.0.83",
       "releaseDate": "2026-10-18T12:56:24.845Z",
       "summary": "UPDATE 1",
@@ -390,14 +398,6 @@
       "summary": "Dolphin Guests: UI Premium Glass + compact",
       "details": [
         "Dolphin Guests: UI Premium Glass + compact"
-      ]
-    },
-    {
-      "version": "1.0.34",
-      "releaseDate": "2026-10-15T08:46:31.144Z",
-      "summary": "Dolphin Guests: bungalow full note + filter 3 tầng + Lounge L1-L15",
-      "details": [
-        "Dolphin Guests: bungalow full note + filter 3 tầng + Lounge L1-L15"
       ]
     }
   ]

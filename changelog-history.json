@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.85",
+      "releaseDate": "2026-10-18T13:19:31.386Z",
+      "summary": "UPDATE 1",
+      "details": [
+        "UPDATE 1"
+      ]
+    },
+    {
       "version": "1.0.84",
       "releaseDate": "2026-10-18T12:57:14.955Z",
       "summary": "UPDATE 1",
@@ -390,14 +398,6 @@
       "summary": "Dolphin Guests: FOC + UI mềm mại hơn",
       "details": [
         "Dolphin Guests: FOC + UI mềm mại hơn"
-      ]
-    },
-    {
-      "version": "1.0.35",
-      "releaseDate": "2026-10-15T09:15:33.036Z",
-      "summary": "Dolphin Guests: UI Premium Glass + compact",
-      "details": [
-        "Dolphin Guests: UI Premium Glass + compact"
       ]
     }
   ]

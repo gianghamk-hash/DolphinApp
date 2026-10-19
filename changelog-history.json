@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.90",
+      "releaseDate": "2026-10-19T06:49:23.792Z",
+      "summary": "UPDATE 1",
+      "details": [
+        "UPDATE 1"
+      ]
+    },
+    {
       "version": "1.0.89",
       "releaseDate": "2026-10-18T13:34:43.970Z",
       "summary": "UPDATE 2",
@@ -390,14 +398,6 @@
       "summary": "CẬP NHẬT BATTLE SHIP",
       "details": [
         "CẬP NHẬT BATTLE SHIP"
-      ]
-    },
-    {
-      "version": "1.0.40",
-      "releaseDate": "2026-10-15T12:42:21.980Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
       ]
     }
   ]

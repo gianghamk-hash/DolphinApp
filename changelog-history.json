@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.89",
+      "releaseDate": "2026-10-18T13:34:43.970Z",
+      "summary": "UPDATE 2",
+      "details": [
+        "UPDATE 2"
+      ]
+    },
+    {
       "version": "1.0.88",
       "releaseDate": "2026-10-18T13:33:08.009Z",
       "summary": "UPDATE 2",
@@ -390,14 +398,6 @@
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.39",
-      "releaseDate": "2026-10-15T12:26:46.906Z",
-      "summary": "THAY ĐỔI GAME BATTLE SHIP VÀ THÊM RẮN SĂN MỒI",
-      "details": [
-        "THAY ĐỔI GAME BATTLE SHIP VÀ THÊM RẮN SĂN MỒI"
       ]
     }
   ]

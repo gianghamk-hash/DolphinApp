@@ -1,22 +1,22 @@
 {
-  "version": "1.0.89",
-  "previousVersion": "1.0.88",
-  "commit": "bb9da1c",
-  "previousCommit": "a6ea864",
-  "buildDate": "2026-10-18T13:34:43.970Z",
-  "summary": "UPDATE 2",
+  "version": "1.0.90",
+  "previousVersion": "1.0.89",
+  "commit": "87fcbda",
+  "previousCommit": "bb9da1c",
+  "buildDate": "2026-10-19T06:49:23.792Z",
+  "summary": "UPDATE 1",
   "changes": {
-    "totalCommits": 93,
+    "totalCommits": 94,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "UPDATE 2"
+    "UPDATE 1"
   ],
   "fileChanges": [
     {
-      "file": "service-worker.js",
+      "file": "dolphin-guests.html",
       "type": "update"
     }
   ]

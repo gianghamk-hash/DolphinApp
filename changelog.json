@@ -1,22 +1,22 @@
 {
-  "version": "1.0.91",
-  "previousVersion": "1.0.90",
-  "commit": "bcfb696",
-  "previousCommit": "87fcbda",
-  "buildDate": "2026-10-19T07:04:28.360Z",
-  "summary": "UPDATE 2",
+  "version": "1.0.92",
+  "previousVersion": "1.0.91",
+  "commit": "46f9c97",
+  "previousCommit": "bcfb696",
+  "buildDate": "2026-10-19T07:11:34.615Z",
+  "summary": "UPDATE 1",
   "changes": {
-    "totalCommits": 95,
+    "totalCommits": 96,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "UPDATE 2"
+    "UPDATE 1"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

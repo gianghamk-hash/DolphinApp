@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
-<meta name="theme-color" content="#123634">
+<meta name="theme-color" content="#000000">
 <title>Dolphin · Giải Trí</title>
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
@@ -155,13 +155,121 @@ html.game-locked, body.game-locked{
   border:none;border-radius:0;box-shadow:none;
   touch-action:none;overscroll-behavior:none;
 }
+
+/* ═══════ ✨ LIQUID GLASS · DARK (nền đen) ═══════ */
+:root{--lg-fill:linear-gradient(145deg,rgba(255,255,255,.14),rgba(255,255,255,.04) 55%,rgba(255,255,255,.08));--lg-fill-hi:linear-gradient(145deg,rgba(255,255,255,.22),rgba(255,255,255,.07) 55%,rgba(255,255,255,.12));--lg-blur:blur(26px) saturate(190%) brightness(1.06);--lg-edge:rgba(255,255,255,.20);--lg-spec:inset 0 1px 0 rgba(255,255,255,.45),inset 0 -1px 0 rgba(255,255,255,.06),inset 1px 0 0 rgba(255,255,255,.12);--lg-shadow:0 14px 40px -14px rgba(0,0,0,.8),0 2px 8px rgba(0,0,0,.35);--lg-ink2:rgba(220,240,235,.72);--spring:.45s cubic-bezier(.34,1.56,.64,1);--ease:.25s cubic-bezier(.2,.8,.2,1)}
+html,body{background:#000!important}
+body{padding-bottom:calc(96px + env(safe-area-inset-bottom))}
+button{touch-action:manipulation}
+button:focus-visible{outline:2px solid rgba(255,255,255,.85);outline-offset:2px}
+body>.sticky{background:linear-gradient(180deg,rgba(0,0,0,.78),rgba(0,0,0,.5))!important;-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);border-bottom:1px solid rgba(255,255,255,.10)!important;padding-top:env(safe-area-inset-top);box-shadow:0 10px 30px -14px rgba(0,0,0,.8),inset 0 1px 0 rgba(255,255,255,.12)}
+body>.sticky button:first-child{width:44px;height:44px;border-radius:50%!important;background:rgba(255,255,255,.09)!important;border:1px solid rgba(255,255,255,.16)!important;color:#fff!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 18px -8px rgba(0,0,0,.8);transition:transform var(--spring),background var(--ease)}
+body>.sticky button:first-child:active{transform:scale(.86)}
+.glass{background:var(--lg-fill);-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);border:1px solid var(--lg-edge);border-radius:24px!important;box-shadow:var(--lg-spec),var(--lg-shadow)}
+.glass[style]{background:linear-gradient(145deg,rgba(255,255,255,.16),rgba(255,255,255,.04) 55%,rgba(251,215,122,.10))!important;border:1px solid rgba(255,255,255,.26)!important}
+.ic{display:inline-block;width:1.15em;height:1.15em;margin-right:.4em;vertical-align:-.2em;flex-shrink:0;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat}
+.tab-btn .ic,.mode-btn .ic,.mp-btn .ic,.gm-icon .ic,.hero-tile .ic,body>.sticky .ic,.track-icon .ic{margin:0}
+.hero-tile{display:flex;align-items:center;justify-content:center;width:64px;height:64px;margin:0 auto 12px;border-radius:21px;color:#ffe29a;background:linear-gradient(145deg,rgba(251,215,122,.30),rgba(251,215,122,.06));border:1px solid rgba(251,215,122,.45);box-shadow:inset 0 1px 0 rgba(255,255,255,.45),0 10px 26px -10px rgba(244,184,66,.65),0 0 34px -10px rgba(251,215,122,.5)}
+.hero-tile .ic{width:32px;height:32px}
+.sec-ic{display:inline-flex;color:#FBD77A}
+.brand-title{filter:drop-shadow(0 2px 14px rgba(251,215,122,.4))}
+
+/* Thanh tab kiểu iOS */
+.tab-switcher{padding:4px;gap:2px;border-radius:99px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 2px 8px rgba(0,0,0,.6),0 1px 0 rgba(255,255,255,.06)}
+.tab-btn{min-height:46px;border-radius:99px;color:var(--lg-ink2);font-weight:800;transition:transform var(--spring),background var(--ease),color var(--ease),box-shadow var(--ease)}
+.tab-btn .ic{width:19px;height:19px}
+.tab-btn:hover{color:#fff}
+.tab-btn:active{transform:scale(.94)}
+.tab-btn.active{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(228,232,236,.94));color:#0a0a0a;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 6px 16px -4px rgba(0,0,0,.7),0 0 22px -6px rgba(255,255,255,.35)}
+#lbGameTabs{border-radius:26px}
+#lbGameTabs .tab-btn{flex:1 1 30%;min-height:44px}
+
+/* Chế độ nhạc */
+.mode-btn{border:1px solid var(--lg-edge);border-radius:20px;background:var(--lg-fill);color:#fff;box-shadow:var(--lg-spec);-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);transition:transform var(--spring),background var(--ease)}
+.mode-btn .ic{width:22px;height:22px}
+.mode-btn:active{transform:scale(.95)}
+.mode-btn.active{background:linear-gradient(180deg,rgba(255,255,255,.98),rgba(228,232,236,.94));color:#0a0a0a;border-color:transparent;box-shadow:inset 0 1px 0 rgba(255,255,255,.9),0 10px 24px -8px rgba(255,255,255,.3)}
+
+/* Đang phát + danh sách bài */
+#nowIcon{width:68px;height:68px;border-radius:22px;display:flex;align-items:center;justify-content:center;font-size:34px!important;filter:none!important;background:linear-gradient(145deg,rgba(251,215,122,.28),rgba(251,215,122,.05));border:1px solid rgba(251,215,122,.4);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 26px -10px rgba(244,184,66,.6);flex-shrink:0}
+.track-row{border-radius:18px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.10);box-shadow:inset 0 1px 0 rgba(255,255,255,.18);transition:transform var(--spring),background var(--ease),border-color var(--ease)}
+.track-row:active{background:rgba(255,255,255,.12);transform:scale(.97)}
+.track-row.playing{background:linear-gradient(145deg,rgba(251,215,122,.22),rgba(251,215,122,.05));border-color:rgba(251,215,122,.55);box-shadow:inset 0 1px 0 rgba(255,255,255,.3),0 0 28px -10px rgba(251,215,122,.6)}
+.track-row .track-icon{width:42px;height:42px;display:flex;align-items:center;justify-content:center;font-size:22px;border-radius:14px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.14);filter:none}
+.track-row .track-sub{color:var(--lg-ink2)}
+.vol-slider{height:6px;background:linear-gradient(90deg,#FBD77A,#F4B842);box-shadow:0 0 14px -2px rgba(244,184,66,.6)}
+.vol-slider::-webkit-slider-thumb{width:22px;height:22px;background:linear-gradient(180deg,#fff,#e6e9ec);box-shadow:0 2px 10px rgba(0,0,0,.6),0 0 0 4px rgba(255,255,255,.18)}
+
+/* Mini player: viên kính nổi */
+#miniPlayer{left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom));max-width:640px;margin:0 auto;padding:10px 12px 10px 14px;border-radius:30px;background:linear-gradient(145deg,rgba(255,255,255,.18),rgba(255,255,255,.05) 55%,rgba(255,255,255,.10));border:1px solid rgba(255,255,255,.28);-webkit-backdrop-filter:blur(30px) saturate(200%);backdrop-filter:blur(30px) saturate(200%);box-shadow:var(--lg-spec),0 20px 50px -12px rgba(0,0,0,.9)}
+#miniPlayer.hide{transform:translateY(160%)}
+#miniPlayer .mp-icon{width:44px;height:44px;display:flex;align-items:center;justify-content:center;font-size:24px;border-radius:15px;background:rgba(255,255,255,.10);border:1px solid rgba(255,255,255,.16)}
+#miniPlayer .mp-sub{color:var(--lg-ink2)}
+.mp-btn{background:linear-gradient(180deg,#ffe59f,#f6bd45)!important;color:#1d1300!important;border:0!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.8),inset 0 -2px 6px rgba(160,95,0,.25),0 10px 24px -8px rgba(244,184,66,.7)!important;transition:transform var(--spring),filter var(--ease)}
+.mp-btn .ic{width:42%;height:42%}
+.mp-btn:active{transform:scale(.88)}
+#miniPlayer .mp-btn.mp-ghost{background:rgba(255,255,255,.10)!important;color:#fff!important;border:1px solid rgba(255,255,255,.18)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.3)!important;width:38px;height:38px}
+#miniPlayer .mp-btn.mp-ghost .ic{width:16px;height:16px}
+
+/* Kho game */
+.game-menu-btn{border:1px solid var(--lg-edge);border-radius:26px;padding:24px 16px;background:var(--lg-fill);-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);box-shadow:var(--lg-spec),var(--lg-shadow);transition:transform var(--spring),background var(--ease),box-shadow var(--ease)}
+.game-menu-btn::after{content:'';position:absolute;inset:0;pointer-events:none;border-radius:inherit;background:radial-gradient(120% 70% at 15% -10%,rgba(255,255,255,.16),transparent 55%)}
+.game-menu-btn:hover{transform:translateY(-4px);background:var(--lg-fill-hi);border-color:rgba(255,255,255,.36);box-shadow:var(--lg-spec),0 22px 46px -16px rgba(0,0,0,.9),0 0 30px -10px rgba(251,215,122,.35)}
+.game-menu-btn:active{transform:scale(.95)}
+.game-menu-btn[style]{background:linear-gradient(145deg,rgba(244,114,182,.24),rgba(255,255,255,.04))!important;border-color:rgba(244,114,182,.5)!important}
+.game-menu-btn .gm-icon{width:64px;height:64px;display:flex;align-items:center;justify-content:center;border-radius:21px;filter:none;color:#ffe29a;background:linear-gradient(145deg,rgba(251,215,122,.28),rgba(251,215,122,.05));border:1px solid rgba(251,215,122,.42);box-shadow:inset 0 1px 0 rgba(255,255,255,.4),0 10px 24px -10px rgba(244,184,66,.6)}
+.game-menu-btn[style] .gm-icon{color:#ffb3d4;background:linear-gradient(145deg,rgba(244,114,182,.32),rgba(244,114,182,.06));border-color:rgba(244,114,182,.5)}
+.game-menu-btn .gm-icon .ic{width:32px;height:32px}
+.game-menu-btn .gm-title{letter-spacing:.04em}
+.game-menu-btn .gm-sub{color:var(--lg-ink2);font-style:normal}
+.game-back-btn{min-height:44px;padding:0 18px;border-radius:99px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3);-webkit-backdrop-filter:var(--lg-blur);backdrop-filter:var(--lg-blur);transition:transform var(--spring),background var(--ease)}
+.game-back-btn .ic{margin:0 .4em 0 0}
+.game-frame-wrap{background:#000;border:1px solid var(--lg-edge);border-radius:26px;box-shadow:var(--lg-spec),0 20px 50px -14px rgba(0,0,0,.9)}
+.game-frame-wrap iframe,.game-loading,#gameIframeView.fullscreen{background:#000}
+#gameIframeView.fullscreen .game-back-btn{background:rgba(0,0,0,.7);border-radius:0;border:0;border-bottom:1px solid rgba(255,255,255,.12);justify-content:flex-start}
+.game-loading .spin{border-color:rgba(255,255,255,.15);border-top-color:#FBD77A}
+
+/* Bảng xếp hạng */
+.btn-outline{border-radius:99px;min-height:36px;background:rgba(255,255,255,.09);border:1px solid rgba(255,255,255,.18);color:#fff;box-shadow:inset 0 1px 0 rgba(255,255,255,.3);transition:transform var(--spring),background var(--ease)}
+.btn-outline:hover{background:rgba(255,255,255,.16)}
+.btn-outline .ic{width:1em;height:1em;margin-right:.35em}
+.lb-table thead tr{border-bottom:1px solid rgba(255,255,255,.2)}
+.lb-table tbody tr{border-bottom:1px solid rgba(255,255,255,.07)}
+.lb-table tbody tr.me{background:linear-gradient(90deg,rgba(251,215,122,.20),rgba(251,215,122,.04))}
+.lb-table td.rank.top{font-size:12px}
+.medal{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;font-size:12px;font-weight:900;color:#1d1300;box-shadow:inset 0 1px 0 rgba(255,255,255,.7),0 4px 12px -3px rgba(0,0,0,.6)}
+.m1{background:linear-gradient(145deg,#ffe59f,#f4b842);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 0 16px -2px rgba(251,215,122,.7)}
+.m2{background:linear-gradient(145deg,#f1f4f8,#aab4c2)}
+.m3{background:linear-gradient(145deg,#f3c79c,#c27a3e)}
+.text-center .ic,.lb-empty .ic{width:1.1em;height:1.1em}
+@supports not ((backdrop-filter:blur(1px)) or (-webkit-backdrop-filter:blur(1px))){.glass,.game-menu-btn,#miniPlayer{background:rgba(24,36,36,.95)}}
+.ic-music{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9 18V5l12-2v13'/%3E%3Ccircle cx='6' cy='18' r='3'/%3E%3Ccircle cx='18' cy='16' r='3'/%3E%3C/svg%3E")}
+.ic-gamepad{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='6' x2='10' y1='11' y2='11'/%3E%3Cline x1='8' x2='8' y1='9' y2='13'/%3E%3Cline x1='15' x2='15.01' y1='12' y2='12'/%3E%3Cline x1='18' x2='18.01' y1='10' y2='10'/%3E%3Cpath d='M17.32 5H6.68a4 4 0 0 0-3.978 3.59c-.006.052-.01.101-.017.152C2.604 9.416 2 14.456 2 16a3 3 0 0 0 3 3c1 0 1.5-.5 2-1l1.414-1.414A2 2 0 0 1 9.828 16h4.344a2 2 0 0 1 1.414.586L17 18c.5.5 1 1 2 1a3 3 0 0 0 3-3c0-1.545-.604-6.584-.685-7.258-.007-.05-.011-.1-.017-.151A4 4 0 0 0 17.32 5z'/%3E%3C/svg%3E")}
+.ic-trophy{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9H4.5a2.5 2.5 0 0 1 0-5H6'/%3E%3Cpath d='M18 9h1.5a2.5 2.5 0 0 0 0-5H18'/%3E%3Cpath d='M4 22h16'/%3E%3Cpath d='M10 14.66V17c0 .55-.47.98-.97 1.21C7.85 18.75 7 20.24 7 22'/%3E%3Cpath d='M14 14.66V17c0 .55.47.98.97 1.21C16.15 18.75 17 20.24 17 22'/%3E%3Cpath d='M18 2H6v7a6 6 0 0 0 12 0V2Z'/%3E%3C/svg%3E")}
+.ic-list{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12h.01'/%3E%3Cpath d='M3 18h.01'/%3E%3Cpath d='M3 6h.01'/%3E%3Cpath d='M8 12h13'/%3E%3Cpath d='M8 18h13'/%3E%3Cpath d='M8 6h13'/%3E%3C/svg%3E")}
+.ic-target{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Ccircle cx='12' cy='12' r='6'/%3E%3Ccircle cx='12' cy='12' r='2'/%3E%3C/svg%3E")}
+.ic-volume{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 4.702a.705.705 0 0 0-1.203-.498L6.413 7.587A1.4 1.4 0 0 1 5.416 8H3a1 1 0 0 0-1 1v6a1 1 0 0 0 1 1h2.416a1.4 1.4 0 0 1 .997.413l3.383 3.384A.705.705 0 0 0 11 19.298z'/%3E%3Cpath d='M16 9a5 5 0 0 1 0 6'/%3E%3Cpath d='M19.364 18.364a9 9 0 0 0 0-12.728'/%3E%3C/svg%3E")}
+.ic-play{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='6 3 20 12 6 21 6 3'/%3E%3C/svg%3E")}
+.ic-pause{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='14' y='4' width='4' height='16' rx='1'/%3E%3Crect x='6' y='4' width='4' height='16' rx='1'/%3E%3C/svg%3E")}
+.ic-prev{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='19 20 9 12 19 4 19 20'/%3E%3Cline x1='5' x2='5' y1='19' y2='5'/%3E%3C/svg%3E")}
+.ic-next{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='black' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolygon points='5 4 15 12 5 20 5 4'/%3E%3Cline x1='19' x2='19' y1='5' y2='19'/%3E%3C/svg%3E")}
+.ic-back{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m12 19-7-7 7-7'/%3E%3Cpath d='M19 12H5'/%3E%3C/svg%3E")}
+.ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'/%3E%3Cpath d='M8 16H3v5'/%3E%3C/svg%3E")}
+.ic-bulb{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.7 1.3 1.5 1.5 2.5'/%3E%3Cpath d='M9 18h6'/%3E%3Cpath d='M10 22h4'/%3E%3C/svg%3E")}
+.ic-alert{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E")}
+.ic-snake{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M5 5h9a4 4 0 0 1 0 8H9a4 4 0 0 0 0 8h9'/%3E%3Cpath d='M19 5h.01'/%3E%3C/svg%3E")}
+.ic-snake2{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 5h8a4 4 0 0 1 0 8H7a4 4 0 0 0 0 8h8'/%3E%3Cpath d='M19.5 7.5c-1.4-1.4-3.4.4-2 1.9l2 2 2-2c1.4-1.5-.6-3.3-2-1.9z'/%3E%3C/svg%3E")}
+.ic-ship{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76'/%3E%3Cpath d='M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6'/%3E%3Cpath d='M12 10v4'/%3E%3Cpath d='M12 2v3'/%3E%3C/svg%3E")}
+.ic-crown{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z'/%3E%3Cpath d='M5 21h14'/%3E%3C/svg%3E")}
+.ic-hash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' x2='20' y1='9' y2='9'/%3E%3Cline x1='4' x2='20' y1='15' y2='15'/%3E%3Cline x1='10' x2='8' y1='3' y2='21'/%3E%3Cline x1='16' x2='14' y1='3' y2='21'/%3E%3C/svg%3E")}
+.ic-shield{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3C/svg%3E")}
 </style>
 </head>
 <body>
 
 <div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
   <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
-    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95">←</button>
+    <button onclick="goBack()" class="w-10 h-10 rounded-xl bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 text-lg active:scale-95"><i class="ic ic-back"></i></button>
     <div class="text-center flex-1">
       <h1 class="brand-title text-lg leading-none">DOLPHIN</h1>
       <p class="text-[9px] text-teal-400 uppercase font-bold tracking-widest mt-1">Giải Trí</p>
@@ -174,13 +282,13 @@ html.game-locked, body.game-locked{
 
   <div class="tab-switcher">
     <button class="tab-btn active" data-tab="music" onclick="showTab('music')">
-      <span>🎵</span> NGHE NHẠC
+      <span><i class="ic ic-music"></i></span> NGHE NHẠC
     </button>
     <button class="tab-btn" data-tab="game" onclick="showTab('game')">
-      <span>🕹</span> KHO GAME
+      <span><i class="ic ic-gamepad"></i></span> KHO GAME
     </button>
     <button class="tab-btn" data-tab="leaderboard" onclick="showTab('leaderboard')">
-      <span>🏆</span> XẾP HẠNG
+      <span><i class="ic ic-trophy"></i></span> XẾP HẠNG
     </button>
   </div>
 
@@ -193,10 +301,10 @@ html.game-locked, body.game-locked{
           <div id="nowTitle" style="font-size:17px;font-weight:900;color:#FBD77A;margin:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">Chưa phát</div>
           <div id="nowSub" style="font-size:11px;color:#bfe9dc;font-weight:700;opacity:.8">Chọn bài bên dưới</div>
         </div>
-        <button id="bigPlayBtn" onclick="toggleMusic()" class="mp-btn" style="width:56px;height:56px;font-size:22px">▶</button>
+        <button id="bigPlayBtn" onclick="toggleMusic()" class="mp-btn" style="width:56px;height:56px;font-size:22px"><i class="ic ic-play"></i></button>
       </div>
       <div style="margin-top:16px;display:flex;align-items:center;gap:10px">
-        <span style="font-size:14px">🔊</span>
+        <span style="font-size:16px;display:flex;color:#FBD77A"><i class="ic ic-volume"></i></span>
         <input id="musicVol" type="range" min="0" max="100" class="vol-slider" oninput="onVolChange(this.value)">
         <span id="musicVolPct" style="font-size:11px;color:#FBD77A;font-weight:900;min-width:36px;text-align:right">30%</span>
       </div>
@@ -204,12 +312,12 @@ html.game-locked, body.game-locked{
 
     <div class="mode-switcher">
       <button id="modeAuto" class="mode-btn" onclick="setMode('auto')">
-        <span style="font-size:18px">🎵</span>
+        <span style="font-size:20px;display:flex"><i class="ic ic-music"></i></span>
         <span>Theo chủ đề</span>
         <span class="mode-sub">Tự đổi theo lễ</span>
       </button>
       <button id="modeManual" class="mode-btn" onclick="setMode('manual')">
-        <span style="font-size:18px">🎯</span>
+        <span style="font-size:20px;display:flex"><i class="ic ic-target"></i></span>
         <span>Tự chọn</span>
         <span class="mode-sub">Cố định 1 bài</span>
       </button>
@@ -217,7 +325,7 @@ html.game-locked, body.game-locked{
 
     <div class="glass rounded-2xl p-4">
       <div style="font-size:12px;font-weight:900;color:#fff;text-transform:uppercase;letter-spacing:.08em;margin-bottom:12px;display:flex;align-items:center;gap:8px">
-        <span>🎼</span> DANH SÁCH BÀI HÁT
+        <span class="sec-ic"><i class="ic ic-list"></i></span> DANH SÁCH BÀI HÁT
         <span style="font-size:10px;color:#7ec9be;font-weight:700;text-transform:none;letter-spacing:0;margin-left:auto;opacity:.7" id="trackCountLbl">15 bài</span>
       </div>
       <div id="trackList"></div>
@@ -227,50 +335,50 @@ html.game-locked, body.game-locked{
   <div id="tab-game" class="tab-content hidden">
     <div id="gameMenuView">
       <div class="glass rounded-2xl p-5 mb-4 text-center">
-        <div class="text-5xl mb-2">🕹</div>
+        <div class="hero-tile"><i class="ic ic-gamepad"></i></div>
         <h2 class="text-[15px] font-black text-gold-400 uppercase tracking-widest mb-1">KHO GAME</h2>
         <p class="text-[12px] text-teal-300">Chọn 1 game để chơi</p>
       </div>
       <div class="game-menu-grid">
         <button class="game-menu-btn" onclick="openGame('caro')">
-          <span class="gm-icon">🎮</span>
+          <span class="gm-icon"><i class="ic ic-gamepad"></i></span>
           <span class="gm-title">Cờ Caro</span>
           <span class="gm-sub">1v1 online</span>
         </button>
         <button class="game-menu-btn" onclick="openGame('chess')">
-          <span class="gm-icon">♟</span>
+          <span class="gm-icon"><i class="ic ic-crown"></i></span>
           <span class="gm-title">Cờ Vua</span>
           <span class="gm-sub">Đấu máy · 2 người</span>
         </button>
         <button class="game-menu-btn" onclick="openGame('game2048')">
-          <span class="gm-icon">🔢</span>
+          <span class="gm-icon"><i class="ic ic-hash"></i></span>
           <span class="gm-title">2048</span>
           <span class="gm-sub">Ghép số đạt 2048</span>
         </button>
         <button class="game-menu-btn" onclick="openGame('battleship')">
-          <span class="gm-icon">🚢</span>
+          <span class="gm-icon"><i class="ic ic-ship"></i></span>
           <span class="gm-title">Battleship</span>
           <span class="gm-sub">Nhà Vua Giang Đoàn</span>
         </button>
         <button class="game-menu-btn" onclick="openGame('snake')">
-          <span class="gm-icon">🐍</span>
+          <span class="gm-icon"><i class="ic ic-snake"></i></span>
           <span class="gm-title">Rắn Săn Mồi Cô Đơn</span>
           <span class="gm-sub">Thanh Hương</span>
         </button>
         <button class="game-menu-btn" onclick="openGame('snake-coop-online')" style="border-color:rgba(244,114,182,.55);background:linear-gradient(135deg,rgba(60,20,40,.55),rgba(26,74,69,.9))">
-          <span class="gm-icon">🐍🐍</span>
+          <span class="gm-icon"><i class="ic ic-snake2"></i></span>
           <span class="gm-title">Rắn Đôi Có Tình Yêu</span>
           <span class="gm-sub">Chu Nam</span>
         </button>
         <button class="game-menu-btn" onclick="openGame('xiangqi')">
-          <span class="gm-icon">🎴</span>
+          <span class="gm-icon"><i class="ic ic-shield"></i></span>
           <span class="gm-title">Cờ Tướng</span>
           <span class="gm-sub">1v1 online</span>
         </button>
       </div>
     </div>
     <div id="gameIframeView" class="hidden">
-      <button class="game-back-btn" onclick="closeGame()">← Quay lại menu</button>
+      <button class="game-back-btn" onclick="closeGame()"><i class="ic ic-back"></i> Quay lại menu</button>
       <div class="game-frame-wrap">
         <div class="game-loading" id="gameLoading">
           <div class="spin"></div>
@@ -283,33 +391,33 @@ html.game-locked, body.game-locked{
 
   <div id="tab-leaderboard" class="tab-content hidden">
     <div class="glass rounded-2xl p-5 mb-4 text-center" style="background:linear-gradient(135deg,rgba(26,74,69,.9),rgba(13,42,40,.9));border:2px solid rgba(244,184,66,.4)">
-      <div class="text-5xl mb-2">🏆</div>
+      <div class="hero-tile"><i class="ic ic-trophy"></i></div>
       <h2 class="text-[15px] font-black text-gold-400 uppercase tracking-widest mb-1">BẢNG XẾP HẠNG</h2>
       <p class="text-[12px] text-teal-300">Thi đua cùng đồng nghiệp Dolphin</p>
     </div>
 
     <div class="tab-switcher" id="lbGameTabs" style="flex-wrap:wrap">
-      <button class="tab-btn active" data-lb="snake" onclick="showLB('snake')"><span>🐍</span> RẮN ĐƠN</button>
-      <button class="tab-btn" data-lb="snake-coop-online" onclick="showLB('snake-coop-online')"><span>🐍🐍</span> ONLINE</button>
-      <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')"><span>🚢</span> BS</button>
-      <button class="tab-btn" data-lb="caro" onclick="showLB('caro')"><span>🎮</span> CARO</button>
-      <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')"><span>🎴</span> TƯỚNG</button>
-      <button class="tab-btn" data-lb="chess" onclick="showLB('chess')"><span>♟</span> VUA</button>
-      <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')"><span>🔢</span> 2048</button>
+      <button class="tab-btn active" data-lb="snake" onclick="showLB('snake')"><span><i class="ic ic-snake"></i></span> RẮN ĐƠN</button>
+      <button class="tab-btn" data-lb="snake-coop-online" onclick="showLB('snake-coop-online')"><span><i class="ic ic-snake2"></i></span> ONLINE</button>
+      <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')"><span><i class="ic ic-ship"></i></span> BS</button>
+      <button class="tab-btn" data-lb="caro" onclick="showLB('caro')"><span><i class="ic ic-gamepad"></i></span> CARO</button>
+      <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')"><span><i class="ic ic-shield"></i></span> TƯỚNG</button>
+      <button class="tab-btn" data-lb="chess" onclick="showLB('chess')"><span><i class="ic ic-crown"></i></span> VUA</button>
+      <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')"><span><i class="ic ic-hash"></i></span> 2048</button>
     </div>
 
     <div class="glass rounded-2xl p-4">
       <div class="flex items-center justify-between mb-3">
         <h3 class="text-[11px] font-black text-white uppercase tracking-widest flex items-center gap-2">
-          <span id="lbGameIcon">🐍</span> <span id="lbGameTitle">RẮN SĂN MỒI</span>
+          <span id="lbGameIcon"><i class="ic ic-snake"></i></span> <span id="lbGameTitle">RẮN SĂN MỒI</span>
         </h3>
-        <button onclick="refreshLB()" class="btn-outline px-3 py-1.5 rounded-lg text-[10.5px] uppercase">🔄 Làm mới</button>
+        <button onclick="refreshLB()" class="btn-outline px-3 py-1.5 rounded-lg text-[10.5px] uppercase"><i class="ic ic-refresh"></i> Làm mới</button>
       </div>
       <div id="lbContent">
         <div class="text-center py-8 text-teal-500 text-[12px] font-bold">Đang tải...</div>
       </div>
       <div class="text-center text-[10px] text-teal-500 mt-3 italic">
-        💡 Chỉ tính điểm khi có tên nhân viên · Cập nhật realtime
+        <i class="ic ic-bulb"></i> Chỉ tính điểm khi có tên nhân viên · Cập nhật realtime
       </div>
     </div>
   </div>
@@ -323,9 +431,9 @@ html.game-locked, body.game-locked{
       <div class="mp-title" id="mpTitle">--</div>
       <div class="mp-sub" id="mpSub">--</div>
     </div>
-    <button class="mp-btn mp-ghost" onclick="prevTrack()" title="Bài trước">⏮</button>
-    <button class="mp-btn" id="mpPlayBtn" onclick="toggleMusic()">▶</button>
-    <button class="mp-btn mp-ghost" onclick="nextTrack()" title="Bài sau">⏭</button>
+    <button class="mp-btn mp-ghost" onclick="prevTrack()" title="Bài trước"><i class="ic ic-prev"></i></button>
+    <button class="mp-btn" id="mpPlayBtn" onclick="toggleMusic()"><i class="ic ic-play"></i></button>
+    <button class="mp-btn mp-ghost" onclick="nextTrack()" title="Bài sau"><i class="ic ic-next"></i></button>
   </div>
 </div>
 
@@ -425,7 +533,7 @@ html.game-locked, body.game-locked{
     if (nowTitle) nowTitle.textContent = nowTrack.label;
     if (nowSub) nowSub.textContent = nowTrack.sub + ' · ' + (isPlaying ? 'Đang phát' : 'Tạm dừng');
     var big = document.getElementById('bigPlayBtn');
-    if (big) big.textContent = isPlaying ? '⏸' : '▶';
+    if (big) big.innerHTML = isPlaying ? '<i class="ic ic-pause"></i>' : '<i class="ic ic-play"></i>';
     var mAuto = document.getElementById('modeAuto');
     var mManual = document.getElementById('modeManual');
     if (mAuto) mAuto.classList.toggle('active', mode === 'auto');
@@ -448,7 +556,7 @@ html.game-locked, body.game-locked{
           + '<div class="track-label">' + t.label + '</div>'
           + '<div class="track-sub">' + t.sub + '</div>'
           + '</div>'
-          + (playing ? '<div class="track-eq"><span></span><span></span><span></span><span></span></div>' : (isCurrent ? '<div style="font-size:16px;color:#FBD77A">⏸</div>' : ''))
+          + (playing ? '<div class="track-eq"><span></span><span></span><span></span><span></span></div>' : (isCurrent ? '<div style="font-size:18px;color:#FBD77A;display:flex"><i class="ic ic-pause"></i></div>' : ''))
           + '</div>';
       }).join('');
     }
@@ -506,7 +614,7 @@ html.game-locked, body.game-locked{
       if (icon) icon.textContent = t.icon;
       if (title) title.textContent = t.label;
       if (sub) sub.textContent = t.sub;
-      if (btn) btn.textContent = '⏸';
+      if (btn) btn.innerHTML = '<i class="ic ic-pause"></i>';
       mp.classList.remove('hide');
     } else {
       mp.classList.add('hide');
@@ -532,13 +640,13 @@ html.game-locked, body.game-locked{
   'use strict';
   var currentLBGame = 'snake';
   var LB_META = {
-    snake:              { icon: '🐍',   title: 'RẮN SĂN MỒI',      type: 'score' },
-    'snake-coop-online':{ icon: '🐍🐍',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
-    battleship:         { icon: '🚢',   title: 'BATTLESHIP',        type: 'win' },
-    chess:              { icon: '♟',    title: 'CỜ VUA',            type: 'win' },
-    game2048:           { icon: '🔢',   title: '2048',              type: 'score' },
-    xiangqi:            { icon: '🎴',   title: 'CỜ TƯỚNG',          type: 'win' },
-    caro:               { icon: '🎮',   title: 'CỜ CARO',           type: 'win' }
+    snake:              { icon: '<i class="ic ic-snake"></i>',   title: 'RẮN SĂN MỒI',      type: 'score' },
+    'snake-coop-online':{ icon: '<i class="ic ic-snake2"></i>',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
+    battleship:         { icon: '<i class="ic ic-ship"></i>',   title: 'BATTLESHIP',        type: 'win' },
+    chess:              { icon: '<i class="ic ic-crown"></i>',    title: 'CỜ VUA',            type: 'win' },
+    game2048:           { icon: '<i class="ic ic-hash"></i>',   title: '2048',              type: 'score' },
+    xiangqi:            { icon: '<i class="ic ic-shield"></i>',   title: 'CỜ TƯỚNG',          type: 'win' },
+    caro:               { icon: '<i class="ic ic-gamepad"></i>',   title: 'CỜ CARO',           type: 'win' }
   };
 
   function $(id){ return document.getElementById(id); }
@@ -559,7 +667,7 @@ html.game-locked, body.game-locked{
       b.classList.toggle('active', b.dataset.lb === game);
     });
     var meta = LB_META[game] || LB_META.snake;
-    var icon = $('lbGameIcon'); if (icon) icon.textContent = meta.icon;
+    var icon = $('lbGameIcon'); if (icon) icon.innerHTML = meta.icon;
     var title = $('lbGameTitle'); if (title) title.textContent = meta.title;
     renderLB(game);
   };
@@ -576,7 +684,7 @@ html.game-locked, body.game-locked{
     waitForLB(async function(){
       var LB = window.DolphinLeaderboard;
       if (!LB){
-        el.innerHTML = '<div class="text-center py-8 text-red-400 text-[12px] font-bold">⚠️ Chưa kết nối Firebase</div>';
+        el.innerHTML = '<div class="text-center py-8 text-red-400 text-[12px] font-bold"><i class="ic ic-alert"></i> Chưa kết nối Firebase</div>';
         return;
       }
       var rows = await LB.getLeaderboard(game, 30);
@@ -606,7 +714,7 @@ html.game-locked, body.game-locked{
 
       rows.forEach(function(r, i){
         var isMe = r.player === myName;
-        var medal = i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : String(i + 1);
+        var medal = i < 3 ? '<span class="medal m' + (i + 1) + '">' + (i + 1) + '</span>' : String(i + 1);
         html += '<tr class="' + (isMe ? 'me' : '') + '">';
         html += '<td class="rank ' + (i < 3 ? 'top' : '') + '">' + medal + '</td>';
         html += '<td class="' + (isMe ? 'me' : '') + '">' + esc(r.player) + (isMe ? ' <span style="font-size:9px;opacity:.7">(BẠN)</span>' : '') + '</td>';

@@ -465,26 +465,100 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 /* Ô tìm kiếm cao hơn cho khớp */
 .search-wrap input{min-height:44px}
 @media(hover:none){.icon-btn:hover,.btn:hover,.btn-ghost:hover{transform:none}}
+
+/* ═══════ 🎨 ICON HIỆN ĐẠI (SVG nét mảnh, đổi màu theo chữ) ═══════ */
+.ic{display:inline-block;width:1.15em;height:1.15em;margin-right:.4em;vertical-align:-.2em;flex-shrink:0;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat}
+.icon-btn .ic,.st-ic .ic{margin:0}
+.icon-btn .ic{width:19px;height:19px}
+.ic-users{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2'/%3E%3Ccircle cx='9' cy='7' r='4'/%3E%3Cpath d='M22 21v-2a4 4 0 0 0-3-3.87'/%3E%3Cpath d='M16 3.13a4 4 0 0 1 0 7.75'/%3E%3C/svg%3E")}
+.ic-clipboard{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='8' height='4' x='8' y='2' rx='1'/%3E%3Cpath d='M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2'/%3E%3Cpath d='M12 11h4'/%3E%3Cpath d='M12 16h4'/%3E%3Cpath d='M8 11h.01'/%3E%3Cpath d='M8 16h.01'/%3E%3C/svg%3E")}
+.ic-utensils{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2'/%3E%3Cpath d='M7 2v20'/%3E%3Cpath d='M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7'/%3E%3C/svg%3E")}
+.ic-tent{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3.5 21 14 3'/%3E%3Cpath d='M20.5 21 10 3'/%3E%3Cpath d='M15.5 21 12 15l-3.5 6'/%3E%3Cpath d='M2 21h20'/%3E%3C/svg%3E")}
+.ic-sparkles{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M9.937 15.5A2 2 0 0 0 8.5 14.063l-6.135-1.582a.5.5 0 0 1 0-.962L8.5 9.936A2 2 0 0 0 9.937 8.5l1.582-6.135a.5.5 0 0 1 .963 0L14.063 8.5A2 2 0 0 0 15.5 9.937l6.135 1.581a.5.5 0 0 1 0 .964L15.5 14.063a2 2 0 0 0-1.437 1.437l-1.582 6.135a.5.5 0 0 1-.963 0z'/%3E%3Cpath d='M20 3v4'/%3E%3Cpath d='M22 5h-4'/%3E%3Cpath d='M4 17v2'/%3E%3Cpath d='M5 18H3'/%3E%3C/svg%3E")}
+.ic-leaf{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11 20A7 7 0 0 1 9.8 6.1C15.5 5 17 4.48 19 2c1 2 2 4.18 2 8 0 5.5-4.78 10-10 10Z'/%3E%3Cpath d='M2 21c0-3 1.85-5.36 5.08-6C9.5 14.52 12 13 13 12'/%3E%3C/svg%3E")}
+.ic-sprout{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M7 20h10'/%3E%3Cpath d='M10 20c5.5-2.5.8-6.4 3-10'/%3E%3Cpath d='M9.5 9.4c1.1.8 1.8 2.2 2.3 3.7-2 .4-3.5.4-4.8-.3-1.2-.6-2.3-1.9-3-4.2 2.8-.5 4.4 0 5.5.8z'/%3E%3Cpath d='M14.1 6a7 7 0 0 0-1.1 4c1.9-.1 3.3-.6 4.3-1.4 1-1 1.6-2.3 1.7-4.6-2.7.1-4 1-4.9 2z'/%3E%3C/svg%3E")}
+.ic-drumstick{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15.4 15.63a7.875 6 135 1 1 6.23-6.23 4.5 3.43 135 0 0-6.23 6.23'/%3E%3Cpath d='m8.29 12.71-2.6 2.6a2.5 2.5 0 1 0-1.65 4.65A2.5 2.5 0 1 0 8.7 18.3l2.59-2.59'/%3E%3C/svg%3E")}
+.ic-ban{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m4.9 4.9 14.2 14.2'/%3E%3C/svg%3E")}
+.ic-fish{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6.5 12c.94-3.46 4.94-6 8.5-6 3.56 0 6.06 2.54 7 6-.94 3.47-3.44 6-7 6s-7.56-2.53-8.5-6Z'/%3E%3Cpath d='M18 12v.5'/%3E%3Cpath d='M7 10.67C7 8 5.58 5.97 2.73 5.5c-1 1.5-1 5 .23 6.5-1.24 1.5-1.24 5-.23 6.5C5.58 18.03 7 16 7 13.33'/%3E%3C/svg%3E")}
+.ic-building{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 22V4a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v18Z'/%3E%3Cpath d='M6 12H4a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2h2'/%3E%3Cpath d='M18 9h2a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2h-2'/%3E%3Cpath d='M10 6h4'/%3E%3Cpath d='M10 10h4'/%3E%3Cpath d='M10 14h4'/%3E%3Cpath d='M10 18h4'/%3E%3C/svg%3E")}
+.ic-globe{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20'/%3E%3Cpath d='M2 12h20'/%3E%3C/svg%3E")}
+.ic-ticket{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 9a3 3 0 0 1 0 6v2a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2v-2a3 3 0 0 1 0-6V7a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2Z'/%3E%3Cpath d='M13 5v2'/%3E%3Cpath d='M13 17v2'/%3E%3Cpath d='M13 11v2'/%3E%3C/svg%3E")}
+.ic-flame{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M8.5 14.5A2.5 2.5 0 0 0 11 12c0-1.38-.5-2-1-3-1.072-2.143-.224-4.054 2-6 .5 2.5 2 4.9 4 6.5 2 1.6 3 3.5 3 5.5a7 7 0 1 1-14 0c0-1.153.433-2.294 1-3a2.5 2.5 0 0 0 2.5 2.5z'/%3E%3C/svg%3E")}
+.ic-clock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpolyline points='12 6 12 12 16 14'/%3E%3C/svg%3E")}
+.ic-xcircle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m15 9-6 6'/%3E%3Cpath d='m9 9 6 6'/%3E%3C/svg%3E")}
+.ic-checkcircle{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.801 10A10 10 0 1 1 17 3.335'/%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3C/svg%3E")}
+.ic-alert{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E")}
+.ic-send{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z'/%3E%3Cpath d='m21.854 2.147-10.94 10.939'/%3E%3C/svg%3E")}
+.ic-gift{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect x='3' y='8' width='18' height='4' rx='1'/%3E%3Cpath d='M12 8v13'/%3E%3Cpath d='M19 12v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7'/%3E%3Cpath d='M7.5 8a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5'/%3E%3C/svg%3E")}
+.ic-lock{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='18' height='11' x='3' y='11' rx='2' ry='2'/%3E%3Cpath d='M7 11V7a5 5 0 0 1 10 0v4'/%3E%3C/svg%3E")}
+.ic-pencil{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.174 6.812a1 1 0 0 0-3.986-3.987L3.842 16.174a2 2 0 0 0-.5.83l-1.321 4.352a.5.5 0 0 0 .623.622l4.353-1.32a2 2 0 0 0 .83-.497z'/%3E%3C/svg%3E")}
+.ic-bed{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 4v16'/%3E%3Cpath d='M2 8h18a2 2 0 0 1 2 2v10'/%3E%3Cpath d='M2 17h20'/%3E%3Cpath d='M6 8v9'/%3E%3C/svg%3E")}
+.ic-waves{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3C/svg%3E")}
+.ic-sunset{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 10V2'/%3E%3Cpath d='m4.93 10.93 1.41 1.41'/%3E%3Cpath d='M2 18h2'/%3E%3Cpath d='M20 18h2'/%3E%3Cpath d='m19.07 10.93-1.41 1.41'/%3E%3Cpath d='M22 22H2'/%3E%3Cpath d='m16 6-4 4-4-4'/%3E%3Cpath d='M16 18a4 4 0 0 0-8 0'/%3E%3C/svg%3E")}
+.ic-file{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E")}
+.ic-ship{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 21c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1 .6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M19.38 20A11.6 11.6 0 0 0 21 14l-9-4-9 4c0 2.9.94 5.34 2.81 7.76'/%3E%3Cpath d='M19 13V7a2 2 0 0 0-2-2H7a2 2 0 0 0-2 2v6'/%3E%3Cpath d='M12 10v4'/%3E%3Cpath d='M12 2v3'/%3E%3C/svg%3E")}
+.ic-dash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='9' x='3' y='3' rx='1'/%3E%3Crect width='7' height='5' x='14' y='3' rx='1'/%3E%3Crect width='7' height='9' x='14' y='12' rx='1'/%3E%3Crect width='7' height='5' x='3' y='16' rx='1'/%3E%3C/svg%3E")}
+.ic-refresh{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 12a9 9 0 0 1 9-9 9.75 9.75 0 0 1 6.74 2.74L21 8'/%3E%3Cpath d='M21 3v5h-5'/%3E%3Cpath d='M21 12a9 9 0 0 1-9 9 9.75 9.75 0 0 1-6.74-2.74L3 16'/%3E%3Cpath d='M8 16H3v5'/%3E%3C/svg%3E")}
+.ic-sun{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='4'/%3E%3Cpath d='M12 2v2'/%3E%3Cpath d='M12 20v2'/%3E%3Cpath d='m4.93 4.93 1.41 1.41'/%3E%3Cpath d='m17.66 17.66 1.41 1.41'/%3E%3Cpath d='M2 12h2'/%3E%3Cpath d='M20 12h2'/%3E%3Cpath d='m6.34 17.66-1.41 1.41'/%3E%3Cpath d='m19.07 4.93-1.41 1.41'/%3E%3C/svg%3E")}
+.ic-moon{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z'/%3E%3C/svg%3E")}
+.ic-grid{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Crect width='7' height='7' x='3' y='3' rx='1'/%3E%3Crect width='7' height='7' x='14' y='3' rx='1'/%3E%3Crect width='7' height='7' x='14' y='14' rx='1'/%3E%3Crect width='7' height='7' x='3' y='14' rx='1'/%3E%3C/svg%3E")}
+.ic-check{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 6 9 17l-5-5'/%3E%3C/svg%3E")}
+
+.logo{display:inline-flex;align-items:center;justify-content:center;width:30px;height:30px;margin-right:9px;border-radius:10px;background:linear-gradient(145deg,#ffe59f,#f4b842);box-shadow:inset 0 1px 0 rgba(255,255,255,.8),0 6px 16px -4px rgba(244,184,66,.6);vertical-align:middle}
+.logo .ic{margin:0;width:18px;height:18px;background:#2a1c00}
+.hd-r1 h1{display:flex;align-items:center}
+.dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin:0 4px 0 1px;vertical-align:1px}
+.dot-r{background:#ff5d73;box-shadow:0 0 8px #ff5d73}.dot-y{background:#ffc64d;box-shadow:0 0 8px #ffc64d}
+.fl-n{display:inline-flex;align-items:center;justify-content:center;width:20px;height:20px;margin-right:7px;border-radius:50%;font-size:.72rem;font-weight:900;background:rgba(255,255,255,.14)}
+.seg-main button.on .fl-n{background:rgba(0,0,0,.14)}
+.st .st-ic{width:40px;height:40px;border-radius:13px;display:flex;align-items:center;justify-content:center;font-size:1rem;filter:none;color:var(--gold);background:linear-gradient(145deg,rgba(251,215,122,.26),rgba(251,215,122,.06));border:1px solid rgba(251,215,122,.35);box-shadow:inset 0 1px 0 rgba(255,255,255,.35),0 6px 16px -8px rgba(244,184,66,.6)}
+.st .st-ic .ic{width:21px;height:21px}
+.st.warn .st-ic{color:#ff9aa8;background:linear-gradient(145deg,rgba(251,113,133,.28),rgba(251,113,133,.06));border-color:rgba(251,113,133,.45)}
+.tag .ic,.pri-badge .ic{width:1em;height:1em;margin-right:.3em;vertical-align:-.15em}
+.bk .meta .ic{width:1em;height:1em;margin-right:.25em;opacity:.7}
+.section-header .ic{width:1.2em;height:1.2em}
+.slot-note .ic{width:.95em;height:.95em;opacity:.7}
+.sub-chip .ic{width:1.05em;height:1.05em}
+.big b .ic{width:1.3em;height:1.3em;margin-right:.35em;color:var(--gold)}
+.big b{display:flex;align-items:center;justify-content:center}
+.empty .ic{opacity:.8}
+.btn .ic{width:1.05em;height:1.05em;margin-right:.35em;vertical-align:-.17em}
+.slot-actions .btn .ic{margin:0;width:1.15em;height:1.15em}
+.err .ic{color:#ff9aa8;width:1.2em;height:1.2em}
+.tabs-main .tab .ic{width:1.1em;height:1.1em;margin-right:.45em}
+#pkStaffLock .ic{width:1.1em;height:1.1em}
+/* Icon gắn bằng CSS cho phần chữ do JS ghi */
+.push .msg.ok::before,.push .msg.warn::before,.slot-msg.ok::before,.slot-msg.warn::before,#toast::before,.pkf .hint.warn:not(#pkStaffLock)::before,#sheetName:not(:empty)::before,#pkTitle::before,.slot-label::before{content:'';display:inline-block;width:1.1em;height:1.1em;margin-right:.4em;vertical-align:-.2em;background:currentColor;-webkit-mask:var(--i) center/contain no-repeat;mask:var(--i) center/contain no-repeat}
+.push .msg.ok::before,.slot-msg.ok::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.801 10A10 10 0 1 1 17 3.335'/%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3C/svg%3E")}
+.push .msg.warn::before,.slot-msg.warn::before,.pkf .hint.warn:not(#pkStaffLock)::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m21.73 18-8-14a2 2 0 0 0-3.48 0l-8 14A2 2 0 0 0 4 21h16a2 2 0 0 0 1.73-3'/%3E%3Cpath d='M12 9v4'/%3E%3Cpath d='M12 17h.01'/%3E%3C/svg%3E")}
+#toast::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M21.801 10A10 10 0 1 1 17 3.335'/%3E%3Cpath d='m9 11 3 3L22 4'/%3E%3C/svg%3E");color:#86efac;width:1.2em;height:1.2em}
+#toast.err::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Ccircle cx='12' cy='12' r='10'/%3E%3Cpath d='m15 9-6 6'/%3E%3Cpath d='m9 9 6 6'/%3E%3C/svg%3E");color:#ff9aa8}
+#sheetName:not(:empty)::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M15 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V7Z'/%3E%3Cpath d='M14 2v4a2 2 0 0 0 2 2h4'/%3E%3Cpath d='M10 9H8'/%3E%3Cpath d='M16 13H8'/%3E%3Cpath d='M16 17H8'/%3E%3C/svg%3E");width:1em;height:1em}
+#pkTitle::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M14.536 21.686a.5.5 0 0 0 .937-.024l6.5-19a.496.496 0 0 0-.635-.635l-19 6.5a.5.5 0 0 0-.024.937l7.93 3.18a2 2 0 0 1 1.112 1.11z'/%3E%3Cpath d='m21.854 2.147-10.94 10.939'/%3E%3C/svg%3E");color:var(--gold);width:1.1em;height:1.1em}
+.slot-label::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 4v16'/%3E%3Cpath d='M2 8h18a2 2 0 0 1 2 2v10'/%3E%3Cpath d='M2 17h20'/%3E%3Cpath d='M6 8v9'/%3E%3C/svg%3E")}
+.slot-row.slot-vps .slot-label::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3C/svg%3E")}
+.slot-row.slot-barview .slot-label::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 10V2'/%3E%3Cpath d='m4.93 10.93 1.41 1.41'/%3E%3Cpath d='M2 18h2'/%3E%3Cpath d='M20 18h2'/%3E%3Cpath d='m19.07 10.93-1.41 1.41'/%3E%3Cpath d='M22 22H2'/%3E%3Cpath d='m16 6-4 4-4-4'/%3E%3Cpath d='M16 18a4 4 0 0 0-8 0'/%3E%3C/svg%3E")}
+.slot-label{display:flex;align-items:center;justify-content:flex-end}
 </style>
 </head>
 <body>
 
 <div class="hd">
   <div class="hd-r1">
-    <h1>🐬 Danh sách khách</h1>
+<h1><span class="logo"><i class="ic ic-waves"></i></span>Danh sách khách</h1>
     <span class="sp"></span>
     <span class="hd-meta" id="upd"></span>
     <span class="hd-meta" id="sheetName"></span>
     <span class="hd-mini-stats" id="hdMiniStats">
-      👥 <b id="hdMiniGuests">0</b> · 🔴 <b id="hdMiniVip">0</b> · 🟡 <b id="hdMiniDiet">0</b>
+      <i class="ic ic-users"></i> <b id="hdMiniGuests">0</b> · <i class="dot dot-r"></i> <b id="hdMiniVip">0</b> · <i class="dot dot-y"></i> <b id="hdMiniDiet">0</b>
     </span>
-    <button class="icon-btn" id="reload" title="Tải lại">🔄</button>
+    <button class="icon-btn" id="reload" title="Tải lại"><i class="ic ic-refresh"></i></button>
   </div>
 
   <div class="hd-r2">
     <div class="tour-seg">
-      <button id="tAm" data-tour="am">☀️ Sáng</button>
-      <button id="tDn" data-tour="dn">🌙 Tối</button>
+      <button id="tAm" data-tour="am"><i class="ic ic-sun"></i> Sáng</button>
+      <button id="tDn" data-tour="dn"><i class="ic ic-moon"></i> Tối</button>
     </div>
     <div class="date-wrap">
       <button id="dPrev" aria-label="Ngày trước">‹</button>
@@ -499,9 +573,9 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 </div>
 
 <div class="seg-main" id="segMain">
-  <button data-f="all">📋 Tất cả</button>
-  <button data-f="Tầng 1">1️⃣ Tầng 1</button>
-  <button data-f="Tầng 2">2️⃣ Tầng 2</button>
+  <button data-f="all"><i class="ic ic-clipboard"></i> Tất cả</button>
+  <button data-f="Tầng 1"><span class="fl-n">1</span>Tầng 1</button>
+  <button data-f="Tầng 2"><span class="fl-n">2</span>Tầng 2</button>
 </div>
 <div class="sub-row" id="subRow"></div>
 
@@ -513,7 +587,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 
 <div id="pushDlg" role="dialog" aria-modal="true">
   <div class="dbox">
-    <div class="pkhd"><span id="pkTitle">📤 Gửi vào Bungalow</span> <span id="pkRoom" style="color:var(--gold)"></span></div>
+    <div class="pkhd"><span id="pkTitle">Gửi vào Bungalow</span> <span id="pkRoom" style="color:var(--gold)"></span></div>
     <div class="pkf"><label>Tên khách</label><input id="pkName" readonly></div>
     <div class="pkf"><label>Số bàn NH</label><input id="pkTable" readonly></div>
     <div class="pkf" id="pkGuestsWrap" style="display:none">
@@ -524,22 +598,22 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
       <label>Phương thức thanh toán <span class="req">*</span></label>
       <select id="pkPayment" onchange="togglePkFocReason()">
         <option value="">-- Chọn --</option>
-        <option value="Tiền mặt">💵 Tiền mặt</option>
-        <option value="Chuyển khoản">🏦 Chuyển khoản</option>
-        <option value="Visa">💳 Visa</option>
-        <option value="TA chưa thanh toán">⏳ TA chưa thanh toán</option>
-        <option value="TA đã thanh toán">✅ TA đã thanh toán</option>
-        <option value="FOC">🎁 FOC (Miễn phí)</option>
+        <option value="Tiền mặt">Tiền mặt</option>
+        <option value="Chuyển khoản">Chuyển khoản</option>
+        <option value="Visa">Visa</option>
+        <option value="TA chưa thanh toán">TA chưa thanh toán</option>
+        <option value="TA đã thanh toán">TA đã thanh toán</option>
+        <option value="FOC">FOC (Miễn phí)</option>
       </select>
     </div>
     <div class="pkf" id="pkFocWrap" style="display:none">
-      <label>🎁 Lý do FOC <span class="req">*</span></label>
+      <label><i class="ic ic-gift"></i> Lý do FOC <span class="req">*</span></label>
       <input id="pkFocReason" placeholder="VD: Khách VIP, đối tác, bù lỗi dịch vụ...">
     </div>
     <div class="pkf">
       <label>NV mở phòng <span class="req">*</span></label>
       <input id="pkStaff" placeholder="Tên NV...">
-      <div id="pkStaffLock" class="hint warn" style="display:none">🔒 Đã khóa — bàn đã được mở bởi <b id="pkStaffLockName"></b></div>
+      <div id="pkStaffLock" class="hint warn" style="display:none"><i class="ic ic-lock"></i> Đã khóa — bàn đã được mở bởi <b id="pkStaffLockName"></b></div>
     </div>
     <div id="pkWarn" class="pkf hint warn" style="display:none;margin-bottom:12px"></div>
     <div class="drow">
@@ -615,7 +689,7 @@ function candidates(){
   return tour==='am'?['DOLPHIN '+x,'Dolphin '+x,'DOLPHIN DAY '+x]
     :['DINNER DOLPHIN '+x,'Dinner DOLPHIN '+x,'DOLPHIN DINNER '+x,'Dinner Dolphin '+x,'DOLPHIN Dinner '+x,'Dolphin Dinner '+x];
 }
-function toast(m){var t=$('toast');t.textContent=m;t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show')},3000)}
+function toast(m){var t=$('toast');t.textContent=m;t.classList.toggle('err',/^Lỗi/.test(m));t.classList.add('show');clearTimeout(toast.t);toast.t=setTimeout(function(){t.classList.remove('show')},3000)}
 
 function esc(s){return String(s==null?'':s).replace(/[&<>"]/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]})}
 function csv(t){
@@ -775,16 +849,16 @@ function slotBadgeText(slot){
   return slot.type;
 }
 function slotIcon(type){
-  if (type === 'BGL') return '🛏';
-  if (type === 'VPS') return '🏊';
-  if (type === 'BAR VIEW') return '🌅';
-  return '🎭';
+  if (type === 'BGL') return '<i class="ic ic-bed"></i>';
+  if (type === 'VPS') return '<i class="ic ic-waves"></i>';
+  if (type === 'BAR VIEW') return '<i class="ic ic-sunset"></i>';
+  return '<i class="ic ic-sparkles"></i>';
 }
 function tagHtml(b){
   var h='';
-  b.diet.forEach(function(d){h+='<span class="tag d">🥗 <b>'+esc(d.t)+'</b> '+esc(d.s)+'</span>'});
-  b.lob.forEach(function(t){h+='<span class="tag m">🦞 '+esc(t)+'</span>'});
-  b.bung.forEach(function(x){h+='<span class="tag o">🌴 '+esc(bungTxt(x))+'</span>'});
+  b.diet.forEach(function(d){h+='<span class="tag d"><i class="ic ic-leaf"></i> <b>'+esc(d.t)+'</b> '+esc(d.s)+'</span>'});
+  b.lob.forEach(function(t){h+='<span class="tag m"><i class="ic ic-fish"></i> '+esc(t)+'</span>'});
+  b.bung.forEach(function(x){h+='<span class="tag o"><i class="ic ic-tent"></i> '+esc(bungTxt(x))+'</span>'});
 
   if (tour === 'dn' && b.showSlots && b.showSlots.length){
     b.showSlots.forEach(function(slot){
@@ -803,13 +877,13 @@ function getPriority(b){
 }
 function card(b){
   var meta='';
-  if(b.agent) meta+='<span>🏢 '+esc(b.agent)+'</span>';
-  if(b.nat) meta+='<span>🌍 '+esc(b.nat)+'</span>';
-  if(b.code) meta+='<span>🎫 '+esc(b.code)+'</span>';
+  if(b.agent) meta+='<span><i class="ic ic-building"></i> '+esc(b.agent)+'</span>';
+  if(b.nat) meta+='<span><i class="ic ic-globe"></i> '+esc(b.nat)+'</span>';
+  if(b.code) meta+='<span><i class="ic ic-ticket"></i> '+esc(b.code)+'</span>';
   var pri = getPriority(b);
   var badge = '';
-  if (pri === 'pri-vip') badge = '<span class="pri-badge">🔥 VIP</span>';
-  else if (pri === 'pri-diet') badge = '<span class="pri-badge">🥗 KIÊNG</span>';
+  if (pri === 'pri-vip') badge = '<span class="pri-badge"><i class="ic ic-flame"></i> VIP</span>';
+  else if (pri === 'pri-diet') badge = '<span class="pri-badge"><i class="ic ic-leaf"></i> KIÊNG</span>';
   return '<div class="bk '+pri+'">'+badge+
     '<div class="h"><span class="tb">'+esc(b.tbl||'Chưa xếp')+'</span><span class="pax">'+b.pax+' khách</span></div>'+
     '<div class="nm">'+esc(b.name)+'</div>'+
@@ -836,10 +910,10 @@ function viewOverview(L){
     tot+=b.pax;
   });
   var h='<div class="stats">'+
-    statBox('👥',tot,'tổng khách')+
-    statBox('📋',L.length,'booking')+
-    statBox('🪑',Object.keys(tset).length,'bàn')+
-    statBox(tour==='am'?'🌴':'🎭',tour==='am'?nBung(L):L.reduce(function(s,b){return s+(b.showSlots?b.showSlots.length:0)},0),tour==='am'?'bungalow đã đặt':'slot show được tặng')+'</div>';
+    statBox('<i class="ic ic-users"></i>',tot,'tổng khách')+
+    statBox('<i class="ic ic-clipboard"></i>',L.length,'booking')+
+    statBox('<i class="ic ic-utensils"></i>',Object.keys(tset).length,'bàn')+
+    statBox(tour==='am'?'<i class="ic ic-tent"></i>':'<i class="ic ic-sparkles"></i>',tour==='am'?nBung(L):L.reduce(function(s,b){return s+(b.showSlots?b.showSlots.length:0)},0),tour==='am'?'bungalow đã đặt':'slot show được tặng')+'</div>';
 
   function areaLabel(a){if(a==='?') return 'Chưa xếp bàn';return 'Khu '+a}
   function areaBlock(a){
@@ -875,11 +949,11 @@ function viewSpecial(L){
   var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Kiêng ăn':0},lob=0;
   S.forEach(function(b){b.diet.forEach(function(d){cnt[d.t]++});lob+=b.lob.length});
   var h='<div class="stats">'+
-    statBox('🥗',cnt['Chay Việt'],'Chay Việt')+
-    statBox('🥬',cnt['Veg'],'Veg')+
-    statBox('🍖',cnt['Non-veg'],'Non-veg')+
-    statBox('🚫',cnt['Kiêng ăn'],'Kiêng khác')+
-    statBox('🦞',lob,'Tôm hùm')+'</div>';
+    statBox('<i class="ic ic-leaf"></i>',cnt['Chay Việt'],'Chay Việt')+
+    statBox('<i class="ic ic-sprout"></i>',cnt['Veg'],'Veg')+
+    statBox('<i class="ic ic-drumstick"></i>',cnt['Non-veg'],'Non-veg')+
+    statBox('<i class="ic ic-ban"></i>',cnt['Kiêng ăn'],'Kiêng khác')+
+    statBox('<i class="ic ic-fish"></i>',lob,'Tôm hùm')+'</div>';
   if(!S.length)return h+'<div class="empty">Không có khách nào có yêu cầu ăn đặc biệt hoặc tôm hùm.</div>';
   h+='<div class="grid">';
   S.forEach(function(b){h+=card(b)});
@@ -892,23 +966,23 @@ function pushBlock(b,i,j,x){
   pick[k]=room;
   var BS=window.BunSync,ex=room&&BS&&BS.rooms[room];
   var isToday=curDate===vnToday(),ready=BS&&BS.ready,msg='',cls='';
-  if(!BS||(!ready&&!BS.error)){msg='⏳ Đang kết nối...'}
-  else if(BS.error){msg='❌ Không kết nối';cls='warn'}
+  if(!BS||(!ready&&!BS.error)){msg='Đang kết nối...'}
+  else if(BS.error){msg='Không kết nối';cls='warn'}
   else if(!isToday){msg='Chỉ gửi cho hôm nay';cls='warn'}
   else if(ex&&ex.customerName){
-    if(ex.customerName===b.name&&ex.restaurantTable===b.tbl){msg='✅ Đã có trong app';cls='ok'}
-    else{msg='⚠️ P.'+room+' đang có khách: '+ex.customerName;cls='warn'}
+    if(ex.customerName===b.name&&ex.restaurantTable===b.tbl){msg='Đã có trong app';cls='ok'}
+    else{msg='P.'+room+' đang có khách: '+ex.customerName;cls='warn'}
   }else if(room)msg='P.'+room+' đang trống';
   var opts='<option value="">— chọn phòng —</option>'+ROOMS.map(function(r){return '<option'+(r===room?' selected':'')+'>'+r+'</option>'}).join('');
   var dis=(!ready||BS.error||!isToday||!room)?' disabled':'';
   return '<div class="push"><select data-pk="'+esc(k)+'">'+opts+'</select>'+
-    '<button class="btn" data-push="'+esc(k)+'"'+dis+'>📤 Gửi</button>'+(msg?'<div class="msg '+cls+'">'+esc(msg)+'</div>':'')+'</div>';
+    '<button class="btn" data-push="'+esc(k)+'"'+dis+'><i class="ic ic-send"></i> Gửi</button>'+(msg?'<div class="msg '+cls+'">'+esc(msg)+'</div>':'')+'</div>';
 }
 function viewBung(L){
   var S=L.filter(function(b){return b.bung.length});
   var h='<div class="stats">'+
-    statBox('📋',S.length,'booking có bungalow')+
-    statBox('🌴',nBung(L),'tổng bungalow')+'</div>';
+    statBox('<i class="ic ic-clipboard"></i>',S.length,'booking có bungalow')+
+    statBox('<i class="ic ic-tent"></i>',nBung(L),'tổng bungalow')+'</div>';
   if(!S.length)return h+'<div class="empty">Chưa có khách nào đặt bungalow trong danh sách này.</div>';
   h+='<div class="grid">';
   S.forEach(function(b){
@@ -983,12 +1057,12 @@ function renderSlotRow(b, slot, slotIdx){
   var ex = roomKey && S && S.rooms[roomKey];
   var msg = '', cls = '';
 
-  if (!S || (!ready && !S.error)){ msg = '⏳ Đang kết nối...'; }
-  else if (S.error){ msg = '❌ Không kết nối'; cls = 'warn'; }
+  if (!S || (!ready && !S.error)){ msg = 'Đang kết nối...'; }
+  else if (S.error){ msg = 'Không kết nối'; cls = 'warn'; }
   else if (!isToday){ msg = 'Chỉ gửi cho hôm nay'; cls = 'warn'; }
   else if (ex && ex.leader){
-    if (ex.leader === b.name && ex.dining === b.tbl){ msg = '✅ Đã có trong app'; cls = 'ok'; }
-    else { msg = '⚠️ Bàn ' + room + ' đang có: ' + ex.leader; cls = 'warn'; }
+    if (ex.leader === b.name && ex.dining === b.tbl){ msg = 'Đã có trong app'; cls = 'ok'; }
+    else { msg = 'Bàn ' + room + ' đang có: ' + ex.leader; cls = 'warn'; }
   } else if (room){ msg = 'Bàn ' + room + ' đang trống'; cls = 'ok'; }
 
   var opts = buildShowOptions(slot.type, room, slot.num);
@@ -999,13 +1073,13 @@ function renderSlotRow(b, slot, slotIdx){
   else if (slot.type === 'BAR VIEW') rowClass += ' slot-barview';
 
   var slotLabel;
-  if (slot.type === 'BGL') slotLabel = '🛏 Bungalow tại Show';
-  else if (slot.type === 'VPS') slotLabel = '🏊 VIP Poolside';
-  else if (slot.type === 'BAR VIEW') slotLabel = '🌅 VIP Bar View';
+  if (slot.type === 'BGL') slotLabel = 'Bungalow tại Show';
+  else if (slot.type === 'VPS') slotLabel = 'VIP Poolside';
+  else if (slot.type === 'BAR VIEW') slotLabel = 'VIP Bar View';
   else slotLabel = slot.type;
 
   var badgeTxt = slot.num ? (slot.type + ' ' + slot.num) : ('#' + (slotIdx + 1));
-  var noteHtml = slot.note ? '<div class="slot-note">📝 ' + esc(slot.note) + '</div>' : '';
+  var noteHtml = slot.note ? '<div class="slot-note"><i class="ic ic-pencil"></i> ' + esc(slot.note) + '</div>' : '';
 
   return '<div class="' + rowClass + '">' +
     '<div class="slot-head">' +
@@ -1015,7 +1089,7 @@ function renderSlotRow(b, slot, slotIdx){
     noteHtml +
     '<div class="slot-actions">' +
       '<select data-pk="' + esc(k) + '">' + opts + '</select>' +
-      '<button class="btn" data-push="' + esc(k) + '"' + dis + '>📤</button>' +
+      '<button class="btn" data-push="' + esc(k) + '"' + dis + '><i class="ic ic-send"></i></button>' +
     '</div>' +
     (msg ? '<div class="slot-msg ' + cls + '">' + esc(msg) + '</div>' : '') +
   '</div>';
@@ -1044,12 +1118,12 @@ function renderFreeCard(b){
   var ex = roomKey && S && S.rooms[roomKey];
   var msg = '', cls = '';
 
-  if (!S || (!ready && !S.error)){ msg = '⏳ Đang kết nối...'; }
-  else if (S.error){ msg = '❌ Không kết nối'; cls = 'warn'; }
+  if (!S || (!ready && !S.error)){ msg = 'Đang kết nối...'; }
+  else if (S.error){ msg = 'Không kết nối'; cls = 'warn'; }
   else if (!isToday){ msg = 'Chỉ gửi cho hôm nay'; cls = 'warn'; }
   else if (ex && ex.leader){
-    if (ex.leader === b.name && ex.dining === b.tbl){ msg = '✅ Đã có trong app'; cls = 'ok'; }
-    else { msg = '⚠️ Bàn ' + room + ' đang có: ' + ex.leader; cls = 'warn'; }
+    if (ex.leader === b.name && ex.dining === b.tbl){ msg = 'Đã có trong app'; cls = 'ok'; }
+    else { msg = 'Bàn ' + room + ' đang có: ' + ex.leader; cls = 'warn'; }
   } else if (room){ msg = 'Bàn ' + room + ' đang trống'; cls = 'ok'; }
 
   var opts = buildShowOptions('ALL', room, null);
@@ -1057,7 +1131,7 @@ function renderFreeCard(b){
 
   var push = '<div class="push">' +
     '<select data-pk="' + esc(k) + '">' + opts + '</select>' +
-    '<button class="btn" data-push="' + esc(k) + '"' + dis + '>📤 Gửi</button>' +
+    '<button class="btn" data-push="' + esc(k) + '"' + dis + '><i class="ic ic-send"></i> Gửi</button>' +
     (msg ? '<div class="msg ' + cls + '">' + esc(msg) + '</div>' : '') +
   '</div>';
 
@@ -1073,14 +1147,14 @@ function viewShow(L){
   var sent = Object.keys((window.ShowSync && window.ShowSync.rooms) || {}).length;
 
   var h = '<div class="stats">' +
-    statBox('👥', totalGuests, 'tổng khách') +
-    statBox('📋', L.length, 'booking') +
-    statBox('🎁', totalSlots, 'slot được tặng') +
-    statBox('✅', sent, 'đã gửi') +
+    statBox('<i class="ic ic-users"></i>', totalGuests, 'tổng khách') +
+    statBox('<i class="ic ic-clipboard"></i>', L.length, 'booking') +
+    statBox('<i class="ic ic-gift"></i>', totalSlots, 'slot được tặng') +
+    statBox('<i class="ic ic-checkcircle"></i>', sent, 'đã gửi') +
   '</div>';
 
   if (showSectionFilter === 'all' || showSectionFilter === 'gift'){
-    h += '<div class="section-header gift">🎁 Đã có bàn show <span class="badge">' + withSlots.length + ' đoàn</span></div>';
+    h += '<div class="section-header gift"><i class="ic ic-gift"></i> Đã có bàn show <span class="badge">' + withSlots.length + ' đoàn</span></div>';
     if (!withSlots.length){
       h += '<div class="empty">Không có khách nào đã có bàn show hôm nay.</div>';
     } else {
@@ -1129,10 +1203,10 @@ function doPush(k){
 
   pushCtx = { b: b, room: room, before: before, isShow: isShow, slotIdx: slotIdx, slot: slot };
 
-  var title = '📤 Gửi vào Bungalow';
+  var title = 'Gửi vào Bungalow';
   if (isShow){
-    if (slot) title = '📤 Gửi vào ' + slotIcon(slot.type) + ' ' + slotBadgeText(slot);
-    else title = '📤 Gửi vào Bàn Show';
+    if (slot) title = 'Gửi vào ' + slotBadgeText(slot);
+    else title = 'Gửi vào Bàn Show';
   }
   $('pkTitle').textContent = title;
   $('pkRoom').textContent = isShow ? room : 'P.' + room;
@@ -1165,7 +1239,7 @@ function doPush(k){
   var w = $('pkWarn');
   if (before){
     w.style.display = 'block';
-    w.textContent = '⚠️ ' + (isShow ? 'Bàn ' + room : 'P.' + room) + ' đang có khách "' + before + '". Gửi sẽ ghi đè thông tin cũ.';
+    w.textContent = '' + (isShow ? 'Bàn ' + room : 'P.' + room) + ' đang có khách "' + before + '". Gửi sẽ ghi đè thông tin cũ.';
   } else {
     w.style.display = 'none';
   }
@@ -1253,9 +1327,9 @@ function submitPush(){
 
   var roomN = pushCtx.room;
   sync.push(roomKey, data).then(function(){
-    toast('✅ Đã gửi vào ' + (isShow ? 'Bàn ' : 'P.') + roomN);
+    toast('Đã gửi vào ' + (isShow ? 'Bàn ' : 'P.') + roomN);
     closePushDlg();
-  }).catch(function(e){ toast('❌ Lỗi gửi: ' + (e && e.message || e)); })
+  }).catch(function(e){ toast('Lỗi gửi: ' + (e && e.message || e)); })
     .then(function(){ pushing = false; });
 }
 
@@ -1263,8 +1337,8 @@ function renderFilter(){
   document.querySelectorAll('#segMain button').forEach(function(b){b.classList.toggle('on',b.dataset.f===floor)});
   var h = '';
   if (tab === 'bg' && tour === 'dn'){
-    h += '<button class="sub-chip' + (showSectionFilter === 'all' ? ' on' : '') + '" data-show-filter="all">🎭 Tất cả</button>';
-    h += '<button class="sub-chip gift' + (showSectionFilter === 'gift' ? ' on' : '') + '" data-show-filter="gift">🎁 Đã có bàn show</button>';
+    h += '<button class="sub-chip' + (showSectionFilter === 'all' ? ' on' : '') + '" data-show-filter="all"><i class="ic ic-sparkles"></i> Tất cả</button>';
+    h += '<button class="sub-chip gift' + (showSectionFilter === 'gift' ? ' on' : '') + '" data-show-filter="gift"><i class="ic ic-gift"></i> Đã có bàn show</button>';
     h += '<button class="sub-chip free' + (showSectionFilter === 'noslot' ? ' on' : '') + '" data-show-filter="noslot">🆓 Chưa mua show</button>';
   } else if (floor !== 'all'){
     var fl=LAYOUT.filter(function(x){return x.f===floor})[0];
@@ -1286,11 +1360,11 @@ function render(){
   var L=B.filter(match);
   var h;
   var dd=curDate.split('-').reverse().join('/');
-  if(status==='loading'&&!B.length)h='<div class="empty">⏳ Đang tải danh sách...</div>';
+  if(status==='loading'&&!B.length)h='<div class="empty"><i class="ic ic-clock"></i> Đang tải danh sách...</div>';
   else if(status==='error')h=$('out').innerHTML;
   else if(status==='missing')h=tour==='dn'
-    ?'<div class="big"><b>🚢 TÀU ĐỖ — KHÔNG CHẠY</b><span>Không có tour tối ngày '+dd+'.</span></div>'
-    :'<div class="big"><b>📄 Chưa có danh sách tour sáng</b><span>Ngày '+dd+' chưa có sheet "DOLPHIN '+dm(curDate)+'".</span></div>';
+    ?'<div class="big"><b><i class="ic ic-ship"></i> TÀU ĐỖ — KHÔNG CHẠY</b><span>Không có tour tối ngày '+dd+'.</span></div>'
+    :'<div class="big"><b><i class="ic ic-file"></i> Chưa có danh sách tour sáng</b><span>Ngày '+dd+' chưa có sheet "DOLPHIN '+dm(curDate)+'".</span></div>';
   else if(!B.length)h='<div class="empty">Sheet "'+esc(foundName)+'" chưa có khách.</div>';
   else if(tab==='ov') h=viewOverview(L);
   else if(tab==='sp') h=viewSpecial(L);
@@ -1299,9 +1373,9 @@ function render(){
   $('tAm').classList.toggle('on',tour==='am');
   $('tDn').classList.toggle('on',tour==='dn');
   $('dToday').classList.toggle('on',curDate===vnToday());
-  $('sheetName').textContent=(foundName?'📄 '+foundName:'')+(titlesKnown?'':'  ⚠️ Tab ẩn'+(titlesErr?' — '+titlesErr:''));
-  var bgLabel = tour === 'am' ? '🌴 Bungalow' : '🎭 Bàn Show';
-  var T=[['ov','🏠 Tổng quan'],['sp','🥗 Ăn đặc biệt · Tôm hùm'],['bg', bgLabel]];
+  $('sheetName').textContent=(foundName?''+foundName:'')+(titlesKnown?'':'  Tab ẩn'+(titlesErr?' — '+titlesErr:''));
+  var bgLabel = tour === 'am' ? '<i class="ic ic-tent"></i> Bungalow' : '<i class="ic ic-sparkles"></i> Bàn Show';
+  var T=[['ov','<i class="ic ic-dash"></i> Tổng quan'],['sp','<i class="ic ic-leaf"></i> Ăn đặc biệt · Tôm hùm'],['bg', bgLabel]];
   $('tabs').innerHTML=T.map(function(t){return '<button class="tab'+(tab===t[0]?' on':'')+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join('');
   renderFilter();
   updateMiniStats();
@@ -1393,7 +1467,7 @@ function load(){
   }).catch(function(e){
     if(my!==loadSeq)return;
     status='error';B=[];foundName='';
-    $('out').innerHTML='<div class="err">⚠️ Không tải được dữ liệu ('+esc(e.message)+').<br>Kiểm tra: Google Sheet đang để <b>"Bất kỳ ai có đường liên kết đều xem được"</b> và mạng còn hoạt động.</div>';
+    $('out').innerHTML='<div class="err"><i class="ic ic-alert"></i> Không tải được dữ liệu ('+esc(e.message)+').<br>Kiểm tra: Google Sheet đang để <b>"Bất kỳ ai có đường liên kết đều xem được"</b> và mạng còn hoạt động.</div>';
   }).then(function(){if(my===loadSeq){btn.disabled=false;render()}});
 }
 

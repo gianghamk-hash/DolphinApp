@@ -130,14 +130,14 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 </aside></main></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="extreme-ai.js"></script>
+<script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script>
 <script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 const $=id=>document.getElementById(id);
 const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
 const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if(!r.ok)throw Error("Thiếu catalog");return r.json()});
-const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE);
+const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE),Animator=window.DolphinTacticsAnimator(THREE);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false;
@@ -306,7 +306,7 @@ function paintControls(){
 window.buyHero=i=>send({type:'BUY',index:i});
 window.tapBench=i=>{let p=state?.players[uid],id=p?.bench[i];if(selected&&selected!==id){send({type:'MOVE',unitId:selected,to:'bench',index:String(i)});selected=null;}else{selected=id||null;paintControls();}};
 function renderBoard(){
- if(!board||!state)return;characters.clear();characterById.clear();
+ if(!board||!state)return;Animator.clear();characters.clear();characterById.clear();
  const p=state.players[uid];if(!p)return;
  const enemyId=state.pairs.find(x=>x.a===uid||x.b===uid);
  const opponent=enemyId?.a===uid?enemyId.b:enemyId?.a;
@@ -328,7 +328,7 @@ function renderBoard(){
  }
 }
 function startReplay(){
- replay=null;
+ replay=null;Animator.clear();
  if(!state.combatSnapshot||state.roundPhase!=='COMBAT')return;
  const pair=state.pairs.find(x=>x.a===uid||x.b===uid);if(!pair)return;
  // Host-authoritative result is never trusted from this local preview. Server recomputes on COMBAT expiry.
@@ -348,14 +348,16 @@ function tickReplay(){
  const elapsed=Date.now()-replay.start;
  while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
   const e=replay.events[replay.index++],node=characterById.get(e.actor),target=characterById.get(e.target);
-  if(e.type==='move'&&node){node.position.x=(e.x-3.5)*.94;node.position.z=((replay.mirror?7-e.y:e.y)-3.5)*.86;}
-  if((e.type==='attack'||e.type==='cast')&&target){
-   if(node)Visuals.strike(stageScene,node,target,e.type==='cast',visualFX);
-   const stat=battleHealth.get(e.target);if(stat){stat.hp=Math.max(0,stat.hp-(e.amount||0));Visuals.updateBars(target,stat.hp/stat.max);}
-   showDamage(target,e.amount);target.rotation.z=.18;setTimeout(()=>{if(target.parent)target.rotation.z=0;},120);
+  if(e.type==='move'&&node){
+   Animator.play(node,'run',performance.now(),{to:new THREE.Vector3((e.x-3.5)*.94,0,((replay.mirror?7-e.y:e.y)-3.5)*.86)});
   }
-  if((e.type==='heal'||e.type==='shield')&&node){Visuals.updateBars(node,.95,.5);}
-  if(e.type==='die'&&node)node.visible=false;
+  if((e.type==='attack'||e.type==='cast')&&target){
+   if(node){Animator.play(node,e.type==='cast'?'cast':'attack');if(e.type==='cast')Animator.burst(stageScene,node,'cast');Visuals.strike(stageScene,node,target,e.type==='cast',visualFX);}
+   const stat=battleHealth.get(e.target);if(stat){stat.hp=Math.max(0,stat.hp-(e.amount||0));Visuals.updateBars(target,stat.hp/stat.max);}
+   showDamage(target,e.amount);Animator.play(target,'hit');Animator.burst(stageScene,target,'hit');
+  }
+  if((e.type==='heal'||e.type==='shield')&&node){Animator.play(node,e.type);Animator.burst(stageScene,node,e.type);Visuals.updateBars(node,.95,.5);}
+  if(e.type==='die'&&node){Animator.play(node,'death');Animator.burst(stageScene,node,'death');}
  }
 }
 function update(){
@@ -427,7 +429,7 @@ function setup3D(){
   if(tile&&selected){const {col,row}=tile.object.userData.tile;if(row>=4){send({type:'MOVE',unitId:selected,to:'board',index:'r'+(row-4)+'c'+col});selected=null;}}
  });
  let last=0;
- function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<33)return;last=now;tickReplay();Visuals.animateFX(stageScene,visualFX,now);renderer.render(stageScene,camera);}
+ function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<33)return;last=now;tickReplay();Animator.tick(stageScene,characterById,now);Visuals.animateFX(stageScene,visualFX,now);renderer.render(stageScene,camera);}
  requestAnimationFrame(frame);
 }
 setInterval(()=>{

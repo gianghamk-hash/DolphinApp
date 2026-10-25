@@ -32,7 +32,7 @@ function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/',rigFactor
   holder.add(scene);holder.userData.gltfModel=scene;holder.userData.articulatedRig=scene.userData.rig||null;
   return true;
  }
- function preload(ids){for(const id of ids)get(id);}
+ function preload(ids){if(rigFactory)return;for(const id of ids)get(id);}
  return {get,attach,preload,getManifest,cache};
 }
 root.DolphinTacticsCreateModelLibrary=createModelLibrary;

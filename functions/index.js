@@ -68,9 +68,11 @@ exports.tacticsLeaveRoom=onCall(opts,async req=>{
 
 exports.tacticsStartRoom=onCall(opts,async req=>{
  const uid=requireUid(req),id=roomIdOf(req.data&&req.data.roomId);
+ const online=(await getDatabase().ref('roomPresence/'+id).once('value')).val()||{};
  const state=await transact(rooms().child(id),s=>{
   E.assert(s&&s.status==='waiting'&&s.hostId===uid,'Chỉ chủ phòng được bắt đầu');
   E.assert(s.playerOrder.length===4,'Cần đủ 4 người');
+  E.assert(s.playerOrder.every(id=>online[id]===true),'Cần cả 4 người đang trực tuyến để bắt đầu');
   const now=Date.now();s.status='in_game';s.round=1;s.roundPhase='PREPARATION';s.phaseStartedAt=now;
   s.phaseEndsAt=now+E.PHASES.PREPARATION;s.updatedAt=now;return s;
  });

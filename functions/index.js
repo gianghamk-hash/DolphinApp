@@ -46,6 +46,26 @@ exports.tacticsJoinRoom=onCall(opts,async req=>{
  });
  return {roomId:id,players:state.playerOrder.length};
 });
+// Remove a waiting-room participant without touching live combat rosters.
+// If the host leaves, the next existing player becomes the host.
+exports.tacticsLeaveRoom=onCall(opts,async req=>{
+ const uid=requireUid(req),id=roomIdOf(req.data&&req.data.roomId);
+ const roomRef=rooms().child(id);
+ const snapshot=await roomRef.once('value');
+ if(!snapshot.exists()||!snapshot.val().players?.[uid])return {left:true};
+ const res=await roomRef.transaction(s=>{
+  if(!s||!s.players||!s.players[uid])return;
+  if(s.status!=='waiting')return s; // Active games retain player slots for reconnection.
+  delete s.players[uid];s.playerOrder=(s.playerOrder||[]).filter(x=>x!==uid);
+  if(!s.playerOrder.length)return null;
+  if(s.hostId===uid)s.hostId=s.playerOrder[0];
+  s.updatedAt=Date.now();return s;
+ },undefined,false);
+ if(!res.committed)throw new HttpsError('aborted','Phòng vừa thay đổi. Thử lại.');
+ await getDatabase().ref('roomPresence/'+id+'/'+uid).set(false);
+ return {left:true};
+});
+
 exports.tacticsStartRoom=onCall(opts,async req=>{
  const uid=requireUid(req),id=roomIdOf(req.data&&req.data.roomId);
  const state=await transact(rooms().child(id),s=>{

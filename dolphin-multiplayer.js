@@ -328,6 +328,19 @@ async function leaveRoom(){
   stopHeartbeat();
   unsubscribeAll();
   const db = getDB();
+  if(db && _roomId && _game === 'dolphin-tactics'){
+    const roomRef=db.collection(COL).doc(_roomId);
+    await db.runTransaction(async tx=>{
+      const snap=await tx.get(roomRef);
+      if(!snap.exists)return;
+      const data=snap.data(),seats={...(data.seats||{})};
+      if(seats[_side]===_deviceId)delete seats[_side];
+      tx.update(roomRef,{seats,updatedAt:Date.now(),...(_isHost?{status:'closed'}:{})});
+      tx.delete(roomRef.collection('players').doc(_deviceId));
+    });
+    _roomId=null;_isHost=false;_side=null;_game=null;
+    return;
+  }
   if (db && _roomId){
     try {
       await db.collection(COL).doc(_roomId).collection('players').doc(_deviceId).delete();

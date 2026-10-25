@@ -1,0 +1,195 @@
+<!doctype html><html lang="vi"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Dolphin Tactics 3D — 4 player online</title>
+<style>
+:root{color-scheme:dark;--gold:#ffd788;--panel:#0e3042;--aqua:#5edad8;background:#071824;color:#e8f9fc;font-family:system-ui,sans-serif}
+*{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 70% 0%,#1b4e62,#06141f 72%);min-height:100dvh}
+header{background:#09232ff4;border-bottom:1px solid #407d89;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
+h1{font-size:17px;margin:0;color:var(--gold)}h2{font-size:14px;color:var(--gold);margin:0 0 10px}h3{font-size:13px;margin:10px 0 6px}
+.small{font-size:11px;color:#aad1d7}.hidden{display:none!important}
+main{max-width:1350px;margin:auto;padding:9px;display:grid;gap:9px;grid-template-columns:minmax(0,1fr) 340px}
+.panel{background:#0c2b3bc9;border:1px solid #376f7f;border-radius:15px;padding:12px;margin-bottom:9px}
+#stage{height:min(64vh,610px);min-height:340px;background:linear-gradient(#163d4f,#071824);border:1px solid #457d8a;border-radius:16px;overflow:hidden;position:relative;touch-action:manipulation}
+#stage canvas{width:100%;height:100%;display:block}
+#boardHelp{position:absolute;bottom:8px;left:10px;color:#d2edee;font-size:11px;background:#09202bb0;padding:6px;border-radius:8px;pointer-events:none}
+.flex{display:flex;flex-wrap:wrap;gap:8px;align-items:center}.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+button,select,input{font:inherit;border-radius:9px;padding:10px;border:1px solid #4a7f8a;background:#174556;color:white;min-width:0}
+button{font-weight:700;cursor:pointer}button:disabled{opacity:.4;cursor:default}.gold{background:linear-gradient(#ffe4a6,#f1b953);color:#172b33;border-color:#eabc5b}
+input{width:100%;max-width:240px}select{max-width:100%}
+.card{background:#12384b;padding:9px;border-radius:10px;border:1px solid #397282;font-size:12px}
+.card.selected{outline:2px solid var(--gold)}.card strong{display:block;color:#f9e0a0;font-size:12px}.card small{display:block;color:#badce0;margin-top:4px}
+#shop{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px}#shop button{font-size:10px;padding:7px 3px;word-break:break-word;min-height:76px}
+.player{padding:8px;border-radius:8px;background:#153a4a;border:1px solid #477b88;font-size:11px}.player.mine{border-color:#f1c56c}
+#bench{display:grid;grid-template-columns:repeat(8,minmax(0,1fr));gap:4px}#bench button{padding:6px 2px;font-size:10px;min-height:41px}
+#events{max-height:105px;overflow:auto;font-size:11px;line-height:1.6;color:#c4e6ea}
+kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;background:#102e40;border-radius:18px;border:1px solid #377184}
+#timer{font-variant-numeric:tabular-nums;color:#f9e2ab;font-weight:800;font-size:18px}
+@media(max-width:800px){main{display:block}#stage{height:41vh;min-height:265px}#overlay{margin:10px}#shop button{font-size:9px}header{padding:9px}h1{font-size:14px}}
+</style></head><body>
+<header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
+<div style="text-align:right"><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div></div></header>
+<div id="overlay">
+<h2>⚔ PHÒNG ĐẤU 4 NGƯỜI</h2>
+<p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Cần cấu hình Firebase Realtime Database và triển khai Cloud Functions trước khi chơi.</p>
+<div id="configBox" class="panel"><h3>Thiết lập lần đầu — Firebase RTDB URL</h3><input id="dburl" placeholder="https://...firebasedatabase.app" style="max-width:100%" />
+<button onclick="saveDbUrl()">Lưu URL và khởi động</button><div class="small">Sao chép chính xác Database URL từ Firebase Console → Realtime Database. Không nhập thông tin bí mật.</div></div>
+<div id="lobby" class="hidden">
+<input id="nick" maxlength="32" placeholder="Tên người chơi" value="Khách Dolphin"/>
+<div class="flex" style="margin-top:10px"><button class="gold" onclick="createRoom()">TẠO PHÒNG</button><input id="code" placeholder="MÃ PHÒNG 6 KÝ TỰ" maxlength="6" style="max-width:180px;text-transform:uppercase"/><button onclick="joinRoom()">THAM GIA</button></div>
+<div id="lobbyStatus" class="small" style="margin-top:12px"></div><button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
+</div><div id="loginStatus" class="small"></div></div>
+<main id="game" class="hidden"><section><div id="stage"><div id="boardHelp">Chạm tướng ở Bench → chạm ô trống trên sân. Chạm tướng trên sân để chọn, chạm ô khác để di chuyển.</div></div>
+<div class="panel"><h2>THÀNH VIÊN PHÒNG</h2><div class="grid" id="players"></div></div>
+<div class="panel"><h2>HOẠT ĐỘNG GIAO TRANH</h2><div id="events">Chưa có diễn biến.</div></div>
+</section><aside>
+<div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div>
+<div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
+<h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="selectedInfo" class="small" style="margin-top:7px"></div>
+<div class="flex" style="margin-top:9px"><button onclick="sellSelected()">Bán tướng đã chọn</button><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
+<div class="panel"><h2>TỘC / HỆ KÍCH HOẠT</h2><div id="traits" class="small"></div></div>
+<div class="panel"><h2>TRANG BỊ & GHÉP ĐỒ</h2><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem"></select><button onclick="equipSelected()">Trang bị cho tướng</button></div></div>
+<div class="panel"><h2>HƯỚNG DẪN</h2><p class="small">Phase chuẩn bị 30s, chiến đấu 40s và chuyển vòng 5s. Hai đội ghép cặp tự động. Các vòng 1, 2, 3 và chia hết cho 5 là PvE.</p></div>
+</aside></main>
+<script src="../../../functions/tactics/engine.js"></script>
+<script type="module">
+import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import{getAuth,signInAnonymously,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
+import{getDatabase,ref,onValue,off}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
+import{getFunctions,httpsCallable}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
+const $=id=>document.getElementById(id);
+const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
+const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if(!r.ok)throw Error("Thiếu catalog");return r.json()});
+const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO;
+let auth,db,functions,uid="",roomId="",state=null,unsubscribe=null,selected=null;
+let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
+let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0;
+function info(msg){$("loginStatus").textContent=msg;}
+function showError(e){console.error(e);info("⚠ "+(e.message||e));}
+window.saveDbUrl=()=>{let value=$("dburl").value.trim();if(!/^https:\/\/[a-z0-9.-]+\.firebasedatabase\.app\/?$|^https:\/\/[a-z0-9.-]+\.firebaseio\.com\/?$/i.test(value)){info("URL Realtime Database không hợp lệ");return;}localStorage.setItem("dt_database_url",value);location.reload();};
+async function init(){
+ const url=localStorage.getItem("dt_database_url");
+ if(!url){info("Nhập Realtime Database URL để kết nối");return;}
+ $("dburl").value=url;
+ try{const app=initializeApp({...firebaseConfig,databaseURL:url},'dolphinTactics');
+ auth=getAuth(app);db=getDatabase(app);functions=getFunctions(app,'asia-southeast1');
+ await signInAnonymously(auth);uid=auth.currentUser.uid;
+ $("configBox").classList.add("hidden");$("lobby").classList.remove("hidden");info("Đã đăng nhập Firebase. Sẵn sàng tạo hoặc vào phòng.");}
+ catch(e){showError(e);}
+}
+async function call(name,data){return(await httpsCallable(functions,name)(data)).data;}
+window.createRoom=async()=>{try{let r=await call("tacticsCreateRoom",{name:$("nick").value});attach(r.roomId);}catch(e){showError(e)}};
+window.joinRoom=async()=>{try{let r=await call("tacticsJoinRoom",{name:$("nick").value,roomId:$("code").value.trim().toUpperCase()});attach(r.roomId);}catch(e){showError(e)}};
+window.startRoom=async()=>{try{await call("tacticsStartRoom",{roomId});}catch(e){showError(e)}};
+async function attach(id){if(unsubscribe)unsubscribe();roomId=id;$("code").value=id;
+ const target=ref(db,'rooms/'+id);unsubscribe=onValue(target,snap=>{state=snap.val();update();},showError);
+ $("roomTag").textContent="PHÒNG "+id;info("Mã phòng: "+id+" — chia sẻ với 3 người chơi khác.");
+}
+window.send=async(action)=>{if(!state||state.status!=="in_game")return;try{await call("tacticsAction",{roomId,action});}catch(e){showError(e)}};
+window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
+window.equipSelected=()=>{if(selected&&$("equipItem").value)send({type:"EQUIP",unitId:selected,component:$("equipItem").value});};
+const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
+function paintPlayers(){let arr=state.playerOrder.map(id=>{let p=state.players[id],me=id===uid;return '<div class="player '+(me?'mine':'')+'"><strong>'+(me?'⭐ ':'')+safe(p.displayName)+'</strong><br>❤️ '+p.hp+' · 🪙 '+p.gold+' · Lv '+p.level+(p.eliminated?' ☠':'')+(p.ready?' ✓':'')+'</div>';});$("players").innerHTML=arr.join('');}
+function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+function viewUnit(p,id){const u=p.units[id],h=u&&hero[u.heroId];return h?h.name+" ★".repeat(u.star):"Trống";}
+function paintControls(){
+ const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready;
+ $("phaseLabel").textContent=phaseName[state.roundPhase]+' · VÒNG '+state.round;
+ $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
+ $("shop").innerHTML=p.shop.map((id,i)=>{let h=hero[id];return '<button '+(!prep||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+(h?'★'+h.cost+' '+safe(h.name):"Đã bán")+'</button>';}).join('');
+ $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
+ const buffs=E.activeTraits(p);$("traits").innerHTML=Object.keys(buffs).length?Object.entries(buffs).map(([k,v])=>safe(k)+' '+v.count+' / mốc '+v.tier).join(' · '):"Chưa kích hoạt hệ tộc.";
+ $("items").textContent=p.inventory.length?p.inventory.map(x=>catalog.components.find(c=>c.id===x)?.name||x).join(' · '):"Chưa có trang bị.";
+ $("equipItem").innerHTML=p.inventory.map(x=>'<option value="'+safe(x)+'">'+safe(catalog.components.find(c=>c.id===x)?.name||x)+'</option>').join('');
+ $("selectedInfo").textContent=selected&&p.units[selected]?"Đã chọn: "+viewUnit(p,selected):"Chọn tướng trên sân hoặc hàng chờ.";
+ [...document.querySelectorAll('#game button')].forEach(b=>{if(b.hasAttribute('onclick')&&/send\(\{type:'(ROLL|BUY_XP|READY)'/.test(b.getAttribute('onclick')))b.disabled=!prep;});
+}
+window.buyHero=i=>send({type:'BUY',index:i});
+window.tapBench=i=>{let p=state?.players[uid],id=p?.bench[i];if(selected&&selected!==id){send({type:'MOVE',unitId:selected,to:'bench',index:String(i)});selected=null;}else{selected=id||null;paintControls();}};
+function renderBoard(){
+ if(!board||!state)return;characters.clear();characterById.clear();
+ const p=state.players[uid];if(!p)return;
+ const enemyId=state.pairs.find(x=>x.a===uid||x.b===uid);
+ const opponent=enemyId?.a===uid?enemyId.b:enemyId?.a;
+ const add=(unit,x,z,enemy)=>{let h=hero[unit.heroId];if(!h)return;
+  const g=new THREE.Group();g.position.set(x,0,z);g.userData={uid:unit.id};
+  let material=new THREE.MeshStandardMaterial({color:enemy?0xfa6b72:[0x6fd9df,0xffd278,0x9d9bff,0x76eac0,0xf6a5dc][h.cost-1],roughness:.55,metalness:.12});
+  let body=new THREE.Mesh(new THREE.ConeGeometry(.34+.04*(unit.star-1),.85,6),material);body.position.y=.65;g.add(body);
+  let head=new THREE.Mesh(new THREE.SphereGeometry(.25,8,6),new THREE.MeshStandardMaterial({color:0xffebcf}));head.position.y=1.18;g.add(head);
+  const ring=new THREE.Mesh(new THREE.TorusGeometry(.45,.045,5,12),new THREE.MeshBasicMaterial({color:enemy?0xff7979:0x79f9dc}));ring.rotation.x=Math.PI/2;ring.position.y=.14;g.add(ring);
+  const hp=new THREE.Mesh(new THREE.BoxGeometry(.7,.06,.08),new THREE.MeshBasicMaterial({color:0x6ae9a1}));hp.position.y=1.55;g.add(hp);g.userData.hpBar=hp;
+  g.traverse(m=>m.userData.unitId=unit.id);characters.add(g);characterById.set(unit.id,g);
+ };
+ for(let [pos,id] of Object.entries(p.board||{})){let u=p.units[id],m=pos.match(/^r(\d)c(\d)$/);if(u&&m)add(u,(+m[2]-3.5)*.94,(+m[1]+.5)*.86,u.id!==id);}
+ if(state.roundPhase==='COMBAT'&&opponent&&state.combatSnapshot&&state.combatSnapshot[opponent]){
+  const other=state.combatSnapshot[opponent];for(const [pos,id] of Object.entries(other.board||{})){let u=other.units[id],m=pos.match(/^r(\d)c(\d)$/);if(u&&m)add(u,(+m[2]-3.5)*.94,(-(+m[1])-.5)*.86,true);}
+ }
+}
+function startReplay(){
+ replay=null;
+ if(!state.combatSnapshot||state.roundPhase!=='COMBAT')return;
+ const pair=state.pairs.find(x=>x.a===uid||x.b===uid);if(!pair)return;
+ // Host-authoritative result is never trusted from this local preview. Server recomputes on COMBAT expiry.
+ const match=pair.a===uid?pair:{...pair,a:pair.b,b:pair.a};
+ const room={round:state.round};const report=E.simulate(match,room,state.combatSnapshot,(state.seed+state.pairs.indexOf(pair)*977+state.round*1033)>>>0);
+ replay={events:report.events,index:0,start:state.phaseStartedAt,units:new Map()};
+}
+function tickReplay(){
+ if(!replay||!state||state.roundPhase!=='COMBAT')return;
+ const elapsed=Date.now()-replay.start;
+ while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
+  const e=replay.events[replay.index++],node=characterById.get(e.actor);
+  if(e.type==='move'&&node){node.position.x=(e.x-3.5)*.94;node.position.z=(e.y-3.5)*.86;}
+  if(e.type==='attack'||e.type==='cast'){const target=characterById.get(e.target);
+    if(target){target.scale.setScalar(.92);setTimeout(()=>{if(target.parent)target.scale.setScalar(1)},90);}
+  }
+  if(e.type==='die'&&node)node.visible=false;
+ }
+}
+function update(){
+ if(!state)return;$("start").classList.toggle("hidden",state.hostId!==uid||state.playerOrder.length!==4||state.status!=="waiting");
+ $("lobbyStatus").textContent=state.playerOrder.length+"/4: "+state.playerOrder.map(id=>state.players[id].displayName).join(" · ");
+ if(state.status==="waiting"){ $("overlay").classList.remove("hidden");$("game").classList.add("hidden");return;}
+ $("overlay").classList.add("hidden");$("game").classList.remove("hidden");
+ if(!renderer)setup3D();
+ if(state.status==="finished"){$("phaseLabel").textContent="🏆 CHIẾN THẮNG: "+(state.players[state.winnerId]?.displayName||"Hòa");}
+ paintPlayers();paintControls();
+ const key=state.round+"-"+state.roundPhase;
+ if(key!==seenPhaseKey){seenPhaseKey=key;renderBoard();startReplay();}
+ if(state.reports?.length&&state.roundPhase==='TRANSITION'){$("events").innerHTML=state.reports.map(r=>'<div>'+safe((r.pair.a||"")+" vs "+(r.pair.b||"PvE")+" → "+(r.winner||"Quái"))+' · Sát thương: '+r.damage+'</div>').join('');}
+}
+function setup3D(){
+ stageScene=new THREE.Scene();stageScene.background=new THREE.Color(0x0a2635);
+ camera=new THREE.PerspectiveCamera(43,1,.1,50);camera.position.set(8,11,11);camera.lookAt(0,0,0);
+ renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));
+ $('stage').prepend(renderer.domElement);stageScene.add(new THREE.HemisphereLight(0xc1f4ff,0x214052,2.5));
+ const light=new THREE.DirectionalLight(0xffe2a9,1.6);light.position.set(2,10,3);stageScene.add(light);
+ board=new THREE.Group();characters=new THREE.Group();stageScene.add(board,characters);
+ let ground=new THREE.Mesh(new THREE.CylinderGeometry(5.3,5.5,.35,8),new THREE.MeshStandardMaterial({color:0x184051}));ground.position.y=-.26;stageScene.add(ground);
+ for(let row=0;row<8;row++)for(let col=0;col<8;col++){
+  const m=new THREE.Mesh(new THREE.BoxGeometry(.89,.11,.81),new THREE.MeshStandardMaterial({color:(row+col)%2?0x225367:0x2c6879}));
+  m.position.set((col-3.5)*.94,0,(row-3.5)*.86);m.userData.tile={col,row};board.add(m);
+ }
+ function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;camera.updateProjectionMatrix();}
+ addEventListener('resize',resize);resize();
+ renderer.domElement.addEventListener('pointerup',e=>{
+  if(!state||state.roundPhase!=='PREPARATION')return;
+  const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);
+  let unit=raycaster.intersectObjects(characters.children,true)[0];
+  if(unit){let target=unit.object;while(target&&!target.userData.unitId)target=target.parent;if(target){selected=target.userData.unitId;paintControls();return;}}
+  let tile=raycaster.intersectObjects(board.children,false)[0];
+  if(tile&&selected){const {col,row}=tile.object.userData.tile;if(row>=4){send({type:'MOVE',unitId:selected,to:'board',index:'r'+(row-4)+'c'+col});selected=null;}}
+ });
+ let last=0;
+ function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<33)return;last=now;tickReplay();renderer.render(stageScene,camera);}
+ requestAnimationFrame(frame);
+}
+setInterval(async()=>{
+ if(!state||state.status!=='in_game')return;
+ $("timer").textContent=Math.max(0,Math.ceil((state.phaseEndsAt-Date.now())/1000))+"s";
+ const now=Date.now();if(now>=state.phaseEndsAt&&now-lastAdvance>2000&&!advancing){
+  advancing=true;lastAdvance=now;try{await call("tacticsAdvanceRoom",{roomId});}catch(e){}finally{advancing=false;}
+ }
+},500);
+init();
+</script></body></html>

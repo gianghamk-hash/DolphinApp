@@ -86,6 +86,23 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
  #game>aside{height:auto;overflow:visible}
 }
 #appShell.pseudoFullscreen{position:fixed!important;inset:0!important;z-index:2147483000;background:#061925;width:100vw;height:100dvh;overflow:hidden}
+/* 4-player compact HUD + landscape viewport */
+#appShell>header{height:30px!important;min-height:30px!important;padding:2px 8px!important}
+#appShell>header h1{font-size:11px!important}#appShell>header .small{display:none}
+#appShell>header button{padding:3px 6px!important;font-size:10px!important}
+#game:not(.hidden){height:calc(100dvh - 30px)!important;grid-template-columns:minmax(0,1.95fr) minmax(250px,.85fr)!important;gap:4px;padding:3px;overflow:hidden}
+#game>section{height:100%!important;min-height:0;overflow:hidden!important;display:flex;flex-direction:column}
+#game>section>#stage{height:auto!important;min-height:0!important;flex:1 1 auto}
+#game>aside{height:100%;min-height:0;overflow-y:auto!important;overflow-x:hidden;touch-action:pan-y!important;-webkit-overflow-scrolling:touch;padding-bottom:22px}
+.playerDock{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:3px;flex:0 0 auto}
+.playerDock .player{padding:3px 5px;min-width:0;font-size:10px;border-radius:7px}
+.playerDock strong{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}
+.playerDock .meta{font-size:9px;white-space:nowrap}.playerDock .meter{height:3px;background:#60313d;margin-top:3px;border-radius:3px;overflow:hidden}.playerDock .meter i{display:block;height:100%;background:#64e3aa}
+#shop .shopHero{display:flex;flex-direction:column;gap:3px;min-width:0;min-height:88px!important;padding:5px 3px!important;text-align:left;border-bottom-width:3px}
+.shopHero .shopRank{display:flex;justify-content:space-between;font-weight:800}.shopHero .shopAvatar{text-align:center;font-size:21px}.shopHero strong{font-size:10px;min-height:22px;line-height:1.1;overflow:hidden}.shopHero small{font-size:8px;color:#b8d7dc;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.shopHero.tier1{border-bottom-color:#a6b5c5}.shopHero.tier2{border-bottom-color:#71d69a}.shopHero.tier3{border-bottom-color:#67b7ff}.shopHero.tier4{border-bottom-color:#d39eff}.shopHero.tier5{border-bottom-color:#f9ca68}
+@media(max-height:440px) and (orientation:landscape){#game:not(.hidden){grid-template-columns:minmax(0,1.9fr) minmax(235px,.85fr)!important}.playerDock .player{padding:2px 4px}}
+@media(orientation:portrait) and (max-width:650px){#appShell{height:auto}#game:not(.hidden){height:auto!important;display:block!important;overflow:visible}#game>section{height:auto!important;overflow:visible!important}#game>section>#stage{height:47vh!important;min-height:260px!important}#game>aside{height:auto;overflow:visible!important}}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header><div id="landscapeHint">↻ Xoay ngang điện thoại để xem bàn cờ và bảng điều khiển cùng lúc. Có thể chọn ⛶ Toàn màn hình.</div>
@@ -101,8 +118,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
 <main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm tướng ở Bench → chạm ô trống trên sân. Chạm tướng trên sân để chọn, chạm ô khác để di chuyển.</div></div>
-<div class="panel"><h2>THÀNH VIÊN PHÒNG</h2><div class="grid" id="players"></div></div>
-<div class="panel"><h2>HOẠT ĐỘNG GIAO TRANH</h2><div id="events">Chưa có diễn biến.</div></div>
+<div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div>
 <div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
@@ -265,13 +281,21 @@ function init(){
 window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
 window.equipSelected=()=>{if(selected&&$("equipItem").value)send({type:"EQUIP",unitId:selected,component:$("equipItem").value});};
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
-function paintPlayers(){let arr=state.playerOrder.map(id=>{let p=state.players[id],me=id===uid;return '<div class="player '+(me?'mine':'')+'"><strong>'+(me?'⭐ ':'')+safe(p.displayName)+'</strong><br>❤️ '+p.hp+' · 🪙 '+p.gold+' · Lv '+p.level+(p.eliminated?' ☠':'')+(p.ready?' ✓':'')+'</div>';});$("players").innerHTML=arr.join('');}
+function paintPlayers(){
+ $('players').innerHTML=state.playerOrder.map(id=>{const p=state.players[id];if(!p)return '';
+ const hp=Math.max(0,Math.min(100,p.hp||0));
+ return '<div class="player '+(id===uid?'mine':'')+'"><strong>'+safe(p.displayName)+'</strong><div class="meta">❤'+hp+' · 🪙'+p.gold+' · Lv'+p.level+'</div><div class="meter"><i style="width:'+hp+'%"></i></div></div>';
+ }).join('');
+}
 function viewUnit(p,id){const u=p.units[id],h=u&&hero[u.heroId];return h?h.name+" ★".repeat(u.star):"Trống";}
 function paintControls(){
  const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready;
  $("phaseLabel").textContent=phaseName[state.roundPhase]+' · VÒNG '+state.round;
  $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
- $("shop").innerHTML=p.shop.map((id,i)=>{let h=hero[id];return '<button '+(!prep||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+(h?'★'+h.cost+' '+safe(h.name):"Đã bán")+'</button>';}).join('');
+ $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;
+ return '<button class="shopHero tier'+cost+'" '+(!prep||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
+ (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].join(' · '))+'</small>':'Đã bán')+'</button>';
+ }).join('');
  $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
  const buffs=E.activeTraits(p);$("traits").innerHTML=Object.keys(buffs).length?Object.entries(buffs).map(([k,v])=>safe(k)+' '+v.count+' / mốc '+v.tier).join(' · '):"Chưa kích hoạt hệ tộc.";
  $("items").textContent=p.inventory.length?p.inventory.map(x=>catalog.components.find(c=>c.id===x)?.name||x).join(' · '):"Chưa có trang bị.";
@@ -349,7 +373,7 @@ function update(){
  const key=state.round+"-"+state.roundPhase;
  if(key!==seenPhaseKey){seenPhaseKey=key;renderBoard();startReplay();}
  else if(state.roundPhase==='PREPARATION')renderBoard();
- if(state.reports?.length&&state.roundPhase==='TRANSITION'){$("events").innerHTML=state.reports.map(r=>'<div>'+safe((r.pair.a||"")+" vs "+(r.pair.b||"PvE")+" → "+(r.winner||"Quái"))+' · Sát thương: '+r.damage+'</div>').join('');}
+
 }
 // Pointer-based drag to place: works on mobile touch as well as mouse.
 function boardHit(clientX,clientY){
@@ -384,9 +408,12 @@ function setup3D(){
  $('stage').prepend(renderer.domElement);stageScene.add(new THREE.HemisphereLight(0xc1f4ff,0x214052,2.5));
  const light=new THREE.DirectionalLight(0xffe2a9,1.6);light.position.set(2,10,3);stageScene.add(light);
  board=new THREE.Group();characters=new THREE.Group();stageScene.add(board,characters);
- let ground=new THREE.Mesh(new THREE.CylinderGeometry(5.3,5.5,.35,8),new THREE.MeshStandardMaterial({color:0x184051}));ground.position.y=-.26;stageScene.add(ground);
+ let ground=new THREE.Mesh(new THREE.CylinderGeometry(5.3,5.45,.48,8),new THREE.MeshStandardMaterial({color:0x185266,metalness:.3,roughness:.5}));ground.position.y=-.3;stageScene.add(ground);
+ for(let i=0;i<8;i++){const angle=i*Math.PI/4;const pedestal=new THREE.Mesh(new THREE.CylinderGeometry(.18,.29,.55,6),new THREE.MeshStandardMaterial({color:0x2f7180}));pedestal.position.set(Math.cos(angle)*5.4,.06,Math.sin(angle)*5.4);stageScene.add(pedestal);
+ const crystal=new THREE.Mesh(new THREE.OctahedronGeometry(.18),new THREE.MeshBasicMaterial({color:i%2?0xffbb77:0x5ff1df}));crystal.position.set(Math.cos(angle)*5.4,.46,Math.sin(angle)*5.4);stageScene.add(crystal);}
+ const centralLine=new THREE.Mesh(new THREE.BoxGeometry(7.5,.03,.05),new THREE.MeshBasicMaterial({color:0xf3be7b}));centralLine.position.y=.1;stageScene.add(centralLine);
  for(let row=0;row<8;row++)for(let col=0;col<8;col++){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(.89,.11,.81),new THREE.MeshStandardMaterial({color:(row+col)%2?0x225367:0x2c6879}));
+  const m=new THREE.Mesh(new THREE.BoxGeometry(.89,.11,.81),new THREE.MeshStandardMaterial({color:(row+col)%2?(row<4?0x1d4e62:0x346272):(row<4?0x276479:0x3c7a87)}));
   m.position.set((col-3.5)*.94,0,(row-3.5)*.86);m.userData.tile={col,row};board.add(m);
  }
  function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;camera.updateProjectionMatrix();}

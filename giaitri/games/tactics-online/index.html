@@ -41,6 +41,51 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 @media(max-height:420px) and (orientation:landscape){#stage{height:calc(100dvh - 57px);min-height:215px}#game .panel{padding:6px}#game>.side{max-height:calc(100dvh - 52px);overflow:auto}#game .panel h2{font-size:11px}}
 :fullscreen #appShell{height:100dvh;overflow:auto;background:#061925}body:fullscreen{overflow:hidden}#appShell:fullscreen #game{min-height:calc(100dvh - 54px)}
 @media(prefers-reduced-motion:reduce){.damagePop{animation-duration:.01ms}}
+/* APK/WebView landscape compact mode. Viewport height is constrained, sidebar scrolls independently. */
+html,body{width:100%;margin:0;overflow-x:hidden}
+#appShell{height:100dvh;display:flex;flex-direction:column;min-height:0}
+#appShell>header{height:42px;min-height:42px;padding:3px 10px;flex-shrink:0;display:flex;align-items:center}
+#appShell>header h1{font-size:clamp(11px,1.55vw,15px);margin:0;letter-spacing:0}
+#appShell>header .small{font-size:10px}
+#appShell>header>div:last-child{display:flex!important;align-items:center;gap:8px;white-space:nowrap}
+#appShell>header #timer{font-size:15px}
+#appShell>header #fullscreenBtn{padding:5px 9px;font-size:11px}
+#appShell>header #leaveTop{padding:4px 7px!important;margin:0!important}
+#game:not(.hidden){flex:1;min-height:0;height:calc(100dvh - 42px);overflow:hidden;
+display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-items:stretch;padding:4px;gap:6px}
+#game>section{min-height:0;min-width:0;height:100%;position:relative;display:flex;flex-direction:column;overflow-y:auto;overscroll-behavior:contain}
+#game>section>#stage{height:auto!important;min-height:190px;flex:1;overflow:hidden}
+#game>section>.panel{flex-shrink:0}
+#game>aside{min-width:0;min-height:0;height:100%;overflow-y:auto;overflow-x:hidden;overscroll-behavior:contain;padding-bottom:32px;scrollbar-width:thin}
+#game>aside .panel{margin-bottom:5px;padding:7px}
+#game>aside h2{font-size:13px}
+#game>aside .flex{gap:4px}
+#game>aside button{padding:6px 7px}
+#game #shop button{min-height:48px;padding:5px 2px;font-size:9px}
+#game #bench button{min-height:34px;padding:5px 1px}
+#battleBanner{font-size:clamp(11px,1.55vw,15px);top:6px;padding:5px 10px;max-width:65%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#boardHelp{font-size:9px;max-width:80%;padding:4px}
+#stageFullscreen{top:6px;right:6px;padding:4px 7px}
+#zoomControls{position:absolute;z-index:12;left:8px;top:7px;display:flex;flex-direction:column;gap:4px}
+#zoomControls button{font-size:15px;padding:4px 8px;background:#103747d9;border:1px solid #74b7ba;min-width:30px}
+#game:not(.hidden)~*{flex-shrink:0}
+@media (max-height:520px) and (orientation:landscape){
+ #appShell>header{height:32px;min-height:32px;padding:2px 8px}
+ #appShell>header .small{display:none}
+ #appShell>header h1{font-size:12px}
+ #game:not(.hidden){height:calc(100dvh - 32px);grid-template-columns:minmax(0,1.75fr) minmax(245px,.8fr)}
+ #game>section>#stage{min-height:160px}
+ #game>aside h2{font-size:11px}
+ #game>aside .panel{padding:5px}
+}
+@media (orientation:portrait) and (max-width:650px){
+ #appShell{height:auto;min-height:100dvh}
+ #game:not(.hidden){height:auto;display:block;overflow:visible}
+ #game>section{height:auto;overflow:visible}
+ #game>section>#stage{height:44vh!important;min-height:260px}
+ #game>aside{height:auto;overflow:visible}
+}
+#appShell.pseudoFullscreen{position:fixed!important;inset:0!important;z-index:2147483000;background:#061925;width:100vw;height:100dvh;overflow:hidden}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header><div id="landscapeHint">↻ Xoay ngang điện thoại để xem bàn cờ và bảng điều khiển cùng lúc. Có thể chọn ⛶ Toàn màn hình.</div>
@@ -55,7 +100,7 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm tướng ở Bench → chạm ô trống trên sân. Chạm tướng trên sân để chọn, chạm ô khác để di chuyển.</div></div>
+<main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm tướng ở Bench → chạm ô trống trên sân. Chạm tướng trên sân để chọn, chạm ô khác để di chuyển.</div></div>
 <div class="panel"><h2>THÀNH VIÊN PHÒNG</h2><div class="grid" id="players"></div></div>
 <div class="panel"><h2>HOẠT ĐỘNG GIAO TRANH</h2><div id="events">Chưa có diễn biến.</div></div>
 </section><aside>
@@ -79,7 +124,7 @@ const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
-let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null;
+let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false;
 const info=msg=>$("loginStatus").textContent=msg;
 const showError=e=>{console.error(e);info("⚠ "+(e?.message||e));};
 function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
@@ -104,22 +149,39 @@ window.startOffline=()=>{
  $('lobby').classList.add('hidden');$('roomTag').textContent='OFFLINE · 3 AI';
  $('leaveTop').classList.remove('hidden');offlineAI(now);publish();
 };
+function refreshFullButton(){
+ const full=!!document.fullscreenElement||pseudoFullscreen;
+ $('fullscreenBtn').textContent=full?'↙ Thu nhỏ':'⛶ Toàn màn hình';
+ $('stageFullscreen').textContent=full?'↙':'⛶';
+ window.dispatchEvent(new Event('resize'));
+}
 window.toggleFullscreen=async()=>{
  const root=$('appShell');
+ if(document.fullscreenElement){try{await document.exitFullscreen();}catch(e){}refreshFullButton();return;}
+ if(pseudoFullscreen){pseudoFullscreen=false;root.classList.remove('pseudoFullscreen');
+  try{parent.postMessage({type:'dolphin-tactics-fullscreen',enabled:false},'*');}catch(e){}
+  refreshFullButton();return;}
  try{
-  if(document.fullscreenElement){await document.exitFullscreen();return;}
-  if(!root.requestFullscreen)throw Error('Trình duyệt không hỗ trợ Fullscreen API');
+  if(!root.requestFullscreen)throw Error('Unsupported WebView');
   await root.requestFullscreen();
-  if(screen.orientation?.lock){try{await screen.orientation.lock('landscape');}catch(e){/* Browser may not support orientation lock */}}
+  if(screen.orientation?.lock)try{await screen.orientation.lock('landscape');}catch(e){}
   if(navigator.wakeLock?.request)try{screenWake=await navigator.wakeLock.request('screen');}catch(e){}
- }catch(e){showError('Không thể bật toàn màn hình trên trình duyệt này: '+e.message+'; hãy xoay ngang thủ công.');}
+ }catch(e){
+  // APK WebView often refuses Fullscreen API from iframe. Use fullscreen-like layout.
+  pseudoFullscreen=true;root.classList.add('pseudoFullscreen');
+  try{parent.postMessage({type:'dolphin-tactics-fullscreen',enabled:true},'*');}catch(err){}
+ }
+ refreshFullButton();
 };
 document.addEventListener('fullscreenchange',()=>{
- const full=!!document.fullscreenElement;
- $('fullscreenBtn').textContent=full?'↙ Thoát toàn màn hình':'⛶ Toàn màn hình';
- if(!full){try{screen.orientation?.unlock?.();}catch(e){}if(screenWake){screenWake.release().catch(()=>{});screenWake=null;}}
- window.dispatchEvent(new Event('resize'));
+ if(!document.fullscreenElement){try{screen.orientation?.unlock?.();}catch(e){}
+ if(screenWake){screenWake.release().catch(()=>{});screenWake=null;}}
+ refreshFullButton();
 });
+window.zoomBoard=direction=>{
+ zoomLevel=direction===0?1:Math.max(.65,Math.min(1.8,zoomLevel+direction*.12));
+ if(camera){camera.position.set(7.2/zoomLevel,10/zoomLevel,10.4/zoomLevel);camera.lookAt(0,0,0);camera.updateProjectionMatrix();}
+};
 function selectedHeroInfo(){
  const u=state?.players?.[uid]?.units?.[selected];
  if(!u){$('heroInfo').textContent='Chạm một tướng để xem chỉ số, hệ tộc và kỹ năng.';return;}
@@ -328,7 +390,7 @@ function setup3D(){
   m.position.set((col-3.5)*.94,0,(row-3.5)*.86);m.userData.tile={col,row};board.add(m);
  }
  function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;camera.updateProjectionMatrix();}
- addEventListener('resize',resize);resize();
+ addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe($('stage'));resize();
  renderer.domElement.addEventListener('pointerup',e=>{
   if(!state||state.roundPhase!=='PREPARATION')return;
   const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);

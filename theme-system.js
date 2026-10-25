@@ -166,26 +166,31 @@
 
 
   var THEME_SCENES = {
-    default:['🐬','🫧','🐠','🫧','🐬'],tet:['🏮','🌸','🧧','🌼','🏮','✨'],
+    default:['🫧','🐠','🫧','🐬','🫧'],tet:['🌸','🏮','🌼','🧧','✨','🌸'],
     valentine:['💕','💗','🌹','💌','💖','💕'],womenday:['🌷','🌸','🦋','🌺','💐','🌷'],
     reunification:['⭐','🇻🇳','⭐','✨','🇻🇳'],children:['🎈','🪁','🎉','🎈','🫧','🎊'],
     nationalday:['⭐','🇻🇳','🎆','⭐','✨'],midautumn:['🏮','🐇','🌕','✨','🏮','☁️'],
     halloween:['👻','🦇','👻','🦇','👻','🦇','🦇'],
-    christmas:['❄️','🎁','🔔','❄️','⭐','❄️','🎄'],
+    christmas:['❄️','🔔','❄️','🎁','❄️','⭐','❄️'],
     newyear:['✨','🎇','⭐','🎊','✨','🎇'],
     spring:['🌸','🦋','🌷','🌸','🌼','🦋'],summer:['🌊','🐠','🫧','🌴','🕊️','🌊'],
     autumn:['🍁','🍂','🍃','🍁','🍂','🍃'],winter:['❄️','🌨️','❄️','✨','❄️','🧊']
   };
-  var SCENE_POSITIONS = [[13,21,.72,13,0],[82,16,.68,17,-3],[23,69,.86,15,-7],
-    [76,72,.82,19,-10],[46,13,.58,16,-4],[91,46,.65,14,-8],[8,48,.74,18,-12]];
+  /* Positions are local to a compact scene around the hero icon, not the full screen. */
+  var SCENE_POSITIONS = [[16,30,.95,6,0],[76,22,1.05,7,-2],[9,67,.85,8,-4],
+    [81,70,1,6.5,-1.5],[37,8,.9,7.5,-3],[61,90,.9,8.5,-5],[91,43,.8,6.8,-2.6]];
+  var GHOST_SVG = '<svg viewBox="0 0 70 86" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M9 72V34a26 26 0 0 1 52 0v38l-12-8-10 10-11-9-10 9Z" fill="#f4f1ff" stroke="#dad1ff" stroke-width="2"/><ellipse cx="27" cy="37" rx="4" ry="6" fill="#292241"/><ellipse cx="45" cy="37" rx="4" ry="6" fill="#292241"/><ellipse cx="36" cy="53" rx="4" ry="6" fill="#292241"/></svg>';
+  var BAT_SVG = '<svg viewBox="0 0 94 54" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><path d="M47 26 39 12 32 19C21 6 11 9 2 16c10 5 11 17 12 27 9-7 19-6 33 6 14-12 24-13 33-6 1-10 2-22 12-27-9-7-19-10-30 3l-7-7Z" fill="#171424" stroke="#685189" stroke-width="2"/></svg>';
   function renderThemeScene(key,holder){
     if (!holder) return;
     var icons=THEME_SCENES[key]||THEME_SCENES.default, html='';
     for(var i=0;i<icons.length;i++){
-      var p=SCENE_POSITIONS[i],bat=key==='halloween'&&icons[i]==='🦇';
-      html+='<span class="tbi-particle '+(bat?'tbi-bat':'tbi-drifter')+
-        '" style="--px:'+p[0]+'%;--py:'+p[1]+'%;--ps:'+p[2]+
-        ';--duration:'+p[3]+'s;--delay:'+p[4]+'s" aria-hidden="true">'+icons[i]+'</span>';
+      var p=SCENE_POSITIONS[i], bat=key==='halloween'&&icons[i]==='🦇';
+      var ghost=key==='halloween'&&icons[i]==='👻';
+      var cls=bat?'tbi-bat':ghost?'tbi-ghost':'tbi-drifter';
+      var visual=bat?BAT_SVG:ghost?GHOST_SVG:icons[i];
+      html+='<span class="tbi-particle '+cls+'" style="--px:'+p[0]+'%;--py:'+p[1]+
+        '%;--ps:'+p[2]+';--duration:'+p[3]+'s;--delay:'+p[4]+'s" aria-hidden="true">'+visual+'</span>';
     }
     holder.innerHTML=html;
   }
@@ -316,11 +321,11 @@
       '#themeBigIcon .tbi-aura{ position:absolute; top:50%; left:50%; border-radius:50%; pointer-events:none; }',
       '#themeBigIcon .tbi-emoji{ position:absolute; top:50%; left:50%; font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; line-height:1; text-align:center; user-select:none; -webkit-user-select:none; -webkit-font-smoothing:antialiased; transform-origin:center; }',
       '#themeBigIcon .tbi-emoji.flag > .tbi-e-inner{ display:inline-block; transform:scaleY(0.72); transform-origin:center; }',
-            '#themeBigIcon .tbi-scene{position:absolute;inset:0;overflow:hidden;pointer-events:none;contain:layout style paint;}',
-      '#themeBigIcon .tbi-particle{position:absolute;left:var(--px);top:var(--py);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:clamp(22px,5vmin,66px);line-height:1;opacity:.65;user-select:none;transform:translate3d(0,0,0) scale(var(--ps));animation:tbi-drift var(--duration) ease-in-out var(--delay) infinite alternate;backface-visibility:hidden;}',
-      '#themeBigIcon .tbi-bat{font-size:clamp(24px,5.5vmin,72px);animation-name:tbi-bat-flight;opacity:.75;}',
-      '@keyframes tbi-drift{from{transform:translate3d(-14px,14px,0) rotate(-9deg) scale(var(--ps));opacity:.38;}to{transform:translate3d(20px,-26px,0) rotate(11deg) scale(var(--ps));opacity:.8;}}',
-      '@keyframes tbi-bat-flight{from{transform:translate3d(-42px,24px,0) rotate(-15deg) scale(var(--ps));opacity:.25;}50%{opacity:.85;}to{transform:translate3d(50px,-32px,0) rotate(14deg) scale(var(--ps));opacity:.55;}}',
+            '#themeBigIcon .tbi-scene{position:absolute;width:min(90vmin,680px);height:min(76vmin,580px);left:50%;top:50%;transform:translate(-50%,-50%);overflow:visible;pointer-events:none;contain:layout style;}',
+      '#themeBigIcon .tbi-particle{position:absolute;left:var(--px);top:var(--py);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:clamp(32px,8vmin,72px);line-height:1;opacity:.8;user-select:none;transform:translate3d(0,0,0) scale(var(--ps));animation:tbi-drift var(--duration) ease-in-out var(--delay) infinite alternate;backface-visibility:hidden;}',
+      '#themeBigIcon .tbi-bat{width:clamp(32px,9vmin,84px);animation-name:tbi-bat-flight;opacity:.78;}','#themeBigIcon .tbi-ghost{width:clamp(30px,7vmin,72px);filter:drop-shadow(0 0 10px rgba(220,210,255,.3));}','#themeBigIcon .tbi-particle svg{display:block;width:100%;height:auto;}',
+      '@keyframes tbi-drift{from{transform:translate3d(-22px,18px,0) rotate(-10deg) scale(var(--ps));opacity:.55;}to{transform:translate3d(30px,-34px,0) rotate(12deg) scale(var(--ps));opacity:.95;}}',
+      '@keyframes tbi-bat-flight{from{transform:translate3d(-60px,35px,0) rotate(-20deg) scale(var(--ps));opacity:.25;}50%{opacity:.95;}to{transform:translate3d(65px,-43px,0) rotate(17deg) scale(var(--ps));opacity:.65;}}',
       'body.app-mode #themeBigIcon .tbi-particle{animation-play-state:paused;}',
       '@media (prefers-reduced-motion: reduce){#themeBigIcon .tbi-particle,#themeBigIcon .tbi-emoji,#themeBigIcon .tbi-aura,#themeBigIcon .fw-rocket,#themeBigIcon .fw-burst,#themeBigIcon .fw-burst::before{animation:none !important;}#themeBigIcon .tbi-particle{opacity:.35;}}',
       '#themeBigIcon .tbi-fireworks{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; display:none; }',

@@ -30,9 +30,8 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 <div style="text-align:right"><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
 <h2>⚔ PHÒNG ĐẤU 4 NGƯỜI</h2>
-<p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Cần cấu hình Firebase Realtime Database và triển khai Cloud Functions trước khi chơi.</p>
-<div id="configBox" class="panel"><h3>Thiết lập lần đầu — Firebase RTDB URL</h3><input id="dburl" placeholder="https://...firebasedatabase.app" style="max-width:100%" />
-<button onclick="saveDbUrl()">Lưu URL và khởi động</button><div class="small">Sao chép chính xác Database URL từ Firebase Console → Realtime Database. Không nhập thông tin bí mật.</div></div>
+<p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Sử dụng Firestore gói Spark và Dolphin Multiplayer có sẵn. Một thiết bị làm Host điều phối trận đấu.</p>
+
 <div id="lobby" class="hidden">
 <input id="nick" maxlength="32" placeholder="Tên người chơi" value="Khách Dolphin"/>
 <div class="flex" style="margin-top:10px"><button class="gold" onclick="createRoom()">TẠO PHÒNG</button><input id="code" placeholder="MÃ PHÒNG 6 KÝ TỰ" maxlength="6" style="max-width:180px;text-transform:uppercase"/><button onclick="joinRoom()">THAM GIA</button></div>
@@ -52,132 +51,106 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 <div class="panel"><h2>TRANG BỊ & GHÉP ĐỒ</h2><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem"></select><button onclick="equipSelected()">Trang bị cho tướng</button></div></div>
 <div class="panel"><h2>HƯỚNG DẪN</h2><p class="small">Phase chuẩn bị 30s, chiến đấu 40s và chuyển vòng 5s. Hai đội ghép cặp tự động. Các vòng 1, 2, 3 và chia hết cho 5 là PvE.</p></div>
 </aside></main>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script>
 <script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
-import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import{getAuth,signInAnonymously,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import{getDatabase,ref,onValue,onDisconnect,set}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-database.js";
-import{getFunctions,httpsCallable}from"https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 const $=id=>document.getElementById(id);
 const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
 const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if(!r.ok)throw Error("Thiếu catalog");return r.json()});
-const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO;
-let auth,db,functions,uid="",roomId="",state=null,selected=null;
-const MP=window.DolphinMP;
+const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP;
+let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve();
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0;
-function info(msg){$("loginStatus").textContent=msg;}
-function showError(e){console.error(e);info("⚠ "+(e.message||e));}
-window.saveDbUrl=()=>{let value=$("dburl").value.trim();if(!/^https:\/\/[a-z0-9.-]+\.firebasedatabase\.app\/?$|^https:\/\/[a-z0-9.-]+\.firebaseio\.com\/?$/i.test(value)){info("URL Realtime Database không hợp lệ");return;}localStorage.setItem("dt_database_url",value);location.reload();};
-async function init(){
- const url=localStorage.getItem("dt_database_url");
- if(!url){info("Nhập Realtime Database URL để kết nối");return;}
- $("dburl").value=url;
- try{const app=initializeApp({...firebaseConfig,databaseURL:url},'dolphinTactics');
- auth=getAuth(app);db=getDatabase(app);functions=getFunctions(app,'asia-southeast1');
- await signInAnonymously(auth);uid=auth.currentUser.uid;
- registerSharedMultiplayer();
- $("configBox").classList.add("hidden");$("lobby").classList.remove("hidden");info("Đã đăng nhập Firebase. Sẵn sàng tạo hoặc vào phòng.");}
- catch(e){showError(e);}
+const info=msg=>$("loginStatus").textContent=msg;
+const showError=e=>{console.error(e);info("⚠ "+(e?.message||e));};
+function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
+function dispatch(work){
+ queue=queue.then(async()=>{if(!host)return;await work();}).catch(showError);
+ return queue;
 }
-async function call(name,data){return(await httpsCallable(functions,name)(data)).data;}
-/* Use DolphinMP as the common multiplayer entry point.
-   RTDB remains the *only* room state database for Tactics; Firestore mp_rooms is
-   untouched. Server callables own all gameplay and phase writes. */
-function registerSharedMultiplayer(){
- if(!MP)throw Error('Không tìm thấy dolphin-multiplayer.js');
- MP.registerAdapter('dolphin-tactics',{
-  createRoom:async opts=>{
-   const result=await call('tacticsCreateRoom',{name:opts.name});
-   return {roomId:result.roomId,playerId:uid,side:'p1',isHost:true};
-  },
-  joinRoom:async(code,opts)=>{
-   const result=await call('tacticsJoinRoom',{roomId:String(code).toUpperCase(),name:opts.name});
-   return {roomId:result.roomId,playerId:uid,side:null,isHost:false};
-  },
-  subscribe:({roomId:code,emit})=>{
-   const roomRef=ref(db,'rooms/'+code);
-   const presenceRef=ref(db,'roomPresence/'+code+'/'+uid);
-   const connectedRef=ref(db,'.info/connected');
-   let disposed=false,latestRoom=null,presence={};
-   const emitPlayers=room=>{
-    const order=Array.isArray(room.playerOrder)?room.playerOrder:Object.values(room.playerOrder||{});
-    const members=order.map((id,i)=>room.players&&room.players[id]?({
-     id,name:room.players[id].displayName,side:'p'+(i+1),
-     ready:!!room.players[id].ready,online:presence[id]===true
-    }):null).filter(Boolean);
-    emit('players',{players:members,me:uid,side:'p'+(Math.max(0,order.indexOf(uid))+1)});
-   };
-   const unsubRoom=onValue(roomRef,snapshot=>{
-    const room=snapshot.val();
-    if(!room){emit('error',{type:'room_deleted',message:'Phòng đã giải tán'});return;}
-    latestRoom=room;
-    emit('room',{id:code,hostId:room.hostId,status:room.status,
-      isHost:room.hostId===uid,round:room.round,roundPhase:room.roundPhase});
-    emitPlayers(room);
-    emit('state',room);
-   },e=>emit('error',{type:'room',err:e}));
-   const unsubPresence=onValue(ref(db,'roomPresence/'+code),snapshot=>{
-    presence=snapshot.val()||{};
-    if(latestRoom)emitPlayers(latestRoom);
-   },e=>emit('error',{type:'presence',err:e}));
-   const unsubConn=onValue(connectedRef,snapshot=>{
-    if(!snapshot.val()||disposed)return;
-    // Register disconnect first, then publish online. Re-register on reconnect.
-    onDisconnect(presenceRef).set(false)
-      .then(()=>{if(!disposed)return set(presenceRef,true);})
-      .catch(e=>emit('error',{type:'presence',err:e}));
-   });
-   return ()=>{
-    disposed=true;unsubRoom();unsubPresence();unsubConn();
-    onDisconnect(presenceRef).cancel().catch(()=>{});
-    set(presenceRef,false).catch(()=>{});
-   };
-  },
-  leaveRoom:async code=>{if(code)await call('tacticsLeaveRoom',{roomId:code});},
-  setReady:async ready=>{if(ready)await call('tacticsAction',{roomId:MP.getRoomId(),action:{type:'READY'}});}
- });
- MP.onRoom(room=>{
-  roomId=room.id;$('roomTag').textContent='PHÒNG '+room.id;
+async function publish(){if(host&&hostState){state=E.clone(hostState);update();await MP.sendStateStrict(E.clone(hostState));}}
+function setupMP(){
+ if(!MP)throw Error('Không thấy Dolphin Multiplayer');
+ MP.onRoom(room=>{host=!!room.isHost;roomId=room.id;$('roomTag').textContent="PHÒNG "+room.id;
   $('leave').classList.remove('hidden');$('leaveTop').classList.remove('hidden');
+  if(room.status==='closed')info('Phòng đã đóng');
  });
  MP.onPlayers(({players})=>{
-  $('lobbyStatus').textContent=players.length+'/4: '+players.map(x=>(x.online?'🟢 ':'⚪ ')+x.name).join(' · ');
+  roster=players.sort((a,b)=>String(a.side).localeCompare(String(b.side)));
+  $('lobbyStatus').textContent=roster.length+'/4: '+roster.map(p=>p.name).join(' · ');
+  $('start').classList.toggle('hidden',!host||roster.length!==4||state?.status==='in_game');
  });
- MP.onState(room=>{state=room;update();});
+ MP.onState(snapshot=>{
+  if(!snapshot||!snapshot.players)return;
+  state=snapshot;
+  if(host&&(!hostState||snapshot.round>hostState.round||snapshot.updatedAt>hostState.updatedAt))hostState=E.clone(snapshot);
+  update();
+ });
+ MP.onInput(({playerId,action,sequence})=>{
+  if(!host||!action||!Number.isSafeInteger(sequence))return;
+  dispatch(async()=>{
+   if(!hostState||hostState.status!=='in_game')return;
+   hostState.clientSequences ||= {};
+   if(sequence<=(hostState.clientSequences[playerId]||0))return;
+   E.action(hostState,playerId,action,Date.now());
+   hostState.clientSequences[playerId]=sequence;
+   await publish();
+  });
+ });
  MP.onError(e=>showError(e.err||e.message||e.type||e));
 }
+let seq=0;
 window.createRoom=async()=>{
- try{const result=await MP.createRoom('dolphin-tactics',{name:$('nick').value.trim()});
-  roomId=result.roomId;$('code').value=roomId;info('Đã tạo phòng '+roomId+'. Chia sẻ mã cho 3 người khác.');}
+ try{if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
+  const r=await MP.createRoom('dolphin-tactics',{name:$('nick').value.trim()||'Khách',maxPlayers:4});
+  roomId=r.roomId;uid=MP.getDeviceId();host=true;$('code').value=roomId;info('Mã phòng '+roomId+' — mời thêm 3 người');}
  catch(e){showError(e);}
 };
 window.joinRoom=async()=>{
- try{const result=await MP.joinRoom($('code').value.trim().toUpperCase(),'dolphin-tactics',{name:$('nick').value.trim()});
-  roomId=result.roomId;$('code').value=roomId;info('Đã tham gia phòng '+roomId);}
+ try{if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
+  const r=await MP.joinRoom($('code').value.trim().toUpperCase(),'dolphin-tactics',{name:$('nick').value.trim()||'Khách'});
+  roomId=r.roomId;uid=MP.getDeviceId();host=false;info('Đã vào phòng '+roomId);}
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- let leaveError=null;
- try{await MP.leaveRoom();}catch(e){leaveError=e;}
- try{
-  roomId='';state=null;selected=null;seenPhaseKey='';replay=null;
+ try{await MP.leaveRoom();roomId='';state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
-  $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');
-  $('lobbyStatus').textContent='';
-  if(leaveError)showError('Đã ngắt kết nối cục bộ, nhưng máy chủ chưa xác nhận rời phòng: '+(leaveError.message||leaveError));
-  else info('Đã rời phòng.');
- }catch(e){showError(e);}
+  $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';
+  info('Đã rời phòng');}catch(e){showError(e);}
 };
-window.startRoom=async()=>{try{await call('tacticsStartRoom',{roomId:MP.getRoomId()});}catch(e){showError(e)}};
-window.send=async(action)=>{if(!state||state.status!=="in_game")return;try{await call("tacticsAction",{roomId:MP.getRoomId(),action});}catch(e){showError(e)}};
+window.startRoom=async()=>{
+ if(!host||roster.length!==4)return showError(Error('Cần đủ 4 người'));
+ return dispatch(async()=>{
+  const seed=(Math.floor(Math.random()*2147483647)||1),now=Date.now(),people=roster.slice();
+  let room=E.roomNew(people[0].id,people[0].name,now,seed);
+  room.hostId=uid;room.playerOrder=people.map(p=>p.id);room.players={};
+  for(const p of people)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
+  room.status='in_game';room.round=1;room.roundPhase='PREPARATION';
+  room.phaseStartedAt=now;room.phaseEndsAt=now+30000;
+  room.clientSequences={};hostState=room;await publish();await MP.updateRoomStatus('playing');
+ });
+};
+window.send=async action=>{
+ if(!state||state.status!=='in_game'||state.roundPhase!=='PREPARATION')return;
+ if(host)return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();});
+ await MP.sendInputStrict({action,sequence:++seq});
+};
+function init(){
+ try{
+  if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
+  window.db=firebase.firestore();
+  uid=MP.getDeviceId();setupMP();
+  $('lobby').classList.remove('hidden');
+  info('Firestore Spark sẵn sàng. Tạo phòng hoặc nhập mã phòng 6 ký tự.');
+ }catch(e){showError(e);}
+}
 window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
 window.equipSelected=()=>{if(selected&&$("equipItem").value)send({type:"EQUIP",unitId:selected,component:$("equipItem").value});};
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
 function paintPlayers(){let arr=state.playerOrder.map(id=>{let p=state.players[id],me=id===uid;return '<div class="player '+(me?'mine':'')+'"><strong>'+(me?'⭐ ':'')+safe(p.displayName)+'</strong><br>❤️ '+p.hp+' · 🪙 '+p.gold+' · Lv '+p.level+(p.eliminated?' ☠':'')+(p.ready?' ✓':'')+'</div>';});$("players").innerHTML=arr.join('');}
-function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function viewUnit(p,id){const u=p.units[id],h=u&&hero[u.heroId];return h?h.name+" ★".repeat(u.star):"Trống";}
 function paintControls(){
  const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready;
@@ -278,12 +251,18 @@ function setup3D(){
  function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<33)return;last=now;tickReplay();renderer.render(stageScene,camera);}
  requestAnimationFrame(frame);
 }
-setInterval(async()=>{
+setInterval(()=>{
  if(!state||state.status!=='in_game')return;
- $("timer").textContent=Math.max(0,Math.ceil((state.phaseEndsAt-Date.now())/1000))+"s";
- const now=Date.now();if(now>=state.phaseEndsAt&&now-lastAdvance>2000&&!advancing&&MP.getRoomId()){
-  advancing=true;lastAdvance=now;try{await call("tacticsAdvanceRoom",{roomId:MP.getRoomId()});}catch(e){}finally{advancing=false;}
- }
+ const now=Date.now();
+ $('timer').textContent=Math.max(0,Math.ceil((state.phaseEndsAt-now)/1000))+'s';
+ if(!host||!hostState||now<hostState.phaseEndsAt||advancing)return;
+ advancing=true;
+ dispatch(async()=>{
+  if(!hostState||hostState.status!=='in_game')return;
+  E.advance(hostState,Date.now());
+  await publish();
+ }).finally(()=>{advancing=false;});
 },500);
+
 init();
 </script></body></html>

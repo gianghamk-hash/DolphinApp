@@ -367,6 +367,10 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
         <span class="flex items-center gap-2">👥 SƠ ĐỒ LOUNGE</span>
         <span class="text-[10px] text-gold-400 font-bold bg-gold-500/10 border border-gold-500/30 px-3 py-1.5 rounded-lg">Bấm vào bàn để thiết lập</span>
       </h3>
+      <div class="flex flex-wrap items-center gap-3 mb-5">
+        <button onclick="openLoungeTransferModal()" class="bg-gradient-to-r from-amber-400 to-yellow-500 text-teal-950 px-5 py-3 rounded-xl font-black text-xs uppercase shadow-lg">🔄 ĐỔI BÀN LOUNGE</button>
+        <span class="text-xs text-teal-200">Chuyển toàn bộ khách, order và yêu cầu phục vụ sang bàn còn trống.</span>
+      </div>
       <div class="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 gap-3" id="reception-tables-lounge"></div>
     </div>
   </div>
@@ -555,6 +559,20 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
   </div>
 </div>
 
+<div id="modal-lounge-transfer" class="fixed inset-0 z-[290] bg-black/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
+  <div class="glass-card border border-gold-500/50 w-full max-w-md rounded-[2rem] p-6 shadow-2xl max-h-[90vh] overflow-y-auto">
+    <h3 class="font-black text-gold-400 text-lg uppercase mb-2">🔄 Chuyển bàn Premium Lounge</h3>
+    <p class="text-teal-200 text-xs mb-5">Chuyển hồ sơ khách, tất cả order và lịch sử order chưa đóng ca, cùng yêu cầu gọi phục vụ.</p>
+    <label class="text-teal-200 text-xs font-bold block mb-2">Bàn hiện tại</label>
+    <select id="lt-source" onchange="refreshLoungeTransferModal()" class="w-full bg-teal-950 border border-teal-600 text-white rounded-xl p-3 mb-4"></select>
+    <label class="text-teal-200 text-xs font-bold block mb-2">Chuyển đến bàn</label>
+    <select id="lt-target" onchange="refreshLoungeTransferModal()" class="w-full bg-teal-950 border border-teal-600 text-white rounded-xl p-3 mb-4"></select>
+    <div id="lt-preview" class="bg-teal-950/70 text-teal-100 text-xs leading-relaxed rounded-xl p-4 mb-4"></div>
+    <label class="flex items-start gap-2 text-xs text-amber-100 mb-4"><input id="lt-agree" type="checkbox" onchange="refreshLoungeTransferModal()" class="mt-1"> Tôi đã kiểm tra bàn nguồn, bàn đích và đồng ý chuyển toàn bộ thông tin.</label>
+    <div class="flex gap-3"><button onclick="closeLoungeTransferModal()" class="flex-1 bg-teal-900 border border-teal-700 text-white rounded-xl p-3 font-bold text-xs">HỦY</button>
+    <button id="lt-submit" onclick="executeLoungeTransfer()" class="flex-1 bg-gold-400 text-teal-950 rounded-xl p-3 font-black text-xs disabled:opacity-40">XÁC NHẬN CHUYỂN</button></div>
+  </div>
+</div>
 <div id="modal-cart" class="fixed inset-0 z-[120] bg-teal-950/90 backdrop-blur-xl hidden flex items-center justify-center p-4">
   <div class="glass-card border border-teal-700/50 w-full max-w-md rounded-[2rem] overflow-hidden p-6 shadow-2xl relative">
     <div class="absolute top-0 right-0 w-32 h-32 bg-gold-500/10 blur-[40px] pointer-events-none"></div>
@@ -1246,6 +1264,83 @@ window.verifyPin = function(){
   else document.getElementById('pin-error').classList.remove('hidden');
 };
 window.closePinModal = function(){ document.getElementById('modal-pin').classList.add('hidden'); pendingRoleRequest=null; };
+
+/* Reception table relocation: atomic transfer of live data. */
+let loungeTransferBusy = false;
+window.openLoungeTransferModal = function(sourceTable){
+  if(loungeTransferBusy) return;
+  const source=document.getElementById('lt-source'),target=document.getElementById('lt-target');
+  const occupied=TABLES_LOUNGE.filter(t=>state.tableAssignments[t]&&state.tableAssignments[t].customerName);
+  source.innerHTML='<option value="">-- Chọn bàn đang có khách --</option>'+
+    occupied.map(t=>'<option value="'+t+'">'+t+' · '+(state.tableAssignments[t].customerName||'')+'</option>').join('');
+  target.innerHTML='<option value="">-- Chọn bàn trống --</option>'+
+    TABLES_LOUNGE.filter(t=>!state.tableAssignments[t]||!state.tableAssignments[t].customerName)
+      .map(t=>'<option value="'+t+'">'+t+'</option>').join('');
+  source.value=occupied.includes(sourceTable)?sourceTable:'';
+  document.getElementById('lt-agree').checked=false;
+  document.getElementById('modal-lounge-transfer').classList.remove('hidden');
+  window.refreshLoungeTransferModal();
+};
+window.closeLoungeTransferModal = function(){
+  if(!loungeTransferBusy)document.getElementById('modal-lounge-transfer').classList.add('hidden');
+};
+window.refreshLoungeTransferModal = function(){
+  const source=document.getElementById('lt-source').value,target=document.getElementById('lt-target').value;
+  const a=state.tableAssignments[source],existing=state.tableAssignments[target];
+  const orderCount=state.orders.filter(o=>o.table===source).length;
+  const callCount=state.activeCalls.filter(c=>c.table===source).length;
+  const destinationOrders=state.orders.filter(o=>o.table===target).length;
+  const destinationCalls=state.activeCalls.filter(c=>c.table===target).length;
+  const invalid=!a||!a.customerName||!target||source===target||!!(existing&&existing.customerName)||!!destinationOrders||!!destinationCalls;
+  document.getElementById('lt-preview').textContent=
+    (a?a.customerName+' · '+(a.pax||0)+' khách':'Chọn bàn có khách')+
+    ' | '+(source||'—')+' → '+(target||'—')+
+    ' | '+orderCount+' đơn hàng · '+callCount+' yêu cầu đang chờ'+
+    (existing&&existing.customerName?' | Bàn đích đang có khách!':'')+
+    (destinationOrders||destinationCalls?' | Bàn đích còn dữ liệu order/gọi phục vụ, không thể chuyển!':'')+
+    ' | Lịch sử đã đóng ca không thay đổi.';
+  document.getElementById('lt-submit').disabled=invalid||loungeTransferBusy||!document.getElementById('lt-agree').checked;
+};
+window.executeLoungeTransfer = async function(){
+  if(loungeTransferBusy||!db)return;
+  const source=document.getElementById('lt-source').value;
+  const target=document.getElementById('lt-target').value;
+  if(!TABLES_LOUNGE.includes(source)||!TABLES_LOUNGE.includes(target)||source===target)return;
+  if(!document.getElementById('lt-agree').checked){window.showToast('Cần xác nhận chuyển bàn','⚠️');return;}
+  loungeTransferBusy=true;window.refreshLoungeTransferModal();
+  try{
+    const orderSnap=await getDocs(query(collection(db,'lounge_orders'),where('table','==',source)));
+    const callSnap=await getDocs(query(collection(db,'lounge_calls'),where('table','==',source)));
+    const destOrderSnap=await getDocs(query(collection(db,'lounge_orders'),where('table','==',target)));
+    const destCallSnap=await getDocs(query(collection(db,'lounge_calls'),where('table','==',target)));
+    if(!destOrderSnap.empty||!destCallSnap.empty)throw Error('Bàn đích còn order hoặc yêu cầu gọi phục vụ.');
+    const orderRefs=orderSnap.docs.map(d=>d.ref),callRefs=callSnap.docs.map(d=>d.ref);
+    if(orderRefs.length+callRefs.length>150)throw Error('Quá nhiều bản ghi để chuyển an toàn; liên hệ quản lý.');
+    await runTransaction(db,async tx=>{
+      const srcRef=doc(db,'lounge_tables',source),dstRef=doc(db,'lounge_tables',target);
+      const src=await tx.get(srcRef),dst=await tx.get(dstRef);
+      const orderDocs=[],callDocs=[];
+      for(const ref of orderRefs)orderDocs.push(await tx.get(ref));
+      for(const ref of callRefs)callDocs.push(await tx.get(ref));
+      if(!src.exists()||!src.data().customerName)throw Error('Bàn nguồn không còn khách.');
+      if(dst.exists()&&dst.data().customerName)throw Error('Bàn đích vừa có khách, đã hủy chuyển.');
+      if(orderDocs.some(d=>!d.exists()||d.data().table!==source)||callDocs.some(d=>!d.exists()||d.data().table!==source))
+        throw Error('Dữ liệu đơn hàng vừa thay đổi. Vui lòng thực hiện lại.');
+      const moved={...src.data(),transferredFrom:source,transferredAt:Date.now()};
+      tx.set(dstRef,moved);
+      tx.delete(srcRef);
+      orderRefs.forEach(ref=>tx.update(ref,{table:target}));
+      callRefs.forEach(ref=>tx.update(ref,{table:target}));
+    });
+    if(state.selectedTable===source){
+      state.selectedTable=target;
+      sessionStorage.setItem('dolphinLoungeSetup',JSON.stringify({lang:state.currentLanguage,table:target}));
+    }
+    document.getElementById('modal-lounge-transfer').classList.add('hidden');
+    window.showToast('Đã chuyển '+source+' → '+target+' cùng '+orderRefs.length+' order và '+callRefs.length+' yêu cầu','✅');
+  }catch(err){console.error('[Lounge Transfer]',err);window.showToast('Không thể chuyển bàn: '+(err.message||err),'❌');}
+  finally{loungeTransferBusy=false;window.refreshLoungeTransferModal();}
+};
 
 window.openCustomerNameModal = function(table){
   document.getElementById('reception-target-table').value = table;

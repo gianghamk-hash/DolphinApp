@@ -117,6 +117,47 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .traitCard{padding:5px 7px!important;margin:4px 0!important}.traitTrack{margin:3px 0!important;height:3px!important}.traitBuff{font-size:10px!important}
 #shop .shopHero{min-height:70px!important}#game .panel{margin-bottom:5px!important}#game .panel h2{margin-bottom:3px!important}#deployment .deployProgress{margin:3px 0 4px}
 #equipmentOwners .itemChip{max-width:100%;white-space:normal}#equipItem{flex:1;max-width:100%;font-size:11px}#equipButton{padding:8px;font-size:11px}
+/* Final fullscreen portrait override: stage, player strip and controls occupy separate normal-flow rows.
+   Previous #game>section height:100% + stage flex:1 caused the overlay. */
+@media (orientation:portrait){
+ #appShell:fullscreen,#appShell.pseudoFullscreen{
+  position:fixed!important;inset:0!important;width:100vw!important;height:100dvh!important;
+  overflow-x:hidden!important;overflow-y:auto!important;touch-action:pan-y!important;
+  -webkit-overflow-scrolling:touch!important;overscroll-behavior:contain!important;
+ }
+ #game:not(.hidden){
+  display:flex!important;flex-direction:column!important;align-items:stretch!important;
+  height:auto!important;min-height:calc(100dvh - 30px)!important;
+  grid-template-columns:none!important;overflow:visible!important;gap:7px!important;padding:5px!important;
+ }
+ #game>section{
+  display:flex!important;flex-direction:column!important;position:relative!important;top:auto!important;
+  flex:0 0 auto!important;height:auto!important;min-height:0!important;
+  overflow:visible!important;gap:6px!important;
+ }
+ #game>section>#stage{
+  flex:none!important;display:block!important;position:relative!important;
+  width:100%!important;height:42dvh!important;min-height:245px!important;max-height:440px!important;
+  overflow:hidden!important;
+ }
+ #game>section>.playerDock{
+  position:relative!important;inset:auto!important;transform:none!important;z-index:1!important;
+  flex:none!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  height:auto!important;min-height:0!important;margin:0!important;padding:0!important;gap:4px!important;
+ }
+ #game>section>.playerDock .player{min-width:0!important;overflow:hidden!important;padding:4px!important;font-size:10px!important}
+ #game>aside{
+  position:relative!important;top:auto!important;display:block!important;flex:0 0 auto!important;
+  width:100%!important;height:auto!important;min-height:0!important;
+  overflow:visible!important;touch-action:pan-y!important;padding-bottom:calc(72px + env(safe-area-inset-bottom))!important;
+ }
+ #game .panel{margin-bottom:6px!important;padding:8px!important}
+ #shop{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important}
+ #shop .shopHero{min-height:70px!important;padding:4px 3px!important;gap:2px!important}
+ #shop .shopAvatar{font-size:17px!important}
+ #bench button{min-height:50px!important;padding:4px!important;font-size:10px!important}
+ #boardHelp{max-width:85%!important}
+}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>

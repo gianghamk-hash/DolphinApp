@@ -1,18 +1,23 @@
 {
-  "version": "1.0.96",
-  "previousVersion": "1.0.95",
-  "commit": "6e93980",
-  "previousCommit": "1acea91",
-  "buildDate": "2026-10-25T05:08:33.348Z",
+  "version": "1.0.97",
+  "previousVersion": "1.0.96",
+  "commit": "1beaac7",
+  "previousCommit": "6e93980",
+  "buildDate": "2026-10-25T05:12:04.784Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 100,
-    "filesChanged": 0,
+    "totalCommits": 101,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
     "FIX LỖI"
   ],
-  "fileChanges": []
+  "fileChanges": [
+    {
+      "file": "theme-system.js",
+      "type": "update"
+    }
+  ]
 }

@@ -103,9 +103,10 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .shopHero.tier1{border-bottom-color:#a6b5c5}.shopHero.tier2{border-bottom-color:#71d69a}.shopHero.tier3{border-bottom-color:#67b7ff}.shopHero.tier4{border-bottom-color:#d39eff}.shopHero.tier5{border-bottom-color:#f9ca68}
 @media(max-height:440px) and (orientation:landscape){#game:not(.hidden){grid-template-columns:minmax(0,1.9fr) minmax(235px,.85fr)!important}.playerDock .player{padding:2px 4px}}
 @media(orientation:portrait) and (max-width:650px){#appShell{height:auto}#game:not(.hidden){height:auto!important;display:block!important;overflow:visible}#game>section{height:auto!important;overflow:visible!important}#game>section>#stage{height:47vh!important;min-height:260px!important}#game>aside{height:auto;overflow:visible!important}}
+.traitCard{padding:8px 10px;background:#123b4e;border:1px solid #345e68;border-radius:10px;margin:6px 0;opacity:.78}.traitCard.active{border-color:#65cdb4;opacity:1;background:#15483f}.traitTitle{display:flex;justify-content:space-between;gap:7px;font-size:12px;font-weight:750}.traitTrack{height:5px;border-radius:5px;background:#244f5e;margin:5px 0;overflow:hidden}.traitTrack>i{display:block;height:100%;background:#64e3aa}.traitBuff{color:#cce7e6;font-size:11px}.itemChip{display:inline-block;padding:5px 7px;margin:3px 3px 3px 0;border:1px solid #537f8d;background:#153e50;border-radius:7px;font-size:11px;color:#e5f8fa}.itemChip button{font-size:10px;padding:2px 5px;margin-left:5px}.heroDetail{margin:7px 0;padding:9px;border:1px solid #4f7c87;border-radius:10px;background:#133749;font-size:11px;line-height:1.6}.heroDetail strong{color:#ffdc99}.statPill{display:inline-block;border:1px solid #467580;border-radius:6px;padding:2px 5px;margin:3px 3px 0 0}.deployProgress{height:7px;background:#1a4a55;overflow:hidden;border-radius:8px;margin:5px 0 8px}.deployProgress i{height:100%;display:block;background:#6ce5a6}#heroInfo{max-width:100%;overflow-wrap:anywhere}#landscapeHint{display:none!important}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
-<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header><div id="landscapeHint">↻ Xoay ngang điện thoại để xem bàn cờ và bảng điều khiển cùng lúc. Có thể chọn ⛶ Toàn màn hình.</div>
+<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
 <h2>⚔ DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">🤖 OFFLINE · VS 3 AI CỰC KHÓ</button><button onclick="chooseOnline()">🌐 ONLINE · 4 NGƯỜI</button></div>
 <p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Sử dụng Firestore gói Spark và Dolphin Multiplayer có sẵn. Một thiết bị làm Host điều phối trận đấu.</p>
@@ -120,12 +121,12 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm chọn tướng trên sân rồi chạm ô Bench để thu hồi, hoặc kéo tướng trên sân về Bench. Có thể đổi chỗ 2 tướng.</div></div>
 <div class="playerDock" id="players"></div>
 </section><aside>
-<div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div>
+<div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
 <div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
 <h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="selectedInfo" class="small" style="margin-top:7px"></div><div id="heroInfo" role="status"></div>
 <div class="flex" style="margin-top:9px"><button onclick="moveSelectedToBench()" title="Chuyển tướng trên bàn cờ về ô trống hàng chờ">↩ Về hàng chờ</button><button onclick="sellSelected()">Bán tướng đã chọn</button><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
-<div class="panel"><h2>TỘC / HỆ KÍCH HOẠT</h2><div id="traits" class="small"></div></div>
-<div class="panel"><h2>TRANG BỊ & GHÉP ĐỒ</h2><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem"></select><button onclick="equipSelected()">Trang bị cho tướng</button></div></div>
+<div class="panel"><h2 id="traitHeading">TỘC / HỆ KÍCH HOẠT</h2><div id="traits" class="small"></div></div>
+<div class="panel"><h2>TRANG BỊ & GHÉP ĐỒ</h2><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem" aria-label="Chọn vật phẩm trong kho"></select><button id="equipButton" onclick="equipSelected()">Trang bị cho tướng</button></div><div id="equipmentOwners" class="small" style="margin-top:10px"></div></div>
 <div class="panel"><h2>HƯỚNG DẪN</h2><p class="small">Phase chuẩn bị 30s, chiến đấu 40s và chuyển vòng 5s. Hai đội ghép cặp tự động. Các vòng 1, 2, 3 và chia hết cho 5 là PvE.</p></div>
 </aside></main></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -224,11 +225,23 @@ window.zoomBoard=direction=>{
  zoomLevel=direction===0?1:Math.max(.65,Math.min(1.8,zoomLevel+direction*.12));
  if(camera){camera.position.set(7.2/zoomLevel,10/zoomLevel,10.4/zoomLevel);camera.lookAt(0,0,0);camera.updateProjectionMatrix();}
 };
+const STAT_LABELS={attack:'Công',abilityPower:'Sức mạnh phép',armor:'Giáp',magicResist:'Kháng phép',hp:'Máu',mana:'Năng lượng',regen:'Hồi máu/giây',bonusMana:'Năng lượng thêm',adjacentShield:'Khiên đồng đội',hpRatio:'Máu tăng',trueDamageRatio:'Sát thương chuẩn',stackAttackSpeed:'Tốc đánh tích lũy',cloneRatio:'Bóng phân thân',omnivamp:'Hút máu toàn phần',critChance:'Tỉ lệ chí mạng',critDamage:'Sát thương chí mạng',doubleHitChance:'Tỉ lệ đánh đôi'};
+const PERCENT_STATS=new Set(['hpRatio','trueDamageRatio','stackAttackSpeed','cloneRatio','omnivamp','critChance','critDamage','doubleHitChance']);
+const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng'};
+const EFFECT_LABELS={stat:'Tăng chỉ số',burn:'Thiêu đốt mục tiêu',apGrowth:'Tăng sức mạnh phép khi tung chiêu',manaRegen:'Hồi năng lượng',crit:'Tăng chí mạng',doubleHit:'Đòn đánh thứ hai'};
+const itemDef=id=>catalog.components.find(c=>c.id===id)||catalog.recipes.find(c=>c.id===id);
+function statLabel(k,v){return (STAT_LABELS[k]||k)+' +'+(PERCENT_STATS.has(k)?Math.round(v*100)+'%':Number.isInteger(v)?v:Number(v).toFixed(1));}
+function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
+window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
 function selectedHeroInfo(){
  const u=state?.players?.[uid]?.units?.[selected];
- if(!u){$('heroInfo').textContent='Chạm một tướng để xem chỉ số, hệ tộc và kỹ năng.';return;}
+ if(!u){$('heroInfo').innerHTML='<div class="heroDetail">🔎 Chọn tướng trên sân hoặc tại hàng chờ để xem chỉ số, kỹ năng và trang bị.</div>';return;}
  const h=hero[u.heroId];if(!h)return;
- $('heroInfo').textContent=h.name+' ★'.repeat(u.star)+' | '+h.origins.join(', ')+' / '+h.classes.join(', ')+' | HP '+Math.round(h.hp*Math.pow(1.8,u.star-1))+' · ATK '+Math.round(h.attack*Math.pow(1.8,u.star-1))+' · Tầm '+h.range+' | Chiêu: '+h.ability.kind;
+ const p=state.players[uid],t=E.activeTraits(p),combat=E.combatStats(p,u,t);
+ const skill=h.ability||{},spell=SKILL_LABELS[skill.kind]||skill.kind;
+ const stats=[['❤ HP',combat.hp],['⚔ ATK',combat.attack],['🛡 Giáp',combat.armor],['✦ Kháng phép',combat.magicResist],['🏹 Tầm đánh',combat.range],['⏱ Tốc đánh',Number(combat.attackSpeed).toFixed(2)],['🔮 Mana',combat.mana+'/'+combat.manaMax],['✨ AP',combat.abilityPower]];
+ const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
+ $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div><div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+'</div>';
 }
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');

@@ -323,7 +323,7 @@ function init(){
  }catch(e){showError(e);}
 }
 window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
-window.equipSelected=()=>{if(selected&&$("equipItem").value)send({type:"EQUIP",unitId:selected,component:$("equipItem").value});};
+window.equipSelected=()=>{if(!selected||!state?.players?.[uid]?.units?.[selected])return info('Chọn tướng trên sân hoặc hàng chờ trước khi trang bị.');if(!$("equipItem").value)return info('Kho vật phẩm đang trống.');send({type:"EQUIP",unitId:selected,component:$("equipItem").value});};
 window.moveSelectedToBench=()=>{
  const p=state?.players?.[uid];if(!p||!selected||state?.roundPhase!=='PREPARATION')return;
  if(!Object.values(p.board||{}).includes(selected)){info('Hãy chọn một tướng trên bàn cờ trước.');return;}
@@ -342,15 +342,29 @@ function viewUnit(p,id){const u=p.units[id],h=u&&hero[u.heroId];return h?h.name+
 function paintControls(){
  const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready;
  $("phaseLabel").textContent=phaseName[state.roundPhase]+' · VÒNG '+state.round;
- $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
+ const slots=E.slotsForLevel(p.level),xpGoal=E.LEVEL_XP[p.level]||0,boardCount=Object.keys(p.board||{}).length;
+ $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+(xpGoal?"/"+xpGoal:" (MAX)")+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
+ $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
  $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;
  return '<button class="shopHero tier'+cost+'" '+(!prep||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
  (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
  $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
- const buffs=E.activeTraits(p);$("traits").innerHTML=Object.keys(buffs).length?Object.entries(buffs).map(([k,v])=>safe(k)+' '+v.count+' / mốc '+v.tier).join(' · '):"Chưa kích hoạt hệ tộc.";
- $("items").textContent=p.inventory.length?p.inventory.map(x=>catalog.components.find(c=>c.id===x)?.name||x).join(' · '):"Chưa có trang bị.";
- $("equipItem").innerHTML=p.inventory.map(x=>'<option value="'+safe(x)+'">'+safe(catalog.components.find(c=>c.id===x)?.name||x)+'</option>').join('');
+ const counts=E.traitCounts(p),buffs=E.activeTraits(p),activeCount=Object.keys(buffs).length;
+ $("traitHeading").textContent='TỘC / HỆ — '+activeCount+' kích hoạt';
+ const keys=Object.keys(counts).sort((a,b)=>Number(!!buffs[b])-Number(!!buffs[a])||counts[b]-counts[a]);
+ $("traits").innerHTML=keys.length?keys.map(key=>{
+  const def=catalog.origins[key],count=counts[key],thresholds=Object.keys(def?.thresholds||{}).map(Number).sort((a,b)=>a-b),active=buffs[key],next=thresholds.find(n=>n>count),target=next||thresholds[thresholds.length-1]||1;
+  const detail=active?Object.entries(active.buff).map(([k,v])=>statLabel(k,v)).join(' · '):'Chưa đủ mốc kích hoạt';
+  return '<div class="traitCard '+(active?'active':'')+'"><div class="traitTitle"><span>'+(def?.type==='origin'?'🧬 ':'⚔ ')+safe(key)+'</span><span>'+(active?'✓ ĐANG BẬT · ':'')+count+'/'+target+'</span></div><div class="traitTrack"><i style="width:'+Math.min(100,count/target*100)+'%"></i></div><div class="traitBuff">'+safe(detail)+(next?' · Còn '+(next-count)+' tướng khác để đạt mốc '+next:'')+'</div></div>';
+ }).join(''):'<div class="small">Đưa tướng lên bàn cờ để kích hoạt Tộc và Hệ.</div>';
+ $("items").innerHTML='<strong>🎒 Kho vật phẩm: '+p.inventory.length+'</strong><div>'+(p.inventory.length?p.inventory.map(id=>'<span class="itemChip">'+itemText(id)+'</span>').join(''):'Chưa có vật phẩm — nhận thêm khi thắng quái PvE')+'</div>';
+ const prevItem=$("equipItem").value;
+ $("equipItem").innerHTML=p.inventory.map(id=>'<option value="'+safe(id)+'">'+itemText(id)+'</option>').join('');
+ if(p.inventory.includes(prevItem))$("equipItem").value=prevItem;
+ $("equipButton").disabled=!prep||!selected||!p.units[selected]||!p.inventory.length;
+ const equipped=Object.values(p.units).filter(u=>u.items?.length);
+ $("equipmentOwners").innerHTML='<strong>🛡 Đã trang bị cho '+equipped.length+' tướng:</strong>'+(equipped.length?equipped.map(u=>'<div class="itemChip">'+safe(hero[u.heroId]?.name||u.heroId)+' ★'+u.star+': '+u.items.map(itemText).join(' | ')+'</div>').join(''):'<div>Chưa có tướng nào được trang bị.</div>');
  $("selectedInfo").textContent=selected&&p.units[selected]?"Đã chọn: "+viewUnit(p,selected):"Chọn tướng trên sân hoặc hàng chờ.";selectedHeroInfo();
  [...document.querySelectorAll('#game button')].forEach(b=>{if(b.hasAttribute('onclick')&&/send\(\{type:'(ROLL|BUY_XP|READY)'/.test(b.getAttribute('onclick')))b.disabled=!prep;});
 }

@@ -104,6 +104,19 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 @media(max-height:440px) and (orientation:landscape){#game:not(.hidden){grid-template-columns:minmax(0,1.9fr) minmax(235px,.85fr)!important}.playerDock .player{padding:2px 4px}}
 @media(orientation:portrait) and (max-width:650px){#appShell{height:auto}#game:not(.hidden){height:auto!important;display:block!important;overflow:visible}#game>section{height:auto!important;overflow:visible!important}#game>section>#stage{height:47vh!important;min-height:260px!important}#game>aside{height:auto;overflow:visible!important}}
 .traitCard{padding:8px 10px;background:#123b4e;border:1px solid #345e68;border-radius:10px;margin:6px 0;opacity:.78}.traitCard.active{border-color:#65cdb4;opacity:1;background:#15483f}.traitTitle{display:flex;justify-content:space-between;gap:7px;font-size:12px;font-weight:750}.traitTrack{height:5px;border-radius:5px;background:#244f5e;margin:5px 0;overflow:hidden}.traitTrack>i{display:block;height:100%;background:#64e3aa}.traitBuff{color:#cce7e6;font-size:11px}.itemChip{display:inline-block;padding:5px 7px;margin:3px 3px 3px 0;border:1px solid #537f8d;background:#153e50;border-radius:7px;font-size:11px;color:#e5f8fa}.itemChip button{font-size:10px;padding:2px 5px;margin-left:5px}.heroDetail{margin:7px 0;padding:9px;border:1px solid #4f7c87;border-radius:10px;background:#133749;font-size:11px;line-height:1.6}.heroDetail strong{color:#ffdc99}.statPill{display:inline-block;border:1px solid #467580;border-radius:6px;padding:2px 5px;margin:3px 3px 0 0}.deployProgress{height:7px;background:#1a4a55;overflow:hidden;border-radius:8px;margin:5px 0 8px}.deployProgress i{height:100%;display:block;background:#6ce5a6}#heroInfo{max-width:100%;overflow-wrap:anywhere}#landscapeHint{display:none!important}
+/* Android WebView: allow independent scrolling even inside iframe fullscreen. */
+@media(orientation:portrait){
+ #appShell:fullscreen,#appShell.pseudoFullscreen{position:fixed!important;inset:0!important;height:100dvh!important;overflow-y:auto!important;overflow-x:hidden!important;touch-action:pan-y!important;-webkit-overflow-scrolling:touch!important;overscroll-behavior:contain}
+ #game:not(.hidden){display:flex!important;flex-direction:column!important;height:auto!important;min-height:calc(100dvh - 30px)!important;overflow:visible!important;grid-template-columns:none!important}
+ #game>section{position:relative!important;height:auto!important;overflow:visible!important;display:block!important}
+ #game>section>#stage{height:43dvh!important;min-height:235px!important;flex:none!important}
+ #game>aside{height:auto!important;overflow:visible!important;touch-action:pan-y!important;padding-bottom:calc(76px + env(safe-area-inset-bottom))!important}
+}
+.foldPanel{padding:8px!important}.foldPanel>summary{cursor:pointer;list-style:none;color:var(--gold);font-size:12px;font-weight:800;display:flex;align-items:center;justify-content:space-between;min-height:24px}.foldPanel>summary::after{content:'▸';color:#7ce0d5}.foldPanel[open]>summary::after{content:'▾'}.foldPanel>summary::-webkit-details-marker{display:none}
+.quickChips{display:flex;flex-wrap:wrap;gap:4px;margin:6px 0}.traitChip{font-size:10px;padding:3px 6px;border-radius:7px;border:1px solid #365f6b;background:#153b4e;color:#c0dce4}.traitChip.on{border-color:#56cb9c;background:#195447;color:#a6f5cb}
+.traitCard{padding:5px 7px!important;margin:4px 0!important}.traitTrack{margin:3px 0!important;height:3px!important}.traitBuff{font-size:10px!important}
+#shop .shopHero{min-height:70px!important}#game .panel{margin-bottom:5px!important}#game .panel h2{margin-bottom:3px!important}#deployment .deployProgress{margin:3px 0 4px}
+#equipmentOwners .itemChip{max-width:100%;white-space:normal}#equipItem{flex:1;max-width:100%;font-size:11px}#equipButton{padding:8px;font-size:11px}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -125,9 +138,9 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
 <h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="selectedInfo" class="small" style="margin-top:7px"></div><div id="heroInfo" role="status"></div>
 <div class="flex" style="margin-top:9px"><button onclick="moveSelectedToBench()" title="Chuyển tướng trên bàn cờ về ô trống hàng chờ">↩ Về hàng chờ</button><button onclick="sellSelected()">Bán tướng đã chọn</button><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
-<div class="panel"><h2 id="traitHeading">TỘC / HỆ KÍCH HOẠT</h2><div id="traits" class="small"></div></div>
-<div class="panel"><h2>TRANG BỊ & GHÉP ĐỒ</h2><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem" aria-label="Chọn vật phẩm trong kho"></select><button id="equipButton" onclick="equipSelected()">Trang bị cho tướng</button></div><div id="equipmentOwners" class="small" style="margin-top:10px"></div></div>
-<div class="panel"><h2>HƯỚNG DẪN</h2><p class="small">Phase chuẩn bị 30s, chiến đấu 40s và chuyển vòng 5s. Hai đội ghép cặp tự động. Các vòng 1, 2, 3 và chia hết cho 5 là PvE.</p></div>
+<details class="panel foldPanel"><summary id="traitHeading">TỘC / HỆ KÍCH HOẠT</summary><div id="traitQuick" class="quickChips"></div><div id="traits" class="small"></div></details>
+<details class="panel foldPanel" open><summary>🎒 TRANG BỊ & GHÉP ĐỒ</summary><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem" aria-label="Chọn vật phẩm trong kho"></select><button id="equipButton" onclick="equipSelected()">Trang bị cho tướng</button></div><div id="equipmentOwners" class="small" style="margin-top:10px"></div></details>
+
 </aside></main></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -353,10 +366,11 @@ function paintControls(){
  const counts=E.traitCounts(p),buffs=E.activeTraits(p),activeCount=Object.keys(buffs).length;
  $("traitHeading").textContent='TỘC / HỆ — '+activeCount+' kích hoạt';
  const keys=Object.keys(counts).sort((a,b)=>Number(!!buffs[b])-Number(!!buffs[a])||counts[b]-counts[a]);
+ $("traitQuick").innerHTML=keys.length?keys.map(key=>'<span class="traitChip '+(buffs[key]?'on':'')+'">'+safe(key)+' '+counts[key]+'/'+(Object.keys(catalog.origins[key]?.thresholds||{}).map(Number).sort((a,b)=>a-b).find(n=>n>counts[key])||buffs[key]?.tier||2)+'</span>').join(''):'Chưa có Tộc/Hệ';
  $("traits").innerHTML=keys.length?keys.map(key=>{
   const def=catalog.origins[key],count=counts[key],thresholds=Object.keys(def?.thresholds||{}).map(Number).sort((a,b)=>a-b),active=buffs[key],next=thresholds.find(n=>n>count),target=next||thresholds[thresholds.length-1]||1;
-  const detail=active?Object.entries(active.buff).map(([k,v])=>statLabel(k,v)).join(' · '):'Chưa đủ mốc kích hoạt';
-  return '<div class="traitCard '+(active?'active':'')+'"><div class="traitTitle"><span>'+(def?.type==='origin'?'🧬 ':'⚔ ')+safe(key)+'</span><span>'+(active?'✓ ĐANG BẬT · ':'')+count+'/'+target+'</span></div><div class="traitTrack"><i style="width:'+Math.min(100,count/target*100)+'%"></i></div><div class="traitBuff">'+safe(detail)+(next?' · Còn '+(next-count)+' tướng khác để đạt mốc '+next:'')+'</div></div>';
+  const detail=active?Object.entries(active.buff).map(([k,v])=>statLabel(k,v)).join(' · '):'Chưa kích hoạt';
+  return '<div class="traitCard '+(active?'active':'')+'"><div class="traitTitle"><span>'+(def?.type==='origin'?'🧬 ':'⚔ ')+safe(key)+'</span><span>'+(active?'✓ ĐANG BẬT · ':'')+count+'/'+target+'</span></div><div class="traitTrack"><i style="width:'+Math.min(100,count/target*100)+'%"></i></div><div class="traitBuff">'+safe(detail)+(next?' · cần '+(next-count)+' tướng':'')+'</div></div>';
  }).join(''):'<div class="small">Đưa tướng lên bàn cờ để kích hoạt Tộc và Hệ.</div>';
  $("items").innerHTML='<strong>🎒 Kho vật phẩm: '+p.inventory.length+'</strong><div>'+(p.inventory.length?p.inventory.map(id=>'<span class="itemChip">'+itemText(id)+'</span>').join(''):'Chưa có vật phẩm — nhận thêm khi thắng quái PvE')+'</div>';
  const prevItem=$("equipItem").value;
@@ -364,7 +378,7 @@ function paintControls(){
  if(p.inventory.includes(prevItem))$("equipItem").value=prevItem;
  $("equipButton").disabled=!prep||!selected||!p.units[selected]||!p.inventory.length;
  const equipped=Object.values(p.units).filter(u=>u.items?.length);
- $("equipmentOwners").innerHTML='<strong>🛡 Đã trang bị cho '+equipped.length+' tướng:</strong>'+(equipped.length?equipped.map(u=>'<div class="itemChip">'+safe(hero[u.heroId]?.name||u.heroId)+' ★'+u.star+': '+u.items.map(itemText).join(' | ')+'</div>').join(''):'<div>Chưa có tướng nào được trang bị.</div>');
+ $("equipmentOwners").innerHTML='<strong>🛡 Đã trang bị: '+equipped.length+' tướng</strong>'+(equipped.length?equipped.map(u=>'<div class="itemChip">'+safe(hero[u.heroId]?.name||u.heroId)+' ★'+u.star+': '+u.items.map(id=>safe(itemDef(id)?.name||id)).join(', ')+'</div>').join(''):'<div>Chưa có tướng nào được trang bị.</div>');
  $("selectedInfo").textContent=selected&&p.units[selected]?"Đã chọn: "+viewUnit(p,selected):"Chọn tướng trên sân hoặc hàng chờ.";selectedHeroInfo();
  [...document.querySelectorAll('#game button')].forEach(b=>{if(b.hasAttribute('onclick')&&/send\(\{type:'(ROLL|BUY_XP|READY)'/.test(b.getAttribute('onclick')))b.disabled=!prep;});
 }

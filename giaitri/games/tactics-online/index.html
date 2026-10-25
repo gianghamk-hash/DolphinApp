@@ -24,10 +24,26 @@ input{width:100%;max-width:240px}select{max-width:100%}
 #events{max-height:105px;overflow:auto;font-size:11px;line-height:1.6;color:#c4e6ea}
 kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;background:#102e40;border-radius:18px;border:1px solid #377184}
 #timer{font-variant-numeric:tabular-nums;color:#f9e2ab;font-weight:800;font-size:18px}#battleBanner{position:absolute;z-index:5;top:10px;left:50%;transform:translateX(-50%);background:#092631df;border:1px solid #6dc8c4;border-radius:13px;padding:8px 13px;color:#ffe0a0;font-weight:900;letter-spacing:.06em;text-align:center;pointer-events:none}#battleBanner.combat{border-color:#e96f78;color:#ffd5d7}#battleBanner.result{border-color:#d4af58;color:#fff2b4}#damageLayer{position:absolute;inset:0;pointer-events:none;overflow:hidden}.damagePop{position:absolute;color:#ffe191;font-weight:900;font-size:17px;text-shadow:0 2px 3px #000;animation:dmgUp .85s forwards}@keyframes dmgUp{to{transform:translateY(-36px);opacity:0}}
-@media(max-width:800px){main{display:block}#stage{height:41vh;min-height:265px}#overlay{margin:10px}#shop button{font-size:9px}header{padding:9px}h1{font-size:14px}}
+/* Landscape-first game UI: battlefield left, management HUD right. */
+#appShell{min-height:100dvh}#game{max-width:none;grid-template-columns:minmax(0,1.75fr) minmax(305px,.85fr);align-items:start}
+#game>section{min-width:0;position:sticky;top:6px}#game>.side{min-width:0}
+#stage{height:clamp(360px,calc(100dvh - 120px),860px);min-height:300px}
+#game .panel{margin-bottom:6px;padding:10px}#game .panel h2{margin-bottom:6px}
+#bench button{min-width:0;font-size:10px}#shop button{font-size:10px}
+#fullscreenBtn{padding:7px 11px;background:#3c6d79;border-color:#84abb2;white-space:nowrap}
+#stageFullscreen{position:absolute;z-index:8;right:9px;top:9px;border:1px solid #7bc6ce;padding:7px 9px;background:#0d3447bf}
+#landscapeHint{display:none;background:#5b4023;color:#ffe5aa;text-align:center;padding:8px;font-size:12px}
+#heroInfo{font-size:12px;color:#c8e9e8;line-height:1.55;min-height:28px}
+#game.fullMode{display:grid}
+@media(min-width:801px) and (orientation:landscape){body{overflow-x:hidden}#game{grid-template-columns:minmax(0,1.8fr) minmax(315px,.85fr);}}
+@media(max-width:800px) and (orientation:landscape){header{padding:5px 10px}header h1{font-size:13px}header .small{font-size:10px}#game{display:grid;grid-template-columns:minmax(0,1.9fr) minmax(260px,.95fr);padding:5px;gap:6px}#game>section{position:sticky;top:0}#stage{height:calc(100dvh - 64px);min-height:230px}#game>.side{max-height:calc(100dvh - 55px);overflow:auto;overscroll-behavior:contain}#shop button{min-height:52px;font-size:9px}#bench button{min-height:32px}#game .panel{padding:7px}#game .panel h2{font-size:12px}#boardHelp{font-size:9px}}
+@media(max-width:800px) and (orientation:portrait){main{display:block;padding:7px}#stage{height:45vh;min-height:260px}#overlay{margin:10px}#shop button{font-size:9px}header{padding:7px}h1{font-size:13px}#landscapeHint{display:block}}
+@media(max-height:420px) and (orientation:landscape){#stage{height:calc(100dvh - 57px);min-height:215px}#game .panel{padding:6px}#game>.side{max-height:calc(100dvh - 52px);overflow:auto}#game .panel h2{font-size:11px}}
+:fullscreen #appShell{height:100dvh;overflow:auto;background:#061925}body:fullscreen{overflow:hidden}#appShell:fullscreen #game{min-height:calc(100dvh - 54px)}
+@media(prefers-reduced-motion:reduce){.damagePop{animation-duration:.01ms}}
 </style></head><body>
-<header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
-<div style="text-align:right"><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
+<div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
+<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header><div id="landscapeHint">↻ Xoay ngang điện thoại để xem bàn cờ và bảng điều khiển cùng lúc. Có thể chọn ⛶ Toàn màn hình.</div>
 <div id="overlay">
 <h2>⚔ DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">🤖 OFFLINE · VS 3 AI CỰC KHÓ</button><button onclick="chooseOnline()">🌐 ONLINE · 4 NGƯỜI</button></div>
 <p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Sử dụng Firestore gói Spark và Dolphin Multiplayer có sẵn. Một thiết bị làm Host điều phối trận đấu.</p>
@@ -39,18 +55,18 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm tướng ở Bench → chạm ô trống trên sân. Chạm tướng trên sân để chọn, chạm ô khác để di chuyển.</div></div>
+<main id="game" class="hidden"><section><div id="stage"><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm tướng ở Bench → chạm ô trống trên sân. Chạm tướng trên sân để chọn, chạm ô khác để di chuyển.</div></div>
 <div class="panel"><h2>THÀNH VIÊN PHÒNG</h2><div class="grid" id="players"></div></div>
 <div class="panel"><h2>HOẠT ĐỘNG GIAO TRANH</h2><div id="events">Chưa có diễn biến.</div></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div>
 <div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
-<h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="selectedInfo" class="small" style="margin-top:7px"></div>
+<h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="selectedInfo" class="small" style="margin-top:7px"></div><div id="heroInfo" role="status"></div>
 <div class="flex" style="margin-top:9px"><button onclick="sellSelected()">Bán tướng đã chọn</button><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 <div class="panel"><h2>TỘC / HỆ KÍCH HOẠT</h2><div id="traits" class="small"></div></div>
 <div class="panel"><h2>TRANG BỊ & GHÉP ĐỒ</h2><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem"></select><button onclick="equipSelected()">Trang bị cho tướng</button></div></div>
 <div class="panel"><h2>HƯỚNG DẪN</h2><p class="small">Phase chuẩn bị 30s, chiến đấu 40s và chuyển vòng 5s. Hai đội ghép cặp tự động. Các vòng 1, 2, 3 và chia hết cho 5 là PvE.</p></div>
-</aside></main>
+</aside></main></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="extreme-ai.js"></script>
@@ -63,7 +79,7 @@ const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
-let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map();
+let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const showError=e=>{console.error(e);info("⚠ "+(e?.message||e));};
 function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
@@ -88,6 +104,28 @@ window.startOffline=()=>{
  $('lobby').classList.add('hidden');$('roomTag').textContent='OFFLINE · 3 AI';
  $('leaveTop').classList.remove('hidden');offlineAI(now);publish();
 };
+window.toggleFullscreen=async()=>{
+ const root=$('appShell');
+ try{
+  if(document.fullscreenElement){await document.exitFullscreen();return;}
+  if(!root.requestFullscreen)throw Error('Trình duyệt không hỗ trợ Fullscreen API');
+  await root.requestFullscreen();
+  if(screen.orientation?.lock){try{await screen.orientation.lock('landscape');}catch(e){/* Browser may not support orientation lock */}}
+  if(navigator.wakeLock?.request)try{screenWake=await navigator.wakeLock.request('screen');}catch(e){}
+ }catch(e){showError('Không thể bật toàn màn hình trên trình duyệt này: '+e.message+'; hãy xoay ngang thủ công.');}
+};
+document.addEventListener('fullscreenchange',()=>{
+ const full=!!document.fullscreenElement;
+ $('fullscreenBtn').textContent=full?'↙ Thoát toàn màn hình':'⛶ Toàn màn hình';
+ if(!full){try{screen.orientation?.unlock?.();}catch(e){}if(screenWake){screenWake.release().catch(()=>{});screenWake=null;}}
+ window.dispatchEvent(new Event('resize'));
+});
+function selectedHeroInfo(){
+ const u=state?.players?.[uid]?.units?.[selected];
+ if(!u){$('heroInfo').textContent='Chạm một tướng để xem chỉ số, hệ tộc và kỹ năng.';return;}
+ const h=hero[u.heroId];if(!h)return;
+ $('heroInfo').textContent=h.name+' ★'.repeat(u.star)+' | '+h.origins.join(', ')+' / '+h.classes.join(', ')+' | HP '+Math.round(h.hp*Math.pow(1.8,u.star-1))+' · ATK '+Math.round(h.attack*Math.pow(1.8,u.star-1))+' · Tầm '+h.range+' | Chiêu: '+h.ability.kind;
+}
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
  MP.onRoom(room=>{host=!!room.isHost;roomId=room.id;$('roomTag').textContent="PHÒNG "+room.id;
@@ -176,7 +214,7 @@ function paintControls(){
  const buffs=E.activeTraits(p);$("traits").innerHTML=Object.keys(buffs).length?Object.entries(buffs).map(([k,v])=>safe(k)+' '+v.count+' / mốc '+v.tier).join(' · '):"Chưa kích hoạt hệ tộc.";
  $("items").textContent=p.inventory.length?p.inventory.map(x=>catalog.components.find(c=>c.id===x)?.name||x).join(' · '):"Chưa có trang bị.";
  $("equipItem").innerHTML=p.inventory.map(x=>'<option value="'+safe(x)+'">'+safe(catalog.components.find(c=>c.id===x)?.name||x)+'</option>').join('');
- $("selectedInfo").textContent=selected&&p.units[selected]?"Đã chọn: "+viewUnit(p,selected):"Chọn tướng trên sân hoặc hàng chờ.";
+ $("selectedInfo").textContent=selected&&p.units[selected]?"Đã chọn: "+viewUnit(p,selected):"Chọn tướng trên sân hoặc hàng chờ.";selectedHeroInfo();
  [...document.querySelectorAll('#game button')].forEach(b=>{if(b.hasAttribute('onclick')&&/send\(\{type:'(ROLL|BUY_XP|READY)'/.test(b.getAttribute('onclick')))b.disabled=!prep;});
 }
 window.buyHero=i=>send({type:'BUY',index:i});

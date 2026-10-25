@@ -1,22 +1,22 @@
 {
-  "version": "1.0.92",
-  "previousVersion": "1.0.91",
-  "commit": "46f9c97",
-  "previousCommit": "bcfb696",
-  "buildDate": "2026-10-19T07:11:34.615Z",
-  "summary": "UPDATE 1",
+  "version": "1.0.93",
+  "previousVersion": "1.0.92",
+  "commit": "0642340",
+  "previousCommit": "46f9c97",
+  "buildDate": "2026-10-25T02:43:14.916Z",
+  "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 96,
+    "totalCommits": 97,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "UPDATE 1"
+    "FIX LỖI"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/index.html",
+      "file": "manifest.json",
       "type": "update"
     }
   ]

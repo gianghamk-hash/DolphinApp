@@ -182,7 +182,7 @@
     [81,73,.9,9,-3],[48,12,.7,8,-5],[66,86,.8,10,-7],[7,48,.75,9,-4]];
   var SCENE_ILLUSTRATIONS={
     ghost:'<svg viewBox="0 0 80 96" xmlns="http://www.w3.org/2000/svg"><path d="M12 80V40C12 22 25 8 40 8s28 14 28 32v40l-11-8-9 9-9-9-10 9-8-9Z" fill="#f8f4ff" stroke="#d8d0f6" stroke-width="2"/><ellipse cx="30" cy="40" rx="4" ry="6" fill="#28213d"/><ellipse cx="50" cy="40" rx="4" ry="6" fill="#28213d"/><path d="M36 57q4 5 8 0" stroke="#28213d" stroke-width="3" fill="none" stroke-linecap="round"/><circle cx="22" cy="54" r="4" fill="#ffbed3" opacity=".7"/><circle cx="58" cy="54" r="4" fill="#ffbed3" opacity=".7"/></svg>',
-    bat:'<svg viewBox="0 0 110 64" xmlns="http://www.w3.org/2000/svg"><path d="M55 29 46 16 39 23Q22 5 2 17q15 9 15 30 16-12 38 9 22-21 38-9 0-21 15-30Q88 5 71 23l-7-7Z" fill="#181325" stroke="#776294" stroke-width="2"/><circle cx="50" cy="34" r="2" fill="#eeb6ff"/><circle cx="60" cy="34" r="2" fill="#eeb6ff"/></svg>',
+    bat:'<svg viewBox="0 0 110 64" xmlns="http://www.w3.org/2000/svg" aria-hidden="true"><g class="bat-left" style="transform-box:view-box;transform-origin:55px 33px"><path d="M55 32 44 19 35 24Q21 8 2 17q15 9 15 29 18-12 38 7Z" fill="#1c152a" stroke="#776294" stroke-width="2"/></g><g class="bat-right" style="transform-box:view-box;transform-origin:55px 33px"><path d="M55 32 66 19 75 24q14-16 33-7-15 9-15 29-18-12-38 7Z" fill="#1c152a" stroke="#776294" stroke-width="2"/></g><path d="M49 29 53 18 55 26 57 18 61 29 60 46Q55 55 50 46Z" fill="#272038"/><circle cx="52" cy="34" r="1.7" fill="#ffa5ec"/><circle cx="58" cy="34" r="1.7" fill="#ffa5ec"/></svg>',
     tree:'<svg viewBox="0 0 240 305" xmlns="http://www.w3.org/2000/svg"><defs><linearGradient id="dolphinTree" x2="0" y2="1"><stop stop-color="#49ee92"/><stop offset="1" stop-color="#087a43"/></linearGradient></defs><rect x="105" y="237" width="30" height="55" rx="5" fill="#875333"/><path d="M120 28 171 109H69Z" fill="url(#dolphinTree)"/><path d="M120 72 193 167H47Z" fill="#1cbf68"/><path d="M120 118 212 245H28Z" fill="#129650"/><path d="M120 0 127 18 146 19 131 31 136 50 120 39 104 50 109 31 94 19 113 18Z" fill="#ffde63"/><path d="M75 133Q115 156 165 131M51 197Q120 228 187 197" fill="none" stroke="#ffdc8a" stroke-width="5" stroke-linecap="round"/><g fill="#ff5678"><circle cx="91" cy="108" r="9"/><circle cx="166" cy="194" r="9"/><circle cx="84" cy="216" r="9"/></g><g fill="#75cfff"><circle cx="145" cy="115" r="9"/><circle cx="65" cy="176" r="9"/><circle cx="137" cy="212" r="9"/></g><g fill="#ffe978"><circle cx="118" cy="161" r="8"/><circle cx="175" cy="225" r="8"/></g></svg>',
     gift:'<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg"><rect x="9" y="26" width="62" height="44" rx="5" fill="#dd4262"/><path d="M9 45h62M36 26v44h9V26" stroke="#ffd66b" stroke-width="8"/><rect x="6" y="21" width="68" height="13" rx="5" fill="#f3637c"/><path d="M40 21C17 21 23 1 35 7q7 4 5 14Zm0 0C63 21 57 1 45 7q-7 4-5 14Z" fill="#ffdb75"/></svg>',
     branch:'<svg viewBox="0 0 320 220" xmlns="http://www.w3.org/2000/svg"><path d="M20 205Q127 150 230 22M115 146Q91 111 63 98M169 98Q150 65 135 49M206 52Q231 50 270 31" fill="none" stroke="#683b27" stroke-width="9" stroke-linecap="round"/><g fill="#ff92b7"><circle cx="65" cy="99" r="14"/><circle cx="101" cy="132" r="14"/><circle cx="148" cy="59" r="15"/><circle cx="184" cy="87" r="13"/><circle cx="231" cy="24" r="15"/><circle cx="264" cy="35" r="13"/></g><g fill="#ffe3ef"><circle cx="65" cy="99" r="5"/><circle cx="101" cy="132" r="5"/><circle cx="148" cy="59" r="5"/><circle cx="184" cy="87" r="5"/><circle cx="231" cy="24" r="5"/><circle cx="264" cy="35" r="5"/></g></svg>',
@@ -219,6 +219,42 @@
       }
     }
     holder.innerHTML=html;
+  }
+
+
+  /* Halloween character animation: Web Animations API, no per-frame JS. */
+  var halloweenAnimations=[];
+  function stopHalloweenAnimation(){
+    halloweenAnimations.forEach(function(a){try{a.cancel();}catch(e){}});
+    halloweenAnimations=[];
+  }
+  function startHalloweenAnimation(holder){
+    stopHalloweenAnimation();
+    if(!holder || !Element.prototype.animate ||
+       (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;
+    var characters=holder.querySelectorAll('.tbi-ghost,.tbi-wing');
+    Array.prototype.forEach.call(characters,function(node,i){
+      node.style.animation='none';
+      var bat=node.classList.contains('tbi-wing');
+      var distance=bat?80:28;
+      halloweenAnimations.push(node.animate([
+        {transform:'translate3d('+(-distance)+'px,12px,0) rotate(-7deg)',opacity:.65},
+        {transform:'translate3d(0,-18px,0) rotate(4deg)',opacity:1,offset:.5},
+        {transform:'translate3d('+distance+'px,8px,0) rotate(-5deg)',opacity:.78}
+      ],{duration:bat?4400+i*390:6300+i*430,iterations:Infinity,direction:'alternate',
+         easing:'ease-in-out',delay:-i*720}));
+      if(bat){
+        ['.bat-left','.bat-right'].forEach(function(selector,k){
+          var wing=node.querySelector(selector);
+          if(wing) halloweenAnimations.push(wing.animate([
+            {transform:'scaleY(.35) rotate('+(k?-15:15)+'deg)'},
+            {transform:'scaleY(1) rotate(0deg)'},
+            {transform:'scaleY(.4) rotate('+(k?-12:12)+'deg)'}
+          ],{duration:380+i*45,iterations:Infinity,easing:'ease-in-out'}));
+        });
+      }
+    });
+    if(document.hidden) halloweenAnimations.forEach(function(a){a.pause();});
   }
 
   var FIREWORKS = [
@@ -979,7 +1015,9 @@
     var scene = el.querySelector('.tbi-scene');
     if (!aura || !emoji || !fw || !scene) return;
     if (el.getAttribute('data-scene') !== themeKey){
+      stopHalloweenAnimation();
       renderThemeScene(themeKey,scene);
+      if(themeKey==='halloween') startHalloweenAnimation(scene);
       el.setAttribute('data-scene',themeKey);
     }
     var isIllustrated = (themeKey === 'halloween' || themeKey === 'christmas' || themeKey === 'tet');
@@ -1019,6 +1057,7 @@
     el.setAttribute('data-bt', themeKey);
   }
   document.addEventListener('visibilitychange',function(){
+    halloweenAnimations.forEach(function(a){if(document.hidden) a.pause();else a.play();});
     var holder=document.querySelector('#themeBigIcon .tbi-scene');
     if (!holder) return;
     Array.prototype.forEach.call(holder.querySelectorAll('*'),function(node){node.style.animationPlayState=document.hidden?'paused':'running';});

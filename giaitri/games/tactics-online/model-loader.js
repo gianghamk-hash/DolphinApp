@@ -20,7 +20,7 @@ function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/',rigFactor
   return cache.get(heroId);
  }
  async function attach(heroId,holder){
-  const asset=await get(heroId);
+  const asset=rigFactory?null:await get(heroId);
   if(!holder.parent)return false;
   const scene=rigFactory?rigFactory.make(heroId):(asset?asset.model.clone(true):null);
   if(!scene)return false;

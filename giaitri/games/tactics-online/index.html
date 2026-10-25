@@ -158,7 +158,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
  #bench button{min-height:50px!important;padding:4px!important;font-size:10px!important}
  #boardHelp{max-width:85%!important}
 }
-</style></head><body>
+.unitPopup{position:fixed;z-index:2147483006;display:flex;flex-direction:column;gap:5px;background:#0b3040ed;border:1px solid #6aabad;border-radius:12px;padding:7px;min-width:132px;box-shadow:0 7px 26px #0009}.unitPopup button{font-size:11px;padding:9px;text-align:left}.unitPopup.hidden{display:none!important}#boardHelp{display:none!important}#heroInfo:empty{display:none!important}</style></head><body>
 <div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
@@ -172,17 +172,17 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm chọn tướng trên sân rồi chạm ô Bench để thu hồi, hoặc kéo tướng trên sân về Bench. Có thể đổi chỗ 2 tướng.</div></div>
+<main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp"></div></div>
 <div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
 <div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
-<h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="selectedInfo" class="small" style="margin-top:7px"></div><div id="heroInfo" role="status"></div>
-<div class="flex" style="margin-top:9px"><button onclick="moveSelectedToBench()" title="Chuyển tướng trên bàn cờ về ô trống hàng chờ">↩ Về hàng chờ</button><button onclick="sellSelected()">Bán tướng đã chọn</button><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
+<h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="heroInfo" role="status"></div>
+<div class="flex" style="margin-top:9px"><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 <details class="panel foldPanel"><summary id="traitHeading">TỘC / HỆ KÍCH HOẠT</summary><div id="traitQuick" class="quickChips"></div><div id="traits" class="small"></div></details>
 <details class="panel foldPanel" open><summary>🎒 TRANG BỊ & GHÉP ĐỒ</summary><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem" aria-label="Chọn vật phẩm trong kho"></select><button id="equipButton" onclick="equipSelected()">Trang bị cho tướng</button></div><div id="equipmentOwners" class="small" style="margin-top:10px"></div></details>
 
-</aside></main></div>
+</aside></main><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupBench" onclick="moveSelectedToBench();closeUnitPopup()">↩ Về hàng chờ</button><button id="popupSell" onclick="sellSelected();closeUnitPopup()">🪙 Bán tướng</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script>
@@ -275,10 +275,7 @@ document.addEventListener('fullscreenchange',()=>{
  if(screenWake){screenWake.release().catch(()=>{});screenWake=null;}}
  refreshFullButton();
 });
-window.zoomBoard=direction=>{
- zoomLevel=direction===0?1:Math.max(.65,Math.min(1.8,zoomLevel+direction*.12));
- if(camera){camera.position.set(7.2/zoomLevel,10/zoomLevel,10.4/zoomLevel);camera.lookAt(0,0,0);camera.updateProjectionMatrix();}
-};
+window.zoomBoard=direction=>{zoomLevel=direction===0?1:Math.max(.7,Math.min(2.4,zoomLevel+direction*.12));if(camera){camera.zoom=zoomLevel;camera.updateProjectionMatrix();}};
 const STAT_LABELS={attack:'Công',abilityPower:'Sức mạnh phép',armor:'Giáp',magicResist:'Kháng phép',hp:'Máu',mana:'Năng lượng',regen:'Hồi máu/giây',bonusMana:'Năng lượng thêm',adjacentShield:'Khiên đồng đội',hpRatio:'Máu tăng',trueDamageRatio:'Sát thương chuẩn',stackAttackSpeed:'Tốc đánh tích lũy',cloneRatio:'Bóng phân thân',omnivamp:'Hút máu toàn phần',critChance:'Tỉ lệ chí mạng',critDamage:'Sát thương chí mạng',doubleHitChance:'Tỉ lệ đánh đôi'};
 const PERCENT_STATS=new Set(['hpRatio','trueDamageRatio','stackAttackSpeed','cloneRatio','omnivamp','critChance','critDamage','doubleHitChance']);
 const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng'};
@@ -289,13 +286,13 @@ function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
 function selectedHeroInfo(){
  const u=state?.players?.[uid]?.units?.[selected];
- if(!u){$('heroInfo').innerHTML='<div class="heroDetail">🔎 Chọn tướng trên sân hoặc tại hàng chờ để xem chỉ số, kỹ năng và trang bị.</div>';return;}
+ if(!u){$('heroInfo').innerHTML='';return;}
  const h=hero[u.heroId];if(!h)return;
  const p=state.players[uid],t=E.activeTraits(p),combat=E.combatStats(p,u,t);
  const skill=h.ability||{},spell=SKILL_LABELS[skill.kind]||skill.kind;
  const stats=[['❤ HP',combat.hp],['⚔ ATK',combat.attack],['🛡 Giáp',combat.armor],['✦ Kháng phép',combat.magicResist],['🏹 Tầm đánh',combat.range],['⏱ Tốc đánh',Number(combat.attackSpeed).toFixed(2)],['🔮 Mana',combat.mana+'/'+combat.manaMax],['✨ AP',combat.abilityPower]];
  const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
- $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div><div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+'</div>';
+ $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div><div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+'</div>';
 }
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
@@ -401,7 +398,7 @@ function paintControls(){
  $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
  $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;
  return '<button class="shopHero tier'+cost+'" '+(!prep||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
- (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].join(' · '))+'</small>':'Đã bán')+'</button>';
+ (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
  $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
  const counts=E.traitCounts(p),buffs=E.activeTraits(p),activeCount=Object.keys(buffs).length;
@@ -411,7 +408,7 @@ function paintControls(){
  $("traits").innerHTML=keys.length?keys.map(key=>{
   const def=catalog.origins[key],count=counts[key],thresholds=Object.keys(def?.thresholds||{}).map(Number).sort((a,b)=>a-b),active=buffs[key],next=thresholds.find(n=>n>count),target=next||thresholds[thresholds.length-1]||1;
   const detail=active?Object.entries(active.buff).map(([k,v])=>statLabel(k,v)).join(' · '):'Chưa kích hoạt';
-  return '<div class="traitCard '+(active?'active':'')+'"><div class="traitTitle"><span>'+(def?.type==='origin'?'🧬 ':'⚔ ')+safe(key)+'</span><span>'+(active?'✓ ĐANG BẬT · ':'')+count+'/'+target+'</span></div><div class="traitTrack"><i style="width:'+Math.min(100,count/target*100)+'%"></i></div><div class="traitBuff">'+safe(detail)+(next?' · cần '+(next-count)+' tướng':'')+'</div></div>';
+  return '<div class="traitCard '+(active?'active':'')+'"><div class="traitTitle"><span>'+(def?.type==='origin'?'🧬 ':'⚔ ')+safe(def?.label||key)+'</span><span>'+(active?'✓ ĐANG BẬT · ':'')+count+'/'+target+'</span></div><div class="traitTrack"><i style="width:'+Math.min(100,count/target*100)+'%"></i></div><div class="traitBuff">'+safe(detail)+(next?' · cần '+(next-count)+' tướng':'')+'</div></div>';
  }).join(''):'<div class="small">Đưa tướng lên bàn cờ để kích hoạt Tộc và Hệ.</div>';
  $("items").innerHTML='<strong>🎒 Kho vật phẩm: '+p.inventory.length+'</strong><div>'+(p.inventory.length?p.inventory.map(id=>'<span class="itemChip">'+itemText(id)+'</span>').join(''):'Chưa có vật phẩm — nhận thêm khi thắng quái PvE')+'</div>';
  const prevItem=$("equipItem").value;
@@ -420,11 +417,25 @@ function paintControls(){
  $("equipButton").disabled=!prep||!selected||!p.units[selected]||!p.inventory.length;
  const equipped=Object.values(p.units).filter(u=>u.items?.length);
  $("equipmentOwners").innerHTML='<strong>🛡 Đã trang bị: '+equipped.length+' tướng</strong>'+(equipped.length?equipped.map(u=>'<div class="itemChip">'+safe(hero[u.heroId]?.name||u.heroId)+' ★'+u.star+': '+u.items.map(id=>safe(itemDef(id)?.name||id)).join(', ')+'</div>').join(''):'<div>Chưa có tướng nào được trang bị.</div>');
- $("selectedInfo").textContent=selected&&p.units[selected]?"Đã chọn: "+viewUnit(p,selected):"Chọn tướng trên sân hoặc hàng chờ.";selectedHeroInfo();
+ selectedHeroInfo();
  [...document.querySelectorAll('#game button')].forEach(b=>{if(b.hasAttribute('onclick')&&/send\(\{type:'(ROLL|BUY_XP|READY)'/.test(b.getAttribute('onclick')))b.disabled=!prep;});
 }
 window.buyHero=i=>send({type:'BUY',index:i});
-window.tapBench=i=>{let p=state?.players[uid],id=p?.bench[i];if(selected&&selected!==id){send({type:'MOVE',unitId:selected,to:'bench',index:String(i)});selected=null;}else{selected=id||null;paintControls();}};
+window.tapBench=i=>{let p=state?.players[uid],id=p?.bench[i];if(selected&&selected!==id){send({type:'MOVE',unitId:selected,to:'bench',index:String(i)});selected=null;closeUnitPopup();}else{selected=id||null;paintControls();if(id)openUnitPopup(window.innerWidth/2,window.innerHeight*.68,id);else closeUnitPopup();}};
+window.closeUnitPopup=()=>{$('unitPopup').classList.add('hidden');};
+function openUnitPopup(x,y,id){
+ if(!state?.players?.[uid]?.units?.[id])return;
+ selected=id;
+ const popup=$('unitPopup'),onBoard=Object.values(state.players[uid].board||{}).includes(id);
+ const prep=state.roundPhase==='PREPARATION'&&!state.players[uid].ready;
+ $('popupBench').style.display=prep&&onBoard?'block':'none';
+ $('popupSell').style.display=prep?'block':'none';
+ if(!prep){closeUnitPopup();return;}
+ popup.classList.remove('hidden');
+ popup.style.left=Math.max(6,Math.min(window.innerWidth-155,x))+'px';
+ popup.style.top=Math.max(36,Math.min(window.innerHeight-124,y))+'px';
+}
+document.addEventListener('pointerdown',e=>{if(!$('unitPopup').contains(e.target)&&!e.target.closest('#bench')&&e.target!==renderer?.domElement)closeUnitPopup();});
 function renderBoard(){
  if(!board||!state)return;Animator.clear();characters.clear();characterById.clear();
  const p=state.players[uid];if(!p)return;
@@ -556,7 +567,7 @@ document.addEventListener('pointerup',e=>{
 });
 function setup3D(){
  stageScene=new THREE.Scene();stageScene.background=new THREE.Color(0x0a2635);
- camera=new THREE.PerspectiveCamera(43,1,.1,50);camera.position.set(7.2,10,10.4);camera.lookAt(0,0,0);
+ camera=new THREE.OrthographicCamera(-4,4,4,-4,.1,80);camera.position.set(0,20,.01);camera.up.set(0,0,-1);camera.lookAt(0,0,0);
  renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));
  $('stage').prepend(renderer.domElement);stageScene.add(new THREE.HemisphereLight(0xc1f4ff,0x214052,2.5));
  const light=new THREE.DirectionalLight(0xffe2a9,1.6);light.position.set(2,10,3);stageScene.add(light);
@@ -569,13 +580,13 @@ function setup3D(){
   const m=new THREE.Mesh(new THREE.BoxGeometry(.89,.11,.81),new THREE.MeshStandardMaterial({color:(row+col)%2?(row<4?0x1d4e62:0x346272):(row<4?0x276479:0x3c7a87)}));
   m.position.set((col-3.5)*.94,0,(row-3.5)*.86);m.userData.tile={col,row};board.add(m);
  }
- function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);camera.aspect=rect.width/rect.height;camera.updateProjectionMatrix();}
+ function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);const aspect=rect.width/Math.max(1,rect.height),span=Math.max(3.75,4.12/aspect);camera.left=-span*aspect;camera.right=span*aspect;camera.top=span;camera.bottom=-span;camera.zoom=zoomLevel;camera.updateProjectionMatrix();}
  addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe($('stage'));resize();
  renderer.domElement.addEventListener('pointerup',e=>{
   if(!state||state.roundPhase!=='PREPARATION')return;
   const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);
   let unit=raycaster.intersectObjects(characters.children,true)[0];
-  if(unit){let target=unit.object;while(target&&!target.userData.unitId)target=target.parent;if(target){selected=target.userData.unitId;paintControls();return;}}
+  if(unit){let target=unit.object;while(target&&!target.userData.unitId)target=target.parent;if(target){selected=target.userData.unitId;paintControls();openUnitPopup(e.clientX,e.clientY,selected);return;}}
   let tile=raycaster.intersectObjects(board.children,false)[0];
   if(tile&&selected){const {col,row}=tile.object.userData.tile;if(row>=4){send({type:'MOVE',unitId:selected,to:'board',index:'r'+(row-4)+'c'+col});selected=null;}}
  });

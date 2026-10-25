@@ -6,6 +6,8 @@ function createEngine(C){
  const COMP=Object.fromEntries(C.components.map(x=>[x.id,x]));
  const RECIPE=Object.fromEntries(C.recipes.map(x=>[x.key,x]));
  const TRAITS=C.origins, PHASES=C.phases;
+ const LEVEL_XP={3:6,4:10,5:20,6:36,7:48,8:76};
+ const maxLevel=9,slotsForLevel=level=>Math.min(9,Math.max(1,level));
  function clone(x){return JSON.parse(JSON.stringify(x));}
  function assert(ok,msg){if(!ok)throw Error(msg);}
  function nextRand(s){s.randomState=(Math.imul(s.randomState||1,1664525)+1013904223)>>>0;return s.randomState/4294967296;}
@@ -70,14 +72,14 @@ function createEngine(C){
     const id=p.shop[i],h=HERO[id],slot=firstBench(p);assert(h&&slot!==null&&p.gold>=h.cost,"Không đủ vàng hoặc bench đầy");
     p.gold-=h.cost;const unitId='u'+(++s.sequence);p.units[unitId]={id:unitId,heroId:id,star:1,items:[]};p.bench[slot]=unitId;p.shop[i]="";mergeTriples(p);
   }else if(a.type==="ROLL"){assert(p.gold>=2,"Không đủ 2 vàng");p.gold-=2;p.shop=shopRoll(s,p.level);
-  }else if(a.type==="BUY_XP"){assert(p.gold>=4&&p.level<9,"Không đủ vàng hoặc đã đạt cấp tối đa");
-    p.gold-=4;p.xp+=4;while(p.level<9&&p.xp>=p.level*4){p.xp-=p.level*4;p.level++;}
+  }else if(a.type==="BUY_XP"){assert(p.gold>=4&&p.level<maxLevel,"Không đủ vàng hoặc đã đạt cấp tối đa");
+    p.gold-=4;p.xp+=4;while(p.level<maxLevel&&p.xp>=(LEVEL_XP[p.level]||999)){p.xp-=LEVEL_XP[p.level];p.level++;}
   }else if(a.type==="MOVE"){assert(typeof a.unitId==="string"&&p.units[a.unitId],"Tướng không có");
     const dest=a.to,key=String(a.index);
     assert(dest==="board"?legalBoard(key):dest==="bench"&&legalBench(key),"Ô không hợp lệ");
     const where=findPosition(p,a.unitId);assert(where,"Không tìm thấy tướng");
     const map=dest==="board"?p.board:p.bench,old=p[where.kind],other=map[key];
-    if(dest==="board"&&where.kind!=="board"&&!other)assert(Object.keys(p.board).length<p.level,"Vượt số tướng trên sân");
+    if(dest==="board"&&where.kind!=="board"&&!other)assert(Object.keys(p.board).length<slotsForLevel(p.level),"Vượt số tướng trên sân");
     if(other&&other!==a.unitId)old[where.key]=other;else delete old[where.key];
     map[key]=a.unitId;
   }else if(a.type==="SELL"){const u=p.units[a.unitId];assert(u,"Không tìm thấy tướng");
@@ -85,11 +87,14 @@ function createEngine(C){
     p.inventory.push(...u.items);delete p.units[u.id];
   }else if(a.type==="EQUIP"){const u=p.units[a.unitId],comp=a.component;assert(u&&COMP[comp],"Tướng hoặc trang bị không hợp lệ");
     const idx=p.inventory.indexOf(comp);assert(idx!==-1,"Không sở hữu trang bị");
-    const other=u.items.findIndex(x=>!!COMP[x]);let newItem;
-    if(other!==-1){newItem=RECIPE[[u.items[other],comp].sort().join("+")];assert(newItem,"Không có công thức");
-      u.items.splice(other,1,newItem.id);
-    }else{assert(u.items.length<3,"Đã đủ 3 ô đồ");u.items.push(comp);}
+    const other=u.items.findIndex(x=>!!COMP[x]&&!!RECIPE[[x,comp].sort().join("+")]);
+    if(other!==-1){const recipe=RECIPE[[u.items[other],comp].sort().join("+")];u.items.splice(other,1,recipe.id);}
+    else{assert(u.items.length<3,"Đã đủ 3 ô đồ");u.items.push(comp);}
     p.inventory.splice(idx,1);
+  }else if(a.type==="UNEQUIP"){
+    const u=p.units[a.unitId];assert(u,"Tướng không tồn tại");
+    const idx=a.slot;assert(Number.isInteger(idx)&&idx>=0&&idx<u.items.length,"Ô trang bị không hợp lệ");
+    p.inventory.push(u.items.splice(idx,1)[0]);
   }else if(a.type==="READY"){p.ready=true;
   }else throw Error("Thao tác không được hỗ trợ");
   s.updatedAt=now;return s;
@@ -225,7 +230,7 @@ function createEngine(C){
  }
  return {C,HERO,COMP,RECIPE,PHASES,clone,assert,nextRand,shopRoll,freshPlayer,roomNew,boardKey,
  legalBoard,legalBench,findPosition,firstBench,mergeTriples,traitCounts,activeTraits,itemStats,combatStats,
- action,pairings,findStep,simulate,finalize,advance};
+ action,LEVEL_XP,maxLevel,slotsForLevel,pairings,findStep,simulate,finalize,advance};
 }
 if(typeof module!=="undefined"&&module.exports)module.exports=createEngine(require("./catalog.json"));
 else root.DolphinTacticsCreateEngine=createEngine;

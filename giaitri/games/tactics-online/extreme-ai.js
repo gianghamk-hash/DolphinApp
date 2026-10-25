@@ -1,90 +1,157 @@
-/* Dolphin Tactics offline champion AI: board optimization, economy, trait-aware drafts. */
+/* Dolphin Tactics Phase 3: expert deterministic offline opponents.
+ * Pure tactical policy; all purchases/equipment use validated engine actions.
+ * No Firestore access, timers or AI service required.
+ */
 (function(root){
 'use strict';
 function createAI(E){
- const H=E.HERO, traits=E.C.origins;
- const value=(u)=>{const h=H[u.heroId];return h.hp*.055+h.attack*2.1+h.cost*15+u.star*32+(u.items||[]).length*18;};
- function teamScore(p,units){
-  let score=units.reduce((sum,u)=>sum+value(u),0);
-  const counts={};const seen=new Set();
+ const H=E.HERO,traits=E.C.origins;
+ const uniq=arr=>[...new Set(arr)];
+ const starValue=u=>Math.pow(1.8,u.star-1);
+ function value(u){
+  const h=H[u.heroId];
+  return (h.hp*.065+h.attack*1.9+h.cost*12)*starValue(u)+(u.items||[]).length*17;
+ }
+ function countsFor(units){
+  const c={},seen=new Set();
   for(const u of units){if(seen.has(u.heroId))continue;seen.add(u.heroId);const h=H[u.heroId];
-   for(const key of [...h.origins,...h.classes])counts[key]=(counts[key]||0)+1;
-  }
-  for(const [key,n] of Object.entries(counts)){
-   const th=Object.keys(traits[key]?.thresholds||{}).map(Number).sort((a,b)=>a-b);
-   const active=th.filter(x=>n>=x).pop()||0;
-   if(active)score+=28+active*19;
-   else if(th.length&&n===th[0]-1)score+=13;
+   for(const key of uniq([...h.origins,...h.classes]))c[key]=(c[key]||0)+1;}
+  return c;
+ }
+ function teamScore(p,units){
+  const counts=countsFor(units);
+  let score=units.reduce((v,u)=>v+value(u),0);
+  for(const [trait,n] of Object.entries(counts)){
+   const steps=Object.keys(traits[trait]?.thresholds||{}).map(Number).sort((a,b)=>a-b);
+   const active=steps.filter(k=>n>=k).pop()||0;
+   if(active)score+=30+active*22;
+   const next=steps.find(k=>k>n);
+   if(next&&next-n===1)score+=16;
   }
   return score;
  }
  function bestLineup(p){
   const all=Object.values(p.units),capacity=Math.min(p.level,8,all.length);
-  const ranked=all.slice().sort((a,b)=>value(b)-value(a)).slice(0,11);
-  let best=[],bestScore=-Infinity;
-  function dfs(index,chosen){
-   if(chosen.length===capacity){const score=teamScore(p,chosen);if(score>bestScore){bestScore=score;best=chosen.slice();}return;}
-   if(index>=ranked.length||chosen.length+ranked.length-index<capacity)return;
-   chosen.push(ranked[index]);dfs(index+1,chosen);chosen.pop();dfs(index+1,chosen);
+  if(!capacity)return [];
+  const pool=all.sort((a,b)=>value(b)-value(a)).slice(0,Math.min(13,all.length));
+  let best=[],max=-Infinity;
+  const chosen=[];
+  function search(i){
+   if(chosen.length===capacity){const n=teamScore(p,chosen);if(n>max){best=chosen.slice();max=n;}return;}
+   if(i>=pool.length||chosen.length+pool.length-i<capacity)return;
+   chosen.push(pool[i]);search(i+1);chosen.pop();search(i+1);
   }
-  if(capacity)dfs(0,[]);
-  return best;
+  search(0);return best;
  }
- function planBoard(E,p){
-  const chosen=bestLineup(p),front=[],back=[];
-  for(const u of chosen)(H[u.heroId].range<=1?front:back).push(u);
-  const board={},bench={},frontCols=[3,4,2,5,1,6,0,7],backCols=[3,4,2,5,1,6,0,7];
-  front.forEach((u,i)=>board['r0c'+frontCols[i]]=u.id);
-  back.forEach((u,i)=>board['r3c'+backCols[i]]=u.id);
-  let k=0;for(const u of Object.values(p.units))if(!chosen.includes(u)&&k<8)bench[String(k++)]=u.id;
+ function opponentThreat(s,uid){
+  const opponents=Object.entries(s.players).filter(([id,p])=>id!==uid&&!p.eliminated);
+  if(!opponents.length)return {frontSide:0,carryColumn:3,contest:{}};
+  const contest={},columns=new Array(8).fill(0);
+  for(const [id,p] of opponents){
+   for(const u of Object.values(p.units)){contest[u.heroId]=(contest[u.heroId]||0)+1;}
+   for(const [key,u] of Object.entries(p.board)){
+    const col=Number((key.match(/c(\d)/)||[])[1]);if(Number.isInteger(col))columns[col]++;}
+  }
+  const carryColumn=columns.indexOf(Math.max(...columns));
+  return {carryColumn,contest};
+ }
+ function planBoard(p,threat){
+  const chosen=bestLineup(p),front=[],rear=[];
+  for(const u of chosen)(H[u.heroId].range<=1?front:rear).push(u);
+  front.sort((a,b)=>H[b.heroId].hp*starValue(b)-H[a.heroId].hp*starValue(a));
+  rear.sort((a,b)=>value(b)-value(a));
+  const shift=threat.carryColumn>=4?[4,3,5,2,6,1,7,0]:[3,4,2,5,1,6,0,7];
+  const board={},bench={};
+  front.forEach((u,i)=>{const row=i<8?0:1;board['r'+row+'c'+shift[i%8]]=u.id;});
+  rear.forEach((u,i)=>{board['r3c'+shift[i%8]]=u.id;});
+  let k=0;const active=new Set(chosen.map(u=>u.id));
+  for(const u of Object.values(p.units))if(!active.has(u.id)&&k<8)bench[String(k++)]=u.id;
   p.board=board;p.bench=bench;
  }
- function draftScore(E,p,h){
-  const have=Object.values(p.units).filter(u=>u.heroId===h.id);
-  const count=have.length;
-  let result=h.hp*.055+h.attack*2+h.cost*11+(count===2?175:count===1?50:0);
-  const lineage=E.traitCounts(p);
-  for(const key of [...h.origins,...h.classes]){
-   const n=lineage[key]||0,tiers=Object.keys(traits[key]?.thresholds||{}).map(Number).sort((a,b)=>a-b);
-   if(tiers.some(t=>n+1===t))result+=70;
-   else if(n)result+=17;
+ function draftScore(p,h,threat){
+  const all=Object.values(p.units),same=all.filter(x=>x.heroId===h.id);
+  const pairs=same.filter(u=>u.star===1).length;
+  const twoStars=same.filter(u=>u.star===2).length;
+  const team=bestLineup(p),now=teamScore(p,team);
+  const fake={id:'candidate',heroId:h.id,star:1,items:[]};
+  let delta=team.length<p.level?teamScore(p,team.concat(fake))-now:
+    Math.max(0,...team.map((u,i)=>teamScore(p,team.filter((_,j)=>j!==i).concat(fake))-now));
+  const contested=threat.contest[h.id]||0;
+  // Find merge pairs, including progress toward 3 stars, without buying contested junk.
+  return h.hp*.04+h.attack*.5+h.cost*7+delta*.55+
+   (pairs===2?280:pairs===1?95:0)+(twoStars===2&&pairs===2?190:0)-
+   Math.min(5,contested)*13;
+ }
+ function economicPlan(p,round){
+  const danger=p.hp<35,healthy=p.hp>65;
+  // Interest is one gold per 10 saved gold, up to 5.
+  const reserve=danger?2:round<=3?0:round<=7?10:healthy?30:10;
+  const wantLevel=p.level<Math.min(8,Math.max(4,Math.floor(round/2)+2));
+  const levelReserve=wantLevel&&p.gold>=reserve+8?4:0;
+  return {reserve,rollBudget:danger?Math.min(16,p.gold):p.gold>=45?12:p.gold>=25?6:2,
+   xpBudget:wantLevel?Math.min(16,Math.max(0,p.gold-reserve-3)):0,
+   levelReserve,danger};
+ }
+ function equipment(p,s,uid,now){
+  if(!p.inventory.length)return;
+  const active=Object.values(p.board).map(id=>p.units[id]).filter(Boolean).sort((a,b)=>value(b)-value(a));
+  for(let n=0;n<18&&p.inventory.length&&active.length;n++){
+   const before=p.inventory.length;
+   const component=p.inventory[0];
+   const prop=E.COMP[component];
+   if(!prop)break;
+   const isMagic=prop.stat==='abilityPower'||prop.stat==='mana';
+   const candidates=active.slice().sort((a,b)=>{
+    const ha=H[a.heroId],hb=H[b.heroId];
+    const qa=value(a)+(isMagic&&ha.classes.includes('Sorcerer')?200:0)+(!isMagic&&ha.range<=1?50:0);
+    const qb=value(b)+(isMagic&&hb.classes.includes('Sorcerer')?200:0)+(!isMagic&&hb.range<=1?50:0);
+    return qb-qa;
+   });
+   let equipped=false;
+   for(const u of candidates){
+    if(u.items.length>=3&&u.items.every(x=>!E.COMP[x]))continue;
+    try{E.action(s,uid,{type:'EQUIP',unitId:u.id,component},now);equipped=true;break;}catch(e){}
+   }
+   if(!equipped||p.inventory.length>=before)break;
   }
-  return result;
  }
  function takeTurn(s,uid,now){
-  const p=s.players[uid];if(!p||p.eliminated||s.roundPhase!=='PREPARATION')return;
-  // Prioritize bench capacity, intelligent purchases, level threshold and trait activation.
-  for(let loop=0;loop<32;loop++){
-   const slots=Object.keys(p.bench).length;
-   const choices=p.shop.map((id,i)=>({i,h:H[id]})).filter(x=>x.h&&x.h.cost<=p.gold);
-   if(!choices.length||slots>=8)break;
-   choices.sort((a,b)=>draftScore(E,p,b.h)-draftScore(E,p,a.h));
-   if(p.gold<3&&choices[0].h.cost>1)break;
-   try{E.action(s,uid,{type:'BUY',index:choices[0].i},now);}catch(e){break;}
-  }
-  if(p.gold>=12 && p.level<8){for(let i=0;i<Math.min(4,Math.floor((p.gold-6)/4));i++){
-   try{E.action(s,uid,{type:'BUY_XP'},now);}catch(e){break;}
-  }}
-  // Prioritize building strong compositions over hoarding gold.
-  if(p.gold>=6&&Object.keys(p.bench).length<8){
-   for(let i=0;i<2;i++){
-    try{E.action(s,uid,{type:'ROLL'},now);}catch(e){break;}
-    const choices=p.shop.map((id,i)=>({i,h:H[id]})).filter(x=>x.h&&x.h.cost<=p.gold);
-    choices.sort((a,b)=>draftScore(E,p,b.h)-draftScore(E,p,a.h));
-    if(choices[0])try{E.action(s,uid,{type:'BUY',index:choices[0].i},now);}catch(e){}
+  const p=s.players[uid];if(!p||p.eliminated||s.roundPhase!=='PREPARATION'||p.ready)return;
+  const threat=opponentThreat(s,uid),round=s.round,plan=economicPlan(p,round);
+  function available(){return Object.keys(p.bench).length<8;}
+  function buyOffers(limit){
+   let bought=0;
+   while(available()&&bought<limit){
+    const choices=p.shop.map((id,i)=>({i,h:H[id]})).filter(x=>x.h&&p.gold>=x.h.cost);
+    if(!choices.length)break;
+    choices.sort((a,b)=>draftScore(p,b.h,threat)-draftScore(p,a.h,threat));
+    const choice=choices[0],score=draftScore(p,choice.h,threat);
+    const merge=Object.values(p.units).filter(u=>u.heroId===choice.h.id&&u.star===1).length>=2;
+    if(p.gold-choice.h.cost<plan.reserve&&!plan.danger&&!merge)break;
+    if(score<90&&!merge&&round>5)break;
+    try{E.action(s,uid,{type:'BUY',index:choice.i},now);bought++;}catch(e){break;}
    }
+   return bought;
   }
-  // Equip optimal champions; components combine through E.action.
-  planBoard(E,p);
-  for(let i=0;i<Math.min(p.inventory.length,15);i++){
-   const id=Object.values(p.board).map(k=>p.units[k]).filter(Boolean).sort((a,b)=>value(b)-value(a))[0]?.id;
-   const item=p.inventory[0];if(!id||!item)break;
-   try{E.action(s,uid,{type:'EQUIP',unitId:id,component:item},now);}catch(e){break;}
+  // First try natural shop, then level according to economy milestones.
+  buyOffers(5);
+  let remainingXP=plan.xpBudget;
+  while(remainingXP>=4&&p.gold>=4&&p.level<9){
+   try{E.action(s,uid,{type:'BUY_XP'},now);remainingXP-=4;}catch(e){break;}
   }
-  planBoard(E,p);
+  // Refresh aggressively when in danger, otherwise protect interest breakpoints.
+  let remainingRoll=plan.rollBudget;
+  while(remainingRoll>=2&&p.gold>=2&&available()){
+   if(!plan.danger&&p.gold-2<plan.reserve)break;
+   try{E.action(s,uid,{type:'ROLL'},now);remainingRoll-=2;}catch(e){break;}
+   buyOffers(3);
+  }
+  planBoard(p,threat);
+  equipment(p,s,uid,now);
+  planBoard(p,threat);
   E.action(s,uid,{type:'READY'},now);
  }
- return {takeTurn,bestLineup,teamScore};
+ return {takeTurn,bestLineup,teamScore,economicPlan,opponentThreat,draftScore};
 }
 if(typeof module!=='undefined'&&module.exports)module.exports=createAI;
 else root.DolphinTacticsCreateAI=createAI;

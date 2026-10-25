@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.97",
+      "releaseDate": "2026-10-25T05:12:04.784Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.96",
       "releaseDate": "2026-10-25T05:08:33.348Z",
       "summary": "FIX LỖI",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.47",
-      "releaseDate": "2026-10-15T14:12:13.330Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
       ]
     }
   ]

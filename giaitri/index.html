@@ -141,6 +141,8 @@ html.game-locked, body.game-locked{
   display:flex;flex-direction:column;
   padding:0;margin:0;
 }
+#gameIframeView.tactics-immersive .game-back-btn{display:none!important}
+#gameIframeView.tactics-immersive .game-frame-wrap{height:100dvh!important;min-height:0!important;flex:1}
 #gameIframeView.fullscreen .game-back-btn{
   margin:0;border-radius:0;
   padding:calc(8px + env(safe-area-inset-top)) 14px 8px;
@@ -507,6 +509,16 @@ body>.sticky button:first-child:active{transform:scale(.86)}
       if (loading) loading.classList.add('hide');
     }, 8000);
   };
+  // Safe same-origin message from Dolphin Tactics embedded iframe; Android WebView fallback.
+  window.addEventListener('message',function(ev){
+    var frame=document.getElementById('gameFrame');
+    if(!frame||ev.source!==frame.contentWindow||ev.origin!==location.origin)return;
+    if(!ev.data||ev.data.type!=='dolphin-tactics-fullscreen')return;
+    var view=document.getElementById('gameIframeView');
+    if(!view)return;
+    view.classList.toggle('fullscreen',!!ev.data.enabled);
+    view.classList.toggle('tactics-immersive',!!ev.data.enabled);
+  });
   window.closeGame = function(){
     if (!currentGame) return;
     currentGame = null;

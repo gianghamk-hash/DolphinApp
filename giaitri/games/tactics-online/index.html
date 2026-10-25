@@ -79,7 +79,7 @@ const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
-let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null;
+let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const showError=e=>{console.error(e);info("⚠ "+(e?.message||e));};
 function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
@@ -210,7 +210,7 @@ function paintControls(){
  $("phaseLabel").textContent=phaseName[state.roundPhase]+' · VÒNG '+state.round;
  $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
  $("shop").innerHTML=p.shop.map((id,i)=>{let h=hero[id];return '<button '+(!prep||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+(h?'★'+h.cost+' '+safe(h.name):"Đã bán")+'</button>';}).join('');
- $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
+ $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
  const buffs=E.activeTraits(p);$("traits").innerHTML=Object.keys(buffs).length?Object.entries(buffs).map(([k,v])=>safe(k)+' '+v.count+' / mốc '+v.tier).join(' · '):"Chưa kích hoạt hệ tộc.";
  $("items").textContent=p.inventory.length?p.inventory.map(x=>catalog.components.find(c=>c.id===x)?.name||x).join(' · '):"Chưa có trang bị.";
  $("equipItem").innerHTML=p.inventory.map(x=>'<option value="'+safe(x)+'">'+safe(catalog.components.find(c=>c.id===x)?.name||x)+'</option>').join('');
@@ -289,6 +289,32 @@ function update(){
  else if(state.roundPhase==='PREPARATION')renderBoard();
  if(state.reports?.length&&state.roundPhase==='TRANSITION'){$("events").innerHTML=state.reports.map(r=>'<div>'+safe((r.pair.a||"")+" vs "+(r.pair.b||"PvE")+" → "+(r.winner||"Quái"))+' · Sát thương: '+r.damage+'</div>').join('');}
 }
+// Pointer-based drag to place: works on mobile touch as well as mouse.
+function boardHit(clientX,clientY){
+ if(!renderer||!camera||!board)return null;
+ const rect=renderer.domElement.getBoundingClientRect();
+ if(clientX<rect.left||clientX>rect.right||clientY<rect.top||clientY>rect.bottom)return null;
+ mouse.set((clientX-rect.left)/rect.width*2-1,-(clientY-rect.top)/rect.height*2+1);
+ raycaster.setFromCamera(mouse,camera);
+ const hit=raycaster.intersectObjects(board.children,false)[0];
+ return hit?.object?.userData?.tile||null;
+}
+$('bench').addEventListener('pointerdown',e=>{
+ const button=e.target.closest('[data-bench]'),slot=Number(button?.dataset.bench);
+ if(!button||!state||state.roundPhase!=='PREPARATION')return;
+ const unitId=state.players?.[uid]?.bench?.[slot];
+ if(unitId)dragUnit={id:unitId,x:e.clientX,y:e.clientY};
+});
+document.addEventListener('pointerup',e=>{
+ if(!dragUnit)return;
+ const drag=dragUnit;dragUnit=null;
+ if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<20)return;
+ const tile=boardHit(e.clientX,e.clientY);
+ if(tile&&tile.row>=4&&state?.roundPhase==='PREPARATION'){
+  send({type:'MOVE',unitId:drag.id,to:'board',index:'r'+(tile.row-4)+'c'+tile.col});
+  selected=null;
+ }
+});
 function setup3D(){
  stageScene=new THREE.Scene();stageScene.background=new THREE.Color(0x0a2635);
  camera=new THREE.PerspectiveCamera(43,1,.1,50);camera.position.set(7.2,10,10.4);camera.lookAt(0,0,0);

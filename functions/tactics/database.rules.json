@@ -4,7 +4,10 @@
       "$roomId": {
         ".read": "auth != null && data.child('players').child(auth.uid).exists()",
         ".write": false
-      }
+      },
+      ".indexOn": [
+        "status"
+      ]
     },
     "roomPresence": {
       "$roomId": {

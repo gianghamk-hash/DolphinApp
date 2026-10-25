@@ -1,0 +1,23 @@
+name: Dolphin Tactics Engine Tests
+on:
+  pull_request:
+    paths:
+      - "functions/tactics/**"
+      - "functions/index.js"
+      - "functions/package.json"
+      - "giaitri/games/tactics-online/**"
+  push:
+    paths:
+      - "functions/tactics/**"
+      - "functions/index.js"
+      - "functions/package.json"
+jobs:
+  engine-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "22"
+      - name: Validate engine and tests
+        run: cd functions && npm test

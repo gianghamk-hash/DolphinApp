@@ -1,7 +1,7 @@
 /* Dolphin Tactics GLB model library. Cache each asset once; gracefully preserve procedural fallback. */
 (function(root){
 'use strict';
-function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/',rigFactory=null){
+function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/',rigFactory=null,skinner=null){
  const loader=new GLTFLoader(),cache=new Map();
  let manifest=null,manifestPromise=null;
  async function getManifest(){
@@ -25,6 +25,7 @@ function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/',rigFactor
   const scene=rigFactory?rigFactory.make(heroId):(asset?asset.model.clone(true):null);
   if(!scene)return false;
   scene.scale.setScalar(asset?.scale||1);
+  if(skinner&&rigFactory)skinner.enhance(heroId,scene);
   scene.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=false;}});
   // Keep world-space bars and ring, replace only placeholder character.
   const bars=holder.userData.bars,ring=holder.userData.ring;

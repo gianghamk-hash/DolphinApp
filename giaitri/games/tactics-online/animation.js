@@ -3,7 +3,7 @@
  */
 (function(root){
 'use strict';
-function createAnimator(T,profiles={},rigAnimator=null){
+function createAnimator(T,profiles={},rigAnimator=null,skinner=null){
  const motions=new Map(),effects=[],clock={now:0};
  const ease=t=>t*t*(3-2*t);
  function play(node,type,now=performance.now(),extra={}){
@@ -12,6 +12,7 @@ function createAnimator(T,profiles={},rigAnimator=null){
   const speed=profile.impact||1;
   const duration=({idle:1000,run:440,attack:340,cast:650,hit:250,death:800,heal:600,shield:700}[type]||500)/(type==='attack'||type==='cast'?Math.sqrt(speed):1);
   motions.set(node,{type,start:now,duration,profile,from:node.position.clone(),to:extra.to||null,baseY:node.userData.baseY||0});
+  if(skinner&&node.userData.gltfModel)skinner.play(node.userData.gltfModel,type);
  }
  function disposeFX(f){if(f.mesh.parent)f.mesh.parent.remove(f.mesh);f.mesh.geometry.dispose();f.mesh.material.dispose();}
  function burst(scene,node,type,now=performance.now()){
@@ -37,7 +38,7 @@ function createAnimator(T,profiles={},rigAnimator=null){
    const rig=node.userData.body, head=node.userData.head,arm=node.userData.arm,legs=node.userData.legs;
    // GLB visual is the live model; procedural rig remains as a fallback.
    const model=node.userData.gltfModel;
-   if(model?.userData?.rig&&rigAnimator)rigAnimator.pose(model,m.type,t,m.profile.style||'');
+   if(model?.userData?.rig&&rigAnimator&&!model.userData.skeletal)rigAnimator.pose(model,m.type,t,m.profile.style||'');
    if(model){
     model.rotation.set(0,0,0);model.position.set(0,0,0);
     if(m.type==='run'){model.rotation.z=Math.sin(t*Math.PI*6)*.055;model.position.y=Math.sin(t*Math.PI*6)*.045;}
@@ -78,9 +79,11 @@ function createAnimator(T,profiles={},rigAnimator=null){
    }}
   }
   for(const node of nodes.values()){
+   if(skinner&&node.userData.gltfModel)skinner.tick(node.userData.gltfModel,now);
    if(!node.parent||motions.has(node)||!node.visible)continue;
    node.position.y=(node.userData.baseY||0)+Math.sin(now*.002+(node.userData.idleOffset||0))*.028;
-   if(node.userData.gltfModel?.userData.rig&&rigAnimator)rigAnimator.idle(node.userData.gltfModel,now);
+   if(node.userData.gltfModel?.userData.skeletal&&skinner)skinner.idle(node.userData.gltfModel);
+   else if(node.userData.gltfModel?.userData.rig&&rigAnimator)rigAnimator.idle(node.userData.gltfModel,now);
   }
   for(let i=effects.length-1;i>=0;i--){const f=effects[i],t=Math.min(1,(now-f.start)/f.duration);
    f.mesh.position.set(f.origin.x+f.dx*t*.67,f.origin.y+Math.sin(t*Math.PI)*.46+t*.3,f.origin.z+f.dz*t*.67);

@@ -404,7 +404,7 @@ function paintControls(){
  const counts=E.traitCounts(p),buffs=E.activeTraits(p),activeCount=Object.keys(buffs).length;
  $("traitHeading").textContent='TỘC / HỆ — '+activeCount+' kích hoạt';
  const keys=Object.keys(counts).sort((a,b)=>Number(!!buffs[b])-Number(!!buffs[a])||counts[b]-counts[a]);
- $("traitQuick").innerHTML=keys.length?keys.map(key=>'<span class="traitChip '+(buffs[key]?'on':'')+'">'+safe(key)+' '+counts[key]+'/'+(Object.keys(catalog.origins[key]?.thresholds||{}).map(Number).sort((a,b)=>a-b).find(n=>n>counts[key])||buffs[key]?.tier||2)+'</span>').join(''):'Chưa có Tộc/Hệ';
+ $("traitQuick").innerHTML=keys.length?keys.map(key=>'<span class="traitChip '+(buffs[key]?'on':'')+'">'+safe(catalog.origins[key]?.label||key)+' '+counts[key]+'/'+(Object.keys(catalog.origins[key]?.thresholds||{}).map(Number).sort((a,b)=>a-b).find(n=>n>counts[key])||buffs[key]?.tier||2)+'</span>').join(''):'Chưa có Tộc/Hệ';
  $("traits").innerHTML=keys.length?keys.map(key=>{
   const def=catalog.origins[key],count=counts[key],thresholds=Object.keys(def?.thresholds||{}).map(Number).sort((a,b)=>a-b),active=buffs[key],next=thresholds.find(n=>n>count),target=next||thresholds[thresholds.length-1]||1;
   const detail=active?Object.entries(active.buff).map(([k,v])=>statLabel(k,v)).join(' · '):'Chưa kích hoạt';

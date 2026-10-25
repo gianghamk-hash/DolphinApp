@@ -53,11 +53,12 @@ function createEngine(C){
   const h=HERO[u.heroId],factor=Math.pow(1.8,u.star-1),items=itemStats(u.items);
   const b={};Object.values(traits).forEach(t=>{for(const k in t.buff)b[k]=(b[k]||0)+t.buff[k];});
   const hp=Math.round((h.hp+ (items.hp||0))*factor*(1+(b.hpRatio||0)));
+  const effects=(u.items||[]).map(id=>C.recipes.find(i=>i.id===id)?.effect).filter(Boolean);
   return {hp,maxHp:hp,attack:Math.round(h.attack*factor+(items.attack||0)),armor:h.armor+(items.armor||0)+(b.armor||0),
    magicResist:h.magicResist+(items.magicResist||0),attackSpeed:h.attackSpeed,range:h.range,
    mana:h.manaStart+(items.mana||0),manaMax:h.manaMax,ability:h.ability,assassinJump:!!(traits.Assassin&&h.classes.includes('Assassin')),
-   abilityPower:(items.abilityPower||0)+(b.abilityPower||0),shield:0,regen:b.regen||0,bonusMana:b.bonusMana||0,
-   trueDamageRatio:b.trueDamageRatio||0,omnivamp:b.omnivamp||0,critChance:b.critChance||0,critDamage:b.critDamage||0,
+   abilityPower:(items.abilityPower||0)+(b.abilityPower||0),effects,shield:0,regen:b.regen||0,bonusMana:b.bonusMana||0,
+   trueDamageRatio:b.trueDamageRatio||0,omnivamp:b.omnivamp||0,critChance:(b.critChance||0)+(effects.includes('crit')?.25:0),critDamage:(b.critDamage||0)+(effects.includes('crit')?.4:0),
    stackAttackSpeed:b.stackAttackSpeed||0,doubleHitChance:b.doubleHitChance||0,
    cloneRatio:b.cloneRatio||0,adjacentShield:b.adjacentShield||0};
  }
@@ -145,6 +146,7 @@ function createEngine(C){
   function deal(src,tgt,amount,t,spell){
    if(!tgt.alive)return;let dealt=Math.max(1,Math.round(amount));const absorbed=Math.min(tgt.shield,dealt);tgt.shield-=absorbed;dealt-=absorbed;
    tgt.hp=Math.max(0,tgt.hp-dealt);src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
+   if(src.effects&&src.effects.includes('burn')){tgt.burnUntil=t+3000;tgt.burnDps=Math.max(8,tgt.maxHp*.015);}
    tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt});
    if(tgt.hp<=0){tgt.alive=false;tgt.fsm="Dead";emit({t,actor:tgt.id,type:"die"});}
   }
@@ -152,6 +154,8 @@ function createEngine(C){
    const living=units.filter(x=>x.alive);if(!living.some(x=>x.owner===0)||!living.some(x=>x.owner===1))break;
    for(const u of living){if(!u.alive)continue;
     if(u.regen)u.hp=Math.min(u.maxHp,u.hp+u.regen*.2);
+   if(u.effects&&u.effects.includes('manaRegen'))u.mana=Math.min(u.manaMax,u.mana+1);
+   if(u.burnUntil>t&&u.burnDps){u.hp=Math.max(0,u.hp-u.burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
     if(u.cloneRatio&&!u.shadowUsed&&u.hp<u.maxHp*.5&&units.length<32){u.shadowUsed=true;const positions=[[1,0],[-1,0],[0,1],[0,-1]];
       const free=positions.map(([dx,dy])=>({x:u.x+dx,y:u.y+dy})).find(p=>p.x>=0&&p.x<8&&p.y>=0&&p.y<8&&!units.some(v=>v.alive&&v.x===p.x&&v.y===p.y));
       if(free){const cloneUnit={...u,id:u.id+"_shadow",...free,maxHp:u.maxHp*u.cloneRatio,hp:u.maxHp*u.cloneRatio,attack:u.attack*u.cloneRatio,cloneRatio:0,shadowUsed:true,shield:0};units.push(cloneUnit);emit({t,actor:cloneUnit.id,type:"shield"});}
@@ -162,6 +166,7 @@ function createEngine(C){
     if(dist(u,target)>u.range){u.fsm="Moving";if(t>=u.nextMove){let step=findStep(u,target,units);if(step){u.x=step.x;u.y=step.y;u.nextMove=t+550;emit({t,actor:u.id,type:"move",x:u.x,y:u.y});}}continue;}
     if(t<u.nextAttack)continue;
     if(u.mana>=u.manaMax){u.fsm="Casting Spell";u.mana=0;
+      if(u.effects&&u.effects.includes('apGrowth'))u.abilityPower=Math.min(250,u.abilityPower+8);
       if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",amount:u.ability.power});}
       else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",amount:u.ability.power});}
       else {const multi=u.ability.kind==="aoe";const targets=multi?foes.filter(v=>dist(target,v)<=u.ability.radius):[target];
@@ -179,12 +184,12 @@ function createEngine(C){
   const left=units.filter(x=>x.alive&&x.owner===0),right=units.filter(x=>x.alive&&x.owner===1);
   const leftPower=left.reduce((v,x)=>v+x.hp,0),rightPower=right.reduce((v,x)=>v+x.hp,0);
   const winLeft=left.length&&!right.length?true:!left.length&&right.length?false:leftPower>=rightPower;
-  const winner=winLeft?pair.a:(pair.pve||pair.ghost?null:pair.b);
-  const loser=winLeft?null:pair.a;
-  const surviving=winLeft?left:right;
-  const damage=2+Math.floor(room.round/3)+surviving.reduce((v,x)=>v+(x.star||1),0);
+  const tie=(!left.length&&!right.length)||!!(left.length&&right.length&&Math.abs(leftPower-rightPower)<.01);
+  const winner=tie?null:(winLeft?pair.a:(pair.pve||pair.ghost?null:pair.b));
+  const surviving=tie?[]:(winLeft?left:right);
+  const damage=tie?0:2+Math.floor(room.round/3)+surviving.reduce((v,x)=>v+(x.star||1),0);
   emit({t:40000,actor:"system",type:"end",amount:damage});
-  return {pair,winner,loser:pair.pve||pair.ghost?(winLeft?null:pair.a):(winLeft?pair.b:pair.a),damage,events};
+  return {pair,winner,loser:tie?null:pair.pve||pair.ghost?(winLeft?null:pair.a):(winLeft?pair.b:pair.a),damage,events};
  }
  function finalize(s,now){
   assert(s.roundPhase==="COMBAT","Chưa ở phase chiến đấu");

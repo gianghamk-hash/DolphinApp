@@ -1,12 +1,12 @@
 {
-  "version": "1.0.93",
-  "previousVersion": "1.0.92",
-  "commit": "0642340",
-  "previousCommit": "46f9c97",
-  "buildDate": "2026-10-25T02:43:14.916Z",
+  "version": "1.0.94",
+  "previousVersion": "1.0.93",
+  "commit": "70a6831",
+  "previousCommit": "0642340",
+  "buildDate": "2026-10-25T02:51:38.786Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 97,
+    "totalCommits": 98,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "manifest.json",
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

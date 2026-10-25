@@ -113,7 +113,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div id="lobby" class="hidden">
 <input id="nick" maxlength="32" placeholder="Tên người chơi" value="Khách Dolphin"/>
 <div class="flex" style="margin-top:10px"><button class="gold" onclick="createRoom()">TẠO PHÒNG</button><input id="code" placeholder="MÃ PHÒNG 6 KÝ TỰ" maxlength="6" style="max-width:180px;text-transform:uppercase"/><button onclick="joinRoom()">THAM GIA</button></div>
-<div id="lobbyStatus" class="small" style="margin-top:12px"></div>
+<div id="lobbyStatus" class="small" style="margin-top:12px"></div><div id="networkStatus" role="status" class="small" style="margin-top:4px"></div><button id="reconnectBtn" class="hidden" onclick="reconnectRoom()">↻ KẾT NỐI LẠI PHÒNG</button>
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
@@ -140,8 +140,32 @@ const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
-let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false;
+let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
 const info=msg=>$("loginStatus").textContent=msg;
+const reconnectKey='dolphin_tactics_last_room';
+function onlineMessage(message,problem=false){
+ $("networkStatus").textContent=message;
+ $("networkStatus").style.color=problem?'#ffc181':'#8eeacb';
+}
+window.reconnectRoom=async()=>{
+ if(offline||MP.getRoomId())return;
+ try{
+  const data=JSON.parse(localStorage.getItem(reconnectKey)||'null');
+  if(!data?.code)throw Error('Chưa có phòng để kết nối lại');
+  $('code').value=data.code;$('nick').value=data.name||$('nick').value;
+  await window.joinRoom();
+ }catch(e){showError(e);}
+};
+function connectionWatch(){
+ if(offline||!roomId)return;
+ if(!navigator.onLine){onlineMessage('⚠ Mất mạng — đang chờ kết nối...',true);return;}
+ if(state?.status==='in_game'&&onlineStateAt&&Date.now()-onlineStateAt>20000){
+  onlineMessage('⚠ Chưa nhận trạng thái mới từ phòng; kiểm tra mạng hoặc Host',true);
+ }else onlineMessage('● Kết nối phòng đang hoạt động');
+}
+addEventListener('online',()=>{if(roomId&&!offline){onlineMessage('Đã có mạng — chờ đồng bộ lại');connectionWatch();}});
+addEventListener('offline',()=>{if(roomId&&!offline)connectionWatch();});
+connectivityTimer=setInterval(connectionWatch,5000);
 const showError=e=>{console.error(e);info("⚠ "+(e?.message||e));};
 function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
 function dispatch(work){
@@ -206,18 +230,22 @@ function selectedHeroInfo(){
 }
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
- MP.onRoom(room=>{host=!!room.isHost;roomId=room.id;$('roomTag').textContent="PHÒNG "+room.id;
+ MP.onRoom(room=>{host=!!room.isHost;roomId=room.id;roomHostId=room.hostId||'';$('roomTag').textContent="PHÒNG "+room.id;
   $('leave').classList.remove('hidden');$('leaveTop').classList.remove('hidden');
-  if(room.status==='closed')info('Phòng đã đóng');
+  if(room.status==='closed'){onlineMessage('⚠ Phòng đã đóng, không thể tiếp tục trận',true);info('Phòng đã đóng');}
  });
  MP.onPlayers(({players})=>{
   roster=players.sort((a,b)=>String(a.side).localeCompare(String(b.side)));
   $('lobbyStatus').textContent=roster.length+'/4: '+roster.map(p=>p.name).join(' · ');
+  if(roomHostId&&roomId&&!roster.some(p=>p.id===roomHostId)&&state?.status==='in_game'){
+   onlineMessage('⚠ Host mất kết nối — trận tạm dừng. Chờ Host quay lại hoặc tạo phòng khác.',true);
+  }
   $('start').classList.toggle('hidden',!host||roster.length!==4||state?.status==='in_game');
  });
  MP.onState(snapshot=>{
   if(!snapshot||!snapshot.players)return;
-  state=snapshot;
+  state=snapshot;onlineStateAt=Date.now();
+  if(uid)seq=Math.max(seq,Number(snapshot.clientSequences?.[uid])||0);
   if(host&&(!hostState||snapshot.round>hostState.round||snapshot.updatedAt>hostState.updatedAt))hostState=E.clone(snapshot);
   update();
  });
@@ -232,25 +260,25 @@ function setupMP(){
    await publish();
   });
  });
- MP.onError(e=>showError(e.err||e.message||e.type||e));
+ MP.onError(e=>{onlineMessage('⚠ Sự cố đồng bộ phòng',true);showError(e.err||e.message||e.type||e);});
 }
 let seq=0;
 window.createRoom=async()=>{
  try{if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
   const r=await MP.createRoom('dolphin-tactics',{name:$('nick').value.trim()||'Khách',maxPlayers:4});
-  roomId=r.roomId;uid=MP.getDeviceId();host=true;$('code').value=roomId;info('Mã phòng '+roomId+' — mời thêm 3 người');}
+  roomId=r.roomId;uid=MP.getDeviceId();host=true;$('code').value=roomId;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:$('nick').value.trim()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Mã phòng '+roomId+' — mời thêm 3 người');}
  catch(e){showError(e);}
 };
 window.joinRoom=async()=>{
  try{if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
   const r=await MP.joinRoom($('code').value.trim().toUpperCase(),'dolphin-tactics',{name:$('nick').value.trim()||'Khách'});
-  roomId=r.roomId;uid=MP.getDeviceId();host=false;info('Đã vào phòng '+roomId);}
+  roomId=r.roomId;uid=MP.getDeviceId();host=!!r.isHost;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:$('nick').value.trim()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Đã vào phòng '+roomId);}
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- try{if(!offline)await MP.leaveRoom();offline=false;roomId='';state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;
+ try{if(!offline)await MP.leaveRoom();offline=false;roomId='';roomHostId='';onlineStateAt=0;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;localStorage.removeItem(reconnectKey);
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
-  $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';
+  $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';$('reconnectBtn').classList.add('hidden');onlineMessage('');
   info('Đã rời phòng');}catch(e){showError(e);}
 };
 window.startRoom=async()=>{
@@ -275,6 +303,7 @@ function init(){
   if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
   window.db=firebase.firestore();
   uid=MP.getDeviceId();setupMP();
+  try{const saved=JSON.parse(localStorage.getItem(reconnectKey)||'null');if(saved?.code){$('code').value=saved.code;$('lobby').classList.remove('hidden');$('reconnectBtn').classList.remove('hidden');onlineMessage('Có thể kết nối lại phòng '+saved.code);}}catch(e){}
   info('Chọn chế độ Offline hoặc Online để bắt đầu.');
  }catch(e){showError(e);}
 }

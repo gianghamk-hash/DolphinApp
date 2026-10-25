@@ -221,6 +221,7 @@ async function createRoom(game, opts = {}){
 
   await db.collection(COL).doc(code).set({
     game, hostId: _deviceId, status: 'waiting', maxPlayers: Math.min(4, Math.max(2, Number(opts.maxPlayers)||2)),
+    seats: (Number(opts.maxPlayers)||2)>2 ? { p1:_deviceId } : null,
     seed, createdAt: now, updatedAt: now,
   });
 
@@ -257,6 +258,31 @@ async function joinRoom(code, game, opts = {}){
   if (room.game !== game) throw new Error('Phòng dành cho game khác');
   if (room.status === 'closed') throw new Error('Phòng đã đóng');
 
+  // Four-seat rooms reserve seats atomically to prevent simultaneous joins
+  // claiming the same slot. Legacy 2P games retain their existing flow.
+  if ((Number(room.maxPlayers)||2)>2){
+    const roomRef=db.collection(COL).doc(code),playerRef=roomRef.collection('players').doc(_deviceId);
+    const assigned=await db.runTransaction(async tx=>{
+      const current=await tx.get(roomRef);
+      if(!current.exists)throw Error('Phòng không tồn tại');
+      const data=current.data();
+      const seats={...(data.seats||{})};
+      const prior=Object.keys(seats).find(slot=>seats[slot]===_deviceId);
+      if(!prior && data.status!=='waiting')throw Error('Trận đã bắt đầu');
+      let slot=prior;
+      if(!slot){
+        for(let n=1;n<=Math.min(4,Number(data.maxPlayers)||2);n++)if(!seats['p'+n]){slot='p'+n;break;}
+        if(!slot)throw Error('Phòng đã đủ '+data.maxPlayers+' người');
+        seats[slot]=_deviceId;
+      }
+      tx.update(roomRef,{seats,updatedAt:Date.now()});
+      tx.set(playerRef,{name:_name,side:slot,joinedAt:Date.now(),lastSeen:Date.now(),ready:false},{merge:true});
+      return slot;
+    });
+    _roomId=code;_side=assigned;_isHost=room.hostId===_deviceId;
+    startHeartbeat();subscribe();
+    return {roomId:code,side:assigned,isHost:_isHost,seed:room.seed,name:_name};
+  }
   const pSnap = await db.collection(COL).doc(code).collection('players').get();
   const players = pSnap.docs.map(d => ({ id: d.id, ...d.data() }));
 
@@ -318,6 +344,21 @@ async function leaveRoom(){
   _game = null;
 }
 
+// Strict variants surface permissions/network errors to the game rather than
+// silently losing player commands. Legacy multiplayer API is unchanged.
+async function sendInputStrict(payload){
+  if(!_roomId)throw Error('Chưa vào phòng');
+  const db=getDB();if(!db)throw Error('Chưa kết nối Firestore');
+  await db.collection(COL).doc(_roomId).collection('inputs').doc(_deviceId).set({
+    ...payload,at:Date.now(),
+  });
+}
+async function sendStateStrict(snapshot){
+  if(!_roomId||!_isHost)throw Error('Chỉ chủ phòng được ghi trạng thái');
+  const db=getDB();if(!db)throw Error('Chưa kết nối Firestore');
+  await db.collection(COL).doc(_roomId).collection('data').doc('state').set(snapshot);
+}
+
 async function sendInput(payload){
   if (_activeAdapter){
     if (!_activeAdapter.sendInput) throw new Error('Adapter chỉ nhận thao tác qua máy chủ');
@@ -376,7 +417,7 @@ async function setReady(ready){
 window.DolphinMP = {
   registerAdapter,
   createRoom, joinRoom, leaveRoom,
-  sendInput, sendState, sendConfig, updateRoomStatus, setReady,
+  sendInput, sendState, sendInputStrict, sendStateStrict, sendConfig, updateRoomStatus, setReady,
   onRoom:    cb => on('room', cb),
   onPlayers: cb => on('players', cb),
   onState:   cb => on('state', cb),

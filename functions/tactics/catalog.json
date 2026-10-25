@@ -9,7 +9,7 @@
   "heroes": [
     {
       "id": "H01",
-      "name": "Thiết Vệ",
+      "name": "Saber",
       "cost": 1,
       "origins": [
         "Mech"
@@ -33,7 +33,7 @@
     },
     {
       "id": "H02",
-      "name": "Sóng Xanh",
+      "name": "Alucard",
       "cost": 1,
       "origins": [
         "Void"
@@ -57,7 +57,7 @@
     },
     {
       "id": "H03",
-      "name": "Ma Nhãn",
+      "name": "Layla",
       "cost": 1,
       "origins": [
         "Arcane"
@@ -81,7 +81,7 @@
     },
     {
       "id": "H04",
-      "name": "Phong Nha",
+      "name": "Miya",
       "cost": 1,
       "origins": [
         "Beast"
@@ -105,7 +105,7 @@
     },
     {
       "id": "H05",
-      "name": "Lôi Tướng",
+      "name": "Eudora",
       "cost": 1,
       "origins": [
         "Shadow"
@@ -129,7 +129,7 @@
     },
     {
       "id": "H06",
-      "name": "Hoa Linh",
+      "name": "Nana",
       "cost": 1,
       "origins": [
         "Celestial"
@@ -153,7 +153,7 @@
     },
     {
       "id": "H07",
-      "name": "Địa Quyền",
+      "name": "Balmond",
       "cost": 1,
       "origins": [
         "Mech"
@@ -177,7 +177,7 @@
     },
     {
       "id": "H08",
-      "name": "Hải Đao",
+      "name": "Clint",
       "cost": 1,
       "origins": [
         "Void"
@@ -201,7 +201,7 @@
     },
     {
       "id": "H09",
-      "name": "Hư Ảnh",
+      "name": "Gusion",
       "cost": 2,
       "origins": [
         "Arcane"
@@ -225,7 +225,7 @@
     },
     {
       "id": "H10",
-      "name": "Cơ Giáp",
+      "name": "Johnson",
       "cost": 2,
       "origins": [
         "Beast"
@@ -249,7 +249,7 @@
     },
     {
       "id": "H11",
-      "name": "Pháp Sư",
+      "name": "Cyclops",
       "cost": 2,
       "origins": [
         "Shadow"
@@ -273,7 +273,7 @@
     },
     {
       "id": "H12",
-      "name": "Thú Vương",
+      "name": "Roger",
       "cost": 2,
       "origins": [
         "Celestial"
@@ -297,7 +297,7 @@
     },
     {
       "id": "H13",
-      "name": "Ngân Dực",
+      "name": "Lesley",
       "cost": 2,
       "origins": [
         "Mech"
@@ -321,7 +321,7 @@
     },
     {
       "id": "H14",
-      "name": "Dạ Nhẫn",
+      "name": "Hayabusa",
       "cost": 2,
       "origins": [
         "Void"
@@ -345,7 +345,7 @@
     },
     {
       "id": "H15",
-      "name": "Thủy Trượng",
+      "name": "Kagura",
       "cost": 2,
       "origins": [
         "Arcane"
@@ -369,7 +369,7 @@
     },
     {
       "id": "H16",
-      "name": "Thiên Tiễn",
+      "name": "Irithel",
       "cost": 3,
       "origins": [
         "Beast"
@@ -393,7 +393,7 @@
     },
     {
       "id": "H17",
-      "name": "Ám Hỏa",
+      "name": "Karina",
       "cost": 3,
       "origins": [
         "Shadow"
@@ -417,7 +417,7 @@
     },
     {
       "id": "H18",
-      "name": "Ngọc Y",
+      "name": "Hanabi",
       "cost": 3,
       "origins": [
         "Celestial"
@@ -441,7 +441,7 @@
     },
     {
       "id": "H19",
-      "name": "Lang Kỵ",
+      "name": "Ruby",
       "cost": 3,
       "origins": [
         "Mech"
@@ -465,7 +465,7 @@
     },
     {
       "id": "H20",
-      "name": "Khải Thần",
+      "name": "Rafaela",
       "cost": 3,
       "origins": [
         "Void"
@@ -489,7 +489,7 @@
     },
     {
       "id": "H21",
-      "name": "Phệ Hồn",
+      "name": "Zhask",
       "cost": 3,
       "origins": [
         "Arcane"
@@ -513,7 +513,7 @@
     },
     {
       "id": "H22",
-      "name": "Lôi Kiếm",
+      "name": "Zilong",
       "cost": 4,
       "origins": [
         "Beast"
@@ -537,7 +537,7 @@
     },
     {
       "id": "H23",
-      "name": "Tỏa Sáng",
+      "name": "Claude",
       "cost": 4,
       "origins": [
         "Shadow"
@@ -561,7 +561,7 @@
     },
     {
       "id": "H24",
-      "name": "Hắc Long",
+      "name": "Thamuz",
       "cost": 4,
       "origins": [
         "Celestial"
@@ -585,7 +585,7 @@
     },
     {
       "id": "H25",
-      "name": "Cự Thần",
+      "name": "Gatotkaca",
       "cost": 4,
       "origins": [
         "Mech"
@@ -609,7 +609,7 @@
     },
     {
       "id": "H26",
-      "name": "Phượng Nữ",
+      "name": "Valir",
       "cost": 4,
       "origins": [
         "Void"
@@ -633,7 +633,7 @@
     },
     {
       "id": "H27",
-      "name": "Tinh Không",
+      "name": "Lunox",
       "cost": 5,
       "origins": [
         "Arcane",
@@ -658,7 +658,7 @@
     },
     {
       "id": "H28",
-      "name": "Hải Hoàng",
+      "name": "Kadita",
       "cost": 5,
       "origins": [
         "Beast"
@@ -682,7 +682,7 @@
     },
     {
       "id": "H29",
-      "name": "Thần Cơ",
+      "name": "Tigreal",
       "cost": 5,
       "origins": [
         "Shadow"
@@ -706,7 +706,7 @@
     },
     {
       "id": "H30",
-      "name": "Hư Vương",
+      "name": "Argus",
       "cost": 5,
       "origins": [
         "Celestial",
@@ -742,7 +742,8 @@
           "armor": 50,
           "regen": 22
         }
-      }
+      },
+      "label": "Robot"
     },
     "Void": {
       "type": "origin",
@@ -753,7 +754,8 @@
         "4": {
           "trueDamageRatio": 0.35
         }
-      }
+      },
+      "label": "Vực Thẳm"
     },
     "Arcane": {
       "type": "origin",
@@ -764,7 +766,8 @@
         "6": {
           "abilityPower": 75
         }
-      }
+      },
+      "label": "Ma Thuật"
     },
     "Beast": {
       "type": "origin",
@@ -778,7 +781,8 @@
         "6": {
           "stackAttackSpeed": 0.12
         }
-      }
+      },
+      "label": "Dã Thú"
     },
     "Shadow": {
       "type": "origin",
@@ -789,7 +793,8 @@
         "4": {
           "cloneRatio": 0.65
         }
-      }
+      },
+      "label": "Bóng Tối"
     },
     "Celestial": {
       "type": "origin",
@@ -800,7 +805,8 @@
         "4": {
           "omnivamp": 0.25
         }
-      }
+      },
+      "label": "Ánh Sáng"
     },
     "Brawler": {
       "type": "class",
@@ -811,7 +817,8 @@
         "4": {
           "hpRatio": 0.45
         }
-      }
+      },
+      "label": "Chiến Binh"
     },
     "Assassin": {
       "type": "class",
@@ -824,7 +831,8 @@
           "critChance": 0.4,
           "critDamage": 0.8
         }
-      }
+      },
+      "label": "Sát Thủ"
     },
     "Ranger": {
       "type": "class",
@@ -835,7 +843,8 @@
         "4": {
           "doubleHitChance": 0.4
         }
-      }
+      },
+      "label": "Xạ Thủ"
     },
     "Guardian": {
       "type": "class",
@@ -843,7 +852,8 @@
         "2": {
           "adjacentShield": 150
         }
-      }
+      },
+      "label": "Hộ Vệ"
     },
     "Sorcerer": {
       "type": "class",
@@ -854,7 +864,8 @@
         "4": {
           "bonusMana": 12
         }
-      }
+      },
+      "label": "Pháp Sư"
     }
   },
   "components": [

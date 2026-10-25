@@ -155,7 +155,7 @@ html.game-locked, body.game-locked{
 #gameIframeView.fullscreen .game-frame-wrap{
   flex:1;height:auto;min-height:0;
   border:none;border-radius:0;box-shadow:none;
-  touch-action:none;overscroll-behavior:none;
+  touch-action:auto;overscroll-behavior:contain;
 }
 
 /* ═══════ ✨ LIQUID GLASS · DARK (nền đen) ═══════ */
@@ -518,6 +518,15 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     if(!view)return;
     view.classList.toggle('fullscreen',!!ev.data.enabled);
     view.classList.toggle('tactics-immersive',!!ev.data.enabled);
+    // Only the same-origin Tactics frame can request native immersive mode.
+    // Android host must explicitly provide this bridge in its APK build.
+    try {
+      var androidBridge=window.AndroidGame;
+      if(androidBridge){
+        if(ev.data.enabled && typeof androidBridge.enterLandscapeFullscreen==='function')androidBridge.enterLandscapeFullscreen();
+        if(!ev.data.enabled && typeof androidBridge.exitLandscapeFullscreen==='function')androidBridge.exitLandscapeFullscreen();
+      }
+    } catch(err){ console.warn('[Tactics] Native fullscreen bridge unavailable',err); }
   });
   window.closeGame = function(){
     if (!currentGame) return;

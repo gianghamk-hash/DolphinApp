@@ -1,0 +1,1291 @@
+{
+  "version": 1,
+  "board": {
+    "columns": 8,
+    "rowsPerSide": 4,
+    "benchSlots": 8,
+    "shopSlots": 5
+  },
+  "heroes": [
+    {
+      "id": "H01",
+      "name": "Thiết Vệ",
+      "cost": 1,
+      "origins": [
+        "Mech"
+      ],
+      "classes": [
+        "Brawler"
+      ],
+      "hp": 550,
+      "attack": 45,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.65,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "strike",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H02",
+      "name": "Sóng Xanh",
+      "cost": 1,
+      "origins": [
+        "Void"
+      ],
+      "classes": [
+        "Assassin"
+      ],
+      "hp": 570,
+      "attack": 49,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.72,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "dash",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H03",
+      "name": "Ma Nhãn",
+      "cost": 1,
+      "origins": [
+        "Arcane"
+      ],
+      "classes": [
+        "Ranger"
+      ],
+      "hp": 590,
+      "attack": 53,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.79,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "bolt",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H04",
+      "name": "Phong Nha",
+      "cost": 1,
+      "origins": [
+        "Beast"
+      ],
+      "classes": [
+        "Guardian"
+      ],
+      "hp": 610,
+      "attack": 57,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.8600000000000001,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "heal",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H05",
+      "name": "Lôi Tướng",
+      "cost": 1,
+      "origins": [
+        "Shadow"
+      ],
+      "classes": [
+        "Sorcerer"
+      ],
+      "hp": 630,
+      "attack": 45,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.93,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "shield",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H06",
+      "name": "Hoa Linh",
+      "cost": 1,
+      "origins": [
+        "Celestial"
+      ],
+      "classes": [
+        "Brawler"
+      ],
+      "hp": 650,
+      "attack": 49,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.65,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "blast",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H07",
+      "name": "Địa Quyền",
+      "cost": 1,
+      "origins": [
+        "Mech"
+      ],
+      "classes": [
+        "Assassin"
+      ],
+      "hp": 550,
+      "attack": 53,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.72,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "drain",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H08",
+      "name": "Hải Đao",
+      "cost": 1,
+      "origins": [
+        "Void"
+      ],
+      "classes": [
+        "Ranger"
+      ],
+      "hp": 570,
+      "attack": 57,
+      "armor": 15,
+      "magicResist": 15,
+      "attackSpeed": 0.79,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 60,
+      "ability": {
+        "kind": "stun",
+        "power": 110,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H09",
+      "name": "Hư Ảnh",
+      "cost": 2,
+      "origins": [
+        "Arcane"
+      ],
+      "classes": [
+        "Guardian"
+      ],
+      "hp": 690,
+      "attack": 55,
+      "armor": 18,
+      "magicResist": 18,
+      "attackSpeed": 0.8600000000000001,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 80,
+      "ability": {
+        "kind": "strike",
+        "power": 145,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H10",
+      "name": "Cơ Giáp",
+      "cost": 2,
+      "origins": [
+        "Beast"
+      ],
+      "classes": [
+        "Sorcerer"
+      ],
+      "hp": 710,
+      "attack": 59,
+      "armor": 18,
+      "magicResist": 18,
+      "attackSpeed": 0.93,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 80,
+      "ability": {
+        "kind": "dash",
+        "power": 145,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H11",
+      "name": "Pháp Sư",
+      "cost": 2,
+      "origins": [
+        "Shadow"
+      ],
+      "classes": [
+        "Brawler"
+      ],
+      "hp": 730,
+      "attack": 63,
+      "armor": 18,
+      "magicResist": 18,
+      "attackSpeed": 0.65,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 80,
+      "ability": {
+        "kind": "bolt",
+        "power": 145,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H12",
+      "name": "Thú Vương",
+      "cost": 2,
+      "origins": [
+        "Celestial"
+      ],
+      "classes": [
+        "Assassin"
+      ],
+      "hp": 750,
+      "attack": 67,
+      "armor": 18,
+      "magicResist": 18,
+      "attackSpeed": 0.72,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 80,
+      "ability": {
+        "kind": "heal",
+        "power": 145,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H13",
+      "name": "Ngân Dực",
+      "cost": 2,
+      "origins": [
+        "Mech"
+      ],
+      "classes": [
+        "Ranger"
+      ],
+      "hp": 650,
+      "attack": 55,
+      "armor": 18,
+      "magicResist": 18,
+      "attackSpeed": 0.79,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 80,
+      "ability": {
+        "kind": "shield",
+        "power": 145,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H14",
+      "name": "Dạ Nhẫn",
+      "cost": 2,
+      "origins": [
+        "Void"
+      ],
+      "classes": [
+        "Guardian"
+      ],
+      "hp": 670,
+      "attack": 59,
+      "armor": 18,
+      "magicResist": 18,
+      "attackSpeed": 0.8600000000000001,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 80,
+      "ability": {
+        "kind": "blast",
+        "power": 145,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H15",
+      "name": "Thủy Trượng",
+      "cost": 2,
+      "origins": [
+        "Arcane"
+      ],
+      "classes": [
+        "Sorcerer"
+      ],
+      "hp": 690,
+      "attack": 63,
+      "armor": 18,
+      "magicResist": 18,
+      "attackSpeed": 0.93,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 80,
+      "ability": {
+        "kind": "drain",
+        "power": 145,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H16",
+      "name": "Thiên Tiễn",
+      "cost": 3,
+      "origins": [
+        "Beast"
+      ],
+      "classes": [
+        "Brawler"
+      ],
+      "hp": 840,
+      "attack": 77,
+      "armor": 21,
+      "magicResist": 21,
+      "attackSpeed": 0.65,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 100,
+      "ability": {
+        "kind": "stun",
+        "power": 180,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H17",
+      "name": "Ám Hỏa",
+      "cost": 3,
+      "origins": [
+        "Shadow"
+      ],
+      "classes": [
+        "Assassin"
+      ],
+      "hp": 870,
+      "attack": 65,
+      "armor": 21,
+      "magicResist": 21,
+      "attackSpeed": 0.72,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 100,
+      "ability": {
+        "kind": "strike",
+        "power": 180,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H18",
+      "name": "Ngọc Y",
+      "cost": 3,
+      "origins": [
+        "Celestial"
+      ],
+      "classes": [
+        "Ranger"
+      ],
+      "hp": 900,
+      "attack": 69,
+      "armor": 21,
+      "magicResist": 21,
+      "attackSpeed": 0.79,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 100,
+      "ability": {
+        "kind": "dash",
+        "power": 180,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H19",
+      "name": "Lang Kỵ",
+      "cost": 3,
+      "origins": [
+        "Mech"
+      ],
+      "classes": [
+        "Guardian"
+      ],
+      "hp": 750,
+      "attack": 73,
+      "armor": 21,
+      "magicResist": 21,
+      "attackSpeed": 0.8600000000000001,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 100,
+      "ability": {
+        "kind": "bolt",
+        "power": 180,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H20",
+      "name": "Khải Thần",
+      "cost": 3,
+      "origins": [
+        "Void"
+      ],
+      "classes": [
+        "Sorcerer"
+      ],
+      "hp": 780,
+      "attack": 77,
+      "armor": 21,
+      "magicResist": 21,
+      "attackSpeed": 0.93,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 100,
+      "ability": {
+        "kind": "heal",
+        "power": 180,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H21",
+      "name": "Phệ Hồn",
+      "cost": 3,
+      "origins": [
+        "Arcane"
+      ],
+      "classes": [
+        "Brawler"
+      ],
+      "hp": 810,
+      "attack": 65,
+      "armor": 21,
+      "magicResist": 21,
+      "attackSpeed": 0.65,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 100,
+      "ability": {
+        "kind": "shield",
+        "power": 180,
+        "radius": 1
+      }
+    },
+    {
+      "id": "H22",
+      "name": "Lôi Kiếm",
+      "cost": 4,
+      "origins": [
+        "Beast"
+      ],
+      "classes": [
+        "Assassin"
+      ],
+      "hp": 1044,
+      "attack": 79,
+      "armor": 24,
+      "magicResist": 24,
+      "attackSpeed": 0.72,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 120,
+      "ability": {
+        "kind": "aoe",
+        "power": 215,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H23",
+      "name": "Tỏa Sáng",
+      "cost": 4,
+      "origins": [
+        "Shadow"
+      ],
+      "classes": [
+        "Ranger"
+      ],
+      "hp": 1082,
+      "attack": 83,
+      "armor": 24,
+      "magicResist": 24,
+      "attackSpeed": 0.79,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 120,
+      "ability": {
+        "kind": "aoe",
+        "power": 215,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H24",
+      "name": "Hắc Long",
+      "cost": 4,
+      "origins": [
+        "Celestial"
+      ],
+      "classes": [
+        "Guardian"
+      ],
+      "hp": 1120,
+      "attack": 87,
+      "armor": 24,
+      "magicResist": 24,
+      "attackSpeed": 0.8600000000000001,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 120,
+      "ability": {
+        "kind": "aoe",
+        "power": 215,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H25",
+      "name": "Cự Thần",
+      "cost": 4,
+      "origins": [
+        "Mech"
+      ],
+      "classes": [
+        "Sorcerer"
+      ],
+      "hp": 930,
+      "attack": 75,
+      "armor": 24,
+      "magicResist": 24,
+      "attackSpeed": 0.93,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 120,
+      "ability": {
+        "kind": "aoe",
+        "power": 215,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H26",
+      "name": "Phượng Nữ",
+      "cost": 4,
+      "origins": [
+        "Void"
+      ],
+      "classes": [
+        "Brawler"
+      ],
+      "hp": 968,
+      "attack": 79,
+      "armor": 24,
+      "magicResist": 24,
+      "attackSpeed": 0.65,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 120,
+      "ability": {
+        "kind": "aoe",
+        "power": 215,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H27",
+      "name": "Tinh Không",
+      "cost": 5,
+      "origins": [
+        "Arcane",
+        "Beast"
+      ],
+      "classes": [
+        "Assassin"
+      ],
+      "hp": 1240,
+      "attack": 93,
+      "armor": 27,
+      "magicResist": 27,
+      "attackSpeed": 0.72,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 140,
+      "ability": {
+        "kind": "aoe",
+        "power": 250,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H28",
+      "name": "Hải Hoàng",
+      "cost": 5,
+      "origins": [
+        "Beast"
+      ],
+      "classes": [
+        "Ranger"
+      ],
+      "hp": 1290,
+      "attack": 97,
+      "armor": 27,
+      "magicResist": 27,
+      "attackSpeed": 0.79,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 140,
+      "ability": {
+        "kind": "aoe",
+        "power": 250,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H29",
+      "name": "Thần Cơ",
+      "cost": 5,
+      "origins": [
+        "Shadow"
+      ],
+      "classes": [
+        "Guardian"
+      ],
+      "hp": 1340,
+      "attack": 85,
+      "armor": 27,
+      "magicResist": 27,
+      "attackSpeed": 0.8600000000000001,
+      "range": 1,
+      "manaStart": 0,
+      "manaMax": 140,
+      "ability": {
+        "kind": "aoe",
+        "power": 250,
+        "radius": 2
+      }
+    },
+    {
+      "id": "H30",
+      "name": "Hư Vương",
+      "cost": 5,
+      "origins": [
+        "Celestial",
+        "Arcane"
+      ],
+      "classes": [
+        "Sorcerer"
+      ],
+      "hp": 1390,
+      "attack": 89,
+      "armor": 27,
+      "magicResist": 27,
+      "attackSpeed": 0.93,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 140,
+      "ability": {
+        "kind": "aoe",
+        "power": 250,
+        "radius": 2
+      }
+    }
+  ],
+  "origins": {
+    "Mech": {
+      "type": "origin",
+      "thresholds": {
+        "2": {
+          "armor": 20,
+          "regen": 8
+        },
+        "4": {
+          "armor": 50,
+          "regen": 22
+        }
+      }
+    },
+    "Void": {
+      "type": "origin",
+      "thresholds": {
+        "2": {
+          "trueDamageRatio": 0.15
+        },
+        "4": {
+          "trueDamageRatio": 0.35
+        }
+      }
+    },
+    "Arcane": {
+      "type": "origin",
+      "thresholds": {
+        "3": {
+          "abilityPower": 30
+        },
+        "6": {
+          "abilityPower": 75
+        }
+      }
+    },
+    "Beast": {
+      "type": "origin",
+      "thresholds": {
+        "2": {
+          "stackAttackSpeed": 0.03
+        },
+        "4": {
+          "stackAttackSpeed": 0.07
+        },
+        "6": {
+          "stackAttackSpeed": 0.12
+        }
+      }
+    },
+    "Shadow": {
+      "type": "origin",
+      "thresholds": {
+        "2": {
+          "cloneRatio": 0.35
+        },
+        "4": {
+          "cloneRatio": 0.65
+        }
+      }
+    },
+    "Celestial": {
+      "type": "origin",
+      "thresholds": {
+        "2": {
+          "omnivamp": 0.12
+        },
+        "4": {
+          "omnivamp": 0.25
+        }
+      }
+    },
+    "Brawler": {
+      "type": "class",
+      "thresholds": {
+        "2": {
+          "hpRatio": 0.2
+        },
+        "4": {
+          "hpRatio": 0.45
+        }
+      }
+    },
+    "Assassin": {
+      "type": "class",
+      "thresholds": {
+        "3": {
+          "critChance": 0.2,
+          "critDamage": 0.4
+        },
+        "6": {
+          "critChance": 0.4,
+          "critDamage": 0.8
+        }
+      }
+    },
+    "Ranger": {
+      "type": "class",
+      "thresholds": {
+        "2": {
+          "doubleHitChance": 0.2
+        },
+        "4": {
+          "doubleHitChance": 0.4
+        }
+      }
+    },
+    "Guardian": {
+      "type": "class",
+      "thresholds": {
+        "2": {
+          "adjacentShield": 150
+        }
+      }
+    },
+    "Sorcerer": {
+      "type": "class",
+      "thresholds": {
+        "2": {
+          "bonusMana": 5
+        },
+        "4": {
+          "bonusMana": 12
+        }
+      }
+    }
+  },
+  "components": [
+    {
+      "id": "sword",
+      "name": "Kiếm BF",
+      "stat": "attack",
+      "value": 12
+    },
+    {
+      "id": "rod",
+      "name": "Gậy Quá Khổ",
+      "stat": "abilityPower",
+      "value": 20
+    },
+    {
+      "id": "vest",
+      "name": "Giáp Lưới",
+      "stat": "armor",
+      "value": 20
+    },
+    {
+      "id": "cloak",
+      "name": "Áo Choàng Bạc",
+      "stat": "magicResist",
+      "value": 20
+    },
+    {
+      "id": "belt",
+      "name": "Đai Máu",
+      "stat": "hp",
+      "value": 150
+    },
+    {
+      "id": "tear",
+      "name": "Nước Mắt",
+      "stat": "mana",
+      "value": 20
+    }
+  ],
+  "recipes": [
+    {
+      "id": "I01",
+      "key": "sword+sword",
+      "components": [
+        "sword",
+        "sword"
+      ],
+      "name": "Vô Cực Kiếm",
+      "bonus": {
+        "attack": 24,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "crit"
+    },
+    {
+      "id": "I02",
+      "key": "rod+sword",
+      "components": [
+        "sword",
+        "rod"
+      ],
+      "name": "Kiếm Pháp Thuật",
+      "bonus": {
+        "attack": 12,
+        "abilityPower": 20,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I03",
+      "key": "sword+vest",
+      "components": [
+        "sword",
+        "vest"
+      ],
+      "name": "Kiếm Hộ Vệ",
+      "bonus": {
+        "attack": 12,
+        "abilityPower": 0,
+        "armor": 20,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I04",
+      "key": "cloak+sword",
+      "components": [
+        "sword",
+        "cloak"
+      ],
+      "name": "Kiếm Kháng Phép",
+      "bonus": {
+        "attack": 12,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 20,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I05",
+      "key": "belt+sword",
+      "components": [
+        "sword",
+        "belt"
+      ],
+      "name": "Huyết Kiếm",
+      "bonus": {
+        "attack": 12,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 150,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I06",
+      "key": "sword+tear",
+      "components": [
+        "sword",
+        "tear"
+      ],
+      "name": "Lưỡi Năng Lượng",
+      "bonus": {
+        "attack": 12,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 20
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I07",
+      "key": "rod+rod",
+      "components": [
+        "rod",
+        "rod"
+      ],
+      "name": "Mũ Pháp Sư",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 40,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I08",
+      "key": "rod+vest",
+      "components": [
+        "rod",
+        "vest"
+      ],
+      "name": "Trượng Thép",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 20,
+        "armor": 20,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I09",
+      "key": "cloak+rod",
+      "components": [
+        "rod",
+        "cloak"
+      ],
+      "name": "Trượng Kháng Phép",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 20,
+        "armor": 0,
+        "magicResist": 20,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I10",
+      "key": "belt+rod",
+      "components": [
+        "rod",
+        "belt"
+      ],
+      "name": "Trượng Sinh Mệnh",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 20,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 150,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I11",
+      "key": "rod+tear",
+      "components": [
+        "rod",
+        "tear"
+      ],
+      "name": "Quyền Trượng Thiên Thần",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 20,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 20
+      },
+      "effect": "apGrowth"
+    },
+    {
+      "id": "I12",
+      "key": "vest+vest",
+      "components": [
+        "vest",
+        "vest"
+      ],
+      "name": "Giáp Gai",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 40,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I13",
+      "key": "cloak+vest",
+      "components": [
+        "vest",
+        "cloak"
+      ],
+      "name": "Giáp Long",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 20,
+        "magicResist": 20,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I14",
+      "key": "belt+vest",
+      "components": [
+        "vest",
+        "belt"
+      ],
+      "name": "Giáp Lửa",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 20,
+        "magicResist": 0,
+        "hp": 150,
+        "mana": 0
+      },
+      "effect": "burn"
+    },
+    {
+      "id": "I15",
+      "key": "tear+vest",
+      "components": [
+        "vest",
+        "tear"
+      ],
+      "name": "Giáp Năng Lượng",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 20,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 20
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I16",
+      "key": "cloak+cloak",
+      "components": [
+        "cloak",
+        "cloak"
+      ],
+      "name": "Song Áo Choàng",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 40,
+        "hp": 0,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I17",
+      "key": "belt+cloak",
+      "components": [
+        "cloak",
+        "belt"
+      ],
+      "name": "Linh Giáp",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 20,
+        "hp": 150,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I18",
+      "key": "cloak+tear",
+      "components": [
+        "cloak",
+        "tear"
+      ],
+      "name": "Áo Choàng Mana",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 20,
+        "hp": 0,
+        "mana": 20
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I19",
+      "key": "belt+belt",
+      "components": [
+        "belt",
+        "belt"
+      ],
+      "name": "Giáp Máu",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 300,
+        "mana": 0
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I20",
+      "key": "belt+tear",
+      "components": [
+        "belt",
+        "tear"
+      ],
+      "name": "Dây Chuyền Hồi Năng Lượng",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 150,
+        "mana": 20
+      },
+      "effect": "stat"
+    },
+    {
+      "id": "I21",
+      "key": "tear+tear",
+      "components": [
+        "tear",
+        "tear"
+      ],
+      "name": "Bùa Xanh",
+      "bonus": {
+        "attack": 0,
+        "abilityPower": 0,
+        "armor": 0,
+        "magicResist": 0,
+        "hp": 0,
+        "mana": 40
+      },
+      "effect": "manaRegen"
+    }
+  ],
+  "pve": {
+    "rounds": [
+      1,
+      2,
+      3
+    ],
+    "every": 5
+  },
+  "phases": {
+    "PREPARATION": 30000,
+    "COMBAT": 40000,
+    "TRANSITION": 5000
+  }
+}

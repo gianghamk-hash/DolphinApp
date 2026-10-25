@@ -211,16 +211,44 @@
         makeIllustration('lantern','tbi-lantern tbi-l3');
       for(i=0;i<6;i++)html+='<span class="tbi-petal" style="--n:'+i+';--delay:'+(-i*1.4)+'s">✿</span>';
     }else{
-      icons=THEME_SCENES[key]||THEME_SCENES.default;
-      for(i=0;i<icons.length;i++){
-        p=SCENE_POSITIONS[i];
-        html+='<span class="tbi-particle" style="--px:'+p[0]+'%;--py:'+p[1]+
-          '%;--ps:'+p[2]+';--duration:'+p[3]+'s;--delay:'+p[4]+'s">'+icons[i]+'</span>';
-      }
+      renderExtraIllustration(key,holder);
+      return;
     }
     holder.innerHTML=html;
   }
 
+
+
+  /* Reusable vector decorations for all remaining holiday and seasonal scenes. */
+  var EXTRA_SCENE_EMOJIS={"default":["🐬","🫧","🌊","🐠","☀️"],"tet":["🌸","🏮","🌼","🧧","🌸"],"valentine":["💖","💗","💌","🌹","💕"],"womenday":["💐","🦋","🌸","🌷","🌺"],"reunification":["🇻🇳","⭐","🎆","⭐","🇻🇳"],"children":["🎈","🪁","🎉","🎈","🎊"],"nationalday":["🇻🇳","⭐","🎇","🇻🇳","⭐"],"midautumn":["🌕","🐇","🏮","☁️","🏮"],"halloween":["👻","🦇","👻","🦇","👻"],"christmas":["❄️","🎁","🔔","❄️","⭐"],"newyear":["🎇","✨","🎆","⭐","🎊"],"spring":["🌸","🦋","🌷","🌼","🌸"],"summer":["🌊","🐠","☀️","🌴","🫧"],"autumn":["🍁","🍂","🍃","🍁","🍂"],"winter":["❄️","🌨️","❄️","✨","❄️"]};
+  var EXTRA_SCENE_COLORS={"default":"#65dbdf","valentine":"#ff7fa9","womenday":"#ec92c6","reunification":"#ee5656","children":"#67ded0","nationalday":"#fcd65b","midautumn":"#f7dd9c","newyear":"#d39cff","spring":"#ffb4d5","summer":"#ffe17a","autumn":"#f8ac65","winter":"#dcf4ff"};
+  function renderExtraIllustration(key,holder){
+    var icons=EXTRA_SCENE_EMOJIS[key]||EXTRA_SCENE_EMOJIS.default;
+    var points=[[10,16],[77,12],[18,68],[77,70],[42,6]];
+    var color=EXTRA_SCENE_COLORS[key]||'#7fdddd';
+    var html='<span class="tbi-extra-aura" style="--extra-color:'+color+'"></span>';
+    for(var i=0;i<icons.length;i++){
+      var p=points[i];
+      html+='<span class="tbi-extra-character" style="left:'+p[0]+'%;top:'+p[1]+'%;--n:'+i+'" aria-hidden="true">'+icons[i]+'</span>';
+    }
+    holder.className='tbi-scene tbi-illustrated tbi-extra-scene';
+    holder.innerHTML=html;
+  }
+  var extraAnimations=[];
+  function stopExtraAnimations(){extraAnimations.forEach(function(a){try{a.cancel();}catch(e){}});extraAnimations=[];}
+  function animateExtraScene(holder,key){
+    stopExtraAnimations();
+    if(!holder||!Element.prototype.animate||(window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches))return;
+    Array.prototype.forEach.call(holder.querySelectorAll('.tbi-extra-character'),function(node,i){
+      node.style.animation='none';
+      extraAnimations.push(node.animate([
+        {transform:'translate3d(-16px,16px,0) rotate(-9deg)',opacity:.45},
+        {transform:'translate3d(24px,-26px,0) rotate(8deg)',opacity:.93},
+        {transform:'translate3d(-8px,3px,0) rotate(-4deg)',opacity:.65}
+      ],{duration:4500+i*570,iterations:Infinity,direction:'alternate',easing:'ease-in-out',delay:-i*450}));
+    });
+    if(document.hidden) extraAnimations.forEach(function(a){a.pause();});
+  }
 
   /* Halloween character animation: Web Animations API, no per-frame JS. */
   var halloweenAnimations=[];
@@ -392,6 +420,8 @@
       '@keyframes tbi-bat-flight{from{transform:translate3d(-60px,35px,0) rotate(-20deg) scale(var(--ps));opacity:.25;}50%{opacity:.95;}to{transform:translate3d(65px,-43px,0) rotate(17deg) scale(var(--ps));opacity:.65;}}',
       'body.app-mode #themeBigIcon .tbi-particle{animation-play-state:paused;}',
       '@media (prefers-reduced-motion: reduce){#themeBigIcon .tbi-particle,#themeBigIcon .tbi-emoji,#themeBigIcon .tbi-aura,#themeBigIcon .fw-rocket,#themeBigIcon .fw-burst,#themeBigIcon .fw-burst::before{animation:none !important;}#themeBigIcon .tbi-particle{opacity:.35;}}',
+      '#themeBigIcon .tbi-extra-aura{position:absolute;inset:15%;border-radius:50%;background:radial-gradient(circle,var(--extra-color) 0%,transparent 70%);opacity:.13;pointer-events:none;}',
+      '#themeBigIcon .tbi-extra-character{position:absolute;display:block;font-size:clamp(35px,10vmin,86px);line-height:1;opacity:.85;pointer-events:none;filter:drop-shadow(0 4px 8px rgba(0,0,0,.15));}',
       '#themeBigIcon .tbi-scene.tbi-illustrated{width:min(88vmin,480px);height:min(74vmin,430px);overflow:visible;isolation:isolate;}',
       '#themeBigIcon .tbi-art{position:absolute;display:block;transform-origin:center;backface-visibility:hidden;}',
       '#themeBigIcon .tbi-art svg{display:block;width:100%;height:auto;}',
@@ -1016,11 +1046,13 @@
     if (!aura || !emoji || !fw || !scene) return;
     if (el.getAttribute('data-scene') !== themeKey){
       stopHalloweenAnimation();
+      stopExtraAnimations();
       renderThemeScene(themeKey,scene);
       if(themeKey==='halloween') startHalloweenAnimation(scene);
+      else if(themeKey!=='tet' && themeKey!=='christmas') animateExtraScene(scene,themeKey);
       el.setAttribute('data-scene',themeKey);
     }
-    var isIllustrated = (themeKey === 'halloween' || themeKey === 'christmas' || themeKey === 'tet');
+    var isIllustrated = true;
     var isNewYear = (themeKey === 'newyear');
     aura.style.background = buildAuraGradient(cfg.aura);
     aura.style.opacity = '.6';
@@ -1058,6 +1090,7 @@
   }
   document.addEventListener('visibilitychange',function(){
     halloweenAnimations.forEach(function(a){if(document.hidden) a.pause();else a.play();});
+    extraAnimations.forEach(function(a){if(document.hidden) a.pause();else a.play();});
     var holder=document.querySelector('#themeBigIcon .tbi-scene');
     if (!holder) return;
     Array.prototype.forEach.call(holder.querySelectorAll('*'),function(node){node.style.animationPlayState=document.hidden?'paused':'running';});

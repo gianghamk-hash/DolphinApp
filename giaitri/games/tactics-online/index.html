@@ -121,6 +121,12 @@ function renderBoard(){
   g.traverse(m=>m.userData.unitId=unit.id);characters.add(g);characterById.set(unit.id,g);
  };
  for(let [pos,id] of Object.entries(p.board||{})){let u=p.units[id],m=pos.match(/^r(\d)c(\d)$/);if(u&&m)add(u,(+m[2]-3.5)*.94,(+m[1]+.5)*.86,u.id!==id);}
+ if(state.roundPhase==='COMBAT'&&!opponent&&enemyId?.pve){
+  for(let i=0;i<Math.min(5,2+Math.floor(state.round/5));i++){
+   const x=(i*2+1)%8,y=1+Math.floor(i/4);
+   add({id:'mob'+i,heroId:'H07',star:1},(x-3.5)*.94,(y-3.5)*.86,true);
+  }
+ }
  if(state.roundPhase==='COMBAT'&&opponent&&state.combatSnapshot&&state.combatSnapshot[opponent]){
   const other=state.combatSnapshot[opponent];for(const [pos,id] of Object.entries(other.board||{})){let u=other.units[id],m=pos.match(/^r(\d)c(\d)$/);if(u&&m)add(u,(+m[2]-3.5)*.94,(-(+m[1])-.5)*.86,true);}
  }
@@ -130,16 +136,16 @@ function startReplay(){
  if(!state.combatSnapshot||state.roundPhase!=='COMBAT')return;
  const pair=state.pairs.find(x=>x.a===uid||x.b===uid);if(!pair)return;
  // Host-authoritative result is never trusted from this local preview. Server recomputes on COMBAT expiry.
- const match=pair.a===uid?pair:{...pair,a:pair.b,b:pair.a};
+ const match=pair; // Use server pairing orientation for deterministic outcomes.
  const room={round:state.round};const report=E.simulate(match,room,state.combatSnapshot,(state.seed+state.pairs.indexOf(pair)*977+state.round*1033)>>>0);
- replay={events:report.events,index:0,start:state.phaseStartedAt,units:new Map()};
+ replay={events:report.events,index:0,start:state.phaseStartedAt,mirror:pair.a!==uid,units:new Map()};
 }
 function tickReplay(){
  if(!replay||!state||state.roundPhase!=='COMBAT')return;
  const elapsed=Date.now()-replay.start;
  while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
   const e=replay.events[replay.index++],node=characterById.get(e.actor);
-  if(e.type==='move'&&node){node.position.x=(e.x-3.5)*.94;node.position.z=(e.y-3.5)*.86;}
+  if(e.type==='move'&&node){node.position.x=(e.x-3.5)*.94;node.position.z=((replay.mirror?7-e.y:e.y)-3.5)*.86;}
   if(e.type==='attack'||e.type==='cast'){const target=characterById.get(e.target);
     if(target){target.scale.setScalar(.92);setTimeout(()=>{if(target.parent)target.scale.setScalar(1)},90);}
   }
@@ -152,10 +158,11 @@ function update(){
  if(state.status==="waiting"){ $("overlay").classList.remove("hidden");$("game").classList.add("hidden");return;}
  $("overlay").classList.add("hidden");$("game").classList.remove("hidden");
  if(!renderer)setup3D();
- if(state.status==="finished"){$("phaseLabel").textContent="🏆 CHIẾN THẮNG: "+(state.players[state.winnerId]?.displayName||"Hòa");}
  paintPlayers();paintControls();
+ if(state.status==="finished"){$("phaseLabel").textContent="🏆 CHIẾN THẮNG: "+(state.players[state.winnerId]?.displayName||"Hòa");}
  const key=state.round+"-"+state.roundPhase;
  if(key!==seenPhaseKey){seenPhaseKey=key;renderBoard();startReplay();}
+ else if(state.roundPhase==='PREPARATION')renderBoard();
  if(state.reports?.length&&state.roundPhase==='TRANSITION'){$("events").innerHTML=state.reports.map(r=>'<div>'+safe((r.pair.a||"")+" vs "+(r.pair.b||"PvE")+" → "+(r.winner||"Quái"))+' · Sát thương: '+r.damage+'</div>').join('');}
 }
 function setup3D(){

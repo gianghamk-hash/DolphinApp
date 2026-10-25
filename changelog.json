@@ -1,12 +1,12 @@
 {
-  "version": "1.0.98",
-  "previousVersion": "1.0.97",
-  "commit": "b726ea0",
-  "previousCommit": "1beaac7",
-  "buildDate": "2026-10-25T05:20:43.012Z",
+  "version": "1.0.99",
+  "previousVersion": "1.0.98",
+  "commit": "7eea36d",
+  "previousCommit": "b726ea0",
+  "buildDate": "2026-10-25T05:31:36.612Z",
   "summary": "FIX LỖI",
   "changes": {
-    "totalCommits": 102,
+    "totalCommits": 103,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
@@ -16,7 +16,7 @@
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "dolphin-lounge.html",
       "type": "update"
     }
   ]

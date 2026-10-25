@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.98",
+      "releaseDate": "2026-10-25T05:20:43.012Z",
+      "summary": "FIX LỖI",
+      "details": [
+        "FIX LỖI"
+      ]
+    },
+    {
       "version": "1.0.97",
       "releaseDate": "2026-10-25T05:12:04.784Z",
       "summary": "FIX LỖI",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.49",
       "releaseDate": "2026-10-16T00:42:58.928Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.48",
-      "releaseDate": "2026-10-15T14:19:33.147Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

@@ -1,7 +1,7 @@
 /* Dolphin Tactics GLB model library. Cache each asset once; gracefully preserve procedural fallback. */
 (function(root){
 'use strict';
-function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/'){
+function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/',rigFactory=null){
  const loader=new GLTFLoader(),cache=new Map();
  let manifest=null,manifestPromise=null;
  async function getManifest(){
@@ -21,14 +21,15 @@ function createModelLibrary(THREE,GLTFLoader,basePath='assets/models/'){
  }
  async function attach(heroId,holder){
   const asset=await get(heroId);
-  if(!asset||!holder.parent)return false;
-  const scene=asset.model.clone(true);
-  scene.scale.setScalar(asset.scale);
+  if(!holder.parent)return false;
+  const scene=rigFactory?rigFactory.make(heroId):(asset?asset.model.clone(true):null);
+  if(!scene)return false;
+  scene.scale.setScalar(asset?.scale||1);
   scene.traverse(o=>{if(o.isMesh){o.castShadow=false;o.receiveShadow=false;}});
   // Keep world-space bars and ring, replace only placeholder character.
   const bars=holder.userData.bars,ring=holder.userData.ring;
   for(const c of holder.children)if(c!==bars&&c!==ring)c.visible=false;
-  holder.add(scene);holder.userData.gltfModel=scene;
+  holder.add(scene);holder.userData.gltfModel=scene;holder.userData.articulatedRig=scene.userData.rig||null;
   return true;
  }
  function preload(ids){for(const id of ids)get(id);}

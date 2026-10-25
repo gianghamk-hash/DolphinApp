@@ -11,6 +11,6 @@
     "firebase-functions": "^6.0.0"
   },
   "scripts": {
-    "test": "node --test tactics/engine.test.js"
+    "test": "node --test tactics/*.test.js"
   }
 }

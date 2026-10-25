@@ -1,7 +1,7 @@
 {
-  "version": "1.0.99",
-  "buildDate": "2026-10-25T05:31:36.612Z",
-  "commit": "7eea36d",
-  "notes": "FIX LỖI",
+  "version": "1.0.100",
+  "buildDate": "2026-10-25T05:58:06.423Z",
+  "commit": "e4da882",
+  "notes": "FIX LỖI (#10)",
   "forceUpdate": false
 }

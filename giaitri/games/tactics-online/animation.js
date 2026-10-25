@@ -3,21 +3,24 @@
  */
 (function(root){
 'use strict';
-function createAnimator(T){
+function createAnimator(T,profiles={}){
  const motions=new Map(),effects=[],clock={now:0};
  const ease=t=>t*t*(3-2*t);
  function play(node,type,now=performance.now(),extra={}){
   if(!node||!node.parent)return;
-  const duration={idle:1000,run:440,attack:340,cast:650,hit:250,death:800,heal:600,shield:700}[type]||500;
-  motions.set(node,{type,start:now,duration,from:node.position.clone(),to:extra.to||null,baseY:node.userData.baseY||0});
+  const profile=profiles[node.userData.heroId]||{};
+  const speed=profile.impact||1;
+  const duration=({idle:1000,run:440,attack:340,cast:650,hit:250,death:800,heal:600,shield:700}[type]||500)/(type==='attack'||type==='cast'?Math.sqrt(speed):1);
+  motions.set(node,{type,start:now,duration,profile,from:node.position.clone(),to:extra.to||null,baseY:node.userData.baseY||0});
  }
  function disposeFX(f){if(f.mesh.parent)f.mesh.parent.remove(f.mesh);f.mesh.geometry.dispose();f.mesh.material.dispose();}
  function burst(scene,node,type,now=performance.now()){
   if(!node||!node.parent||effects.length>55)return;
-  const hue={cast:0x9a76ff,heal:0x5af9a0,shield:0x56c9ff,hit:0xffb26e,death:0xff657f}[type]||0xffdb84;
-  const count=type==='cast'?9:6;
+  const profile=profiles[node.userData.heroId]||{};
+  const hue=type==='cast'?(profile.color||0x9a76ff):({heal:0x5af9a0,shield:0x56c9ff,hit:0xffb26e,death:0xff657f}[type]||0xffdb84);
+  const count=type==='cast'?Math.round(7+(profile.impact||1)*3):6;
   for(let i=0;i<count;i++){
-   const theta=(i/count)*Math.PI*2;
+   const theta=(i/count)*Math.PI*2+(profile.impact||1);
    const mat=new T.MeshBasicMaterial({color:hue,transparent:true,opacity:.88,depthWrite:false});
    const mesh=new T.Mesh(new T.OctahedronGeometry(type==='cast'?.09:.065,0),mat);
    const origin=node.position.clone().add(new T.Vector3(0,1,0));
@@ -29,17 +32,23 @@ function createAnimator(T){
   for(const [node,m] of motions){
    if(!node.parent){motions.delete(node);continue;}
    const t=Math.min(1,Math.max(0,(now-m.start)/m.duration)),p=ease(t);
+   const style=m.profile.style||'standard',impact=m.profile.impact||1;
+   const wave=Math.sin(t*Math.PI),fast=Math.sin(t*Math.PI*(style.includes('dash')||style.includes('step')?7:4));
    const rig=node.userData.body, head=node.userData.head,arm=node.userData.arm,legs=node.userData.legs;
    if(m.type==='run'){
     if(m.to)node.position.lerpVectors(m.from,m.to,p);
-    if(legs)legs.forEach((leg,i)=>leg.rotation.x=Math.sin(t*Math.PI*5+i*Math.PI)*.56*(1-t*.35));
+    if(legs)legs.forEach((leg,i)=>leg.rotation.x=Math.sin(t*Math.PI*(style.includes('step')?8:5)+i*Math.PI)*.46*impact*(1-t*.35));
     if(rig)rig.rotation.z=Math.sin(t*Math.PI*5)*.08;
    }else if(m.type==='attack'){
-    if(arm)arm.rotation.x=-Math.sin(t*Math.PI)*1.3;
+    if(arm){arm.rotation.x=-wave*(style.includes('arrow')||m.profile.weapon==='bow'?.65:1.2)*impact;
+      arm.rotation.z=(style.includes('edge')||style.includes('blade')?fast*.6:wave*.22);}
+    if(head)head.rotation.y=wave*.13*impact;
     if(rig)rig.rotation.x=-Math.sin(t*Math.PI)*.3;
    }else if(m.type==='cast'){
-    if(arm)arm.rotation.z=Math.sin(t*Math.PI)*.9;
-    if(rig)rig.position.y=.79+Math.sin(t*Math.PI)*.15;
+    if(arm){arm.rotation.z=wave*(m.profile.weapon==='staff'?1.3:.8);
+      arm.rotation.x=fast*.18;}
+    if(head)head.rotation.y=fast*.15;
+    if(rig){rig.position.y=.79+wave*.12*impact;rig.rotation.y=wave*(style.includes('rift')||style.includes('collapse')?.75:.18);}
    }else if(m.type==='hit'){
     node.rotation.z=Math.sin(t*Math.PI)*.25;
    }else if(m.type==='death'){
@@ -52,6 +61,7 @@ function createAnimator(T){
    if(t>=1){motions.delete(node);if(m.type!=='death'){
     node.rotation.set(0,0,0);
     if(rig){rig.rotation.set(0,0,0);rig.position.y=.79;}
+    if(head)head.rotation.set(0,0,0);
     if(arm)arm.rotation.set(0,0,0);
     if(legs)legs.forEach(leg=>leg.rotation.set(0,0,0));
    }}

@@ -164,6 +164,32 @@
     winter:         { e:'❄️', aE:'bgi-rotate',    dE:'22s',  oE:0.70, aura:'rgba(184,216,240,.60)', aA:'aura-frost',    dA:'3s'   }
   };
 
+
+  var THEME_SCENES = {
+    default:['🐬','🫧','🐠','🫧','🐬'],tet:['🏮','🌸','🧧','🌼','🏮','✨'],
+    valentine:['💕','💗','🌹','💌','💖','💕'],womenday:['🌷','🌸','🦋','🌺','💐','🌷'],
+    reunification:['⭐','🇻🇳','⭐','✨','🇻🇳'],children:['🎈','🪁','🎉','🎈','🫧','🎊'],
+    nationalday:['⭐','🇻🇳','🎆','⭐','✨'],midautumn:['🏮','🐇','🌕','✨','🏮','☁️'],
+    halloween:['👻','🦇','👻','🦇','👻','🦇','🦇'],
+    christmas:['❄️','🎁','🔔','❄️','⭐','❄️','🎄'],
+    newyear:['✨','🎇','⭐','🎊','✨','🎇'],
+    spring:['🌸','🦋','🌷','🌸','🌼','🦋'],summer:['🌊','🐠','🫧','🌴','🕊️','🌊'],
+    autumn:['🍁','🍂','🍃','🍁','🍂','🍃'],winter:['❄️','🌨️','❄️','✨','❄️','🧊']
+  };
+  var SCENE_POSITIONS = [[13,21,.72,13,0],[82,16,.68,17,-3],[23,69,.86,15,-7],
+    [76,72,.82,19,-10],[46,13,.58,16,-4],[91,46,.65,14,-8],[8,48,.74,18,-12]];
+  function renderThemeScene(key,holder){
+    if (!holder) return;
+    var icons=THEME_SCENES[key]||THEME_SCENES.default, html='';
+    for(var i=0;i<icons.length;i++){
+      var p=SCENE_POSITIONS[i],bat=key==='halloween'&&icons[i]==='🦇';
+      html+='<span class="tbi-particle '+(bat?'tbi-bat':'tbi-drifter')+
+        '" style="--px:'+p[0]+'%;--py:'+p[1]+'%;--ps:'+p[2]+
+        ';--duration:'+p[3]+'s;--delay:'+p[4]+'s" aria-hidden="true">'+icons[i]+'</span>';
+    }
+    holder.innerHTML=html;
+  }
+
   var FIREWORKS = [
     { x: '18%', y: '26%', c: '#FFD700', delay: '0s'   },
     { x: '78%', y: '22%', c: '#FF6B9D', delay: '0.7s' },
@@ -290,6 +316,13 @@
       '#themeBigIcon .tbi-aura{ position:absolute; top:50%; left:50%; border-radius:50%; pointer-events:none; }',
       '#themeBigIcon .tbi-emoji{ position:absolute; top:50%; left:50%; font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif; line-height:1; text-align:center; user-select:none; -webkit-user-select:none; -webkit-font-smoothing:antialiased; transform-origin:center; }',
       '#themeBigIcon .tbi-emoji.flag > .tbi-e-inner{ display:inline-block; transform:scaleY(0.72); transform-origin:center; }',
+            '#themeBigIcon .tbi-scene{position:absolute;inset:0;overflow:hidden;pointer-events:none;contain:layout style paint;}',
+      '#themeBigIcon .tbi-particle{position:absolute;left:var(--px);top:var(--py);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;font-size:clamp(22px,5vmin,66px);line-height:1;opacity:.65;user-select:none;transform:translate3d(0,0,0) scale(var(--ps));animation:tbi-drift var(--duration) ease-in-out var(--delay) infinite alternate;backface-visibility:hidden;}',
+      '#themeBigIcon .tbi-bat{font-size:clamp(24px,5.5vmin,72px);animation-name:tbi-bat-flight;opacity:.75;}',
+      '@keyframes tbi-drift{from{transform:translate3d(-14px,14px,0) rotate(-9deg) scale(var(--ps));opacity:.38;}to{transform:translate3d(20px,-26px,0) rotate(11deg) scale(var(--ps));opacity:.8;}}',
+      '@keyframes tbi-bat-flight{from{transform:translate3d(-42px,24px,0) rotate(-15deg) scale(var(--ps));opacity:.25;}50%{opacity:.85;}to{transform:translate3d(50px,-32px,0) rotate(14deg) scale(var(--ps));opacity:.55;}}',
+      'body.app-mode #themeBigIcon .tbi-particle{animation-play-state:paused;}',
+      '@media (prefers-reduced-motion: reduce){#themeBigIcon .tbi-particle,#themeBigIcon .tbi-emoji,#themeBigIcon .tbi-aura,#themeBigIcon .fw-rocket,#themeBigIcon .fw-burst,#themeBigIcon .fw-burst::before{animation:none !important;}#themeBigIcon .tbi-particle{opacity:.35;}}',
       '#themeBigIcon .tbi-fireworks{ position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; display:none; }',
       '#themeBigIcon .tbi-fireworks.active{ display:block; }',
       '#themeBigIcon .fw{ position:absolute; left:var(--x); top:var(--y); width:0; height:0; pointer-events:none; }',
@@ -817,6 +850,7 @@
     el.innerHTML =
       '<div class="tbi-aura" aria-hidden="true"></div>' +
       '<span class="tbi-emoji" aria-hidden="true"></span>' +
+       '<div class="tbi-scene" aria-hidden="true"></div>' +
       '<div class="tbi-fireworks" aria-hidden="true"></div>';
     document.body.appendChild(el);
     return el;
@@ -877,7 +911,12 @@
     var aura = el.querySelector('.tbi-aura');
     var emoji = el.querySelector('.tbi-emoji');
     var fw = el.querySelector('.tbi-fireworks');
-    if (!aura || !emoji || !fw) return;
+    var scene = el.querySelector('.tbi-scene');
+    if (!aura || !emoji || !fw || !scene) return;
+    if (el.getAttribute('data-scene') !== themeKey){
+      renderThemeScene(themeKey,scene);
+      el.setAttribute('data-scene',themeKey);
+    }
     var isNewYear = (themeKey === 'newyear');
     aura.style.background = buildAuraGradient(cfg.aura);
     aura.style.opacity = '.6';
@@ -912,6 +951,11 @@
     el.classList.add('show');
     el.setAttribute('data-bt', themeKey);
   }
+  document.addEventListener('visibilitychange',function(){
+    var holder=document.querySelector('#themeBigIcon .tbi-scene');
+    if (!holder) return;
+    Array.prototype.forEach.call(holder.children,function(node){node.style.animationPlayState=document.hidden?'paused':'running';});
+  });
   var resizeDebounce = null;
   function handleResize(){
     if (resizeDebounce) clearTimeout(resizeDebounce);

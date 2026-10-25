@@ -35,6 +35,16 @@ function createAnimator(T,profiles={}){
    const style=m.profile.style||'standard',impact=m.profile.impact||1;
    const wave=Math.sin(t*Math.PI),fast=Math.sin(t*Math.PI*(style.includes('dash')||style.includes('step')?7:4));
    const rig=node.userData.body, head=node.userData.head,arm=node.userData.arm,legs=node.userData.legs;
+   // GLB visual is the live model; procedural rig remains as a fallback.
+   const model=node.userData.gltfModel;
+   if(model){
+    model.rotation.set(0,0,0);model.position.set(0,0,0);
+    if(m.type==='run'){model.rotation.z=Math.sin(t*Math.PI*6)*.055;model.position.y=Math.sin(t*Math.PI*6)*.045;}
+    else if(m.type==='attack'){model.rotation.x=-Math.sin(t*Math.PI)*.35;model.rotation.y=Math.sin(t*Math.PI)*.25;}
+    else if(m.type==='cast'){model.position.y=Math.sin(t*Math.PI)*.12;model.rotation.y=Math.sin(t*Math.PI)*.42;}
+    else if(m.type==='hit')model.rotation.z=Math.sin(t*Math.PI)*.18;
+    else if(m.type==='heal'||m.type==='shield')model.position.y=Math.sin(t*Math.PI)*.09;
+   }
    if(m.type==='run'){
     if(m.to)node.position.lerpVectors(m.from,m.to,p);
     if(legs)legs.forEach((leg,i)=>leg.rotation.x=Math.sin(t*Math.PI*(style.includes('step')?8:5)+i*Math.PI)*.46*impact*(1-t*.35));
@@ -58,7 +68,7 @@ function createAnimator(T,profiles={}){
    }else if(m.type==='heal'||m.type==='shield'){
     if(rig)rig.position.y=.79+Math.sin(t*Math.PI)*.08;
    }
-   if(t>=1){motions.delete(node);if(m.type!=='death'){
+   if(t>=1){motions.delete(node);if(model){model.rotation.set(0,0,0);model.position.set(0,0,0);}if(m.type!=='death'){
     node.rotation.set(0,0,0);
     if(rig){rig.rotation.set(0,0,0);rig.position.y=.79;}
     if(head)head.rotation.set(0,0,0);

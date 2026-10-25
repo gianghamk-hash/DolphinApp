@@ -1,0 +1,187 @@
+{
+  "version": 1,
+  "format": "glb",
+  "license": "Original procedural geometry generated for Dolphin Tactics, no external copyrighted assets",
+  "heroes": {
+    "H01": {
+      "file": "heroes/h01.glb",
+      "name": "Thiết Vệ",
+      "archetype": "hammer",
+      "scale": 1
+    },
+    "H02": {
+      "file": "heroes/h02.glb",
+      "name": "Sóng Xanh",
+      "archetype": "dagger",
+      "scale": 1
+    },
+    "H03": {
+      "file": "heroes/h03.glb",
+      "name": "Ma Nhãn",
+      "archetype": "bow",
+      "scale": 1
+    },
+    "H04": {
+      "file": "heroes/h04.glb",
+      "name": "Phong Nha",
+      "archetype": "shield",
+      "scale": 1
+    },
+    "H05": {
+      "file": "heroes/h05.glb",
+      "name": "Lôi Tướng",
+      "archetype": "staff",
+      "scale": 1
+    },
+    "H06": {
+      "file": "heroes/h06.glb",
+      "name": "Hoa Linh",
+      "archetype": "fists",
+      "scale": 1
+    },
+    "H07": {
+      "file": "heroes/h07.glb",
+      "name": "Địa Quyền",
+      "archetype": "claws",
+      "scale": 1
+    },
+    "H08": {
+      "file": "heroes/h08.glb",
+      "name": "Hải Đao",
+      "archetype": "bow",
+      "scale": 1
+    },
+    "H09": {
+      "file": "heroes/h09.glb",
+      "name": "Hư Ảnh",
+      "archetype": "shield",
+      "scale": 1
+    },
+    "H10": {
+      "file": "heroes/h10.glb",
+      "name": "Cơ Giáp",
+      "archetype": "staff",
+      "scale": 1
+    },
+    "H11": {
+      "file": "heroes/h11.glb",
+      "name": "Pháp Sư",
+      "archetype": "fists",
+      "scale": 1
+    },
+    "H12": {
+      "file": "heroes/h12.glb",
+      "name": "Thú Vương",
+      "archetype": "claws",
+      "scale": 1
+    },
+    "H13": {
+      "file": "heroes/h13.glb",
+      "name": "Ngân Dực",
+      "archetype": "bow",
+      "scale": 1
+    },
+    "H14": {
+      "file": "heroes/h14.glb",
+      "name": "Dạ Nhẫn",
+      "archetype": "shield",
+      "scale": 1
+    },
+    "H15": {
+      "file": "heroes/h15.glb",
+      "name": "Thủy Trượng",
+      "archetype": "staff",
+      "scale": 1
+    },
+    "H16": {
+      "file": "heroes/h16.glb",
+      "name": "Thiên Tiễn",
+      "archetype": "bow",
+      "scale": 1
+    },
+    "H17": {
+      "file": "heroes/h17.glb",
+      "name": "Ám Hỏa",
+      "archetype": "dagger",
+      "scale": 1
+    },
+    "H18": {
+      "file": "heroes/h18.glb",
+      "name": "Ngọc Y",
+      "archetype": "bow",
+      "scale": 1
+    },
+    "H19": {
+      "file": "heroes/h19.glb",
+      "name": "Lang Kỵ",
+      "archetype": "shield",
+      "scale": 1
+    },
+    "H20": {
+      "file": "heroes/h20.glb",
+      "name": "Khải Thần",
+      "archetype": "staff",
+      "scale": 1
+    },
+    "H21": {
+      "file": "heroes/h21.glb",
+      "name": "Phệ Hồn",
+      "archetype": "fists",
+      "scale": 1
+    },
+    "H22": {
+      "file": "heroes/h22.glb",
+      "name": "Lôi Kiếm",
+      "archetype": "sword",
+      "scale": 1
+    },
+    "H23": {
+      "file": "heroes/h23.glb",
+      "name": "Tỏa Sáng",
+      "archetype": "bow",
+      "scale": 1
+    },
+    "H24": {
+      "file": "heroes/h24.glb",
+      "name": "Hắc Long",
+      "archetype": "shield",
+      "scale": 1
+    },
+    "H25": {
+      "file": "heroes/h25.glb",
+      "name": "Cự Thần",
+      "archetype": "staff",
+      "scale": 1
+    },
+    "H26": {
+      "file": "heroes/h26.glb",
+      "name": "Phượng Nữ",
+      "archetype": "claws",
+      "scale": 1
+    },
+    "H27": {
+      "file": "heroes/h27.glb",
+      "name": "Tinh Không",
+      "archetype": "dagger",
+      "scale": 1
+    },
+    "H28": {
+      "file": "heroes/h28.glb",
+      "name": "Hải Hoàng",
+      "archetype": "bow",
+      "scale": 1
+    },
+    "H29": {
+      "file": "heroes/h29.glb",
+      "name": "Thần Cơ",
+      "archetype": "shield",
+      "scale": 1
+    },
+    "H30": {
+      "file": "heroes/h30.glb",
+      "name": "Hư Vương",
+      "archetype": "staff",
+      "scale": 1
+    }
+  }
+}

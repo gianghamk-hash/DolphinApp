@@ -36,7 +36,7 @@ function makeVisuals(T,profiles={}){
   const hp=mesh(new T.BoxGeometry(.82,.075,.08),0x6ff2a0);hp.position.z=.048;bars.add(hp);
   const mp=mesh(new T.BoxGeometry(.82,.045,.065),0x7eafff);mp.position.set(0,-.105,.052);bars.add(mp);g.add(bars);
   const scale=1+Math.max(0,star-1)*.11;g.scale.setScalar(scale);
-  g.userData={health:hp,mana:mp,body,head,arm:right,arms,legs:movingLegs,baseY:0,star,heroId:hero.id,idleOffset:hero.cost*1.6};
+  g.userData={bars,ring,health:hp,mana:mp,body,head,arm:right,arms,legs:movingLegs,baseY:0,star,heroId:hero.id,idleOffset:hero.cost*1.6};
   return g;
  }
  function updateBars(g,hp,mana){if(!g)return;

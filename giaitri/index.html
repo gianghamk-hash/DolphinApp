@@ -340,6 +340,9 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         <p class="text-[12px] text-teal-300">Chọn 1 game để chơi</p>
       </div>
       <div class="game-menu-grid">
+        <button class="game-menu-btn" onclick="openGame('dolphin-tactics-online')" style="border-color:rgba(255,210,112,.7);background:linear-gradient(130deg,rgba(61,40,18,.55),rgba(19,80,89,.85))">
+          <span class="gm-icon">♟️</span><span class="gm-title">Dolphin Tactics 3D</span><span class="gm-sub">4 người online · 30 tướng</span>
+        </button>
         <button class="game-menu-btn" onclick="openGame('caro')">
           <span class="gm-icon"><i class="ic ic-gamepad"></i></span>
           <span class="gm-title">Cờ Caro</span>
@@ -443,6 +446,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
 
   var currentGame = null;
   var GAME_URLS = {
+    'dolphin-tactics-online':'games/tactics-online/index.html',
     'caro':              'games/caro.html',
     'chess':             'games/chess.html',
     'game2048':          'games/game2048.html',

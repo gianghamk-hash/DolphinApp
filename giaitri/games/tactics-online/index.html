@@ -27,7 +27,7 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 @media(max-width:800px){main{display:block}#stage{height:41vh;min-height:265px}#overlay{margin:10px}#shop button{font-size:9px}header{padding:9px}h1{font-size:14px}}
 </style></head><body>
 <header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
-<div style="text-align:right"><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div></div></header>
+<div style="text-align:right"><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
 <h2>⚔ PHÒNG ĐẤU 4 NGƯỜI</h2>
 <p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Cần cấu hình Firebase Realtime Database và triển khai Cloud Functions trước khi chơi.</p>
@@ -133,7 +133,7 @@ function registerSharedMultiplayer(){
  });
  MP.onRoom(room=>{
   roomId=room.id;$('roomTag').textContent='PHÒNG '+room.id;
-  $('leave').classList.remove('hidden');
+  $('leave').classList.remove('hidden');$('leaveTop').classList.remove('hidden');
  });
  MP.onPlayers(({players})=>{
   $('lobbyStatus').textContent=players.length+'/4: '+players.map(x=>x.name).join(' · ');
@@ -154,7 +154,7 @@ window.joinRoom=async()=>{
 window.leaveRoom=async()=>{
  try{
   await MP.leaveRoom();roomId='';state=null;selected=null;seenPhaseKey='';replay=null;
-  $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');
+  $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');
   $('lobbyStatus').textContent='';info('Đã rời phòng.');
  }catch(e){showError(e);}

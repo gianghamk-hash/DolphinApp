@@ -20,4 +20,4 @@ jobs:
         with:
           node-version: "22"
       - name: Validate engine and tests
-        run: node --test functions/tactics/engine.test.js
+        run: cd functions && npm test

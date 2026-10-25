@@ -70,6 +70,10 @@ let _name = getName();
 let _game = null;
 let _isHost = false;
 let _side = null;
+let _activeAdapter = null;
+let _adapterCleanup = null;
+let _adapterPlayerId = null;
+const _adapters = Object.create(null);
 let _hbTimer = null;
 let _unsubs = [];
 
@@ -146,9 +150,57 @@ function subscribe(){
   }, err => {}));
 }
 
+// ═══ OPTIONAL GAME TRANSPORT ADAPTERS ═══
+// Legacy Firestore games retain their existing 2-player protocol unchanged.
+// Games using a trusted backend can reuse the common room/player event API.
+function registerAdapter(game, adapter){
+  if (typeof game !== 'string' || !game || !adapter ||
+      typeof adapter.createRoom !== 'function' ||
+      typeof adapter.joinRoom !== 'function' ||
+      typeof adapter.subscribe !== 'function'){
+    throw new Error('Multiplayer adapter phải có createRoom, joinRoom và subscribe');
+  }
+  if (_adapters[game] && _adapters[game] !== adapter) throw new Error('Adapter đã đăng ký: ' + game);
+  _adapters[game] = adapter;
+  return () => { if (_adapters[game] === adapter && _game !== game) delete _adapters[game]; };
+}
+async function connectAdapter(game, code, opts){
+  const adapter = _adapters[game];
+  if (!adapter) throw new Error('Adapter không tồn tại');
+  if (_roomId) throw new Error('Đã tham gia phòng, hãy rời phòng trước khi mở phòng mới');
+  const result = code
+    ? await adapter.joinRoom(code, opts)
+    : await adapter.createRoom(opts);
+  if (!result || !result.roomId) throw new Error('Adapter không trả về mã phòng');
+  _roomId = String(result.roomId);
+  _game = game;
+  _name = opts.name || getName();
+  _side = result.side || null;
+  _isHost = !!result.isHost;
+  _activeAdapter = adapter;
+  _adapterPlayerId = result.playerId || result.uid || null;
+  try {
+    const cleanup = adapter.subscribe({
+      roomId: _roomId, playerId: _adapterPlayerId,
+      emit: (type, payload) => {
+        if (type === 'room' && payload) _isHost = !!payload.isHost;
+        fire(type, payload);
+      }
+    });
+    if (cleanup && typeof cleanup !== 'function') throw new Error('subscribe phải trả về hàm hủy theo dõi');
+    _adapterCleanup = cleanup || null;
+  } catch(err){
+    _roomId = null; _game = null; _side = null; _isHost = false;
+    _activeAdapter = null; _adapterPlayerId = null;
+    throw err;
+  }
+  return { ...result, roomId: _roomId, isHost: _isHost, side: _side };
+}
+
 // ═══ PUBLIC API ═══
 
 async function createRoom(game, opts = {}){
+  if (_adapters[game]) return connectAdapter(game, null, opts);
   const db = getDB();
   if (!db) throw new Error('Chưa kết nối Firebase');
 
@@ -187,6 +239,7 @@ async function createRoom(game, opts = {}){
 }
 
 async function joinRoom(code, game, opts = {}){
+  if (_adapters[game]) return connectAdapter(game, code, opts);
   const db = getDB();
   if (!db) throw new Error('Chưa kết nối Firebase');
 
@@ -236,6 +289,15 @@ async function joinRoom(code, game, opts = {}){
 }
 
 async function leaveRoom(){
+  if (_activeAdapter){
+    const adapter = _activeAdapter, id = _roomId;
+    if (_adapterCleanup){ try { _adapterCleanup(); } catch(e){console.warn('[MP] adapter unsubscribe:',e);} }
+    _adapterCleanup = null;
+    _activeAdapter = null;
+    _roomId = null; _side = null; _isHost = false; _game = null; _adapterPlayerId = null;
+    if (typeof adapter.leaveRoom === 'function') await adapter.leaveRoom(id);
+    return;
+  }
   stopHeartbeat();
   unsubscribeAll();
   const db = getDB();
@@ -256,6 +318,10 @@ async function leaveRoom(){
 }
 
 async function sendInput(payload){
+  if (_activeAdapter){
+    if (!_activeAdapter.sendInput) throw new Error('Adapter chỉ nhận thao tác qua máy chủ');
+    return _activeAdapter.sendInput(payload);
+  }
   if (!_roomId) return;
   const db = getDB(); if (!db) return;
   try {
@@ -266,6 +332,7 @@ async function sendInput(payload){
 }
 
 async function sendState(state){
+  if (_activeAdapter) throw new Error('Không thể ghi trạng thái trận đấu từ client adapter');
   if (!_roomId || !_isHost) return;
   const db = getDB(); if (!db) return;
   try {
@@ -274,6 +341,7 @@ async function sendState(state){
 }
 
 async function sendConfig(config){
+  if (_activeAdapter) throw new Error('Cấu hình trận đấu do server quản lý');
   if (!_roomId || !_isHost) return;
   const db = getDB(); if (!db) return;
   try {
@@ -282,6 +350,7 @@ async function sendConfig(config){
 }
 
 async function updateRoomStatus(status){
+  if (_activeAdapter) throw new Error('Phase và trạng thái phòng do server quản lý');
   if (!_roomId || !_isHost) return;
   const db = getDB(); if (!db) return;
   try {
@@ -290,6 +359,10 @@ async function updateRoomStatus(status){
 }
 
 async function setReady(ready){
+  if (_activeAdapter){
+    if (typeof _activeAdapter.setReady !== 'function') throw new Error('Adapter không hỗ trợ ready');
+    return _activeAdapter.setReady(!!ready);
+  }
   if (!_roomId) return;
   const db = getDB(); if (!db) return;
   try {
@@ -300,6 +373,7 @@ async function setReady(ready){
 }
 
 window.DolphinMP = {
+  registerAdapter,
   createRoom, joinRoom, leaveRoom,
   sendInput, sendState, sendConfig, updateRoomStatus, setReady,
   onRoom:    cb => on('room', cb),
@@ -309,6 +383,7 @@ window.DolphinMP = {
   onError:   cb => on('error', cb),
   getRoomId:   () => _roomId,
   getDeviceId: () => _deviceId,
+  getPlayerId: () => _adapterPlayerId || _deviceId,
   getSide:     () => _side,
   isHost:      () => _isHost,
   getName:     () => _name,

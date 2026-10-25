@@ -2,6 +2,16 @@
 
 > Implementation branch only; this does NOT deploy Firebase or merge main. Node.js 22 for Functions.
 
+## Shared Dolphin Multiplayer integration
+
+The game now reuses the **existing** root `dolphin-multiplayer.js` through a backward-compatible `registerAdapter('dolphin-tactics', ...)` adapter. The same UI-facing methods are used: `createRoom`, `joinRoom`, `onRoom`, `onPlayers`, `onState`, `leaveRoom`, `getRoomId` and `isHost`.
+
+**One authoritative room only:** Existing Caro/Snake 2-player Firestore games keep using `mp_rooms` and the original `p1/p2` protocol. Tactics uses `/rooms/{roomId}` in RTDB via the adapter, with *no duplicate Firestore lobby*. The 4-player cap is enforced by `tacticsJoinRoom` Cloud Function, not by relaxing the legacy Firestore limit.
+
+Tactics adapter hooks RTDB presence `/roomPresence/{roomId}/{uid}` with `onDisconnect` and cleans up listeners on leave. `tacticsLeaveRoom` releases a waiting slot, reassigns the host if needed, and intentionally keeps in-game roster slots for reconnection. Automatic removal of stale waiting players is not implemented yet.
+
+To avoid trusting a browser host, the adapter deliberately **rejects** `sendState()`, `sendConfig()` and `updateRoomStatus()`. Game actions continue through authenticated callables. Engine changes remain in the existing PR #11.
+
 ## Client / server contract
 
 - `giaitri/games/tactics-online/index.html`: Three.js WebGL frontend, 4-player lobby, 30-hero shop, board/bench controls and local combat replay.

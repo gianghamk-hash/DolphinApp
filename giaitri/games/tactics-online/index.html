@@ -117,13 +117,13 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm tướng ở Bench → chạm ô trống trên sân. Chạm tướng trên sân để chọn, chạm ô khác để di chuyển.</div></div>
+<main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp">Chạm chọn tướng trên sân rồi chạm ô Bench để thu hồi, hoặc kéo tướng trên sân về Bench. Có thể đổi chỗ 2 tướng.</div></div>
 <div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div>
 <div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
 <h3>HÀNG CHỜ (8 ô)</h3><div id="bench"></div><div id="selectedInfo" class="small" style="margin-top:7px"></div><div id="heroInfo" role="status"></div>
-<div class="flex" style="margin-top:9px"><button onclick="sellSelected()">Bán tướng đã chọn</button><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
+<div class="flex" style="margin-top:9px"><button onclick="moveSelectedToBench()" title="Chuyển tướng trên bàn cờ về ô trống hàng chờ">↩ Về hàng chờ</button><button onclick="sellSelected()">Bán tướng đã chọn</button><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 <div class="panel"><h2>TỘC / HỆ KÍCH HOẠT</h2><div id="traits" class="small"></div></div>
 <div class="panel"><h2>TRANG BỊ & GHÉP ĐỒ</h2><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem"></select><button onclick="equipSelected()">Trang bị cho tướng</button></div></div>
 <div class="panel"><h2>HƯỚNG DẪN</h2><p class="small">Phase chuẩn bị 30s, chiến đấu 40s và chuyển vòng 5s. Hai đội ghép cặp tự động. Các vòng 1, 2, 3 và chia hết cho 5 là PvE.</p></div>
@@ -311,6 +311,13 @@ function init(){
 }
 window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
 window.equipSelected=()=>{if(selected&&$("equipItem").value)send({type:"EQUIP",unitId:selected,component:$("equipItem").value});};
+window.moveSelectedToBench=()=>{
+ const p=state?.players?.[uid];if(!p||!selected||state?.roundPhase!=='PREPARATION')return;
+ if(!Object.values(p.board||{}).includes(selected)){info('Hãy chọn một tướng trên bàn cờ trước.');return;}
+ const slot=Array.from({length:8},(_,i)=>String(i)).find(i=>!p.bench[i]);
+ if(slot===undefined){info('Hàng chờ đã đầy. Chạm một ô hàng chờ có tướng để đổi vị trí.');return;}
+ send({type:'MOVE',unitId:selected,to:'bench',index:slot});selected=null;
+};
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
 function paintPlayers(){
  $('players').innerHTML=state.playerOrder.map(id=>{const p=state.players[id];if(!p)return '';
@@ -418,18 +425,49 @@ function boardHit(clientX,clientY){
  const hit=raycaster.intersectObjects(board.children,false)[0];
  return hit?.object?.userData?.tile||null;
 }
+function boardUnitAt(x,y){
+ if(!renderer||!camera||!characters)return null;
+ const r=renderer.domElement.getBoundingClientRect();
+ if(x<r.left||x>r.right||y<r.top||y>r.bottom)return null;
+ mouse.set((x-r.left)/r.width*2-1,-(y-r.top)/r.height*2+1);raycaster.setFromCamera(mouse,camera);
+ const hit=raycaster.intersectObjects(characters.children,true).find(h=>h.object.visible);
+ if(!hit)return null;
+ let target=hit.object;while(target&&!target.userData.unitId)target=target.parent;
+ const id=target?.userData?.unitId;
+ return id&&Object.values(state?.players?.[uid]?.board||{}).includes(id)?id:null;
+}
+$('stage').addEventListener('pointerdown',e=>{
+ if(e.target!==renderer?.domElement||!state||state.roundPhase!=='PREPARATION')return;
+ const id=boardUnitAt(e.clientX,e.clientY);
+ if(id)dragUnit={id,source:'board',x:e.clientX,y:e.clientY};
+});
 $('bench').addEventListener('pointerdown',e=>{
  const button=e.target.closest('[data-bench]'),slot=Number(button?.dataset.bench);
  if(!button||!state||state.roundPhase!=='PREPARATION')return;
  const unitId=state.players?.[uid]?.bench?.[slot];
- if(unitId)dragUnit={id:unitId,x:e.clientX,y:e.clientY};
+ if(unitId)dragUnit={id:unitId,source:'bench',x:e.clientX,y:e.clientY};
 });
 document.addEventListener('pointerup',e=>{
  if(!dragUnit)return;
  const drag=dragUnit;dragUnit=null;
- if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<20)return;
+ if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<20||state?.roundPhase!=='PREPARATION')return;
+ const element=document.elementFromPoint(e.clientX,e.clientY);
+ const benchButton=element?.closest?.('#bench [data-bench]');
+ if(benchButton){
+  const slot=benchButton.dataset.bench;
+  if(drag.source==='board'){send({type:'MOVE',unitId:drag.id,to:'bench',index:String(slot)});selected=null;}
+  return;
+ }
+ // If dropped onto the bench strip between buttons, choose the first empty bench slot.
+ const benchRect=$('bench').getBoundingClientRect();
+ if(drag.source==='board'&&e.clientX>=benchRect.left&&e.clientX<=benchRect.right&&e.clientY>=benchRect.top&&e.clientY<=benchRect.bottom){
+  const p=state.players[uid],free=Array.from({length:8},(_,i)=>String(i)).find(i=>!p.bench[i]);
+  if(free!==undefined){send({type:'MOVE',unitId:drag.id,to:'bench',index:free});selected=null;}
+  else info('Hàng chờ đầy: thả vào một ô có tướng để hoán đổi.');
+  return;
+ }
  const tile=boardHit(e.clientX,e.clientY);
- if(tile&&tile.row>=4&&state?.roundPhase==='PREPARATION'){
+ if(tile&&tile.row>=4){
   send({type:'MOVE',unitId:drag.id,to:'board',index:'r'+(tile.row-4)+'c'+tile.col});
   selected=null;
  }

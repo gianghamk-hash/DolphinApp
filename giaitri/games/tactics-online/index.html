@@ -101,20 +101,28 @@ function registerSharedMultiplayer(){
    const roomRef=ref(db,'rooms/'+code);
    const presenceRef=ref(db,'roomPresence/'+code+'/'+uid);
    const connectedRef=ref(db,'.info/connected');
-   let disposed=false;
+   let disposed=false,latestRoom=null,presence={};
+   const emitPlayers=room=>{
+    const order=Array.isArray(room.playerOrder)?room.playerOrder:Object.values(room.playerOrder||{});
+    const members=order.map((id,i)=>room.players&&room.players[id]?({
+     id,name:room.players[id].displayName,side:'p'+(i+1),
+     ready:!!room.players[id].ready,online:presence[id]===true
+    }):null).filter(Boolean);
+    emit('players',{players:members,me:uid,side:'p'+(Math.max(0,order.indexOf(uid))+1)});
+   };
    const unsubRoom=onValue(roomRef,snapshot=>{
     const room=snapshot.val();
     if(!room){emit('error',{type:'room_deleted',message:'Phòng đã giải tán'});return;}
-    const order=Array.isArray(room.playerOrder)?room.playerOrder:Object.values(room.playerOrder||{});
-    const members=order.map((id,i)=>room.players&&room.players[id]?({
-     id,name:room.players[id].displayName,side:'p'+(i+1),ready:!!room.players[id].ready
-    }):null).filter(Boolean);
-    const mySide='p'+(Math.max(0,order.indexOf(uid))+1);
+    latestRoom=room;
     emit('room',{id:code,hostId:room.hostId,status:room.status,
       isHost:room.hostId===uid,round:room.round,roundPhase:room.roundPhase});
-    emit('players',{players:members,me:uid,side:mySide});
+    emitPlayers(room);
     emit('state',room);
    },e=>emit('error',{type:'room',err:e}));
+   const unsubPresence=onValue(ref(db,'roomPresence/'+code),snapshot=>{
+    presence=snapshot.val()||{};
+    if(latestRoom)emitPlayers(latestRoom);
+   },e=>emit('error',{type:'presence',err:e}));
    const unsubConn=onValue(connectedRef,snapshot=>{
     if(!snapshot.val()||disposed)return;
     // Register disconnect first, then publish online. Re-register on reconnect.
@@ -123,7 +131,7 @@ function registerSharedMultiplayer(){
       .catch(e=>emit('error',{type:'presence',err:e}));
    });
    return ()=>{
-    disposed=true;unsubRoom();unsubConn();
+    disposed=true;unsubRoom();unsubPresence();unsubConn();
     onDisconnect(presenceRef).cancel().catch(()=>{});
     set(presenceRef,false).catch(()=>{});
    };
@@ -136,7 +144,7 @@ function registerSharedMultiplayer(){
   $('leave').classList.remove('hidden');$('leaveTop').classList.remove('hidden');
  });
  MP.onPlayers(({players})=>{
-  $('lobbyStatus').textContent=players.length+'/4: '+players.map(x=>x.name).join(' · ');
+  $('lobbyStatus').textContent=players.length+'/4: '+players.map(x=>(x.online?'🟢 ':'⚪ ')+x.name).join(' · ');
  });
  MP.onState(room=>{state=room;update();});
  MP.onError(e=>showError(e.err||e.message||e.type||e));
@@ -152,11 +160,15 @@ window.joinRoom=async()=>{
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
+ let leaveError=null;
+ try{await MP.leaveRoom();}catch(e){leaveError=e;}
  try{
-  await MP.leaveRoom();roomId='';state=null;selected=null;seenPhaseKey='';replay=null;
+  roomId='';state=null;selected=null;seenPhaseKey='';replay=null;
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');
-  $('lobbyStatus').textContent='';info('Đã rời phòng.');
+  $('lobbyStatus').textContent='';
+  if(leaveError)showError('Đã ngắt kết nối cục bộ, nhưng máy chủ chưa xác nhận rời phòng: '+(leaveError.message||leaveError));
+  else info('Đã rời phòng.');
  }catch(e){showError(e);}
 };
 window.startRoom=async()=>{try{await call('tacticsStartRoom',{roomId:MP.getRoomId()});}catch(e){showError(e)}};

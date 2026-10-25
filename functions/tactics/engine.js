@@ -55,7 +55,7 @@ function createEngine(C){
   const hp=Math.round((h.hp+ (items.hp||0))*factor*(1+(b.hpRatio||0)));
   return {hp,maxHp:hp,attack:Math.round(h.attack*factor+(items.attack||0)),armor:h.armor+(items.armor||0)+(b.armor||0),
    magicResist:h.magicResist+(items.magicResist||0),attackSpeed:h.attackSpeed,range:h.range,
-   mana:h.manaStart+(items.mana||0),manaMax:h.manaMax,ability:h.ability,
+   mana:h.manaStart+(items.mana||0),manaMax:h.manaMax,ability:h.ability,assassinJump:!!(traits.Assassin&&h.classes.includes('Assassin')),
    abilityPower:(items.abilityPower||0)+(b.abilityPower||0),shield:0,regen:b.regen||0,bonusMana:b.bonusMana||0,
    trueDamageRatio:b.trueDamageRatio||0,omnivamp:b.omnivamp||0,critChance:b.critChance||0,critDamage:b.critDamage||0,
    stackAttackSpeed:b.stackAttackSpeed||0,doubleHitChance:b.doubleHitChance||0,
@@ -133,6 +133,13 @@ function createEngine(C){
     trueDamageRatio:0,omnivamp:0,critChance:0,critDamage:0,stackAttackSpeed:0,doubleHitChance:0,
     cloneRatio:0,adjacentShield:0,alive:true,shadowUsed:false,attacks:0,nextAttack:0,nextMove:0,fsm:"Idle"});}
   }
+  // Assassin backline jump happens before auto-combat; avoid occupied cells.
+  for(const u of units){if(!u.assassinJump)continue;
+   const backY=u.owner===0?0:7;
+   for(const x of [u.x,(u.x+1)%8,(u.x+7)%8]){
+    if(!units.some(v=>v!==u&&v.x===x&&v.y===backY)) {u.x=x;u.y=backY;break;}
+   }
+  }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
   const events=[],emit=e=>{if(events.length<1200)events.push(e);};
   function deal(src,tgt,amount,t,spell){
@@ -183,7 +190,12 @@ function createEngine(C){
   assert(s.roundPhase==="COMBAT","Chưa ở phase chiến đấu");
   const snap=s.combatSnapshot||clone(s.players);
   const reports=s.pairs.map((pair,i)=>simulate(pair,s,snap,(s.seed+i*977+s.round*1033)>>>0));
-  for(const rep of reports){if(rep.loser&&s.players[rep.loser]&&!s.players[rep.loser].eliminated){
+  for(const rep of reports){
+   // PvE rewards drop only after actually winning the PvE encounter.
+   if(rep.pair.pve&&rep.winner===rep.pair.a&&s.players[rep.pair.a]){
+    const item=C.components[Math.floor(nextRand(s)*C.components.length)];s.players[rep.pair.a].inventory.push(item.id);
+   }
+   if(rep.loser&&s.players[rep.loser]&&!s.players[rep.loser].eliminated){
     const p=s.players[rep.loser];p.hp=Math.max(0,p.hp-rep.damage);p.streaks.loss++;p.streaks.win=0;if(!p.hp)p.eliminated=true;}
    if(rep.winner&&s.players[rep.winner]&&!s.players[rep.winner].eliminated){const p=s.players[rep.winner];p.streaks.win++;p.streaks.loss=0;}
   }
@@ -202,7 +214,7 @@ function createEngine(C){
   else if(s.roundPhase==="TRANSITION"){s.round++;s.roundPhase="PREPARATION";s.phaseStartedAt=now;s.phaseEndsAt=now+PHASES.PREPARATION;
     for(const uid of s.playerOrder){const p=s.players[uid];if(p.eliminated)continue;
       p.gold=Math.min(80,p.gold+5+Math.min(5,Math.floor(p.gold/10)));p.ready=false;p.shop=shopRoll(s,p.level);
-      if(s.round<=3||s.round%5===0){const item=C.components[Math.floor(nextRand(s)*C.components.length)];p.inventory.push(item.id);}
+
     }}
   s.updatedAt=now;return s;
  }

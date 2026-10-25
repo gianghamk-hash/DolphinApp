@@ -29,7 +29,7 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 <header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
-<h2>⚔ PHÒNG ĐẤU 4 NGƯỜI</h2>
+<h2>⚔ DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">🤖 OFFLINE · VS 3 AI CỰC KHÓ</button><button onclick="chooseOnline()">🌐 ONLINE · 4 NGƯỜI</button></div>
 <p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Sử dụng Firestore gói Spark và Dolphin Multiplayer có sẵn. Một thiết bị làm Host điều phối trận đấu.</p>
 
 <div id="lobby" class="hidden">
@@ -53,15 +53,15 @@ kbd{color:#ffe4a6}#overlay{padding:24px;max-width:620px;margin:26px auto;backgro
 </aside></main>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="../../../functions/tactics/engine.js"></script>
+<script src="../../../functions/tactics/engine.js"></script><script src="extreme-ai.js"></script>
 <script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 const $=id=>document.getElementById(id);
 const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
 const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if(!r.ok)throw Error("Thiếu catalog");return r.json()});
-const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP;
-let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve();
+const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E);
+let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0;
 const info=msg=>$("loginStatus").textContent=msg;
@@ -71,7 +71,23 @@ function dispatch(work){
  queue=queue.then(async()=>{if(!host)return;await work();}).catch(showError);
  return queue;
 }
-async function publish(){if(host&&hostState){state=E.clone(hostState);update();await MP.sendStateStrict(E.clone(hostState));}}
+async function publish(){if(host&&hostState){state=E.clone(hostState);update();if(!offline)await MP.sendStateStrict(E.clone(hostState));}}
+function offlineAI(now){if(!offline||!hostState||hostState.roundPhase!=='PREPARATION')return;
+ for(const id of ['AI_1','AI_2','AI_3'])if(!hostState.players[id].eliminated&&!hostState.players[id].ready)AI.takeTurn(hostState,id,now);
+}
+window.chooseOnline=()=>{if(offline){window.leaveRoom().then(()=>$('lobby').classList.remove('hidden'));return;}$('lobby').classList.remove('hidden');info('Online: tạo phòng hoặc nhập mã phòng 6 ký tự.');};
+window.startOffline=()=>{
+ if(MP.getRoomId())return showError(Error('Rời phòng Online trước khi chơi Offline'));
+ offline=true;host=true;uid='OFFLINE_HUMAN';roomId='';
+ const now=Date.now(),seed=Math.floor(Math.random()*2147483647)||1;
+ const ppl=[{id:uid,name:$('nick').value.trim()||'Người chơi'},{id:'AI_1',name:'AI Tối Thượng I'},{id:'AI_2',name:'AI Tối Thượng II'},{id:'AI_3',name:'AI Tối Thượng III'}];
+ const room=E.roomNew(uid,ppl[0].name,now,seed);room.playerOrder=ppl.map(p=>p.id);room.players={};
+ for(const p of ppl)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
+ room.status='in_game';room.phaseStartedAt=now;room.phaseEndsAt=now+30000;
+ room.mode='offline';hostState=room;state=E.clone(room);
+ $('lobby').classList.add('hidden');$('roomTag').textContent='OFFLINE · 3 AI';
+ $('leaveTop').classList.remove('hidden');offlineAI(now);publish();
+};
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
  MP.onRoom(room=>{host=!!room.isHost;roomId=room.id;$('roomTag').textContent="PHÒNG "+room.id;
@@ -116,13 +132,13 @@ window.joinRoom=async()=>{
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- try{await MP.leaveRoom();roomId='';state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;
+ try{if(!offline)await MP.leaveRoom();offline=false;roomId='';state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';
   info('Đã rời phòng');}catch(e){showError(e);}
 };
 window.startRoom=async()=>{
- if(!host||roster.length!==4)return showError(Error('Cần đủ 4 người'));
+ if(offline||!host||roster.length!==4)return showError(Error('Cần đủ 4 người online'));
  return dispatch(async()=>{
   const seed=(Math.floor(Math.random()*2147483647)||1),now=Date.now(),people=roster.slice();
   let room=E.roomNew(people[0].id,people[0].name,now,seed);
@@ -143,8 +159,7 @@ function init(){
   if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
   window.db=firebase.firestore();
   uid=MP.getDeviceId();setupMP();
-  $('lobby').classList.remove('hidden');
-  info('Firestore Spark sẵn sàng. Tạo phòng hoặc nhập mã phòng 6 ký tự.');
+  info('Chọn chế độ Offline hoặc Online để bắt đầu.');
  }catch(e){showError(e);}
 }
 window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
@@ -214,7 +229,7 @@ function tickReplay(){
 }
 function update(){
  if(!state)return;$("start").classList.toggle("hidden",state.hostId!==uid||state.playerOrder.length!==4||state.status!=="waiting");
- $("lobbyStatus").textContent=state.playerOrder.length+"/4: "+state.playerOrder.map(id=>state.players[id].displayName).join(" · ");
+ if(!offline)$("lobbyStatus").textContent=state.playerOrder.length+"/4: "+state.playerOrder.map(id=>state.players[id].displayName).join(" · ");
  if(state.status==="waiting"){ $("overlay").classList.remove("hidden");$("game").classList.add("hidden");return;}
  $("overlay").classList.add("hidden");$("game").classList.remove("hidden");
  if(!renderer)setup3D();
@@ -260,6 +275,7 @@ setInterval(()=>{
  dispatch(async()=>{
   if(!hostState||hostState.status!=='in_game')return;
   E.advance(hostState,Date.now());
+  if(offline&&hostState.status==='in_game'&&hostState.roundPhase==='PREPARATION')offlineAI(Date.now());
   await publish();
  }).finally(()=>{advancing=false;});
 },500);

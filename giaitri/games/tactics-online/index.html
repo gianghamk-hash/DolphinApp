@@ -75,7 +75,7 @@ async function publish(){if(host&&hostState){state=E.clone(hostState);update();i
 function offlineAI(now){if(!offline||!hostState||hostState.roundPhase!=='PREPARATION')return;
  for(const id of ['AI_1','AI_2','AI_3'])if(!hostState.players[id].eliminated&&!hostState.players[id].ready)AI.takeTurn(hostState,id,now);
 }
-window.chooseOnline=()=>{if(offline)window.leaveRoom();$('lobby').classList.remove('hidden');info('Online: tạo phòng hoặc nhập mã phòng 6 ký tự.');};
+window.chooseOnline=()=>{if(offline){window.leaveRoom().then(()=>$('lobby').classList.remove('hidden'));return;}$('lobby').classList.remove('hidden');info('Online: tạo phòng hoặc nhập mã phòng 6 ký tự.');};
 window.startOffline=()=>{
  if(MP.getRoomId())return showError(Error('Rời phòng Online trước khi chơi Offline'));
  offline=true;host=true;uid='OFFLINE_HUMAN';roomId='';

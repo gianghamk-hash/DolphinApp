@@ -559,9 +559,7 @@
       'body[data-theme] :is(.glass-card,.menu-card,.order-card,.stat-card,.outlet-card,.combo-card,.table-display-box):hover{',
       '  border-color:var(--theme-accent) !important;',
       '}',
-      'body[data-theme] :is(.border-red-500,.border-red-600,.border-red-700,.border-red-400,.border-emerald-500,.border-green-500,.border-amber-500,.border-yellow-500,.state-alert,.state-ready,[role="alert"],.error,.err){',
-      '  /* Status indicators retain their native red/green/amber border colors. */',
-      '}',
+      'body[data-theme] .state-alert,body[data-theme] .state-ready{border-color:initial;}',
       '@media(prefers-reduced-motion:reduce){body[data-theme] :is(.glass-card,.menu-card,.order-card,.stat-card,.outlet-card){transition:none !important;}}'
     );
 

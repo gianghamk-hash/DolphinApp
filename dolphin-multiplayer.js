@@ -220,7 +220,7 @@ async function createRoom(game, opts = {}){
   const now = Date.now();
 
   await db.collection(COL).doc(code).set({
-    game, hostId: _deviceId, status: 'waiting',
+    game, hostId: _deviceId, status: 'waiting', maxPlayers: Math.min(4, Math.max(2, Number(opts.maxPlayers)||2)),
     seed, createdAt: now, updatedAt: now,
   });
 
@@ -264,10 +264,11 @@ async function joinRoom(code, game, opts = {}){
   let side = existing ? existing.side : null;
 
   if (!existing){
+    if (room.status !== 'waiting') throw new Error('Trận đã bắt đầu, không thể vào mới');
+    const capacity = Math.min(4,Math.max(2,Number(room.maxPlayers)||2));
     const used = new Set(players.map(p => p.side));
-    if (!used.has('p1')) side = 'p1';
-    else if (!used.has('p2')) side = 'p2';
-    else throw new Error('Phòng đã đủ 2 người');
+    for(let i=1;i<=capacity;i++)if(!used.has('p'+i)){side='p'+i;break;}
+    if (!side) throw new Error('Phòng đã đủ '+capacity+' người');
 
     await db.collection(COL).doc(code).collection('players').doc(_deviceId).set({
       name: _name, side, joinedAt: Date.now(), lastSeen: Date.now(), ready: false,

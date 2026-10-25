@@ -9,12 +9,13 @@ function makeVisuals(T){
  function unit(hero,star,enemy){
   const g=new T.Group(),roleName=role(hero),c=enemy?0xe56870:[0x59cbd3,0x80d9b0,0xe1a3fa,0xf1bf69,0xf37fbe][hero.cost-1];
   const ring=mesh(new T.TorusGeometry(.43,.042,5,14),enemy?0xf98b92:teal);ring.rotation.x=Math.PI/2;ring.position.y=.08;g.add(ring);
-  const legs=[-.16,.16];for(const z of legs){let m=mesh(new T.BoxGeometry(.17,.42,.22),0x344656);m.position.set(z,.34,0);g.add(m);}
+  const movingLegs=[];const arms=[];
+  const legs=[-.16,.16];for(const z of legs){let m=mesh(new T.BoxGeometry(.17,.42,.22),0x344656);m.position.set(z,.34,0);g.add(m);movingLegs.push(m);}
   const body=mesh(new T.CylinderGeometry(roleName==='tank'?.39:.27,.32,.64,7),c);body.position.y=.79;g.add(body);
   const head=mesh(new T.SphereGeometry(.23,9,7),0xf2cc9b);head.position.y=1.23;g.add(head);
   const helmet=mesh(new T.ConeGeometry(.26,.28,7),c);helmet.position.y=1.49;g.add(helmet);
-  const left=mesh(new T.BoxGeometry(.14,.48,.16),c);left.position.set(-.39,.83,0);g.add(left);
-  const right=mesh(new T.BoxGeometry(.14,.48,.16),c);right.position.set(.39,.83,0);g.add(right);
+  const left=mesh(new T.BoxGeometry(.14,.48,.16),c);left.position.set(-.39,.83,0);g.add(left);arms.push(left);
+  const right=mesh(new T.BoxGeometry(.14,.48,.16),c);right.position.set(.39,.83,0);g.add(right);arms.push(right);
   if(roleName==='tank'){const shield=mesh(new T.BoxGeometry(.45,.54,.1),0xd8c177,.75);shield.position.set(-.49,.81,.15);g.add(shield);}
   else if(roleName==='ranger'){const bow=mesh(new T.TorusGeometry(.38,.045,6,14,Math.PI),gold);bow.position.set(.47,.87,.15);g.add(bow);}
   else if(roleName==='mage'){const crystal=mesh(new T.OctahedronGeometry(.23,0),0xc68cff);crystal.position.set(.5,1.45,.12);g.add(crystal);}
@@ -24,7 +25,7 @@ function makeVisuals(T){
   const hp=mesh(new T.BoxGeometry(.82,.075,.08),0x6ff2a0);hp.position.z=.048;bars.add(hp);
   const mp=mesh(new T.BoxGeometry(.82,.045,.065),0x7eafff);mp.position.set(0,-.105,.052);bars.add(mp);g.add(bars);
   const scale=1+Math.max(0,star-1)*.11;g.scale.setScalar(scale);
-  g.userData={health:hp,mana:mp,body,baseY:0,star};
+  g.userData={health:hp,mana:mp,body,head,arm:right,arms,legs:movingLegs,baseY:0,star,idleOffset:hero.cost*1.6};
   return g;
  }
  function updateBars(g,hp,mana){if(!g)return;

@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="vi"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
+<title>Dolphin Tactics 3D — 4 đội</title>
+<style>
+:root{color-scheme:dark;font-family:system-ui,sans-serif;background:#071721;color:#eff9ff}*{box-sizing:border-box}body{margin:0;min-height:100dvh;background:radial-gradient(circle at 50% -10%,#21576b,#091d2b 60%,#06121a)}
+header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 15px;background:#071c28d9;border-bottom:1px solid #3a8792}
+h1{font-size:17px;margin:0;color:#ffe19a}.muted{color:#9ac4ce;font-size:12px}.layout{display:grid;grid-template-columns:minmax(0,1fr) 315px;gap:12px;padding:12px;max-width:1280px;margin:auto}
+#scene{height:min(65vh,610px);min-height:350px;background:linear-gradient(#153b51,#092132);border:1px solid #3f7d91;border-radius:18px;overflow:hidden;touch-action:pan-y}
+.panel{background:#0e2737e8;border:1px solid #386579;border-radius:16px;padding:12px;margin-bottom:10px}.panel h2{font-size:14px;color:#ffe29b;margin:0 0 8px}
+.players{display:grid;grid-template-columns:repeat(2,1fr);gap:6px}.player{padding:8px;background:#15374b;border-radius:10px;border:1px solid #3b7084;font-size:12px}.player.active{border-color:#f8c761;box-shadow:0 0 13px #e5b55755}
+button,select{background:#1a5264;border:1px solid #5a9ba8;color:white;border-radius:10px;padding:10px;font-weight:750;cursor:pointer}button:disabled{opacity:.45;cursor:not-allowed}button.primary{background:linear-gradient(#ffdb82,#e6a948);color:#1d2b30;border:0}
+.actions{display:grid;grid-template-columns:repeat(2,1fr);gap:7px;margin-top:8px}.shop{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px}
+.hero{border:1px solid #4a8797;border-radius:11px;padding:9px;background:#143a4d;text-align:left;min-height:72px}.hero strong{display:block;color:#f7db9c}.hero small{display:block;color:#b0d0d9;margin-top:4px}
+#roster{line-height:1.8;font-size:12px;min-height:26px}#log{height:105px;overflow:auto;font-size:12px;color:#c8dfe5;line-height:1.6}
+#fallback{height:100%;display:flex;align-items:center;justify-content:center;text-align:center;padding:25px}footer{font-size:11px;text-align:center;color:#88aeb9;padding:12px}
+@media(max-width:750px){.layout{display:block;padding:8px}#scene{height:42vh;min-height:280px}.side{margin-top:10px}.shop{grid-template-columns:repeat(4,minmax(0,1fr))}.hero{padding:6px;min-height:82px;font-size:11px}.hero small{font-size:10px}.panel{padding:10px}header{padding:9px}}
+</style></head><body>
+<header><div><h1>🐬 DOLPHIN TACTICS 3D</h1><div class="muted">Auto-battler • 4 đội • 8 loại tướng • Demo cục bộ</div></div><div id="phase" class="muted">CHUẨN BỊ</div></header>
+<div class="layout"><main><div id="scene"><div id="fallback">Đang tải đấu trường 3D…</div></div>
+<div class="panel"><h2>HƯỚNG DẪN</h2><div class="muted">Chọn tướng trong cửa hàng để mua và tự đặt vào ô trống. Chạm tướng trên bàn cờ để bán. Mỗi đội có tối đa 3 tướng trên sân. Kết thúc lượt bằng nút bên phải; 4 đội đấu tự động theo cặp. Đội còn sống cuối cùng chiến thắng.</div></div></main>
+<aside class="side"><div class="panel"><h2>4 ĐỘI THAM GIA</h2><div class="players" id="players"></div><div class="actions"><button id="toggle" onclick="toggleBots()">Đội 2–4: AI</button><button onclick="restart()">Trận mới</button></div></div>
+<div class="panel"><h2 id="turn">Lượt đội 1</h2><div id="meta" class="muted"></div><div class="shop" id="shop"></div><div class="actions"><button onclick="reroll()">Đổi shop · 1 vàng</button><button class="primary" id="next" onclick="endTurn()">Xong lượt ▶</button></div><h2 style="margin-top:12px">ĐỘI HÌNH</h2><div id="roster">Chưa có tướng</div></div>
+<div class="panel"><h2>NHẬT KÝ TRẬN ĐẤU</h2><div id="log"></div></div></aside></div>
+<footer>Bản demo: 4 người chơi luân phiên trên một thiết bị, hoặc 1 người + 3 AI. Chưa hỗ trợ 4 điện thoại online.</footer>
+<script type="module">
+import * as THREE from 'https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js';
+const TYPES=[
+ {name:'Thủy Vệ',icon:'🛡',cost:2,hp:125,atk:13,range:1,color:0x3aabda},
+ {name:'Hỏa Sư',icon:'🔥',cost:3,hp:75,atk:26,range:3,color:0xff7d4a},
+ {name:'Phong Ảnh',icon:'⚔',cost:2,hp:85,atk:20,range:1,color:0x9be872},
+ {name:'Ngọc Y',icon:'✚',cost:2,hp:90,atk:12,range:2,color:0xc47deb},
+ {name:'Lôi Thần',icon:'⚡',cost:4,hp:105,atk:29,range:2,color:0xffd355},
+ {name:'Băng Linh',icon:'❄',cost:3,hp:88,atk:23,range:3,color:0x9ceaff},
+ {name:'Địa Giáp',icon:'◈',cost:1,hp:145,atk:9,range:1,color:0xa98569},
+ {name:'Hải Đao',icon:'🐬',cost:1,hp:100,atk:16,range:1,color:0x64dacc}
+];
+let players=[],active=0,round=1,shop=[],stage='prep',botMode=true,battleToken=0,selected=null;
+let scene,camera,renderer,boardGroup,unitGroup,raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+const $=id=>document.getElementById(id);
+const log=t=>{let d=document.createElement('div');d.textContent='• '+t;$('log').prepend(d);};
+const rnd=n=>Math.floor(Math.random()*n);
+function createPlayers(){players=Array.from({length:4},(_,i)=>({id:i,name:'Đội '+(i+1),life:30,gold:10,units:[],dead:false}));}
+function restock(){shop=Array.from({length:4},()=>rnd(TYPES.length));}
+function mk(type,x,y,z,color){let m=new THREE.Mesh(new THREE.CylinderGeometry(.49,.49,.13,6),new THREE.MeshStandardMaterial({color,roughness:.7}));m.position.set(x,y,z);m.receiveShadow=true;return m;}
+function build3D(){
+ try{scene=new THREE.Scene();scene.background=new THREE.Color(0x0d2634);
+ camera=new THREE.PerspectiveCamera(43,1,.1,100);camera.position.set(7.8,11.8,13.5);camera.lookAt(0,0,0);
+ renderer=new THREE.WebGLRenderer({antialias:false,alpha:false,powerPreference:'low-power'});
+ renderer.setPixelRatio(Math.min(window.devicePixelRatio||1,1.5));renderer.outputColorSpace=THREE.SRGBColorSpace;
+ $('scene').replaceChildren(renderer.domElement);renderer.domElement.style.cssText='width:100%;height:100%;display:block;touch-action:manipulation';
+ scene.add(new THREE.HemisphereLight(0xa9eaff,0x184254,2.15));let sun=new THREE.DirectionalLight(0xffdf9a,1.8);sun.position.set(4,9,4);scene.add(sun);
+ let base=new THREE.Mesh(new THREE.CylinderGeometry(5.1,5.25,.46,8),new THREE.MeshStandardMaterial({color:0x163a48,metalness:.22,roughness:.7}));base.position.y=-.27;scene.add(base);
+ boardGroup=new THREE.Group();unitGroup=new THREE.Group();scene.add(boardGroup,unitGroup);
+ for(let z=0;z<6;z++)for(let x=0;x<4;x++){let tile=mk('tile',(x-1.5)*1.07,0,(z-2.5)*1.02,(x+z)%2?0x215e73:0x286c7e);tile.userData={x,z,tile:true};boardGroup.add(tile);}
+ let size=()=>{const box=$('scene').getBoundingClientRect();renderer.setSize(box.width,box.height,false);camera.aspect=box.width/box.height;camera.updateProjectionMatrix();};window.addEventListener('resize',size);size();
+ renderer.domElement.addEventListener('pointerup',onBoardTap);
+ let running=true;function frame(){if(!running)return;requestAnimationFrame(frame);if(!document.hidden)renderer.render(scene,camera);}frame();
+ }catch(e){$('scene').textContent='WebGL không khả dụng: '+e.message;log(e.message);}
+}
+function model(t,x,z,enemy=false){const data=TYPES[t],g=new THREE.Group();g.position.set(x,0,z);
+ let body=new THREE.Mesh(new THREE.ConeGeometry(.32,.7,5),new THREE.MeshStandardMaterial({color:data.color,roughness:.46,metalness:.2}));body.position.y=.65;g.add(body);
+ let head=new THREE.Mesh(new THREE.SphereGeometry(.21,8,6),new THREE.MeshStandardMaterial({color:enemy?0xffabab:0xffecd1}));head.position.y=1.14;g.add(head);
+ let halo=new THREE.Mesh(new THREE.TorusGeometry(.33,.045,5,12),new THREE.MeshBasicMaterial({color:enemy?0xff6969:0x5bffbc}));halo.rotation.x=Math.PI/2;halo.position.y=.12;g.add(halo);return g;}
+function drawBoard(enemyUnits=[]){
+ if(!unitGroup)return;unitGroup.clear();
+ const me=players[active];if(!me)return;
+ me.units.forEach((u,i)=>{let g=model(u.t,(u.col-1.5)*1.07,(u.row-2.5)*1.02);g.userData={unit:i};g.children.forEach(ch=>ch.userData={unit:i});unitGroup.add(g);});
+ enemyUnits.forEach((u,i)=>unitGroup.add(model(u.t,((i%3)-1)*1.07,-2.0+Math.floor(i/3)*1.05,true)));
+}
+function onBoardTap(e){
+ if(stage!=='prep'||!renderer||botMode&&active!==0)return;
+ const rect=renderer.domElement.getBoundingClientRect();pointer.x=(e.clientX-rect.left)/rect.width*2-1;pointer.y=-(e.clientY-rect.top)/rect.height*2+1;raycaster.setFromCamera(pointer,camera);
+ const hit=raycaster.intersectObjects(unitGroup.children,true)[0];if(!hit)return;
+ let obj=hit.object;while(obj&&!Number.isInteger(obj.userData.unit))obj=obj.parent;
+ if(obj&&Number.isInteger(obj.userData.unit)){let u=players[active].units.splice(obj.userData.unit,1)[0];players[active].gold+=Math.max(1,Math.floor(TYPES[u.t].cost/2));log('Đã bán '+TYPES[u.t].name);render();}
+}
+function drawShop(){$('shop').innerHTML=shop.map((t,i)=>'<button class="hero" '+(stage!=='prep'||TYPES[t].cost>players[active].gold||players[active].units.length>=3?'disabled':'')+' onclick="buy('+i+')"><strong>'+TYPES[t].icon+' '+TYPES[t].name+'</strong><small>'+TYPES[t].cost+' vàng · '+TYPES[t].atk+' ATK</small></button>').join('');}
+window.buy=i=>{if(stage!=='prep')return;let p=players[active],t=shop[i];if(t===undefined||p.gold<TYPES[t].cost||p.units.length>=3)return;
+ p.gold-=TYPES[t].cost;let occupied=new Set(p.units.map(u=>u.col+','+u.row));let spots=[[1,4],[2,4],[0,5],[3,5],[1,5],[2,5]];let pos=spots.find(q=>!occupied.has(q.join(',')));p.units.push({t,col:pos[0],row:pos[1]});shop[i]=rnd(TYPES.length);render();};
+window.reroll=()=>{let p=players[active];if(stage!=='prep'||p.gold<1)return;p.gold--;restock();render();};
+window.toggleBots=()=>{if(stage!=='prep'||active!==0)return;botMode=!botMode;$('toggle').textContent='Đội 2–4: '+(botMode?'AI':'Người');render();};
+function chooseBot(p){while(p.units.length<3&&p.gold>=1){let options=TYPES.map((t,i)=>({t,i})).filter(o=>o.t.cost<=p.gold);if(!options.length)break;let t=options[rnd(options.length)].i;p.gold-=TYPES[t].cost;p.units.push({t,col:p.units.length,row:4});}}
+window.endTurn=()=>{if(stage!=='prep')return;advance();};
+function advance(){active++;if(active<4){if(botMode){while(active<4){chooseBot(players[active]);active++;}startBattles();}else{restock();render();}}else startBattles();}
+const power=p=>p.units.reduce((n,u)=>n+TYPES[u.t].hp*.11+TYPES[u.t].atk*2.0,0)+(Math.random()*18);
+function fight(a,b){let pa=players[a],pb=players[b];if(pa.dead||pb.dead)return;
+ let sa=power(pa),sb=power(pb);let winner=sa>=sb?pa:pb,loser=sa>=sb?pb:pa;let damage=4+Math.max(1,Math.ceil(Math.abs(sa-sb)/24));loser.life=Math.max(0,loser.life-damage);if(loser.life===0)loser.dead=true;
+ log(winner.name+' thắng '+loser.name+' — '+loser.name+' mất '+damage+' máu.');
+ return {winner,loser};}
+function startBattles(){stage='fight';active=players.findIndex(p=>!p.dead);if(active<0)active=0;render();
+ let alive=players.filter(p=>!p.dead),pairs=[];for(let i=0;i<alive.length;i+=2)if(alive[i+1])pairs.push([alive[i].id,alive[i+1].id]);
+ let k=0;const token=++battleToken;
+ function next(){if(token!==battleToken)return;if(k>=pairs.length){finishRound();return;}const [a,b]=pairs[k++];active=a;drawBoard(players[b].units);$('phase').textContent='⚔ '+players[a].name+' VS '+players[b].name;setTimeout(()=>{if(token!==battleToken)return;fight(a,b);render();next();},1000);}
+ next();}
+function finishRound(){const alive=players.filter(p=>!p.dead);if(alive.length<=1||round>=12){stage='end';$('phase').textContent='🏆 '+(alive[0]?alive[0].name:'Kết thúc');log('Trận đấu kết thúc. Đội chiến thắng: '+(alive[0]?alive[0].name:'không có'));render();return;}
+ round++;players.forEach(p=>{if(!p.dead)p.gold=Math.min(30,p.gold+5);});active=players.findIndex(p=>!p.dead);stage='prep';restock();log('Vòng '+round+' — mỗi đội còn sống nhận 5 vàng.');render();}
+window.restart=()=>{battleToken++;createPlayers();stage='prep';active=0;round=1;restock();$('log').replaceChildren();log('Chào mừng đến Dolphin Tactics 3D!');render();};
+function render(){const p=players[active];$('players').innerHTML=players.map((x,i)=>'<div class="player '+(active===i?'active':'')+'"><b>'+x.name+'</b><br>❤️ '+x.life+' · 🪙 '+x.gold+(x.dead?' · LOẠI':'')+'</div>').join('');
+ $('turn').textContent=stage==='end'?'KẾT THÚC':stage==='fight'?'ĐANG GIAO TRANH':'Vòng '+round+' — '+p.name;
+ $('phase').textContent=stage==='end'?'🏆 KẾT THÚC':stage==='fight'?'⚔ CHIẾN ĐẤU':'🛒 CHUẨN BỊ';
+ $('meta').textContent='❤️ '+p.life+' | 🪙 '+p.gold+' | '+p.units.length+'/3 tướng';
+ $('roster').textContent=p.units.map(u=>TYPES[u.t].icon+' '+TYPES[u.t].name).join(' · ')||'Chưa có tướng';
+ $('next').disabled=stage!=='prep';$('next').textContent=stage==='prep'?(active===3||botMode?'Bắt đầu chiến đấu ⚔':'Chuyển đội ▶'):'Đang chiến đấu';
+ $('toggle').disabled=stage!=='prep'||active!==0;
+ drawShop();drawBoard();}
+build3D();window.restart();
+</script></body></html>

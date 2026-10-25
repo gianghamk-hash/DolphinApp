@@ -1,0 +1,50 @@
+/* Detailed articulated low-poly character assembly; original meshes, no external licensed assets. */
+(function(root){'use strict';
+function createRigFactory(T,defs){
+ const geo=new Map(),mats=new Map();
+ function box(w,h,d,c){const key=[w,h,d].join(':');if(!geo.has(key))geo.set(key,new T.BoxGeometry(w,h,d));const mkey=String(c);if(!mats.has(mkey))mats.set(mkey,new T.MeshStandardMaterial({color:c,roughness:.58,metalness:.27}));return new T.Mesh(geo.get(key),mats.get(mkey));}
+ function part(parent,name,pos,size,color){const o=box(...size,color);o.name=name;o.position.set(...pos);parent.add(o);return o;}
+ function pivot(parent,name,x,y,z){const n=new T.Group();n.name=name;n.position.set(x,y,z);parent.add(n);return n;}
+ function make(id){const d=defs[id];if(!d)throw Error('Unknown hero '+id);const primary=d.accent,steel=0x283f55,skin=0xefc8a7,trim=0xe9c782;
+  const root=new T.Group();root.name=id+'_rig';const hips=pivot(root,'hips',0,.82,0),spine=pivot(hips,'spine',0,.18,0),head=pivot(spine,'head',0,.44,0);
+  const heavy=d.build==='heavy'||d.armor==='plate',width=heavy?.72:.48;
+  part(spine,'breastplate',[0,.05,0],[width,.62,.39],primary);
+  part(hips,'belt',[0,-.21,0],[.54,.14,.4],steel);
+  part(head,'face',[0,.12,.04],[.36,.39,.31],skin);
+  part(head,'nose',[0,.07,.225],[.10,.12,.1],skin);
+  for(const sx of [-1,1]){part(head,'eye'+sx,[sx*.105,.18,.22],[.055,.047,.05],d.face==='visor'?0x52e4f5:0x182d40);
+   if(d.headgear==='horns')part(head,'horn'+sx,[sx*.2,.43,0],[.12,.35,.12],trim);}
+  if(d.face==='beard')part(head,'beard',[0,-.09,.18],[.29,.16,.15],steel);
+  if(d.face==='mask')part(head,'mask',[0,.06,.22],[.35,.18,.1],steel);
+  if(d.headgear==='helm'||d.headgear==='crown'||d.headgear==='crest')part(head,'helmet',[0,.36,0],[.43,.19,.38],d.headgear==='crown'?trim:steel);
+  if(d.headgear==='hood')part(head,'hood',[0,.33,-.06],[.46,.24,.4],primary);
+  const rig={root,hips,spine,head};
+  for(const side of ['left','right']){const sign=side==='left'?-1:1;
+   const upper=pivot(spine,side+'UpperArm',sign*(width/2+.07),.25,0);
+   part(upper,side+'UpperArmMesh',[0,-.22,0],[.21,.43,.23],primary);
+   const fore=pivot(upper,side+'Forearm',0,-.43,0);
+   part(fore,side+'Bracer',[0,-.17,0],[.2,.34,.22],steel);
+   const hand=pivot(fore,side+'Hand',0,-.37,0);part(hand,side+'Palm',[0,0,0],[.19,.18,.19],skin);
+   const thigh=pivot(hips,side+'Thigh',sign*.19,-.22,0);
+   part(thigh,side+'ThighArmor',[0,-.2,0],[.25,.42,.29],primary);
+   const calf=pivot(thigh,side+'Calf',0,-.42,0);
+   part(calf,side+'Boot',[0,-.19,.04],[.25,.4,.32],steel);
+   part(spine,side+'Pauldron',[sign*(width/2+.07),.26,0],[heavy?.36:.22,.24,.4],d.armor==='scale'?trim:steel);
+   Object.assign(rig,{[side+'UpperArm']:upper,[side+'Forearm']:fore,[side+'Hand']:hand,[side+'Thigh']:thigh,[side+'Calf']:calf});
+  }
+  if(d.cape)part(spine,'cape',[0,-.29,-.28],[width+.1,.94,.065],primary);
+  if(d.armor==='robe')part(hips,'robe',[0,-.35,0],[.73,.7,.55],primary);
+  if(d.armor==='arcane')part(spine,'arcaneCore',[0,.08,.23],[.19,.2,.09],trim);
+  const w=rig.rightHand;
+  if(d.weapon==='staff'){part(w,'staff',[0,-.05,.03],[.085,1.2,.085],steel);part(w,'crystal',[0,.57,.03],[.25,.27,.24],trim);}
+  else if(d.weapon==='bow'){part(w,'bow',[0,0,.04],[.1,.87,.12],trim);part(spine,'quiver',[-.25,.05,-.25],[.21,.49,.19],steel);}
+  else if(d.weapon==='hammer'){part(w,'handle',[0,-.03,0],[.09,.94,.09],steel);part(w,'hammerHead',[0,.43,0],[.6,.25,.24],trim);}
+  else if(d.weapon==='shield'){part(rig.leftHand,'shield',[0,0,.11],[.55,.64,.12],steel);part(w,'sword',[0,.14,0],[.11,.79,.12],trim);}
+  else if(d.weapon==='claws'||d.weapon==='dagger'){for(const h of [rig.leftHand,rig.rightHand])part(h,'twinBlade',[0,.19,.03],[.1,.58,.11],trim);}
+  else part(w,'weapon',[0,.18,0],[.14,.76,.12],trim);
+  root.userData.rig=rig;root.userData.heroId=id;return root;
+ }
+ return {make};
+}
+root.DolphinCreateRigFactory=createRigFactory;
+})(typeof window!=='undefined'?window:globalThis);

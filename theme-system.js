@@ -544,6 +544,27 @@
       '}'
     );
 
+    /* THEME BORDER SYSTEM — app child information containers, not alerts. */
+    css.push(
+      'body[data-theme] :is(.glass-card,.menu-card,.order-card,.order-slot,.order-item,.welcome-card,.table-display-box,.modal-content,.combo-card,.stat-card,.outlet-card,.settings-panel,.order-row,.rem-info){',
+      '  border-color:var(--theme-border) !important;',
+      '  transition:border-color .5s ease,box-shadow .5s ease !important;',
+      '}',
+      'body[data-theme] :is(.glass-card,.menu-card,.order-card,.welcome-card,.table-display-box,.combo-card,.stat-card,.outlet-card){',
+      '  box-shadow:0 7px 26px rgba(0,0,0,.18),0 0 0 1px var(--theme-border-soft),0 0 18px var(--theme-glow) !important;',
+      '}',
+      'body[data-theme] :is(#reception-tables-lounge,#reception-tables-j,#reception-tables-q,#welcome-tables-lounge,#welcome-tables-j,#welcome-tables-q) > :is(button,div){',
+      '  border-color:var(--theme-border) !important;',
+      '}',
+      'body[data-theme] :is(.glass-card,.menu-card,.order-card,.stat-card,.outlet-card,.combo-card,.table-display-box):hover{',
+      '  border-color:var(--theme-accent) !important;',
+      '}',
+      'body[data-theme] :is(.border-red-500,.border-red-600,.border-red-700,.border-red-400,.border-emerald-500,.border-green-500,.border-amber-500,.border-yellow-500,.state-alert,.state-ready,[role="alert"],.error,.err){',
+      '  /* Status indicators retain their native red/green/amber border colors. */',
+      '}',
+      '@media(prefers-reduced-motion:reduce){body[data-theme] :is(.glass-card,.menu-card,.order-card,.stat-card,.outlet-card){transition:none !important;}}'
+    );
+
     /* ═══════════════════════════════════════════════════════════
        🚀 ĐỘT PHÁ #2: REAL GLASS CARD
        Card có backdrop-filter + inner highlight + conic border xoay

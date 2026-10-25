@@ -71,7 +71,7 @@ function dispatch(work){
  queue=queue.then(async()=>{if(!host)return;await work();}).catch(showError);
  return queue;
 }
-async function publish(){if(host&&hostState){state=E.clone(hostState);update();await MP.sendState(E.clone(hostState));}}
+async function publish(){if(host&&hostState){state=E.clone(hostState);update();await MP.sendStateStrict(E.clone(hostState));}}
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
  MP.onRoom(room=>{host=!!room.isHost;roomId=room.id;$('roomTag').textContent="PHÒNG "+room.id;
@@ -136,7 +136,7 @@ window.startRoom=async()=>{
 window.send=async action=>{
  if(!state||state.status!=='in_game'||state.roundPhase!=='PREPARATION')return;
  if(host)return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();});
- await MP.sendInput({action,sequence:++seq});
+ await MP.sendInputStrict({action,sequence:++seq});
 };
 function init(){
  try{

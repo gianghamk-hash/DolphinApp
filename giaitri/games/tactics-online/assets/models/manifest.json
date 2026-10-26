@@ -183,5 +183,10 @@
       "archetype": "staff",
       "scale": 1
     }
+  },
+  "pipeline": "GLB-first stylized-chibi",
+  "instructions": "Set quality=stylized-chibi only after adding verified rigged or static authored GLB file. Existing tiny placeholder GLBs remain procedural fallback.",
+  "defaults": {
+    "targetHeight": 1.02
   }
 }

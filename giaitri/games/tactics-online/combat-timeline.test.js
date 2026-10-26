@@ -22,7 +22,7 @@ test('wind-up starts before impact, never duplicates and resets for next round',
  s.reset();
  assert.equal(s.pending,0);
  s.advance(events,0,850,(e,i)=>seen.push(i));
- assert.equal(seen.at(-1),0);
+ assert.deepEqual(seen.slice(-2),[0,1]);
 });
 
 test('late frames do not start an obsolete pre-impact animation',()=>{

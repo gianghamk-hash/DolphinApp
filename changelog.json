@@ -1,18 +1,18 @@
 {
-  "version": "1.0.112",
-  "previousVersion": "1.0.111",
-  "commit": "f22ebb0",
-  "previousCommit": "1f9c0da",
-  "buildDate": "2026-10-26T15:45:03.093Z",
-  "summary": "feat(tactics): add Blender automated Saber Chibi build pipeline",
+  "version": "1.0.113",
+  "previousVersion": "1.0.112",
+  "commit": "30a4df8",
+  "previousCommit": "f22ebb0",
+  "buildDate": "2026-10-26T15:47:49.015Z",
+  "summary": "feat(tactics): activate validated Saber GLB automatically",
   "changes": {
-    "totalCommits": 116,
-    "filesChanged": 2,
+    "totalCommits": 117,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tactics): add Blender automated Saber Chibi build pipeline"
+    "feat(tactics): activate validated Saber GLB automatically"
   ],
   "fileChanges": [
     {
@@ -20,7 +20,11 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/assets/models/production/saber/build_saber.py",
+      "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/model-loader.js",
       "type": "update"
     }
   ]

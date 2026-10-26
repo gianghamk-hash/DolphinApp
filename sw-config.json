@@ -1,5 +1,5 @@
 {
-  "version": "1.0.112",
+  "version": "1.0.113",
   "releaseDate": "2026-10-26",
-  "notes": "feat(tactics): add Blender automated Saber Chibi build pipeline"
+  "notes": "feat(tactics): activate validated Saber GLB automatically"
 }

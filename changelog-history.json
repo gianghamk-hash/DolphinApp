@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.112",
+      "releaseDate": "2026-10-26T15:45:03.093Z",
+      "summary": "feat(tactics): add Blender automated Saber Chibi build pipeline",
+      "details": [
+        "feat(tactics): add Blender automated Saber Chibi build pipeline"
+      ]
+    },
+    {
       "version": "1.0.111",
       "releaseDate": "2026-10-26T15:22:41.788Z",
       "summary": "feat(tactics): Saber chibi Blender production setup",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.63",
       "releaseDate": "2026-10-16T06:33:49.441Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.62",
-      "releaseDate": "2026-10-16T06:26:49.811Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

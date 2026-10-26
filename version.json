@@ -1,7 +1,7 @@
 {
-  "version": "1.0.112",
-  "buildDate": "2026-10-26T15:45:03.093Z",
-  "commit": "f22ebb0",
-  "notes": "feat(tactics): add Blender automated Saber Chibi build pipeline",
+  "version": "1.0.113",
+  "buildDate": "2026-10-26T15:47:49.015Z",
+  "commit": "30a4df8",
+  "notes": "feat(tactics): activate validated Saber GLB automatically",
   "forceUpdate": false
 }

@@ -1,6 +1,6 @@
 name: Auto Bump Version
 
-# Chỉ chạy khi push lên main với commit message chứa [bump] hoặc [release]
+# Auto bump every non-bot push to main; [release] / [bump-minor] select bump type.
 on:
   push:
     branches: [ main, master ]
@@ -21,8 +21,7 @@ jobs:
     if: |
       !contains(github.event.head_commit.message, '[skip ci]') &&
       !contains(github.event.head_commit.author.name, 'github-actions') &&
-      (contains(github.event.head_commit.message, '[bump]') ||
-       contains(github.event.head_commit.message, '[release]'))
+      !contains(github.event.head_commit.message, '[no-bump]')
 
     runs-on: ubuntu-latest
     permissions:
@@ -41,9 +40,11 @@ jobs:
           node-version: '20'
 
       - name: 🐬 Detect bump type
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         id: detect
         run: |
-          MSG="${{ github.event.head_commit.message }}"
+          MSG="$COMMIT_MSG"
           if echo "$MSG" | grep -q "\[release\]"; then
             echo "type=major" >> $GITHUB_OUTPUT
             echo "Detected: MAJOR bump"
@@ -56,9 +57,11 @@ jobs:
           fi
 
       - name: 🔍 Extract note from commit message
+        env:
+          COMMIT_MSG: ${{ github.event.head_commit.message }}
         id: note
         run: |
-          MSG="${{ github.event.head_commit.message }}"
+          MSG="$COMMIT_MSG"
           # Lấy dòng đầu của commit message
           NOTE=$(echo "$MSG" | head -n 1 | sed 's/\[bump\]//g' | sed 's/\[release\]//g' | sed 's/\[bump-minor\]//g' | xargs)
           if [ -z "$NOTE" ]; then
@@ -83,7 +86,7 @@ jobs:
 
       - name: 💾 Commit changes
         run: |
-          git add -A
+          git add version.json sw-config.json changelog.json changelog-history.json service-worker.js index.html dolphin-bungalow.html dolphin-lounge.html dolphin-restaurant.html dolphin-show.html ranking/index.html caro/index.html
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0
@@ -92,6 +95,7 @@ jobs:
 
       - name: 📤 Push changes
         run: |
+          git pull --rebase origin "${{ github.ref_name }}"
           git push origin HEAD:${{ github.ref_name }}
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

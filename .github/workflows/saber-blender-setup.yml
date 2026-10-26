@@ -1,0 +1,28 @@
+name: Saber Blender Setup Validation
+on:
+  pull_request:
+    paths:
+      - "giaitri/games/tactics-online/assets/models/production/saber/**"
+      - ".github/workflows/saber-blender-setup.yml"
+  push:
+    paths:
+      - "giaitri/games/tactics-online/assets/models/production/saber/**"
+jobs:
+  validate-python:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - name: Check Blender authoring scripts syntax
+        run: python -m py_compile giaitri/games/tactics-online/assets/models/production/saber/*.py
+      - name: Confirm no production GLB is incorrectly activated
+        run: |
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('giaitri/games/tactics-online/assets/models/manifest.json')
+          manifest=json.loads(p.read_text())
+          assert manifest['heroes']['H01'].get('quality') != 'stylized-chibi', 'Do not enable a GLB until sculpt/rig/animation QA passes'
+          PY

@@ -22,4 +22,4 @@ jobs:
       - name: Validate engine and tests
         run: |
           cd functions && npm test
-          node --test ../giaitri/games/tactics-online/weapon-animation.test.js ../giaitri/games/tactics-online/combat-performance.test.js
+          node --test ../giaitri/games/tactics-online/weapon-animation.test.js ../giaitri/games/tactics-online/combat-performance.test.js ../giaitri/games/tactics-online/combat-timeline.test.js

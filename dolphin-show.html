@@ -725,6 +725,7 @@ window.executeArchive = async () => {
   if (!db) return toast('Chưa kết nối đám mây!', '❌');
   const date = $('a-date').value, shift = $('a-shift').value;
   if (!date) return toast('Vui lòng chọn ngày!', '⚠️');
+  if(Date.parse(date+'T23:59:59')<Date.now()-30*86400000)return toast('Lịch sử chỉ tra cứu trong 30 ngày gần nhất','⚠️');
   closeM('m-archive'); toast('Đang lưu trữ...', '☁️');
   try {
     const snaps = await getDocs(collection(db, COL_LIVE));

@@ -104,6 +104,27 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 .lb-status.ok{color:#86efac}
 .lb-status.err{color:#fca5a5}
 .lb-status.loading{color:#FBD77A}
+
+/* Dolphin Arcade 2026 visual refresh — paint-only, no game logic or hitbox changes */
+:root{--arcade-glow:rgba(92,229,216,.30);--arcade-gold:rgba(250,202,114,.35)}
+body{background:radial-gradient(ellipse at 52% -8%,rgba(34,115,121,.43),transparent 48%),radial-gradient(ellipse at 110% 74%,rgba(16,71,97,.26),transparent 50%),#071b1c;background-attachment:fixed}
+.glass,.modal-card,.result-card,.rules-card{border:1px solid rgba(133,225,214,.20);box-shadow:0 12px 30px rgba(0,8,13,.26),inset 0 1px rgba(255,255,255,.065)}
+.btn-gold{box-shadow:0 4px 0 rgba(128,82,19,.35),0 7px 23px rgba(239,180,70,.19),inset 0 1px rgba(255,255,255,.48);transition:filter .16s ease,box-shadow .16s ease,transform .16s ease}
+.btn-outline{box-shadow:inset 0 1px rgba(255,255,255,.08),0 5px 14px rgba(0,0,0,.15);transition:filter .16s ease,transform .16s ease}
+button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;outline-offset:3px}
+@media(hover:hover){.btn-gold:hover,.btn-outline:hover{filter:brightness(1.10)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+.board-container{border-radius:16px;box-shadow:0 18px 38px rgba(0,8,18,.45),0 0 0 1px rgba(91,214,229,.25),inset 0 0 25px rgba(33,178,213,.09);overflow:hidden}
+.board-grid{background:linear-gradient(145deg,rgba(16,91,123,.24),rgba(4,39,67,.20))}
+.cell:not(.label-cell){box-shadow:inset 0 1px rgba(235,255,255,.10);transition:background-color .15s ease,filter .15s ease}
+.cell.ship{background-image:linear-gradient(135deg,rgba(255,255,255,.17),transparent 55%);box-shadow:inset 0 1px rgba(255,255,255,.3),0 0 8px rgba(98,207,201,.2)}
+.cell.shot-hit{filter:saturate(1.18);box-shadow:inset 0 0 16px rgba(251,93,74,.38)}
+.cell.shot-miss{box-shadow:inset 0 0 12px rgba(112,217,248,.17)}
+.turn-banner.your-turn{box-shadow:0 0 0 1px rgba(255,214,124,.18),0 0 23px rgba(248,186,72,.16)}
+.ship-item.active,.battle-tab.active{filter:brightness(1.12);box-shadow:0 6px 18px rgba(54,201,195,.14)}
+
 </style>
 </head>
 <body class="pb-6">

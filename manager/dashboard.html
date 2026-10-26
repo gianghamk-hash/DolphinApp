@@ -524,7 +524,7 @@ input[type="datetime-local"].mgr-input{color-scheme:dark;font-weight:800}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc, addDoc, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc, addDoc, deleteDoc, updateDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
 
@@ -1360,10 +1360,11 @@ setTimeout(autoCleanNotes, 8000);
 setTimeout(autoCleanReminders, 9000);
 
 /* ═══════════════ REALTIME LISTENERS (ORDERS) ═══════════════ */
+const RECENT_DAYS=14,MAX_ORDERS=180;let orderStops=[];
 function startListeners(db) {
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     if (cfg.colOrders) {
-      onSnapshot(collection(db, cfg.colOrders), snap => {
+      onSnapshot(query(collection(db,cfg.colOrders),where('timestamp','>=',Date.now()-RECENT_DAYS*86400000),orderBy('timestamp','desc'),limit(MAX_ORDERS)),snap=>{
         const arr = [];
         snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
         arr.sort((a, b) => getTs(b) - getTs(a));
@@ -1372,7 +1373,7 @@ function startListeners(db) {
       });
     }
     if (cfg.colCalls) {
-      onSnapshot(collection(db, cfg.colCalls), snap => {
+      onSnapshot(query(collection(db,cfg.colCalls),where('status','==','pending'),limit(80)),snap=>{
         const arr = [];
         snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
         state.calls[key] = arr.filter(c => c.status === 'pending');

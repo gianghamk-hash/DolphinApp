@@ -1536,7 +1536,7 @@ try {
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, query, where, orderBy, limit, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const cfg = {
   apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
@@ -1548,6 +1548,9 @@ const WATCH_ORDERS = [
   { name: 'lounge_orders', label: 'Lounge', icon: '🍸' },
   { name: 'res_orders', label: 'Restaurant', icon: '🍽️' }
 ];
+const NOTIFICATION_ORDER_DAYS = 14;
+const NOTIFICATION_ORDER_LIMIT = 180;
+const NOTIFICATION_CALL_LIMIT = 80;
 const WATCH_CALLS = [
   { name: 'bun_calls', label: 'Bungalow', icon: '🌴' },
   { name: 'lounge_calls', label: 'Lounge', icon: '🍸' },
@@ -1628,10 +1631,25 @@ try {
   const app = initializeApp(cfg, 'notif-app');
   const auth = getAuth(app);
   const db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
+  let notificationStops = [];
+  let notificationRunning = false;
+  let notificationReady = false;
+  function stopNotificationStreams(){
+    notificationStops.splice(0).forEach(stop => { try { stop(); } catch(e) { console.warn('[Notif cleanup]', e); } });
+    notificationRunning = false;
+  }
+  function startNotificationStreams(){
+    if (!notificationReady || notificationRunning) return;
+    notificationRunning = true;
     WATCH_ORDERS.forEach(c => {
       const init = { f: true };
-      onSnapshot(collection(db, c.name), snap => {
+      const recent = query(
+        collection(db, c.name),
+        where('timestamp', '>=', Date.now() - NOTIFICATION_ORDER_DAYS * 86400000),
+        orderBy('timestamp', 'desc'),
+        limit(NOTIFICATION_ORDER_LIMIT)
+      );
+      notificationStops.push(onSnapshot(recent, snap => {
         if (init.f){ init.f = false; return; }
         snap.docChanges().forEach(ch => {
           if (ch.type === 'added'){
@@ -1643,7 +1661,8 @@ try {
     });
     WATCH_CALLS.forEach(c => {
       const init = { f: true };
-      onSnapshot(collection(db, c.name), snap => {
+      const pending = query(collection(db, c.name), where('status', '==', 'pending'), limit(NOTIFICATION_CALL_LIMIT));
+      notificationStops.push(onSnapshot(pending, snap => {
         if (init.f){ init.f = false; return; }
         snap.docChanges().forEach(ch => {
           if (ch.type === 'added'){
@@ -1653,6 +1672,12 @@ try {
         });
       }, err => console.warn('[Notif]', c.name, err));
     });
+  }
+  window.addEventListener('pagehide', stopNotificationStreams);
+  window.addEventListener('pageshow', startNotificationStreams);
+  signInAnonymously(auth).then(() => {
+    notificationReady = true;
+    startNotificationStreams();
   }).catch(err => console.warn('[Notif]', err));
 } catch(e){ console.warn('[Notif]', e); }
 </script>

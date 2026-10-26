@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.122",
+      "releaseDate": "2026-10-26T18:03:56.760Z",
+      "summary": "balance(tactics): 20-second combat and class-based HP/damage",
+      "details": [
+        "balance(tactics): 20-second combat and class-based HP/damage"
+      ]
+    },
+    {
       "version": "1.0.121",
       "releaseDate": "2026-10-26T17:48:40.168Z",
       "summary": "fix(ci): pass chibi batch arguments directly to Blender",
@@ -390,14 +398,6 @@
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.72",
-      "releaseDate": "2026-10-17T05:39:19.035Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
       ]
     }
   ]

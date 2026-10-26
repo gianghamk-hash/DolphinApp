@@ -1,34 +1,46 @@
 {
-  "version": "1.0.122",
-  "previousVersion": "1.0.121",
-  "commit": "1440486",
-  "previousCommit": "d7d2d52",
-  "buildDate": "2026-10-26T18:03:56.760Z",
-  "summary": "balance(tactics): 20-second combat and class-based HP/damage",
+  "version": "1.0.123",
+  "previousVersion": "1.0.122",
+  "commit": "7ae967f",
+  "previousCommit": "1440486",
+  "buildDate": "2026-10-26T18:14:05.757Z",
+  "summary": "style(arcade): visual polish for seven games except TFT",
   "changes": {
-    "totalCommits": 126,
-    "filesChanged": 4,
+    "totalCommits": 127,
+    "filesChanged": 7,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "balance(tactics): 20-second combat and class-based HP/damage"
+    "style(arcade): visual polish for seven games except TFT"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/catalog.json",
+      "file": "giaitri/games/battleship.html",
       "type": "update"
     },
     {
-      "file": "functions/tactics/engine.js",
+      "file": "giaitri/games/caro.html",
       "type": "update"
     },
     {
-      "file": "functions/tactics/engine.test.js",
+      "file": "giaitri/games/chess.html",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/catalog.json",
+      "file": "giaitri/games/game2048.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/snake-coop-online.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/snake.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/xiangqi.html",
       "type": "update"
     }
   ]

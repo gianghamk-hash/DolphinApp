@@ -1,7 +1,7 @@
 {
-  "version": "1.0.122",
-  "buildDate": "2026-10-26T18:03:56.760Z",
-  "commit": "1440486",
-  "notes": "balance(tactics): 20-second combat and class-based HP/damage",
+  "version": "1.0.123",
+  "buildDate": "2026-10-26T18:14:05.757Z",
+  "commit": "7ae967f",
+  "notes": "style(arcade): visual polish for seven games except TFT",
   "forceUpdate": false
 }

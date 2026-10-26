@@ -1,5 +1,5 @@
 {
-  "version": "1.0.110",
+  "version": "1.0.111",
   "releaseDate": "2026-10-26",
-  "notes": "feat: GLB-first Stylized Chibi character asset pipeline"
+  "notes": "feat(tactics): Saber chibi Blender production setup"
 }

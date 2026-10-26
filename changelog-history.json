@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.110",
+      "releaseDate": "2026-10-26T13:44:13.316Z",
+      "summary": "feat: GLB-first Stylized Chibi character asset pipeline",
+      "details": [
+        "feat: GLB-first Stylized Chibi character asset pipeline"
+      ]
+    },
+    {
       "version": "1.0.109",
       "releaseDate": "2026-10-26T13:30:47.939Z",
       "summary": "feat: TFT Phase 1D detailed hero models scaled down 40%",
@@ -390,14 +398,6 @@
       "summary": "FIX BỐ ĐỜI",
       "details": [
         "FIX BỐ ĐỜI"
-      ]
-    },
-    {
-      "version": "1.0.60",
-      "releaseDate": "2026-10-16T06:04:14.168Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
       ]
     }
   ]

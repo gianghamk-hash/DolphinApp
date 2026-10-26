@@ -1,7 +1,7 @@
 {
-  "version": "1.0.110",
-  "buildDate": "2026-10-26T13:44:13.316Z",
-  "commit": "5035353",
-  "notes": "feat: GLB-first Stylized Chibi character asset pipeline",
+  "version": "1.0.111",
+  "buildDate": "2026-10-26T15:22:41.788Z",
+  "commit": "1f9c0da",
+  "notes": "feat(tactics): Saber chibi Blender production setup",
   "forceUpdate": false
 }

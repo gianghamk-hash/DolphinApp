@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.121",
+      "releaseDate": "2026-10-26T17:48:40.168Z",
+      "summary": "fix(ci): pass chibi batch arguments directly to Blender",
+      "details": [
+        "fix(ci): pass chibi batch arguments directly to Blender"
+      ]
+    },
+    {
       "version": "1.0.120",
       "releaseDate": "2026-10-26T17:45:28.592Z",
       "summary": "ci(tactics): batch chibi GLBs using prebuilt Blender container",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.72",
       "releaseDate": "2026-10-17T05:39:19.035Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.71",
-      "releaseDate": "2026-10-17T02:21:50.393Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

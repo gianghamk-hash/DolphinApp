@@ -1,22 +1,34 @@
 {
-  "version": "1.0.121",
-  "previousVersion": "1.0.120",
-  "commit": "d7d2d52",
-  "previousCommit": "d607d7b",
-  "buildDate": "2026-10-26T17:48:40.168Z",
-  "summary": "fix(ci): pass chibi batch arguments directly to Blender",
+  "version": "1.0.122",
+  "previousVersion": "1.0.121",
+  "commit": "1440486",
+  "previousCommit": "d7d2d52",
+  "buildDate": "2026-10-26T18:03:56.760Z",
+  "summary": "balance(tactics): 20-second combat and class-based HP/damage",
   "changes": {
-    "totalCommits": 125,
-    "filesChanged": 1,
+    "totalCommits": 126,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ci): pass chibi batch arguments directly to Blender"
+    "balance(tactics): 20-second combat and class-based HP/damage"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/build-remaining-chibi.yml",
+      "file": "functions/tactics/catalog.json",
+      "type": "update"
+    },
+    {
+      "file": "functions/tactics/engine.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/tactics/engine.test.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/catalog.json",
       "type": "update"
     }
   ]

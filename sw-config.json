@@ -1,5 +1,5 @@
 {
-  "version": "1.0.121",
+  "version": "1.0.122",
   "releaseDate": "2026-10-26",
-  "notes": "fix(ci): pass chibi batch arguments directly to Blender"
+  "notes": "balance(tactics): 20-second combat and class-based HP/damage"
 }

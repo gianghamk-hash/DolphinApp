@@ -1,7 +1,7 @@
 {
-  "version": "1.0.121",
-  "buildDate": "2026-10-26T17:48:40.168Z",
-  "commit": "d7d2d52",
-  "notes": "fix(ci): pass chibi batch arguments directly to Blender",
+  "version": "1.0.122",
+  "buildDate": "2026-10-26T18:03:56.760Z",
+  "commit": "1440486",
+  "notes": "balance(tactics): 20-second combat and class-based HP/damage",
   "forceUpdate": false
 }

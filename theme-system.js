@@ -14,6 +14,7 @@
     projectId: "dolphin-f6d67"
   };
   var LS_THEME_KEY = 'dolphin_theme';
+  var IS_SUB_APP = /(?:^|\/)dolphin-(?:bungalow|lounge|restaurant|show)\.html$/i.test(location.pathname);
 
   var DEBUG = false;
   try { DEBUG = new URLSearchParams(location.search).get('btdebug') === '1'; } catch(e){}
@@ -879,6 +880,18 @@
       '}'
     );
 
+    // Fast paint path in operational screens: keep colors/layout, avoid expensive
+    // animated full-viewport gradients, backdrop blur, shadows and paint loops.
+    if (IS_SUB_APP) css.push(
+      'body[data-theme]:not([data-theme="default"]){transition:none !important;}',
+      'body[data-theme]:not([data-theme="default"])::before{animation:none !important;background-size:100% 100% !important;will-change:auto !important;}',
+      'body[data-theme]:not([data-theme="default"]) .glass-card{backdrop-filter:none !important;-webkit-backdrop-filter:none !important;box-shadow:0 3px 12px rgba(0,0,0,.22) !important;}',
+      'body[data-theme]:not([data-theme="default"]) .glass-card::after{animation:none !important;display:none !important;}',
+      'body[data-theme]:not([data-theme="default"]) :is(.glass-card,.menu-card,.order-card,.stat-card,.outlet-card){will-change:auto !important;transition-property:transform,opacity !important;transition-duration:.12s !important;}',
+      'body[data-theme]:not([data-theme="default"]) :is(.brand-title,.logo-shimmer,.breathe,.btn-select,.state-chip)::before{animation:none !important;}',
+      'body[data-theme]:not([data-theme="default"]) :is(.logo-shimmer,.brand-title,.breathe,.btn-select){animation:none !important;}',
+      '@media(prefers-reduced-motion:reduce){body[data-theme] *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}}'
+    );
     s.textContent = css.join('\n');
     document.head.appendChild(s);
   }
@@ -1125,6 +1138,9 @@
   /* ============== APPLY THEME ============== */
   function applyTheme(key){
     var t = THEMES[key] || THEMES.default;
+    key = (key in THEMES) ? key : 'default';
+    if (state.hasApplied && state.currentTheme === key) return;
+    state.hasApplied = true;
     state.currentTheme = (key in THEMES) ? key : 'default';
     var root = document.documentElement;
     root.style.setProperty('--theme-border',      t.border);
@@ -1149,7 +1165,7 @@
     document.querySelectorAll('.area-card').forEach(function(card){
       card.style.borderRadius = t.radius || '22px';
     });
-    applyBigIcon(state.currentTheme, t.accent);
+    if (hasLanding()) applyBigIcon(state.currentTheme, t.accent);
     try { localStorage.setItem(LS_THEME_KEY, state.currentTheme); } catch(e){}
     try {
       var bc = window.__dolphinThemeBC ||
@@ -1210,8 +1226,7 @@
   /* ============== INIT ============== */
   function init(){
     injectStyles();
-    initTilt();
-    initThemeRipple();
+    if (!IS_SUB_APP) { initTilt(); initThemeRipple(); }
 
     var urlParams = new URLSearchParams(location.search);
     var urlTheme = urlParams.get('theme');
@@ -1241,7 +1256,7 @@
     if (hasLanding() && !document.getElementById('themeBigIcon')){
       applyBigIcon(state.currentTheme, THEMES[state.currentTheme].accent);
     }
-    [0, 50, 200, 500, 1000, 2000, 3500].forEach(function(t){
+    if (hasLanding()) [0, 200, 800].forEach(function(t){
       setTimeout(sizeBigIcon, t);
     });
     document.addEventListener('visibilitychange', function(){
@@ -1254,8 +1269,10 @@
     }
 
     /* Đánh dấu order "thở" mỗi 30s */
-    setTimeout(markBreathingOrders, 3000);
-    setInterval(markBreathingOrders, 30000);
+    if (!IS_SUB_APP) {
+      setTimeout(markBreathingOrders, 3000);
+      setInterval(markBreathingOrders, 30000);
+    }
   }
 
   window.ThemeSystem = {

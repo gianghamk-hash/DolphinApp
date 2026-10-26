@@ -18,7 +18,7 @@ function createCombatFX(T){
    if(t>=1){f.mesh.parent?.remove(f.mesh);f.mesh.material.dispose();active.splice(i,1);}
   }
  }
- function clear(){for(const f of active){f.mesh.parent?.remove(f.mesh);f.mesh.geometry.dispose();f.mesh.material.dispose();}active.length=0;}
+ function clear(){for(const f of active){f.mesh.parent?.remove(f.mesh);f.mesh.material.dispose();}active.length=0;}
  return {pulse,tick,clear,get activeCount(){return active.length;},maxEffects:MAX_FX};
 }
 root.DolphinCreateCombatFX=createCombatFX;

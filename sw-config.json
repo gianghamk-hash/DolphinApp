@@ -1,5 +1,5 @@
 {
-  "version": "1.0.113",
+  "version": "1.0.114",
   "releaseDate": "2026-10-26",
-  "notes": "feat(tactics): activate validated Saber GLB automatically"
+  "notes": "fix: Blender GLB export NumPy dependency"
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.113",
+      "releaseDate": "2026-10-26T15:47:49.015Z",
+      "summary": "feat(tactics): activate validated Saber GLB automatically",
+      "details": [
+        "feat(tactics): activate validated Saber GLB automatically"
+      ]
+    },
+    {
       "version": "1.0.112",
       "releaseDate": "2026-10-26T15:45:03.093Z",
       "summary": "feat(tactics): add Blender automated Saber Chibi build pipeline",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI staff sync",
       "details": [
         "FIX LỖI staff sync"
-      ]
-    },
-    {
-      "version": "1.0.63",
-      "releaseDate": "2026-10-16T06:33:49.441Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
       ]
     }
   ]

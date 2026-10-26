@@ -251,7 +251,7 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ===== CẤU HÌNH ===== */
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
@@ -730,7 +730,7 @@ window.executeArchive = async () => {
     const snaps = await getDocs(collection(db, COL_LIVE));
     const list = snaps.docs.map(d => d.data());
     if (!list.length) return toast('Không có dữ liệu bàn để lưu trữ!', '⚠️');
-    await addDoc(collection(db, COL_HISTORY), { date, shift, timestamp: Date.now(), bookings: list });
+    await addDoc(collection(db, COL_HISTORY), { date, shift, timestamp: Date.now(), expireAt:Timestamp.fromMillis(Date.now()+90*86400000), bookings: list });
     await Promise.all(snaps.docs.map(d => deleteDoc(d.ref)));
     toast(`Đã đóng ${shift} - lưu ${list.length} bàn`, '✨');
   } catch (e) { toast('Lỗi lưu trữ: ' + e.message, '❌'); }

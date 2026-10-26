@@ -598,7 +598,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, orderBy, limit, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, orderBy, limit, startAfter, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const state = { currentRole:'customer', staffViewMode:'table', tableSelected:false, selectedTable:null, currentLanguage:'VI', activeCategory:'all', cart:{}, orders:[], activeCalls:[], tableAssignments:{}, isSending:false, isCallingStaff:false, pendingAction:null, lastTransactionWarning:null };
 window.state = state;
@@ -1840,7 +1840,8 @@ window.executeSystemReset = async function(){
   } catch(e){ window.showToast("Lỗi lưu trữ!","❌"); }
 };
 
-window.fetchHistoryData = async function(){
+let loungeHistoryCursor=null,loungeHistoryKey='';
+window.fetchHistoryData = async function(next=false){
   if(!db) return;
   const date = document.getElementById('history-search-date').value;
   if(date&&Date.parse(date+'T23:59:59')<Date.now()-30*86400000){window.showToast('Lịch sử trực tiếp chỉ tra cứu 30 ngày gần nhất','⚠️');return;}
@@ -1849,19 +1850,21 @@ window.fetchHistoryData = async function(){
   const c = document.getElementById('history-cards-container');
   if(!date){ window.showToast("Chọn ngày!","⚠️"); return; }
   c.className = 'grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-4';
-  c.innerHTML = Array.from({length:6}).map(()=>`<div class="glass-card p-5 rounded-2xl border border-teal-700/30"><div class="skeleton h-4 w-24 mb-3"></div><div class="skeleton h-3 w-full mb-2"></div><div class="skeleton h-3 w-2/3 mb-4"></div><div class="skeleton h-8 w-full"></div></div>`).join('');
+  if(!next)c.innerHTML = Array.from({length:6}).map(()=>`<div class="glass-card p-5 rounded-2xl border border-teal-700/30"><div class="skeleton h-4 w-24 mb-3"></div><div class="skeleton h-3 w-full mb-2"></div><div class="skeleton h-3 w-2/3 mb-4"></div><div class="skeleton h-8 w-full"></div></div>`).join('');
   try{
     let q = shift==='Cả Ngày' ? query(collection(db,'lounge_history_sessions'), where('date','==',date)) : query(collection(db,'lounge_history_sessions'), where('date','==',date), where('shift','==',shift));
-    const snap = await getDocs(q);
+    const k=date+'|'+shift+'|'+sTable;if(!next||k!==loungeHistoryKey){loungeHistoryCursor=null;loungeHistoryKey=k;next=false;}
+    const snap=await getDocs(loungeHistoryCursor?query(q,limit(8),startAfter(loungeHistoryCursor)):query(q,limit(8)));
+    loungeHistoryCursor=snap.docs.length===8?snap.docs[snap.docs.length-1]:null;
     let hist = {};
     snap.forEach(d=>{ const s = d.data(); if(s.orders) s.orders.forEach(o=>{ if(!hist[o.table]) hist[o.table]={orders:[],tableData:{}}; hist[o.table].orders.push({...o,date:s.date,shift:s.shift}); }); if(s.tables) Object.keys(s.tables).forEach(t=>{ if(!hist[t]) hist[t]={orders:[],tableData:{}}; hist[t].tableData = s.tables[t]; }); });
     if(sTable){ const f={}; Object.keys(hist).forEach(t=>{ if(t.toUpperCase().includes(sTable)) f[t]=hist[t]; }); hist=f; }
-    window.currentHistoryData = hist;
+    window.currentHistoryData = next?Object.assign({},window.currentHistoryData,hist):hist;
     if(!Object.keys(hist).length){
       c.innerHTML = `<div class="col-span-full text-center py-12 border border-dashed border-teal-800/40 rounded-2xl"><div class="text-teal-400 font-bold text-sm">Không tìm thấy dữ liệu</div><div class="text-teal-500 text-[10px] mt-1">Thử đổi ngày hoặc ca khác</div></div>`;
       return;
     }
-    c.innerHTML = Object.keys(hist).map(t=>{
+    const html = Object.keys(hist).map(t=>{
       const d = hist[t]; const tData = d.tableData; const tOrders = d.orders.sort((a,b)=>a.timestamp-b.timestamp);
       const name = tData.customerName || 'Khách Vãng Lai';
       const pax = tData.pax || 0;
@@ -1892,6 +1895,8 @@ window.fetchHistoryData = async function(){
       if(payment==='KTOUR') payColor = 'bg-red-700/90 text-red-100 border-red-400 font-black';
       return `<div class="glass-card p-5 rounded-2xl border border-teal-700/50 backdrop-blur-sm flex flex-col relative overflow-hidden shadow-lg hover:border-gold-500/50 transition-colors"><div class="flex justify-between items-start mb-2 relative z-10"><span class="text-sm font-black text-emerald-400 drop-shadow-sm">${t}</span><span class="text-[10px] bg-teal-800 text-white px-2 py-0.5 rounded font-bold shadow-sm">PAX: ${pax}</span></div><div class="text-[13px] font-black text-white leading-tight mb-2 uppercase tracking-wide">${name} ${rest}</div><div class="text-[9px] font-black uppercase tracking-wider mb-4 ${payColor} px-2.5 py-1.5 rounded inline-block self-start border shadow-inner">TT: ${payment} ${foc}</div><div class="space-y-2 bg-teal-950/60 p-3 rounded-xl relative z-10 border border-teal-800/50 shadow-inner"><div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Đồ Uống:</span><span class="font-black text-emerald-400">${drinks}/${pax}</span></div><div class="flex justify-between items-center text-[11px]"><span class="text-teal-300">Bánh Ngọt:</span><span class="font-black text-emerald-400">${pastries}/${pax}</span></div></div>${details}${ordersHtml}</div>`;
     }).join('');
+    c.querySelector('[data-lounge-history-next]')?.remove();
+    c.innerHTML=(next?c.innerHTML:'')+html+(loungeHistoryCursor?'<div data-lounge-history-next class="col-span-full"><button class="w-full rounded-xl border border-teal-600 p-3 text-gold-400" onclick="fetchHistoryData(true)">Xem thêm lịch sử</button></div>':'');
     window.showToast("Tải lịch sử thành công!",'✅');
   } catch(e){ c.innerHTML = `<div class="col-span-full text-center py-10 text-red-400 font-bold border border-red-900/50 bg-red-950/20 rounded-xl">Lỗi tải dữ liệu!</div>`; }
 };

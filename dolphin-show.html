@@ -251,7 +251,7 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction, Timestamp, limit, startAfter } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ===== CẤU HÌNH ===== */
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
@@ -737,21 +737,25 @@ window.executeArchive = async () => {
   } catch (e) { toast('Lỗi lưu trữ: ' + e.message, '❌'); }
 };
 
-window.fetchHistory = async () => {
+let showHistoryCursor=null,showHistoryKey='';
+window.fetchHistory = async (next=false) => {
   if (!db) return;
   const date = $('h-date').value, shift = $('h-shift').value, kw = norm($('h-search').value), body = $('h-body');
   if (!date) return toast('Vui lòng chọn ngày!', '⚠️');
-  body.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-gold-400 font-bold animate-pulse">Đang tải...</td></tr>';
+  if(!next)body.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-gold-400 font-bold animate-pulse">Đang tải...</td></tr>';
   try {
     const q = shift === 'Cả Ngày' ? query(collection(db, COL_HISTORY), where('date', '==', date))
       : query(collection(db, COL_HISTORY), where('date', '==', date), where('shift', '==', shift));
-    const snap = await getDocs(q);
+    const k=date+'|'+shift+'|'+kw;if(!next||showHistoryKey!==k){showHistoryCursor=null;showHistoryKey=k;next=false;}
+    const snap=await getDocs(showHistoryCursor?query(q,limit(8),startAfter(showHistoryCursor)):query(q,limit(8)));
+    showHistoryCursor=snap.docs.length===8?snap.docs[snap.docs.length-1]:null;
     let rows = [];
     snap.forEach(d => { const x = d.data(); (x.bookings || []).forEach(b => rows.push({ ...b, shift: x.shift })); });
     if (kw) rows = rows.filter(r => norm([r.label, r.leader, r.dining, r.payment, r.focNote, r.seller].join(' ')).includes(kw));
     rows.sort((a, b) => ALL.indexOf(a.label) - ALL.indexOf(b.label));
     $('h-summary').innerText = rows.length ? `Tìm thấy ${rows.length} bàn • Tổng ${rows.reduce((s, r) => s + (parseInt(r.guests) || 0), 0)} khách` : '';
-    body.innerHTML = rows.length ? rows.map(r => {
+    if(next)body.querySelector('[data-show-history-next]')?.remove();
+    const rendered=rows.length ? rows.map(r => {
       const sv = r.service || {};
       const comboName = sv.combo && COMBOS[sv.combo] ? COMBOS[sv.combo].name : '-';
       return `<tr class="hover:bg-teal-800/40">
@@ -763,6 +767,7 @@ window.fetchHistory = async () => {
       <td class="p-3 text-teal-400">${esc(r.shift)}</td></tr>`;
     }).join('')
       : '<tr><td colspan="9" class="text-center py-10 text-teal-400 font-bold">Không tìm thấy dữ liệu.</td></tr>';
+    body.innerHTML=(next?body.innerHTML:'')+rendered+(showHistoryCursor?'<tr data-show-history-next><td colspan="9"><button class="btn-gold p-2 rounded-lg" onclick="fetchHistory(true)">Xem thêm lịch sử</button></td></tr>':'');
   } catch (e) { body.innerHTML = '<tr><td colspan="9" class="text-center py-10 text-red-400 font-bold">Lỗi tải dữ liệu!</td></tr>'; }
 };
 

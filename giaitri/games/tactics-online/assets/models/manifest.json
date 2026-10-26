@@ -4,10 +4,12 @@
   "license": "Original procedural geometry generated for Dolphin Tactics, no external copyrighted assets",
   "heroes": {
     "H01": {
-      "file": "heroes/h01.glb",
+      "file": "heroes/chibi/h01.glb",
       "name": "Thiết Vệ",
       "archetype": "hammer",
-      "scale": 1
+      "scale": 1,
+      "quality": "stylized-chibi",
+      "targetHeight": 1.02
     },
     "H02": {
       "file": "heroes/h02.glb",
@@ -189,4 +191,4 @@
   "defaults": {
     "targetHeight": 1.02
   }
-}
+}\n

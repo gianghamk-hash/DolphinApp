@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.115",
+      "releaseDate": "2026-10-26T16:35:42.670Z",
+      "summary": "fix(ci): retry Saber GLB deployment after concurrent main changes",
+      "details": [
+        "fix(ci): retry Saber GLB deployment after concurrent main changes"
+      ]
+    },
+    {
       "version": "1.0.114",
       "releaseDate": "2026-10-26T16:03:43.910Z",
       "summary": "fix: Blender GLB export NumPy dependency",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.66",
       "releaseDate": "2026-10-16T06:47:07.536Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.65",
-      "releaseDate": "2026-10-16T06:40:16.954Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"

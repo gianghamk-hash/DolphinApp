@@ -1,5 +1,5 @@
 {
-  "version": "1.0.115",
+  "version": "1.0.116",
   "releaseDate": "2026-10-26",
-  "notes": "fix(ci): retry Saber GLB deployment after concurrent main changes"
+  "notes": "fix(ci): bound Blender apt install and use minimal dependencies (#55)"
 }

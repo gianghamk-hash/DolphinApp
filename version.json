@@ -1,7 +1,7 @@
 {
-  "version": "1.0.115",
-  "buildDate": "2026-10-26T16:35:42.670Z",
-  "commit": "4836722",
-  "notes": "fix(ci): retry Saber GLB deployment after concurrent main changes",
+  "version": "1.0.116",
+  "buildDate": "2026-10-26T16:59:04.737Z",
+  "commit": "aa733b8",
+  "notes": "fix(ci): bound Blender apt install and use minimal dependencies (#55)",
   "forceUpdate": false
 }

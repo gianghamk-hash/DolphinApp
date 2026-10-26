@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.118",
+      "releaseDate": "2026-10-26T17:17:59.771Z",
+      "summary": "fix(tactics): restore valid GLB manifest JSON",
+      "details": [
+        "fix(tactics): restore valid GLB manifest JSON"
+      ]
+    },
+    {
       "version": "1.0.117",
       "releaseDate": "2026-10-26T17:12:36.884Z",
       "summary": "fix(ci): avoid premature Blender apt timeout",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.68",
-      "releaseDate": "2026-10-17T00:30:21.760Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
       ]
     }
   ]

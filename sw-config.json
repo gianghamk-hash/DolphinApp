@@ -1,5 +1,5 @@
 {
-  "version": "1.0.118",
+  "version": "1.0.119",
   "releaseDate": "2026-10-26",
-  "notes": "fix(tactics): restore valid GLB manifest JSON"
+  "notes": "feat(tactics): generate remaining 29 rigged chibi heroes"
 }

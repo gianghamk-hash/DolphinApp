@@ -1,26 +1,26 @@
 {
-  "version": "1.0.118",
-  "previousVersion": "1.0.117",
-  "commit": "8238578",
-  "previousCommit": "1d6721e",
-  "buildDate": "2026-10-26T17:17:59.771Z",
-  "summary": "fix(tactics): restore valid GLB manifest JSON",
+  "version": "1.0.119",
+  "previousVersion": "1.0.118",
+  "commit": "78ebcf5",
+  "previousCommit": "8238578",
+  "buildDate": "2026-10-26T17:33:46.537Z",
+  "summary": "feat(tactics): generate remaining 29 rigged chibi heroes",
   "changes": {
-    "totalCommits": 122,
+    "totalCommits": 123,
     "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(tactics): restore valid GLB manifest JSON"
+    "feat(tactics): generate remaining 29 rigged chibi heroes"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/build-saber-chibi.yml",
+      "file": ".github/workflows/build-remaining-chibi.yml",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/assets/models/manifest.json",
+      "file": "giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py",
       "type": "update"
     }
   ]

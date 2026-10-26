@@ -638,7 +638,7 @@ function startCaroListener(db) {
   if (caroListenerStarted) return;
   caroListenerStarted = true;
   try {
-    onSnapshot(collection(db, 'caro_games'), (snap) => {
+    onSnapshot(query(collection(db, 'caro_games'),limit(80)), (snap) => {
       const arr = [];
       snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
       caroGamesAll = arr;
@@ -1020,7 +1020,7 @@ function startNoteListener(db) {
   if (noteListenStarted) return;
   noteListenStarted = true;
   try {
-    const q = query(collection(db, COL_NOTES), orderBy('timestamp', 'desc'));
+    const q = query(collection(db, COL_NOTES), orderBy('timestamp', 'desc'), limit(80));
     onSnapshot(q, (snap) => {
       allNotes = [];
       snap.forEach(d => allNotes.push(Object.assign({ id: d.id }, d.data())));
@@ -1139,7 +1139,7 @@ function startReminderListener(db) {
   if (remListenStarted) return;
   remListenStarted = true;
   try {
-    const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'));
+    const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'), limit(80));
     onSnapshot(q, (snap) => {
       allReminders = [];
       snap.forEach(d => allReminders.push(Object.assign({ id: d.id }, d.data())));

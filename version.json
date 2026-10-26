@@ -1,7 +1,7 @@
 {
-  "version": "1.0.109",
-  "buildDate": "2026-10-26T13:30:47.939Z",
-  "commit": "de2643a",
-  "notes": "feat: TFT Phase 1D detailed hero models scaled down 40%",
+  "version": "1.0.110",
+  "buildDate": "2026-10-26T13:44:13.316Z",
+  "commit": "5035353",
+  "notes": "feat: GLB-first Stylized Chibi character asset pipeline",
   "forceUpdate": false
 }

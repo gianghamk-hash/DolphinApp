@@ -1,18 +1,18 @@
 {
-  "version": "1.0.109",
-  "previousVersion": "1.0.108",
-  "commit": "de2643a",
-  "previousCommit": "b7f2983",
-  "buildDate": "2026-10-26T13:30:47.939Z",
-  "summary": "feat: TFT Phase 1D detailed hero models scaled down 40%",
+  "version": "1.0.110",
+  "previousVersion": "1.0.109",
+  "commit": "5035353",
+  "previousCommit": "de2643a",
+  "buildDate": "2026-10-26T13:44:13.316Z",
+  "summary": "feat: GLB-first Stylized Chibi character asset pipeline",
   "changes": {
-    "totalCommits": 113,
-    "filesChanged": 3,
+    "totalCommits": 114,
+    "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: TFT Phase 1D detailed hero models scaled down 40%"
+    "feat: GLB-first Stylized Chibi character asset pipeline"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,19 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/hero-quality.test.js",
+      "file": "giaitri/games/tactics-online/animation.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/rigged-model-factory.js",
+      "file": "giaitri/games/tactics-online/assets/models/manifest.json",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/model-loader.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/model-loader.test.js",
       "type": "update"
     }
   ]

@@ -3,7 +3,15 @@ const assert = require('node:assert/strict');
 require('./skeletal-system.js');
 class Track { constructor(name,times,values){this.name=name;this.times=times;this.values=values;} }
 class Clip { constructor(name,duration,tracks){this.name=name;this.duration=duration;this.tracks=tracks;} }
-const T={NumberKeyframeTrack:Track,AnimationClip:Clip};
+class Geometry {
+ constructor(){this.attributes={position:{count:2,getY:i=>i?0.6:-0.6}};}
+ setAttribute(){}
+}
+const T={
+ NumberKeyframeTrack:Track,AnimationClip:Clip,CylinderGeometry:Geometry,
+ Uint16BufferAttribute:class {},Float32BufferAttribute:class {},
+ MathUtils:{clamp:(v,min,max)=>Math.min(max,Math.max(min,v))}
+};
 test('all weapon families get cached animation clips without mutating generic clips',()=>{
  const defs={};
  for(const [i,weapon] of ['sword','bow','staff','hammer','dagger','claws','shield','fists'].entries())defs['H'+i]={weapon};

@@ -598,7 +598,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, orderBy, limit, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const state = { currentRole:'customer', staffViewMode:'table', tableSelected:false, selectedTable:null, currentLanguage:'VI', activeCategory:'all', cart:{}, orders:[], activeCalls:[], tableAssignments:{}, isSending:false, isCallingStaff:false, pendingAction:null, lastTransactionWarning:null };
 window.state = state;
@@ -1828,7 +1828,7 @@ window.executeSystemReset = async function(){
     const orders=[], tables={};
     oSnap.forEach(d=>orders.push(d.data()));
     tSnap.forEach(d=>{ tables[d.id] = d.data(); });
-    if(orders.length || Object.keys(tables).length){ await addDoc(collection(db,'lounge_history_sessions'),{date, shift, timestamp:Date.now(), orders, tables}); }
+    if(orders.length || Object.keys(tables).length){ await addDoc(collection(db,'lounge_history_sessions'),{date, shift, timestamp:Date.now(), expireAt:Timestamp.fromMillis(Date.now()+90*86400000), orders, tables}); }
     const del = [];
     oSnap.forEach(d=>del.push(deleteDoc(d.ref)));
     const cSnap = await getDocs(collection(db,'lounge_calls'));

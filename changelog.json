@@ -1,18 +1,18 @@
 {
-  "version": "1.0.114",
-  "previousVersion": "1.0.113",
-  "commit": "edeead3",
-  "previousCommit": "30a4df8",
-  "buildDate": "2026-10-26T16:03:43.910Z",
-  "summary": "fix: Blender GLB export NumPy dependency",
+  "version": "1.0.115",
+  "previousVersion": "1.0.114",
+  "commit": "4836722",
+  "previousCommit": "edeead3",
+  "buildDate": "2026-10-26T16:35:42.670Z",
+  "summary": "fix(ci): retry Saber GLB deployment after concurrent main changes",
   "changes": {
-    "totalCommits": 118,
+    "totalCommits": 119,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix: Blender GLB export NumPy dependency"
+    "fix(ci): retry Saber GLB deployment after concurrent main changes"
   ],
   "fileChanges": [
     {

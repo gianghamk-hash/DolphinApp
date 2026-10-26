@@ -1,7 +1,7 @@
 {
-  "version": "1.0.114",
-  "buildDate": "2026-10-26T16:03:43.910Z",
-  "commit": "edeead3",
-  "notes": "fix: Blender GLB export NumPy dependency",
+  "version": "1.0.115",
+  "buildDate": "2026-10-26T16:35:42.670Z",
+  "commit": "4836722",
+  "notes": "fix(ci): retry Saber GLB deployment after concurrent main changes",
   "forceUpdate": false
 }

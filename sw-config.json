@@ -1,5 +1,5 @@
 {
-  "version": "1.0.114",
+  "version": "1.0.115",
   "releaseDate": "2026-10-26",
-  "notes": "fix: Blender GLB export NumPy dependency"
+  "notes": "fix(ci): retry Saber GLB deployment after concurrent main changes"
 }

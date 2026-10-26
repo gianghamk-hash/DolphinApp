@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.114",
+      "releaseDate": "2026-10-26T16:03:43.910Z",
+      "summary": "fix: Blender GLB export NumPy dependency",
+      "details": [
+        "fix: Blender GLB export NumPy dependency"
+      ]
+    },
+    {
       "version": "1.0.113",
       "releaseDate": "2026-10-26T15:47:49.015Z",
       "summary": "feat(tactics): activate validated Saber GLB automatically",
@@ -390,14 +398,6 @@
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.64",
-      "releaseDate": "2026-10-16T06:35:19.255Z",
-      "summary": "FIX LỖI staff sync",
-      "details": [
-        "FIX LỖI staff sync"
       ]
     }
   ]

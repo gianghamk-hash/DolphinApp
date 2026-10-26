@@ -60,7 +60,7 @@ jobs:
           print('Validated mapping for 29 heroes')
           PY
       - name: Fetch prebuilt Blender container
-        run: docker pull blender/blender:4.3.2
+        run: docker pull blenderkit/headless-blender:blender-4.0
       - name: Build only this batch of rigged GLBs
         run: |
           set -euo pipefail
@@ -68,8 +68,8 @@ jobs:
           for n in $(seq ${{ matrix.start }} ${{ matrix.end }}); do
             num=$(printf '%02d' "$n")
             echo "::group::H${num}"
-            docker run --rm -v "$PWD:/work" -w /work blender/blender:4.3.2 \
-              blender -b -t 2 --python-exit-code 1 \
+            docker run --rm -v "$PWD:/work" -w /work blenderkit/headless-blender:blender-4.0 \
+              /home/headless/blender/blender -b -t 2 --python-exit-code 1 \
               --python giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py \
               -- "H${num}" "/work/generated-chibi/h${num}.glb"
             test -s "generated-chibi/h${num}.glb"

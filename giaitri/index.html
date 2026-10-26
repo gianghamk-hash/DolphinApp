@@ -513,7 +513,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
   window.addEventListener('message',function(ev){
     var frame=document.getElementById('gameFrame');
     if(!frame||ev.source!==frame.contentWindow||ev.origin!==location.origin)return;
-    if(!ev.data||ev.data.type!=='dolphin-tactics-fullscreen')return;
+    if(!ev.data||!['dolphin-tactics-fullscreen','dolphin-arcade-fullscreen'].includes(ev.data.type))return;
     var view=document.getElementById('gameIframeView');
     if(!view)return;
     view.classList.toggle('fullscreen',!!ev.data.enabled);
@@ -526,7 +526,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         if(ev.data.enabled && typeof androidBridge.enterLandscapeFullscreen==='function')androidBridge.enterLandscapeFullscreen();
         if(!ev.data.enabled && typeof androidBridge.exitLandscapeFullscreen==='function')androidBridge.exitLandscapeFullscreen();
       }
-    } catch(err){ console.warn('[Tactics] Native fullscreen bridge unavailable',err); }
+    } catch(err){ console.warn('[Arcade] Native fullscreen bridge unavailable',err); }
   });
   window.closeGame = function(){
     if (!currentGame) return;
@@ -535,6 +535,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     if (frame) frame.src = 'about:blank';
     document.getElementById('gameIframeView').classList.add('hidden');
     document.getElementById('gameIframeView').classList.remove('fullscreen'); // ✅ tắt fullscreen
+    document.getElementById('gameIframeView').classList.remove('tactics-immersive');
     document.getElementById('gameMenuView').classList.remove('hidden');
     document.documentElement.classList.remove('game-locked');
     document.body.classList.remove('game-locked');

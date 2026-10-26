@@ -158,7 +158,7 @@ function createEngine(C){
    tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt});
    if(tgt.hp<=0){tgt.alive=false;tgt.fsm="Dead";emit({t,actor:tgt.id,type:"die"});}
   }
-  for(let t=0;t<40000;t+=200){
+  for(let t=0;t<PHASES.COMBAT;t+=200){
    const living=units.filter(x=>x.alive);if(!living.some(x=>x.owner===0)||!living.some(x=>x.owner===1))break;
    for(const u of living){if(!u.alive)continue;
     if(u.regen)u.hp=Math.min(u.maxHp,u.hp+u.regen*.2);
@@ -196,7 +196,7 @@ function createEngine(C){
   const winner=tie?null:(winLeft?pair.a:(pair.pve||pair.ghost?null:pair.b));
   const surviving=tie?[]:(winLeft?left:right);
   const damage=tie?0:2+Math.floor(room.round/3)+surviving.reduce((v,x)=>v+(x.star||1),0);
-  emit({t:40000,actor:"system",type:"end",amount:damage});
+  emit({t:PHASES.COMBAT,actor:"system",type:"end",amount:damage});
   return {pair,winner,loser:tie?null:pair.pve||pair.ghost?(winLeft?null:pair.a):(winLeft?pair.b:pair.a),damage,events};
  }
  function finalize(s,now){

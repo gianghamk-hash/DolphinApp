@@ -12,10 +12,16 @@ function createRigAnimator(){
    rig.leftCalf.rotation.x=Math.max(0,-gait)*.48;rig.rightCalf.rotation.x=Math.max(0,gait)*.48;
    left.rotation.x=-gait*.47;right.rotation.x=gait*.47;rig.spine.rotation.x=-.1;
   }else if(type==='attack'){
-   const ranged=style.includes('arrow')||style.includes('shot')||style.includes('barrage');
-   rig.spine.rotation.y=wave*(ranged?-.1:-.31);
-   right.rotation.x=wave*(ranged?-.75:-1.25);
-   rig.rightForearm.rotation.x=-wave*.52;left.rotation.x=wave*.24;
+   const ranged=/arrow|shot|barrage|bow/i.test(style);
+   const caster=/staff|spell|arcane|ward|surge|rift|collapse/i.test(style);
+   const heavy=/hammer|bulwark|titan/i.test(style);
+   const dual=/dagger|claw|dash|step|edge/i.test(style);
+   rig.spine.rotation.y=wave*(ranged?-.08:dual?-.42:-.25);
+   right.rotation.x=-wave*(ranged?.72:caster?.45:heavy?1.7:1.15);
+   rig.rightForearm.rotation.x=-wave*(ranged?.18:.52);
+   left.rotation.x=-wave*(ranged?.65:dual?1.05:.24);
+   if(caster){right.rotation.z=wave*.8;left.rotation.z=-wave*.4;}
+   if(heavy)rig.spine.rotation.x=-wave*.2;
   }else if(type==='cast'){
    left.rotation.z=-wave*.85;right.rotation.z=wave*.85;
    rig.leftForearm.rotation.x=-wave*.64;rig.rightForearm.rotation.x=-wave*.64;

@@ -103,6 +103,28 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 .promo-btn:active{transform:scale(.95)}
 .promo-btn.w{color:#FFF;text-shadow:0 0 2px #000, 0 1px 2px rgba(0,0,0,.5)}
 .promo-btn.b{color:#1a1a1a}
+
+/* Dolphin Arcade 2026 visual refresh — paint-only, no game logic or hitbox changes */
+:root{--arcade-glow:rgba(92,229,216,.30);--arcade-gold:rgba(250,202,114,.35)}
+body{background:radial-gradient(ellipse at 52% -8%,rgba(34,115,121,.43),transparent 48%),radial-gradient(ellipse at 110% 74%,rgba(16,71,97,.26),transparent 50%),#071b1c;background-attachment:fixed}
+.glass,.modal-card,.result-card,.rules-card{border:1px solid rgba(133,225,214,.20);box-shadow:0 12px 30px rgba(0,8,13,.26),inset 0 1px rgba(255,255,255,.065)}
+.btn-gold{box-shadow:0 4px 0 rgba(128,82,19,.35),0 7px 23px rgba(239,180,70,.19),inset 0 1px rgba(255,255,255,.48);transition:filter .16s ease,box-shadow .16s ease,transform .16s ease}
+.btn-outline{box-shadow:inset 0 1px rgba(255,255,255,.08),0 5px 14px rgba(0,0,0,.15);transition:filter .16s ease,transform .16s ease}
+button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;outline-offset:3px}
+@media(hover:hover){.btn-gold:hover,.btn-outline:hover{filter:brightness(1.10)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+#chessBoard{overflow:hidden;border-radius:12px;box-shadow:0 18px 38px rgba(0,8,15,.43),0 0 0 2px rgba(239,199,117,.32)}
+.sq.light{background-image:linear-gradient(145deg,rgba(255,255,255,.10),transparent 75%)}
+.sq.dark{background-image:linear-gradient(145deg,rgba(20,77,70,.12),rgba(4,27,36,.11))}
+.sq.sel,.sq.lastmove{box-shadow:inset 0 0 0 2px rgba(253,221,132,.29)}
+.sq.check{box-shadow:inset 0 0 20px rgba(244,61,78,.43)}
+.pc{filter:drop-shadow(0 3px 2px rgba(0,0,0,.38));transition:filter .13s ease}
+.pc.w{filter:drop-shadow(0 3px 2px rgba(0,0,0,.33)) drop-shadow(0 0 2px rgba(255,255,255,.32))}
+.pc.b{filter:drop-shadow(0 3px 2px rgba(0,0,0,.51))}
+.mode-btn.active{box-shadow:inset 0 1px rgba(255,255,255,.18),0 6px 20px rgba(239,198,101,.12)}
+
 </style>
 </head>
 <body class="pb-6">

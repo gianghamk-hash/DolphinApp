@@ -1,5 +1,5 @@
 {
-  "version": "1.0.106",
+  "version": "1.0.107",
   "releaseDate": "2026-10-26",
-  "notes": "perf: TFT Android combat effects and adaptive rendering"
+  "notes": "feat: TFT timed windup and impact replay cues"
 }

@@ -1,18 +1,18 @@
 {
-  "version": "1.0.106",
-  "previousVersion": "1.0.105",
-  "commit": "fb2bed3",
-  "previousCommit": "56aa1e9",
-  "buildDate": "2026-10-26T13:13:17.759Z",
-  "summary": "perf: TFT Android combat effects and adaptive rendering",
+  "version": "1.0.107",
+  "previousVersion": "1.0.106",
+  "commit": "2a85850",
+  "previousCommit": "fb2bed3",
+  "buildDate": "2026-10-26T13:17:51.170Z",
+  "summary": "feat: TFT timed windup and impact replay cues",
   "changes": {
-    "totalCommits": 110,
+    "totalCommits": 111,
     "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "perf: TFT Android combat effects and adaptive rendering"
+    "feat: TFT timed windup and impact replay cues"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,11 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/combat-fx.js",
+      "file": "giaitri/games/tactics-online/combat-timeline.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/combat-performance.test.js",
+      "file": "giaitri/games/tactics-online/combat-timeline.test.js",
       "type": "update"
     },
     {

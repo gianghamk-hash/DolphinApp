@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.106",
+      "releaseDate": "2026-10-26T13:13:17.759Z",
+      "summary": "perf: TFT Android combat effects and adaptive rendering",
+      "details": [
+        "perf: TFT Android combat effects and adaptive rendering"
+      ]
+    },
+    {
       "version": "1.0.105",
       "releaseDate": "2026-10-26T13:09:20.007Z",
       "summary": "feat: TFT weapon-specific hero attack animation [Phase 1B]",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.56",
-      "releaseDate": "2026-10-16T05:33:48.336Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
       ]
     }
   ]

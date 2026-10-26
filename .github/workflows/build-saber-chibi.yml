@@ -19,11 +19,12 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - name: Install Blender
-        run: sudo apt-get update -qq && sudo apt-get install -y blender
+        run: sudo apt-get update -qq && sudo apt-get install -y blender python3-numpy
       - name: Build original Saber 3D mesh, skinned armature, animations
         run: |
           mkdir -p generated-saber
-          blender -b -t 2 --python giaitri/games/tactics-online/assets/models/production/saber/build_saber.py -- "$PWD/generated-saber/h01.glb"
+          blender -b -t 2 --python-exit-code 1 --python giaitri/games/tactics-online/assets/models/production/saber/build_saber.py -- "$PWD/generated-saber/h01.glb"
+          test -s generated-saber/h01.glb
       - name: Validate GLB animation, skeleton and mesh
         run: |
           python -m pip install pygltflib --break-system-packages -q

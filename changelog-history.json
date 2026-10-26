@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.108",
+      "releaseDate": "2026-10-26T13:23:33.109Z",
+      "summary": "feat: TFT Phase 1C hero origin/class identities",
+      "details": [
+        "feat: TFT Phase 1C hero origin/class identities"
+      ]
+    },
+    {
       "version": "1.0.107",
       "releaseDate": "2026-10-26T13:17:51.170Z",
       "summary": "feat: TFT timed windup and impact replay cues",
@@ -390,14 +398,6 @@
       "summary": "HỆ THỐNG MULTIPLAYER",
       "details": [
         "HỆ THỐNG MULTIPLAYER"
-      ]
-    },
-    {
-      "version": "1.0.58",
-      "releaseDate": "2026-10-16T05:38:54.621Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
       ]
     }
   ]

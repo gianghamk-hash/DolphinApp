@@ -1,18 +1,18 @@
 {
-  "version": "1.0.108",
-  "previousVersion": "1.0.107",
-  "commit": "b7f2983",
-  "previousCommit": "2a85850",
-  "buildDate": "2026-10-26T13:23:33.109Z",
-  "summary": "feat: TFT Phase 1C hero origin/class identities",
+  "version": "1.0.109",
+  "previousVersion": "1.0.108",
+  "commit": "de2643a",
+  "previousCommit": "b7f2983",
+  "buildDate": "2026-10-26T13:30:47.939Z",
+  "summary": "feat: TFT Phase 1D detailed hero models scaled down 40%",
   "changes": {
-    "totalCommits": 112,
-    "filesChanged": 5,
+    "totalCommits": 113,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: TFT Phase 1C hero origin/class identities"
+    "feat: TFT Phase 1D detailed hero models scaled down 40%"
   ],
   "fileChanges": [
     {
@@ -20,15 +20,7 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/hero-identity.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/hero-identity.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "giaitri/games/tactics-online/hero-quality.test.js",
       "type": "update"
     },
     {

@@ -1,0 +1,107 @@
+name: Build Remaining 29 Chibi Heroes
+on:
+  pull_request:
+    paths:
+      - "giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py"
+      - ".github/workflows/build-remaining-chibi.yml"
+  push:
+    branches: [main]
+    paths:
+      - "giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py"
+      - ".github/workflows/build-remaining-chibi.yml"
+  workflow_dispatch:
+permissions:
+  contents: write
+concurrency:
+  group: chibi-remaining-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  build-remaining:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender and GLB validation library
+        timeout-minutes: 22
+        run: |
+          set -euo pipefail
+          sudo DEBIAN_FRONTEND=noninteractive timeout 240 apt-get update -qq -o Acquire::Retries=2
+          sudo DEBIAN_FRONTEND=noninteractive timeout 1100 apt-get install -y --no-install-recommends blender python3-numpy -o Acquire::Retries=2
+          python -m pip install pygltflib --break-system-packages -q
+      - name: Validate 29 hero definitions match catalog
+        run: |
+          python -m py_compile giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py
+          python - <<'PY'
+          import json,ast
+          from pathlib import Path
+          src=Path('giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py').read_text()
+          tree=ast.parse(src)
+          mapping=next(ast.literal_eval(n.value) for n in tree.body if isinstance(n,ast.Assign) and any(isinstance(t,ast.Name) and t.id=='HEROES' for t in n.targets))
+          heroes=json.loads(Path('giaitri/games/tactics-online/catalog.json').read_text())['heroes']
+          expected={h['id'] for h in heroes}-{'H01'}
+          assert set(mapping)==expected,(expected-set(mapping),set(mapping)-expected)
+          for hero in heroes[1:]:
+            _,origin,role,*_=mapping[hero['id']]
+            assert origin==hero['origins'][0] and role==hero['classes'][0],hero['id']
+          print('Validated all',len(mapping),'hero definitions')
+          PY
+      - name: Build and validate each rigged hero GLB
+        run: |
+          set -euo pipefail
+          mkdir -p generated-chibi
+          for n in $(seq -w 2 30); do
+            id="H${n}"
+            file="generated-chibi/h${n}.glb"
+            echo "::group::Building ${id}"
+            blender -b -t 2 --python-exit-code 1 --python giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py -- "$id" "$PWD/$file"
+            test -s "$file"
+            python giaitri/games/tactics-online/assets/models/production/saber/validate_saber_glb.py "$file"
+            echo "::endgroup::"
+          done
+          test "$(find generated-chibi -name '*.glb' | wc -l)" -eq 29
+      - name: Publish all 29 models and activate manifest on main
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          set -euo pipefail
+          target="giaitri/games/tactics-online/assets/models/heroes/chibi"
+          mkdir -p "$target"
+          cp generated-chibi/*.glb "$target/"
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('giaitri/games/tactics-online/assets/models/manifest.json')
+          m=json.loads(p.read_text(encoding='utf-8'))
+          for i in range(2,31):
+            hero=m['heroes'][f'H{i:02d}']
+            hero.update(file=f'heroes/chibi/h{i:02d}.glb',quality='stylized-chibi',targetHeight=1.02,scale=1)
+          p.write_text(json.dumps(m,ensure_ascii=False,indent=2)+chr(10),encoding='utf-8')
+          assert json.loads(p.read_text())['heroes']['H30']['quality']=='stylized-chibi'
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add "$target" giaitri/games/tactics-online/assets/models/manifest.json
+          if git diff --cached --quiet; then
+            echo "29 hero assets already up to date"
+          else
+            git commit -m 'assets(tactics): activate remaining 29 original rigged chibi heroes'
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo "Conflicting asset change; no force push attempted"
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo "Published 29 chibi heroes successfully"
+                exit 0
+              fi
+              if [ "$attempt" -eq 5 ]; then exit 1; fi
+              sleep 3
+            done
+          fi
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: remaining-29-chibi-glbs
+          path: generated-chibi/*.glb
+          retention-days: 14

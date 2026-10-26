@@ -46,9 +46,32 @@ jobs:
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
           git add giaitri/games/tactics-online/assets/models/heroes/chibi/h01.glb giaitri/games/tactics-online/assets/models/manifest.json
-          git commit -m 'assets(tactics): activate validated original Saber Chibi GLB' || exit 0
-          git push
+          if git diff --cached --quiet; then
+            echo 'No asset changes to commit'
+          else
+            git commit -m 'assets(tactics): activate validated original Saber Chibi GLB'
+            # main may advance during the Blender job (e.g. version-bump automation).
+            # Rebase our generated asset commit, preserving unrelated remote changes.
+            for attempt in 1 2 3 4 5; do
+              git fetch origin main
+              if ! git rebase origin/main; then
+                git rebase --abort || true
+                echo 'Could not safely rebase Saber assets. No force push attempted.'
+                exit 1
+              fi
+              if git push origin HEAD:main; then
+                echo 'Saber model published successfully'
+                break
+              fi
+              if [ "$attempt" -eq 5 ]; then
+                echo 'Remote main advanced repeatedly; aborting without force push'
+                exit 1
+              fi
+              sleep 3
+            done
+          fi
       - uses: actions/upload-artifact@v4
+        if: always()
         with:
           name: saber-chibi-glb-test
           path: generated-saber/h01.glb

@@ -1,20 +1,24 @@
 {
-  "version": "1.0.123",
-  "previousVersion": "1.0.122",
-  "commit": "7ae967f",
-  "previousCommit": "1440486",
-  "buildDate": "2026-10-26T18:14:05.757Z",
-  "summary": "style(arcade): visual polish for seven games except TFT",
+  "version": "1.0.124",
+  "previousVersion": "1.0.123",
+  "commit": "32ee8f5",
+  "previousCommit": "7ae967f",
+  "buildDate": "2026-10-26T18:22:02.736Z",
+  "summary": "feat(arcade): optional fullscreen for all seven non-TFT games",
   "changes": {
-    "totalCommits": 127,
-    "filesChanged": 7,
+    "totalCommits": 128,
+    "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "style(arcade): visual polish for seven games except TFT"
+    "feat(arcade): optional fullscreen for all seven non-TFT games"
   ],
   "fileChanges": [
+    {
+      "file": "giaitri/games/arcade-fullscreen.js",
+      "type": "update"
+    },
     {
       "file": "giaitri/games/battleship.html",
       "type": "update"
@@ -41,6 +45,10 @@
     },
     {
       "file": "giaitri/games/xiangqi.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

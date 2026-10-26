@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.123",
+      "releaseDate": "2026-10-26T18:14:05.757Z",
+      "summary": "style(arcade): visual polish for seven games except TFT",
+      "details": [
+        "style(arcade): visual polish for seven games except TFT"
+      ]
+    },
+    {
       "version": "1.0.122",
       "releaseDate": "2026-10-26T18:03:56.760Z",
       "summary": "balance(tactics): 20-second combat and class-based HP/damage",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI BUNGALOW VÀ VPS",
       "details": [
         "FIX LỖI BUNGALOW VÀ VPS"
-      ]
-    },
-    {
-      "version": "1.0.73",
-      "releaseDate": "2026-10-17T05:58:08.332Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
       ]
     }
   ]

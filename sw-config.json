@@ -1,5 +1,5 @@
 {
-  "version": "1.0.123",
+  "version": "1.0.124",
   "releaseDate": "2026-10-26",
-  "notes": "style(arcade): visual polish for seven games except TFT"
+  "notes": "feat(arcade): optional fullscreen for all seven non-TFT games"
 }

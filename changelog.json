@@ -1,22 +1,26 @@
 {
-  "version": "1.0.117",
-  "previousVersion": "1.0.116",
-  "commit": "1d6721e",
-  "previousCommit": "aa733b8",
-  "buildDate": "2026-10-26T17:12:36.884Z",
-  "summary": "fix(ci): avoid premature Blender apt timeout",
+  "version": "1.0.118",
+  "previousVersion": "1.0.117",
+  "commit": "8238578",
+  "previousCommit": "1d6721e",
+  "buildDate": "2026-10-26T17:17:59.771Z",
+  "summary": "fix(tactics): restore valid GLB manifest JSON",
   "changes": {
-    "totalCommits": 121,
-    "filesChanged": 1,
+    "totalCommits": 122,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ci): avoid premature Blender apt timeout"
+    "fix(tactics): restore valid GLB manifest JSON"
   ],
   "fileChanges": [
     {
       "file": ".github/workflows/build-saber-chibi.yml",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/assets/models/manifest.json",
       "type": "update"
     }
   ]

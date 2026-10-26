@@ -1,7 +1,7 @@
 {
-  "version": "1.0.117",
-  "buildDate": "2026-10-26T17:12:36.884Z",
-  "commit": "1d6721e",
-  "notes": "fix(ci): avoid premature Blender apt timeout",
+  "version": "1.0.118",
+  "buildDate": "2026-10-26T17:17:59.771Z",
+  "commit": "8238578",
+  "notes": "fix(tactics): restore valid GLB manifest JSON",
   "forceUpdate": false
 }

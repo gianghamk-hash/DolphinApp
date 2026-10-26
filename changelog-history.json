@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.117",
+      "releaseDate": "2026-10-26T17:12:36.884Z",
+      "summary": "fix(ci): avoid premature Blender apt timeout",
+      "details": [
+        "fix(ci): avoid premature Blender apt timeout"
+      ]
+    },
+    {
       "version": "1.0.116",
       "releaseDate": "2026-10-26T16:59:04.737Z",
       "summary": "fix(ci): bound Blender apt install and use minimal dependencies (#55)",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.68",
       "releaseDate": "2026-10-17T00:30:21.760Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.67",
-      "releaseDate": "2026-10-16T06:48:47.758Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"

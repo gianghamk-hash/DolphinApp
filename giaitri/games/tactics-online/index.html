@@ -503,7 +503,10 @@ function startReplay(){
 function showDamage(node,amount){
  if(!node||!renderer||!camera)return;
  const v=node.position.clone().add(new THREE.Vector3(0,1.9,0)).project(camera);
- const layer=$('damageLayer'),el=document.createElement('span');el.className='damagePop';el.textContent='−'+Math.round(amount||0);
+ const layer=$('damageLayer');
+ // Restrict concurrent DOM animations during large AoE bursts.
+ while(layer.childElementCount>=16)layer.firstElementChild.remove();
+ const el=document.createElement('span');el.className='damagePop';el.textContent='−'+Math.round(amount||0);
  el.style.left=((v.x+1)*.5*layer.clientWidth)+'px';el.style.top=((-v.y+1)*.5*layer.clientHeight)+'px';
  layer.append(el);setTimeout(()=>el.remove(),900);
 }
@@ -601,7 +604,10 @@ document.addEventListener('pointerup',e=>{
 function setup3D(){
  stageScene=new THREE.Scene();stageScene.background=new THREE.Color(0x0a2635);
  camera=new THREE.OrthographicCamera(-4,4,4,-4,.1,80);camera.position.set(0,10,10);camera.up.set(0,1,0);camera.lookAt(0,0,0);
- renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});renderer.setPixelRatio(Math.min(devicePixelRatio||1,1.35));
+ renderer=new THREE.WebGLRenderer({antialias:false,powerPreference:'low-power'});
+ const pixelRatioCeiling=Math.min(window.devicePixelRatio||1,1.35);
+ let renderPixelRatio=pixelRatioCeiling,qualityWindowStart=0,qualitySamples=0,qualityFrameTime=0,lastFrameStamp=0;
+ renderer.setPixelRatio(renderPixelRatio);
  $('stage').prepend(renderer.domElement);stageScene.add(new THREE.HemisphereLight(0xc1f4ff,0x214052,2.5));
  const light=new THREE.DirectionalLight(0xffe2a9,1.6);light.position.set(2,10,3);stageScene.add(light);
  board=new THREE.Group();characters=new THREE.Group();stageScene.add(board,characters);
@@ -624,7 +630,27 @@ function setup3D(){
   if(tile&&selected){const {col,row}=tile.object.userData.tile;if(row>=4){send({type:'MOVE',unitId:selected,to:'board',index:'r'+(row-4)+'c'+col});selected=null;}}
  });
  let last=0;
- function frame(now){requestAnimationFrame(frame);if(document.hidden||now-last<33)return;last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);renderer.render(stageScene,camera);}
+ function frame(now){
+  requestAnimationFrame(frame);
+  if(document.hidden){lastFrameStamp=now;return;}
+  if(lastFrameStamp){
+   const elapsed=now-lastFrameStamp;
+   if(elapsed>0&&elapsed<180){qualityFrameTime+=elapsed;qualitySamples++;}
+  }
+  lastFrameStamp=now;
+  // Adaptive resolution, with a long sampling window to avoid rapid quality oscillation.
+  if(!qualityWindowStart)qualityWindowStart=now;
+  if(now-qualityWindowStart>=6000){
+   if(qualitySamples>=70){
+    const avg=qualityFrameTime/qualitySamples;
+    const next=avg>43?Math.max(.85,renderPixelRatio-.15):avg<30?Math.min(pixelRatioCeiling,renderPixelRatio+.1):renderPixelRatio;
+    if(Math.abs(next-renderPixelRatio)>.01){renderPixelRatio=next;renderer.setPixelRatio(renderPixelRatio);}
+   }
+   qualityWindowStart=now;qualitySamples=0;qualityFrameTime=0;
+  }
+  if(now-last<33)return;
+  last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);renderer.render(stageScene,camera);
+ }
  requestAnimationFrame(frame);
 }
 setInterval(()=>{

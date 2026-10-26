@@ -344,7 +344,10 @@ jobs:
 
       - name: Generate icons
         run: |
-          sudo apt-get install -y imagemagick
+          if ! command -v convert >/dev/null 2>&1; then
+            sudo apt-get update -y
+            sudo apt-get install -y imagemagick
+          fi
           if [ ! -f "icon-source.png" ]; then
             echo "ERROR: icon-source.png not found!"
             exit 1

@@ -43,23 +43,46 @@ function createSkinner(T,defs){
   model.userData.skeletal={mesh:skin,skeleton:skin.skeleton,mixer,actions,current:'Idle',last:performance.now()};
   return model;
  }
+ const ONESHOT=new Set(['Attack','Cast','Hit','Heal','Shield']);
  function play(model,type){
   const s=model?.userData?.skeletal;if(!s)return false;
-  const label=({idle:'Idle',run:'Run',attack:'Attack',cast:'Cast',hit:'Hit',death:'Death',heal:'Heal',shield:'Shield'})[type];
+  const label=({idle:'Idle',walk:'Run',run:'Run',attack:'Attack',cast:'Cast',hit:'Hit',death:'Death',heal:'Heal',shield:'Shield'})[type];
   if(!label||!s.actions[label])return false;
-  if(s.current===label&&label==='Run')return true;
+  if(s.current==='Death'&&label!=='Death')return false;
+  if(s.current===label){
+   // Preserve looping walk/idle playback; do not restart the same move on every frame.
+   if(label==='Idle'||label==='Run')return true;
+  }
   const previous=s.actions[s.current],next=s.actions[label];
   if(previous&&previous!==next)previous.fadeOut(.12);
-  next.reset().setEffectiveWeight(1).fadeIn(.1).play();s.current=label;return true;
+  next.reset().setEffectiveTimeScale(1).setEffectiveWeight(1).fadeIn(.12).play();
+  s.current=label;
+  return true;
  }
  function tick(model,now){
   const s=model?.userData?.skeletal;if(!s)return;
-  const delta=Math.min(.07,Math.max(0,(now-s.last)/1000));s.last=now;s.mixer.update(delta);
+  const delta=Math.min(.05,Math.max(0,(now-s.last)/1000));
+  s.last=now;
+  if(!delta)return;
+  s.mixer.update(delta);
+  // One-shot actions return to idle only after their clip finishes.
+  // Death intentionally persists until the unit is removed.
+  if(ONESHOT.has(s.current)&&!s.actions[s.current].isRunning())play(model,'idle');
  }
  function idle(model){
-  const s=model?.userData?.skeletal;if(s&&s.current!=='Idle'&&s.current!=='Death')play(model,'idle');
+  const s=model?.userData?.skeletal;
+  if(s&&(s.current==='Run'||(ONESHOT.has(s.current)&&!s.actions[s.current].isRunning())))play(model,'idle');
  }
- return {enhance,play,tick,idle,clips};
+ function dispose(model){
+  const s=model?.userData?.skeletal;if(!s)return;
+  s.mixer.stopAllAction();
+  s.mixer.uncacheRoot(model);
+  if(s.mesh?.parent)s.mesh.parent.remove(s.mesh);
+  s.mesh?.geometry?.dispose();
+  s.mesh?.material?.dispose();
+  delete model.userData.skeletal;
+ }
+ return {enhance,play,tick,idle,dispose,clips};
 }
 root.DolphinCreateSkinner=createSkinner;
 })(typeof window!=='undefined'?window:globalThis);

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.116",
+      "releaseDate": "2026-10-26T16:59:04.737Z",
+      "summary": "fix(ci): bound Blender apt install and use minimal dependencies (#55)",
+      "details": [
+        "fix(ci): bound Blender apt install and use minimal dependencies (#55)"
+      ]
+    },
+    {
       "version": "1.0.115",
       "releaseDate": "2026-10-26T16:35:42.670Z",
       "summary": "fix(ci): retry Saber GLB deployment after concurrent main changes",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.67",
       "releaseDate": "2026-10-16T06:48:47.758Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.66",
-      "releaseDate": "2026-10-16T06:47:07.536Z",
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"

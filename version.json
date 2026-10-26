@@ -1,7 +1,7 @@
 {
-  "version": "1.0.116",
-  "buildDate": "2026-10-26T16:59:04.737Z",
-  "commit": "aa733b8",
-  "notes": "fix(ci): bound Blender apt install and use minimal dependencies (#55)",
+  "version": "1.0.117",
+  "buildDate": "2026-10-26T17:12:36.884Z",
+  "commit": "1d6721e",
+  "notes": "fix(ci): avoid premature Blender apt timeout",
   "forceUpdate": false
 }

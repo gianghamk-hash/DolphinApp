@@ -1,18 +1,18 @@
 {
-  "version": "1.0.116",
-  "previousVersion": "1.0.115",
-  "commit": "aa733b8",
-  "previousCommit": "4836722",
-  "buildDate": "2026-10-26T16:59:04.737Z",
-  "summary": "fix(ci): bound Blender apt install and use minimal dependencies (#55)",
+  "version": "1.0.117",
+  "previousVersion": "1.0.116",
+  "commit": "1d6721e",
+  "previousCommit": "aa733b8",
+  "buildDate": "2026-10-26T17:12:36.884Z",
+  "summary": "fix(ci): avoid premature Blender apt timeout",
   "changes": {
-    "totalCommits": 120,
+    "totalCommits": 121,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ci): bound Blender apt install and use minimal dependencies (#55)"
+    "fix(ci): avoid premature Blender apt timeout"
   ],
   "fileChanges": [
     {

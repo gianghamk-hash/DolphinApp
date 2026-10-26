@@ -1,5 +1,5 @@
 {
-  "version": "1.0.116",
+  "version": "1.0.117",
   "releaseDate": "2026-10-26",
-  "notes": "fix(ci): bound Blender apt install and use minimal dependencies (#55)"
+  "notes": "fix(ci): avoid premature Blender apt timeout"
 }

@@ -47,6 +47,39 @@ function createRigFactory(T,defs){
   if(d.weapon==='fists'){
    for(const hand of [rig.leftHand,rig.rightHand])part(hand,'gauntlet',[0,0,0],[.26,.22,.26],trim);
   }
+  // Visible origin/class motifs sized for distant isometric camera.
+  // Reuse shared box geometries/materials; avoid glow particles and extra render loops.
+  if(d.motif){
+   const aura=d.motifColor||trim,variant=d.silhouetteVariant||0;
+   part(spine,'originChestCore',[0,.08,.235],[.23,.25,.095],aura);
+   if(d.motif==='core'){
+    for(const sign of [-1,1])part(spine,'mechShoulder'+sign,[sign*(width/2+.16),.25,0],[.3,.3,.44],aura);
+    part(spine,'reactor',[0,.1,.31],[.13,.13,.08],0xe3fdff);
+   }else if(d.motif==='spikes'){
+    for(const sign of [-1,1])part(spine,'voidSpike'+sign,[sign*(width/2+.16),.44,-.08],[.16,.44,.2],aura);
+   }else if(d.motif==='runes'){
+    part(spine,'runePlate',[0,.02,.31],[.35,.31,.055],aura);
+    for(const sign of [-1,1])part(head,'arcaneAntenna'+sign,[sign*.24,.45,0],[.1,.33,.11],aura);
+   }else if(d.motif==='horns'){
+    for(const sign of [-1,1])part(head,'beastAntler'+sign,[sign*.27,.42,-.04],[.15,.55,.17],aura);
+   }else if(d.motif==='blades'){
+    for(const sign of [-1,1])part(spine,'shadowFin'+sign,[sign*(width/2+.19),.34,-.12],[.12,.5,.24],aura);
+   }else if(d.motif==='halo'){
+    part(head,'celestialCrest',[0,.66,0],[.5,.085,.16],aura);
+    for(const sign of [-1,1])part(spine,'celestialWing'+sign,[sign*(width/2+.25),.13,-.22],[.16,.7,.16],aura);
+   }
+   // Silhouette variation independent of origin color.
+   if(variant===0)part(spine,'heroBanner',[0,.32,-.34],[.23,.78,.07],aura);
+   if(variant===1)part(head,'heroTallCrown',[0,.58,0],[.17,.38,.17],aura);
+   if(variant===2)for(const sign of [-1,1])part(spine,'heroWing'+sign,[sign*(width/2+.3),-.02,-.17],[.18,.56,.12],aura);
+   if(variant===3)part(hips,'heroTabard',[0,-.43,.25],[.31,.54,.07],aura);
+   if(variant===4)for(const sign of [-1,1])part(spine,'heroBannerArm'+sign,[sign*(width/2+.2),.31,-.15],[.18,.36,.15],aura);
+   if(d.role==='Guardian')part(rig.leftForearm,'guardianGuard',[0,-.12,.12],[.4,.51,.12],aura);
+   else if(d.role==='Ranger')part(spine,'rangerQuiver',[.32,.05,-.32],[.28,.45,.24],aura);
+   else if(d.role==='Assassin')for(const h of [rig.leftHand,rig.rightHand])part(h,'assassinTip',[0,.37,.02],[.09,.35,.12],aura);
+   else if(d.role==='Sorcerer')part(spine,'sorcererSigil',[0,.27,.26],[.3,.1,.08],aura);
+   else if(d.role==='Brawler')for(const h of [rig.leftHand,rig.rightHand])part(h,'brawlerFist',[0,0,.04],[.31,.26,.29],aura);
+  }
   if(d.cape)part(spine,'cape',[0,-.29,-.28],[width+.1,.94,.065],primary);
   if(d.armor==='robe')part(hips,'robe',[0,-.35,0],[.73,.7,.55],primary);
   if(d.armor==='arcane')part(spine,'arcaneCore',[0,.08,.23],[.19,.2,.09],trim);

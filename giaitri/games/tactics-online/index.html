@@ -208,10 +208,11 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 import {GLTFLoader} from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";
+import {clone as cloneSkeleton} from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/utils/SkeletonUtils.js";
 const $=id=>document.getElementById(id);
 const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
 const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if(!r.ok)throw Error("Thiếu catalog");return r.json()});
-const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),RigFactory=window.DolphinCreateRigFactory(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),RigAnimator=window.DolphinCreateRigAnimator(),Skinner=window.DolphinCreateSkinner(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),CombatFX=window.DolphinCreateCombatFX(THREE),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles,RigAnimator,Skinner),ModelLibrary=window.DolphinTacticsCreateModelLibrary(THREE,GLTFLoader,'assets/models/',RigFactory,Skinner);
+const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),RigFactory=window.DolphinCreateRigFactory(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),RigAnimator=window.DolphinCreateRigAnimator(),Skinner=window.DolphinCreateSkinner(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),CombatFX=window.DolphinCreateCombatFX(THREE),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles,RigAnimator,Skinner),ModelLibrary=window.DolphinTacticsCreateModelLibrary(THREE,GLTFLoader,'assets/models/',RigFactory,Skinner,cloneSkeleton);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();

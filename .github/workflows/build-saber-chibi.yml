@@ -4,7 +4,14 @@ on:
     paths:
       - "giaitri/games/tactics-online/assets/models/production/saber/**"
       - ".github/workflows/build-saber-chibi.yml"
+  push:
+    branches: [main]
+    paths:
+      - "giaitri/games/tactics-online/assets/models/production/saber/build_saber.py"
+      - ".github/workflows/build-saber-chibi.yml"
   workflow_dispatch:
+permissions:
+  contents: write
 jobs:
   build-saber:
     runs-on: ubuntu-24.04
@@ -22,6 +29,24 @@ jobs:
           python -m pip install pygltflib --break-system-packages -q
           python giaitri/games/tactics-online/assets/models/production/saber/validate_saber_glb.py generated-saber/h01.glb
           test "$(stat -c %s generated-saber/h01.glb)" -gt 15000
+      - name: Activate validated Saber model on main
+        if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+        run: |
+          mkdir -p giaitri/games/tactics-online/assets/models/heroes/chibi
+          cp generated-saber/h01.glb giaitri/games/tactics-online/assets/models/heroes/chibi/h01.glb
+          python - <<'PY'
+          import json
+          from pathlib import Path
+          p=Path('giaitri/games/tactics-online/assets/models/manifest.json')
+          m=json.loads(p.read_text(encoding='utf-8'))
+          m['heroes']['H01'].update(file='heroes/chibi/h01.glb',quality='stylized-chibi',targetHeight=1.02,scale=1)
+          p.write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\\n',encoding='utf-8')
+          PY
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add giaitri/games/tactics-online/assets/models/heroes/chibi/h01.glb giaitri/games/tactics-online/assets/models/manifest.json
+          git commit -m 'assets(tactics): activate validated original Saber Chibi GLB' || exit 0
+          git push
       - uses: actions/upload-artifact@v4
         with:
           name: saber-chibi-glb-test

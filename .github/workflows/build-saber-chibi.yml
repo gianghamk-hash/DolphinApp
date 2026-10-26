@@ -47,7 +47,7 @@ jobs:
           p=Path('giaitri/games/tactics-online/assets/models/manifest.json')
           m=json.loads(p.read_text(encoding='utf-8'))
           m['heroes']['H01'].update(file='heroes/chibi/h01.glb',quality='stylized-chibi',targetHeight=1.02,scale=1)
-          p.write_text(json.dumps(m,ensure_ascii=False,indent=2)+'\\n',encoding='utf-8')
+          p.write_text(json.dumps(m,ensure_ascii=False,indent=2)+chr(10),encoding='utf-8')
           PY
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'

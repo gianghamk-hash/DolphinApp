@@ -1,7 +1,7 @@
 {
-  "version": "1.0.101",
-  "buildDate": "2026-10-26T10:31:24.026Z",
-  "commit": "3b0839e",
-  "notes": "fix: single-source Auto Bump and reliable APK version build",
+  "version": "1.0.102",
+  "buildDate": "2026-10-26T10:33:17.847Z",
+  "commit": "befdd00",
+  "notes": "fix: regenerate apt indexes if ImageMagick is missing",
   "forceUpdate": false
 }

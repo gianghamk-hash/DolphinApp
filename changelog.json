@@ -1,24 +1,20 @@
 {
-  "version": "1.0.101",
-  "previousVersion": "1.0.100",
-  "commit": "3b0839e",
-  "previousCommit": "e4da882",
-  "buildDate": "2026-10-26T10:31:24.026Z",
-  "summary": "fix: single-source Auto Bump and reliable APK version build",
+  "version": "1.0.102",
+  "previousVersion": "1.0.101",
+  "commit": "befdd00",
+  "previousCommit": "3b0839e",
+  "buildDate": "2026-10-26T10:33:17.847Z",
+  "summary": "fix: regenerate apt indexes if ImageMagick is missing",
   "changes": {
-    "totalCommits": 105,
-    "filesChanged": 2,
+    "totalCommits": 106,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix: single-source Auto Bump and reliable APK version build"
+    "fix: regenerate apt indexes if ImageMagick is missing"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/auto-bump.yml",
-      "type": "update"
-    },
     {
       "file": ".github/workflows/build.yml",
       "type": "update"

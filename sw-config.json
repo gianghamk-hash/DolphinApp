@@ -1,5 +1,5 @@
 {
-  "version": "1.0.101",
+  "version": "1.0.102",
   "releaseDate": "2026-10-26",
-  "notes": "fix: single-source Auto Bump and reliable APK version build"
+  "notes": "fix: regenerate apt indexes if ImageMagick is missing"
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.101",
+      "releaseDate": "2026-10-26T10:31:24.026Z",
+      "summary": "fix: single-source Auto Bump and reliable APK version build",
+      "details": [
+        "fix: single-source Auto Bump and reliable APK version build"
+      ]
+    },
+    {
       "version": "1.0.100",
       "releaseDate": "2026-10-25T05:58:06.423Z",
       "summary": "FIX LỖI (#10)",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.52",
       "releaseDate": "2026-10-16T01:26:05.897Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.51",
-      "releaseDate": "2026-10-16T01:22:11.972Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

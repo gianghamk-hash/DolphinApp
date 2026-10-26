@@ -1,26 +1,22 @@
 {
-  "version": "1.0.119",
-  "previousVersion": "1.0.118",
-  "commit": "78ebcf5",
-  "previousCommit": "8238578",
-  "buildDate": "2026-10-26T17:33:46.537Z",
-  "summary": "feat(tactics): generate remaining 29 rigged chibi heroes",
+  "version": "1.0.120",
+  "previousVersion": "1.0.119",
+  "commit": "d607d7b",
+  "previousCommit": "78ebcf5",
+  "buildDate": "2026-10-26T17:45:28.592Z",
+  "summary": "ci(tactics): batch chibi GLBs using prebuilt Blender container",
   "changes": {
-    "totalCommits": 123,
-    "filesChanged": 2,
+    "totalCommits": 124,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tactics): generate remaining 29 rigged chibi heroes"
+    "ci(tactics): batch chibi GLBs using prebuilt Blender container"
   ],
   "fileChanges": [
     {
       "file": ".github/workflows/build-remaining-chibi.yml",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py",
       "type": "update"
     }
   ]

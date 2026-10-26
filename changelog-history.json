@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.119",
+      "releaseDate": "2026-10-26T17:33:46.537Z",
+      "summary": "feat(tactics): generate remaining 29 rigged chibi heroes",
+      "details": [
+        "feat(tactics): generate remaining 29 rigged chibi heroes"
+      ]
+    },
+    {
       "version": "1.0.118",
       "releaseDate": "2026-10-26T17:17:59.771Z",
       "summary": "fix(tactics): restore valid GLB manifest JSON",
@@ -390,14 +398,6 @@
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.69",
-      "releaseDate": "2026-10-17T02:04:53.867Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
       ]
     }
   ]

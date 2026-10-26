@@ -1,5 +1,5 @@
 {
-  "version": "1.0.119",
+  "version": "1.0.120",
   "releaseDate": "2026-10-26",
-  "notes": "feat(tactics): generate remaining 29 rigged chibi heroes"
+  "notes": "ci(tactics): batch chibi GLBs using prebuilt Blender container"
 }

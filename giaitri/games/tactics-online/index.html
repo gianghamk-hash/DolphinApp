@@ -174,6 +174,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .hpEntry{gap:3px!important}.hpPortrait{width:23px!important;height:23px!important;flex:0 0 23px!important;padding:2px!important}
 .hpInside{font-size:10px!important}.hpIdentity strong{font-size:7px!important;line-height:1.05!important}.hpIdentity small{font-size:7px!important;line-height:1.05!important}
 #lockShopBtn{min-width:39px!important;padding:7px 9px!important}#lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
+.shopIconBtn{width:43px;min-width:43px!important;height:40px;padding:5px!important;display:inline-grid;place-items:center;font-size:21px!important;line-height:1;border-radius:10px}.shopIconBtn:disabled{opacity:.35;cursor:not-allowed}#rollShopBtn:disabled{filter:grayscale(1)}#game #lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -192,7 +193,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div><div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
-<div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button><button id="lockShopBtn" onclick="send({type:'TOGGLE_SHOP_LOCK'})" title="Giữ nguyên shop qua vòng sau">🔓</button></div><div id="shop"></div>
+<div class="flex" style="margin:8px 0"><button id="rollShopBtn" class="shopIconBtn" onclick="send({type:'ROLL'})" title="Đổi Shop · 2 vàng" aria-label="Đổi Shop · 2 vàng">🔄</button><button id="buyXpBtn" class="shopIconBtn" onclick="send({type:'BUY_XP'})" title="Mua 4 XP · 4 vàng" aria-label="Mua 4 XP · 4 vàng">⭐</button><button id="lockShopBtn" class="shopIconBtn" onclick="send({type:'TOGGLE_SHOP_LOCK'})" title="Khóa Shop" aria-label="Khóa Shop">🔓</button></div><div id="shop"></div>
 <div id="heroInfo" role="status"></div>
 <div class="flex" style="margin-top:9px"><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 <div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div>
@@ -441,10 +442,14 @@ function paintControls(){
  $('lockShopBtn').textContent=p.shopLocked?'🔒':'🔓';
  $('lockShopBtn').title=p.shopLocked?'Đang khóa shop — giữ nguyên khi sang vòng sau':'Nhấn để khóa shop';
  $('lockShopBtn').classList.toggle('shopLocked',!!p.shopLocked);
+ $('lockShopBtn').setAttribute('aria-label',p.shopLocked?'Mở khóa Shop':'Khóa Shop');
+ $('rollShopBtn').disabled=!shopEnabled||!!p.shopLocked||p.gold<2;
+ $('rollShopBtn').title=p.shopLocked?'Shop đang khóa · cần mở khóa để đổi':'Đổi Shop · 2 vàng';
+ $('buyXpBtn').disabled=!shopEnabled||p.gold<4||p.level>=E.maxLevel;
  [...document.querySelectorAll('#game button')].forEach(b=>{
   if(!b.hasAttribute('onclick'))return;
   const text=b.getAttribute('onclick');
-  if(/send\(\{type:'(ROLL|BUY_XP|TOGGLE_SHOP_LOCK)'/.test(text))b.disabled=!shopEnabled;
+  if(/send\(\{type:'TOGGLE_SHOP_LOCK'/.test(text))b.disabled=!shopEnabled;
   if(/send\(\{type:'READY'/.test(text))b.disabled=!prep;
  });
 }

@@ -73,7 +73,7 @@ function createEngine(C){
   if(a.type==="BUY"){const i=a.index;assert(Number.isInteger(i)&&i>=0&&i<5,"Ô shop sai");
     const id=p.shop[i],h=HERO[id],slot=firstBench(p);assert(h&&slot!==null&&p.gold>=h.cost,"Không đủ vàng hoặc bench đầy");
     p.gold-=h.cost;const unitId='u'+(++s.sequence);p.units[unitId]={id:unitId,heroId:id,star:1,items:[]};p.bench[slot]=unitId;p.shop[i]="";if(s.roundPhase==="PREPARATION")mergeTriples(p);else p.pendingMerge=true;
-  }else if(a.type==="ROLL"){assert(p.gold>=2,"Không đủ 2 vàng");p.gold-=2;p.shop=shopRoll(s,p.level);
+  }else if(a.type==="ROLL"){assert(!p.shopLocked,"Shop đang khóa, hãy mở khóa trước khi đổi Shop");assert(p.gold>=2,"Không đủ 2 vàng");p.gold-=2;p.shop=shopRoll(s,p.level);
   }else if(a.type==="TOGGLE_SHOP_LOCK"){p.shopLocked=!p.shopLocked;
   }else if(a.type==="BUY_XP"){assert(p.gold>=4&&p.level<maxLevel,"Không đủ vàng hoặc đã đạt cấp tối đa");
     p.gold-=4;p.xp+=4;while(p.level<maxLevel&&p.xp>=(LEVEL_XP[p.level]||999)){p.xp-=LEVEL_XP[p.level];p.level++;}

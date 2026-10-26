@@ -175,11 +175,11 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .hpInside{font-size:10px!important}.hpIdentity strong{font-size:7px!important;line-height:1.05!important}.hpIdentity small{font-size:7px!important;line-height:1.05!important}
 #lockShopBtn{min-width:39px!important;padding:7px 9px!important}#lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
 </style></head><body>
-<div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
+<div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
-<h2>⚔ DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">🤖 OFFLINE · VS 3 AI CỰC KHÓ</button><button onclick="chooseOnline()">🌐 ONLINE · 4 NGƯỜI</button></div>
-<p class="small">Đây là game nhiều người trực tuyến. Mỗi người mở trên thiết bị riêng, nhập cùng mã phòng. Sử dụng Firestore gói Spark và Dolphin Multiplayer có sẵn. Một thiết bị làm Host điều phối trận đấu.</p>
+<h2>🐉 DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">OFFLINE</button><button onclick="chooseOnline()">ONLINE</button></div>
+
 
 <div id="lobby" class="hidden">
 <input id="nick" maxlength="32" placeholder="Tên người chơi" value="Khách Dolphin"/>
@@ -254,7 +254,7 @@ window.startOffline=()=>{
  if(MP.getRoomId())return showError(Error('Rời phòng Online trước khi chơi Offline'));
  offline=true;host=true;uid='OFFLINE_HUMAN';roomId='';
  const now=Date.now(),seed=Math.floor(Math.random()*2147483647)||1;
- const ppl=[{id:uid,name:$('nick').value.trim()||'Người chơi'},{id:'AI_1',name:'AI Tối Thượng I'},{id:'AI_2',name:'AI Tối Thượng II'},{id:'AI_3',name:'AI Tối Thượng III'}];
+ const ppl=[{id:uid,name:$('nick').value.trim()||'Người chơi'},{id:'AI_1',name:'AI 1'},{id:'AI_2',name:'AI 2'},{id:'AI_3',name:'AI 3'}];
  const room=E.roomNew(uid,ppl[0].name,now,seed);room.playerOrder=ppl.map(p=>p.id);room.players={};
  for(const p of ppl)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
  room.status='in_game';room.phaseStartedAt=now;room.phaseEndsAt=now+30000;

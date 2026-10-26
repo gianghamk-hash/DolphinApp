@@ -1,22 +1,30 @@
 {
-  "version": "1.0.103",
-  "previousVersion": "1.0.102",
-  "commit": "aad0810",
-  "previousCommit": "befdd00",
-  "buildDate": "2026-10-26T12:47:18.972Z",
-  "summary": "perf: optimize seasonal themes in sub-apps",
+  "version": "1.0.104",
+  "previousVersion": "1.0.103",
+  "commit": "8f9d410",
+  "previousCommit": "aad0810",
+  "buildDate": "2026-10-26T13:01:50.856Z",
+  "summary": "feat: TFT Phase 1 articulated character animation improvements",
   "changes": {
-    "totalCommits": 107,
-    "filesChanged": 1,
+    "totalCommits": 108,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "perf: optimize seasonal themes in sub-apps"
+    "feat: TFT Phase 1 articulated character animation improvements"
   ],
   "fileChanges": [
     {
-      "file": "theme-system.js",
+      "file": "functions/tactics/engine.test.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/rigged-model-factory.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/skeletal-system.js",
       "type": "update"
     }
   ]

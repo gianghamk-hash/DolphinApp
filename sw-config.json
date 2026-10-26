@@ -1,5 +1,5 @@
 {
-  "version": "1.0.103",
+  "version": "1.0.104",
   "releaseDate": "2026-10-26",
-  "notes": "perf: optimize seasonal themes in sub-apps"
+  "notes": "feat: TFT Phase 1 articulated character animation improvements"
 }

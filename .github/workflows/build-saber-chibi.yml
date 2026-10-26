@@ -15,11 +15,17 @@ permissions:
 jobs:
   build-saber:
     runs-on: ubuntu-24.04
-    timeout-minutes: 18
+    timeout-minutes: 12
     steps:
       - uses: actions/checkout@v4
-      - name: Install Blender
-        run: sudo apt-get update -qq && sudo apt-get install -y blender python3-numpy
+      - name: Install Blender with bounded apt retries
+        timeout-minutes: 5
+        run: |
+          set -euo pipefail
+          # Avoid hanging on dpkg locks or network stalls.
+          sudo DEBIAN_FRONTEND=noninteractive timeout 100 apt-get update -qq -o Acquire::Retries=2 -o Acquire::http::Timeout=20
+          sudo DEBIAN_FRONTEND=noninteractive timeout 180 apt-get install -y --no-install-recommends blender python3-numpy -o DPkg::Lock::Timeout=45 -o Acquire::Retries=2 -o Acquire::http::Timeout=20
+          blender --version | head -n 2
       - name: Build original Saber 3D mesh, skinned armature, animations
         run: |
           mkdir -p generated-saber

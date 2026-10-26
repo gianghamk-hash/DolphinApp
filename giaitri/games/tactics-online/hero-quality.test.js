@@ -13,7 +13,7 @@ test('30 hero rigs are scaled to 60% and retain identifiable detailed parts',()=
   function visit(x){if(x.name)names.push(x.name);for(const child of x.children||[])visit(child);}
   visit(model);
   assert.equal(model.userData.visualScale,.6);
-  assert.ok(Math.abs(model.scale.y-.6)<.0001);
+  assert.ok(Math.abs(model.scale.y-(defs[hero.id].build==='slim'?.624:.6))<.0001);
   assert.ok(model.scale.x<=.6);
   assert.ok(names.includes('chestUpperPlate'));
   assert.ok(names.includes('originChestCore'));

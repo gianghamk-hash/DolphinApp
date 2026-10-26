@@ -39,7 +39,7 @@ test('server state denies actions during combat and supports deterministic PvE r
  const s=setup(),p=s.players.a;p.shop[0]='H01';E.action(s,'a',{type:'BUY',index:0},1000);
  const id=Object.keys(p.units)[0];E.action(s,'a',{type:'MOVE',unitId:id,to:'board',index:'r0c3'},1001);
  E.advance(s,30100);assert.equal(s.roundPhase,'COMBAT');assert.equal(s.pairs.length,4);
- assert.throws(()=>E.action(s,'a',{type:'ROLL'},30101));
+ assert.throws(()=>E.action(s,'a',{type:'MOVE',unitId:id,to:'board',index:'r0c4'},30101)); // shop rolls are intentionally allowed during combat
  const a=E.simulate(s.pairs[0],s,s.combatSnapshot,876),b=E.simulate(s.pairs[0],s,s.combatSnapshot,876);
  assert.deepEqual(a,b);
  E.advance(s,70100);assert.equal(s.roundPhase,'TRANSITION');assert.equal(s.reports.length,4);

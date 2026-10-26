@@ -32,6 +32,21 @@ function createRigFactory(T,defs){
    part(spine,side+'Pauldron',[sign*(width/2+.07),.26,0],[heavy?.36:.22,.24,.4],d.armor==='scale'?trim:steel);
    Object.assign(rig,{[side+'UpperArm']:upper,[side+'Forearm']:fore,[side+'Hand']:hand,[side+'Thigh']:thigh,[side+'Calf']:calf});
   }
+  // Hero silhouettes vary by build and weapon while sharing lightweight cached meshes.
+  if(d.build==='tall')head.position.y+=.08;
+  if(d.build==='slim')root.scale.set(.93,1.04,.93);
+  if(d.build==='royal'){
+   part(head,'royalCrest',[0,.51,-.03],[.18,.22,.2],trim);
+   part(spine,'royalCollar',[0,.35,-.09],[width+.19,.13,.31],trim);
+  }
+  if(d.armor==='scale'){
+   for(const sx of [-1,1])part(spine,'scalePlate'+sx,[sx*.16,-.09,.205],[.15,.28,.045],trim);
+  }
+  if(d.weapon==='bow')part(rig.leftHand,'bowGrip',[0,.04,.04],[.08,.33,.1],steel);
+  if(d.weapon==='dagger'||d.weapon==='claws')part(hips,'utilityPouch',[-.27,-.19,.08],[.17,.22,.23],steel);
+  if(d.weapon==='fists'){
+   for(const hand of [rig.leftHand,rig.rightHand])part(hand,'gauntlet',[0,0,0],[.26,.22,.26],trim);
+  }
   if(d.cape)part(spine,'cape',[0,-.29,-.28],[width+.1,.94,.065],primary);
   if(d.armor==='robe')part(hips,'robe',[0,-.35,0],[.73,.7,.55],primary);
   if(d.armor==='arcane')part(spine,'arcaneCore',[0,.08,.23],[.19,.2,.09],trim);

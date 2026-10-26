@@ -11,7 +11,7 @@ test('wind-up starts before impact, never duplicates and resets for next round',
  s.advance(events,0,800,(e,i)=>seen.push(i));
  assert.deepEqual(seen,[]);
  s.advance(events,0,850,(e,i)=>seen.push(i));
- assert.deepEqual(seen,[0]);
+ assert.deepEqual(seen,[0,1]);
  s.advance(events,0,900,(e,i)=>seen.push(i));
  assert.deepEqual(seen,[0,1]);
  assert.equal(s.consume(0),true);

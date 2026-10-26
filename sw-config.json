@@ -1,5 +1,5 @@
 {
-  "version": "1.0.111",
+  "version": "1.0.112",
   "releaseDate": "2026-10-26",
-  "notes": "feat(tactics): Saber chibi Blender production setup"
+  "notes": "feat(tactics): add Blender automated Saber Chibi build pipeline"
 }

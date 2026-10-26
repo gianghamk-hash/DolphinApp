@@ -1,38 +1,26 @@
 {
-  "version": "1.0.111",
-  "previousVersion": "1.0.110",
-  "commit": "1f9c0da",
-  "previousCommit": "5035353",
-  "buildDate": "2026-10-26T15:22:41.788Z",
-  "summary": "feat(tactics): Saber chibi Blender production setup",
+  "version": "1.0.112",
+  "previousVersion": "1.0.111",
+  "commit": "f22ebb0",
+  "previousCommit": "1f9c0da",
+  "buildDate": "2026-10-26T15:45:03.093Z",
+  "summary": "feat(tactics): add Blender automated Saber Chibi build pipeline",
   "changes": {
-    "totalCommits": 115,
-    "filesChanged": 5,
+    "totalCommits": 116,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tactics): Saber chibi Blender production setup"
+    "feat(tactics): add Blender automated Saber Chibi build pipeline"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/saber-blender-setup.yml",
+      "file": ".github/workflows/build-saber-chibi.yml",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/assets/models/production/saber/README.md",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/production/saber/export_saber.py",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/production/saber/setup_saber.py",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/production/saber/validate_saber_glb.py",
+      "file": "giaitri/games/tactics-online/assets/models/production/saber/build_saber.py",
       "type": "update"
     }
   ]

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.111",
-  "buildDate": "2026-10-26T15:22:41.788Z",
-  "commit": "1f9c0da",
-  "notes": "feat(tactics): Saber chibi Blender production setup",
+  "version": "1.0.112",
+  "buildDate": "2026-10-26T15:45:03.093Z",
+  "commit": "f22ebb0",
+  "notes": "feat(tactics): add Blender automated Saber Chibi build pipeline",
   "forceUpdate": false
 }

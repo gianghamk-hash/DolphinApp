@@ -376,6 +376,20 @@ function renderFoodList(foodsObj) {
   return Object.entries(foodsObj).map(([k, v]) => `${esc(k)} <b>x${v}</b>`).join(' • ');
 }
 
+window.updateShowServiceStatus=async (label,nextStatus,event)=>{
+ event?.preventDefault();event?.stopPropagation();
+ if(!db)return toast('Chưa kết nối đám mây!','❌');
+ const ref=doc(db,COL_LIVE,key(label));
+ try{await runTransaction(db,async tx=>{
+  const snap=await tx.get(ref);if(!snap.exists()||!snap.data().service)throw Error('Không tìm thấy order');
+  const sv=snap.data().service,old=sv.status||'pending';
+  if(nextStatus==='preparing'&&old!=='pending')throw Error('Đơn đã được nhận');
+  if(nextStatus==='completed'&&old!=='preparing')throw Error('Cần nhận đơn trước');
+  if(!['preparing','completed'].includes(nextStatus))throw Error('Trạng thái không hợp lệ');
+  tx.update(ref,{service:{...sv,status:nextStatus,preparedAt:nextStatus==='preparing'?Date.now():(sv.preparedAt||null),completedAt:nextStatus==='completed'?Date.now():(sv.completedAt||null)}});
+ });toast(nextStatus==='preparing'?'Đã bắt đầu chuẩn bị':'Đã hoàn thành','✅');}
+ catch(e){console.error('[Show order]',label,e);toast(e?.message||'Không cập nhật được đơn','❌');}
+};
 function showCell(label) {
   const b = bookings[key(label)];
   if (!b) return `<div class="tbl free !min-h-[110px]" onclick="openService('${label}')"><b class="text-sm">${label}</b><span class="text-[10px] opacity-70">Trống</span></div>`;
@@ -385,6 +399,8 @@ function showCell(label) {
   const listDr = o => Object.entries(o || {}).map(([k, v]) => `${esc(k)} <b>x${v}</b>`).join(' • ');
   const dr = sv && listDr(sv.drinks);
   const fd = sv ? renderFoodList(sv.foods) : null;
+  const status=sv?.status||'pending';
+  const action=sv?(status==='pending'?`<button class="btn-gold text-[10px] px-2 py-2 rounded-lg" onclick="updateShowServiceStatus('${label}','preparing',event)">🔥 Bắt đầu chuẩn bị</button>`:status==='preparing'?`<button class="btn-gold text-[10px] px-2 py-2 rounded-lg" onclick="updateShowServiceStatus('${label}','completed',event)">✅ Hoàn thành</button>`:'<span class="text-emerald-400 text-[10px]">✅ Đã hoàn thành</span>'):'';
   const none = '<i class="opacity-70">Chưa chọn</i>';
   
   return `<div class="tbl ${sv ? '!bg-black/55 !border-gold-400 !text-gold-400' : 'mine'} !text-left !items-stretch !gap-1 !p-3" onclick="openService('${label}')">
@@ -394,7 +410,7 @@ function showCell(label) {
     <span class="text-[10px] font-bold">🧑‍💼 NV: ${esc(b.seller)}</span>
     <span class="text-[10px] font-bold text-yellow-300">🎁 ${esc(comboName)}</span>
     <span class="text-[10px] leading-snug border-t border-white/20 pt-1">🥤 ${dr || none}</span>
-    <span class="text-[10px] leading-snug">🍢 ${fd || none}</span></div>`;
+    <span class="text-[10px] leading-snug">🍢 ${fd || none}</span><div class="mt-2">${action}</div></div>`;
 }
 
 function layoutHtml(cf = cell, grid = 'grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-6') {
@@ -637,7 +653,7 @@ window.saveService = async () => {
   if (!currentCombo) return toast('Vui lòng chọn Combo!', '⚠️');
   
   const label = $('s-id').value;
-  const service = { combo: currentCombo, drinks: {}, foods: {}, savedAt: Date.now() };
+  const service = { combo: currentCombo, drinks: {}, foods: {}, status:'pending', savedAt: Date.now() };
   
   document.querySelectorAll('.s-inp[data-g="drinks"]').forEach(i => {
     const n = parseInt(i.value) || 0;

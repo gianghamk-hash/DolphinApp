@@ -1551,7 +1551,9 @@ window.confirmStaffAction = async function(){
   if(!name){ window.showToast("Nhập tên!","⚠️"); return; }
   localStorage.setItem('dolphinStaffName', name);
   if (typeof window.setSyncedStaffName === 'function') window.setSyncedStaffName(name);
-  window.closeStaffNameModal();
+  // Keep the order action until Firestore has received the status update.
+  // closeStaffNameModal() clears pendingAction, so never call it here.
+  document.getElementById('modal-staff-name').classList.add('hidden');
   await window.executeStaffAction(name);
 };
 window.executeStaffAction = async function(name){
@@ -1579,7 +1581,7 @@ window.executeStaffAction = async function(name){
       });
       if(state.lastTransactionWarning){ window.showToast(state.lastTransactionWarning,"⚠️"); playNotificationAlert(); }
       else { window.showToast(`Đã ghi nhận: ${name}`,'📝'); if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100); }
-    } catch(e){ window.showToast("Lỗi cập nhật!","❌"); }
+    } catch(e){ console.error('[Lounge order status]',orderId,nextStatus,e); window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra quyền Firestore'),"❌"); }
   } else { window.showToast(`Đã lưu tên: ${name}`,'📝'); renderAll(); }
   state.pendingAction=null;
 };

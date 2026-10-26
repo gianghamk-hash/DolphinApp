@@ -1,22 +1,22 @@
 {
-  "version": "1.0.102",
-  "previousVersion": "1.0.101",
-  "commit": "befdd00",
-  "previousCommit": "3b0839e",
-  "buildDate": "2026-10-26T10:33:17.847Z",
-  "summary": "fix: regenerate apt indexes if ImageMagick is missing",
+  "version": "1.0.103",
+  "previousVersion": "1.0.102",
+  "commit": "aad0810",
+  "previousCommit": "befdd00",
+  "buildDate": "2026-10-26T12:47:18.972Z",
+  "summary": "perf: optimize seasonal themes in sub-apps",
   "changes": {
-    "totalCommits": 106,
+    "totalCommits": 107,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix: regenerate apt indexes if ImageMagick is missing"
+    "perf: optimize seasonal themes in sub-apps"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/build.yml",
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

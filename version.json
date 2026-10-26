@@ -1,7 +1,7 @@
 {
-  "version": "1.0.102",
-  "buildDate": "2026-10-26T10:33:17.847Z",
-  "commit": "befdd00",
-  "notes": "fix: regenerate apt indexes if ImageMagick is missing",
+  "version": "1.0.103",
+  "buildDate": "2026-10-26T12:47:18.972Z",
+  "commit": "aad0810",
+  "notes": "perf: optimize seasonal themes in sub-apps",
   "forceUpdate": false
 }

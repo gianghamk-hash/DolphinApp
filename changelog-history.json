@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.102",
+      "releaseDate": "2026-10-26T10:33:17.847Z",
+      "summary": "fix: regenerate apt indexes if ImageMagick is missing",
+      "details": [
+        "fix: regenerate apt indexes if ImageMagick is missing"
+      ]
+    },
+    {
       "version": "1.0.101",
       "releaseDate": "2026-10-26T10:31:24.026Z",
       "summary": "fix: single-source Auto Bump and reliable APK version build",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.53",
       "releaseDate": "2026-10-16T01:37:29.337Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.52",
-      "releaseDate": "2026-10-16T01:26:05.897Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

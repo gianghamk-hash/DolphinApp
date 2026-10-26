@@ -694,11 +694,13 @@ window.startCloudConnection = function() {
       if(dot) dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,.8)]";
       if(text){ text.innerText = "🌐 ONLINE (REALTIME)"; text.className = "font-bold text-emerald-400 tracking-wider text-[10px] uppercase"; }
       setupRealtimeListeners();
-    }).catch(()=>{
+    }).catch(err=>{
+      console.error('[Lounge Firebase Auth]',err);
+      window.showToast('Kết nối Firebase thất bại: '+(err?.code||err?.message||'không rõ nguyên nhân'),'❌');
       const text = document.getElementById('cloud-status-text');
       if(text){ text.innerText = "⚠️ OFFLINE"; text.className = "font-bold text-red-400 tracking-wider text-[10px] uppercase"; }
     });
-  } catch(e){}
+  } catch(e){ console.error('[Lounge Firebase Init]',e); window.showToast('Lỗi khởi tạo Firebase: '+(e?.message||e),'❌'); }
 };
 
 let isInitialOrderLoad = true, isInitialCallLoad = true, globalAudioCtx = null;

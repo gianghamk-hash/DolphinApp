@@ -20,4 +20,6 @@ jobs:
         with:
           node-version: "22"
       - name: Validate engine and tests
-        run: cd functions && npm test
+        run: |
+          cd functions && npm test
+          node --test ../giaitri/games/tactics-online/weapon-animation.test.js

@@ -11,19 +11,34 @@ function createSkinner(T,defs){
  }
  skinGeo.setAttribute('skinIndex',new T.Uint16BufferAttribute(indices,4));
  skinGeo.setAttribute('skinWeight',new T.Float32BufferAttribute(weights,4));
- const tracks=(name,mult=1)=>{
-  const keys=[0,.25,.5,.75,1],sin=(phase)=>keys.map(t=>Math.sin(t*Math.PI*2+phase)*mult);
+ const tracks=(name,weapon='sword')=>{
+  const keys=[0,.25,.5,.75,1],sin=(phase)=>keys.map(t=>Math.sin(t*Math.PI*2+phase));
   let specs=[];
   if(name==='Idle')specs=[['spine.rotation[z]',sin(0).map(x=>x*.035)],['head.rotation[y]',sin(.7).map(x=>x*.07)]];
   if(name==='Run')specs=[['leftThigh.rotation[x]',sin(0).map(x=>x*.65)],['rightThigh.rotation[x]',sin(Math.PI).map(x=>x*.65)],['leftUpperArm.rotation[x]',sin(Math.PI).map(x=>x*.4)],['rightUpperArm.rotation[x]',sin(0).map(x=>x*.4)]];
   if(name==='Attack')specs=[['rightUpperArm.rotation[x]',[0,-.6,-1.3,-.65,0]],['spine.rotation[y]',[0,-.2,-.34,-.15,0]]];
+  if(name==='Attack'){
+   const bow=weapon==='bow',staff=weapon==='staff',heavy=weapon==='hammer',dual=weapon==='dagger'||weapon==='claws',shield=weapon==='shield';
+   if(bow)specs=[['rightUpperArm.rotation[x]',[0,-.4,-.85,-.55,0]],['leftUpperArm.rotation[x]',[0,-.45,-.7,-.4,0]],['leftForearm.rotation[y]',[0,-.25,-.5,-.2,0]]];
+   else if(staff)specs=[['rightUpperArm.rotation[z]',[0,.35,.75,.4,0]],['leftUpperArm.rotation[z]',[0,-.2,-.45,-.25,0]],['spine.rotation[y]',[0,.12,.3,.1,0]]];
+   else if(heavy)specs=[['rightUpperArm.rotation[x]',[0,-1.5,-1.8,-.35,0]],['spine.rotation[x]',[0,-.25,-.1,.3,0]]];
+   else if(dual)specs=[['leftUpperArm.rotation[x]',[0,-.95,-.3,-.85,0]],['rightUpperArm.rotation[x]',[0,-.25,-1.2,-.1,0]],['spine.rotation[y]',[0,.2,-.28,.1,0]]];
+   else if(shield)specs=[['leftUpperArm.rotation[x]',[0,-.35,-.65,-.3,0]],['rightUpperArm.rotation[x]',[0,-.85,-1.35,-.4,0]]];
+  }
   if(name==='Cast')specs=[['rightUpperArm.rotation[z]',[0,.3,.85,.6,0]],['leftUpperArm.rotation[z]',[0,-.3,-.85,-.6,0]],['head.rotation[x]',[0,-.06,-.15,-.06,0]]];
   if(name==='Hit')specs=[['spine.rotation[z]',[0,.15,.24,.09,0]]];
   if(name==='Death')specs=[['hips.rotation[z]',[0,-.25,-.68,-1.0,-1.2]]];
   if(name==='Heal'||name==='Shield')specs=[['leftUpperArm.rotation[z]',[0,-.3,-.55,-.3,0]],['rightUpperArm.rotation[z]',[0,.3,.55,.3,0]]];
   return new T.AnimationClip(name,1,specs.map(([path,values])=>new T.NumberKeyframeTrack(path,keys,values)));
  };
- const clips=Object.fromEntries(['Idle','Run','Attack','Cast','Hit','Death','Heal','Shield'].map(k=>[k,tracks(k)]));
+ const labels=['Idle','Run','Attack','Cast','Hit','Death','Heal','Shield'];
+ const clipCache=new Map();
+ function clipsFor(weapon){
+  weapon=weapon||'sword';
+  if(!clipCache.has(weapon))clipCache.set(weapon,Object.fromEntries(labels.map(k=>[k,tracks(k,weapon)])));
+  return clipCache.get(weapon);
+ }
+ const clips=clipsFor('sword');
  function enhance(heroId,model){
   const def=defs[heroId];if(!def)return model;
   // Detached named bone skeleton is a genuine vertex-weighted skin.
@@ -34,7 +49,7 @@ function createSkinner(T,defs){
   skin.position.y=.85;skin.scale.set(.85,1,.85);
   // Existing articulated limbs are driven by native AnimationMixer clips.
   const mixer=new T.AnimationMixer(model),actions={};
-  for(const [key,clip] of Object.entries(clips)){
+  for(const [key,clip] of Object.entries(clipsFor(def.weapon))){
    actions[key]=mixer.clipAction(clip);
    actions[key].setLoop(key==='Idle'||key==='Run'?T.LoopRepeat:T.LoopOnce,Infinity);
    actions[key].clampWhenFinished=true;
@@ -82,7 +97,7 @@ function createSkinner(T,defs){
   s.mesh?.material?.dispose();
   delete model.userData.skeletal;
  }
- return {enhance,play,tick,idle,dispose,clips};
+ return {enhance,play,tick,idle,dispose,clips,clipsFor};
 }
 root.DolphinCreateSkinner=createSkinner;
 })(typeof window!=='undefined'?window:globalThis);

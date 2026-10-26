@@ -13,7 +13,7 @@ function createEngine(C){
  function nextRand(s){s.randomState=(Math.imul(s.randomState||1,1664525)+1013904223)>>>0;return s.randomState/4294967296;}
  function shuffle(s,a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(nextRand(s)*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
  function shopRoll(s,level){const pool=C.heroes.filter(h=>h.cost<=Math.min(5,Math.max(1,Math.ceil(level/2)+1)));return Array.from({length:5},()=>pool[Math.floor(nextRand(s)*pool.length)].id);}
- function freshPlayer(uid,name,room){return {uid,displayName:String(name||"Người chơi").slice(0,32),hp:100,gold:10,level:3,xp:0,board:{},bench:{},units:{},shop:shopRoll(room,3),inventory:[],streaks:{win:0,loss:0},ready:false,eliminated:false};}
+ function freshPlayer(uid,name,room){return {uid,displayName:String(name||"Người chơi").slice(0,32),hp:100,gold:10,level:3,xp:0,board:{},bench:{},units:{},shop:shopRoll(room,3),inventory:[],shopLocked:false,pendingMerge:false,streaks:{win:0,loss:0},ready:false,eliminated:false};}
  function roomNew(uid,name,now,seed){
   const s={status:"waiting",round:1,roundPhase:"PREPARATION",phaseStartedAt:0,phaseEndsAt:0,
    hostId:uid,players:{},playerOrder:[uid],seed,randomState:seed,sequence:0,pairs:[],combatSnapshot:null,reports:[],winnerId:null,createdAt:now,updatedAt:now};
@@ -65,13 +65,16 @@ function createEngine(C){
    cloneRatio:b.cloneRatio||0,adjacentShield:b.adjacentShield||0};
  }
  function action(s,uid,a,now){
-  assert(s.status==="in_game"&&s.roundPhase==="PREPARATION"&&now<=s.phaseEndsAt,"Chỉ thao tác trong thời gian chuẩn bị");
+  assert(s.status==="in_game"&&now<=s.phaseEndsAt,"Trận đấu đã kết thúc hoặc giai đoạn đã hết");
+  const shopAction=["BUY","ROLL","BUY_XP","TOGGLE_SHOP_LOCK"].includes(a?.type);
+  assert(shopAction||s.roundPhase==="PREPARATION","Chỉ thay đổi đội hình trong giai đoạn Chuẩn bị");
   const p=s.players[uid];assert(p&&!p.eliminated,"Người chơi không hợp lệ");
-  assert(a&&typeof a.type==="string","Thiếu thao tác");assert(!p.ready,"Đã sẵn sàng");
+  assert(a&&typeof a.type==="string","Thiếu thao tác");assert(shopAction||!p.ready,"Đã sẵn sàng");
   if(a.type==="BUY"){const i=a.index;assert(Number.isInteger(i)&&i>=0&&i<5,"Ô shop sai");
     const id=p.shop[i],h=HERO[id],slot=firstBench(p);assert(h&&slot!==null&&p.gold>=h.cost,"Không đủ vàng hoặc bench đầy");
-    p.gold-=h.cost;const unitId='u'+(++s.sequence);p.units[unitId]={id:unitId,heroId:id,star:1,items:[]};p.bench[slot]=unitId;p.shop[i]="";mergeTriples(p);
+    p.gold-=h.cost;const unitId='u'+(++s.sequence);p.units[unitId]={id:unitId,heroId:id,star:1,items:[]};p.bench[slot]=unitId;p.shop[i]="";if(s.roundPhase==="PREPARATION")mergeTriples(p);else p.pendingMerge=true;
   }else if(a.type==="ROLL"){assert(p.gold>=2,"Không đủ 2 vàng");p.gold-=2;p.shop=shopRoll(s,p.level);
+  }else if(a.type==="TOGGLE_SHOP_LOCK"){p.shopLocked=!p.shopLocked;
   }else if(a.type==="BUY_XP"){assert(p.gold>=4&&p.level<maxLevel,"Không đủ vàng hoặc đã đạt cấp tối đa");
     p.gold-=4;p.xp+=4;while(p.level<maxLevel&&p.xp>=(LEVEL_XP[p.level]||999)){p.xp-=LEVEL_XP[p.level];p.level++;}
   }else if(a.type==="MOVE"){assert(typeof a.unitId==="string"&&p.units[a.unitId],"Tướng không có");
@@ -223,7 +226,7 @@ function createEngine(C){
   }else if(s.roundPhase==="COMBAT")finalize(s,now);
   else if(s.roundPhase==="TRANSITION"){s.round++;s.roundPhase="PREPARATION";s.phaseStartedAt=now;s.phaseEndsAt=now+PHASES.PREPARATION;
     for(const uid of s.playerOrder){const p=s.players[uid];if(p.eliminated)continue;
-      p.gold=Math.min(80,p.gold+5+Math.min(5,Math.floor(p.gold/10)));p.ready=false;p.shop=shopRoll(s,p.level);
+      p.gold=Math.min(80,p.gold+5+Math.min(5,Math.floor(p.gold/10)));p.ready=false;if(!p.shopLocked)p.shop=shopRoll(s,p.level);if(p.pendingMerge){mergeTriples(p);p.pendingMerge=false;}
 
     }}
   s.updatedAt=now;return s;

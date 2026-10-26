@@ -59,6 +59,7 @@
   button.addEventListener('click',toggle);
   document.body.appendChild(button);refresh();
  }
+ document.addEventListener('keydown',function(ev){if(ev.key==='Escape'&&pseudo){ev.preventDefault();toggle();}});
  document.addEventListener('fullscreenchange',function(){if(!document.fullscreenElement)release();refresh();});
  window.addEventListener('pagehide',function(){if(pseudo)notifyParent(false);release();});
  window.DolphinArcadeFullscreen={toggle:toggle,active:active};

@@ -1,0 +1,29 @@
+name: Build Saber Chibi GLB in Blender
+on:
+  pull_request:
+    paths:
+      - "giaitri/games/tactics-online/assets/models/production/saber/**"
+      - ".github/workflows/build-saber-chibi.yml"
+  workflow_dispatch:
+jobs:
+  build-saber:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 18
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Blender
+        run: sudo apt-get update -qq && sudo apt-get install -y blender
+      - name: Build original Saber 3D mesh, skinned armature, animations
+        run: |
+          mkdir -p generated-saber
+          blender -b -t 2 --python giaitri/games/tactics-online/assets/models/production/saber/build_saber.py -- "$PWD/generated-saber/h01.glb"
+      - name: Validate GLB animation, skeleton and mesh
+        run: |
+          python -m pip install pygltflib --break-system-packages -q
+          python giaitri/games/tactics-online/assets/models/production/saber/validate_saber_glb.py generated-saber/h01.glb
+          test "$(stat -c %s generated-saber/h01.glb)" -gt 15000
+      - uses: actions/upload-artifact@v4
+        with:
+          name: saber-chibi-glb-test
+          path: generated-saber/h01.glb
+          retention-days: 14

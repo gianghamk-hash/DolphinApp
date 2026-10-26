@@ -73,7 +73,7 @@ if __name__=='__main__':
  extras.append("uv('Faction_Gem',(0,-.172,.49),(.044,.018,.042),cyan,'chest')")
  if hair in ('twintails','ponytail','braid'):
   for s in ((-1,1) if hair!='ponytail' else (1,)):
-   extras.append("uv('Hair_Tail_%s'%(%s),(%s,.11,.70),(.095,.095,.22),hair,'head')" %(('R' if s==-1 else 'L'),repr('R' if s==-1 else 'L'),repr(s*.22)))
+   extras.append("uv('Hair_Tail_%s',(%s,.11,.70),(.095,.095,.22),hair,'head')" %(('R' if s==-1 else 'L'),repr(s*.22)))
  elif hair=='bob':
   extras.append("uv('Bob_Hair_Left',(-.19,.04,.79),(.10,.12,.14),hair,'head')")
   extras.append("uv('Bob_Hair_Right',(.19,.04,.79),(.10,.12,.14),hair,'head')")

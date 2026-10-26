@@ -1361,32 +1361,36 @@ setTimeout(autoCleanReminders, 9000);
 
 /* ═══════════════ REALTIME LISTENERS (ORDERS) ═══════════════ */
 const RECENT_DAYS=14,MAX_ORDERS=180;let orderStops=[];
-function startListeners(db) {
+let dashboardUnsubscribers=[],dashboardListening=false;
+function stopDashboardStreams(){dashboardUnsubscribers.splice(0).forEach(fn=>{try{fn();}catch(e){}});dashboardListening=false;}
+addEventListener('pagehide',stopDashboardStreams);
+addEventListener('pageshow',()=>{if(window.__db&&!dashboardListening)startListeners(window.__db);});
+function startListeners(db) {if(dashboardListening)return;dashboardListening=true;
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     if (cfg.colOrders) {
-      onSnapshot(query(collection(db,cfg.colOrders),where('timestamp','>=',Date.now()-RECENT_DAYS*86400000),orderBy('timestamp','desc'),limit(MAX_ORDERS)),snap=>{
+      dashboardUnsubscribers.push(onSnapshot(query(collection(db,cfg.colOrders),where('timestamp','>=',Date.now()-RECENT_DAYS*86400000),orderBy('timestamp','desc'),limit(MAX_ORDERS)),snap=>{
         const arr = [];
         snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
         arr.sort((a, b) => getTs(b) - getTs(a));
         state.orders[key] = arr;
         renderAll();
-      });
+      }));
     }
     if (cfg.colCalls) {
-      onSnapshot(query(collection(db,cfg.colCalls),where('status','==','pending'),limit(80)),snap=>{
+      dashboardUnsubscribers.push(onSnapshot(query(collection(db,cfg.colCalls),where('status','==','pending'),limit(80)),snap=>{
         const arr = [];
         snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
         state.calls[key] = arr.filter(c => c.status === 'pending');
         renderAll();
-      });
+      }));
     }
     if (cfg.colTables) {
-      onSnapshot(collection(db, cfg.colTables), snap => {
+      dashboardUnsubscribers.push(onSnapshot(collection(db, cfg.colTables), snap => {
         const obj = {};
         snap.forEach(d => obj[d.id] = { id: d.id, ...d.data() });
         state.tables[key] = obj;
         renderAll();
-      });
+      }));
     }
   });
 }

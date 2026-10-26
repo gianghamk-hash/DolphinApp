@@ -1,5 +1,5 @@
 {
-  "version": "1.0.100",
-  "releaseDate": "2026-10-25",
-  "notes": "FIX LỖI (#10)"
+  "version": "1.0.101",
+  "releaseDate": "2026-10-26",
+  "notes": "fix: single-source Auto Bump and reliable APK version build"
 }

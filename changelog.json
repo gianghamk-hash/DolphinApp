@@ -1,34 +1,26 @@
 {
-  "version": "1.0.100",
-  "previousVersion": "1.0.99",
-  "commit": "e4da882",
-  "previousCommit": "7eea36d",
-  "buildDate": "2026-10-25T05:58:06.423Z",
-  "summary": "FIX LỖI (#10)",
+  "version": "1.0.101",
+  "previousVersion": "1.0.100",
+  "commit": "3b0839e",
+  "previousCommit": "e4da882",
+  "buildDate": "2026-10-26T10:31:24.026Z",
+  "summary": "fix: single-source Auto Bump and reliable APK version build",
   "changes": {
-    "totalCommits": 104,
-    "filesChanged": 4,
+    "totalCommits": 105,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "FIX LỖI (#10)"
+    "fix: single-source Auto Bump and reliable APK version build"
   ],
   "fileChanges": [
     {
-      "file": "functions/package.json",
+      "file": ".github/workflows/auto-bump.yml",
       "type": "update"
     },
     {
-      "file": "functions/tactics/database.rules.json",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/schema.ts",
+      "file": ".github/workflows/build.yml",
       "type": "update"
     }
   ]

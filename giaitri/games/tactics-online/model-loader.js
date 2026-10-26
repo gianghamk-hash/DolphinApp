@@ -1,6 +1,6 @@
 /* GLB-first Stylized Chibi model loading; procedural rigs are fallback only. */
 (function(root){'use strict';
-function createModelLibrary(T,GLTFLoader,basePath='assets/models/',rigFactory=null,skinner=null){
+function createModelLibrary(T,GLTFLoader,basePath='assets/models/',rigFactory=null,skinner=null,cloneSkeleton=null){
  const loader=new GLTFLoader(),cache=new Map();
  let manifest=null,manifestPromise=null;
  function getManifest(){
@@ -29,7 +29,7 @@ function createModelLibrary(T,GLTFLoader,basePath='assets/models/',rigFactory=nu
   const asset=await get(id);if(!holder.parent)return false;
   let model=null,isAsset=false;
   if(asset){
-   model=asset.model.clone(true);normalize(model,asset.def);isAsset=true;
+   model=cloneSkeleton?cloneSkeleton(asset.model):asset.model.clone(true);normalize(model,asset.def);isAsset=true;
    if(asset.animations.length){
     const mixer=new T.AnimationMixer(model),actions={};
     for(const clip of asset.animations)actions[clip.name.toLowerCase()]=mixer.clipAction(clip);

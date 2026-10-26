@@ -17,8 +17,8 @@
       "classes": [
         "Brawler"
       ],
-      "hp": 550,
-      "attack": 45,
+      "hp": 495,
+      "attack": 51,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.65,
@@ -27,7 +27,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "strike",
-        "power": 110,
+        "power": 121,
         "radius": 1
       }
     },
@@ -41,8 +41,8 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 570,
-      "attack": 49,
+      "hp": 465,
+      "attack": 58,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.72,
@@ -51,7 +51,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "dash",
-        "power": 110,
+        "power": 121,
         "radius": 1
       }
     },
@@ -65,8 +65,8 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 590,
-      "attack": 53,
+      "hp": 490,
+      "attack": 61,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.79,
@@ -75,7 +75,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "bolt",
-        "power": 110,
+        "power": 121,
         "radius": 1
       }
     },
@@ -89,8 +89,8 @@
       "classes": [
         "Guardian"
       ],
-      "hp": 610,
-      "attack": 57,
+      "hp": 575,
+      "attack": 62,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.8600000000000001,
@@ -99,7 +99,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "heal",
-        "power": 110,
+        "power": 106,
         "radius": 1
       }
     },
@@ -113,8 +113,8 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 630,
-      "attack": 45,
+      "hp": 540,
+      "attack": 50,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.93,
@@ -123,7 +123,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "shield",
-        "power": 110,
+        "power": 106,
         "radius": 1
       }
     },
@@ -137,8 +137,8 @@
       "classes": [
         "Brawler"
       ],
-      "hp": 650,
-      "attack": 49,
+      "hp": 585,
+      "attack": 55,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.65,
@@ -147,7 +147,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "blast",
-        "power": 110,
+        "power": 121,
         "radius": 1
       }
     },
@@ -161,8 +161,8 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 550,
-      "attack": 53,
+      "hp": 450,
+      "attack": 63,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.72,
@@ -171,7 +171,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "drain",
-        "power": 110,
+        "power": 121,
         "radius": 1
       }
     },
@@ -185,8 +185,8 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 570,
-      "attack": 57,
+      "hp": 475,
+      "attack": 66,
       "armor": 15,
       "magicResist": 15,
       "attackSpeed": 0.79,
@@ -195,7 +195,7 @@
       "manaMax": 60,
       "ability": {
         "kind": "stun",
-        "power": 110,
+        "power": 121,
         "radius": 1
       }
     },
@@ -209,8 +209,8 @@
       "classes": [
         "Guardian"
       ],
-      "hp": 690,
-      "attack": 55,
+      "hp": 650,
+      "attack": 60,
       "armor": 18,
       "magicResist": 18,
       "attackSpeed": 0.8600000000000001,
@@ -219,7 +219,7 @@
       "manaMax": 80,
       "ability": {
         "kind": "strike",
-        "power": 145,
+        "power": 160,
         "radius": 1
       }
     },
@@ -233,8 +233,8 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 710,
-      "attack": 59,
+      "hp": 610,
+      "attack": 65,
       "armor": 18,
       "magicResist": 18,
       "attackSpeed": 0.93,
@@ -243,7 +243,7 @@
       "manaMax": 80,
       "ability": {
         "kind": "dash",
-        "power": 145,
+        "power": 160,
         "radius": 1
       }
     },
@@ -257,8 +257,8 @@
       "classes": [
         "Brawler"
       ],
-      "hp": 730,
-      "attack": 63,
+      "hp": 655,
+      "attack": 71,
       "armor": 18,
       "magicResist": 18,
       "attackSpeed": 0.65,
@@ -267,7 +267,7 @@
       "manaMax": 80,
       "ability": {
         "kind": "bolt",
-        "power": 145,
+        "power": 160,
         "radius": 1
       }
     },
@@ -281,8 +281,8 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 750,
-      "attack": 67,
+      "hp": 615,
+      "attack": 80,
       "armor": 18,
       "magicResist": 18,
       "attackSpeed": 0.72,
@@ -291,7 +291,7 @@
       "manaMax": 80,
       "ability": {
         "kind": "heal",
-        "power": 145,
+        "power": 139,
         "radius": 1
       }
     },
@@ -305,8 +305,8 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 650,
-      "attack": 55,
+      "hp": 540,
+      "attack": 64,
       "armor": 18,
       "magicResist": 18,
       "attackSpeed": 0.79,
@@ -315,7 +315,7 @@
       "manaMax": 80,
       "ability": {
         "kind": "shield",
-        "power": 145,
+        "power": 139,
         "radius": 1
       }
     },
@@ -329,8 +329,8 @@
       "classes": [
         "Guardian"
       ],
-      "hp": 670,
-      "attack": 59,
+      "hp": 630,
+      "attack": 64,
       "armor": 18,
       "magicResist": 18,
       "attackSpeed": 0.8600000000000001,
@@ -339,7 +339,7 @@
       "manaMax": 80,
       "ability": {
         "kind": "blast",
-        "power": 145,
+        "power": 160,
         "radius": 1
       }
     },
@@ -353,8 +353,8 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 690,
-      "attack": 63,
+      "hp": 595,
+      "attack": 69,
       "armor": 18,
       "magicResist": 18,
       "attackSpeed": 0.93,
@@ -363,7 +363,7 @@
       "manaMax": 80,
       "ability": {
         "kind": "drain",
-        "power": 145,
+        "power": 160,
         "radius": 1
       }
     },
@@ -377,8 +377,8 @@
       "classes": [
         "Brawler"
       ],
-      "hp": 840,
-      "attack": 77,
+      "hp": 755,
+      "attack": 87,
       "armor": 21,
       "magicResist": 21,
       "attackSpeed": 0.65,
@@ -387,7 +387,7 @@
       "manaMax": 100,
       "ability": {
         "kind": "stun",
-        "power": 180,
+        "power": 198,
         "radius": 1
       }
     },
@@ -401,8 +401,8 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 870,
-      "attack": 65,
+      "hp": 715,
+      "attack": 77,
       "armor": 21,
       "magicResist": 21,
       "attackSpeed": 0.72,
@@ -411,7 +411,7 @@
       "manaMax": 100,
       "ability": {
         "kind": "strike",
-        "power": 180,
+        "power": 198,
         "radius": 1
       }
     },
@@ -425,8 +425,8 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 900,
-      "attack": 69,
+      "hp": 745,
+      "attack": 80,
       "armor": 21,
       "magicResist": 21,
       "attackSpeed": 0.79,
@@ -435,7 +435,7 @@
       "manaMax": 100,
       "ability": {
         "kind": "dash",
-        "power": 180,
+        "power": 198,
         "radius": 1
       }
     },
@@ -449,8 +449,8 @@
       "classes": [
         "Guardian"
       ],
-      "hp": 750,
-      "attack": 73,
+      "hp": 705,
+      "attack": 80,
       "armor": 21,
       "magicResist": 21,
       "attackSpeed": 0.8600000000000001,
@@ -459,7 +459,7 @@
       "manaMax": 100,
       "ability": {
         "kind": "bolt",
-        "power": 180,
+        "power": 198,
         "radius": 1
       }
     },
@@ -473,8 +473,8 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 780,
-      "attack": 77,
+      "hp": 670,
+      "attack": 85,
       "armor": 21,
       "magicResist": 21,
       "attackSpeed": 0.93,
@@ -483,7 +483,7 @@
       "manaMax": 100,
       "ability": {
         "kind": "heal",
-        "power": 180,
+        "power": 173,
         "radius": 1
       }
     },
@@ -497,8 +497,8 @@
       "classes": [
         "Brawler"
       ],
-      "hp": 810,
-      "attack": 65,
+      "hp": 730,
+      "attack": 73,
       "armor": 21,
       "magicResist": 21,
       "attackSpeed": 0.65,
@@ -507,7 +507,7 @@
       "manaMax": 100,
       "ability": {
         "kind": "shield",
-        "power": 180,
+        "power": 173,
         "radius": 1
       }
     },
@@ -521,8 +521,8 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 1044,
-      "attack": 79,
+      "hp": 855,
+      "attack": 94,
       "armor": 24,
       "magicResist": 24,
       "attackSpeed": 0.72,
@@ -531,7 +531,7 @@
       "manaMax": 120,
       "ability": {
         "kind": "aoe",
-        "power": 215,
+        "power": 237,
         "radius": 2
       }
     },
@@ -545,8 +545,8 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 1082,
-      "attack": 83,
+      "hp": 900,
+      "attack": 96,
       "armor": 24,
       "magicResist": 24,
       "attackSpeed": 0.79,
@@ -555,7 +555,7 @@
       "manaMax": 120,
       "ability": {
         "kind": "aoe",
-        "power": 215,
+        "power": 237,
         "radius": 2
       }
     },
@@ -569,8 +569,8 @@
       "classes": [
         "Guardian"
       ],
-      "hp": 1120,
-      "attack": 87,
+      "hp": 1055,
+      "attack": 95,
       "armor": 24,
       "magicResist": 24,
       "attackSpeed": 0.8600000000000001,
@@ -579,7 +579,7 @@
       "manaMax": 120,
       "ability": {
         "kind": "aoe",
-        "power": 215,
+        "power": 237,
         "radius": 2
       }
     },
@@ -593,8 +593,8 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 930,
-      "attack": 75,
+      "hp": 800,
+      "attack": 83,
       "armor": 24,
       "magicResist": 24,
       "attackSpeed": 0.93,
@@ -603,7 +603,7 @@
       "manaMax": 120,
       "ability": {
         "kind": "aoe",
-        "power": 215,
+        "power": 237,
         "radius": 2
       }
     },
@@ -617,8 +617,8 @@
       "classes": [
         "Brawler"
       ],
-      "hp": 968,
-      "attack": 79,
+      "hp": 870,
+      "attack": 89,
       "armor": 24,
       "magicResist": 24,
       "attackSpeed": 0.65,
@@ -627,7 +627,7 @@
       "manaMax": 120,
       "ability": {
         "kind": "aoe",
-        "power": 215,
+        "power": 237,
         "radius": 2
       }
     },
@@ -642,8 +642,8 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 1240,
-      "attack": 93,
+      "hp": 1015,
+      "attack": 111,
       "armor": 27,
       "magicResist": 27,
       "attackSpeed": 0.72,
@@ -652,7 +652,7 @@
       "manaMax": 140,
       "ability": {
         "kind": "aoe",
-        "power": 250,
+        "power": 275,
         "radius": 2
       }
     },
@@ -666,8 +666,8 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 1290,
-      "attack": 97,
+      "hp": 1070,
+      "attack": 113,
       "armor": 27,
       "magicResist": 27,
       "attackSpeed": 0.79,
@@ -676,7 +676,7 @@
       "manaMax": 140,
       "ability": {
         "kind": "aoe",
-        "power": 250,
+        "power": 275,
         "radius": 2
       }
     },
@@ -690,8 +690,8 @@
       "classes": [
         "Guardian"
       ],
-      "hp": 1340,
-      "attack": 85,
+      "hp": 1260,
+      "attack": 93,
       "armor": 27,
       "magicResist": 27,
       "attackSpeed": 0.8600000000000001,
@@ -700,7 +700,7 @@
       "manaMax": 140,
       "ability": {
         "kind": "aoe",
-        "power": 250,
+        "power": 275,
         "radius": 2
       }
     },
@@ -715,8 +715,8 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 1390,
-      "attack": 89,
+      "hp": 1195,
+      "attack": 98,
       "armor": 27,
       "magicResist": 27,
       "attackSpeed": 0.93,
@@ -725,7 +725,7 @@
       "manaMax": 140,
       "ability": {
         "kind": "aoe",
-        "power": 250,
+        "power": 275,
         "radius": 2
       }
     }
@@ -1296,7 +1296,7 @@
   },
   "phases": {
     "PREPARATION": 30000,
-    "COMBAT": 40000,
+    "COMBAT": 20000,
     "TRANSITION": 5000
   }
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.120",
+      "releaseDate": "2026-10-26T17:45:28.592Z",
+      "summary": "ci(tactics): batch chibi GLBs using prebuilt Blender container",
+      "details": [
+        "ci(tactics): batch chibi GLBs using prebuilt Blender container"
+      ]
+    },
+    {
       "version": "1.0.119",
       "releaseDate": "2026-10-26T17:33:46.537Z",
       "summary": "feat(tactics): generate remaining 29 rigged chibi heroes",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.70",
-      "releaseDate": "2026-10-17T02:13:55.258Z",
-      "summary": "Mô tả ngắn gọn việc bạn vừa làm",
-      "details": [
-        "Mô tả ngắn gọn việc bạn vừa làm"
       ]
     }
   ]

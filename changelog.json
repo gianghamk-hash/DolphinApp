@@ -1,18 +1,18 @@
 {
-  "version": "1.0.120",
-  "previousVersion": "1.0.119",
-  "commit": "d607d7b",
-  "previousCommit": "78ebcf5",
-  "buildDate": "2026-10-26T17:45:28.592Z",
-  "summary": "ci(tactics): batch chibi GLBs using prebuilt Blender container",
+  "version": "1.0.121",
+  "previousVersion": "1.0.120",
+  "commit": "d7d2d52",
+  "previousCommit": "d607d7b",
+  "buildDate": "2026-10-26T17:48:40.168Z",
+  "summary": "fix(ci): pass chibi batch arguments directly to Blender",
   "changes": {
-    "totalCommits": 124,
+    "totalCommits": 125,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "ci(tactics): batch chibi GLBs using prebuilt Blender container"
+    "fix(ci): pass chibi batch arguments directly to Blender"
   ],
   "fileChanges": [
     {

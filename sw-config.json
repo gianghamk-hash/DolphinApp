@@ -1,5 +1,5 @@
 {
-  "version": "1.0.120",
+  "version": "1.0.121",
   "releaseDate": "2026-10-26",
-  "notes": "ci(tactics): batch chibi GLBs using prebuilt Blender container"
+  "notes": "fix(ci): pass chibi batch arguments directly to Blender"
 }

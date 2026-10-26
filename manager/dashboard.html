@@ -524,7 +524,7 @@ input[type="datetime-local"].mgr-input{color-scheme:dark;font-weight:800}
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc, addDoc, deleteDoc, updateDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, onSnapshot, getDocs, query, where, doc, setDoc, addDoc, deleteDoc, updateDoc, orderBy, limit } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
 
@@ -638,7 +638,7 @@ function startCaroListener(db) {
   if (caroListenerStarted) return;
   caroListenerStarted = true;
   try {
-    onSnapshot(collection(db, 'caro_games'), (snap) => {
+    onSnapshot(query(collection(db, 'caro_games'),limit(80)), (snap) => {
       const arr = [];
       snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
       caroGamesAll = arr;
@@ -1020,7 +1020,7 @@ function startNoteListener(db) {
   if (noteListenStarted) return;
   noteListenStarted = true;
   try {
-    const q = query(collection(db, COL_NOTES), orderBy('timestamp', 'desc'));
+    const q = query(collection(db, COL_NOTES), orderBy('timestamp', 'desc'), limit(80));
     onSnapshot(q, (snap) => {
       allNotes = [];
       snap.forEach(d => allNotes.push(Object.assign({ id: d.id }, d.data())));
@@ -1139,7 +1139,7 @@ function startReminderListener(db) {
   if (remListenStarted) return;
   remListenStarted = true;
   try {
-    const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'));
+    const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'), limit(80));
     onSnapshot(q, (snap) => {
       allReminders = [];
       snap.forEach(d => allReminders.push(Object.assign({ id: d.id }, d.data())));
@@ -1360,32 +1360,37 @@ setTimeout(autoCleanNotes, 8000);
 setTimeout(autoCleanReminders, 9000);
 
 /* ═══════════════ REALTIME LISTENERS (ORDERS) ═══════════════ */
-function startListeners(db) {
+const RECENT_DAYS=14,MAX_ORDERS=180;let orderStops=[];
+let dashboardUnsubscribers=[],dashboardListening=false;
+function stopDashboardStreams(){dashboardUnsubscribers.splice(0).forEach(fn=>{try{fn();}catch(e){}});dashboardListening=false;}
+addEventListener('pagehide',stopDashboardStreams);
+addEventListener('pageshow',()=>{if(window.__db&&!dashboardListening)startListeners(window.__db);});
+function startListeners(db) {if(dashboardListening)return;dashboardListening=true;
   Object.entries(OUTLETS).forEach(([key, cfg]) => {
     if (cfg.colOrders) {
-      onSnapshot(collection(db, cfg.colOrders), snap => {
+      dashboardUnsubscribers.push(onSnapshot(query(collection(db,cfg.colOrders),where('timestamp','>=',Date.now()-RECENT_DAYS*86400000),orderBy('timestamp','desc'),limit(MAX_ORDERS)),snap=>{
         const arr = [];
         snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
         arr.sort((a, b) => getTs(b) - getTs(a));
         state.orders[key] = arr;
         renderAll();
-      });
+      }));
     }
     if (cfg.colCalls) {
-      onSnapshot(collection(db, cfg.colCalls), snap => {
+      dashboardUnsubscribers.push(onSnapshot(query(collection(db,cfg.colCalls),where('status','==','pending'),limit(80)),snap=>{
         const arr = [];
         snap.forEach(d => arr.push({ id: d.id, ...d.data(), _outlet: key }));
         state.calls[key] = arr.filter(c => c.status === 'pending');
         renderAll();
-      });
+      }));
     }
     if (cfg.colTables) {
-      onSnapshot(collection(db, cfg.colTables), snap => {
+      dashboardUnsubscribers.push(onSnapshot(collection(db, cfg.colTables), snap => {
         const obj = {};
         snap.forEach(d => obj[d.id] = { id: d.id, ...d.data() });
         state.tables[key] = obj;
         renderAll();
-      });
+      }));
     }
   });
 }
@@ -1591,6 +1596,7 @@ $('h-search-btn').onclick = async () => {
   const outlet = $('h-outlet').value;
   const search = ($('h-search').value || '').toLowerCase().trim();
   if (!date) { alert('Chọn ngày!'); return; }
+  if(Date.parse(date+'T23:59:59')<Date.now()-30*86400000){alert('Lịch sử chỉ tra cứu trực tiếp trong 30 ngày gần nhất.');return;}
   $('h-body').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gold-400 font-bold animate-pulse">Đang tải...</td></tr>`;
   $('h-summary').textContent = '';
   const targets = outlet ? [outlet] : ['bungalow', 'lounge', 'restaurant', 'show'];

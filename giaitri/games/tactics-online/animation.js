@@ -12,7 +12,18 @@ function createAnimator(T,profiles={},rigAnimator=null,skinner=null){
   const speed=profile.impact||1;
   const duration=({idle:1000,run:440,attack:340,cast:650,hit:250,death:800,heal:600,shield:700}[type]||500)/(type==='attack'||type==='cast'?Math.sqrt(speed):1);
   motions.set(node,{type,start:now,duration,profile,from:node.position.clone(),to:extra.to||null,baseY:node.userData.baseY||0});
-  if(skinner&&node.userData.gltfModel)skinner.play(node.userData.gltfModel,type);
+  const external=node.userData.gltfModel?.userData?.externalAnimations;
+  if(external){
+   const clip=external.actions[type]||external.actions[type==='run'?'walk':type==='walk'?'run':type==='cast'?'spell':type];
+   if(clip){
+    const prev=external.current?external.actions[external.current]:null;
+    if(prev&&prev!==clip)prev.fadeOut(.12);
+    if(prev!==clip||type==='attack'||type==='cast'||type==='hit'||type==='death'){
+     clip.reset().fadeIn(.12).play();
+     external.current=Object.keys(external.actions).find(k=>external.actions[k]===clip);
+    }
+   }
+  }else if(skinner&&node.userData.gltfModel)skinner.play(node.userData.gltfModel,type);
  }
  function disposeFX(f){if(f.mesh.parent)f.mesh.parent.remove(f.mesh);f.mesh.geometry.dispose();f.mesh.material.dispose();}
  function burst(scene,node,type,now=performance.now()){
@@ -79,7 +90,9 @@ function createAnimator(T,profiles={},rigAnimator=null,skinner=null){
    }}
   }
   for(const node of nodes.values()){
-   if(skinner&&node.userData.gltfModel)skinner.tick(node.userData.gltfModel,now);
+   const ext=node.userData.gltfModel?.userData?.externalAnimations;
+   if(ext){ext.mixer.update(Math.min(.05,Math.max(0,(now-ext.last)/1000)));ext.last=now;}
+   else if(skinner&&node.userData.gltfModel)skinner.tick(node.userData.gltfModel,now);
    if(!node.parent||motions.has(node)||!node.visible)continue;
    node.position.y=(node.userData.baseY||0)+Math.sin(now*.002+(node.userData.idleOffset||0))*.028;
    if(node.userData.gltfModel?.userData.skeletal&&skinner)skinner.idle(node.userData.gltfModel);

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.104",
+  "version": "1.0.105",
   "releaseDate": "2026-10-26",
-  "notes": "feat: TFT Phase 1 articulated character animation improvements"
+  "notes": "feat: TFT weapon-specific hero attack animation [Phase 1B]"
 }

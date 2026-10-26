@@ -1,7 +1,7 @@
 {
-  "version": "1.0.104",
-  "buildDate": "2026-10-26T13:01:50.856Z",
-  "commit": "8f9d410",
-  "notes": "feat: TFT Phase 1 articulated character animation improvements",
+  "version": "1.0.105",
+  "buildDate": "2026-10-26T13:09:20.007Z",
+  "commit": "56aa1e9",
+  "notes": "feat: TFT weapon-specific hero attack animation [Phase 1B]",
   "forceUpdate": false
 }

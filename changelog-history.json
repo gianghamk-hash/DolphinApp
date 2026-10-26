@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.104",
+      "releaseDate": "2026-10-26T13:01:50.856Z",
+      "summary": "feat: TFT Phase 1 articulated character animation improvements",
+      "details": [
+        "feat: TFT Phase 1 articulated character animation improvements"
+      ]
+    },
+    {
       "version": "1.0.103",
       "releaseDate": "2026-10-26T12:47:18.972Z",
       "summary": "perf: optimize seasonal themes in sub-apps",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.55",
       "releaseDate": "2026-10-16T05:32:17.633Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.54",
-      "releaseDate": "2026-10-16T01:54:28.140Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.105",
+      "releaseDate": "2026-10-26T13:09:20.007Z",
+      "summary": "feat: TFT weapon-specific hero attack animation [Phase 1B]",
+      "details": [
+        "feat: TFT weapon-specific hero attack animation [Phase 1B]"
+      ]
+    },
+    {
       "version": "1.0.104",
       "releaseDate": "2026-10-26T13:01:50.856Z",
       "summary": "feat: TFT Phase 1 articulated character animation improvements",
@@ -390,14 +398,6 @@
       "summary": "Mô tả ngắn gọn việc bạn vừa làm",
       "details": [
         "Mô tả ngắn gọn việc bạn vừa làm"
-      ]
-    },
-    {
-      "version": "1.0.55",
-      "releaseDate": "2026-10-16T05:32:17.633Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
       ]
     }
   ]

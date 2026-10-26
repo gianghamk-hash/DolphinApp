@@ -1,18 +1,18 @@
 {
-  "version": "1.0.105",
-  "previousVersion": "1.0.104",
-  "commit": "56aa1e9",
-  "previousCommit": "8f9d410",
-  "buildDate": "2026-10-26T13:09:20.007Z",
-  "summary": "feat: TFT weapon-specific hero attack animation [Phase 1B]",
+  "version": "1.0.106",
+  "previousVersion": "1.0.105",
+  "commit": "fb2bed3",
+  "previousCommit": "56aa1e9",
+  "buildDate": "2026-10-26T13:13:17.759Z",
+  "summary": "perf: TFT Android combat effects and adaptive rendering",
   "changes": {
-    "totalCommits": 109,
+    "totalCommits": 110,
     "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: TFT weapon-specific hero attack animation [Phase 1B]"
+    "perf: TFT Android combat effects and adaptive rendering"
   ],
   "fileChanges": [
     {
@@ -20,15 +20,15 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/rig-animator.js",
+      "file": "giaitri/games/tactics-online/combat-fx.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/skeletal-system.js",
+      "file": "giaitri/games/tactics-online/combat-performance.test.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/weapon-animation.test.js",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     }
   ]

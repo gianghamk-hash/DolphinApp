@@ -1,7 +1,7 @@
 {
-  "version": "1.0.105",
-  "buildDate": "2026-10-26T13:09:20.007Z",
-  "commit": "56aa1e9",
-  "notes": "feat: TFT weapon-specific hero attack animation [Phase 1B]",
+  "version": "1.0.106",
+  "buildDate": "2026-10-26T13:13:17.759Z",
+  "commit": "fb2bed3",
+  "notes": "perf: TFT Android combat effects and adaptive rendering",
   "forceUpdate": false
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.105",
+  "version": "1.0.106",
   "releaseDate": "2026-10-26",
-  "notes": "feat: TFT weapon-specific hero attack animation [Phase 1B]"
+  "notes": "perf: TFT Android combat effects and adaptive rendering"
 }

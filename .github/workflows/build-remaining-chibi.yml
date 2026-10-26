@@ -68,8 +68,8 @@ jobs:
           for n in $(seq ${{ matrix.start }} ${{ matrix.end }}); do
             num=$(printf '%02d' "$n")
             echo "::group::H${num}"
-            docker run --rm -v "$PWD:/work" -w /work blenderkit/headless-blender:blender-4.0 \
-              /home/headless/blender/blender -b -t 2 --python-exit-code 1 \
+            docker run --rm --entrypoint /home/headless/blender/blender -v "$PWD:/work" -w /work blenderkit/headless-blender:blender-4.0 \
+              -b -t 2 --python-exit-code 1 \
               --python giaitri/games/tactics-online/assets/models/production/build_remaining_heroes.py \
               -- "H${num}" "/work/generated-chibi/h${num}.glb"
             test -s "generated-chibi/h${num}.glb"

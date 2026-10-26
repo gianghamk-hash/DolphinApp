@@ -598,7 +598,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, orderBy, limit, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, orderBy, limit, startAfter, runTransaction, Timestamp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const state = { currentRole:'customer', staffViewMode:'table', tableSelected:false, selectedTable:null, currentLanguage:'VI', activeCategory:'all', cart:{}, orders:[], activeCalls:[], tableAssignments:{}, isSending:false, isCallingStaff:false, pendingAction:null, lastTransactionWarning:null };
 window.state = state;
@@ -1840,7 +1840,8 @@ window.executeSystemReset = async function(){
   } catch(e){ window.showToast("Lỗi lưu trữ!","❌"); }
 };
 
-window.fetchHistoryData = async function(){
+let loungeHistoryCursor=null,loungeHistoryKey='';
+window.fetchHistoryData = async function(next=false){
   if(!db) return;
   const date = document.getElementById('history-search-date').value;
   if(date&&Date.parse(date+'T23:59:59')<Date.now()-30*86400000){window.showToast('Lịch sử trực tiếp chỉ tra cứu 30 ngày gần nhất','⚠️');return;}
@@ -1852,7 +1853,9 @@ window.fetchHistoryData = async function(){
   c.innerHTML = Array.from({length:6}).map(()=>`<div class="glass-card p-5 rounded-2xl border border-teal-700/30"><div class="skeleton h-4 w-24 mb-3"></div><div class="skeleton h-3 w-full mb-2"></div><div class="skeleton h-3 w-2/3 mb-4"></div><div class="skeleton h-8 w-full"></div></div>`).join('');
   try{
     let q = shift==='Cả Ngày' ? query(collection(db,'lounge_history_sessions'), where('date','==',date)) : query(collection(db,'lounge_history_sessions'), where('date','==',date), where('shift','==',shift));
-    const snap = await getDocs(q);
+    const k=date+'|'+shift+'|'+sTable;if(!next||k!==loungeHistoryKey){loungeHistoryCursor=null;loungeHistoryKey=k;next=false;}
+    const snap=await getDocs(loungeHistoryCursor?query(q,limit(8),startAfter(loungeHistoryCursor)):query(q,limit(8)));
+    loungeHistoryCursor=snap.docs.length===8?snap.docs[snap.docs.length-1]:null;
     let hist = {};
     snap.forEach(d=>{ const s = d.data(); if(s.orders) s.orders.forEach(o=>{ if(!hist[o.table]) hist[o.table]={orders:[],tableData:{}}; hist[o.table].orders.push({...o,date:s.date,shift:s.shift}); }); if(s.tables) Object.keys(s.tables).forEach(t=>{ if(!hist[t]) hist[t]={orders:[],tableData:{}}; hist[t].tableData = s.tables[t]; }); });
     if(sTable){ const f={}; Object.keys(hist).forEach(t=>{ if(t.toUpperCase().includes(sTable)) f[t]=hist[t]; }); hist=f; }

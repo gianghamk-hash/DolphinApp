@@ -90,6 +90,59 @@ function createRigFactory(T,defs){
   else if(d.weapon==='shield'){part(rig.leftHand,'shield',[0,0,.11],[.55,.64,.12],steel);part(w,'sword',[0,.14,0],[.11,.79,.12],trim);}
   else if(d.weapon==='claws'||d.weapon==='dagger'){for(const h of [rig.leftHand,rig.rightHand])part(h,'twinBlade',[0,.19,.03],[.1,.58,.11],trim);}
   else part(w,'weapon',[0,.18,0],[.14,.76,.12],trim);
+  // Phase 1D: hero-grade layered silhouette, compact 60% scale and readable weapon detail.
+  // Detail remains attached to existing joints for animation; mesh geometries are cached.
+  const jewel=d.motifColor||trim,variant=d.silhouetteVariant||0;
+  part(spine,'chestUpperPlate',[0,.23,.205],[width*.82,.19,.13],steel);
+  part(spine,'chestInlay',[0,.13,.287],[width*.44,.17,.06],jewel);
+  part(spine,'waistGuard',[0,-.22,.19],[.42,.14,.12],trim);
+  part(head,'browRidge',[0,.22,.21],[.34,.075,.075],steel);
+  part(head,'chinPlate',[0,-.075,.13],[.28,.11,.22],d.face==='visor'?steel:skin);
+  for(const side of ['left','right']){
+   const sign=side==='left'?-1:1;
+   part(rig[side+'Forearm'],side+'WristPlate',[0,-.28,.13],[.22,.12,.1],jewel);
+   part(rig[side+'Thigh'],side+'KneeGuard',[0,-.4,.18],[.26,.15,.12],trim);
+   part(rig[side+'Calf'],side+'BootToe',[0,-.37,.18],[.27,.12,.3],steel);
+   part(spine,side+'ShoulderTrim',[sign*(width/2+.07),.34,.18],[.19,.11,.12],jewel);
+  }
+  if(d.motif==='core'){
+   part(spine,'mechPowerpack',[0,.12,-.33],[.4,.49,.23],steel);
+   part(spine,'mechPowerLine',[0,.12,-.465],[.17,.36,.07],jewel);
+  }else if(d.motif==='horns'){
+   part(spine,'beastBackRidge',[0,.16,-.33],[.23,.65,.22],jewel);
+  }else if(d.motif==='runes'||d.motif==='halo'){
+   part(head,'arcaneCrownGem',[0,.52,.16],[.17,.2,.11],jewel);
+  }else if(d.motif==='blades'||d.motif==='spikes'){
+   part(spine,'shadowSpine',[0,.21,-.33],[.13,.65,.18],jewel);
+  }
+  // Hero-index signature: broad forms remain recognizable at the game camera distance.
+  if(variant===0)part(spine,'signatureBackCrest',[0,.55,-.31],[.3,.3,.16],jewel);
+  if(variant===1)part(head,'signatureTopSpike',[0,.76,0],[.13,.39,.14],jewel);
+  if(variant===2)for(const x of [-1,1])part(spine,'signatureSideFin'+x,[x*(width/2+.32),.17,-.17],[.21,.56,.13],jewel);
+  if(variant===3)part(hips,'signatureCoat',[0,-.52,-.12],[.55,.5,.17],primary);
+  if(variant===4)part(spine,'signatureBanner',[0,.46,-.32],[.25,.5,.1],primary);
+  if(d.weapon==='bow'){
+   part(w,'bowUpperLimb',[0,.42,.04],[.13,.37,.11],jewel);
+   part(w,'bowLowerLimb',[0,-.42,.04],[.13,.37,.11],jewel);
+   part(w,'bowString',[0,0,.13],[.025,1.06,.025],0xd9f7ff);
+  }else if(d.weapon==='hammer'){
+   part(w,'hammerRim',[0,.44,.15],[.68,.29,.09],jewel);
+   part(w,'hammerPommel',[0,-.49,0],[.18,.16,.18],trim);
+  }else if(d.weapon==='staff'){
+   part(w,'staffCrown',[0,.72,0],[.37,.12,.22],jewel);
+   part(w,'staffRuneGem',[0,.85,0],[.16,.2,.16],0xeafaff);
+  }else if(d.weapon==='shield'){
+   part(rig.leftHand,'shieldEmblem',[0,0,.2],[.31,.33,.08],jewel);
+   part(w,'bladeEdge',[0,.31,.08],[.06,.53,.065],0xddeafa);
+  }else if(d.weapon==='sword'){
+   part(w,'swordGuard',[0,.05,.07],[.43,.1,.13],jewel);
+   part(w,'bladeHighlight',[0,.48,.08],[.065,.64,.07],0xcceeff);
+  }else if(d.weapon==='dagger'||d.weapon==='claws'){
+   for(const hand of [rig.leftHand,rig.rightHand])part(hand,'bladeHighlight',[0,.39,.13],[.07,.4,.06],jewel);
+  }
+  // Preserve the factory's existing slim-build proportions; apply one final global reduction.
+  root.scale.multiplyScalar(.6);
+  root.userData.visualScale=.6;
   root.userData.rig=rig;root.userData.heroId=id;return root;
  }
  return {make};

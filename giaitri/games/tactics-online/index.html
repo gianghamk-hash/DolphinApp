@@ -169,6 +169,11 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .traitRail{display:flex;flex-wrap:wrap;gap:5px;padding:0 4px}.traitRail:empty{display:none}.traitOrb{width:35px;min-width:35px;height:35px;padding:0;border-radius:9px;background:#17475a;border:1px solid #75d8b5;font-size:17px}.traitInfo{border:1px solid #5ec6af;background:#123e4a;border-radius:10px;padding:9px;font-size:11px}.traitInfo button{font-size:10px;padding:5px 9px;margin-top:5px}
 @media(orientation:portrait){#game>section{position:relative!important;display:flex!important;flex-direction:column!important;gap:5px!important}#game>section>#stage{height:48dvh!important;min-height:270px!important;max-height:540px!important}#game>section>.benchBar{order:2!important;flex:0 0 auto!important;position:relative!important}#game>section>.playerDock{top:48px!important;right:7px!important;width:106px!important;position:absolute!important;display:flex!important;flex-direction:column!important}#game>aside{height:auto!important;overflow:visible!important}}
 @media(orientation:landscape){#game>section>.playerDock{top:40px!important;right:5px!important;width:108px!important}#game>section>.benchBar{flex:0 0 auto!important}}
+/* Compact right-side life rings + shop lock */
+#game>section>.playerDock{width:79px!important;gap:2px!important;padding:3px!important;right:5px!important}
+.hpEntry{gap:3px!important}.hpPortrait{width:23px!important;height:23px!important;flex:0 0 23px!important;padding:2px!important}
+.hpInside{font-size:10px!important}.hpIdentity strong{font-size:7px!important;line-height:1.05!important}.hpIdentity small{font-size:7px!important;line-height:1.05!important}
+#lockShopBtn{min-width:39px!important;padding:7px 9px!important}#lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐬 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -187,7 +192,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div><div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
-<div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button></div><div id="shop"></div>
+<div class="flex" style="margin:8px 0"><button onclick="send({type:'ROLL'})">Đổi shop: 2🪙</button><button onclick="send({type:'BUY_XP'})">+4 XP: 4🪙</button><button id="lockShopBtn" onclick="send({type:'TOGGLE_SHOP_LOCK'})" title="Giữ nguyên shop qua vòng sau">🔓</button></div><div id="shop"></div>
 <div id="heroInfo" role="status"></div>
 <div class="flex" style="margin-top:9px"><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 <div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div>
@@ -411,13 +416,13 @@ window.showTraitInfo=key=>{
 };
 $('traitRail').addEventListener('click',e=>{const btn=e.target.closest('[data-trait]');if(btn)showTraitInfo(btn.dataset.trait);});
 function paintControls(){
- const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready;
+ const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready,shopEnabled=state.status==="in_game"&&!p.eliminated;
  $("phaseLabel").textContent=phaseName[state.roundPhase]+' · VÒNG '+state.round;
  const slots=E.slotsForLevel(p.level),xpGoal=E.LEVEL_XP[p.level]||0,boardCount=Object.keys(p.board||{}).length;
  $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+(xpGoal?"/"+xpGoal:" (MAX)")+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
  $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
  $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;
- return '<button class="shopHero tier'+cost+'" '+(!prep||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
+ return '<button class="shopHero tier'+cost+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
  (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
  $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
@@ -433,7 +438,15 @@ function paintControls(){
  const equipped=Object.values(p.units).filter(u=>u.items?.length);
  $("equipmentOwners").innerHTML='<strong>🛡 Đã trang bị: '+equipped.length+' tướng</strong>'+(equipped.length?equipped.map(u=>'<div class="itemChip">'+safe(hero[u.heroId]?.name||u.heroId)+' ★'+u.star+': '+u.items.map(id=>safe(itemDef(id)?.name||id)).join(', ')+'</div>').join(''):'<div>Chưa có tướng nào được trang bị.</div>');
  selectedHeroInfo();
- [...document.querySelectorAll('#game button')].forEach(b=>{if(b.hasAttribute('onclick')&&/send\(\{type:'(ROLL|BUY_XP|READY)'/.test(b.getAttribute('onclick')))b.disabled=!prep;});
+ $('lockShopBtn').textContent=p.shopLocked?'🔒':'🔓';
+ $('lockShopBtn').title=p.shopLocked?'Đang khóa shop — giữ nguyên khi sang vòng sau':'Nhấn để khóa shop';
+ $('lockShopBtn').classList.toggle('shopLocked',!!p.shopLocked);
+ [...document.querySelectorAll('#game button')].forEach(b=>{
+  if(!b.hasAttribute('onclick'))return;
+  const text=b.getAttribute('onclick');
+  if(/send\(\{type:'(ROLL|BUY_XP|TOGGLE_SHOP_LOCK)'/.test(text))b.disabled=!shopEnabled;
+  if(/send\(\{type:'READY'/.test(text))b.disabled=!prep;
+ });
 }
 window.buyHero=i=>send({type:'BUY',index:i});
 window.tapBench=i=>{let p=state?.players[uid],id=p?.bench[i];if(selected&&selected!==id){send({type:'MOVE',unitId:selected,to:'bench',index:String(i)});selected=null;closeUnitPopup();}else{selected=id||null;paintControls();if(id)openUnitPopup(window.innerWidth/2,window.innerHeight*.68,id);else closeUnitPopup();}};

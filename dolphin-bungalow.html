@@ -417,7 +417,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFirestore, collection, addDoc, setDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, orderBy, limit, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 const state={currentRole:'customer',tableSelected:false,selectedTable:null,currentLanguage:'VI',activeCategory:'all',searchTerm:'',cart:{},orders:[],activeCalls:[],tableAssignments:{},isSending:false,isCallingStaff:false,pendingAction:null,alertedDelayedOrders:new Set(),lastTransactionWarning:null,adminFilter:'all'};
 window.state=state;
@@ -464,10 +464,18 @@ window.playNotificationAlert=function(type){if(navigator.vibrate){try{navigator.
 
 function checkDelayedOrders(){if(state.currentRole==='customer')return;const now=Date.now();let has=false;state.orders.forEach(o=>{if(o.status==='pending'&&o.timestamp&&(now-o.timestamp)>300000){if(!state.alertedDelayedOrders.has(o.id)){state.alertedDelayedOrders.add(o.id);has=true;}}});if(has){playNotificationAlert('delayed');window.showToast('⚠️ CÓ ĐƠN QUÁ 5 PHÚT!','⚠️');renderAll();}}
 
-function setupListeners(){if(!db)return;
-onSnapshot(collection(db,COL_ORDERS),s=>{let has=false;s.docChanges().forEach(c=>{if(c.type==='added'&&!isInitOrder&&c.doc.data().status==='pending')has=true;});isInitOrder=false;const all=[];s.forEach(d=>all.push({id:d.id,...d.data()}));all.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));state.orders=all;if(has&&['bungalow','admin'].includes(state.currentRole)){playNotificationAlert('newOrder');window.showToast('🔔 CÓ ĐƠN MỚI!','🔔');}renderAll();});
-onSnapshot(collection(db,COL_CALLS),s=>{let has=false;s.docChanges().forEach(c=>{if(c.type==='added'&&!isInitCall&&c.doc.data().status==='pending')has=true;});isInitCall=false;const all=[];s.forEach(d=>all.push({id:d.id,...d.data()}));state.activeCalls=all.filter(c=>c.status==='pending');if(has&&['bungalow','admin'].includes(state.currentRole))playNotificationAlert('call');renderAll();});
-onSnapshot(collection(db,COL_TABLES),s=>{const a={};s.forEach(d=>{a[d.id]={customerName:d.data().customerName,restaurantTable:d.data().restaurantTable||'',paymentMethod:d.data().paymentMethod||'',focReason:d.data().focReason||'',openedByStaff:d.data().openedByStaff||''};});state.tableAssignments=a;window.updateWelcomeLabels();renderAll();});}
+const LIVE_ORDER_DAYS=14,LIVE_ORDER_LIMIT=180,LIVE_CALL_LIMIT=80;
+let activeStreams=[],streamsRunning=false;
+function stopStreams(){activeStreams.splice(0).forEach(stop=>{try{stop();}catch(e){}});streamsRunning=false;}
+addEventListener('pagehide',stopStreams);
+addEventListener('pageshow',()=>{if(db&&auth?.currentUser&&!streamsRunning)setupListeners();});
+function setupListeners(){
+  if(!db||streamsRunning)return;streamsRunning=true;
+  const recent=query(collection(db,COL_ORDERS),where('timestamp','>=',Date.now()-LIVE_ORDER_DAYS*86400000),orderBy('timestamp','desc'),limit(LIVE_ORDER_LIMIT));
+  const liveCalls=query(collection(db,COL_CALLS),where('status','==','pending'),limit(LIVE_CALL_LIMIT));
+activeStreams.push(onSnapshot(recent,s=>{let has=false;s.docChanges().forEach(c=>{if(c.type==='added'&&!isInitOrder&&c.doc.data().status==='pending')has=true;});isInitOrder=false;const all=[];s.forEach(d=>all.push({id:d.id,...d.data()}));all.sort((a,b)=>(b.timestamp||0)-(a.timestamp||0));state.orders=all;if(has&&['bungalow','admin'].includes(state.currentRole)){playNotificationAlert('newOrder');window.showToast('🔔 CÓ ĐƠN MỚI!','🔔');}renderAll();}));
+activeStreams.push(onSnapshot(liveCalls,s=>{let has=false;s.docChanges().forEach(c=>{if(c.type==='added'&&!isInitCall&&c.doc.data().status==='pending')has=true;});isInitCall=false;const all=[];s.forEach(d=>all.push({id:d.id,...d.data()}));state.activeCalls=all.filter(c=>c.status==='pending');if(has&&['bungalow','admin'].includes(state.currentRole))playNotificationAlert('call');renderAll();}));
+activeStreams.push(onSnapshot(collection(db,COL_TABLES),s=>{const a={};s.forEach(d=>{a[d.id]={customerName:d.data().customerName,restaurantTable:d.data().restaurantTable||'',paymentMethod:d.data().paymentMethod||'',focReason:d.data().focReason||'',openedByStaff:d.data().openedByStaff||''};});state.tableAssignments=a;window.updateWelcomeLabels();renderAll();}));}
 
 window.onload=function(){
 const mk=(tables,prefix)=>tables.map(t=>`<div><input type="radio" name="table" id="w-t-${prefix}-${t}" value="${t}" class="hidden table-radio" onchange="checkWelcomeForm()"><label for="w-t-${prefix}-${t}" class="table-choice-label block text-center rounded-lg border border-teal-700/50 bg-teal-900/40 text-teal-100 font-bold cursor-pointer flex flex-col items-center justify-center"><span>${t}</span></label></div>`).join('');

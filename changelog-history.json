@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.107",
+      "releaseDate": "2026-10-26T13:17:51.170Z",
+      "summary": "feat: TFT timed windup and impact replay cues",
+      "details": [
+        "feat: TFT timed windup and impact replay cues"
+      ]
+    },
+    {
       "version": "1.0.106",
       "releaseDate": "2026-10-26T13:13:17.759Z",
       "summary": "perf: TFT Android combat effects and adaptive rendering",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.58",
       "releaseDate": "2026-10-16T05:38:54.621Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.57",
-      "releaseDate": "2026-10-16T05:35:30.073Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

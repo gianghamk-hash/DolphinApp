@@ -1,18 +1,18 @@
 {
-  "version": "1.0.107",
-  "previousVersion": "1.0.106",
-  "commit": "2a85850",
-  "previousCommit": "fb2bed3",
-  "buildDate": "2026-10-26T13:17:51.170Z",
-  "summary": "feat: TFT timed windup and impact replay cues",
+  "version": "1.0.108",
+  "previousVersion": "1.0.107",
+  "commit": "b7f2983",
+  "previousCommit": "2a85850",
+  "buildDate": "2026-10-26T13:23:33.109Z",
+  "summary": "feat: TFT Phase 1C hero origin/class identities",
   "changes": {
-    "totalCommits": 111,
-    "filesChanged": 4,
+    "totalCommits": 112,
+    "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: TFT timed windup and impact replay cues"
+    "feat: TFT Phase 1C hero origin/class identities"
   ],
   "fileChanges": [
     {
@@ -20,15 +20,19 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/combat-timeline.js",
+      "file": "giaitri/games/tactics-online/hero-identity.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/combat-timeline.test.js",
+      "file": "giaitri/games/tactics-online/hero-identity.test.js",
       "type": "update"
     },
     {
       "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/rigged-model-factory.js",
       "type": "update"
     }
   ]

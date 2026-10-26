@@ -1,7 +1,7 @@
 {
-  "version": "1.0.107",
-  "buildDate": "2026-10-26T13:17:51.170Z",
-  "commit": "2a85850",
-  "notes": "feat: TFT timed windup and impact replay cues",
+  "version": "1.0.108",
+  "buildDate": "2026-10-26T13:23:33.109Z",
+  "commit": "b7f2983",
+  "notes": "feat: TFT Phase 1C hero origin/class identities",
   "forceUpdate": false
 }

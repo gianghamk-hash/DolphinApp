@@ -1,5 +1,5 @@
 {
-  "version": "1.0.107",
+  "version": "1.0.108",
   "releaseDate": "2026-10-26",
-  "notes": "feat: TFT timed windup and impact replay cues"
+  "notes": "feat: TFT Phase 1C hero origin/class identities"
 }

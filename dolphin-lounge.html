@@ -1843,6 +1843,7 @@ window.executeSystemReset = async function(){
 window.fetchHistoryData = async function(){
   if(!db) return;
   const date = document.getElementById('history-search-date').value;
+  if(date&&Date.parse(date+'T23:59:59')<Date.now()-30*86400000){window.showToast('Lịch sử trực tiếp chỉ tra cứu 30 ngày gần nhất','⚠️');return;}
   const shift = document.getElementById('history-search-shift').value;
   const sTable = (document.getElementById('history-search-table').value||'').trim().toUpperCase();
   const c = document.getElementById('history-cards-container');

@@ -1596,6 +1596,7 @@ $('h-search-btn').onclick = async () => {
   const outlet = $('h-outlet').value;
   const search = ($('h-search').value || '').toLowerCase().trim();
   if (!date) { alert('Chọn ngày!'); return; }
+  if(Date.parse(date+'T23:59:59')<Date.now()-30*86400000){alert('Lịch sử chỉ tra cứu trực tiếp trong 30 ngày gần nhất.');return;}
   $('h-body').innerHTML = `<tr><td colspan="6" class="text-center py-10 text-gold-400 font-bold animate-pulse">Đang tải...</td></tr>`;
   $('h-summary').textContent = '';
   const targets = outlet ? [outlet] : ['bungalow', 'lounge', 'restaurant', 'show'];

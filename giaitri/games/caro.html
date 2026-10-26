@@ -104,6 +104,28 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;margin:0;min-
 
 .lb-status{font-size:10.5px;font-weight:800;margin-top:6px;min-height:16px;letter-spacing:.02em}
 .lb-status.ok{color:#86efac}.lb-status.err{color:#fca5a5}.lb-status.loading{color:#FBD77A}
+
+/* Dolphin Arcade 2026 visual refresh — paint-only, no game logic or hitbox changes */
+:root{--arcade-glow:rgba(92,229,216,.30);--arcade-gold:rgba(250,202,114,.35)}
+body{background:radial-gradient(ellipse at 52% -8%,rgba(34,115,121,.43),transparent 48%),radial-gradient(ellipse at 110% 74%,rgba(16,71,97,.26),transparent 50%),#071b1c;background-attachment:fixed}
+.glass,.modal-card,.result-card,.rules-card{border:1px solid rgba(133,225,214,.20);box-shadow:0 12px 30px rgba(0,8,13,.26),inset 0 1px rgba(255,255,255,.065)}
+.btn-gold{box-shadow:0 4px 0 rgba(128,82,19,.35),0 7px 23px rgba(239,180,70,.19),inset 0 1px rgba(255,255,255,.48);transition:filter .16s ease,box-shadow .16s ease,transform .16s ease}
+.btn-outline{box-shadow:inset 0 1px rgba(255,255,255,.08),0 5px 14px rgba(0,0,0,.15);transition:filter .16s ease,transform .16s ease}
+button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;outline-offset:3px}
+@media(hover:hover){.btn-gold:hover,.btn-outline:hover{filter:brightness(1.10)}}
+@media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+
+
+#boardContainer{box-shadow:0 16px 36px rgba(0,13,16,.36),0 0 0 1px rgba(236,203,132,.28);border-radius:12px}
+#board{background-image:linear-gradient(135deg,rgba(255,255,255,.07),transparent 45%);box-shadow:inset 0 0 22px rgba(74,38,14,.10)}
+.cell{transition:background-color .13s ease}
+.cell.last-move{background-color:rgba(250,202,110,.15)}
+.cell.win{box-shadow:inset 0 0 15px rgba(255,207,83,.35)}
+.piece{filter:drop-shadow(0 2px 2px rgba(0,0,0,.32));transition:filter .16s ease,transform .16s ease}
+.piece.x{filter:drop-shadow(0 2px 4px rgba(51,185,239,.42))}
+.piece.o{filter:drop-shadow(0 2px 4px rgba(255,163,104,.38))}
+.avatar.active{box-shadow:0 0 0 2px rgba(238,203,109,.40),0 0 19px rgba(238,203,109,.22)}
+
 </style>
 </head>
 <body>

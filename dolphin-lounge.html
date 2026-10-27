@@ -1234,6 +1234,7 @@ window.executeStaffAction = async function(name){
           } else { upd.preparedBy = name; state.lastTransactionWarning=null; }
         } else if(nextStatus==='completed'){
           upd.completedBy = name;
+          upd.completedAt = Date.now();
           upd.completedTime = window.getVNTime().timeString;
           state.lastTransactionWarning=null;
         }

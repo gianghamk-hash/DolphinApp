@@ -605,6 +605,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   padding:0;
   -webkit-tap-highlight-color:transparent;
 }
+#notifPermBtn[hidden]{display:none!important}
 #notifPermBtn:active{transform:scale(.92)}
 #notifPermBtn.granted{
   background:linear-gradient(135deg,rgba(16,185,129,.9),rgba(5,150,105,.9));
@@ -1747,6 +1748,7 @@ window.toggleNotifPerm = async function(){
     return;
   }
   if (Notification.permission === 'granted'){
+    updateNotifBtn();
     if (window.showToast) window.showToast('Đã bật rồi!', '🔔');
     return;
   }
@@ -1781,6 +1783,7 @@ function updateNotifBtn(){
     return;
   }
   const p = Notification.permission;
+  btn.hidden = (p === 'granted');
   if (p === 'granted'){
     btn.textContent = '🔔';
     btn.classList.add('granted');

@@ -1,0 +1,26 @@
+name: Ranking Work Points Checks
+on:
+  pull_request:
+    paths:
+      - 'ranking/index.html'
+      - 'ranking/work-points.test.js'
+      - 'dolphin-lounge.html'
+      - '.github/workflows/ranking-work-points.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'ranking/index.html'
+      - 'ranking/work-points.test.js'
+      - 'dolphin-lounge.html'
+      - '.github/workflows/ranking-work-points.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test ranking/work-points.test.js rank-rewards.test.js

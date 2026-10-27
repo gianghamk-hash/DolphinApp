@@ -49,10 +49,10 @@ test('work champion and work tags are independent from sales',()=>{
  assert.equal(api.get('Sales Winner','revenue').title,'KING OF SALES');
  assert.equal(api.history('work').length,1);
 });
-test('legacy point algorithm is unchanged in ranking file',()=>{
+test('outlet specific point rules preserved in ranking file',()=>{
  const file=fs.readFileSync(require('node:path').join(__dirname,'ranking/index.html'),'utf8');
- assert.match(file,/e\.points \+= 0\.5/);
- assert.match(file,/e\.points \+= 1/);
+ assert.match(file,/lounge\?0\.1:0\.5/);
+ assert.match(file,/lounge\?0\.25:1/);
  assert.match(file,/renderRevenue\(\);\s*renderPoints\(\);/);
  assert.match(file,/publishCategory\('work',data,state\.weekStart\)/);
 });

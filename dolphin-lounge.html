@@ -69,8 +69,8 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <div class="bg-teal-950/80 backdrop-blur-md border-b border-teal-800/50 px-4 py-2 text-xs flex flex-wrap justify-between items-center gap-3 z-50">
   <div class="flex items-center gap-3 flex-wrap">
     <div class="flex items-center gap-2">
-      <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,.8)]"></span>
-      <span id="cloud-status-text" class="font-bold text-teal-200 tracking-wider text-[10px] uppercase">⚡ ĐANG KẾT NỐI...</span>
+      <span id="cloud-status-dot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse shadow-[0_0_8px_rgba(245,158,11,.8)]" role="status" aria-label="Chưa kết nối" title="Offline"></span>
+      <span id="cloud-status-text" class="font-bold text-teal-200 tracking-wider text-[10px] uppercase" style="display:none!important" aria-hidden="true">⚡ ĐANG KẾT NỐI...</span>
     </div>
     <div id="vn-clock" class="hidden sm:flex items-center gap-1.5 px-2.5 py-1 rounded-lg text-[10px] font-black tracking-wider" style="background:rgba(18,54,52,.6);border:1px solid var(--theme-border);color:var(--theme-accent);">
       <span>🕒</span><span id="vn-clock-text">--:--</span>
@@ -649,12 +649,13 @@ window.startCloudConnection = function() {
     signInAnonymously(auth).then(()=>{
       const dot = document.getElementById('cloud-status-dot');
       const text = document.getElementById('cloud-status-text');
-      if(dot) dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,.8)]";
+      if(dot){ dot.className = "w-2.5 h-2.5 rounded-full bg-emerald-500 shadow-[0_0_8px_rgba(16,185,129,.8)]"; dot.setAttribute("aria-label","Đã kết nối"); dot.title="Online"; }
       if(text){ text.innerText = "🌐 ONLINE (REALTIME)"; text.className = "font-bold text-emerald-400 tracking-wider text-[10px] uppercase"; }
       setupRealtimeListeners();
     }).catch(err=>{
       console.error('[Lounge Firebase Auth]',err);
       window.showToast('Kết nối Firebase thất bại: '+(err?.code||err?.message||'không rõ nguyên nhân'),'❌');
+      const d = document.getElementById("cloud-status-dot"); if(d){d.className="w-2.5 h-2.5 rounded-full bg-red-500";d.setAttribute("aria-label","Chưa kết nối");d.title="Offline";}
       const text = document.getElementById('cloud-status-text');
       if(text){ text.innerText = "⚠️ OFFLINE"; text.className = "font-bold text-red-400 tracking-wider text-[10px] uppercase"; }
     });

@@ -2,22 +2,34 @@
 'use strict';
 const css=document.createElement('style');
 css.textContent=`
-#dolphin-royal-leaders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;width:100%;max-width:760px;margin:12px auto 20px}
-.drl-card{position:relative;overflow:hidden;padding:13px 10px;border-radius:17px;text-align:center;background:linear-gradient(145deg,#183e38,#0a201f 72%);border:2px solid #c49b46;box-shadow:inset 0 0 20px #e3c06f15,0 4px 20px #0005}
-.drl-card:before{content:'✦';position:absolute;color:#fbd77a;left:12px;top:8px;opacity:.65}
-.drl-title{font-size:11px;font-weight:900;color:#fbd77a;letter-spacing:.05em}
-.drl-crown{font-size:24px;filter:drop-shadow(0 0 6px #ffd9697d)}
-.drl-name{font-size:15px;font-weight:900;color:#fff2bb;margin-top:3px;overflow-wrap:anywhere}
-.drl-tag{font-size:9px;color:#f8d789;font-weight:800;letter-spacing:.09em}
-.drl-value{font-size:12px;color:#bff9df;font-weight:800;margin-top:5px}
-@media(max-width:390px){#dolphin-royal-leaders{gap:6px}.drl-card{padding:9px 6px}.drl-title{font-size:9px}.drl-name{font-size:12px}}
+#dolphin-royal-leaders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:860px;margin:14px auto 22px}
+.drl-card{position:relative;isolation:isolate;overflow:hidden;padding:17px 14px 19px;border-radius:24px;text-align:center;background:radial-gradient(ellipse at 12% 0%,rgba(251,215,122,.22),transparent 48%),radial-gradient(ellipse at 90% 92%,rgba(63,218,207,.17),transparent 55%),linear-gradient(130deg,rgba(28,72,71,.42),rgba(6,24,34,.24));border:1px solid rgba(255,225,151,.78);box-shadow:0 12px 38px rgba(0,0,0,.28),0 0 24px rgba(255,171,55,.19),inset 0 1px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(255,255,255,.09);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);transition:transform .28s ease,box-shadow .28s ease}
+.drl-card:hover{transform:translateY(-3px);box-shadow:0 18px 46px rgba(0,0,0,.32),0 0 34px rgba(255,184,64,.24),inset 0 1px 0 rgba(255,255,255,.52)}
+.drl-card::before{content:'';position:absolute;inset:1px;border-radius:23px;pointer-events:none;background:linear-gradient(118deg,rgba(255,255,255,.27),transparent 30%,transparent 75%,rgba(255,255,255,.07));z-index:-1}
+.drl-card::after{content:'';position:absolute;width:230px;height:230px;top:-155px;right:-100px;border-radius:50%;background:radial-gradient(circle,rgba(255,226,143,.3),transparent 72%);filter:blur(4px);pointer-events:none;z-index:-1}
+.drl-title{position:relative;display:inline-block;margin:0 0 8px;padding:0 5px;font-size:12px;font-weight:1000;letter-spacing:.11em;color:#ffe9a2;text-transform:uppercase;text-shadow:0 0 6px #ffeebd,0 0 15px #ffab48,0 0 29px #ff5e18;animation:drlFireFlicker 1.05s infinite alternate ease-in-out}
+.drl-title::before{content:'🔥';position:absolute;left:-24px;top:-5px;font-size:17px;filter:drop-shadow(0 0 8px #ff8e30);animation:drlFireDance .95s infinite alternate ease-in-out}
+.drl-title::after{content:'🔥';position:absolute;right:-24px;top:-5px;font-size:17px;filter:drop-shadow(0 0 8px #ff8e30);animation:drlFireDance 1.2s .25s infinite alternate-reverse ease-in-out}
+.drl-crown{position:relative;width:max-content;margin:3px auto 5px;font-size:32px;line-height:1.3;filter:drop-shadow(0 0 10px rgba(255,221,110,.9));animation:drlCrownFloat 2.5s ease-in-out infinite}
+.drl-crown::before,.drl-crown::after{content:'✦';position:absolute;font-size:14px;color:#fff5bf;text-shadow:0 0 8px #ffe46a,0 0 16px #ffae47;animation:drlTwinkle 1.35s infinite alternate ease-in-out}
+.drl-crown::before{left:-13px;top:-3px}.drl-crown::after{right:-15px;bottom:0;animation-delay:.6s}
+.drl-name{position:relative;font-size:17px;font-weight:900;color:#fff6d2;margin-top:3px;overflow-wrap:anywhere;text-shadow:0 2px 9px rgba(0,0,0,.38)}
+.drl-tag{position:relative;font-size:10px;color:#ffe1a0;font-weight:850;letter-spacing:.1em;margin-top:5px}
+.drl-value{position:relative;font-size:14px;color:#c9fff0;font-weight:900;margin-top:8px;text-shadow:0 0 14px rgba(89,234,220,.3)}
+@keyframes drlFireFlicker{0%{text-shadow:0 0 4px #ffe9b0,0 0 12px #ffb34f,0 0 21px #ff620d;transform:translateY(0)}35%{text-shadow:0 0 9px #fff4c8,0 0 20px #ffb448,0 0 37px #ff4000;transform:translateY(-1px)}75%{text-shadow:0 0 5px #ffecb2,0 0 18px #ff8b1a,0 0 32px #ef4400;transform:translateY(1px)}100%{text-shadow:0 0 8px #fff3c1,0 0 23px #ffc35e,0 0 42px #ff4d00;transform:translateY(-.5px)}}
+@keyframes drlFireDance{from{transform:translateY(2px) rotate(-8deg) scale(.92);opacity:.75}to{transform:translateY(-5px) rotate(9deg) scale(1.2);opacity:1}}
+@keyframes drlTwinkle{from{opacity:.25;transform:scale(.55) rotate(0deg)}to{opacity:1;transform:scale(1.3) rotate(60deg)}}
+@keyframes drlCrownFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-4px)}}
+@media(max-width:600px){#dolphin-royal-leaders{gap:8px}.drl-card{padding:12px 8px 15px}.drl-title{font-size:10px;letter-spacing:.03em}.drl-title::before{left:-17px;font-size:12px}.drl-title::after{right:-17px;font-size:12px}.drl-name{font-size:14px}.drl-value{font-size:12px}}
+@media(max-width:360px){#dolphin-royal-leaders{grid-template-columns:1fr}.drl-title{font-size:12px}}
+@media(prefers-reduced-motion:reduce){.drl-card,.drl-title,.drl-title::before,.drl-title::after,.drl-crown,.drl-crown::before,.drl-crown::after{animation:none!important;transition:none!important}}
 `;document.head.appendChild(css);
 const e=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function draw(type,data){
  const el=document.getElementById('drl-'+type);
  if(!el)return;
  const top=data&&data.entries&&data.entries[0],sales=type==='revenue';
- el.innerHTML='<div class="drl-title">'+(sales?'👑 VUA DOANH THU':'🏆 VUA CÔNG VIỆC')+'</div><div class="drl-crown">👑</div>'+
+ el.innerHTML='<div class="drl-title">'+(sales?'KING OF SALES':'WORK CHAMPION')+'</div><div class="drl-crown">👑</div>'+
  (top?'<div class="drl-name">'+e(top.name)+'</div><div class="drl-tag">'+(sales?'KING OF SALES':'WORK CHAMPION')+'</div><div class="drl-value">'+(sales?Number(top.value).toLocaleString('vi-VN')+' đ':Number(top.value).toLocaleString('vi-VN')+' điểm')+'</div>':'<div class="drl-name" style="opacity:.65">Chưa có dữ liệu</div>');
 }
 function ready(){

@@ -128,7 +128,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 
 <div class="bg-teal-950/85 backdrop-blur-md border-b border-teal-800/50 z-50 relative top-sim-bar">
 <div class="flex items-center gap-2 md:gap-4 flex-shrink-0">
-<div class="conn-status"><span id="cloud-status-dot" class="conn-dot bg-gold-500 animate-pulse"></span><span id="cloud-status-text" class="font-bold text-teal-200 uppercase">KẾT NỐI...</span></div>
+<div class="conn-status"><span id="cloud-status-dot" class="conn-dot bg-red-500 animate-pulse" role="status" aria-label="Chưa kết nối" title="Offline"></span><span id="cloud-status-text" class="font-bold text-teal-200 uppercase" style="display:none!important" aria-hidden="true">KẾT NỐI...</span></div>
 <div id="clock-badge" class="weather-cluster hidden">
 <span class="clock-display"><span id="clock-time">--:--</span><span id="clock-seconds">:--</span></span>
 </div>
@@ -455,7 +455,7 @@ let db,auth;
 
 window.showToast=function(msg,icon){const t=document.getElementById('toast');if(!t)return;document.getElementById('toast-msg').innerText=msg;document.getElementById('toast-icon').innerText=icon||'✨';t.classList.remove('opacity-0','pointer-events-none','translate-y-2');setTimeout(()=>t.classList.add('opacity-0','pointer-events-none','translate-y-2'),2500);};
 
-window.startCloudConnection=function(){try{const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);signInAnonymously(auth).then(()=>{const d=document.getElementById('cloud-status-dot');const t=document.getElementById('cloud-status-text');if(d)d.className='conn-dot bg-emerald-500';if(t){t.innerText='ONLINE';t.className='font-bold text-emerald-400 uppercase';}setupListeners();}).catch(e=>{console.error('[Bungalow Firebase Auth]',e);window.showToast('Lỗi Firebase: '+(e?.code||e?.message||'Không xác thực được'),'❌');const t=document.getElementById('cloud-status-text');if(t){t.innerText='OFFLINE';t.className='font-bold text-red-400 uppercase';}});}catch(e){console.error('[Firebase Init]',e);window.showToast('Lỗi khởi tạo Firebase: '+(e?.message||e),'❌');}};
+window.startCloudConnection=function(){try{const app=initializeApp(firebaseConfig);auth=getAuth(app);db=getFirestore(app);signInAnonymously(auth).then(()=>{const d=document.getElementById('cloud-status-dot');const t=document.getElementById('cloud-status-text');if(d){d.className='conn-dot bg-emerald-500';d.setAttribute('aria-label','Đã kết nối');d.title='Online';}if(t){t.innerText='ONLINE';t.className='font-bold text-emerald-400 uppercase';}setupListeners();}).catch(e=>{console.error('[Bungalow Firebase Auth]',e);window.showToast('Lỗi Firebase: '+(e?.code||e?.message||'Không xác thực được'),'❌');const d=document.getElementById('cloud-status-dot');if(d){d.className='conn-dot bg-red-500';d.setAttribute('aria-label','Chưa kết nối');d.title='Offline';}const t=document.getElementById('cloud-status-text');if(t){t.innerText='OFFLINE';t.className='font-bold text-red-400 uppercase';}});}catch(e){console.error('[Firebase Init]',e);window.showToast('Lỗi khởi tạo Firebase: '+(e?.message||e),'❌');}};
 
 let isInitOrder=true,isInitCall=true,globalAudioCtx=null;
 window.unlockAudio=()=>{if(!globalAudioCtx)globalAudioCtx=new(window.AudioContext||window.webkitAudioContext)();if(globalAudioCtx.state==='suspended')globalAudioCtx.resume();};

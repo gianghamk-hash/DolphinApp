@@ -218,6 +218,8 @@
     if (iconEl) iconEl.textContent = avt || getInitial(name) || '👤';
     if (nameEl) nameEl.textContent = name || '--';
     if (hintEl){
+      var reward = window.DolphinRankRewards && window.DolphinRankRewards.get(name);
+      if(reward){hintEl.textContent = reward.emoji+' TOP '+reward.rank+' · '+reward.title+' (xếp hạng realtime)';hintEl.style.color='#FBD77A';return;}
       var isMe = name === getStaffName();
       hintEl.textContent = isMe ? 'Đây là avatar của bạn' : 'Đang đổi avatar cho nhân viên khác';
       hintEl.style.color = isMe ? '#98dccb' : '#fbbf24';
@@ -385,6 +387,8 @@
       var isMine = name === getStaffName();
       var content = emoji || getInitial(name);
       var cls = 'avt avt-' + size + (isMine ? ' avt-mine' : '');
+      var reward=window.DolphinRankRewards && window.DolphinRankRewards.get(name);
+      if(reward) return '<span class="drr-frame drr-'+reward.tier+'" title="'+reward.title+'"><div class="'+cls+'">'+content+'</div></span>';
       return '<div class="' + cls + '">' + content + '</div>';
     },
     refresh: fetchAllAvatars

@@ -736,7 +736,6 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
       <p class="fade-up d-1 welcome-lbl">
         <span class="wlc-vi" id="wlcGreeting">XIN CHÀO <span id="wlcStaffName">BẠN</span> 👋</span>
-        <span class="wlc-en" id="wlcGreetingSub">CÙNG CỐ GẮNG LÀM VIỆC NHÉ! 💪</span>
       </p>
 
       <div class="fade-up d-2 area-grid">
@@ -1320,9 +1319,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     try {
       var name = (localStorage.getItem('dolphinStaffName') || '').trim();
       var nameEl = document.getElementById('wlcStaffName');
-      var subEl  = document.getElementById('wlcGreetingSub');
       var greetEl = document.getElementById('wlcGreeting');
-      if (!nameEl || !subEl || !greetEl) return;
+      if (!nameEl || !greetEl) return;
       if (name){
         var display = name.charAt(0).toUpperCase() + name.slice(1);
         var hour = parseInt(new Intl.DateTimeFormat('en-US', {

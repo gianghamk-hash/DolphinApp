@@ -3,8 +3,8 @@
 const css=document.createElement('style');
 css.textContent=`
 #dolphin-royal-leaders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:860px;margin:14px auto 22px}
-.drl-card{position:relative;isolation:isolate;overflow:hidden;padding:17px 14px 19px;border-radius:24px;text-align:center;background:transparent!important;border:1px solid rgba(255,229,170,.78);box-shadow:0 0 20px rgba(255,171,55,.18),inset 0 0 0 1px rgba(255,255,255,.12);backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:transform .28s ease,border-color .28s ease}
-.drl-card:hover{transform:translateY(-3px);border-color:#ffe5aa}
+.drl-card{position:relative;isolation:isolate;overflow:visible;padding:17px 14px 19px;border-radius:24px;text-align:center;background:transparent!important;border:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important;transition:transform .28s ease,border-color .28s ease}
+.drl-card:hover{transform:translateY(-3px);border:none!important;box-shadow:none!important}
 .drl-card::before,.drl-card::after{content:none!important;display:none!important}
 .drl-title{position:relative;display:inline-block;margin:0 0 8px;padding:0 5px;font-size:12px;font-weight:1000;letter-spacing:.11em;color:#ffe9a2;text-transform:uppercase;text-shadow:0 0 6px #ffeebd,0 0 15px #ffab48,0 0 29px #ff5e18;animation:drlFireFlicker 1.05s infinite alternate ease-in-out}
 .drl-title::before{content:'🔥';position:absolute;left:-24px;top:-5px;font-size:17px;filter:drop-shadow(0 0 8px #ff8e30);animation:drlFireDance .95s infinite alternate ease-in-out}

@@ -29,7 +29,7 @@ function draw(type,data){
  const el=document.getElementById('drl-'+type);
  if(!el)return;
  const top=data&&data.entries&&data.entries[0],sales=type==='revenue';
- el.innerHTML='<div class="drl-title">'+(sales?'KING OF SALES':'WORK CHAMPION')+'</div><div class="drl-crown">👑</div>'+
+ el.innerHTML='<div class="drl-title">'+'REALTIME TOP 1'+'</div><div class="drl-crown">👑</div>'+
  (top?'<div class="drl-name">'+e(top.name)+'</div><div class="drl-tag">'+(sales?'KING OF SALES':'WORK CHAMPION')+'</div><div class="drl-value">'+(sales?Number(top.value).toLocaleString('vi-VN')+' đ':Number(top.value).toLocaleString('vi-VN')+' điểm')+'</div>':'<div class="drl-name" style="opacity:.65">Chưa có dữ liệu</div>');
 }
 function ready(){

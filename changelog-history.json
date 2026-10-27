@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.139",
+      "releaseDate": "2026-10-27T10:13:52.211Z",
+      "summary": "feat(ranking): hide scoring explanations and integrate seasonal theme",
+      "details": [
+        "feat(ranking): hide scoring explanations and integrate seasonal theme"
+      ]
+    },
+    {
       "version": "1.0.138",
       "releaseDate": "2026-10-27T10:05:01.554Z",
       "summary": "fix(ranking): apply separate Lounge work point weights",
@@ -390,14 +398,6 @@
       "summary": "UPDATE 1",
       "details": [
         "UPDATE 1"
-      ]
-    },
-    {
-      "version": "1.0.89",
-      "releaseDate": "2026-10-18T13:34:43.970Z",
-      "summary": "UPDATE 2",
-      "details": [
-        "UPDATE 2"
       ]
     }
   ]

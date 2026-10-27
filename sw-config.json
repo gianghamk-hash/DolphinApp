@@ -1,5 +1,5 @@
 {
-  "version": "1.0.139",
+  "version": "1.0.140",
   "releaseDate": "2026-10-27",
-  "notes": "feat(ranking): hide scoring explanations and integrate seasonal theme"
+  "notes": "feat(landing): animated flames around royal Top 1 names"
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.139",
-  "buildDate": "2026-10-27T10:13:52.211Z",
-  "commit": "d175b5e",
-  "notes": "feat(ranking): hide scoring explanations and integrate seasonal theme",
+  "version": "1.0.140",
+  "buildDate": "2026-10-27T10:19:10.635Z",
+  "commit": "0cff633",
+  "notes": "feat(landing): animated flames around royal Top 1 names",
   "forceUpdate": false
 }

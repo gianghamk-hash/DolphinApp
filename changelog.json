@@ -1,18 +1,18 @@
 {
-  "version": "1.0.132",
-  "previousVersion": "1.0.131",
-  "commit": "c164a02",
-  "previousCommit": "87d688d",
-  "buildDate": "2026-10-27T05:03:52.490Z",
-  "summary": "fix(landing): transparent royal glass and TOP 1 label",
+  "version": "1.0.133",
+  "previousVersion": "1.0.132",
+  "commit": "8838ce6",
+  "previousCommit": "c164a02",
+  "buildDate": "2026-10-27T05:07:20.055Z",
+  "summary": "fix(landing): fully transparent royal leader cards",
   "changes": {
-    "totalCommits": 136,
+    "totalCommits": 137,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(landing): transparent royal glass and TOP 1 label"
+    "fix(landing): fully transparent royal leader cards"
   ],
   "fileChanges": [
     {

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.132",
+      "releaseDate": "2026-10-27T05:03:52.490Z",
+      "summary": "fix(landing): transparent royal glass and TOP 1 label",
+      "details": [
+        "fix(landing): transparent royal glass and TOP 1 label"
+      ]
+    },
+    {
       "version": "1.0.131",
       "releaseDate": "2026-10-27T04:55:01.861Z",
       "summary": "feat(landing): premium glass royal cards with flaming titles",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.83",
       "releaseDate": "2026-10-18T12:56:24.845Z",
-      "summary": "UPDATE 1",
-      "details": [
-        "UPDATE 1"
-      ]
-    },
-    {
-      "version": "1.0.82",
-      "releaseDate": "2026-10-18T12:55:13.535Z",
       "summary": "UPDATE 1",
       "details": [
         "UPDATE 1"

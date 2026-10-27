@@ -1,5 +1,5 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),vm=require('node:vm');
-const src=fs.readFileSync(require('node:path').join(__dirname,'ranking/index.html'),'utf8');
+const src=fs.readFileSync(require('node:path').join(__dirname,'index.html'),'utf8');
 const start=src.indexOf('function vnDateToTimestamp('),end=src.indexOf('/* ════════ FIREBASE',start);
 const funcs=src.slice(start,end)+src.slice(src.indexOf('function parseStaffNames('),src.indexOf('function renderPoints(){'));
 const state={weekStart:Date.UTC(2026,9,25,17),weekEnd:Date.UTC(2026,10,1,17),loungeOrders:[],bunOrders:[],resOrders:[],loungeHistory:[],bunHistory:[],resHistory:[]};

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.135",
+  "version": "1.0.136",
   "releaseDate": "2026-10-27",
-  "notes": "feat(halloween): responsive portrait and landscape landing photographs"
+  "notes": "revert(halloween): restore original animated background"
 }

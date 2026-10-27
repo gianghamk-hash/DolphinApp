@@ -1,18 +1,18 @@
 {
-  "version": "1.0.135",
-  "previousVersion": "1.0.134",
-  "commit": "9aefc05",
-  "previousCommit": "0b9bdab",
-  "buildDate": "2026-10-27T05:42:38.237Z",
-  "summary": "feat(halloween): responsive portrait and landscape landing photographs",
+  "version": "1.0.136",
+  "previousVersion": "1.0.135",
+  "commit": "1c8d5fd",
+  "previousCommit": "9aefc05",
+  "buildDate": "2026-10-27T05:48:17.144Z",
+  "summary": "revert(halloween): restore original animated background",
   "changes": {
-    "totalCommits": 139,
+    "totalCommits": 140,
     "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(halloween): responsive portrait and landscape landing photographs"
+    "revert(halloween): restore original animated background"
   ],
   "fileChanges": [
     {

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.135",
+      "releaseDate": "2026-10-27T05:42:38.237Z",
+      "summary": "feat(halloween): responsive portrait and landscape landing photographs",
+      "details": [
+        "feat(halloween): responsive portrait and landscape landing photographs"
+      ]
+    },
+    {
       "version": "1.0.134",
       "releaseDate": "2026-10-27T05:12:31.151Z",
       "summary": "fix(landing): frameless Top 1 honor cards and no subtitle",
@@ -390,14 +398,6 @@
       "summary": "UPDATE 2",
       "details": [
         "UPDATE 2"
-      ]
-    },
-    {
-      "version": "1.0.85",
-      "releaseDate": "2026-10-18T13:19:31.386Z",
-      "summary": "UPDATE 1",
-      "details": [
-        "UPDATE 1"
       ]
     }
   ]

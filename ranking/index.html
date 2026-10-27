@@ -380,7 +380,8 @@ function renderRevenue(){
   if (!list) return;
   const data = calcRevenue();
   const rewards = window.DolphinRankRewards;
-  if(rewards) rewards.publish(data, state.weekStart || 'current-week');
+  if(rewards) rewards.publishCategory('revenue',data,state.weekStart);
+  sendLeaders();
   if (!data.length){
     list.innerHTML = '<div class="empty">Chưa có doanh thu trong tuần này</div>';
     return;
@@ -473,6 +474,9 @@ function renderPoints(){
   const list = $('points-list');
   if (!list) return;
   const data = calcPoints();
+  const rewards=window.DolphinRankRewards;
+  if(rewards) rewards.publishCategory('work',data,state.weekStart);
+  sendLeaders();
   if (!data.length){
     list.innerHTML = '<div class="empty">Chưa có dữ liệu công việc trong tuần này</div>';
     return;
@@ -485,7 +489,7 @@ function renderPoints(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        ${esc(e.name)}
+        ${esc(e.name)}<div>${rewards?rewards.badge(e.name,"work"):""}</div>
         <div class="sub-count" style="text-align:left;opacity:.7">${totalOrders} đơn · ${e.both}✓ ${e.onlyComplete}🆘 ${e.onlyPrepare}⏳</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -507,12 +511,22 @@ function renderWeekStat(){
 }
 
 /* ════════ RENDER ════════ */
+function sendLeaders(){
+ const r=window.DolphinRankRewards;if(!r||window.parent===window)return;
+ try{window.parent.postMessage({type:'dolphin-rank-leaders',revenue:r.current('revenue'),work:r.current('work')},location.origin);}catch(e){}
+}
+function renderHall(){
+ const el=document.getElementById('rank-hall-body'),r=window.DolphinRankRewards;
+ if(!el||!r)return;
+ el.innerHTML=['revenue','work'].map(c=>'<div style="margin-top:9px"><b>'+(c==='revenue'?'👑 DOANH THU':'🏆 CÔNG VIỆC')+'</b></div>'+
+ (r.history(c).length?r.history(c).slice(0,6).map(x=>'<div class="drr-hall-item">'+r.escapeHTML(x.name)+' · '+r.escapeHTML(r.formatPeriod(x.week))+'</div>').join(''):'<div class="drr-hall-item">Chưa có dữ liệu trên thiết bị này</div>')).join('');
+}
 function renderAll(){
-  renderWeekStat();
-  if (state.mainTab === 'revenue') renderRevenue();
-  const hall=document.getElementById('rank-hall-body'),rewards=window.DolphinRankRewards;
-  if(hall&&rewards){const entries=rewards.history();hall.innerHTML=entries.length?entries.slice(0,12).map(x=>'<div class="drr-hall-item">👑 '+rewards.escapeHTML(x.name)+' · '+rewards.escapeHTML(x.week)+'</div>').join(''):'Chưa có quán quân được ghi nhận trên thiết bị này';}
-  else renderPoints();
+ renderWeekStat();
+ // Both leaderboards publish on every Firestore snapshot, independent of active tab.
+ renderRevenue();
+ renderPoints();
+ renderHall();
 }
 
 window.switchMain = function(tab){

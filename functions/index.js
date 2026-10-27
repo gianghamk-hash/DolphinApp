@@ -3,6 +3,8 @@
 'use strict';
 const crypto=require('node:crypto');
 const {initializeApp}=require('firebase-admin/app');
+const {getAuth: getAdminAuth}=require('firebase-admin/auth');
+const {getFirestore: getAdminFirestore, FieldValue}=require('firebase-admin/firestore');
 const {getDatabase}=require('firebase-admin/database');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const {onSchedule}=require('firebase-functions/v2/scheduler');
@@ -107,4 +109,70 @@ exports.tacticsRoomSweep=onSchedule({schedule:'every 1 minutes',region:'asia-sou
   if(entries[id].phaseEndsAt>Date.now())continue;
   try{await advanceById(id,null);}catch(e){console.warn('sweep',id,e.message);}
  }
+});
+
+/* Staff identity phase 1: only a separately provisioned, trusted Auth custom
+   claim can manage employee identities. Manager UI or anonymous Auth never grant it. */
+const staffOptions={region:'asia-southeast1',maxInstances:10,timeoutSeconds:30};
+function staffAdmin(req){
+ if(!req.auth||req.auth.token.staffAdmin!==true)throw new HttpsError('permission-denied','Tài khoản chưa được cấp quyền quản lý nhân viên');
+}
+function staffValue(v,max=100){return typeof v==='string'?v.trim().slice(0,max):'';}
+exports.staffAdminCreate=onCall(staffOptions,async req=>{
+ staffAdmin(req);
+ const v=req.data||{},email=staffValue(v.email,160).toLowerCase(),displayName=staffValue(v.displayName,80),department=staffValue(v.department,50),position=staffValue(v.position,50);
+ if(!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)||!displayName)throw new HttpsError('invalid-argument','Cần email hợp lệ và tên nhân viên');
+ const auth=getAdminAuth(),fs=getAdminFirestore();
+ const exists=await auth.getUserByEmail(email).catch(e=>{if(e.code==='auth/user-not-found')return null;throw e;});
+ if(exists)throw new HttpsError('already-exists','Email đã có tài khoản. Không thể tự liên kết tài khoản khác.');
+ const bytes=crypto.randomBytes(18).toString('base64url');
+ let user;
+ try{
+  user=await auth.createUser({email,password:bytes,displayName,emailVerified:false,disabled:false});
+  // A fixed internal staff ID is allocated transactionally, never derived from a mutable name.
+  const counter=fs.doc('staff_identity_meta/counter');
+  const staffId=await fs.runTransaction(async tx=>{
+   const snap=await tx.get(counter);
+   const next=(snap.exists?snap.data().next:1);
+   if(!Number.isSafeInteger(next)||next<1||next>9999999)throw new Error('Staff counter exhausted');
+   tx.set(counter,{next:next+1},{merge:true});
+   return 'DLP-'+String(next).padStart(4,'0');
+  });
+  const profile={staffId,authUid:user.uid,email,displayName,department,position,status:'active',createdAt:FieldValue.serverTimestamp(),updatedAt:FieldValue.serverTimestamp(),createdBy:req.auth.uid};
+  await fs.doc('staff_identities/'+staffId).create(profile);
+  await fs.doc('staff_uid_index/'+user.uid).create({staffId});
+  return {staffId,uid:user.uid,email,temporaryPassword:bytes};
+ }catch(e){
+  if(user)await auth.deleteUser(user.uid).catch(err=>console.warn('Failed cleanup staff',user.uid,err));
+  if(e instanceof HttpsError)throw e;
+  console.error('staffAdminCreate',e);throw new HttpsError('internal','Không tạo được nhân viên');
+ }
+});
+exports.staffAdminList=onCall(staffOptions,async req=>{
+ staffAdmin(req);
+ const snap=await getAdminFirestore().collection('staff_identities').orderBy('staffId').limit(500).get();
+ return {staff:snap.docs.map(d=>{const v=d.data();return {staffId:v.staffId,displayName:v.displayName,email:v.email,department:v.department,position:v.position,status:v.status,authUid:v.authUid};})};
+});
+exports.staffAdminUpdate=onCall(staffOptions,async req=>{
+ staffAdmin(req);
+ const v=req.data||{},staffId=staffValue(v.staffId,20);
+ if(!/^DLP-\d{4,7}$/.test(staffId))throw new HttpsError('invalid-argument','ID không hợp lệ');
+ const fs=getAdminFirestore(),ref=fs.doc('staff_identities/'+staffId),snap=await ref.get();
+ if(!snap.exists)throw new HttpsError('not-found','Không tìm thấy nhân viên');
+ const patch={updatedAt:FieldValue.serverTimestamp()};
+ for(const field of ['displayName','department','position'])if(Object.prototype.hasOwnProperty.call(v,field))patch[field]=staffValue(v[field],80);
+ if(v.status!==undefined){
+  if(!['active','inactive'].includes(v.status))throw new HttpsError('invalid-argument','Trạng thái không hợp lệ');
+  await getAdminAuth().updateUser(snap.data().authUid,{disabled:v.status==='inactive'});
+  patch.status=v.status;
+ }
+ await ref.update(patch);return {ok:true,staffId};
+});
+exports.staffMyIdentity=onCall(staffOptions,async req=>{
+ const uid=requireUid(req),fs=getAdminFirestore(),idx=await fs.doc('staff_uid_index/'+uid).get();
+ if(!idx.exists)return {linked:false};
+ const profile=await fs.doc('staff_identities/'+idx.data().staffId).get();
+ if(!profile.exists||profile.data().authUid!==uid)return {linked:false};
+ const v=profile.data();
+ return {linked:true,staffId:v.staffId,displayName:v.displayName,department:v.department,position:v.position,status:v.status};
 });

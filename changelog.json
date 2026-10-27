@@ -1,26 +1,42 @@
 {
-  "version": "1.0.134",
-  "previousVersion": "1.0.133",
-  "commit": "0b9bdab",
-  "previousCommit": "8838ce6",
-  "buildDate": "2026-10-27T05:12:31.151Z",
-  "summary": "fix(landing): frameless Top 1 honor cards and no subtitle",
+  "version": "1.0.135",
+  "previousVersion": "1.0.134",
+  "commit": "9aefc05",
+  "previousCommit": "0b9bdab",
+  "buildDate": "2026-10-27T05:42:38.237Z",
+  "summary": "feat(halloween): responsive portrait and landscape landing photographs",
   "changes": {
-    "totalCommits": 138,
-    "filesChanged": 2,
+    "totalCommits": 139,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(landing): frameless Top 1 honor cards and no subtitle"
+    "feat(halloween): responsive portrait and landscape landing photographs"
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": ".github/workflows/halloween-background-tests.yml",
       "type": "update"
     },
     {
-      "file": "royal-leaders.js",
+      "file": "assets/themes/halloween/landscape.webp",
+      "type": "update"
+    },
+    {
+      "file": "assets/themes/halloween/portrait.webp",
+      "type": "update"
+    },
+    {
+      "file": "halloween-background.css",
+      "type": "update"
+    },
+    {
+      "file": "halloween-background.test.js",
+      "type": "update"
+    },
+    {
+      "file": "index.html",
       "type": "update"
     }
   ]

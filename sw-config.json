@@ -1,5 +1,5 @@
 {
-  "version": "1.0.134",
+  "version": "1.0.135",
   "releaseDate": "2026-10-27",
-  "notes": "fix(landing): frameless Top 1 honor cards and no subtitle"
+  "notes": "feat(halloween): responsive portrait and landscape landing photographs"
 }

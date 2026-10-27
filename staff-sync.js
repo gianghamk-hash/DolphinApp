@@ -106,10 +106,13 @@
       try {
         var input = document.getElementById('staff-name-input');
         if (input && input.value && input.value.trim()){
-          writeName(input.value);
+          if(!writeName(input.value))return;
+          input.value=readName();
         }
       } catch(e){}
-      return _orig.apply(this, arguments);
+      var result=_orig.apply(this, arguments);
+      syncLockedInputs();
+      return result;
     };
     newFn.__synced = true;
     window.confirmStaffAction = newFn;

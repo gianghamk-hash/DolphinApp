@@ -1,7 +1,7 @@
 {
-  "version": "1.0.138",
-  "buildDate": "2026-10-27T10:05:01.554Z",
-  "commit": "bb42d96",
-  "notes": "fix(ranking): apply separate Lounge work point weights",
+  "version": "1.0.139",
+  "buildDate": "2026-10-27T10:13:52.211Z",
+  "commit": "d175b5e",
+  "notes": "feat(ranking): hide scoring explanations and integrate seasonal theme",
   "forceUpdate": false
 }

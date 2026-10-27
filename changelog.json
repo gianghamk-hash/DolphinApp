@@ -1,22 +1,22 @@
 {
-  "version": "1.0.138",
-  "previousVersion": "1.0.137",
-  "commit": "bb42d96",
-  "previousCommit": "a0f2350",
-  "buildDate": "2026-10-27T10:05:01.554Z",
-  "summary": "fix(ranking): apply separate Lounge work point weights",
+  "version": "1.0.139",
+  "previousVersion": "1.0.138",
+  "commit": "d175b5e",
+  "previousCommit": "bb42d96",
+  "buildDate": "2026-10-27T10:13:52.211Z",
+  "summary": "feat(ranking): hide scoring explanations and integrate seasonal theme",
   "changes": {
-    "totalCommits": 142,
-    "filesChanged": 3,
+    "totalCommits": 143,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ranking): apply separate Lounge work point weights"
+    "feat(ranking): hide scoring explanations and integrate seasonal theme"
   ],
   "fileChanges": [
     {
-      "file": "rank-rewards.test.js",
+      "file": ".github/workflows/ranking-theme-ui.yml",
       "type": "update"
     },
     {
@@ -24,7 +24,11 @@
       "type": "update"
     },
     {
-      "file": "ranking/work-points.test.js",
+      "file": "ranking/ranking-theme.test.js",
+      "type": "update"
+    },
+    {
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

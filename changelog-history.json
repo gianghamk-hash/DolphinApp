@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.138",
+      "releaseDate": "2026-10-27T10:05:01.554Z",
+      "summary": "fix(ranking): apply separate Lounge work point weights",
+      "details": [
+        "fix(ranking): apply separate Lounge work point weights"
+      ]
+    },
+    {
       "version": "1.0.137",
       "releaseDate": "2026-10-27T09:59:29.159Z",
       "summary": "fix(ranking): count Lounge work completions in weekly points",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.89",
       "releaseDate": "2026-10-18T13:34:43.970Z",
-      "summary": "UPDATE 2",
-      "details": [
-        "UPDATE 2"
-      ]
-    },
-    {
-      "version": "1.0.88",
-      "releaseDate": "2026-10-18T13:33:08.009Z",
       "summary": "UPDATE 2",
       "details": [
         "UPDATE 2"

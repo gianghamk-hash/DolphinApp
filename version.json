@@ -1,7 +1,7 @@
 {
-  "version": "1.0.131",
-  "buildDate": "2026-10-27T04:55:01.861Z",
-  "commit": "87d688d",
-  "notes": "feat(landing): premium glass royal cards with flaming titles",
+  "version": "1.0.132",
+  "buildDate": "2026-10-27T05:03:52.490Z",
+  "commit": "c164a02",
+  "notes": "fix(landing): transparent royal glass and TOP 1 label",
   "forceUpdate": false
 }

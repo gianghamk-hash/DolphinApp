@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.131",
+      "releaseDate": "2026-10-27T04:55:01.861Z",
+      "summary": "feat(landing): premium glass royal cards with flaming titles",
+      "details": [
+        "feat(landing): premium glass royal cards with flaming titles"
+      ]
+    },
+    {
       "version": "1.0.130",
       "releaseDate": "2026-10-27T02:18:19.318Z",
       "summary": "fix(ranking): work leaderboard and dual royal realtime leaders",
@@ -390,14 +398,6 @@
       "summary": "UPDATE 1",
       "details": [
         "UPDATE 1"
-      ]
-    },
-    {
-      "version": "1.0.81",
-      "releaseDate": "2026-10-18T09:26:07.757Z",
-      "summary": "KHÓA BGL",
-      "details": [
-        "KHÓA BGL"
       ]
     }
   ]

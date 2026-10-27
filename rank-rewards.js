@@ -3,33 +3,36 @@
  */
 (function(root){
  'use strict';
- const KEY='dolphinRankRewardsV1',HISTORY='dolphinRankHallOfFameV1';
- const TIERS=[{max:1,title:'KING OF SALES',emoji:'👑',tier:'king'},{max:3,title:'DIAMOND ELITE',emoji:'💎',tier:'diamond'},{max:6,title:'MASTER',emoji:'🔮',tier:'master'},{max:10,title:'DOLPHIN ELITE',emoji:'🐬',tier:'elite'}];
+ const KEY='dolphinRankRewardsV2',HISTORY='dolphinRankHallOfFameV2';
+ const TIERS={
+ revenue:[{max:1,title:'KING OF SALES',emoji:'👑',tier:'king'},{max:3,title:'DIAMOND SALES',emoji:'💎',tier:'diamond'},{max:6,title:'MASTER SALES',emoji:'🔮',tier:'master'},{max:10,title:'SALES ELITE',emoji:'🐬',tier:'elite'}],
+ work:[{max:1,title:'WORK CHAMPION',emoji:'👑',tier:'king'},{max:3,title:'WORK ELITE',emoji:'⚔️',tier:'diamond'},{max:6,title:'WORK MASTER',emoji:'🛡️',tier:'master'},{max:10,title:'WORK TOP 10',emoji:'⭐',tier:'elite'}]};
  function clean(s){return String(s||'').trim().normalize('NFC');}
- function tier(rank){return TIERS.find(t=>rank>0&&rank<=t.max)||null;}
- function read(key){try{return JSON.parse(localStorage.getItem(key)||'null');}catch(e){return null;}}
- function current(){const x=read(KEY);return x&&Array.isArray(x.entries)?x:{entries:[],updatedAt:0,week:''};}
- function history(){const x=read(HISTORY);return Array.isArray(x)?x:[];}
- function get(name){const k=clean(name);const e=current().entries.find(e=>clean(e.name)===k);return e?{...e,...tier(e.rank)}:null;}
+ function read(k){try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}}
+ function all(){return read(KEY)||{};}
+ function current(category='revenue'){const v=all()[category];return v&&Array.isArray(v.entries)?v:{entries:[],week:'',updatedAt:0};}
+ function history(category='revenue'){const v=read(HISTORY)||{};return Array.isArray(v[category])?v[category]:[];}
+ function tier(rank,category='revenue'){return (TIERS[category]||TIERS.revenue).find(x=>rank>0&&rank<=x.max)||null;}
+ function get(name,category='revenue'){const e=current(category).entries.find(x=>clean(x.name)===clean(name));return e?{...e,...tier(e.rank,category)}:null;}
  function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
- function badge(name){const r=get(name);if(!r)return '';return '<span class="drr-tag drr-'+r.tier+'" title="Top '+r.rank+' · '+escapeHTML(r.title)+'">'+r.emoji+' '+escapeHTML(r.title)+'</span>';}
- function publish(rows,week){
-  if(!Array.isArray(rows))return;
-  const entries=rows.slice(0,10).filter(r=>clean(r.name)&&Number.isFinite(r.rev)&&r.rev>0).map((r,i)=>({rank:i+1,name:clean(r.name),revenue:r.rev}));
-  // Identical display ranking means no extra storage writes or redraws.
-  const prev=current(), next={week:String(week||''),entries,updatedAt:Date.now()};
-  if(JSON.stringify(prev.entries)===JSON.stringify(entries)&&prev.week===next.week)return;
-  try{localStorage.setItem(KEY,JSON.stringify(next));}catch(e){}
+ function badge(name,category='revenue'){const r=get(name,category);return r?'<span class="drr-tag drr-'+r.tier+'" title="Top '+r.rank+' · '+escapeHTML(r.title)+'">'+r.emoji+' '+escapeHTML(r.title)+'</span>':'';}
+ function publishCategory(category,rows,week){
+  if(!TIERS[category]||!Array.isArray(rows))return;
+  const entries=rows.filter(x=>clean(x.name)&&Number.isFinite(category==='work'?x.points:x.rev)&&(category==='work'?x.points:x.rev)>0)
+   .slice(0,10).map((x,i)=>({rank:i+1,name:clean(x.name),value:category==='work'?x.points:x.rev}));
+  const prev=current(category),now={week:String(week||''),entries,updatedAt:Date.now()};
+  if(prev.week===now.week&&JSON.stringify(prev.entries)===JSON.stringify(entries))return;
+  const data=all();data[category]=now;
+  try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}
   const winner=entries[0];
   if(winner){
-   const hall=history(),id=next.week+'|'+winner.name;
-   if(!hall.some(x=>x.id===id)){
-    hall.unshift({id,week:next.week,name:winner.name,firstSeen:next.updatedAt});
-    try{localStorage.setItem(HISTORY,JSON.stringify(hall.slice(0,52)));}catch(e){}
-   }
+   const h=read(HISTORY)||{},old=history(category),id=now.week+'|'+winner.name;
+   if(!old.some(x=>x.id===id)){old.unshift({id,name:winner.name,week:now.week,firstSeen:now.updatedAt});h[category]=old.slice(0,52);try{localStorage.setItem(HISTORY,JSON.stringify(h));}catch(e){}}
   }
-  try{root.dispatchEvent(new CustomEvent('dolphinRankRewardsUpdated',{detail:next}));}catch(e){}
+  try{root.dispatchEvent(new CustomEvent('dolphinRankRewardsUpdated',{detail:{category,...now}}));}catch(e){}
  }
+ function publish(rows,week){publishCategory('revenue',rows,week);}
+ function formatPeriod(value){const n=Number(value);if(!Number.isFinite(n)||n<1000000000000)return String(value||'');const d=new Date(n),f=new Intl.DateTimeFormat('vi-VN',{timeZone:'Asia/Ho_Chi_Minh',day:'2-digit',month:'2-digit',year:'numeric'});return f.format(d)+' → '+f.format(new Date(n+7*86400000-1000));}
  function installStyle(){if(document.getElementById('dolphin-rank-style'))return;const style=document.createElement('style');style.id='dolphin-rank-style';style.textContent=`
  .drr-tag{display:inline-flex;vertical-align:middle;align-items:center;gap:4px;padding:3px 7px;margin:3px 3px 0 0;border-radius:99px;font-size:9px;font-weight:900;letter-spacing:.02em;white-space:nowrap;border:1px solid}
  .drr-king{color:#ffe18b;border-color:#ffcf59;background:linear-gradient(120deg,#6d3e09,#271d11);box-shadow:0 0 13px #f6be4350}
@@ -45,6 +48,6 @@
  .drr-hall-item{font-size:11px;padding:6px 0;border-bottom:1px solid #ffffff13}
  @media(prefers-reduced-motion:reduce){.drr-tag,.drr-frame{animation:none!important}}
  `;document.head.appendChild(style);}
- root.DolphinRankRewards={current,history,get,tier,publish,badge,escapeHTML,installStyle};
+ root.DolphinRankRewards={current,history,get,tier,publish,publishCategory,badge,escapeHTML,formatPeriod,installStyle};
  installStyle();
 })(typeof window!=='undefined'?window:globalThis);

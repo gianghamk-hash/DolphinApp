@@ -1,15 +1,15 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs');
 const source=fs.readFileSync('theme-system.js','utf8');
-test('every non-Halloween scene uses CSS-only visual elements',()=>{
- assert.match(source,/function renderExtraIllustration\(key,holder\)/);
- assert.match(source,/tbi-css-scene scene-/);
- assert.match(source,/tbi-css-orb/);
- assert.match(source,/tbi-css-spark/);
- assert.doesNotMatch(source,/html\+='<span class="tbi-extra-character"/);
+const manager=fs.readFileSync('manager/dashboard.html','utf8');
+test('only dark, light and gray display modes are available',()=>{
+ assert.match(source,/dark:\{name:'Dark Mode'/);
+ assert.match(source,/light:\{name:'Light Mode'/);
+ assert.match(source,/gray:\{name:'Gray Mode'/);
+ assert.doesNotMatch(source,/function renderThemeScene|function renderExtraIllustration|startHalloweenAnimation/);
+ assert.deepEqual([...manager.matchAll(/<option value="(.*?)">/g)].filter(x=>['dark','light','gray'].includes(x[1])).map(x=>x[1]),['dark','light','gray']);
 });
-test('seasonal variety, Halloween untouched and reduced motion',()=>{
- for(const name of ['autumn','winter','spring','summer','valentine','midautumn','children','nationalday','newyear'])assert.ok(source.includes('scene-'+name));
- assert.match(source,/if\(key==='halloween'\)/);
- assert.match(source,/startHalloweenAnimation\(scene\)/);
- assert.match(source,/prefers-reduced-motion:reduce/);
+test('legacy modes map to dark and no big illustrations are created',()=>{
+ assert.match(source,/return Object\.prototype\.hasOwnProperty\.call\(THEMES,key\)\?key:'dark'/);
+ assert.match(source,/#themeBigIcon/);
+ assert.match(source,/master_config','theme'/);
 });

@@ -1,22 +1,34 @@
 {
-  "version": "1.0.126",
-  "previousVersion": "1.0.125",
-  "commit": "8d5ad21",
-  "previousCommit": "8aa3f6d",
-  "buildDate": "2026-10-27T01:25:21.747Z",
-  "summary": "fix(landing): hide notification bell when permission granted",
+  "version": "1.0.127",
+  "previousVersion": "1.0.126",
+  "commit": "61f8395",
+  "previousCommit": "8d5ad21",
+  "buildDate": "2026-10-27T01:33:31.748Z",
+  "summary": "fix(ui): compact connection indicators in child apps",
   "changes": {
-    "totalCommits": 130,
-    "filesChanged": 1,
+    "totalCommits": 131,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(landing): hide notification bell when permission granted"
+    "fix(ui): compact connection indicators in child apps"
   ],
   "fileChanges": [
     {
-      "file": "index.html",
+      "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-lounge.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-show.html",
       "type": "update"
     }
   ]

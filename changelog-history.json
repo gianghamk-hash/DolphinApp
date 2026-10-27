@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.126",
+      "releaseDate": "2026-10-27T01:25:21.747Z",
+      "summary": "fix(landing): hide notification bell when permission granted",
+      "details": [
+        "fix(landing): hide notification bell when permission granted"
+      ]
+    },
+    {
       "version": "1.0.125",
       "releaseDate": "2026-10-27T00:26:06.029Z",
       "summary": "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.77",
       "releaseDate": "2026-10-17T14:55:54.917Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.76",
-      "releaseDate": "2026-10-17T14:50:48.032Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

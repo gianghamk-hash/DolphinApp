@@ -1,5 +1,5 @@
 {
-  "version": "1.0.137",
+  "version": "1.0.138",
   "releaseDate": "2026-10-27",
-  "notes": "fix(ranking): count Lounge work completions in weekly points"
+  "notes": "fix(ranking): apply separate Lounge work point weights"
 }

@@ -411,63 +411,53 @@ function parseStaffNames(str){
   return str.split('&').map(s => s.trim()).filter(Boolean);
 }
 
+function completedTimestamp(o, archiveDate){
+  const raw=o.completedAt;
+  if(typeof raw==='number'&&Number.isFinite(raw)&&raw>0)return raw;
+  if(raw&&typeof raw.toMillis==='function')return raw.toMillis();
+  if(raw&&Number.isFinite(raw.seconds))return raw.seconds*1000+Math.floor((raw.nanoseconds||0)/1e6);
+  // Old archived Lounge orders had completedTime (HH:mm) but no completedAt.
+  // Archive date is their only reliable calendar date; never assume today's date.
+  if(archiveDate && /^\\d{4}-\\d{2}-\\d{2}$/.test(archiveDate)){
+    const midnight=vnDateToTimestamp(archiveDate);
+    const m=String(o.completedTime||'').match(/^(\\d{1,2}):(\\d{2})/);
+    if(m&&+m[1]<24&&+m[2]<60)return midnight+(+m[1]*60+(+m[2]))*60000;
+    return midnight;
+  }
+  return 0;
+}
 function collectAllOrders(){
   const out = [];
-  // Current
-  state.loungeOrders.forEach(o => out.push(o));
-  state.bunOrders.forEach(o => out.push(o));
-  state.resOrders.forEach(o => out.push(o));
-  // History — filter theo order completedAt
-  state.loungeHistory.forEach(sess => {
-    (sess.orders || []).forEach(o => out.push(o));
-  });
-  state.bunHistory.forEach(sess => {
-    (sess.orders || []).forEach(o => out.push(o));
-  });
-  state.resHistory.forEach(sess => {
-    (sess.orders || []).forEach(o => out.push(o));
-  });
+  const add=(area,o,date)=>{
+    if(!o)return;
+    out.push({...o,_completedTs:completedTimestamp(o,date),_area:area});
+  };
+  state.loungeOrders.forEach(o=>add('lounge',o,null));
+  state.bunOrders.forEach(o=>add('bungalow',o,null));
+  state.resOrders.forEach(o=>add('restaurant',o,null));
+  state.loungeHistory.forEach(sess=>(sess.orders||[]).forEach(o=>add('lounge',o,sess.date)));
+  state.bunHistory.forEach(sess=>(sess.orders||[]).forEach(o=>add('bungalow',o,sess.date)));
+  state.resHistory.forEach(sess=>(sess.orders||[]).forEach(o=>add('restaurant',o,sess.date)));
   return out;
 }
-
 function calcPoints(){
   const emp = {};
-
   function ensure(name){
-    if (!emp[name]) emp[name] = { name: name, points: 0, both: 0, onlyComplete: 0, onlyPrepare: 0 };
+    if (!emp[name]) emp[name] = { name, points: 0, both: 0, onlyComplete: 0, onlyPrepare: 0 };
     return emp[name];
   }
-
-  const allOrders = collectAllOrders();
-
-  allOrders.forEach(o => {
-    if (!o.completedAt) return;
-    if (!isInWeek(o.completedAt)) return;
-    if (o.status !== 'completed') return;
-
-    const preparedNames = parseStaffNames(o.preparedBy);
-    const completedNames = parseStaffNames(o.completedBy);
-
-    const allNames = new Set([...preparedNames, ...completedNames]);
-    allNames.forEach(name => {
-      const e = ensure(name);
-      const didPrepare = preparedNames.indexOf(name) >= 0;
-      const didComplete = completedNames.indexOf(name) >= 0;
-
-      if (didPrepare && didComplete){
-        e.points += 1; e.both += 1;
-      } else if (didComplete && !didPrepare){
-        e.points += 1; e.onlyComplete += 1;
-      } else if (didPrepare && !didComplete){
-        e.points += 0.5; e.onlyPrepare += 1;
-      }
+  collectAllOrders().forEach(o => {
+    if(o.status!=='completed'||!isInWeek(o._completedTs))return;
+    const preparedNames=parseStaffNames(o.preparedBy);
+    const completedNames=parseStaffNames(o.completedBy);
+    new Set([...preparedNames,...completedNames]).forEach(name=>{
+      const e=ensure(name),didPrepare=preparedNames.includes(name),didComplete=completedNames.includes(name);
+      if(didPrepare&&didComplete){e.points+=1;e.both+=1;}
+      else if(didComplete){e.points+=1;e.onlyComplete+=1;}
+      else if(didPrepare){e.points+=0.5;e.onlyPrepare+=1;}
     });
   });
-
-  return Object.values(emp)
-    .filter(e => e.points > 0)
-    .sort((a, b) => b.points - a.points)
-    .slice(0, TOP_N);
+  return Object.values(emp).filter(e=>e.points>0).sort((a,b)=>b.points-a.points||a.name.localeCompare(b.name,'vi')).slice(0,TOP_N);
 }
 
 function renderPoints(){
@@ -506,7 +496,7 @@ function renderWeekStat(){
   const loungeCnt = collectLoungeTables().length;
   const bunCnt = collectBunTables().length;
   const showCnt = collectShowTables().length;
-  const totalOrders = collectAllOrders().filter(o => o.completedAt && isInWeek(o.completedAt)).length;
+  const totalOrders = collectAllOrders().filter(o => o.status==='completed' && isInWeek(o._completedTs)).length;
   el.textContent = `🍸 ${loungeCnt} · 🌴 ${bunCnt} · 🎭 ${showCnt} · 📦 ${totalOrders} đơn hoàn thành`;
 }
 

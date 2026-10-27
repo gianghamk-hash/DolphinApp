@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.124",
+      "releaseDate": "2026-10-26T18:22:02.736Z",
+      "summary": "feat(arcade): optional fullscreen for all seven non-TFT games",
+      "details": [
+        "feat(arcade): optional fullscreen for all seven non-TFT games"
+      ]
+    },
+    {
       "version": "1.0.123",
       "releaseDate": "2026-10-26T18:14:05.757Z",
       "summary": "style(arcade): visual polish for seven games except TFT",
@@ -390,14 +398,6 @@
       "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
       "details": [
         "Nhạc theme v2.0 — 15 file + auto fade khi vào app"
-      ]
-    },
-    {
-      "version": "1.0.74",
-      "releaseDate": "2026-10-17T06:06:43.392Z",
-      "summary": "FIX LỖI BUNGALOW VÀ VPS",
-      "details": [
-        "FIX LỖI BUNGALOW VÀ VPS"
       ]
     }
   ]

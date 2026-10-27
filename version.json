@@ -1,7 +1,7 @@
 {
-  "version": "1.0.124",
-  "buildDate": "2026-10-26T18:22:02.736Z",
-  "commit": "32ee8f5",
-  "notes": "feat(arcade): optional fullscreen for all seven non-TFT games",
+  "version": "1.0.125",
+  "buildDate": "2026-10-27T00:26:06.029Z",
+  "commit": "8aa3f6d",
+  "notes": "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music",
   "forceUpdate": false
 }

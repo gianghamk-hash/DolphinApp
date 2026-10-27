@@ -1,54 +1,30 @@
 {
-  "version": "1.0.124",
-  "previousVersion": "1.0.123",
-  "commit": "32ee8f5",
-  "previousCommit": "7ae967f",
-  "buildDate": "2026-10-26T18:22:02.736Z",
-  "summary": "feat(arcade): optional fullscreen for all seven non-TFT games",
+  "version": "1.0.125",
+  "previousVersion": "1.0.124",
+  "commit": "8aa3f6d",
+  "previousCommit": "32ee8f5",
+  "buildDate": "2026-10-27T00:26:06.029Z",
+  "summary": "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music",
   "changes": {
-    "totalCommits": 128,
-    "filesChanged": 9,
+    "totalCommits": 129,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(arcade): optional fullscreen for all seven non-TFT games"
+    "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/arcade-fullscreen.js",
+      "file": "dolphin-lounge.html",
       "type": "update"
     },
     {
-      "file": "giaitri/games/battleship.html",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "giaitri/games/caro.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/chess.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/game2048.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake-coop-online.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/xiangqi.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/index.html",
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

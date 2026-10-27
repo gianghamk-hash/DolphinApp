@@ -1,42 +1,30 @@
 {
-  "version": "1.0.128",
-  "previousVersion": "1.0.127",
-  "commit": "4c55f4d",
-  "previousCommit": "61f8395",
-  "buildDate": "2026-10-27T01:48:01.408Z",
-  "summary": "feat(rewards): live top-10 badges and King of Sales avatar frame",
+  "version": "1.0.129",
+  "previousVersion": "1.0.128",
+  "commit": "4b31a52",
+  "previousCommit": "4c55f4d",
+  "buildDate": "2026-10-27T02:06:47.267Z",
+  "summary": "feat(staff): lock names after one-time confirmation",
   "changes": {
-    "totalCommits": 132,
-    "filesChanged": 6,
+    "totalCommits": 133,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(rewards): live top-10 badges and King of Sales avatar frame"
+    "feat(staff): lock names after one-time confirmation"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/rank-rewards-tests.yml",
+      "file": ".github/workflows/staff-name-lock-tests.yml",
       "type": "update"
     },
     {
-      "file": "avatar-system.js",
+      "file": "staff-sync.js",
       "type": "update"
     },
     {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "rank-rewards.js",
-      "type": "update"
-    },
-    {
-      "file": "rank-rewards.test.js",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
+      "file": "staff-sync.test.js",
       "type": "update"
     }
   ]

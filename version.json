@@ -1,7 +1,7 @@
 {
-  "version": "1.0.128",
-  "buildDate": "2026-10-27T01:48:01.408Z",
-  "commit": "4c55f4d",
-  "notes": "feat(rewards): live top-10 badges and King of Sales avatar frame",
+  "version": "1.0.129",
+  "buildDate": "2026-10-27T02:06:47.267Z",
+  "commit": "4b31a52",
+  "notes": "feat(staff): lock names after one-time confirmation",
   "forceUpdate": false
 }

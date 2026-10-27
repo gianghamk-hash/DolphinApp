@@ -38,7 +38,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .week-bar .stat{font-size:10px;color:#bfe9dc;margin-top:4px;opacity:.75;font-weight:700}
 </style>
 </head>
-<body>
+<body class="dolphin-ranking-page">
 
 <div class="sticky top-0 z-30 bg-[#0a1f1d]/95 backdrop-blur-xl border-b border-emerald-800/40">
   <div class="max-w-3xl mx-auto px-4 py-3 flex items-center justify-between gap-2">
@@ -75,17 +75,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div id="revenue-list">
       <div class="loading">⏳ Đang tải...</div>
     </div>
-    <div class="mt-4 pt-3 border-t border-white/10 text-[10.5px] text-teal-400 leading-relaxed">
-      💡 <b class="text-teal-300">Cách tính:</b><br>
-      • 🍸 Lounge: <b class="text-gold-300">250K/pax</b> (trừ bàn FOC / KTOUR)<br>
-      • 🌴 Bungalow: <b class="text-gold-300">2.000K/căn</b> (trừ bàn FOC)<br>
-      • 🎭 Show <b class="text-gold-300">BGL</b>: <b class="text-gold-300">2.000K/bàn</b> (trừ FOC)<br>
-      • 🎭 Show <b class="text-gold-300">VPS</b>: <b class="text-gold-300">1.390K/bàn</b> (trừ FOC)<br>
-      • 🎭 Show <b class="text-gold-300">Bar View</b>: <b class="text-gold-300">790K/bàn</b> (trừ FOC)
-    </div>
-  </div>
 
-  <div id="rank-hall" class="drr-hall" aria-label="Hall of Fame"><h3>👑 DOLPHIN HALL OF FAME</h3><div id="rank-hall-body">Đang cập nhật…</div></div>
+  </div>
 
   <div id="section-points" class="glass rounded-2xl p-4" style="display:none">
     <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
@@ -98,16 +89,12 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div id="points-list">
       <div class="loading">⏳ Đang tải...</div>
     </div>
-    <div class="mt-4 pt-3 border-t border-white/10 text-[10.5px] text-teal-400 leading-relaxed">
-      💡 <b class="text-teal-300">Cách tính điểm mỗi đơn:</b><br>
-      • Nhận <b>và</b> hoàn thành đơn: <b class="text-gold-300">+1 điểm</b><br>
-      • Không nhận nhưng hỗ trợ hoàn thành: <b class="text-gold-300">+1 điểm</b><br>
-      • Nhận nhưng không hoàn thành: <b class="text-gold-300">+0.5 điểm</b>
-    </div>
+
   </div>
 
 </main>
 
+<script src="../theme-system.js?v=7.2" defer></script>
 <script src="../rank-rewards.js?v=1.0"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.141",
+  "version": "1.0.142",
   "releaseDate": "2026-10-27",
-  "notes": "feat(theme): animated CSS artwork for seasonal landing scenes"
+  "notes": "refactor(theme): only Dark Light and Gray display modes"
 }

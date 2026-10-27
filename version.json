@@ -1,7 +1,7 @@
 {
-  "version": "1.0.141",
-  "buildDate": "2026-10-27T10:38:56.020Z",
-  "commit": "a81396a",
-  "notes": "feat(theme): animated CSS artwork for seasonal landing scenes",
+  "version": "1.0.142",
+  "buildDate": "2026-10-27T15:03:07.184Z",
+  "commit": "87d8b4f",
+  "notes": "refactor(theme): only Dark Light and Gray display modes",
   "forceUpdate": false
 }

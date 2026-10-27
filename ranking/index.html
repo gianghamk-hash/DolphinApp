@@ -452,9 +452,9 @@ function calcPoints(){
     const completedNames=parseStaffNames(o.completedBy);
     new Set([...preparedNames,...completedNames]).forEach(name=>{
       const e=ensure(name),didPrepare=preparedNames.includes(name),didComplete=completedNames.includes(name);
-      if(didPrepare&&didComplete){e.points+=1;e.both+=1;}
-      else if(didComplete){e.points+=1;e.onlyComplete+=1;}
-      else if(didPrepare){e.points+=0.5;e.onlyPrepare+=1;}
+      if(didPrepare&&didComplete){e.points += 1;e.both+=1;}
+      else if(didComplete){e.points += 1;e.onlyComplete+=1;}
+      else if(didPrepare){e.points += 0.5;e.onlyPrepare+=1;}
     });
   });
   return Object.values(emp).filter(e=>e.points>0).sort((a,b)=>b.points-a.points||a.name.localeCompare(b.name,'vi')).slice(0,TOP_N);

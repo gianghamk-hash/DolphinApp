@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.133",
+      "releaseDate": "2026-10-27T05:07:20.055Z",
+      "summary": "fix(landing): fully transparent royal leader cards",
+      "details": [
+        "fix(landing): fully transparent royal leader cards"
+      ]
+    },
+    {
       "version": "1.0.132",
       "releaseDate": "2026-10-27T05:03:52.490Z",
       "summary": "fix(landing): transparent royal glass and TOP 1 label",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.84",
       "releaseDate": "2026-10-18T12:57:14.955Z",
-      "summary": "UPDATE 1",
-      "details": [
-        "UPDATE 1"
-      ]
-    },
-    {
-      "version": "1.0.83",
-      "releaseDate": "2026-10-18T12:56:24.845Z",
       "summary": "UPDATE 1",
       "details": [
         "UPDATE 1"

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.133",
+  "version": "1.0.134",
   "releaseDate": "2026-10-27",
-  "notes": "fix(landing): fully transparent royal leader cards"
+  "notes": "fix(landing): frameless Top 1 honor cards and no subtitle"
 }

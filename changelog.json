@@ -1,20 +1,24 @@
 {
-  "version": "1.0.133",
-  "previousVersion": "1.0.132",
-  "commit": "8838ce6",
-  "previousCommit": "c164a02",
-  "buildDate": "2026-10-27T05:07:20.055Z",
-  "summary": "fix(landing): fully transparent royal leader cards",
+  "version": "1.0.134",
+  "previousVersion": "1.0.133",
+  "commit": "0b9bdab",
+  "previousCommit": "8838ce6",
+  "buildDate": "2026-10-27T05:12:31.151Z",
+  "summary": "fix(landing): frameless Top 1 honor cards and no subtitle",
   "changes": {
-    "totalCommits": 137,
-    "filesChanged": 1,
+    "totalCommits": 138,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(landing): fully transparent royal leader cards"
+    "fix(landing): frameless Top 1 honor cards and no subtitle"
   ],
   "fileChanges": [
+    {
+      "file": "index.html",
+      "type": "update"
+    },
     {
       "file": "royal-leaders.js",
       "type": "update"

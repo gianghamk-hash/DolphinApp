@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.130",
+      "releaseDate": "2026-10-27T02:18:19.318Z",
+      "summary": "fix(ranking): work leaderboard and dual royal realtime leaders",
+      "details": [
+        "fix(ranking): work leaderboard and dual royal realtime leaders"
+      ]
+    },
+    {
       "version": "1.0.129",
       "releaseDate": "2026-10-27T02:06:47.267Z",
       "summary": "feat(staff): lock names after one-time confirmation",
@@ -390,14 +398,6 @@
       "summary": "KHÓA BGL",
       "details": [
         "KHÓA BGL"
-      ]
-    },
-    {
-      "version": "1.0.80",
-      "releaseDate": "2026-10-18T01:39:24.558Z",
-      "summary": "ĐỔI MÀU",
-      "details": [
-        "ĐỔI MÀU"
       ]
     }
   ]

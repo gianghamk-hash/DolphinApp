@@ -1,5 +1,5 @@
 {
-  "version": "1.0.130",
+  "version": "1.0.131",
   "releaseDate": "2026-10-27",
-  "notes": "fix(ranking): work leaderboard and dual royal realtime leaders"
+  "notes": "feat(landing): premium glass royal cards with flaming titles"
 }

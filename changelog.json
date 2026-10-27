@@ -1,36 +1,20 @@
 {
-  "version": "1.0.130",
-  "previousVersion": "1.0.129",
-  "commit": "8e40062",
-  "previousCommit": "4b31a52",
-  "buildDate": "2026-10-27T02:18:19.318Z",
-  "summary": "fix(ranking): work leaderboard and dual royal realtime leaders",
+  "version": "1.0.131",
+  "previousVersion": "1.0.130",
+  "commit": "87d688d",
+  "previousCommit": "8e40062",
+  "buildDate": "2026-10-27T04:55:01.861Z",
+  "summary": "feat(landing): premium glass royal cards with flaming titles",
   "changes": {
-    "totalCommits": 134,
-    "filesChanged": 5,
+    "totalCommits": 135,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ranking): work leaderboard and dual royal realtime leaders"
+    "feat(landing): premium glass royal cards with flaming titles"
   ],
   "fileChanges": [
-    {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "rank-rewards.js",
-      "type": "update"
-    },
-    {
-      "file": "rank-rewards.test.js",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
     {
       "file": "royal-leaders.js",
       "type": "update"

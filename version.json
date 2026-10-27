@@ -1,7 +1,7 @@
 {
-  "version": "1.0.130",
-  "buildDate": "2026-10-27T02:18:19.318Z",
-  "commit": "8e40062",
-  "notes": "fix(ranking): work leaderboard and dual royal realtime leaders",
+  "version": "1.0.131",
+  "buildDate": "2026-10-27T04:55:01.861Z",
+  "commit": "87d688d",
+  "notes": "feat(landing): premium glass royal cards with flaming titles",
   "forceUpdate": false
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.136",
+  "version": "1.0.137",
   "releaseDate": "2026-10-27",
-  "notes": "revert(halloween): restore original animated background"
+  "notes": "fix(ranking): count Lounge work completions in weekly points"
 }

@@ -1,30 +1,26 @@
 {
-  "version": "1.0.142",
-  "previousVersion": "1.0.141",
-  "commit": "87d8b4f",
-  "previousCommit": "a81396a",
-  "buildDate": "2026-10-27T15:03:07.184Z",
-  "summary": "refactor(theme): only Dark Light and Gray display modes",
+  "version": "1.0.143",
+  "previousVersion": "1.0.142",
+  "commit": "aaace29",
+  "previousCommit": "87d8b4f",
+  "buildDate": "2026-10-27T15:09:52.639Z",
+  "summary": "fix(dark): deep black background and transparent clock",
   "changes": {
-    "totalCommits": 146,
-    "filesChanged": 4,
+    "totalCommits": 147,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "refactor(theme): only Dark Light and Gray display modes"
+    "fix(dark): deep black background and transparent clock"
   ],
   "fileChanges": [
     {
-      "file": "manager/dashboard.html",
+      "file": ".github/workflows/dark-clock.yml",
       "type": "update"
     },
     {
-      "file": "ranking/ranking-theme.test.js",
-      "type": "update"
-    },
-    {
-      "file": "theme-seasonal-scenes.test.js",
+      "file": "dark-clock.test.js",
       "type": "update"
     },
     {

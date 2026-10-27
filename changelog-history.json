@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.142",
+      "releaseDate": "2026-10-27T15:03:07.184Z",
+      "summary": "refactor(theme): only Dark Light and Gray display modes",
+      "details": [
+        "refactor(theme): only Dark Light and Gray display modes"
+      ]
+    },
+    {
       "version": "1.0.141",
       "releaseDate": "2026-10-27T10:38:56.020Z",
       "summary": "feat(theme): animated CSS artwork for seasonal landing scenes",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.92",
-      "releaseDate": "2026-10-19T07:11:34.615Z",
-      "summary": "UPDATE 1",
-      "details": [
-        "UPDATE 1"
       ]
     }
   ]

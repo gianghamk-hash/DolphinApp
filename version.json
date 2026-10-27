@@ -1,7 +1,7 @@
 {
-  "version": "1.0.142",
-  "buildDate": "2026-10-27T15:03:07.184Z",
-  "commit": "87d8b4f",
-  "notes": "refactor(theme): only Dark Light and Gray display modes",
+  "version": "1.0.143",
+  "buildDate": "2026-10-27T15:09:52.639Z",
+  "commit": "aaace29",
+  "notes": "fix(dark): deep black background and transparent clock",
   "forceUpdate": false
 }

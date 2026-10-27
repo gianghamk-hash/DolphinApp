@@ -892,6 +892,20 @@
       'body[data-theme]:not([data-theme="default"]) :is(.logo-shimmer,.brand-title,.breathe,.btn-select){animation:none !important;}',
       '@media(prefers-reduced-motion:reduce){body[data-theme] *{animation-duration:.01ms !important;animation-iteration-count:1 !important;transition-duration:.01ms !important;}}'
     );
+    /* Ranking uses the same selected seasonal theme and visual tokens.
+       Scope these rules to ranking only; never override leaderboard business logic. */
+    css.push(
+      'body.dolphin-ranking-page{background:var(--theme-bg2)!important;color:#fff;}',
+      'body.dolphin-ranking-page .glass{background:linear-gradient(135deg,rgba(255,255,255,.07),rgba(255,255,255,.025))!important;border:1px solid var(--theme-border-soft)!important;backdrop-filter:blur(14px) saturate(140%)!important;-webkit-backdrop-filter:blur(14px) saturate(140%)!important;box-shadow:inset 0 1px 0 rgba(255,255,255,.13),0 10px 32px rgba(0,0,0,.16)!important;}',
+      'body.dolphin-ranking-page .week-bar{border-color:var(--theme-border)!important;background:linear-gradient(130deg,var(--theme-border-soft),rgba(255,255,255,.02))!important;}',
+      'body.dolphin-ranking-page .tab-btn{border-color:var(--theme-border-soft)!important;background:rgba(10,31,29,.35)!important;color:var(--theme-accent2)!important;}',
+      'body.dolphin-ranking-page .tab-btn.active{background:linear-gradient(135deg,var(--theme-accent),var(--theme-accent2))!important;color:#082d2a!important;border-color:transparent!important;box-shadow:0 4px 20px var(--theme-glow)!important;}',
+      'body.dolphin-ranking-page .row{background:rgba(10,31,29,.22)!important;border-color:var(--theme-border-soft)!important;}',
+      'body.dolphin-ranking-page .row.r1{background:linear-gradient(125deg,var(--theme-border-soft),rgba(255,255,255,.03))!important;border-color:var(--theme-border)!important;box-shadow:0 0 14px var(--theme-glow)!important;}',
+      'body.dolphin-ranking-page .brand-title{filter:drop-shadow(0 0 12px var(--theme-glow))!important;}',
+      'body.dolphin-ranking-page .week-bar .value,body.dolphin-ranking-page .val.gold{color:var(--theme-accent)!important;}',
+      '@media(prefers-reduced-motion:reduce){body.dolphin-ranking-page .glass{backdrop-filter:none!important;-webkit-backdrop-filter:none!important;}}'
+    );
     s.textContent = css.join('\n');
     document.head.appendChild(s);
   }

@@ -418,6 +418,9 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   flex-direction:column;gap:1rem;background:#123634;transition:opacity .4s;pointer-events:none;
 }
 #app-loading.hide{opacity:0}
+.loading-dolphin-logo{width:min(38vw,170px);height:auto;max-height:190px;object-fit:contain;filter:drop-shadow(0 0 22px rgba(94,220,210,.32));animation:dolphinLoadingGlow 2.4s ease-in-out infinite}
+@keyframes dolphinLoadingGlow{0%,100%{opacity:.82;transform:scale(.97)}50%{opacity:1;transform:scale(1.04)}}
+@media(prefers-reduced-motion:reduce){.loading-dolphin-logo{animation:none}}
 .loader-ring{
   width:56px;height:56px;border:4px solid rgba(244,184,66,.2);
   border-top-color:#F4B842;border-radius:50%;animation:spin 1s linear infinite;
@@ -822,7 +825,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
       </svg>
     </button>
   </div>
-  <div id="app-loading"><div class="loader-ring"></div><div class="loader-text">Đang tải...</div></div>
+  <div id="app-loading" role="status" aria-label="Đang mở ứng dụng Dolphin"><img class="loading-dolphin-logo" src="/DolphinApp/logo-dolphin.png" alt="Dolphin" /></div>
   <iframe id="app-frame" allow="microphone; camera; geolocation; autoplay; clipboard-read; clipboard-write; fullscreen" title="Dolphin App"></iframe>
 </div>
 

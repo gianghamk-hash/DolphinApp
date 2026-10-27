@@ -50,28 +50,8 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 .logo-shimmer{background:linear-gradient(90deg,var(--theme-accent) 0%,var(--theme-accent2) 25%,#FFF7C2 50%,var(--theme-accent2) 75%,var(--theme-accent) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 3.5s linear infinite}
 #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:500}
 #scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#FBBF24,#22d3ee,#FBBF24);background-size:200% 100%;z-index:999;width:0;box-shadow:0 0 10px rgba(245,158,11,.7);transition:width .1s linear;animation:shimmer 4s linear infinite}
-.sound-toggle{position:relative;transition:all .3s}
-.sound-toggle.active{color:#FBBF24;text-shadow:0 0 12px rgba(245,158,11,.9);border-color:rgba(245,158,11,.6)!important}
-.sound-toggle.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(245,158,11,.7);animation:callRing 2s ease-out infinite}
-.sound-menu{position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,51,80,.95);backdrop-filter:blur(20px);border:1px solid rgba(245,158,11,.4);border-radius:16px;padding:8px;box-shadow:0 20px 40px rgba(0,0,0,.6);min-width:260px;transform-origin:top right;transition:all .25s cubic-bezier(.2,.9,.3,1.2);z-index:300}
-.sound-menu.hidden-pop{opacity:0;transform:scale(.9) translateY(-6px);pointer-events:none}
-.sound-menu .menu-title{padding:8px 14px 4px;font-size:9px;font-weight:900;color:#FBBF24;text-transform:uppercase;letter-spacing:.15em;opacity:.8}
-.sound-menu button.mode-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:11.5px;color:#cbd5e1;width:100%;text-align:left;transition:all .18s}
-.sound-menu button.mode-btn:hover{background:rgba(28,121,189,.3);color:#fff}
-.sound-menu button.mode-btn.active{background:linear-gradient(135deg,#FBBF24,#D97706);color:#000;box-shadow:0 4px 12px rgba(245,158,11,.4)}
-.sound-menu button.mode-btn .icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
-.sound-menu button.mode-btn .meta{display:flex;flex-direction:column;flex:1;min-width:0}
-.sound-menu button.mode-btn .meta .name{font-weight:900;font-size:11.5px;line-height:1.2}
-.sound-menu button.mode-btn .meta .sub{font-size:8.5px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
-.sound-menu .divider{height:1px;background:rgba(255,255,255,.08);margin:6px 0}
-.sound-menu .vol-wrap{padding:8px 12px 4px}
-.sound-menu input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#FBBF24,#F59E0B);border-radius:99px;outline:none}
-.sound-menu input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(245,158,11,.9);cursor:pointer}
 @media(max-width:767px){
-  #btn-role-customer,#btn-role-reception,#btn-role-bungalow,#btn-role-staff,#btn-role-admin{padding:6px 10px!important;font-size:10px!important}
-  .sound-menu{min-width:230px}
-  .sound-menu button.mode-btn{padding:9px 10px;font-size:11px}
-}
+  #btn-role-customer,#btn-role-reception,#btn-role-bungalow,#btn-role-staff,#btn-role-admin{padding:6px 10px!important;font-size:10px!important}}
 @media(prefers-reduced-motion:reduce){.logo-glow,.logo-shimmer{animation:none!important}}
 </style>
 <script src="master.js" defer></script>

@@ -1,30 +1,22 @@
 {
-  "version": "1.0.125",
-  "previousVersion": "1.0.124",
-  "commit": "8aa3f6d",
-  "previousCommit": "32ee8f5",
-  "buildDate": "2026-10-27T00:26:06.029Z",
-  "summary": "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music",
+  "version": "1.0.126",
+  "previousVersion": "1.0.125",
+  "commit": "8d5ad21",
+  "previousCommit": "8aa3f6d",
+  "buildDate": "2026-10-27T01:25:21.747Z",
+  "summary": "fix(landing): hide notification bell when permission granted",
   "changes": {
-    "totalCommits": 129,
-    "filesChanged": 3,
+    "totalCommits": 130,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music"
+    "fix(landing): hide notification bell when permission granted"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-lounge.html",
-      "type": "update"
-    },
-    {
       "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "theme-system.js",
       "type": "update"
     }
   ]

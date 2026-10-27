@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.125",
+      "releaseDate": "2026-10-27T00:26:06.029Z",
+      "summary": "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music",
+      "details": [
+        "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music"
+      ]
+    },
+    {
       "version": "1.0.124",
       "releaseDate": "2026-10-26T18:22:02.736Z",
       "summary": "feat(arcade): optional fullscreen for all seven non-TFT games",
@@ -390,14 +398,6 @@
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.75",
-      "releaseDate": "2026-10-17T14:47:08.137Z",
-      "summary": "Nhạc theme v2.0 — 15 file + auto fade khi vào app",
-      "details": [
-        "Nhạc theme v2.0 — 15 file + auto fade khi vào app"
       ]
     }
   ]

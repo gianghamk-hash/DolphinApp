@@ -8,6 +8,7 @@
   'use strict';
 
   var MAIN_KEY = 'dolphinStaffName';
+  var LOCK_KEY = 'dolphinStaffNameLockedV1';
   var LEGACY_KEYS = ['dolphinShowSeller'];
 
   // ════════ ĐỌC TÊN ════════
@@ -27,28 +28,47 @@
     } catch(e) { return ''; }
   }
 
-  // ════════ GHI TÊN ════════
+  // ════════ KHÓA TÊN SAU LẦN XÁC NHẬN ĐẦU ════════
+  function locked(){try{return localStorage.getItem(LOCK_KEY)==='1';}catch(e){return false;}}
+  function notify(message){
+    if(typeof window.showToast==='function')window.showToast(message,'🔒');
+    else if(typeof window.alert==='function')window.alert(message);
+  }
   function writeName(name){
-    if (!name) return;
-    var trimmed = String(name).trim();
-    if (!trimmed) return;
+    var trimmed=String(name||'').trim().replace(/\\s+/g,' ');
+    if(!trimmed)return false;
+    var old=readName();
+    if(locked()){
+      if(old!==trimmed){notify('Tên nhân viên đã khóa: '+old+'. Liên hệ quản lý nếu cần chỉnh sửa.');return false;}
+      return true;
+    }
+    // Existing employees get one final confirmation/change. New staff enter once.
+    var message=old
+      ?'Tên hiện tại: '+old+'\\nTên xác nhận: '+trimmed+'\\n\\nĐây là lần đổi/xác nhận cuối cùng. Sau khi lưu sẽ không thể tự sửa tên. Tiếp tục?'
+      :'Xác nhận tên nhân viên: '+trimmed+'?\\n\\nTên sẽ bị khóa sau khi lưu và không thể tự chỉnh sửa.';
+    if(typeof window.confirm==='function'&&!window.confirm(message))return false;
     try {
-      localStorage.setItem(MAIN_KEY, trimmed);
-      // Đồng bộ sang các key cũ để tương thích
-      LEGACY_KEYS.forEach(function(k){
-        try { localStorage.setItem(k, trimmed); } catch(e){}
-      });
-      try {
-        window.dispatchEvent(new CustomEvent('dolphinStaffNameChanged', {
-          detail: { name: trimmed }
-        }));
-      } catch(e){}
-    } catch(e){}
+      localStorage.setItem(MAIN_KEY,trimmed);
+      LEGACY_KEYS.forEach(function(k){localStorage.setItem(k,trimmed);});
+      localStorage.setItem(LOCK_KEY,'1');
+      window.dispatchEvent(new CustomEvent('dolphinStaffNameChanged',{detail:{name:trimmed,locked:true}}));
+      window.dispatchEvent(new CustomEvent('dolphinStaffNameLocked',{detail:{name:trimmed}}));
+      return true;
+    }catch(e){notify('Không lưu được trạng thái khóa tên. Vui lòng thử lại.');return false;}
+  }
+  function syncLockedInputs(){
+    if(!locked())return;
+    var name=readName();
+    ['staff-name-input','seller-me'].forEach(function(id){
+      var el=document.getElementById(id);
+      if(el&&name){el.value=name;el.readOnly=true;el.title='Tên nhân viên đã được khóa';}
+    });
   }
 
   // ════════ EXPOSE API ════════
   window.getSyncedStaffName = readName;
   window.setSyncedStaffName = writeName;
+  window.isStaffNameLocked = locked;
 
   // ════════ OVERRIDE HÀM CŨ ════════
   function hookCoreFunctions(){
@@ -65,10 +85,13 @@
       try {
         var input = document.getElementById('seller-me');
         if (input && input.value && input.value.trim()){
-          writeName(input.value);
+          if(!writeName(input.value))return;
+          input.value=readName();
         }
       } catch(e){}
-      return _orig.apply(this, arguments);
+      var result=_orig.apply(this, arguments);
+      syncLockedInputs();
+      return result;
     };
     newFn.__synced = true;
     window.saveSeller = newFn;
@@ -83,10 +106,13 @@
       try {
         var input = document.getElementById('staff-name-input');
         if (input && input.value && input.value.trim()){
-          writeName(input.value);
+          if(!writeName(input.value))return;
+          input.value=readName();
         }
       } catch(e){}
-      return _orig.apply(this, arguments);
+      var result=_orig.apply(this, arguments);
+      syncLockedInputs();
+      return result;
     };
     newFn.__synced = true;
     window.confirmStaffAction = newFn;
@@ -101,6 +127,7 @@
         var name = readName();
         if (name) input.value = name;
       }
+      syncLockedInputs();
     } catch(e){}
   }
 
@@ -116,6 +143,7 @@
       hookShowSaveSeller();
       hookConfirmStaffAction();
       autoFillShowSeller();
+      syncLockedInputs();
       if (tries > 200) clearInterval(timer);
     }, 100);
 

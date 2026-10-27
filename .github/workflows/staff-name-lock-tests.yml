@@ -1,0 +1,19 @@
+name: Staff Name Lock Tests
+on:
+  pull_request:
+    paths: ['staff-sync.js','staff-sync.test.js','.github/workflows/staff-name-lock-tests.yml']
+  push:
+    branches: [main]
+    paths: ['staff-sync.js','staff-sync.test.js','.github/workflows/staff-name-lock-tests.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check staff-sync.js
+      - run: node --test staff-sync.test.js

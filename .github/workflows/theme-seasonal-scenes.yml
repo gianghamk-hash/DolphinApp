@@ -1,0 +1,19 @@
+name: Landing Theme Scene Tests
+on:
+  pull_request:
+    paths: ['theme-system.js','theme-seasonal-scenes.test.js','.github/workflows/theme-seasonal-scenes.yml']
+  push:
+    branches: [main]
+    paths: ['theme-system.js','theme-seasonal-scenes.test.js','.github/workflows/theme-seasonal-scenes.yml']
+permissions:
+  contents: read
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check theme-system.js
+      - run: node --test theme-seasonal-scenes.test.js

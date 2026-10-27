@@ -1,0 +1,19 @@
+name: Dark Clock Mode Tests
+on:
+  pull_request:
+    paths: ['theme-system.js','dark-clock.test.js','.github/workflows/dark-clock.yml']
+  push:
+    branches: [main]
+    paths: ['theme-system.js','dark-clock.test.js','.github/workflows/dark-clock.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check theme-system.js
+      - run: node --test dark-clock.test.js theme-seasonal-scenes.test.js

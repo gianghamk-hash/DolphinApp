@@ -418,9 +418,9 @@ function completedTimestamp(o, archiveDate){
   if(raw&&Number.isFinite(raw.seconds))return raw.seconds*1000+Math.floor((raw.nanoseconds||0)/1e6);
   // Old archived Lounge orders had completedTime (HH:mm) but no completedAt.
   // Archive date is their only reliable calendar date; never assume today's date.
-  if(archiveDate && /^\\d{4}-\\d{2}-\\d{2}$/.test(archiveDate)){
+  if(archiveDate && /^\d{4}-\d{2}-\d{2}$/.test(archiveDate)){
     const midnight=vnDateToTimestamp(archiveDate);
-    const m=String(o.completedTime||'').match(/^(\\d{1,2}):(\\d{2})/);
+    const m=String(o.completedTime||'').match(/^(\d{1,2}):(\d{2})/);
     if(m&&+m[1]<24&&+m[2]<60)return midnight+(+m[1]*60+(+m[2]))*60000;
     return midnight;
   }

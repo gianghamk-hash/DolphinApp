@@ -1,5 +1,5 @@
 {
-  "version": "1.0.129",
+  "version": "1.0.130",
   "releaseDate": "2026-10-27",
-  "notes": "feat(staff): lock names after one-time confirmation"
+  "notes": "fix(ranking): work leaderboard and dual royal realtime leaders"
 }

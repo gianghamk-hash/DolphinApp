@@ -1,7 +1,7 @@
 {
-  "version": "1.0.129",
-  "buildDate": "2026-10-27T02:06:47.267Z",
-  "commit": "4b31a52",
-  "notes": "feat(staff): lock names after one-time confirmation",
+  "version": "1.0.130",
+  "buildDate": "2026-10-27T02:18:19.318Z",
+  "commit": "8e40062",
+  "notes": "fix(ranking): work leaderboard and dual royal realtime leaders",
   "forceUpdate": false
 }

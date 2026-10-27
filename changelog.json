@@ -1,30 +1,38 @@
 {
-  "version": "1.0.129",
-  "previousVersion": "1.0.128",
-  "commit": "4b31a52",
-  "previousCommit": "4c55f4d",
-  "buildDate": "2026-10-27T02:06:47.267Z",
-  "summary": "feat(staff): lock names after one-time confirmation",
+  "version": "1.0.130",
+  "previousVersion": "1.0.129",
+  "commit": "8e40062",
+  "previousCommit": "4b31a52",
+  "buildDate": "2026-10-27T02:18:19.318Z",
+  "summary": "fix(ranking): work leaderboard and dual royal realtime leaders",
   "changes": {
-    "totalCommits": 133,
-    "filesChanged": 3,
+    "totalCommits": 134,
+    "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(staff): lock names after one-time confirmation"
+    "fix(ranking): work leaderboard and dual royal realtime leaders"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-name-lock-tests.yml",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "staff-sync.js",
+      "file": "rank-rewards.js",
       "type": "update"
     },
     {
-      "file": "staff-sync.test.js",
+      "file": "rank-rewards.test.js",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "royal-leaders.js",
       "type": "update"
     }
   ]

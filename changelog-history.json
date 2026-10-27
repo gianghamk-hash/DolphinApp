@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.129",
+      "releaseDate": "2026-10-27T02:06:47.267Z",
+      "summary": "feat(staff): lock names after one-time confirmation",
+      "details": [
+        "feat(staff): lock names after one-time confirmation"
+      ]
+    },
+    {
       "version": "1.0.128",
       "releaseDate": "2026-10-27T01:48:01.408Z",
       "summary": "feat(rewards): live top-10 badges and King of Sales avatar frame",
@@ -390,14 +398,6 @@
       "summary": "ĐỔI MÀU",
       "details": [
         "ĐỔI MÀU"
-      ]
-    },
-    {
-      "version": "1.0.79",
-      "releaseDate": "2026-10-17T14:58:32.035Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
       ]
     }
   ]

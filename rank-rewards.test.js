@@ -26,7 +26,7 @@ test('publish changes award when realtime positions change',()=>{
  api.publish([{name:'Bob',rev:350},{name:'Alice',rev:300}], '2026-W44');
  assert.equal(api.get('Bob').rank,1);
  assert.equal(api.get('Alice').tier,'diamond');
- assert.equal(api.history().length,2);
+ assert.equal(api.history('revenue').length,2);
 });
 test('no missing or zero-revenue person gets a reward',()=>{
  const {api}=harness();
@@ -38,4 +38,21 @@ test('badge escapes dangerous display names',()=>{
  const {api}=harness();
  api.publish([{name:'<script>',rev:12}], 'w');
  assert.ok(!api.badge('<script>').includes('<script>'));
+});
+
+test('work champion and work tags are independent from sales',()=>{
+ const {api}=harness();
+ api.publishCategory('revenue',[{name:'Sales Winner',rev:100}], 'week');
+ api.publishCategory('work',[{name:'Work Winner',points:12.5}], 'week');
+ assert.equal(api.get('Work Winner','work').title,'WORK CHAMPION');
+ assert.equal(api.get('Work Winner','revenue'),null);
+ assert.equal(api.get('Sales Winner','revenue').title,'KING OF SALES');
+ assert.equal(api.history('work').length,1);
+});
+test('legacy point algorithm is unchanged in ranking file',()=>{
+ const file=fs.readFileSync(require('node:path').join(__dirname,'ranking/index.html'),'utf8');
+ assert.match(file,/e\.points \+= 0\.5/);
+ assert.match(file,/e\.points \+= 1/);
+ assert.match(file,/renderRevenue\(\);\s*renderPoints\(\);/);
+ assert.match(file,/publishCategory\('work',data,state\.weekStart\)/);
 });

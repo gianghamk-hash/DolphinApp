@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.127",
+      "releaseDate": "2026-10-27T01:33:31.748Z",
+      "summary": "fix(ui): compact connection indicators in child apps",
+      "details": [
+        "fix(ui): compact connection indicators in child apps"
+      ]
+    },
+    {
       "version": "1.0.126",
       "releaseDate": "2026-10-27T01:25:21.747Z",
       "summary": "fix(landing): hide notification bell when permission granted",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.78",
       "releaseDate": "2026-10-17T14:57:23.511Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.77",
-      "releaseDate": "2026-10-17T14:55:54.917Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

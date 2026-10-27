@@ -1,7 +1,7 @@
 {
-  "version": "1.0.127",
-  "buildDate": "2026-10-27T01:33:31.748Z",
-  "commit": "61f8395",
-  "notes": "fix(ui): compact connection indicators in child apps",
+  "version": "1.0.128",
+  "buildDate": "2026-10-27T01:48:01.408Z",
+  "commit": "4c55f4d",
+  "notes": "feat(rewards): live top-10 badges and King of Sales avatar frame",
   "forceUpdate": false
 }

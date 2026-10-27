@@ -1,34 +1,42 @@
 {
-  "version": "1.0.127",
-  "previousVersion": "1.0.126",
-  "commit": "61f8395",
-  "previousCommit": "8d5ad21",
-  "buildDate": "2026-10-27T01:33:31.748Z",
-  "summary": "fix(ui): compact connection indicators in child apps",
+  "version": "1.0.128",
+  "previousVersion": "1.0.127",
+  "commit": "4c55f4d",
+  "previousCommit": "61f8395",
+  "buildDate": "2026-10-27T01:48:01.408Z",
+  "summary": "feat(rewards): live top-10 badges and King of Sales avatar frame",
   "changes": {
-    "totalCommits": 131,
-    "filesChanged": 4,
+    "totalCommits": 132,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ui): compact connection indicators in child apps"
+    "feat(rewards): live top-10 badges and King of Sales avatar frame"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-bungalow.html",
+      "file": ".github/workflows/rank-rewards-tests.yml",
       "type": "update"
     },
     {
-      "file": "dolphin-lounge.html",
+      "file": "avatar-system.js",
       "type": "update"
     },
     {
-      "file": "dolphin-restaurant.html",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "dolphin-show.html",
+      "file": "rank-rewards.js",
+      "type": "update"
+    },
+    {
+      "file": "rank-rewards.test.js",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
       "type": "update"
     }
   ]

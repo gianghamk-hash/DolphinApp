@@ -48,8 +48,8 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 <!-- THANH ĐIỀU HƯỚNG -->
 <div class="bg-black/70 relative z-20 backdrop-blur-md border-b border-teal-800/50 px-4 py-2 text-xs flex flex-wrap justify-between items-center gap-3 sticky top-0 z-50">
   <div class="flex items-center gap-2">
-    <span id="dot" class="w-2.5 h-2.5 rounded-full bg-gold-500 animate-pulse"></span>
-    <span id="dot-text" class="font-bold text-teal-200 text-[10px] uppercase tracking-wider">Đang kết nối đám mây...</span>
+    <span id="dot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" role="status" aria-label="Chưa kết nối" title="Offline"></span>
+    <span id="dot-text" class="font-bold text-teal-200 text-[10px] uppercase tracking-wider" style="display:none!important" aria-hidden="true">Đang kết nối đám mây...</span>
   </div>
   <div class="flex bg-teal-900/50 p-1 rounded-xl border border-teal-800/50 gap-1 flex-wrap">
     <button id="btn-reception" onclick="requestRole('reception')" class="px-3 py-1.5 rounded-lg font-bold text-[11px] text-teal-300">💁 Lễ Tân</button>
@@ -324,13 +324,13 @@ try {
   const app = initializeApp(firebaseConfig);
   db = getFirestore(app);
   signInAnonymously(getAuth(app)).then(() => {
-    $('dot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-500';
+    $('dot').className = 'w-2.5 h-2.5 rounded-full bg-emerald-500'; $('dot').setAttribute('aria-label','Đã kết nối'); $('dot').title='Online';
     $('dot-text').innerText = '🌐 Online (Realtime)';
     window.__showStopLive?.();
     window.__showStopLive=onSnapshot(collection(db, COL_LIVE), snap => {
       const b = {}; snap.forEach(d => b[d.id] = d.data()); bookings = b; render();
-    },err=>{console.error('[Show Firestore stream]',err);$('dot-text').innerText='⚠️ Firestore: '+(err?.code||err?.message||'Lỗi kết nối');toast('Không đọc được dữ liệu Show: '+(err?.code||err?.message||'kiểm tra quyền truy cập'),'❌');});
-  }).catch(err => { console.error('[Show Firebase Auth]',err); $('dot').className = 'w-2.5 h-2.5 rounded-full bg-red-500'; $('dot-text').innerText = '⚠️ Firebase: '+(err?.code||err?.message||'Offline'); });
+    },err=>{console.error('[Show Firestore stream]',err);$('dot').className='w-2.5 h-2.5 rounded-full bg-red-500'; $('dot').setAttribute('aria-label','Chưa kết nối'); $('dot').title='Offline'; $('dot-text').innerText='⚠️ Firestore: '+(err?.code||err?.message||'Lỗi kết nối');toast('Không đọc được dữ liệu Show: '+(err?.code||err?.message||'kiểm tra quyền truy cập'),'❌');});
+  }).catch(err => { console.error('[Show Firebase Auth]',err); $('dot').className = 'w-2.5 h-2.5 rounded-full bg-red-500'; $('dot').setAttribute('aria-label','Chưa kết nối'); $('dot').title='Offline'; $('dot-text').innerText = '⚠️ Firebase: '+(err?.code||err?.message||'Offline'); });
 } catch (e) { console.error('[Show Firebase init]',e); $('dot-text').innerText = '⚠️ '+(e?.message||'Lỗi kết nối'); }
 
 addEventListener('pagehide',()=>{window.__showStopLive?.();window.__showStopLive=null;});

@@ -508,7 +508,7 @@
       '.announcement-text{ color:var(--theme-accent) !important; }',
       '.welcome-lbl .wlc-vi{ color:var(--theme-accent) !important; }',
       '.welcome-lbl .wlc-en{ color:var(--theme-accent2) !important; }',
-      '#themeBadge{ position:fixed;top:8px;left:8px;z-index:9998; display:flex;align-items:center;gap:6px; padding:6px 12px; background:rgba(10,31,29,.9); border:1px solid var(--theme-border); border-radius:999px; font-size:11px;font-weight:900; color:var(--theme-accent); font-family:Nunito,sans-serif; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:none;opacity:0; transition:opacity .5s,border-color var(--theme-trans),color var(--theme-trans); }',
+      '#themeBadge{ display:none !important;position:fixed;top:8px;left:8px;z-index:9998; display:flex;align-items:center;gap:6px; padding:6px 12px; background:rgba(10,31,29,.9); border:1px solid var(--theme-border); border-radius:999px; font-size:11px;font-weight:900; color:var(--theme-accent); font-family:Nunito,sans-serif; backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); pointer-events:none;opacity:0; transition:opacity .5s,border-color var(--theme-trans),color var(--theme-trans); }',
       '#themeBadge.show{ opacity:1; }',
       '#themeBadge .tb-icon{ font-size:14px; }',
       'body.app-mode #themeBadge{ display:none !important; }',
@@ -1176,12 +1176,9 @@
     console.log('[Theme] Applied:', state.currentTheme);
   }
   function updateBadge(key){
-    var b = document.getElementById('themeBadge');
-    if (!b){ b = document.createElement('div'); b.id='themeBadge'; document.body.appendChild(b); }
-    if (!key || key === 'default'){ b.classList.remove('show'); return; }
-    var t = THEMES[key];
-    b.innerHTML = '<span class="tb-icon">' + t.icon + '</span><span>' + t.badge + '</span>';
-    b.classList.add('show');
+    // Theme remains functional; the public theme-name badge is intentionally hidden.
+    var oldBadge=document.getElementById('themeBadge');
+    if(oldBadge)oldBadge.remove();
   }
 
   /* ============== FIREBASE ============== */

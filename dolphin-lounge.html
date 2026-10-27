@@ -50,28 +50,8 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 .logo-shimmer{background:linear-gradient(90deg,var(--theme-accent) 0%,var(--theme-accent2) 25%,#FFF7C2 50%,var(--theme-accent2) 75%,var(--theme-accent) 100%);background-size:200% auto;-webkit-background-clip:text;background-clip:text;color:transparent;animation:shimmer 3.5s linear infinite}
 #confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:500}
 #scroll-progress{position:fixed;top:0;left:0;height:3px;background:linear-gradient(90deg,#FBBF24,#22d3ee,#FBBF24);background-size:200% 100%;z-index:999;width:0;box-shadow:0 0 10px rgba(245,158,11,.7);transition:width .1s linear;animation:shimmer 4s linear infinite}
-.sound-toggle{position:relative;transition:all .3s}
-.sound-toggle.active{color:#FBBF24;text-shadow:0 0 12px rgba(245,158,11,.9);border-color:rgba(245,158,11,.6)!important}
-.sound-toggle.active::after{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid rgba(245,158,11,.7);animation:callRing 2s ease-out infinite}
-.sound-menu{position:absolute;top:calc(100% + 8px);right:0;background:rgba(10,51,80,.95);backdrop-filter:blur(20px);border:1px solid rgba(245,158,11,.4);border-radius:16px;padding:8px;box-shadow:0 20px 40px rgba(0,0,0,.6);min-width:260px;transform-origin:top right;transition:all .25s cubic-bezier(.2,.9,.3,1.2);z-index:300}
-.sound-menu.hidden-pop{opacity:0;transform:scale(.9) translateY(-6px);pointer-events:none}
-.sound-menu .menu-title{padding:8px 14px 4px;font-size:9px;font-weight:900;color:#FBBF24;text-transform:uppercase;letter-spacing:.15em;opacity:.8}
-.sound-menu button.mode-btn{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;font-weight:700;font-size:11.5px;color:#cbd5e1;width:100%;text-align:left;transition:all .18s}
-.sound-menu button.mode-btn:hover{background:rgba(28,121,189,.3);color:#fff}
-.sound-menu button.mode-btn.active{background:linear-gradient(135deg,#FBBF24,#D97706);color:#000;box-shadow:0 4px 12px rgba(245,158,11,.4)}
-.sound-menu button.mode-btn .icon{font-size:16px;width:22px;text-align:center;flex-shrink:0}
-.sound-menu button.mode-btn .meta{display:flex;flex-direction:column;flex:1;min-width:0}
-.sound-menu button.mode-btn .meta .name{font-weight:900;font-size:11.5px;line-height:1.2}
-.sound-menu button.mode-btn .meta .sub{font-size:8.5px;font-weight:700;opacity:.65;text-transform:uppercase;letter-spacing:.08em;margin-top:1px}
-.sound-menu .divider{height:1px;background:rgba(255,255,255,.08);margin:6px 0}
-.sound-menu .vol-wrap{padding:8px 12px 4px}
-.sound-menu input[type=range]{width:100%;height:4px;-webkit-appearance:none;appearance:none;background:linear-gradient(90deg,#FBBF24,#F59E0B);border-radius:99px;outline:none}
-.sound-menu input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 0 8px rgba(245,158,11,.9);cursor:pointer}
 @media(max-width:767px){
-  #btn-role-customer,#btn-role-reception,#btn-role-bungalow,#btn-role-staff,#btn-role-admin{padding:6px 10px!important;font-size:10px!important}
-  .sound-menu{min-width:230px}
-  .sound-menu button.mode-btn{padding:9px 10px;font-size:11px}
-}
+  #btn-role-customer,#btn-role-reception,#btn-role-bungalow,#btn-role-staff,#btn-role-admin{padding:6px 10px!important;font-size:10px!important}}
 @media(prefers-reduced-motion:reduce){.logo-glow,.logo-shimmer{animation:none!important}}
 </style>
 <script src="master.js" defer></script>
@@ -79,7 +59,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script src="theme-system.js?v=1.0" defer></script>
 <script src="staff-online.js?v=1.0" defer></script>
 <script src="dolphin-ui.js?v=1.0" defer></script>
-<script src="dolphin-soundscape.js?v=1.0" defer></script>
+
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black relative z-0">
 
@@ -97,28 +77,6 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
     </div>
   </div>
   <div class="flex items-center gap-2">
-    <div class="relative">
-      <button id="sound-toggle" onclick="toggleSoundMenu(event)" class="sound-toggle w-9 h-9 rounded-lg bg-teal-900/60 border border-teal-700/50 flex items-center justify-center text-teal-300 hover:text-white transition-colors text-sm" title="Nhạc nền Lounge">🔇</button>
-      <div id="sound-menu" class="sound-menu hidden-pop">
-        <div class="menu-title">🎹 Dolphin Lounge Ballad</div>
-        <button data-mode="off" onclick="setSoundMode('off')" class="mode-btn"><span class="icon">🔇</span><div class="meta"><span class="name">Tắt âm thanh</span><span class="sub">Silent Mode</span></div></button>
-        <div class="divider"></div>
-        <button data-mode="t1" onclick="setSoundMode('t1')" class="mode-btn"><span class="icon">🎹</span><div class="meta"><span class="name">Rhodes & Strings</span><span class="sub">Full Ballad · 68 BPM</span></div></button>
-        <button data-mode="t2" onclick="setSoundMode('t2')" class="mode-btn"><span class="icon">🎼</span><div class="meta"><span class="name">Piano Solo</span><span class="sub">Pure Piano · 70 BPM</span></div></button>
-        <button data-mode="t3" onclick="setSoundMode('t3')" class="mode-btn"><span class="icon">🌫️</span><div class="meta"><span class="name">Ambient Wash</span><span class="sub">Ethereal · 64 BPM</span></div></button>
-        <button data-mode="t4" onclick="setSoundMode('t4')" class="mode-btn"><span class="icon">🎸</span><div class="meta"><span class="name">Soft Guitar</span><span class="sub">Mellow · 72 BPM</span></div></button>
-        <button data-mode="t5" onclick="setSoundMode('t5')" class="mode-btn"><span class="icon">🌙</span><div class="meta"><span class="name">Late Night</span><span class="sub">Slow & Deep · 62 BPM</span></div></button>
-        <div class="divider"></div>
-        <button data-mode="loop" onclick="setSoundMode('loop')" class="mode-btn"><span class="icon">🔁</span><div class="meta"><span class="name">Auto Loop</span><span class="sub">Cycle 5 Arrangements</span></div></button>
-        <div class="divider"></div>
-        <div class="vol-wrap">
-          <div class="flex justify-between items-center mb-1.5 text-[9px] text-teal-300 font-black uppercase tracking-widest">
-            <span>Âm lượng</span><span id="vol-pct">30%</span>
-          </div>
-          <input id="vol-slider" type="range" min="0" max="100" value="30" oninput="setAmbientVolume(this.value)">
-        </div>
-      </div>
-    </div>
     <div class="flex bg-teal-900/50 p-1 rounded-xl border border-teal-800/50 gap-1 flex-wrap backdrop-blur-sm">
       <button onclick="changeRole('customer')" id="btn-role-customer" class="px-3 py-1.5 rounded-lg font-black transition-all text-[11px] bg-gradient-to-r from-gold-400 to-gold-500 text-black shadow-lg shadow-gold-500/30">🧑‍🍳 Khách</button>
       <button onclick="requestPinAccess('reception')" id="btn-role-reception" class="px-3 py-1.5 rounded-lg font-bold transition-all text-[11px] text-teal-300 hover:text-white hover:bg-teal-800/50">💁 Lễ Tân</button>
@@ -713,7 +671,7 @@ window.unlockAudio = function() {
 window.playNotificationAlert = function() {
   if(navigator.vibrate){ try{ navigator.vibrate([500,120,500,120,500,120,500,120,800]); }catch(e){} }
   try {
-    let ctx = (window.Ambient && Ambient.ctx && Ambient.ctx.state!=='closed') ? Ambient.ctx : globalAudioCtx;
+    let ctx = globalAudioCtx;
     if(!ctx){ ctx = new (window.AudioContext||window.webkitAudioContext)(); globalAudioCtx = ctx; }
     if(ctx.state==='suspended') ctx.resume();
     const notifGain = ctx.createGain();
@@ -765,294 +723,7 @@ window.playNotificationAlert = function() {
   } catch(e){ console.log('Bell error:', e); }
 };
 
-const AMB_NOTES = {
-  Bb1: 58.27, C2: 65.41, D2: 73.42, Eb2: 77.78, F2: 87.31, G2: 98.00, A2: 110.00,
-  Bb2: 116.54, C3: 130.81, D3: 146.83, Eb3: 155.56, F3: 174.61, G3: 196.00, A3: 220.00,
-  Bb3: 233.08, C4: 261.63, D4: 293.66, Eb4: 311.13, F4: 349.23, G4: 392.00, A4: 440.00,
-  Bb4: 466.16, C5: 523.25, D5: 587.33, Eb5: 622.25, F5: 698.46, G5: 783.99, A5: 880.00,
-  Bb5: 932.33, C6: 1046.50
-};
-
-const BALLAD_LOOP = [
-  { chord:[AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4, AMB_NOTES.A4], bass: AMB_NOTES.Bb2,
-    melody:[[AMB_NOTES.F5,1.5],[AMB_NOTES.Eb5,0.5],[AMB_NOTES.D5,2]] },
-  { chord:[AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4], bass: AMB_NOTES.G2,
-    melody:[[AMB_NOTES.D5,1.5],[AMB_NOTES.C5,0.5],[AMB_NOTES.Bb4,2]] },
-  { chord:[AMB_NOTES.Eb3, AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4], bass: AMB_NOTES.Eb2,
-    melody:[[AMB_NOTES.Eb5,1],[AMB_NOTES.F5,1],[AMB_NOTES.G5,2]] },
-  { chord:[AMB_NOTES.F3, AMB_NOTES.A3, AMB_NOTES.C4, AMB_NOTES.F4], bass: AMB_NOTES.F2,
-    melody:[[AMB_NOTES.F5,4]] },
-  { chord:[AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4, AMB_NOTES.A4], bass: AMB_NOTES.Bb2,
-    melody:[[AMB_NOTES.F5,1],[AMB_NOTES.Eb5,1],[AMB_NOTES.D5,1],[AMB_NOTES.C5,1]] },
-  { chord:[AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4, AMB_NOTES.F4], bass: AMB_NOTES.G2,
-    melody:[[AMB_NOTES.Bb4,1.5],[AMB_NOTES.C5,0.5],[AMB_NOTES.D5,2]] },
-  { chord:[AMB_NOTES.Eb3, AMB_NOTES.G3, AMB_NOTES.Bb3, AMB_NOTES.D4], bass: AMB_NOTES.Eb2,
-    melody:[[AMB_NOTES.Eb5,1],[AMB_NOTES.D5,1],[AMB_NOTES.C5,2]] },
-  { chord:[AMB_NOTES.F3, AMB_NOTES.A3, AMB_NOTES.C4, AMB_NOTES.F4], bass: AMB_NOTES.F2,
-    melody:[[AMB_NOTES.Bb4,4]] }
-];
-
-const Ambient = {
-  ctx: null, master: null, tracksGain: null, reverb: null,
-  enabled: false, mode: 'off', volume: 0.30,
-  bpm: 68,
-  seqState: { barIdx: 0, nextBarTime: 0, timer: null },
-  variant: 'full',
-  init() {
-    if (this.ctx) return;
-    this.ctx = new (window.AudioContext||window.webkitAudioContext)();
-    this.master = this.ctx.createGain();
-    this.master.gain.value = this.volume;
-    const comp = this.ctx.createDynamicsCompressor();
-    comp.threshold.value = -18; comp.ratio.value = 3;
-    comp.attack.value = 0.01; comp.release.value = 0.3;
-    this.master.connect(comp);
-    comp.connect(this.ctx.destination);
-    this.tracksGain = this.ctx.createGain();
-    this.tracksGain.gain.value = 1.0;
-    this.tracksGain.connect(this.master);
-    const conv = this.ctx.createConvolver();
-    const rate = this.ctx.sampleRate;
-    const len = Math.floor(rate * 2.4);
-    const buf = this.ctx.createBuffer(2, len, rate);
-    for (let ch = 0; ch < 2; ch++) {
-      const d = buf.getChannelData(ch);
-      for (let i = 0; i < len; i++) { d[i] = (Math.random()*2-1) * Math.pow(1 - i/len, 2.6); }
-    }
-    conv.buffer = buf;
-    const revGain = this.ctx.createGain();
-    revGain.gain.value = 0.30;
-    conv.connect(revGain);
-    revGain.connect(this.master);
-    this.reverb = conv;
-  },
-  _route(node, wetAmount = 0.25) {
-    node.connect(this.tracksGain);
-    if (this.reverb && wetAmount > 0) {
-      const g = this.ctx.createGain();
-      g.gain.value = wetAmount;
-      node.connect(g); g.connect(this.reverb);
-    }
-  },
-  playLead(freq, t, dur, gain = 1.0) {
-    const o1 = this.ctx.createOscillator();
-    const o2 = this.ctx.createOscillator();
-    const o3 = this.ctx.createOscillator();
-    const g1 = this.ctx.createGain();
-    const g2 = this.ctx.createGain();
-    const g3 = this.ctx.createGain();
-    const filt = this.ctx.createBiquadFilter();
-    const out = this.ctx.createGain();
-    o1.type = 'sine';       o1.frequency.value = freq;
-    o2.type = 'triangle';   o2.frequency.value = freq * 2;
-    o3.type = 'sine';       o3.frequency.value = freq * 0.5;
-    g2.gain.setValueAtTime(0.0001, t);
-    g2.gain.exponentialRampToValueAtTime(0.42, t + 0.006);
-    g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.32);
-    g3.gain.value = 0.16;
-    const peak = 0.155 * gain;
-    g1.gain.setValueAtTime(0.0001, t);
-    g1.gain.exponentialRampToValueAtTime(peak, t + 0.055);
-    g1.gain.exponentialRampToValueAtTime(peak * 0.72, t + 0.20);
-    g1.gain.setValueAtTime(peak * 0.68, t + Math.max(0.20, dur * 0.82));
-    g1.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.38);
-    filt.type = 'lowpass'; filt.frequency.value = 2200; filt.Q.value = 0.7;
-    o1.connect(g1); o2.connect(g2); o3.connect(g3);
-    g1.connect(filt); g2.connect(filt); g3.connect(filt);
-    filt.connect(out);
-    this._route(out, 0.38);
-    o1.start(t); o1.stop(t + dur + 0.5);
-    o2.start(t); o2.stop(t + dur + 0.5);
-    o3.start(t); o3.stop(t + dur + 0.5);
-  },
-  playPad(freqs, t, dur, gain = 1.0) {
-    const peak = 0.024 * gain;
-    freqs.forEach((f, i) => {
-      [-5, 5].forEach(detune => {
-        const o = this.ctx.createOscillator();
-        o.type = 'sawtooth';
-        o.frequency.value = f;
-        o.detune.value = detune;
-        const g = this.ctx.createGain();
-        const filt = this.ctx.createBiquadFilter();
-        filt.type = 'lowpass';
-        filt.frequency.value = 820 + i*80;
-        filt.Q.value = 0.55;
-        g.gain.setValueAtTime(0.0001, t);
-        g.gain.linearRampToValueAtTime(peak, t + 0.9);
-        g.gain.setValueAtTime(peak, t + Math.max(0.9, dur - 0.5));
-        g.gain.linearRampToValueAtTime(0.0001, t + dur + 0.5);
-        o.connect(g); g.connect(filt);
-        this._route(filt, 0.55);
-        o.start(t); o.stop(t + dur + 0.6);
-      });
-    });
-  },
-  playBass(freq, t, dur, gain = 1.0) {
-    const o1 = this.ctx.createOscillator();
-    const o2 = this.ctx.createOscillator();
-    const g1 = this.ctx.createGain();
-    const g2 = this.ctx.createGain();
-    const filt = this.ctx.createBiquadFilter();
-    o1.type = 'sine'; o1.frequency.value = freq;
-    o2.type = 'sine'; o2.frequency.value = freq * 2;
-    g2.gain.value = 0.12;
-    const peak = 0.145 * gain;
-    g1.gain.setValueAtTime(0.0001, t);
-    g1.gain.exponentialRampToValueAtTime(peak, t + 0.025);
-    g1.gain.exponentialRampToValueAtTime(peak * 0.72, t + dur * 0.55);
-    g1.gain.setValueAtTime(peak * 0.68, t + Math.max(0.1, dur - 0.08));
-    g1.gain.exponentialRampToValueAtTime(0.0001, t + dur + 0.28);
-    filt.type = 'lowpass'; filt.frequency.value = 360; filt.Q.value = 0.6;
-    o1.connect(g1); o2.connect(g2);
-    g1.connect(filt); g2.connect(filt);
-    this._route(filt, 0.10);
-    o1.start(t); o1.stop(t + dur + 0.4);
-    o2.start(t); o2.stop(t + dur + 0.4);
-  },
-  playChord(freqs, t, dur, gain = 1.0) {
-    freqs.forEach((f, i) => {
-      const delay = i * 0.014;
-      this.playLead(f, t + delay, dur, gain * 0.52);
-    });
-  },
-  scheduleBars() {
-    if (!this.enabled) return;
-    const beatDur = 60 / this.bpm;
-    const barDur = beatDur * 4;
-    const lookAhead = 3.5;
-    while (this.seqState.nextBarTime < this.ctx.currentTime + lookAhead) {
-      const idx = this.seqState.barIdx % BALLAD_LOOP.length;
-      const bar = BALLAD_LOOP[idx];
-      const t = this.seqState.nextBarTime;
-      const v = this.variant;
-      const padGain = (v === 'piano') ? 0.35 : (v === 'ambient') ? 1.4 : 1.0;
-      this.playPad(bar.chord, t, barDur * 0.98, padGain);
-      if (v === 'full' || v === 'night') {
-        this.playChord(bar.chord, t + 0.02, barDur * 0.48, 1.0);
-        if (idx % 2 === 1) this.playChord(bar.chord, t + beatDur*2 + 0.02, barDur * 0.42, 0.72);
-      } else if (v === 'piano') { this.playChord(bar.chord, t + 0.02, barDur * 0.85, 1.1); }
-      else if (v === 'ambient') { this.playChord(bar.chord, t + 0.05, barDur * 0.98, 0.45); }
-      else if (v === 'guitar') { this.playChord(bar.chord, t + 0.02, barDur * 0.5, 0.55); }
-      if (v === 'full' || v === 'guitar' || v === 'night') {
-        const bassGain = (v === 'night') ? 1.15 : 1.0;
-        this.playBass(bar.bass, t + 0.03, barDur * 0.9, bassGain);
-        if (idx % 2 === 0) { this.playBass(bar.bass * 1.5, t + beatDur*2, barDur * 0.4, 0.62); }
-      }
-      const melGain = (v === 'ambient') ? 0.72 : 1.0;
-      let mtime = t;
-      bar.melody.forEach(([note, dur]) => {
-        if (note > 0 && dur > 0) { this.playLead(note, mtime + 0.045, beatDur * dur * 0.92, melGain); }
-        mtime += beatDur * dur;
-      });
-      this.seqState.nextBarTime += barDur;
-      this.seqState.barIdx++;
-    }
-    this.seqState.timer = setTimeout(() => this.scheduleBars(), 800);
-  },
-  stopSchedule() { if (this.seqState.timer) { clearTimeout(this.seqState.timer); this.seqState.timer = null; } },
-  fadeIn(sec = 1.2) {
-    const now = this.ctx.currentTime;
-    this.master.gain.cancelScheduledValues(now);
-    this.master.gain.setValueAtTime(Math.max(0.0001, this.master.gain.value), now);
-    this.master.gain.linearRampToValueAtTime(this.volume, now + sec);
-  },
-  fadeOut(sec = 0.8) {
-    const now = this.ctx.currentTime;
-    this.master.gain.cancelScheduledValues(now);
-    this.master.gain.setValueAtTime(Math.max(0.0001, this.master.gain.value), now);
-    this.master.gain.linearRampToValueAtTime(0.0001, now + sec);
-  },
-  setMode(mode) {
-    this.init();
-    if (this.ctx.state === 'suspended') this.ctx.resume();
-    const prevEnabled = this.enabled;
-    if (mode === 'off') {
-      this.fadeOut(0.7);
-      this.stopSchedule();
-      setTimeout(()=>{ try{ this.ctx.suspend(); }catch(e){} }, 800);
-      this.enabled = false; this.mode = 'off';
-      return;
-    }
-    const cfg = {
-      t1: { variant: 'full', bpm: 68 }, t2: { variant: 'piano', bpm: 70 },
-      t3: { variant: 'ambient', bpm: 64 }, t4: { variant: 'guitar', bpm: 72 },
-      t5: { variant: 'night', bpm: 62 }, loop: { variant: 'full', bpm: 68 }
-    }[mode] || { variant: 'full', bpm: 68 };
-    this.variant = cfg.variant; this.bpm = cfg.bpm;
-    if (!prevEnabled) {
-      this.seqState.nextBarTime = this.ctx.currentTime + 0.15;
-      this.seqState.barIdx = 0;
-      this.stopSchedule();
-      this.scheduleBars();
-      this.fadeIn(1.3);
-    } else {
-      const now = this.ctx.currentTime;
-      this.master.gain.cancelScheduledValues(now);
-      this.master.gain.setValueAtTime(this.master.gain.value, now);
-      this.master.gain.linearRampToValueAtTime(this.volume * 0.08, now + 0.55);
-      setTimeout(() => {
-        this.stopSchedule();
-        this.seqState.nextBarTime = this.ctx.currentTime + 0.15;
-        this.seqState.barIdx = 0;
-        this.scheduleBars();
-        this.fadeIn(1.1);
-      }, 600);
-    }
-    this.mode = mode; this.enabled = true;
-  },
-  setVolume(v) {
-    this.volume = v;
-    if (this.master && this.enabled) {
-      const now = this.ctx.currentTime;
-      this.master.gain.cancelScheduledValues(now);
-      this.master.gain.linearRampToValueAtTime(v, now + 0.15);
-    }
-  }
-};
-
-window.toggleSoundMenu = function(e) {
-  e.stopPropagation();
-  const menu = document.getElementById('sound-menu');
-  menu.classList.toggle('hidden-pop');
-};
-
-const SOUND_META = {
-  off: { icon:'🔇', label:'Đã tắt nhạc nền Lounge' },
-  t1: { icon:'🎹', label:'🎹 Rhodes & Strings — Full Ballad 68 BPM' },
-  t2: { icon:'🎼', label:'🎼 Piano Solo — Pure 70 BPM' },
-  t3: { icon:'🌫️', label:'🌫️ Ambient Wash — Ethereal 64 BPM' },
-  t4: { icon:'🎸', label:'🎸 Soft Guitar — Mellow 72 BPM' },
-  t5: { icon:'🌙', label:'🌙 Late Night — Slow & Deep 62 BPM' },
-  loop: { icon:'🔁', label:'🔁 Auto Loop — Dolphin Ballad Theme' }
-};
-
-window.setSoundMode = function(mode) {
-  Ambient.setMode(mode);
-  const meta = SOUND_META[mode] || SOUND_META.off;
-  const btn = document.getElementById('sound-toggle');
-  btn.innerText = meta.icon;
-  btn.classList.toggle('active', mode !== 'off');
-  document.querySelectorAll('#sound-menu .mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === mode));
-  localStorage.setItem('dolphinSoundMode', mode);
-  const menu = document.getElementById('sound-menu');
-  setTimeout(() => menu.classList.add('hidden-pop'), 150);
-  window.showToast(meta.label, meta.icon);
-};
-
-window.setAmbientVolume = function(v) {
-  const vol = parseInt(v) / 100;
-  Ambient.setVolume(vol);
-  document.getElementById('vol-pct').innerText = v + '%';
-  localStorage.setItem('dolphinSoundVolume', v);
-};
-
-document.addEventListener('click', (e) => {
-  const menu = document.getElementById('sound-menu');
-  if (menu && !menu.classList.contains('hidden-pop') && !e.target.closest('#sound-menu') && !e.target.closest('#sound-toggle')) {
-    menu.classList.add('hidden-pop');
-  }
-});
+// Lounge music player removed by request; operational alert sounds remain available.
 
 function tickClock(){
   const el = document.getElementById('vn-clock-text');
@@ -1167,30 +838,9 @@ window.onload = function() {
   const saved = sessionStorage.getItem('dolphinLoungeSetup');
   if(saved){ const p = JSON.parse(saved); state.selectedTable = p.table; state.currentLanguage = p.lang; state.tableSelected = true; }
 
-  const savedMode = localStorage.getItem('dolphinSoundMode') || 'off';
-  const savedVol = localStorage.getItem('dolphinSoundVolume') || '30';
-  document.getElementById('vol-slider').value = savedVol;
-  document.getElementById('vol-pct').innerText = savedVol + '%';
-  Ambient.volume = parseInt(savedVol)/100;
-
-  const meta = SOUND_META[savedMode] || SOUND_META.off;
-  const btn = document.getElementById('sound-toggle');
-  btn.innerText = meta.icon;
-  btn.classList.toggle('active', savedMode !== 'off');
-  document.querySelectorAll('#sound-menu .mode-btn').forEach(b => b.classList.toggle('active', b.dataset.mode === savedMode));
-
-  if (savedMode !== 'off') {
-    const enableOnFirst = () => {
-      Ambient.setMode(savedMode);
-      const m2 = SOUND_META[savedMode] || SOUND_META.off;
-      btn.innerText = m2.icon;
-      btn.classList.toggle('active', savedMode !== 'off');
-      document.removeEventListener('click', enableOnFirst);
-      document.removeEventListener('touchstart', enableOnFirst);
-    };
-    document.addEventListener('click', enableOnFirst);
-    document.addEventListener('touchstart', enableOnFirst);
-  }
+  // Explicitly clear former background-music preferences.
+  localStorage.removeItem('dolphinSoundMode');
+  localStorage.removeItem('dolphinSoundVolume');
 
   window.startCloudConnection();
   tickClock();

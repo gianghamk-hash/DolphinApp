@@ -3,10 +3,10 @@
 const css=document.createElement('style');
 css.textContent=`
 #dolphin-royal-leaders{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;width:100%;max-width:860px;margin:14px auto 22px}
-.drl-card{position:relative;isolation:isolate;overflow:hidden;padding:17px 14px 19px;border-radius:24px;text-align:center;background:radial-gradient(ellipse at 12% 0%,rgba(251,215,122,.22),transparent 48%),radial-gradient(ellipse at 90% 92%,rgba(63,218,207,.17),transparent 55%),linear-gradient(130deg,rgba(28,72,71,.42),rgba(6,24,34,.24));border:1px solid rgba(255,225,151,.78);box-shadow:0 12px 38px rgba(0,0,0,.28),0 0 24px rgba(255,171,55,.19),inset 0 1px 0 rgba(255,255,255,.40),inset 0 -1px 0 rgba(255,255,255,.09);backdrop-filter:blur(24px) saturate(180%);-webkit-backdrop-filter:blur(24px) saturate(180%);transition:transform .28s ease,box-shadow .28s ease}
-.drl-card:hover{transform:translateY(-3px);box-shadow:0 18px 46px rgba(0,0,0,.32),0 0 34px rgba(255,184,64,.24),inset 0 1px 0 rgba(255,255,255,.52)}
-.drl-card::before{content:'';position:absolute;inset:1px;border-radius:23px;pointer-events:none;background:linear-gradient(118deg,rgba(255,255,255,.27),transparent 30%,transparent 75%,rgba(255,255,255,.07));z-index:-1}
-.drl-card::after{content:'';position:absolute;width:230px;height:230px;top:-155px;right:-100px;border-radius:50%;background:radial-gradient(circle,rgba(255,226,143,.3),transparent 72%);filter:blur(4px);pointer-events:none;z-index:-1}
+.drl-card{position:relative;isolation:isolate;overflow:hidden;padding:17px 14px 19px;border-radius:24px;text-align:center;background:linear-gradient(135deg,rgba(255,255,255,.075),rgba(255,255,255,.025) 48%,rgba(43,199,191,.035));border:1px solid rgba(255,229,170,.72);box-shadow:0 12px 38px rgba(0,0,0,.20),0 0 20px rgba(255,171,55,.14),inset 0 1px 0 rgba(255,255,255,.32),inset 0 -1px 0 rgba(255,255,255,.06);backdrop-filter:blur(5px) saturate(130%);-webkit-backdrop-filter:blur(5px) saturate(130%);transition:transform .28s ease,box-shadow .28s ease}
+.drl-card:hover{transform:translateY(-3px);box-shadow:0 15px 38px rgba(0,0,0,.26),0 0 26px rgba(255,184,64,.19),inset 0 1px 0 rgba(255,255,255,.42)}
+.drl-card::before{content:'';position:absolute;inset:1px;border-radius:23px;pointer-events:none;background:linear-gradient(120deg,rgba(255,255,255,.13),transparent 26%,transparent 74%,rgba(255,255,255,.035));z-index:-1}
+.drl-card::after{content:'';position:absolute;width:170px;height:170px;top:-112px;right:-82px;border-radius:50%;background:radial-gradient(circle,rgba(255,230,162,.095),transparent 72%);pointer-events:none;z-index:-1}
 .drl-title{position:relative;display:inline-block;margin:0 0 8px;padding:0 5px;font-size:12px;font-weight:1000;letter-spacing:.11em;color:#ffe9a2;text-transform:uppercase;text-shadow:0 0 6px #ffeebd,0 0 15px #ffab48,0 0 29px #ff5e18;animation:drlFireFlicker 1.05s infinite alternate ease-in-out}
 .drl-title::before{content:'🔥';position:absolute;left:-24px;top:-5px;font-size:17px;filter:drop-shadow(0 0 8px #ff8e30);animation:drlFireDance .95s infinite alternate ease-in-out}
 .drl-title::after{content:'🔥';position:absolute;right:-24px;top:-5px;font-size:17px;filter:drop-shadow(0 0 8px #ff8e30);animation:drlFireDance 1.2s .25s infinite alternate-reverse ease-in-out}
@@ -29,7 +29,7 @@ function draw(type,data){
  const el=document.getElementById('drl-'+type);
  if(!el)return;
  const top=data&&data.entries&&data.entries[0],sales=type==='revenue';
- el.innerHTML='<div class="drl-title">'+'REALTIME TOP 1'+'</div><div class="drl-crown">👑</div>'+
+ el.innerHTML='<div class="drl-title">'+'TOP 1'+'</div><div class="drl-crown">👑</div>'+
  (top?'<div class="drl-name">'+e(top.name)+'</div><div class="drl-tag">'+(sales?'KING OF SALES':'WORK CHAMPION')+'</div><div class="drl-value">'+(sales?Number(top.value).toLocaleString('vi-VN')+' đ':Number(top.value).toLocaleString('vi-VN')+' điểm')+'</div>':'<div class="drl-name" style="opacity:.65">Chưa có dữ liệu</div>');
 }
 function ready(){

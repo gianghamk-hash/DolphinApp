@@ -85,6 +85,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     </div>
   </div>
 
+  <div id="rank-hall" class="drr-hall" aria-label="Hall of Fame"><h3>👑 DOLPHIN HALL OF FAME</h3><div id="rank-hall-body">Đang cập nhật…</div></div>
+
   <div id="section-points" class="glass rounded-2xl p-4" style="display:none">
     <div class="flex items-center justify-between mb-4 pb-3 border-b border-white/10">
       <div class="flex items-center gap-2">
@@ -106,6 +108,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 </main>
 
+<script src="../rank-rewards.js?v=1"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -376,6 +379,8 @@ function renderRevenue(){
   const list = $('revenue-list');
   if (!list) return;
   const data = calcRevenue();
+  const rewards = window.DolphinRankRewards;
+  if(rewards) rewards.publish(data, state.weekStart || 'current-week');
   if (!data.length){
     list.innerHTML = '<div class="empty">Chưa có doanh thu trong tuần này</div>';
     return;
@@ -388,7 +393,7 @@ function renderRevenue(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        ${esc(e.name)}
+        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" style="width:34px;height:34px">${r===1?'👑':r<=3?'💎':r<=6?'🔮':'🐬'}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}</div></span></div>
         <div class="sub-count" style="text-align:left;opacity:.7">${lbl}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -505,6 +510,8 @@ function renderWeekStat(){
 function renderAll(){
   renderWeekStat();
   if (state.mainTab === 'revenue') renderRevenue();
+  const hall=document.getElementById('rank-hall-body'),rewards=window.DolphinRankRewards;
+  if(hall&&rewards){const entries=rewards.history();hall.innerHTML=entries.length?entries.slice(0,12).map(x=>'<div class="drr-hall-item">👑 '+rewards.escapeHTML(x.name)+' · '+rewards.escapeHTML(x.week)+'</div>').join(''):'Chưa có quán quân được ghi nhận trên thiết bị này';}
   else renderPoints();
 }
 

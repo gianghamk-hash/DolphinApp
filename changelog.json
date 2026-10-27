@@ -1,22 +1,30 @@
 {
-  "version": "1.0.140",
-  "previousVersion": "1.0.139",
-  "commit": "0cff633",
-  "previousCommit": "d175b5e",
-  "buildDate": "2026-10-27T10:19:10.635Z",
-  "summary": "feat(landing): animated flames around royal Top 1 names",
+  "version": "1.0.141",
+  "previousVersion": "1.0.140",
+  "commit": "a81396a",
+  "previousCommit": "0cff633",
+  "buildDate": "2026-10-27T10:38:56.020Z",
+  "summary": "feat(theme): animated CSS artwork for seasonal landing scenes",
   "changes": {
-    "totalCommits": 144,
-    "filesChanged": 1,
+    "totalCommits": 145,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(landing): animated flames around royal Top 1 names"
+    "feat(theme): animated CSS artwork for seasonal landing scenes"
   ],
   "fileChanges": [
     {
-      "file": "royal-leaders.js",
+      "file": ".github/workflows/theme-seasonal-scenes.yml",
+      "type": "update"
+    },
+    {
+      "file": "theme-seasonal-scenes.test.js",
+      "type": "update"
+    },
+    {
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

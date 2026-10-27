@@ -340,30 +340,13 @@ input[type="datetime-local"].mgr-input{color-scheme:dark;font-weight:800}
       <!-- Tab: Theme -->
       <div id="stab-theme">
         <p class="text-[11px] text-teal-300 mb-3 leading-relaxed">
-          Chọn chủ đề cho landing page. <b class="text-gold-400">Auto</b> = tự động theo ngày VN.
+          Chọn một trong ba chế độ hiển thị áp dụng cho Landing, Ranking và các app con.
         </p>
         <label class="block text-[10px] font-bold text-teal-300 uppercase tracking-wider mb-2">Chủ đề</label>
         <select id="theme-select" class="w-full bg-black/40 border border-teal-700/50 rounded-xl px-3 py-3 text-[13px] text-white focus:outline-none focus:border-gold-500 mb-3">
-          <option value="auto">🔄 Auto (theo ngày VN)</option>
-          <option value="default">🐬 Mặc định</option>
-          <optgroup label="🇻🇳 Ngày Lễ Việt Nam">
-            <option value="tet">🌸 Tết Nguyên Đán</option>
-            <option value="valentine">💖 Valentine</option>
-            <option value="womenday">🌹 Quốc Tế Phụ Nữ</option>
-            <option value="reunification">🇻🇳 30/4 Thống Nhất</option>
-            <option value="children">🎈 Tết Thiếu Nhi</option>
-            <option value="nationalday">🇻🇳 Quốc Khánh 2/9</option>
-            <option value="midautumn">🏮 Trung Thu</option>
-            <option value="halloween">🎃 Halloween</option>
-            <option value="christmas">🎄 Giáng Sinh</option>
-            <option value="newyear">🎊 Tết Dương Lịch</option>
-          </optgroup>
-          <optgroup label="🌤️ Bốn Mùa">
-            <option value="spring">🌸 Mùa Xuân</option>
-            <option value="summer">☀️ Mùa Hè</option>
-            <option value="autumn">🍂 Mùa Thu</option>
-            <option value="winter">❄️ Mùa Đông</option>
-          </optgroup>
+          <option value="dark">🌙 Dark Mode</option>
+          <option value="light">☀️ Light Mode</option>
+          <option value="gray">◻️ Gray Mode</option>
         </select>
         <div id="theme-status" class="hidden text-[11px] font-bold mb-3 px-3 py-2 rounded-lg"></div>
         <div class="flex gap-2 flex-wrap">
@@ -804,7 +787,7 @@ function startThemeListener(db) {
       const sel = document.getElementById('theme-select');
       const meta = document.getElementById('theme-meta');
       if (!sel) return;
-      sel.value = data.themeKey || 'auto';
+      sel.value = ['dark','light','gray'].includes(data.themeKey) ? data.themeKey : 'dark';
       if (meta && data.updatedAt) {
         const d = new Date(data.updatedAt);
         meta.textContent = '✏️ Cập nhật cuối: ' + d.toLocaleString('vi-VN', { hour: '2-digit', minute: '2-digit', day: '2-digit', month: '2-digit' });
@@ -817,7 +800,7 @@ window.saveTheme = async function() {
   const status = document.getElementById('theme-status');
   const btn = document.getElementById('theme-save-btn');
   if (!sel || !status || !btn || !window.__db) return;
-  const themeKey = sel.value;
+  const themeKey = ['dark','light','gray'].includes(sel.value) ? sel.value : 'dark';
   btn.disabled = true; btn.style.opacity = '.6'; btn.textContent = '⏳ Đang lưu...';
   try {
     await setDoc(doc(window.__db, 'master_config', 'theme'), { themeKey, updatedAt: Date.now(), updatedBy: 'Manager' }, { merge: true });
@@ -829,7 +812,7 @@ window.saveTheme = async function() {
 window.previewTheme = function() {
   const sel = document.getElementById('theme-select');
   if (!sel) return;
-  window.open(sel.value === 'auto' ? '/DolphinApp/' : '/DolphinApp/?theme=' + sel.value, '_blank');
+  window.open('/DolphinApp/?theme=' + sel.value, '_blank');
 };
 function showThemeStatus(type, text) {
   const status = document.getElementById('theme-status');

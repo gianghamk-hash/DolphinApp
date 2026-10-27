@@ -3,7 +3,7 @@
 'use strict';
 const KEY='dolphin_theme';
 const THEMES={
- dark:{name:'Dark Mode',accent:'#FBD77A',accent2:'#9de4d7',bg1:'#133b38',bg2:'#081c1b',surface:'#123b37',text:'#f7faf9',muted:'#a9d4ca',border:'rgba(244,184,66,.48)',borderSoft:'rgba(146,216,202,.2)',glow:'rgba(244,184,66,.2)'},
+ dark:{name:'Dark Mode',accent:'#FBD77A',accent2:'#9de4d7',bg1:'#050505',bg2:'#000000',surface:'#090909',text:'#f7faf9',muted:'#a9d4ca',border:'rgba(244,184,66,.48)',borderSoft:'rgba(146,216,202,.2)',glow:'rgba(244,184,66,.2)'},
  light:{name:'Light Mode',accent:'#006f74',accent2:'#006f74',bg1:'#f3f9f8',bg2:'#eff6f4',surface:'#ffffff',text:'#103b3c',muted:'#446966',border:'rgba(0,111,116,.4)',borderSoft:'rgba(0,100,104,.18)',glow:'rgba(0,119,118,.14)'},
  gray:{name:'Gray Mode',accent:'#d1d5db',accent2:'#d1d5db',bg1:'#3a3e43',bg2:'#23272b',surface:'#343a40',text:'#f0f1f3',muted:'#b6c0c8',border:'rgba(180,189,198,.46)',borderSoft:'rgba(173,184,193,.24)',glow:'rgba(170,179,189,.12)'}
 };
@@ -34,6 +34,11 @@ function inject(){
  style.textContent=`
 body[data-theme]{background:var(--theme-bg2)!important;color:var(--mode-text)!important;transition:background-color .25s,color .25s}
 body[data-theme]::before{background:linear-gradient(145deg,var(--theme-bg1),var(--theme-bg2))!important;animation:none!important}
+body[data-theme="dark"]{background:#000!important}
+body[data-theme="dark"]::before{background:#000!important;box-shadow:none!important;filter:none!important}
+body[data-theme="dark"] #halongClock{background:transparent!important;border:none!important;box-shadow:none!important;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+body[data-theme="dark"] #halongClock .hclock-glow{display:none!important}
+body[data-theme="dark"] #landing{background:transparent!important}
 body[data-theme] :is(.glass-card,.glass,.menu-card,.order-card,.order-slot,.stat-card,.outlet-card,.week-bar,.settings-panel,.modal-content,.app-header){border-color:var(--theme-border-soft)!important}
 body[data-theme] :is(.glass-card,.glass,.menu-card,.order-card,.stat-card,.outlet-card,.settings-panel){background:var(--mode-surface)!important;color:var(--mode-text)!important}
 body[data-theme] :is(.week-bar,.tab-btn){border-color:var(--theme-border-soft)!important}

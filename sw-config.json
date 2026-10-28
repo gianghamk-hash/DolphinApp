@@ -1,5 +1,5 @@
 {
-  "version": "1.0.160",
+  "version": "1.0.161",
   "releaseDate": "2026-10-28",
-  "notes": "Merge pull request #100 from gianghamk-hash/feat/tft-battle-unit-nameplates-20261028"
+  "notes": "Merge pull request #101 from gianghamk-hash/fix/tft-reliable-board-nameplates-20261028"
 }

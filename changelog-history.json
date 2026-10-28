@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.160",
+      "releaseDate": "2026-10-28T07:36:56.108Z",
+      "summary": "Merge pull request #100 from gianghamk-hash/feat/tft-battle-unit-nameplates-20261028",
+      "details": [
+        "Merge pull request #100 from gianghamk-hash/feat/tft-battle-unit-nameplates-20261028"
+      ]
+    },
+    {
       "version": "1.0.159",
       "releaseDate": "2026-10-28T07:29:49.947Z",
       "summary": "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028",
@@ -390,14 +398,6 @@
       "summary": "feat(tactics): Saber chibi Blender production setup",
       "details": [
         "feat(tactics): Saber chibi Blender production setup"
-      ]
-    },
-    {
-      "version": "1.0.110",
-      "releaseDate": "2026-10-26T13:44:13.316Z",
-      "summary": "feat: GLB-first Stylized Chibi character asset pipeline",
-      "details": [
-        "feat: GLB-first Stylized Chibi character asset pipeline"
       ]
     }
   ]

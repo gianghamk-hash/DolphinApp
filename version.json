@@ -1,7 +1,7 @@
 {
-  "version": "1.0.160",
-  "buildDate": "2026-10-28T07:36:56.108Z",
-  "commit": "4af1675",
-  "notes": "Merge pull request #100 from gianghamk-hash/feat/tft-battle-unit-nameplates-20261028",
+  "version": "1.0.161",
+  "buildDate": "2026-10-28T08:56:31.663Z",
+  "commit": "aca03ed",
+  "notes": "Merge pull request #101 from gianghamk-hash/fix/tft-reliable-board-nameplates-20261028",
   "forceUpdate": false
 }

@@ -114,3 +114,27 @@
  #game>section>.playerDock{top:38px!important;max-height:calc(100% - 42px)!important}
 }
 @media (prefers-reduced-motion:reduce){#game .traitOrb{transition:none!important}}
+
+/* Compact portrait-first controls: use one viewport with scrollable shop details. */
+#game .benchBar #bench button{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;overflow:hidden}
+#game .benchBar #bench button strong{font-size:clamp(7px,1.9vw,10px);line-height:1.12;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#game .benchBar #bench button small{font-size:clamp(6px,1.5vw,8px);line-height:1.1;white-space:normal;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;max-width:100%}
+.equipSuccessFx{position:fixed;z-index:2147483400;transform:translate(-50%,-50%);pointer-events:none;color:#ffdf81;text-shadow:0 0 10px #00dc9a,0 2px 5px #061926;font-size:13px;font-weight:900;animation:equipSuccessPop .85s ease-out forwards}
+@keyframes equipSuccessPop{from{opacity:0;transform:translate(-50%,-30%) scale(.65)}25%{opacity:1;transform:translate(-50%,-85%) scale(1.15)}to{opacity:0;transform:translate(-50%,-150%) scale(.9)}}
+@media(orientation:portrait) and (max-width:650px){
+  #appShell:fullscreen,#appShell.pseudoFullscreen{height:100dvh!important;overflow:hidden!important}
+  #game:not(.hidden){height:calc(100dvh - 30px)!important;min-height:0!important;overflow:hidden!important;gap:3px!important;padding:3px!important}
+  #game>section{flex:0 0 auto!important;min-height:0!important;gap:3px!important}
+  #game>section>#stage{height:clamp(180px,37dvh,340px)!important;min-height:0!important;max-height:none!important}
+  #game .touchItemTray{min-height:34px!important;max-height:41px!important;padding:2px 4px!important}
+  #game .touchGear{height:32px!important;flex-basis:56px}
+  #game .benchBar{padding:3px 4px!important;margin-top:0!important}
+  #game .benchBar #bench button{min-height:43px!important;height:43px!important;padding:2px!important}
+  #game>aside{flex:1 1 0!important;min-height:0!important;height:auto!important;overflow-y:auto!important;padding-bottom:4px!important;overscroll-behavior:contain}
+  #game .panel{padding:4px!important;margin-bottom:3px!important}
+  #game #shop .shopHero{min-height:54px!important;padding:3px 1px!important}
+  #game #shop .shopAvatar{font-size:13px!important}
+  #game .shopIconBtn{min-height:30px!important;padding:3px 8px!important}
+  #game #heroInfo{max-height:24dvh;overflow-y:auto}
+}
+@media(prefers-reduced-motion:reduce){.equipSuccessFx{animation:none}}

@@ -42,12 +42,12 @@ test('server state denies actions during combat and supports deterministic PvE r
  assert.throws(()=>E.action(s,'a',{type:'MOVE',unitId:id,to:'board',index:'r0c4'},30101)); // shop rolls are intentionally allowed during combat
  const a=E.simulate(s.pairs[0],s,s.combatSnapshot,876),b=E.simulate(s.pairs[0],s,s.combatSnapshot,876);
  assert.deepEqual(a,b);
- E.advance(s,50100);assert.equal(s.roundPhase,'TRANSITION');assert.equal(s.reports.length,4);
- E.advance(s,55100);assert.equal(s.roundPhase,'PREPARATION');assert.equal(s.round,2);
+ E.advance(s,60100);assert.equal(s.roundPhase,'TRANSITION');assert.equal(s.reports.length,4);
+ E.advance(s,65100);assert.equal(s.roundPhase,'PREPARATION');assert.equal(s.round,2);
 });
 
-test('20-second combat has bounded authoritative timeline and tuned hero classes',()=>{
- assert.equal(E.PHASES.COMBAT,20000);
+test('30-second combat has bounded authoritative timeline and tuned hero classes',()=>{
+ assert.equal(E.PHASES.COMBAT,30000);
  assert.equal(E.PHASES.PREPARATION,30000);
  assert.equal(E.C.heroes.length,30);
  for(const hero of E.C.heroes){
@@ -57,5 +57,5 @@ test('20-second combat has bounded authoritative timeline and tuned hero classes
  }
  const state=setup();E.advance(state,30100);
  const report=E.simulate(state.pairs[0],state,state.combatSnapshot,876);
- assert.equal(report.events.at(-1).t,20000);
+ assert.equal(report.events.at(-1).t,30000);
 });

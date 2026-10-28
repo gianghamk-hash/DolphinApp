@@ -63,3 +63,21 @@
  50%{box-shadow:inset 0 0 0 1px rgba(255,239,164,.7),0 0 16px rgba(255,207,77,.65),0 0 26px rgba(255,179,34,.23)}
 }
 @media(prefers-reduced-motion:reduce){#game #shop .shopHero.shopRecommended{animation:none!important}}
+
+
+/* Touch inventory sits immediately below the 3D arena, before the bench.
+   It is purposefully outside the canvas to keep 3D pointer picking intact. */
+#game .touchItemTray{flex:0 0 auto;display:flex;align-items:center;gap:8px;min-height:56px;max-height:70px;padding:5px 9px;border:1px solid rgba(241,205,136,.5);border-radius:12px;background:linear-gradient(110deg,#0d2939,#153e4a);box-shadow:inset 0 1px #ffffff18}
+#game .touchItemTitle{color:#ffda8a;font-size:10px;font-weight:900;white-space:nowrap;letter-spacing:.05em}
+#game .touchItemSlots{display:flex;align-items:center;gap:6px;overflow-x:auto;overscroll-behavior-x:contain;scrollbar-width:thin;min-width:0;flex:1}
+#game .touchGear{display:flex;align-items:center;flex-direction:column;justify-content:center;flex:0 0 66px;height:44px;padding:3px!important;background:linear-gradient(130deg,#1b4b59,#102e41)!important;border:1px solid #5db9bd!important;border-radius:9px;color:#f6f8e5;touch-action:none;user-select:none;-webkit-user-select:none;cursor:grab}
+#game .touchGear>span{font-size:16px;line-height:1}
+#game .touchGear>small{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;width:100%;font-size:9px}
+#game .touchGear:disabled{opacity:.42;cursor:not-allowed}
+#game .touchItemEmpty{font-size:10px;color:#b6d1d9}
+.touchGearGhost{position:fixed!important;z-index:2147483200;transform:translate(-50%,-72%) scale(1.12);pointer-events:none!important;width:74px;height:53px;background:#164d58!important;border:2px solid #ffe096!important;border-radius:10px;color:#fff2ba;box-shadow:0 0 17px #ffd46a9c;display:flex;flex-direction:column;align-items:center;justify-content:center}
+.touchGearGhost small{font-size:10px;max-width:72px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#game #stage,#game #stage canvas{touch-action:none!important}
+#game #zoomControls{display:none!important}
+@media(max-height:520px) and (orientation:landscape){#game .touchItemTray{min-height:43px;max-height:49px;padding:3px 6px;gap:5px}#game .touchGear{flex-basis:55px;height:36px}#game .touchGear>span{font-size:12px}#game .touchGear>small{font-size:8px}}
+@media(orientation:portrait){#game .touchItemTray{min-height:60px}#game .touchGear{flex-basis:70px;height:47px}}

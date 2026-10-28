@@ -269,7 +269,13 @@
     "impact": 2,
     "skill": "aoe",
     "origin": "Celestial"
-  }
+  },
+  "H31": {"name":"Diggie","style":"support-1","weapon":"staff","color":16766601,"impact":1,"skill":"teamShield","origin":"Mech"},
+  "H32": {"name":"Angela","style":"support-2","weapon":"staff","color":16748923,"impact":1.1,"skill":"teamHaste","origin":"Celestial"},
+  "H33": {"name":"Floryn","style":"support-3","weapon":"staff","color":7394455,"impact":1.2,"skill":"teamHeal","origin":"Beast"},
+  "H34": {"name":"Mathilda","style":"support-4","weapon":"staff","color":7615461,"impact":1.3,"skill":"teamHaste","origin":"Arcane"},
+  "H35": {"name":"Estes","style":"support-5","weapon":"staff","color":15251192,"impact":1.4,"skill":"teamHeal","origin":"Celestial"},
+  "H36": {"name":"Faramis","style":"support-6","weapon":"staff","color":12423934,"impact":1.5,"skill":"teamShield","origin":"Shadow"}
 };
 root.DolphinTacticsHeroProfiles=Object.freeze(PROFILES);
 if(typeof module!=='undefined'&&module.exports)module.exports=PROFILES;

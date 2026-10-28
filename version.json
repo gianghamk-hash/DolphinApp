@@ -1,7 +1,7 @@
 {
-  "version": "1.0.147",
-  "buildDate": "2026-10-28T03:38:26.402Z",
-  "commit": "e3803d2",
-  "notes": "feat(tft): responsive trait HUD, full tier details and touch-only equipment",
+  "version": "1.0.148",
+  "buildDate": "2026-10-28T03:54:14.027Z",
+  "commit": "4b734b6",
+  "notes": "fix(tft): synchronize trait and player HP HUD scaling (#88)",
   "forceUpdate": false
 }

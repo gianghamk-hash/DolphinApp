@@ -1,42 +1,22 @@
 {
-  "version": "1.0.147",
-  "previousVersion": "1.0.146",
-  "commit": "e3803d2",
-  "previousCommit": "52ce26a",
-  "buildDate": "2026-10-28T03:38:26.402Z",
-  "summary": "feat(tft): responsive trait HUD, full tier details and touch-only equipment",
+  "version": "1.0.148",
+  "previousVersion": "1.0.147",
+  "commit": "4b734b6",
+  "previousCommit": "e3803d2",
+  "buildDate": "2026-10-28T03:54:14.027Z",
+  "summary": "fix(tft): synchronize trait and player HP HUD scaling (#88)",
   "changes": {
-    "totalCommits": 151,
-    "filesChanged": 7,
+    "totalCommits": 152,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tft): responsive trait HUD, full tier details and touch-only equipment"
+    "fix(tft): synchronize trait and player HP HUD scaling (#88)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/tft-trait-hud.yml",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/catalog.json",
-      "type": "update"
-    },
-    {
       "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.css",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     },
     {

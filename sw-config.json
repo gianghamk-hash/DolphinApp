@@ -1,5 +1,5 @@
 {
-  "version": "1.0.147",
+  "version": "1.0.148",
   "releaseDate": "2026-10-28",
-  "notes": "feat(tft): responsive trait HUD, full tier details and touch-only equipment"
+  "notes": "fix(tft): synchronize trait and player HP HUD scaling (#88)"
 }

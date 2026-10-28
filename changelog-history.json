@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.147",
+      "releaseDate": "2026-10-28T03:38:26.402Z",
+      "summary": "feat(tft): responsive trait HUD, full tier details and touch-only equipment",
+      "details": [
+        "feat(tft): responsive trait HUD, full tier details and touch-only equipment"
+      ]
+    },
+    {
       "version": "1.0.146",
       "releaseDate": "2026-10-28T03:20:32.403Z",
       "summary": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.98",
       "releaseDate": "2026-10-25T05:20:43.012Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.97",
-      "releaseDate": "2026-10-25T05:12:04.784Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

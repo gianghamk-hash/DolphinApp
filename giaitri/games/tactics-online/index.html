@@ -634,9 +634,6 @@ $('bench').addEventListener('pointerdown',e=>{
 function clearUnitDragFeedback(){document.querySelectorAll('#bench .isDragSource,#bench .isDropTarget,.benchBar.isDropTarget').forEach(node=>node.classList.remove('isDragSource','isDropTarget'));}
 document.addEventListener('pointermove',e=>{if(!dragUnit)return;document.querySelectorAll('#bench .isDropTarget,.benchBar.isDropTarget').forEach(node=>node.classList.remove('isDropTarget'));if(Math.hypot(e.clientX-dragUnit.x,e.clientY-dragUnit.y)<15)return;const hit=document.elementFromPoint(e.clientX,e.clientY),b=hit?.closest?.('#bench [data-bench]');if(b)b.classList.add('isDropTarget');else if(hit?.closest?.('.benchBar'))$('bench').closest('.benchBar')?.classList.add('isDropTarget');},{passive:true});
 document.addEventListener('pointercancel',()=>{dragUnit=null;clearUnitDragFeedback();});
-function clearUnitDragFeedback(){document.querySelectorAll('#bench .isDragSource,#bench .isDropTarget,.benchBar.isDropTarget').forEach(node=>node.classList.remove('isDragSource','isDropTarget'));}
-document.addEventListener('pointermove',e=>{if(!dragUnit)return;document.querySelectorAll('#bench .isDropTarget,.benchBar.isDropTarget').forEach(node=>node.classList.remove('isDropTarget'));if(Math.hypot(e.clientX-dragUnit.x,e.clientY-dragUnit.y)<15)return;const hit=document.elementFromPoint(e.clientX,e.clientY),b=hit?.closest?.('#bench [data-bench]');if(b)b.classList.add('isDropTarget');else if(hit?.closest?.('.benchBar'))$('bench').closest('.benchBar')?.classList.add('isDropTarget');},{passive:true});
-document.addEventListener('pointercancel',()=>{dragUnit=null;clearUnitDragFeedback();});
 document.addEventListener('pointerup',e=>{
   clearUnitDragFeedback();
  if(Date.now()-lastPinchAt<350){dragUnit=null;return;}

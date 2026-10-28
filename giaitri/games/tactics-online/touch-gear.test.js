@@ -27,3 +27,16 @@ test('round labels match engine PVE rotation',()=>{
  assert.match(html,/PvP · ĐẤU NGƯỜI/);
  assert.equal(catalog.phases.COMBAT,30000);
 });
+
+test('gear drag captures on stable tray instead of rerendered item button',()=>{
+ assert.match(html,/trayRoot\.setPointerCapture\(e\.pointerId\)/);
+ assert.doesNotMatch(html,/tile\.setPointerCapture\(e\.pointerId\)/);
+ assert.match(html,/trayRoot\.releasePointerCapture\(e\.pointerId\)/);
+ assert.match(css,/#game \.touchItemTray \.touchGear\{touch-action:none!important/);
+});
+test('gear drops fall back to occupied board tile and bench slot',()=>{
+ assert.match(html,/const tile=boardHit\(e\.clientX,e\.clientY\)/);
+ assert.match(html,/target=p\.board\['r'\+\(tile\.row-4\)\+'c'\+tile\.col\]/);
+ assert.match(html,/target=p\.bench\[String\(b\.dataset\.bench\)\]/);
+ assert.match(html,/chờ đồng bộ từ chủ phòng/);
+});

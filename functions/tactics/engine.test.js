@@ -134,3 +134,17 @@ test('client catalog matches server ability identities for all heroes',()=>{
  const client=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../giaitri/games/tactics-online/catalog.json'),'utf8'));
  assert.deepEqual(client.heroes.map(h=>h.ability),E.C.heroes.map(h=>h.ability));
 });
+
+test('casting consumes full mana and creates a matching skill timeline event',()=>{
+ const state=setup(),player=state.players.a;
+ const h=E.C.heroes.find(x=>x.ability.kind==='stun');
+ player.units={caster:{id:'caster',heroId:h.id,star:2,items:[]}};
+ player.board={r0c3:'caster'};
+ state.round=1;
+ const events=E.simulate({a:'a',b:null,pve:true,ghost:false},state,{a:E.clone(player)},381).events;
+ const cast=events.find(e=>e.type==='skill'&&e.actor==='caster');
+ assert.ok(cast,'expected spell cast during PvE combat');
+ assert.equal(cast.skillId,h.ability.id);
+ assert.ok(events.some(e=>e.type==='mana'&&e.actor==='caster'&&e.amount===0&&e.t===cast.t));
+ assert.ok(events.some(e=>e.type==='mana'&&e.actor==='caster'&&e.amount>0));
+});

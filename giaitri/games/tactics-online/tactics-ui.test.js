@@ -52,3 +52,9 @@ test('phase 3 sound and VFX are driven by recorded combat events',()=>{
  assert.match(html,/if\(e\.type==='burn'&&target\)/);
  assert.match(html,/e\.skill\|\|'spell'/);
 });
+
+test('mana and casting effects are connected to replay events',()=>{
+ assert.match(html,/e\.type==='mana'/);
+ assert.match(html,/CombatFX\.castAura/);
+ assert.match(html,/e\.type==='skill'/);
+});

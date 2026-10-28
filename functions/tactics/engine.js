@@ -155,7 +155,8 @@ function createEngine(C){
    if(!tgt.alive)return;let dealt=Math.max(1,Math.round(amount));const absorbed=Math.min(tgt.shield,dealt);tgt.shield-=absorbed;dealt-=absorbed;
    tgt.hp=Math.max(0,tgt.hp-dealt);src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
    if(src.effects&&src.effects.includes('burn')){tgt.burnUntil=t+3000;tgt.burnDps=Math.max(8,tgt.maxHp*.015);emit({t,actor:src.id,target:tgt.id,type:"burn",amount:3000});}
-   tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt,skill:spell?skillKind:null});
+   if(dealt>0){tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:tgt.id,type:"mana",amount:tgt.mana,max:tgt.manaMax,source:"damage"});}
+   emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt,skill:spell?skillKind:null});
    if(tgt.hp<=0){tgt.alive=false;tgt.fsm="Dead";emit({t,actor:tgt.id,type:"die"});}
   }
   for(let t=0;t<PHASES.COMBAT;t+=200){
@@ -163,7 +164,7 @@ function createEngine(C){
    for(const u of living){if(!u.alive)continue;
     if(u.stunnedUntil>t){u.fsm="Stunned";continue;}
     if(u.regen)u.hp=Math.min(u.maxHp,u.hp+u.regen*.2);
-   if(u.effects&&u.effects.includes('manaRegen'))u.mana=Math.min(u.manaMax,u.mana+1);
+   if(u.effects&&u.effects.includes('manaRegen')){u.mana=Math.min(u.manaMax,u.mana+1);emit({t,actor:u.id,type:'mana',amount:u.mana,max:u.manaMax,source:'item'});}
    if(u.burnUntil>t&&u.burnDps){u.hp=Math.max(0,u.hp-u.burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
     if(u.cloneRatio&&!u.shadowUsed&&u.hp<u.maxHp*.5&&units.length<32){u.shadowUsed=true;const positions=[[1,0],[-1,0],[0,1],[0,-1]];
       const free=positions.map(([dx,dy])=>({x:u.x+dx,y:u.y+dy})).find(p=>p.x>=0&&p.x<8&&p.y>=0&&p.y<8&&!units.some(v=>v.alive&&v.x===p.x&&v.y===p.y));
@@ -174,11 +175,11 @@ function createEngine(C){
     u.fsm="Targeting";
     if(dist(u,target)>u.range){u.fsm="Moving";if(t>=u.nextMove){let step=findStep(u,target,units);if(step){u.x=step.x;u.y=step.y;u.nextMove=t+550;emit({t,actor:u.id,type:"move",x:u.x,y:u.y});}}continue;}
     if(t<u.nextAttack)continue;
-    if(u.mana>=u.manaMax){u.fsm="Casting Spell";u.mana=0;
+    if(u.mana>=u.manaMax){u.fsm="Casting Spell";u.mana=0;emit({t,actor:u.id,type:"mana",amount:0,max:u.manaMax,source:"cast"});
       emit({t,actor:u.id,type:"skill",skill:u.ability.kind,skillId:u.ability.id,skillName:u.ability.name,vfx:u.ability.vfx,sfx:u.ability.sfx});
       if(u.effects&&u.effects.includes('apGrowth'))u.abilityPower=Math.min(250,u.abilityPower+8);
-      if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;emit({t,actor:u.id,type:"cleanse"});}}
-      else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",skill:"shield",amount:u.ability.power});}
+      if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;emit({t,actor:u.id,type:"cleanse"});}}
+      else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",skill:"shield",amount:u.ability.power});}
       else {
        const kind=u.ability.kind,area=kind==="aoe"||kind==="blast";
        const targets=area?foes.filter(v=>v.alive&&dist(target,v)<=Math.max(1,u.ability.radius||1)):[target];
@@ -198,7 +199,7 @@ function createEngine(C){
       const effectiveArmor=Math.max(-50,target.armor);const physical=u.attack*crit*100/(100+effectiveArmor);
       deal(u,target,physical*(1-u.trueDamageRatio)+u.attack*u.trueDamageRatio,t,false);
       if(target.alive&&rnd()<u.doubleHitChance)deal(u,target,physical*.8,t,false);
-      u.mana=Math.min(u.manaMax,u.mana+10+u.bonusMana);u.attacks++;
+      u.mana=Math.min(u.manaMax,u.mana+10+u.bonusMana);emit({t,actor:u.id,type:"mana",amount:u.mana,max:u.manaMax,source:"attack"});u.attacks++;
     }
     const speed=Math.min(3,u.attackSpeed+Math.min(.9,u.attacks*u.stackAttackSpeed));
     u.nextAttack=t+1000/(u.slowUntil>t?Math.max(.2,speed*.65):speed);

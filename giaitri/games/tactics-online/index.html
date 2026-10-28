@@ -560,7 +560,8 @@ function tickReplay(){
  while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
   const eventIndex=replay.index++;
   const e=replay.events[eventIndex],node=characterById.get(e.actor),target=characterById.get(e.target);
-  if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.vfx||e.skill||'spell',.8);playCombatSound(e.sfx||e.skill||'cast');}
+  if(e.type==='mana'&&node){const stat=battleHealth.get(e.actor)||{hp:1,max:1};stat.mana=e.amount;stat.manaMax=e.max||1;battleHealth.set(e.actor,stat);Visuals.updateBars(node,Math.max(0,stat.hp/stat.max),Math.max(0,Math.min(1,stat.mana/stat.manaMax)));}
+  if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.vfx||e.skill||'spell',1.15);CombatFX.castAura(stageScene,node,e.vfx||e.skill);playCombatSound(e.sfx||e.skill||'cast');}
   if(e.type==='cleanse'&&node){CombatFX.pulse(stageScene,node,'cleanse',.75);playCombatSound('heal');}
   if(e.type==='slow'&&target){CombatFX.pulse(stageScene,target,'slow',.65);playCombatSound('shield');}
   if(e.type==='stun'&&target){CombatFX.pulse(stageScene,target,'stun',.65);playCombatSound('stun');}
@@ -571,7 +572,7 @@ function tickReplay(){
   }
   if((e.type==='attack'||e.type==='cast')&&target){
    if(node){if(!CombatCues.consume(eventIndex))Animator.play(node,e.type==='cast'?'cast':'attack');if(e.type==='cast'){Animator.burst(stageScene,node,'cast');CombatFX.pulse(stageScene,target,e.skill||'spell',1);}Visuals.strike(stageScene,node,target,e.type==='cast',visualFX);}
-   const stat=battleHealth.get(e.target);if(stat){stat.hp=Math.max(0,stat.hp-(e.amount||0));Visuals.updateBars(target,stat.hp/stat.max);}
+   const stat=battleHealth.get(e.target);if(stat){stat.hp=Math.max(0,stat.hp-(e.amount||0));Visuals.updateBars(target,stat.hp/stat.max,(stat.mana||0)/(stat.manaMax||1));}
    showDamage(target,e.amount);playCombatSound(e.type);Animator.play(target,'hit');Animator.burst(stageScene,target,'hit');CombatFX.pulse(stageScene,target,'critical',.45);
   }
   if((e.type==='heal'||e.type==='shield')&&node){playCombatSound(e.type);Animator.play(node,e.type);Animator.burst(stageScene,node,e.type);CombatFX.pulse(stageScene,node,e.type);Visuals.updateBars(node,.95,.5);}

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.153",
-  "buildDate": "2026-10-28T06:04:43.617Z",
-  "commit": "6ec1ffd",
-  "notes": "Merge pull request #93 from gianghamk-hash/feat/tft-phase3-combat-feedback-20261028",
+  "version": "1.0.154",
+  "buildDate": "2026-10-28T06:07:48.344Z",
+  "commit": "c46cc62",
+  "notes": "Merge pull request #94 from gianghamk-hash/feat/tft-phase3-unique-abilities-statuses-20261028",
   "forceUpdate": false
 }

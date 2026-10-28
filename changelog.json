@@ -1,30 +1,22 @@
 {
-  "version": "1.0.157",
-  "previousVersion": "1.0.156",
-  "commit": "336bd9d",
-  "previousCommit": "100aa9b",
-  "buildDate": "2026-10-28T07:05:14.166Z",
-  "summary": "Merge pull request #97 from gianghamk-hash/feat/tft-strategy-depth-round-results-20261028",
+  "version": "1.0.158",
+  "previousVersion": "1.0.157",
+  "commit": "e3e26a2",
+  "previousCommit": "336bd9d",
+  "buildDate": "2026-10-28T07:18:10.695Z",
+  "summary": "Merge pull request #98 from gianghamk-hash/feat/tft-original-fantasy-icons-20261028",
   "changes": {
-    "totalCommits": 161,
-    "filesChanged": 5,
+    "totalCommits": 162,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #97 from gianghamk-hash/feat/tft-strategy-depth-round-results-20261028"
+    "Merge pull request #98 from gianghamk-hash/feat/tft-original-fantasy-icons-20261028"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/engine.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/extreme-ai.js",
+      "file": "giaitri/games/tactics-online/assets/item-icons.svg",
       "type": "update"
     },
     {
@@ -33,6 +25,10 @@
     },
     {
       "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     }
   ]

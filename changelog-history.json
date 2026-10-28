@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.157",
+      "releaseDate": "2026-10-28T07:05:14.166Z",
+      "summary": "Merge pull request #97 from gianghamk-hash/feat/tft-strategy-depth-round-results-20261028",
+      "details": [
+        "Merge pull request #97 from gianghamk-hash/feat/tft-strategy-depth-round-results-20261028"
+      ]
+    },
+    {
       "version": "1.0.156",
       "releaseDate": "2026-10-28T06:58:03.473Z",
       "summary": "Merge pull request #96 from gianghamk-hash/feat/tft-equipment-v2-20261028",
@@ -390,14 +398,6 @@
       "summary": "feat: TFT Phase 1C hero origin/class identities",
       "details": [
         "feat: TFT Phase 1C hero origin/class identities"
-      ]
-    },
-    {
-      "version": "1.0.107",
-      "releaseDate": "2026-10-26T13:17:51.170Z",
-      "summary": "feat: TFT timed windup and impact replay cues",
-      "details": [
-        "feat: TFT timed windup and impact replay cues"
       ]
     }
   ]

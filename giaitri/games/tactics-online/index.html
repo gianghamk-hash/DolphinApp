@@ -309,7 +309,7 @@ function selectedHeroInfo(){
  if(!u){$('heroInfo').innerHTML='';return;}
  const h=hero[u.heroId];if(!h)return;
  const p=state.players[uid],t=E.activeTraits(p),combat=E.combatStats(p,u,t);
- const skill=h.ability||{},spell=SKILL_LABELS[skill.kind]||skill.kind;
+ const skill=h.ability||{},spell=skill.name||SKILL_LABELS[skill.kind]||skill.kind;
  const stats=[['❤ HP',combat.hp],['⚔ ATK',combat.attack],['🛡 Giáp',combat.armor],['✦ Kháng phép',combat.magicResist],['🏹 Tầm đánh',combat.range],['⏱ Tốc đánh',Number(combat.attackSpeed).toFixed(2)],['🔮 Mana',combat.mana+'/'+combat.manaMax],['✨ AP',combat.abilityPower]];
  const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
  $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div><div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+'</div>';
@@ -560,7 +560,9 @@ function tickReplay(){
  while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
   const eventIndex=replay.index++;
   const e=replay.events[eventIndex],node=characterById.get(e.actor),target=characterById.get(e.target);
-  if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.skill||'spell',.8);playCombatSound(e.skill||'cast');}
+  if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.vfx||e.skill||'spell',.8);playCombatSound(e.sfx||e.skill||'cast');}
+  if(e.type==='cleanse'&&node){CombatFX.pulse(stageScene,node,'cleanse',.75);playCombatSound('heal');}
+  if(e.type==='slow'&&target){CombatFX.pulse(stageScene,target,'slow',.65);playCombatSound('shield');}
   if(e.type==='stun'&&target){CombatFX.pulse(stageScene,target,'stun',.65);playCombatSound('stun');}
   if(e.type==='burn'&&target){CombatFX.pulse(stageScene,target,'burn',.6);playCombatSound('burn');}
 

@@ -103,10 +103,15 @@ test('skills produce distinct deterministic control and healing events',()=>{
   p.units={};p.board={};
   const own=E.C.heroes.find(h=>h.ability.kind===kind);
   assert.ok(own,'missing '+kind);
-  p.units.a={id:'a',heroId:own.id,star:3,items:[]};p.board.r0c3='a';
+  p.units.a={id:'a',heroId:own.id,star:1,items:[]};p.board.r0c3='a';
   s.round=1;
-  const battle=E.simulate({a:'a',b:null,pve:true,ghost:false},s,{a:E.clone(p)},123);
-  return battle.events;
+  // Deterministic fixture: guarantee the skill can fire before combat ends.
+  const before={manaStart:own.manaStart,range:own.range,attack:own.attack};
+  own.manaStart=own.manaMax;own.range=8;own.attack=1;
+  try{
+   const battle=E.simulate({a:'a',b:null,pve:true,ghost:false},s,{a:E.clone(p)},123);
+   return battle.events;
+  }finally{Object.assign(own,before);}
  }
  assert.ok(run('stun').some(e=>e.type==='stun'));
  assert.ok(run('drain').some(e=>e.type==='heal'));

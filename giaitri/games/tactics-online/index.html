@@ -295,7 +295,7 @@ document.addEventListener('fullscreenchange',()=>{
  if(screenWake){screenWake.release().catch(()=>{});screenWake=null;}}
  refreshFullButton();
 });
-window.zoomBoard=direction=>{zoomLevel=direction===0?1:Math.max(.7,Math.min(2.4,zoomLevel+direction*.12));if(camera){camera.zoom=zoomLevel;camera.updateProjectionMatrix();}};
+window.zoomBoard=direction=>{zoomLevel=direction===0?1:Math.max(.7,Math.min(2.4,zoomLevel+direction*.12));if(camera){camera.zoom=zoomLevel;camera.updateProjectionMatrix();}syncBattleHudScale();};
 const STAT_LABELS={attack:'Công',abilityPower:'Sức mạnh phép',armor:'Giáp',magicResist:'Kháng phép',hp:'Máu',mana:'Năng lượng',regen:'Hồi máu/giây',bonusMana:'Năng lượng thêm',adjacentShield:'Khiên đồng đội',hpRatio:'Máu tăng',trueDamageRatio:'Sát thương chuẩn',stackAttackSpeed:'Tốc đánh tích lũy',cloneRatio:'Bóng phân thân',omnivamp:'Hút máu toàn phần',critChance:'Tỉ lệ chí mạng',critDamage:'Sát thương chí mạng',doubleHitChance:'Tỉ lệ đánh đôi'};
 const PERCENT_STATS=new Set(['hpRatio','trueDamageRatio','stackAttackSpeed','cloneRatio','omnivamp','critChance','critDamage','doubleHitChance']);
 const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng'};
@@ -426,7 +426,7 @@ function syncBattleHudScale(){
  // Visual HUD remains anchored to viewport edges; zoom affects only the 3D camera.
  // Scale to available stage area, not camera zoom, preserving readable information.
  const ratio=Math.min(w/600,h/420,1);
- const scale=Math.max(.68,Math.min(1,ratio));
+ const scale=Math.max(.64,Math.min(1,ratio/Math.sqrt(Math.max(.7,zoomLevel))));
  stage?.style.setProperty('--tft-hud-scale',String(scale));
  const narrow=w<420;
  stage?.classList.toggle('hudCompact',narrow);
@@ -609,7 +609,7 @@ $('stage').addEventListener('pointermove',e=>{
  if(pinchPointers.size<2)return;
  const d=pinchGap();
  if(pinchDistance>0&&d>0){zoomLevel=Math.max(.7,Math.min(2.4,zoomLevel*d/pinchDistance));if(camera){camera.zoom=zoomLevel;camera.updateProjectionMatrix();}lastPinchAt=Date.now();}
- pinchDistance=d;e.preventDefault();
+ pinchDistance=d;syncBattleHudScale();e.preventDefault();
 },{passive:false});
 function endPinch(e){pinchPointers.delete(e.pointerId);if(pinchPointers.size<2)pinchDistance=0;}
 $('stage').addEventListener('pointerup',endPinch);

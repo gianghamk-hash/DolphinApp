@@ -59,3 +59,25 @@ test('30-second combat has bounded authoritative timeline and tuned hero classes
  const report=E.simulate(state.pairs[0],state,state.combatSnapshot,876);
  assert.equal(report.events.at(-1).t,30000);
 });
+
+test('trait buffs apply only to heroes possessing the activated trait',()=>{
+ const state=setup(),p=state.players.a;
+ const mech=E.C.heroes.filter(h=>h.origins.includes('Mech'));
+ const outsider=E.C.heroes.find(h=>!h.origins.includes('Mech')&&!h.classes.includes('Mech'));
+ assert.ok(mech.length>=2&&outsider);
+ [mech[0],mech[1],outsider].forEach((h,i)=>{const id='trait'+i;p.units[id]={id,heroId:h.id,star:1,items:[]};p.board['r0c'+i]=id;});
+ const traits=E.activeTraits(p);assert.equal(traits.Mech.tier,2);
+ const ally=E.combatStats(p,p.units.trait0,traits),other=E.combatStats(p,p.units.trait2,traits),plainOther=E.combatStats(p,p.units.trait2,{});
+ assert.equal(other.armor,plainOther.armor);
+ assert.equal(other.regen,plainOther.regen);
+ assert.equal(ally.armor,E.combatStats(p,p.units.trait0,{}).armor+20);
+ assert.equal(ally.regen,8);
+});
+test('equipment allows at most three occupied slots on a hero',()=>{
+ const state=setup(),p=state.players.a,h=E.C.heroes[0];
+ const crafted=E.C.recipes.slice(0,3).map(x=>x.id);
+ p.units.u={id:'u',heroId:h.id,star:1,items:crafted};p.bench['0']='u';
+ const extra=E.C.components[0].id;p.inventory.push(extra);
+ assert.throws(()=>E.action(state,'a',{type:'EQUIP',unitId:'u',component:extra},1009),/3 ô đồ/);
+ assert.equal(p.units.u.items.length,3);
+});

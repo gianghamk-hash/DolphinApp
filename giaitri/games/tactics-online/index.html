@@ -394,7 +394,6 @@ function init(){
  }catch(e){showError(e);}
 }
 window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
-window.equipSelected=()=>{if(!selected||!state?.players?.[uid]?.units?.[selected])return info('Chọn tướng trên sân hoặc hàng chờ trước khi trang bị.');if(!$("equipItem").value)return info('Kho vật phẩm đang trống.');send({type:"EQUIP",unitId:selected,component:$("equipItem").value});};
 window.moveSelectedToBench=()=>{
  const p=state?.players?.[uid];if(!p||!selected||state?.roundPhase!=='PREPARATION')return;
  if(!Object.values(p.board||{}).includes(selected)){info('Hãy chọn một tướng trên bàn cờ trước.');return;}

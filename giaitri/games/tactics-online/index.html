@@ -190,8 +190,8 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><div id="zoomControls"><button onclick="zoomBoard(1)" title="Phóng to">＋</button><button onclick="zoomBoard(-1)" title="Thu nhỏ">－</button><button onclick="zoomBoard(0)" title="Đặt lại">⟲</button></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp"></div></div>
-<div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div><div class="playerDock" id="players"></div>
+<main id="game" class="hidden"><section><div id="stage"><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp"></div></div>
+<div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><span class="touchItemTitle">🎒 TRANG BỊ</span><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div><div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
 <div class="flex" style="margin:8px 0"><button id="rollShopBtn" class="shopIconBtn" onclick="send({type:'ROLL'})" title="Đổi Shop · 2 vàng" aria-label="Đổi Shop · 2 vàng">🔄</button><button id="buyXpBtn" class="shopIconBtn" onclick="send({type:'BUY_XP'})" title="Mua 4 XP · 4 vàng" aria-label="Mua 4 XP · 4 vàng">⭐</button><button id="lockShopBtn" class="shopIconBtn" onclick="send({type:'TOGGLE_SHOP_LOCK'})" title="Khóa Shop" aria-label="Khóa Shop">🔓</button></div><div id="shop"></div>
@@ -217,6 +217,7 @@ const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.Dolphin
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
+let pinchPointers=new Map(),pinchDistance=0,lastPinchAt=0,itemDrag=null;
 let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
@@ -402,6 +403,8 @@ window.moveSelectedToBench=()=>{
  if(slot===undefined){info('Hàng chờ đã đầy. Chạm một ô hàng chờ có tướng để đổi vị trí.');return;}
  send({type:'MOVE',unitId:selected,to:'bench',index:slot});selected=null;
 };
+function isPvERound(round){return round<=3||round%5===0;}
+function combatType(){return isPvERound(Number(state?.round||1))?"PvE · ĐẤU QUÁI":"PvP · ĐẤU NGƯỜI";}
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
 function paintPlayers(){
  $('players').innerHTML=state.playerOrder.map(id=>{
@@ -421,7 +424,7 @@ window.showTraitInfo=key=>{
 $('traitRail').addEventListener('click',e=>{const btn=e.target.closest('[data-trait]');if(btn)showTraitInfo(btn.dataset.trait);});
 function paintControls(){
  const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready,shopEnabled=state.status==="in_game"&&!p.eliminated;
- $("phaseLabel").textContent=phaseName[state.roundPhase]+' · VÒNG '+state.round;
+ $("phaseLabel").textContent=phaseName[state.roundPhase]+' · '+combatType()+' · VÒNG '+state.round;
  const slots=E.slotsForLevel(p.level),xpGoal=E.LEVEL_XP[p.level]||0,boardCount=Object.keys(p.board||{}).length;
  $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+(xpGoal?"/"+xpGoal:" (MAX)")+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
  $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
@@ -434,6 +437,9 @@ function paintControls(){
  const icons={Mech:'🤖',Void:'🕳️',Arcane:'🔮',Beast:'🐺',Shadow:'🌑',Celestial:'☀️',Brawler:'⚔️',Assassin:'🗡️',Ranger:'🏹',Guardian:'🛡️',Sorcerer:'✨'};
  $('traitRail').innerHTML=Object.keys(buffs).map(key=>'<button class="traitOrb" type="button" data-trait="'+safe(key)+'" title="'+safe(catalog.origins[key]?.label||key)+'">'+(icons[key]||'✨')+'</button>').join('');
  if(!$('traitRail').children.length)$('traitInfo').classList.add('hidden');
+ // The touch tray mirrors the inventory; the original select remains as a fallback.
+ const tray=$('touchItemSlots');
+ if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" title="'+safe(itemDef(id)?.name||id)+'" '+(!prep?'disabled':'')+'><span>💠</span><small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
  $("items").innerHTML='<strong>🎒 Kho vật phẩm: '+p.inventory.length+'</strong><div>'+(p.inventory.length?p.inventory.map(id=>'<span class="itemChip">'+itemText(id)+'</span>').join(''):'Chưa có vật phẩm — nhận thêm khi thắng quái PvE')+'</div>';
  const prevItem=$("equipItem").value;
  $("equipItem").innerHTML=p.inventory.map(id=>'<option value="'+safe(id)+'">'+itemText(id)+'</option>').join('');
@@ -545,7 +551,7 @@ function update(){
  if(!renderer)setup3D();
  const banner=$('battleBanner');
  banner.className=state.roundPhase==='COMBAT'?'combat':state.roundPhase==='TRANSITION'?'result':'';
- banner.textContent=state.status==='finished'?'🏆 KẾT THÚC':state.roundPhase==='COMBAT'?'⚔ GIAO TRANH — VÒNG '+state.round:state.roundPhase==='TRANSITION'?'🏁 KẾT QUẢ VÒNG '+state.round:'🛒 CHUẨN BỊ — VÒNG '+state.round;
+ banner.textContent=state.status==='finished'?'🏆 KẾT THÚC':state.roundPhase==='COMBAT'?'⚔ '+combatType()+' — VÒNG '+state.round:state.roundPhase==='TRANSITION'?'🏁 '+combatType()+' — KẾT QUẢ VÒNG '+state.round:'🛒 '+combatType()+' — CHUẨN BỊ VÒNG '+state.round;
  $('boardHelp').textContent=state.roundPhase==='COMBAT'?'Theo dõi các tướng di chuyển, tấn công và dùng kỹ năng':state.roundPhase==='TRANSITION'?'Kết quả đã được tính, chuẩn bị vòng tiếp theo':'Chạm tướng tại Bench, sau đó chạm ô trống trên sân để bố trí';
  paintPlayers();paintControls();
  if(state.status==="finished"){$("phaseLabel").textContent="🏆 CHIẾN THẮNG: "+(state.players[state.winnerId]?.displayName||"Hòa");}
@@ -575,7 +581,26 @@ function boardUnitAt(x,y){
  const id=target?.userData?.unitId;
  return id&&Object.values(state?.players?.[uid]?.board||{}).includes(id)?id:null;
 }
+// Two-finger pinch zoom; never interpret a pinch as moving or selecting a unit.
+function pinchGap(){const p=[...pinchPointers.values()];return p.length<2?0:Math.hypot(p[0].x-p[1].x,p[0].y-p[1].y);}
 $('stage').addEventListener('pointerdown',e=>{
+ if(e.pointerType==='mouse')return;
+ pinchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pinchPointers.size===2){pinchDistance=pinchGap();dragUnit=null;lastPinchAt=Date.now();}
+},{passive:true});
+$('stage').addEventListener('pointermove',e=>{
+ if(!pinchPointers.has(e.pointerId))return;
+ pinchPointers.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ if(pinchPointers.size<2)return;
+ const d=pinchGap();
+ if(pinchDistance>0&&d>0){zoomLevel=Math.max(.7,Math.min(2.4,zoomLevel*d/pinchDistance));if(camera){camera.zoom=zoomLevel;camera.updateProjectionMatrix();}lastPinchAt=Date.now();}
+ pinchDistance=d;e.preventDefault();
+},{passive:false});
+function endPinch(e){pinchPointers.delete(e.pointerId);if(pinchPointers.size<2)pinchDistance=0;}
+$('stage').addEventListener('pointerup',endPinch);
+$('stage').addEventListener('pointercancel',endPinch);
+$('stage').addEventListener('pointerdown',e=>{
+ if(pinchPointers.size>1||Date.now()-lastPinchAt<350)return;
  if(e.target!==renderer?.domElement||!state||state.roundPhase!=='PREPARATION')return;
  const id=boardUnitAt(e.clientX,e.clientY);
  if(id)dragUnit={id,source:'board',x:e.clientX,y:e.clientY};
@@ -587,6 +612,7 @@ $('bench').addEventListener('pointerdown',e=>{
  if(unitId)dragUnit={id:unitId,source:'bench',x:e.clientX,y:e.clientY};
 });
 document.addEventListener('pointerup',e=>{
+ if(Date.now()-lastPinchAt<350){dragUnit=null;return;}
  if(!dragUnit)return;
  const drag=dragUnit;dragUnit=null;
  if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<20||state?.roundPhase!=='PREPARATION')return;
@@ -611,6 +637,40 @@ document.addEventListener('pointerup',e=>{
   selected=null;
  }
 });
+// Inventory drag-and-drop shares the existing EQUIP engine command and validations.
+const trayRoot=$('touchItemTray');
+trayRoot.addEventListener('pointerdown',e=>{
+ const tile=e.target.closest('[data-item-index]');
+ if(!tile||tile.disabled||state?.roundPhase!=='PREPARATION'||state.players?.[uid]?.ready)return;
+ const index=Number(tile.dataset.itemIndex),item=state.players?.[uid]?.inventory?.[index];
+ if(!item)return;
+ e.preventDefault();
+ const ghost=tile.cloneNode(true);ghost.removeAttribute('data-item-index');ghost.classList.add('touchGearGhost');
+ document.body.appendChild(ghost);
+ itemDrag={pointer:e.pointerId,item,startX:e.clientX,startY:e.clientY,ghost};
+ ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
+ try{tile.setPointerCapture(e.pointerId);}catch(_){}
+});
+document.addEventListener('pointermove',e=>{
+ if(!itemDrag||itemDrag.pointer!==e.pointerId)return;
+ e.preventDefault();itemDrag.ghost.style.left=e.clientX+'px';itemDrag.ghost.style.top=e.clientY+'px';
+});
+function finishGearDrag(e){
+ if(!itemDrag||itemDrag.pointer!==e.pointerId)return;
+ const drag=itemDrag;itemDrag=null;drag.ghost.remove();
+ if(e.type==='pointercancel')return;
+ const p=state?.players?.[uid];
+ if(!p||state.roundPhase!=='PREPARATION'||p.ready||!p.inventory.includes(drag.item))return;
+ let target=boardUnitAt(e.clientX,e.clientY);
+ if(!target){
+  const b=document.elementFromPoint(e.clientX,e.clientY)?.closest?.('#bench [data-bench]');
+  if(b)target=p.bench[Number(b.dataset.bench)];
+ }
+ if(!target||!p.units[target]){info('Thả trang bị lên tướng trên bàn cờ hoặc hàng chờ.');return;}
+ send({type:'EQUIP',unitId:target,component:drag.item});
+}
+document.addEventListener('pointerup',finishGearDrag);
+document.addEventListener('pointercancel',finishGearDrag);
 function setup3D(){
  stageScene=new THREE.Scene();stageScene.background=new THREE.Color(0x0a2635);
  camera=new THREE.OrthographicCamera(-4,4,4,-4,.1,80);camera.position.set(0,10,10);camera.up.set(0,1,0);camera.lookAt(0,0,0);
@@ -632,7 +692,7 @@ function setup3D(){
  function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);const aspect=rect.width/Math.max(1,rect.height),span=Math.max(5.2,5.4/aspect);camera.left=-span*aspect;camera.right=span*aspect;camera.top=span;camera.bottom=-span;camera.zoom=zoomLevel;camera.updateProjectionMatrix();}
  addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe($('stage'));resize();
  renderer.domElement.addEventListener('pointerup',e=>{
-  if(!state||state.roundPhase!=='PREPARATION')return;
+  if(!state||state.roundPhase!=='PREPARATION'||Date.now()-lastPinchAt<350||pinchPointers.size>1)return;
   const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);
   let unit=raycaster.intersectObjects(characters.children,true)[0];
   if(unit){let target=unit.object;while(target&&!target.userData.unitId)target=target.parent;if(target){selected=target.userData.unitId;paintControls();openUnitPopup(e.clientX,e.clientY,selected);return;}}

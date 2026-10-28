@@ -1,5 +1,5 @@
 {
-  "version": "1.0.144",
+  "version": "1.0.145",
   "releaseDate": "2026-10-28",
-  "notes": "feat(tft): refreshed arena, hero shop and armory UI"
+  "notes": "feat(tft): 30s combat and smart gold shop hints"
 }

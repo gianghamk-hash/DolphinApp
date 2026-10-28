@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.144",
+      "releaseDate": "2026-10-28T02:33:43.759Z",
+      "summary": "feat(tft): refreshed arena, hero shop and armory UI",
+      "details": [
+        "feat(tft): refreshed arena, hero shop and armory UI"
+      ]
+    },
+    {
       "version": "1.0.143",
       "releaseDate": "2026-10-27T15:09:52.639Z",
       "summary": "fix(dark): deep black background and transparent clock",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.95",
       "releaseDate": "2026-10-25T04:55:16.214Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.94",
-      "releaseDate": "2026-10-25T02:51:38.786Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

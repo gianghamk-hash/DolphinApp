@@ -1,7 +1,7 @@
 {
-  "version": "1.0.144",
-  "buildDate": "2026-10-28T02:33:43.759Z",
-  "commit": "8d11623",
-  "notes": "feat(tft): refreshed arena, hero shop and armory UI",
+  "version": "1.0.145",
+  "buildDate": "2026-10-28T02:48:38.864Z",
+  "commit": "268ee84",
+  "notes": "feat(tft): 30s combat and smart gold shop hints",
   "forceUpdate": false
 }

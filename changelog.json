@@ -1,50 +1,38 @@
 {
-  "version": "1.0.163",
-  "previousVersion": "1.0.162",
-  "commit": "e8ba0ed",
-  "previousCommit": "f6b18bc",
-  "buildDate": "2026-10-28T09:19:30.898Z",
-  "summary": "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028",
+  "version": "1.0.164",
+  "previousVersion": "1.0.163",
+  "commit": "a4f46a3",
+  "previousCommit": "e8ba0ed",
+  "buildDate": "2026-10-28T09:38:51.366Z",
+  "summary": "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028",
   "changes": {
-    "totalCommits": 167,
-    "filesChanged": 8,
+    "totalCommits": 168,
+    "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028"
+    "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/catalog.json",
+      "file": "giaitri/games/tactics-online/guide.js",
       "type": "update"
     },
     {
-      "file": "functions/tactics/engine.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/hero-identity.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/hero-profiles.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/hero-visual-defs.js",
+      "file": "giaitri/games/tactics-online/guide.test.js",
       "type": "update"
     },
     {
       "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     }
   ]

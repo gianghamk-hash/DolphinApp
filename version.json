@@ -1,7 +1,7 @@
 {
-  "version": "1.0.163",
-  "buildDate": "2026-10-28T09:19:30.898Z",
-  "commit": "e8ba0ed",
-  "notes": "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028",
+  "version": "1.0.164",
+  "buildDate": "2026-10-28T09:38:51.366Z",
+  "commit": "a4f46a3",
+  "notes": "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028",
   "forceUpdate": false
 }

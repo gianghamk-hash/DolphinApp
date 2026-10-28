@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.163",
+      "releaseDate": "2026-10-28T09:19:30.898Z",
+      "summary": "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028",
+      "details": [
+        "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028"
+      ]
+    },
+    {
       "version": "1.0.162",
       "releaseDate": "2026-10-28T09:09:52.442Z",
       "summary": "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028",
@@ -390,14 +398,6 @@
       "summary": "fix: Blender GLB export NumPy dependency",
       "details": [
         "fix: Blender GLB export NumPy dependency"
-      ]
-    },
-    {
-      "version": "1.0.113",
-      "releaseDate": "2026-10-26T15:47:49.015Z",
-      "summary": "feat(tactics): activate validated Saber GLB automatically",
-      "details": [
-        "feat(tactics): activate validated Saber GLB automatically"
       ]
     }
   ]

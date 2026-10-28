@@ -1,7 +1,7 @@
 {
-  "version": "1.0.151",
-  "buildDate": "2026-10-28T05:52:15.338Z",
-  "commit": "44e240c",
-  "notes": "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028",
+  "version": "1.0.152",
+  "buildDate": "2026-10-28T05:58:30.419Z",
+  "commit": "c33cd7e",
+  "notes": "Merge pull request #92 from gianghamk-hash/fix/tft-entry-module-duplicate-20261028",
   "forceUpdate": false
 }

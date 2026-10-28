@@ -1,26 +1,22 @@
 {
-  "version": "1.0.151",
-  "previousVersion": "1.0.150",
-  "commit": "44e240c",
-  "previousCommit": "cb20470",
-  "buildDate": "2026-10-28T05:52:15.338Z",
-  "summary": "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028",
+  "version": "1.0.152",
+  "previousVersion": "1.0.151",
+  "commit": "c33cd7e",
+  "previousCommit": "44e240c",
+  "buildDate": "2026-10-28T05:58:30.419Z",
+  "summary": "Merge pull request #92 from gianghamk-hash/fix/tft-entry-module-duplicate-20261028",
   "changes": {
-    "totalCommits": 155,
-    "filesChanged": 3,
+    "totalCommits": 156,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028"
+    "Merge pull request #92 from gianghamk-hash/fix/tft-entry-module-duplicate-20261028"
   ],
   "fileChanges": [
     {
       "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.css",
       "type": "update"
     },
     {

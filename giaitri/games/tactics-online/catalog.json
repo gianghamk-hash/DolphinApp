@@ -15,7 +15,7 @@
         "Mech"
       ],
       "classes": [
-        "Brawler"
+        "Assassin"
       ],
       "hp": 495,
       "attack": 51,
@@ -47,7 +47,7 @@
         "Void"
       ],
       "classes": [
-        "Assassin"
+        "Fighter"
       ],
       "hp": 465,
       "attack": 58,
@@ -111,7 +111,7 @@
         "Beast"
       ],
       "classes": [
-        "Guardian"
+        "Ranger"
       ],
       "hp": 575,
       "attack": 62,
@@ -175,7 +175,7 @@
         "Celestial"
       ],
       "classes": [
-        "Brawler"
+        "Sorcerer"
       ],
       "hp": 585,
       "attack": 55,
@@ -207,7 +207,7 @@
         "Mech"
       ],
       "classes": [
-        "Assassin"
+        "Fighter"
       ],
       "hp": 450,
       "attack": 63,
@@ -271,7 +271,7 @@
         "Arcane"
       ],
       "classes": [
-        "Guardian"
+        "Assassin"
       ],
       "hp": 650,
       "attack": 60,
@@ -303,7 +303,7 @@
         "Beast"
       ],
       "classes": [
-        "Sorcerer"
+        "Tank"
       ],
       "hp": 610,
       "attack": 65,
@@ -335,7 +335,7 @@
         "Shadow"
       ],
       "classes": [
-        "Brawler"
+        "Sorcerer"
       ],
       "hp": 655,
       "attack": 71,
@@ -367,7 +367,7 @@
         "Celestial"
       ],
       "classes": [
-        "Assassin"
+        "Fighter"
       ],
       "hp": 615,
       "attack": 80,
@@ -431,7 +431,7 @@
         "Void"
       ],
       "classes": [
-        "Guardian"
+        "Assassin"
       ],
       "hp": 630,
       "attack": 64,
@@ -495,7 +495,7 @@
         "Beast"
       ],
       "classes": [
-        "Brawler"
+        "Ranger"
       ],
       "hp": 755,
       "attack": 87,
@@ -591,7 +591,7 @@
         "Mech"
       ],
       "classes": [
-        "Guardian"
+        "Fighter"
       ],
       "hp": 705,
       "attack": 80,
@@ -623,7 +623,7 @@
         "Void"
       ],
       "classes": [
-        "Sorcerer"
+        "Support"
       ],
       "hp": 670,
       "attack": 85,
@@ -655,7 +655,7 @@
         "Arcane"
       ],
       "classes": [
-        "Brawler"
+        "Sorcerer"
       ],
       "hp": 730,
       "attack": 73,
@@ -687,7 +687,7 @@
         "Beast"
       ],
       "classes": [
-        "Assassin"
+        "Fighter"
       ],
       "hp": 855,
       "attack": 94,
@@ -751,7 +751,7 @@
         "Celestial"
       ],
       "classes": [
-        "Guardian"
+        "Fighter"
       ],
       "hp": 1055,
       "attack": 95,
@@ -783,7 +783,7 @@
         "Mech"
       ],
       "classes": [
-        "Sorcerer"
+        "Tank"
       ],
       "hp": 800,
       "attack": 83,
@@ -815,7 +815,7 @@
         "Void"
       ],
       "classes": [
-        "Brawler"
+        "Sorcerer"
       ],
       "hp": 870,
       "attack": 89,
@@ -848,7 +848,7 @@
         "Beast"
       ],
       "classes": [
-        "Assassin"
+        "Sorcerer"
       ],
       "hp": 1015,
       "attack": 111,
@@ -880,7 +880,7 @@
         "Beast"
       ],
       "classes": [
-        "Ranger"
+        "Sorcerer"
       ],
       "hp": 1070,
       "attack": 113,
@@ -912,7 +912,7 @@
         "Shadow"
       ],
       "classes": [
-        "Guardian"
+        "Tank"
       ],
       "hp": 1260,
       "attack": 93,
@@ -945,7 +945,7 @@
         "Arcane"
       ],
       "classes": [
-        "Sorcerer"
+        "Fighter"
       ],
       "hp": 1195,
       "attack": 98,
@@ -1048,28 +1048,16 @@
       },
       "label": "Ánh Sáng"
     },
-    "Brawler": {
-      "type": "class",
-      "thresholds": {
-        "2": {
-          "hpRatio": 0.2
-        },
-        "4": {
-          "hpRatio": 0.45
-        }
-      },
-      "label": "Chiến Binh"
-    },
     "Assassin": {
       "type": "class",
       "thresholds": {
-        "3": {
-          "critChance": 0.2,
-          "critDamage": 0.4
+        "2": {
+          "critChance": 0.15,
+          "critDamage": 0.25
         },
-        "6": {
-          "critChance": 0.4,
-          "critDamage": 0.8
+        "4": {
+          "critChance": 0.32,
+          "critDamage": 0.6
         }
       },
       "label": "Sát Thủ"
@@ -1081,19 +1069,13 @@
           "doubleHitChance": 0.2
         },
         "4": {
-          "doubleHitChance": 0.4
+          "doubleHitChance": 0.35
+        },
+        "6": {
+          "doubleHitChance": 0.5
         }
       },
       "label": "Xạ Thủ"
-    },
-    "Guardian": {
-      "type": "class",
-      "thresholds": {
-        "2": {
-          "adjacentShield": 150
-        }
-      },
-      "label": "Hộ Vệ"
     },
     "Sorcerer": {
       "type": "class",
@@ -1109,6 +1091,44 @@
         }
       },
       "label": "Pháp Sư"
+    },
+    "Fighter": {
+      "type": "class",
+      "label": "Đấu Sĩ",
+      "thresholds": {
+        "2": {
+          "hpRatio": 0.15
+        },
+        "4": {
+          "hpRatio": 0.32
+        },
+        "6": {
+          "hpRatio": 0.48
+        }
+      }
+    },
+    "Tank": {
+      "type": "class",
+      "label": "Đỡ Đòn",
+      "thresholds": {
+        "2": {
+          "adjacentShield": 150
+        },
+        "3": {
+          "adjacentShield": 260,
+          "armor": 30
+        }
+      }
+    },
+    "Support": {
+      "type": "class",
+      "label": "Hỗ Trợ",
+      "thresholds": {
+        "1": {
+          "regen": 6,
+          "bonusMana": 4
+        }
+      }
     }
   },
   "components": [

@@ -36,3 +36,11 @@ test('drag interactions provide source and destination cues and clean up on canc
  assert.match(html,/pointercancel.*clearUnitDragFeedback/);
  assert.match(css,/\.benchBar\.isDropTarget/);
 });
+
+test('game entry ES module parses without duplicate declarations',()=>{
+ const {execFileSync}=require('node:child_process');
+ const match=html.match(/<script type="module">([\\s\\S]*?)<\\/script>/);
+ assert.ok(match,'game ES module must be present');
+ const source=match[1].replace(/^import\\s+.*?;\\s*$/gm,'');
+ assert.doesNotThrow(()=>execFileSync(process.execPath,['--input-type=module','--check'],{input:source,encoding:'utf8'}));
+});

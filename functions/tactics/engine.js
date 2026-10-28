@@ -32,7 +32,8 @@ function createEngine(C){
     if(same.length<3||unit.star===3)continue;
     const chosen=same.slice(0,3).sort((a,b)=>(findPosition(p,a.id)?.kind==="board"?-1:0)-(findPosition(p,b.id)?.kind==="board"?-1:0));
     const survivor=chosen[0],combined=chosen.flatMap(x=>x.items||[]);survivor.star++;
-    survivor.items=combined.slice(0,3);p.inventory.push(...combined.slice(3));
+    const prioritized=combined.slice().sort((a,b)=>Number(!!COMP[a])-Number(!!COMP[b]));
+    survivor.items=prioritized.slice(0,3);p.inventory.push(...prioritized.slice(3));
     chosen.slice(1).forEach(x=>{const pos=findPosition(p,x.id);if(pos)delete p[pos.kind][pos.key];delete p.units[x.id];});
     done=true;break;
    }
@@ -60,7 +61,7 @@ function createEngine(C){
    magicResist:h.magicResist+(items.magicResist||0),attackSpeed:h.attackSpeed,range:h.range,
    mana:h.manaStart+(items.mana||0),manaMax:h.manaMax,ability:h.ability,assassinJump:!!(traits.Assassin&&h.classes.includes('Assassin')),
    abilityPower:(items.abilityPower||0)+(b.abilityPower||0),effects,shield:0,regen:b.regen||0,bonusMana:b.bonusMana||0,
-   trueDamageRatio:b.trueDamageRatio||0,omnivamp:b.omnivamp||0,critChance:(b.critChance||0)+(effects.includes('crit')?.25:0),critDamage:(b.critDamage||0)+(effects.includes('crit')?.4:0),
+   trueDamageRatio:b.trueDamageRatio||0,omnivamp:(b.omnivamp||0)+(effects.includes('lifesteal')?.15:0),critChance:(b.critChance||0)+(effects.includes('crit')?.25:0),critDamage:(b.critDamage||0)+(effects.includes('crit')?.4:0),
    stackAttackSpeed:b.stackAttackSpeed||0,doubleHitChance:b.doubleHitChance||0,
    cloneRatio:b.cloneRatio||0,adjacentShield:b.adjacentShield||0};
  }
@@ -151,10 +152,16 @@ function createEngine(C){
   }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
   const events=[],emit=e=>{if(events.length<1200)events.push(e);};
+  function applyBurn(src,tgt,t,duration,dps,source){
+   tgt.burns ||= {};
+   const key=source+':'+src.id;
+   tgt.burns[key]={until:t+duration,dps};
+   emit({t,actor:src.id,target:tgt.id,type:'burn',source,amount:duration});
+  }
   function deal(src,tgt,amount,t,spell,skillKind=null){
    if(!tgt.alive)return;let dealt=Math.max(1,Math.round(amount));const absorbed=Math.min(tgt.shield,dealt);tgt.shield-=absorbed;dealt-=absorbed;
    tgt.hp=Math.max(0,tgt.hp-dealt);src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
-   if(src.effects&&src.effects.includes('burn')){tgt.burnUntil=t+3000;tgt.burnDps=Math.max(8,tgt.maxHp*.015);emit({t,actor:src.id,target:tgt.id,type:"burn",amount:3000});}
+   if(src.effects&&src.effects.includes('burn'))applyBurn(src,tgt,t,3000,Math.max(8,tgt.maxHp*.015),'item');
    if(dealt>0){tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:tgt.id,type:"mana",amount:tgt.mana,max:tgt.manaMax,source:"damage"});}
    emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt,skill:spell?skillKind:null});
    if(tgt.hp<=0){tgt.alive=false;tgt.fsm="Dead";emit({t,actor:tgt.id,type:"die"});}
@@ -164,8 +171,11 @@ function createEngine(C){
    for(const u of living){if(!u.alive)continue;
     if(u.stunnedUntil>t){u.fsm="Stunned";continue;}
     if(u.regen)u.hp=Math.min(u.maxHp,u.hp+u.regen*.2);
-   if(u.effects&&u.effects.includes('manaRegen')){u.mana=Math.min(u.manaMax,u.mana+1);emit({t,actor:u.id,type:'mana',amount:u.mana,max:u.manaMax,source:'item'});}
-   if(u.burnUntil>t&&u.burnDps){u.hp=Math.max(0,u.hp-u.burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
+   const manaTick=(u.effects&&u.effects.includes('manaRegen')?1:0)+(u.effects&&u.effects.includes('manaPulse')?0.4:0);
+   if(manaTick){u.mana=Math.min(u.manaMax,u.mana+manaTick);emit({t,actor:u.id,type:'mana',amount:u.mana,max:u.manaMax,source:'item'});}
+   const activeBurns=Object.values(u.burns||{}).filter(x=>x.until>t);
+   const burnDps=Math.max(...activeBurns.map(x=>x.dps),u.burnUntil>t?(u.burnDps||0):0,0);
+   if(burnDps){u.hp=Math.max(0,u.hp-burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
     if(u.cloneRatio&&!u.shadowUsed&&u.hp<u.maxHp*.5&&units.length<32){u.shadowUsed=true;const positions=[[1,0],[-1,0],[0,1],[0,-1]];
       const free=positions.map(([dx,dy])=>({x:u.x+dx,y:u.y+dy})).find(p=>p.x>=0&&p.x<8&&p.y>=0&&p.y<8&&!units.some(v=>v.alive&&v.x===p.x&&v.y===p.y));
       if(free){const cloneUnit={...u,id:u.id+"_shadow",...free,maxHp:u.maxHp*u.cloneRatio,hp:u.maxHp*u.cloneRatio,attack:u.attack*u.cloneRatio,cloneRatio:0,shadowUsed:true,shield:0};units.push(cloneUnit);emit({t,actor:cloneUnit.id,type:"shield"});}
@@ -189,7 +199,7 @@ function createEngine(C){
         const dealt=Math.max(1,Math.round(power*100/(100+Math.max(-50,v.magicResist))));
         const before=v.hp;deal(u,v,dealt,t,true,kind);
         if(v.alive&&u.ability.status==="slow"){v.slowUntil=Math.max(v.slowUntil||0,t+1800);emit({t,actor:u.id,target:v.id,type:"slow",amount:1800});}
-        if(v.alive&&u.ability.status==="burn"){v.burnUntil=Math.max(v.burnUntil||0,t+2200);v.burnDps=Math.max(8,v.maxHp*.018);emit({t,actor:u.id,target:v.id,type:"burn",amount:2200});}
+        if(v.alive&&u.ability.status==="burn"){applyBurn(u,v,t,2200,Math.max(8,v.maxHp*.018),"skill");}
         if(kind==="stun"&&v.alive){const duration=u.ability.durationMs||1200;v.stunnedUntil=Math.max(v.stunnedUntil||0,t+duration);emit({t,actor:u.id,target:v.id,type:"stun",amount:duration});}
         if(kind==="drain"){const healed=Math.max(0,before-v.hp)*.35;u.hp=Math.min(u.maxHp,u.hp+healed);emit({t,actor:u.id,type:"heal",amount:Math.round(healed)});}
        }

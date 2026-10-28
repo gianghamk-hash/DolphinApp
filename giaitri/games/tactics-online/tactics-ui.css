@@ -186,3 +186,14 @@
 .itemChip .tftItemIcon{margin-right:5px}
 .tftItemIcon-I05,.tftItemIcon-I14{background:linear-gradient(135deg,#713241,#2b1825);border-color:#ff9a85}
 .tftItemIcon-I20,.tftItemIcon-I21{background:linear-gradient(135deg,#264c90,#142451);border-color:#a9bcff}
+
+/* Original fantasy equipment sprite art, with a reliable text-glyph fallback. */
+.tftItemIcon{position:relative;overflow:hidden;isolation:isolate}
+.tftItemArtwork{display:none;width:100%;height:100%;object-fit:contain;overflow:visible}
+.tftItemFallback{display:grid;place-items:center;width:100%;height:100%;line-height:1}
+.tftItemArtworkReady .tftItemArtwork{display:block}
+.tftItemArtworkReady .tftItemFallback{display:none}
+.tftItemArtworkReady .tftItemIcon{background:#091829;border-color:#d9b46e;box-shadow:0 0 6px #f1ba5533}
+#game .touchGear .tftItemIcon{width:32px;height:32px;flex:0 0 32px}
+#game .itemChip .tftItemIcon{width:30px;height:30px;display:inline-grid}
+@media(orientation:portrait) and (max-width:650px){#game .touchGear .tftItemIcon{width:27px;height:27px;flex-basis:27px}}

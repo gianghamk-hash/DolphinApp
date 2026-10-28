@@ -511,9 +511,9 @@ function renderBoard(){
  const p=state.players[uid];if(!p)return;
  const enemyId=state.pairs.find(x=>x.a===uid||x.b===uid);
  const opponent=enemyId?.a===uid?enemyId.b:enemyId?.a;
- const add=(unit,x,z,enemy)=>{
+ const add=(unit,x,z,enemy,displayName)=>{
   const h=hero[unit.heroId];if(!h)return;
-  const g=Visuals.unit(h,unit.star||1,enemy);g.position.set(x,0,z);
+  const g=Visuals.unit(h,unit.star||1,enemy,displayName||h.name);g.position.set(x,0,z);
   g.userData.uid=unit.id;g.traverse(m=>m.userData.unitId=unit.id);
   characters.add(g);characterById.set(unit.id,g);ModelLibrary.attach(unit.heroId,g);
  };
@@ -521,7 +521,7 @@ function renderBoard(){
  if(state.roundPhase==='COMBAT'&&!opponent&&enemyId?.pve){
   for(let i=0;i<Math.min(5,2+Math.floor(state.round/5));i++){
    const x=(i*2+1)%8,y=1+Math.floor(i/4);
-   add({id:'mob'+i,heroId:'H07',star:1},(x-3.5)*.94,(y-3.5)*.86,true);
+   add({id:'mob'+i,heroId:'H07',star:1},(x-3.5)*.94,(y-3.5)*.86,true,'Quái PvE');
   }
  }
  if(state.roundPhase==='COMBAT'&&opponent&&state.combatSnapshot&&state.combatSnapshot[opponent]){

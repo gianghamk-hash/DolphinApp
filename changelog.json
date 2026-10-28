@@ -1,18 +1,18 @@
 {
-  "version": "1.0.159",
-  "previousVersion": "1.0.158",
-  "commit": "5d73f99",
-  "previousCommit": "e3e26a2",
-  "buildDate": "2026-10-28T07:29:49.947Z",
-  "summary": "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028",
+  "version": "1.0.160",
+  "previousVersion": "1.0.159",
+  "commit": "4af1675",
+  "previousCommit": "5d73f99",
+  "buildDate": "2026-10-28T07:36:56.108Z",
+  "summary": "Merge pull request #100 from gianghamk-hash/feat/tft-battle-unit-nameplates-20261028",
   "changes": {
-    "totalCommits": 163,
+    "totalCommits": 164,
     "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028"
+    "Merge pull request #100 from gianghamk-hash/feat/tft-battle-unit-nameplates-20261028"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,11 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/touch-gear.test.js",
+      "file": "giaitri/games/tactics-online/visuals.js",
       "type": "update"
     }
   ]

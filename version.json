@@ -1,7 +1,7 @@
 {
-  "version": "1.0.159",
-  "buildDate": "2026-10-28T07:29:49.947Z",
-  "commit": "5d73f99",
-  "notes": "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028",
+  "version": "1.0.160",
+  "buildDate": "2026-10-28T07:36:56.108Z",
+  "commit": "4af1675",
+  "notes": "Merge pull request #100 from gianghamk-hash/feat/tft-battle-unit-nameplates-20261028",
   "forceUpdate": false
 }

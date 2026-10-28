@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.159",
+      "releaseDate": "2026-10-28T07:29:49.947Z",
+      "summary": "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028",
+      "details": [
+        "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028"
+      ]
+    },
+    {
       "version": "1.0.158",
       "releaseDate": "2026-10-28T07:18:10.695Z",
       "summary": "Merge pull request #98 from gianghamk-hash/feat/tft-original-fantasy-icons-20261028",
@@ -390,14 +398,6 @@
       "summary": "feat: GLB-first Stylized Chibi character asset pipeline",
       "details": [
         "feat: GLB-first Stylized Chibi character asset pipeline"
-      ]
-    },
-    {
-      "version": "1.0.109",
-      "releaseDate": "2026-10-26T13:30:47.939Z",
-      "summary": "feat: TFT Phase 1D detailed hero models scaled down 40%",
-      "details": [
-        "feat: TFT Phase 1D detailed hero models scaled down 40%"
       ]
     }
   ]

@@ -71,3 +71,12 @@ test('all 27 equipment entries have original vector icon symbols',()=>{
  assert.match(html,/class="tftItemFallback"/);
  assert.match(css,/\.tftItemArtworkReady \.tftItemArtwork/);
 });
+
+test('battle characters show cached names for allies opponents and PvE',()=>{
+ const visuals=require('node:fs').readFileSync(require('node:path').join(__dirname,'visuals.js'),'utf8');
+ assert.match(visuals,/function nameplate\(name,enemy\)/);
+ assert.match(visuals,/new T\.CanvasTexture\(canvas\)/);
+ assert.match(visuals,/new T\.Sprite\(nameplates\.get\(key\)\)/);
+ assert.match(html,/Visuals\.unit\(h,unit\.star\|\|1,enemy,displayName\|\|h\.name\)/);
+ assert.match(html,/true,'Quái PvE'/);
+});

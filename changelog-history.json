@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.146",
+      "releaseDate": "2026-10-28T03:20:32.403Z",
+      "summary": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels",
+      "details": [
+        "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels"
+      ]
+    },
+    {
       "version": "1.0.145",
       "releaseDate": "2026-10-28T02:48:38.864Z",
       "summary": "feat(tft): 30s combat and smart gold shop hints",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.97",
       "releaseDate": "2026-10-25T05:12:04.784Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.96",
-      "releaseDate": "2026-10-25T05:08:33.348Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

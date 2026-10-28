@@ -1,22 +1,30 @@
 {
-  "version": "1.0.146",
-  "previousVersion": "1.0.145",
-  "commit": "52ce26a",
-  "previousCommit": "268ee84",
-  "buildDate": "2026-10-28T03:20:32.403Z",
-  "summary": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels",
+  "version": "1.0.147",
+  "previousVersion": "1.0.146",
+  "commit": "e3803d2",
+  "previousCommit": "52ce26a",
+  "buildDate": "2026-10-28T03:38:26.402Z",
+  "summary": "feat(tft): responsive trait HUD, full tier details and touch-only equipment",
   "changes": {
-    "totalCommits": 150,
-    "filesChanged": 4,
+    "totalCommits": 151,
+    "filesChanged": 7,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels"
+    "feat(tft): responsive trait HUD, full tier details and touch-only equipment"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/tft-touch-controls.yml",
+      "file": ".github/workflows/tft-trait-hud.yml",
+      "type": "update"
+    },
+    {
+      "file": "functions/tactics/catalog.json",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/catalog.json",
       "type": "update"
     },
     {
@@ -28,7 +36,11 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/touch-gear.test.js",
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/trait-hud.test.js",
       "type": "update"
     }
   ]

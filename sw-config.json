@@ -1,5 +1,5 @@
 {
-  "version": "1.0.146",
+  "version": "1.0.147",
   "releaseDate": "2026-10-28",
-  "notes": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels"
+  "notes": "feat(tft): responsive trait HUD, full tier details and touch-only equipment"
 }

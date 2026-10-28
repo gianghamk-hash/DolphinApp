@@ -1,7 +1,7 @@
 {
-  "version": "1.0.146",
-  "buildDate": "2026-10-28T03:20:32.403Z",
-  "commit": "52ce26a",
-  "notes": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels",
+  "version": "1.0.147",
+  "buildDate": "2026-10-28T03:38:26.402Z",
+  "commit": "e3803d2",
+  "notes": "feat(tft): responsive trait HUD, full tier details and touch-only equipment",
   "forceUpdate": false
 }

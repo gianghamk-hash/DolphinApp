@@ -1,7 +1,7 @@
 {
-  "version": "1.0.152",
-  "buildDate": "2026-10-28T05:58:30.419Z",
-  "commit": "c33cd7e",
-  "notes": "Merge pull request #92 from gianghamk-hash/fix/tft-entry-module-duplicate-20261028",
+  "version": "1.0.153",
+  "buildDate": "2026-10-28T06:04:43.617Z",
+  "commit": "6ec1ffd",
+  "notes": "Merge pull request #93 from gianghamk-hash/feat/tft-phase3-combat-feedback-20261028",
   "forceUpdate": false
 }

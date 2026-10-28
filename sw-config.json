@@ -1,5 +1,5 @@
 {
-  "version": "1.0.152",
+  "version": "1.0.153",
   "releaseDate": "2026-10-28",
-  "notes": "Merge pull request #92 from gianghamk-hash/fix/tft-entry-module-duplicate-20261028"
+  "notes": "Merge pull request #93 from gianghamk-hash/feat/tft-phase3-combat-feedback-20261028"
 }

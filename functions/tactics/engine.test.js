@@ -197,3 +197,17 @@ test('win and loss streak gold uses 2, 4 and 5 thresholds',()=>{
   assert.equal(p.gold,5+expected);
  }
 });
+
+test('all 30 MLBB primary roles are aligned without changing hero identity or skill',()=>{
+ const expected=['Assassin','Fighter','Ranger','Ranger','Sorcerer','Sorcerer','Fighter','Ranger','Assassin','Tank','Sorcerer','Fighter','Ranger','Assassin','Sorcerer','Ranger','Assassin','Ranger','Fighter','Support','Sorcerer','Fighter','Ranger','Fighter','Tank','Sorcerer','Sorcerer','Sorcerer','Tank','Fighter'];
+ assert.deepEqual(E.C.heroes.map(h=>h.classes[0]),expected);
+ assert.equal(E.C.heroes.length,30);
+ for(const hero of E.C.heroes){
+  assert.ok(E.C.origins[hero.classes[0]],hero.id);
+  assert.ok(hero.ability.id&&hero.ability.kind,hero.id);
+ }
+ assert.equal(E.C.origins.Ranger.label,'Xạ Thủ');
+ assert.equal(E.C.origins.Fighter.label,'Đấu Sĩ');
+ assert.equal(E.C.origins.Tank.label,'Đỡ Đòn');
+ assert.equal(E.C.origins.Support.label,'Hỗ Trợ');
+});

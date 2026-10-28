@@ -2,11 +2,27 @@
 (function(root){
 function makeVisuals(T,profiles={}){
  const gold=0xffd98b, teal=0x54decb;
+ const nameplates=new Map();
+ function nameplate(name,enemy){
+  if(typeof document==='undefined'||!T.Sprite||!T.CanvasTexture)return null;
+  const text=String(name||'').slice(0,22),key=(enemy?'enemy:':'ally:')+text;
+  if(!nameplates.has(key)){
+   const canvas=document.createElement('canvas');canvas.width=256;canvas.height=52;
+   const ctx=canvas.getContext('2d');if(!ctx)return null;
+   ctx.fillStyle='rgba(4,18,30,.82)';ctx.beginPath();ctx.roundRect(4,3,248,45,10);ctx.fill();
+   ctx.strokeStyle=enemy?'#ff9fa3':'#8ce9de';ctx.lineWidth=2;ctx.stroke();
+   ctx.font='bold 25px sans-serif';ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillStyle='#fff9e6';ctx.fillText(text,128,25,238);
+   const texture=new T.CanvasTexture(canvas);texture.needsUpdate=true;
+   nameplates.set(key,new T.SpriteMaterial({map:texture,transparent:true,depthTest:false,depthWrite:false}));
+  }
+  const label=new T.Sprite(nameplates.get(key));label.position.y=2.27;label.scale.set(1.53,.32,1);label.renderOrder=30;
+  return label;
+ }
  function mesh(geometry,color,metalness=.18){return new T.Mesh(geometry,new T.MeshStandardMaterial({color,roughness:.47,metalness}));}
  function role(hero){if(hero.classes.includes('Guardian')||hero.classes.includes('Brawler'))return 'tank';
  if(hero.classes.includes('Ranger'))return 'ranger';
  if(hero.classes.includes('Sorcerer'))return 'mage';return 'assassin';}
- function unit(hero,star,enemy){
+ function unit(hero,star,enemy,displayName){
   const g=new T.Group(),roleName=role(hero),profile=profiles[hero.id]||{},c=enemy?0xe56870:[0x59cbd3,0x80d9b0,0xe1a3fa,0xf1bf69,0xf37fbe][hero.cost-1];
   const ring=mesh(new T.TorusGeometry(.43,.042,5,14),enemy?0xf98b92:teal);ring.rotation.x=Math.PI/2;ring.position.y=.08;g.add(ring);
   const movingLegs=[];const arms=[];
@@ -35,6 +51,7 @@ function makeVisuals(T,profiles={}){
   const bg=mesh(new T.BoxGeometry(.85,.1,.06),0x12242f);bars.add(bg);
   const hp=mesh(new T.BoxGeometry(.82,.075,.08),0x6ff2a0);hp.position.z=.048;bars.add(hp);
   const mp=mesh(new T.BoxGeometry(.82,.045,.065),0x7eafff);mp.position.set(0,-.105,.052);bars.add(mp);g.add(bars);
+  const tag=nameplate(displayName||hero.name,enemy);if(tag)g.add(tag);
   const scale=1+Math.max(0,star-1)*.11;g.scale.setScalar(scale);
   g.userData={bars,ring,health:hp,mana:mp,body,head,arm:right,arms,legs:movingLegs,baseY:0,star,heroId:hero.id,idleOffset:hero.cost*1.6};
   return g;

@@ -75,11 +75,9 @@ test('trait buffs apply only to heroes possessing the activated trait',()=>{
 });
 test('equipment allows at most three occupied slots on a hero',()=>{
  const state=setup(),p=state.players.a,h=E.C.heroes[0];
- p.units.u={id:'u',heroId:h.id,star:1,items:[]};p.bench['0']='u';
- const components=E.C.components;
- for(let i=0;i<3;i++){p.inventory.push(components[i].id);E.action(state,'a',{type:'EQUIP',unitId:'u',component:components[i].id},1000+i);}
+ const crafted=E.C.recipes.slice(0,3).map(x=>x.id);
+ p.units.u={id:'u',heroId:h.id,star:1,items:crafted};p.bench['0']='u';
+ const extra=E.C.components[0].id;p.inventory.push(extra);
+ assert.throws(()=>E.action(state,'a',{type:'EQUIP',unitId:'u',component:extra},1009),/3 ô đồ/);
  assert.equal(p.units.u.items.length,3);
- const extra=components.find(x=>!p.units.u.items.some(y=>E.RECIPE[[x.id,y].sort().join('+')]));
- if(extra){p.inventory.push(extra.id);assert.throws(()=>E.action(state,'a',{type:'EQUIP',unitId:'u',component:extra.id},1009));}
- assert.ok(p.units.u.items.length<=3);
 });

@@ -968,6 +968,198 @@
         "cleanse": false,
         "status": null
       }
+    },
+    {
+      "id": "H31",
+      "name": "Diggie",
+      "cost": 1,
+      "origins": [
+        "Mech"
+      ],
+      "classes": [
+        "Support"
+      ],
+      "hp": 460,
+      "attack": 42,
+      "armor": 17,
+      "magicResist": 20,
+      "attackSpeed": 0.61,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 70,
+      "ability": {
+        "kind": "teamShield",
+        "power": 70,
+        "radius": 1,
+        "id": "SK31",
+        "name": "Đồng Hồ Hộ Vệ",
+        "durationMs": 0,
+        "vfx": "hero-h31",
+        "sfx": "hero-h31",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
+      }
+    },
+    {
+      "id": "H32",
+      "name": "Angela",
+      "cost": 2,
+      "origins": [
+        "Celestial"
+      ],
+      "classes": [
+        "Support"
+      ],
+      "hp": 570,
+      "attack": 47,
+      "armor": 20,
+      "magicResist": 20,
+      "attackSpeed": 0.65,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 85,
+      "ability": {
+        "kind": "teamHaste",
+        "power": 0.22,
+        "radius": 2,
+        "id": "SK32",
+        "name": "Nhịp Tim Tiếp Sức",
+        "durationMs": 3500,
+        "vfx": "hero-h32",
+        "sfx": "hero-h32",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
+      }
+    },
+    {
+      "id": "H33",
+      "name": "Floryn",
+      "cost": 3,
+      "origins": [
+        "Beast"
+      ],
+      "classes": [
+        "Support"
+      ],
+      "hp": 620,
+      "attack": 52,
+      "armor": 23,
+      "magicResist": 20,
+      "attackSpeed": 0.62,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 95,
+      "ability": {
+        "kind": "teamHeal",
+        "power": 145,
+        "radius": 3,
+        "id": "SK33",
+        "name": "Mầm Xanh Hồi Phục",
+        "durationMs": 0,
+        "vfx": "hero-h33",
+        "sfx": "hero-h33",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
+      }
+    },
+    {
+      "id": "H34",
+      "name": "Mathilda",
+      "cost": 3,
+      "origins": [
+        "Arcane"
+      ],
+      "classes": [
+        "Support"
+      ],
+      "hp": 650,
+      "attack": 52,
+      "armor": 23,
+      "magicResist": 20,
+      "attackSpeed": 0.72,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 100,
+      "ability": {
+        "kind": "teamHaste",
+        "power": 0.3,
+        "radius": 3,
+        "id": "SK34",
+        "name": "Cánh Gió Tăng Tốc",
+        "durationMs": 3500,
+        "vfx": "hero-h34",
+        "sfx": "hero-h34",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
+      }
+    },
+    {
+      "id": "H35",
+      "name": "Estes",
+      "cost": 4,
+      "origins": [
+        "Celestial"
+      ],
+      "classes": [
+        "Support"
+      ],
+      "hp": 760,
+      "attack": 57,
+      "armor": 26,
+      "magicResist": 20,
+      "attackSpeed": 0.64,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 115,
+      "ability": {
+        "kind": "teamHeal",
+        "power": 225,
+        "radius": 4,
+        "id": "SK35",
+        "name": "Nguyệt Quang Chữa Lành",
+        "durationMs": 0,
+        "vfx": "hero-h35",
+        "sfx": "hero-h35",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
+      }
+    },
+    {
+      "id": "H36",
+      "name": "Faramis",
+      "cost": 5,
+      "origins": [
+        "Shadow"
+      ],
+      "classes": [
+        "Support"
+      ],
+      "hp": 880,
+      "attack": 62,
+      "armor": 29,
+      "magicResist": 20,
+      "attackSpeed": 0.7,
+      "range": 3,
+      "manaStart": 0,
+      "manaMax": 130,
+      "ability": {
+        "kind": "teamShield",
+        "power": 330,
+        "radius": 5,
+        "id": "SK36",
+        "name": "Lá Chắn Linh Hồn",
+        "durationMs": 0,
+        "vfx": "hero-h36",
+        "sfx": "hero-h36",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
+      }
     }
   ],
   "origins": {
@@ -1127,6 +1319,18 @@
         "1": {
           "regen": 6,
           "bonusMana": 4
+        },
+        "2": {
+          "regen": 9,
+          "bonusMana": 6
+        },
+        "4": {
+          "regen": 14,
+          "bonusMana": 9
+        },
+        "6": {
+          "regen": 20,
+          "bonusMana": 13
         }
       }
     }

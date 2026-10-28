@@ -44,3 +44,11 @@ test('game entry ES module parses without duplicate declarations',()=>{
  const source=html.slice(start+opening.length,end).split('\n').filter(line=>!line.trimStart().startsWith('import ')).join('\n');
  assert.doesNotThrow(()=>execFileSync(process.execPath,['--input-type=module','--check'],{input:source,encoding:'utf8'}));
 });
+
+test('phase 3 sound and VFX are driven by recorded combat events',()=>{
+ assert.match(html,/id="combatSoundBtn"/);
+ assert.match(html,/window\.toggleCombatSound=/);
+ assert.match(html,/if\(e\.type==='stun'&&target\)/);
+ assert.match(html,/if\(e\.type==='burn'&&target\)/);
+ assert.match(html,/e\.skill\|\|'spell'/);
+});

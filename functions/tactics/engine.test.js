@@ -221,11 +221,11 @@ test('six support skills heal, shield and haste friendly units',()=>{
   const hero=additions.find(h=>h.ability.kind===kind),s=setup(),p=s.players.a;
   p.units={support:{id:'support',heroId:hero.id,star:2,items:[]},friend:{id:'friend',heroId:'H01',star:2,items:[]}};
   p.board={r0c2:'support',r0c3:'friend'};
-  const before=hero.manaStart;hero.manaStart=hero.manaMax;
+  const before=hero.manaStart,rangeBefore=hero.range;hero.manaStart=hero.manaMax;hero.range=8;
   try{
    const events=E.simulate({a:'a',b:null,pve:true,ghost:false},s,{a:E.clone(p)},123).events;
    assert.ok(events.some(e=>e.type==='skill'&&e.actor==='support'),kind+' not cast');
    assert.ok(events.some(e=>e.type===({teamHeal:'heal',teamShield:'shield',teamHaste:'haste'})[kind]&&e.target==='friend'),kind+' not applied to ally');
-  }finally{hero.manaStart=before;}
+  }finally{hero.manaStart=before;hero.range=rangeBefore;}
  }
 });

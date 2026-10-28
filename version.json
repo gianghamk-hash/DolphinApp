@@ -1,7 +1,7 @@
 {
-  "version": "1.0.148",
-  "buildDate": "2026-10-28T03:54:14.027Z",
-  "commit": "4b734b6",
-  "notes": "fix(tft): synchronize trait and player HP HUD scaling (#88)",
+  "version": "1.0.149",
+  "buildDate": "2026-10-28T05:36:45.464Z",
+  "commit": "37a09b0",
+  "notes": "Merge pull request #89 from gianghamk-hash/feat/tft-mobile-combat-controls-20261028",
   "forceUpdate": false
 }

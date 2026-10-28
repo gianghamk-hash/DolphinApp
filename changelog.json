@@ -1,26 +1,34 @@
 {
-  "version": "1.0.148",
-  "previousVersion": "1.0.147",
-  "commit": "4b734b6",
-  "previousCommit": "e3803d2",
-  "buildDate": "2026-10-28T03:54:14.027Z",
-  "summary": "fix(tft): synchronize trait and player HP HUD scaling (#88)",
+  "version": "1.0.149",
+  "previousVersion": "1.0.148",
+  "commit": "37a09b0",
+  "previousCommit": "4b734b6",
+  "buildDate": "2026-10-28T05:36:45.464Z",
+  "summary": "Merge pull request #89 from gianghamk-hash/feat/tft-mobile-combat-controls-20261028",
   "changes": {
-    "totalCommits": 152,
-    "filesChanged": 2,
+    "totalCommits": 153,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(tft): synchronize trait and player HP HUD scaling (#88)"
+    "Merge pull request #89 from gianghamk-hash/feat/tft-mobile-combat-controls-20261028"
   ],
   "fileChanges": [
+    {
+      "file": "functions/tactics/engine.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/tactics/engine.test.js",
+      "type": "update"
+    },
     {
       "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/trait-hud.test.js",
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
       "type": "update"
     }
   ]

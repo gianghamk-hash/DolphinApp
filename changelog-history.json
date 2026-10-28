@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.148",
+      "releaseDate": "2026-10-28T03:54:14.027Z",
+      "summary": "fix(tft): synchronize trait and player HP HUD scaling (#88)",
+      "details": [
+        "fix(tft): synchronize trait and player HP HUD scaling (#88)"
+      ]
+    },
+    {
       "version": "1.0.147",
       "releaseDate": "2026-10-28T03:38:26.402Z",
       "summary": "feat(tft): responsive trait HUD, full tier details and touch-only equipment",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.99",
       "releaseDate": "2026-10-25T05:31:36.612Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.98",
-      "releaseDate": "2026-10-25T05:20:43.012Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

@@ -19,7 +19,7 @@ function makeVisuals(T,profiles={}){
   return label;
  }
  function mesh(geometry,color,metalness=.18){return new T.Mesh(geometry,new T.MeshStandardMaterial({color,roughness:.47,metalness}));}
- function role(hero){if(hero.classes.includes('Guardian')||hero.classes.includes('Brawler'))return 'tank';
+ function role(hero){if(hero.classes.includes('Tank')||hero.classes.includes('Fighter'))return 'tank';
  if(hero.classes.includes('Ranger'))return 'ranger';
  if(hero.classes.includes('Sorcerer'))return 'mage';return 'assassin';}
  function unit(hero,star,enemy,displayName){

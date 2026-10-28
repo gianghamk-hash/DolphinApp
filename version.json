@@ -1,7 +1,7 @@
 {
-  "version": "1.0.145",
-  "buildDate": "2026-10-28T02:48:38.864Z",
-  "commit": "268ee84",
-  "notes": "feat(tft): 30s combat and smart gold shop hints",
+  "version": "1.0.146",
+  "buildDate": "2026-10-28T03:20:32.403Z",
+  "commit": "52ce26a",
+  "notes": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels",
   "forceUpdate": false
 }

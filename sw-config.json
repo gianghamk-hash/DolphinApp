@@ -1,5 +1,5 @@
 {
-  "version": "1.0.145",
+  "version": "1.0.146",
   "releaseDate": "2026-10-28",
-  "notes": "feat(tft): 30s combat and smart gold shop hints"
+  "notes": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels"
 }

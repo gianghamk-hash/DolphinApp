@@ -1,34 +1,22 @@
 {
-  "version": "1.0.145",
-  "previousVersion": "1.0.144",
-  "commit": "268ee84",
-  "previousCommit": "8d11623",
-  "buildDate": "2026-10-28T02:48:38.864Z",
-  "summary": "feat(tft): 30s combat and smart gold shop hints",
+  "version": "1.0.146",
+  "previousVersion": "1.0.145",
+  "commit": "52ce26a",
+  "previousCommit": "268ee84",
+  "buildDate": "2026-10-28T03:20:32.403Z",
+  "summary": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels",
   "changes": {
-    "totalCommits": 149,
-    "filesChanged": 8,
+    "totalCommits": 150,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tft): 30s combat and smart gold shop hints"
+    "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/tft-shop-combat.yml",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/catalog.json",
+      "file": ".github/workflows/tft-touch-controls.yml",
       "type": "update"
     },
     {
@@ -36,15 +24,11 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/shop-hints.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/shop-hints.test.js",
-      "type": "update"
-    },
-    {
       "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/touch-gear.test.js",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.145",
+      "releaseDate": "2026-10-28T02:48:38.864Z",
+      "summary": "feat(tft): 30s combat and smart gold shop hints",
+      "details": [
+        "feat(tft): 30s combat and smart gold shop hints"
+      ]
+    },
+    {
       "version": "1.0.144",
       "releaseDate": "2026-10-28T02:33:43.759Z",
       "summary": "feat(tft): refreshed arena, hero shop and armory UI",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.96",
       "releaseDate": "2026-10-25T05:08:33.348Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.95",
-      "releaseDate": "2026-10-25T04:55:16.214Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

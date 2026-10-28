@@ -39,3 +39,27 @@
 @media(max-height:520px) and (orientation:landscape){#game #shop .shopHero{min-height:62px!important;padding:4px 3px!important}#game #shop .shopAvatar{font-size:16px}#game>aside .panel{border-radius:11px}#game .itemChip{padding:3px 5px!important}}
 @media(orientation:portrait) and (max-width:650px){#game #shop .shopHero{min-height:82px!important}#game #shop .shopHero strong{font-size:10px}}
 @media(prefers-reduced-motion:reduce){#game #shop .shopHero{transition:none!important}}
+
+/* Smart market highlighting: gentle gold signal for a merge or shared traits. */
+#game #shop .shopHero.shopRecommended{
+ border:2px solid #ffda62!important;
+ border-bottom:3px solid #ffe18a!important;
+ box-shadow:inset 0 0 0 1px rgba(255,239,164,.4),0 0 12px rgba(255,194,49,.48),0 0 22px rgba(255,179,34,.16)!important;
+ animation:tftShopGoldPulse 2.3s ease-in-out infinite;
+}
+#game #shop .shopHero.shopRecommended .shopRank{color:#ffeaa1}
+#game #shop .shopHero.shopUpgrade:after{
+ content:'★ UP';position:absolute;top:26px;right:3px;z-index:2;
+ font-size:8px;line-height:1;font-weight:900;letter-spacing:.02em;
+ padding:3px 4px;border-radius:5px;background:#f6cd66;color:#17252b;
+}
+#game #shop .shopHero.shopSynergy:not(.shopUpgrade):after{
+ content:'✦ HỆ';position:absolute;top:26px;right:3px;z-index:2;
+ font-size:8px;line-height:1;font-weight:900;padding:3px 4px;
+ border-radius:5px;background:#e2bb57;color:#17252b;
+}
+@keyframes tftShopGoldPulse{
+ 0%,100%{box-shadow:inset 0 0 0 1px rgba(255,239,164,.2),0 0 7px rgba(255,194,49,.32),0 0 14px rgba(255,179,34,.1)}
+ 50%{box-shadow:inset 0 0 0 1px rgba(255,239,164,.7),0 0 16px rgba(255,207,77,.65),0 0 26px rgba(255,179,34,.23)}
+}
+@media(prefers-reduced-motion:reduce){#game #shop .shopHero.shopRecommended{animation:none!important}}

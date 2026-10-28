@@ -1,0 +1,24 @@
+name: TFT Combat and Smart Shop Checks
+on:
+  pull_request:
+    paths:
+      - 'giaitri/games/tactics-online/**'
+      - 'functions/tactics/catalog.json'
+      - '.github/workflows/tft-shop-combat.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'giaitri/games/tactics-online/**'
+      - 'functions/tactics/catalog.json'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check giaitri/games/tactics-online/shop-hints.js
+      - run: node --test giaitri/games/tactics-online/shop-hints.test.js giaitri/games/tactics-online/tactics-ui.test.js giaitri/games/tactics-online/combat-timeline.test.js

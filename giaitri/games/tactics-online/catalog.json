@@ -1296,7 +1296,7 @@
   },
   "phases": {
     "PREPARATION": 30000,
-    "COMBAT": 20000,
+    "COMBAT": 30000,
     "TRANSITION": 5000
   }
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.156",
-  "buildDate": "2026-10-28T06:58:03.473Z",
-  "commit": "100aa9b",
-  "notes": "Merge pull request #96 from gianghamk-hash/feat/tft-equipment-v2-20261028",
+  "version": "1.0.157",
+  "buildDate": "2026-10-28T07:05:14.166Z",
+  "commit": "336bd9d",
+  "notes": "Merge pull request #97 from gianghamk-hash/feat/tft-strategy-depth-round-results-20261028",
   "forceUpdate": false
 }

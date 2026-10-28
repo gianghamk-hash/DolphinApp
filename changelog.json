@@ -1,24 +1,20 @@
 {
-  "version": "1.0.156",
-  "previousVersion": "1.0.155",
-  "commit": "100aa9b",
-  "previousCommit": "329a0a5",
-  "buildDate": "2026-10-28T06:58:03.473Z",
-  "summary": "Merge pull request #96 from gianghamk-hash/feat/tft-equipment-v2-20261028",
+  "version": "1.0.157",
+  "previousVersion": "1.0.156",
+  "commit": "336bd9d",
+  "previousCommit": "100aa9b",
+  "buildDate": "2026-10-28T07:05:14.166Z",
+  "summary": "Merge pull request #97 from gianghamk-hash/feat/tft-strategy-depth-round-results-20261028",
   "changes": {
-    "totalCommits": 160,
+    "totalCommits": 161,
     "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #96 from gianghamk-hash/feat/tft-equipment-v2-20261028"
+    "Merge pull request #97 from gianghamk-hash/feat/tft-strategy-depth-round-results-20261028"
   ],
   "fileChanges": [
-    {
-      "file": "functions/tactics/catalog.json",
-      "type": "update"
-    },
     {
       "file": "functions/tactics/engine.js",
       "type": "update"
@@ -28,11 +24,15 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/catalog.json",
+      "file": "giaitri/games/tactics-online/extreme-ai.js",
       "type": "update"
     },
     {
       "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
       "type": "update"
     }
   ]

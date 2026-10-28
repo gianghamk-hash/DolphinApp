@@ -117,3 +117,20 @@ test('skills produce distinct deterministic control and healing events',()=>{
  assert.ok(run('drain').some(e=>e.type==='heal'));
  assert.ok(run('dash').some(e=>e.type==='move'));
 });
+
+test('all 30 heroes have distinct skill identities and supported status metadata',()=>{
+ const heroes=E.C.heroes,ids=new Set(),names=new Set();
+ assert.equal(heroes.length,30);
+ for(const h of heroes){
+  assert.ok(h.ability.id&&h.ability.name&&h.ability.vfx&&h.ability.sfx,h.id);
+  assert.ok(!ids.has(h.ability.id)&&!names.has(h.ability.name),h.id);
+  assert.ok(['slow','burn',null].includes(h.ability.status),h.id);
+  assert.ok(h.ability.effectScale>=1&&h.ability.effectScale<=1.2,h.id);
+  ids.add(h.ability.id);names.add(h.ability.name);
+ }
+});
+test('client catalog matches server ability identities for all heroes',()=>{
+ const path=require('node:path'),fs=require('node:fs');
+ const client=JSON.parse(fs.readFileSync(path.resolve(__dirname,'../../giaitri/games/tactics-online/catalog.json'),'utf8'));
+ assert.deepEqual(client.heroes.map(h=>h.ability),E.C.heroes.map(h=>h.ability));
+});

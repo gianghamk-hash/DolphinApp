@@ -138,3 +138,44 @@
   #game #heroInfo{max-height:24dvh;overflow-y:auto}
 }
 @media(prefers-reduced-motion:reduce){.equipSuccessFx{animation:none}}
+
+/* Phase 2: consolidated responsive priority layer, after legacy portrait rules. */
+#game .benchBar #bench button,#game #shop .shopHero,#game .shopIconBtn,#game .touchGear{touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+#game .benchBar #bench button,#game .touchGear{user-select:none;-webkit-user-select:none}
+#game .benchBar #bench button.isDragSource{outline:2px solid #ffe18b!important;background:#265d60!important}
+#game .benchBar #bench button.isDropTarget{outline:2px dashed #7ef4c8!important;background:#1b5f54!important}
+#game .benchBar.isDropTarget{box-shadow:0 0 0 2px #75e6b0 inset}
+#game .benchBar #bench button:focus-visible,#game .shopIconBtn:focus-visible,#game .touchGear:focus-visible{outline:2px solid #fff0af;outline-offset:2px}
+#game .touchItemSlots,#game #bench{overscroll-behavior-x:contain}
+@media (orientation:portrait) and (max-width:650px){
+  #appShell:fullscreen,#appShell.pseudoFullscreen{height:100dvh!important;overflow:hidden!important}
+  #game:not(.hidden){display:flex!important;flex-direction:column!important;height:calc(100dvh - var(--tft-header-height,64px))!important;min-height:0!important;overflow:hidden!important;padding:3px 4px calc(3px + env(safe-area-inset-bottom))!important;gap:3px!important}
+  #game>section{height:auto!important;min-height:0!important;flex:0 0 auto!important;display:flex!important;flex-direction:column!important;gap:3px!important}
+  #game>section>#stage{height:clamp(150px,36dvh,310px)!important;min-height:0!important;max-height:none!important;flex:none!important}
+  #game>section>.playerDock{position:relative!important;inset:auto!important;width:100%!important;max-height:42px!important;min-height:0!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;padding:1px!important;gap:2px!important;pointer-events:none}
+  #game>section>.playerDock .hpEntry{min-width:0!important}
+  #game>section>.benchBar{padding:2px 4px!important;margin:0!important}
+  #game .benchTitle{font-size:9px!important;margin-bottom:2px!important}
+  #game .benchBar #bench{gap:2px!important}
+  #game .benchBar #bench button{height:46px!important;min-height:46px!important;padding:2px 1px!important}
+  #game .touchItemTray{height:39px!important;min-height:39px!important;max-height:39px!important;padding:2px 4px!important}
+  #game .touchGear{height:33px!important;flex-basis:54px}
+  #game>aside{height:auto!important;min-height:0!important;flex:1 1 0!important;overflow-y:auto!important;overflow-x:hidden!important;padding:0 1px calc(5px + env(safe-area-inset-bottom))!important;touch-action:pan-y!important;scrollbar-width:thin}
+  #game #shop{gap:2px!important}
+  #game #shop .shopHero{min-height:57px!important;padding:3px 2px!important}
+  #game .shopIconBtn{min-height:36px!important;height:36px!important;width:42px!important}
+  #game #heroInfo{max-height:20dvh;overflow-y:auto}
+}
+@media (orientation:portrait) and (max-width:650px) and (max-height:700px){
+ #game>section>#stage{height:clamp(130px,31dvh,230px)!important}
+ #game .benchBar #bench button{min-height:41px!important;height:41px!important}
+ #game .touchItemTray{min-height:34px!important;height:34px!important;max-height:34px!important}
+ #game .touchGear{height:28px!important}
+}
+@media (orientation:portrait) and (max-width:650px) and (min-height:850px){
+ #game>section>#stage{height:40dvh!important}
+}
+@media (pointer:coarse){
+ #unitPopup button,#traitInfo button,#game .shopIconBtn{min-height:40px}
+ #game .benchBar #bench button{touch-action:none!important}
+}

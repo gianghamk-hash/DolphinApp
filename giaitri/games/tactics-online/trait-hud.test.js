@@ -27,3 +27,9 @@ test('old duplicate equipment panel removed, touch gear stays',()=>{
  assert.match(html,/id="touchItemTray"/);
  assert.match(html,/send\(\{type:'EQUIP',unitId:target,component:drag\.item\}\)/);
 });
+
+test('stage traits and sibling player HP rail share camera scale',()=>{
+ assert.match(html,/stage\?\.style\.setProperty\('--tft-hud-scale',String\(scale\)\)/);
+ assert.match(html,/stage\?\.parentElement\?\.style\.setProperty\('--tft-hud-scale',String\(scale\)\)/);
+ assert.match(css,/#game>section>\.playerDock \.hpPortrait/);
+});

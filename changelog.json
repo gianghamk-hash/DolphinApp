@@ -1,30 +1,30 @@
 {
-  "version": "1.0.161",
-  "previousVersion": "1.0.160",
-  "commit": "aca03ed",
-  "previousCommit": "4af1675",
-  "buildDate": "2026-10-28T08:56:31.663Z",
-  "summary": "Merge pull request #101 from gianghamk-hash/fix/tft-reliable-board-nameplates-20261028",
+  "version": "1.0.162",
+  "previousVersion": "1.0.161",
+  "commit": "f6b18bc",
+  "previousCommit": "aca03ed",
+  "buildDate": "2026-10-28T09:09:52.442Z",
+  "summary": "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028",
   "changes": {
-    "totalCommits": 165,
+    "totalCommits": 166,
     "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #101 from gianghamk-hash/fix/tft-reliable-board-nameplates-20261028"
+    "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "functions/tactics/catalog.json",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "file": "functions/tactics/engine.test.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "file": "giaitri/games/tactics-online/catalog.json",
       "type": "update"
     },
     {

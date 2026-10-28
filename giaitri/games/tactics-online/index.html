@@ -177,7 +177,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 #lockShopBtn{min-width:39px!important;padding:7px 9px!important}#lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
 .shopIconBtn{width:43px;min-width:43px!important;height:40px;padding:5px!important;display:inline-grid;place-items:center;font-size:21px!important;line-height:1;border-radius:10px}.shopIconBtn:disabled{opacity:.35;cursor:not-allowed}#rollShopBtn:disabled{filter:grayscale(1)}#game #lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
 </style></head><body>
-<div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
+<div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
 <h2>🐉 DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">OFFLINE</button><button onclick="chooseOnline()">ONLINE</button></div>
@@ -298,7 +298,7 @@ document.addEventListener('fullscreenchange',()=>{
 window.zoomBoard=direction=>{zoomLevel=direction===0?1:Math.max(.7,Math.min(2.4,zoomLevel+direction*.12));if(camera){camera.zoom=zoomLevel;camera.updateProjectionMatrix();}syncBattleHudScale();};
 const STAT_LABELS={attack:'Công',abilityPower:'Sức mạnh phép',armor:'Giáp',magicResist:'Kháng phép',hp:'Máu',mana:'Năng lượng',regen:'Hồi máu/giây',bonusMana:'Năng lượng thêm',adjacentShield:'Khiên đồng đội',hpRatio:'Máu tăng',trueDamageRatio:'Sát thương chuẩn',stackAttackSpeed:'Tốc đánh tích lũy',cloneRatio:'Bóng phân thân',omnivamp:'Hút máu toàn phần',critChance:'Tỉ lệ chí mạng',critDamage:'Sát thương chí mạng',doubleHitChance:'Tỉ lệ đánh đôi'};
 const PERCENT_STATS=new Set(['hpRatio','trueDamageRatio','stackAttackSpeed','cloneRatio','omnivamp','critChance','critDamage','doubleHitChance']);
-const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng'};
+const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng',teamHeal:'Hồi máu đồng đội',teamShield:'Khiên đồng đội',teamHaste:'Tăng tốc đánh đồng đội'};
 const EFFECT_LABELS={stat:'Tăng chỉ số',burn:'Thiêu đốt mục tiêu',apGrowth:'Tăng sức mạnh phép khi tung chiêu',manaRegen:'Hồi 5 Mana/giây',manaPulse:'Hồi 2 Mana/giây',lifesteal:'Hút máu 15%',crit:'Tăng chí mạng',doubleHit:'Đòn đánh thứ hai'};
 const itemDef=id=>catalog.components.find(c=>c.id===id)||catalog.recipes.find(c=>c.id===id);
 const ITEM_ICONS={sword:'⚔️',rod:'🪄',vest:'🛡️',cloak:'🧥',belt:'❤️',tear:'💧',I01:'🗡️',I02:'⚡',I03:'🛡️',I04:'⚔️',I05:'🩸',I06:'🔋',I07:'👑',I08:'🔱',I09:'🪬',I10:'🌿',I11:'✨',I12:'🦔',I13:'🐉',I14:'🔥',I15:'⚙️',I16:'🧥',I17:'💚',I18:'🌙',I19:'💖',I20:'🔮',I21:'💠'};
@@ -588,6 +588,7 @@ function tickReplay(){
   if(e.type==='mana'&&node){const stat=battleHealth.get(e.actor)||{hp:1,max:1};stat.mana=e.amount;stat.manaMax=e.max||1;battleHealth.set(e.actor,stat);Visuals.updateBars(node,Math.max(0,stat.hp/stat.max),Math.max(0,Math.min(1,stat.mana/stat.manaMax)));}
   if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.vfx||e.skill||'spell',1.15);CombatFX.castAura(stageScene,node,e.vfx||e.skill);playCombatSound(e.sfx||e.skill||'cast');}
   if(e.type==='cleanse'&&node){CombatFX.pulse(stageScene,node,'cleanse',.75);playCombatSound('heal');}
+  if(e.type==='haste'&&target){CombatFX.pulse(stageScene,target,'heal',.75);playCombatSound('heal');}
   if(e.type==='slow'&&target){CombatFX.pulse(stageScene,target,'slow',.65);playCombatSound('shield');}
   if(e.type==='stun'&&target){CombatFX.pulse(stageScene,target,'stun',.65);playCombatSound('stun');}
   if(e.type==='burn'&&target){CombatFX.pulse(stageScene,target,'burn',.6);playCombatSound('burn');}
@@ -600,7 +601,7 @@ function tickReplay(){
    const stat=battleHealth.get(e.target);if(stat){stat.hp=Math.max(0,stat.hp-(e.amount||0));Visuals.updateBars(target,stat.hp/stat.max,(stat.mana||0)/(stat.manaMax||1));}
    showDamage(target,e.amount);playCombatSound(e.type);Animator.play(target,'hit');Animator.burst(stageScene,target,'hit');CombatFX.pulse(stageScene,target,'critical',.45);
   }
-  if((e.type==='heal'||e.type==='shield')&&node){playCombatSound(e.type);Animator.play(node,e.type);Animator.burst(stageScene,node,e.type);CombatFX.pulse(stageScene,node,e.type);Visuals.updateBars(node,.95,.5);}
+  if((e.type==='heal'||e.type==='shield')&&(target||node)){const affected=target||node;playCombatSound(e.type);Animator.play(affected,e.type);Animator.burst(stageScene,affected,e.type);CombatFX.pulse(stageScene,affected,e.type);if(e.type==='heal'){const hp=battleHealth.get(e.target||e.actor);if(hp){hp.hp=Math.min(hp.max,hp.hp+(e.amount||0));Visuals.updateBars(affected,hp.hp/hp.max);}}}
   if(e.type==='die'&&node){playCombatSound('die');Animator.play(node,'death');Animator.burst(stageScene,node,'death');CombatFX.pulse(stageScene,node,'death');}
  }
 }

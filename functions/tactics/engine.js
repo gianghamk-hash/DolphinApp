@@ -53,7 +53,7 @@ function createEngine(C){
  }
  function combatStats(p,u,traits){
   const h=HERO[u.heroId],factor=Math.pow(1.8,u.star-1),items=itemStats(u.items);
-  const b={};Object.values(traits).forEach(t=>{for(const k in t.buff)b[k]=(b[k]||0)+t.buff[k];});
+  const b={};Object.entries(traits).forEach(([traitKey,t])=>{if(![...(h.origins||[]),...(h.classes||[])].includes(traitKey))return;for(const k in t.buff)b[k]=(b[k]||0)+t.buff[k];});
   const hp=Math.round((h.hp+ (items.hp||0))*factor*(1+(b.hpRatio||0)));
   const effects=(u.items||[]).map(id=>C.recipes.find(i=>i.id===id)?.effect).filter(Boolean);
   return {hp,maxHp:hp,attack:Math.round(h.attack*factor+(items.attack||0)),armor:h.armor+(items.armor||0)+(b.armor||0),

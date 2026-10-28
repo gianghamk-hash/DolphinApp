@@ -1,24 +1,20 @@
 {
-  "version": "1.0.158",
-  "previousVersion": "1.0.157",
-  "commit": "e3e26a2",
-  "previousCommit": "336bd9d",
-  "buildDate": "2026-10-28T07:18:10.695Z",
-  "summary": "Merge pull request #98 from gianghamk-hash/feat/tft-original-fantasy-icons-20261028",
+  "version": "1.0.159",
+  "previousVersion": "1.0.158",
+  "commit": "5d73f99",
+  "previousCommit": "e3e26a2",
+  "buildDate": "2026-10-28T07:29:49.947Z",
+  "summary": "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028",
   "changes": {
-    "totalCommits": 162,
-    "filesChanged": 4,
+    "totalCommits": 163,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #98 from gianghamk-hash/feat/tft-original-fantasy-icons-20261028"
+    "Merge pull request #99 from gianghamk-hash/fix/tft-equipment-drag-reliability-20261028"
   ],
   "fileChanges": [
-    {
-      "file": "giaitri/games/tactics-online/assets/item-icons.svg",
-      "type": "update"
-    },
     {
       "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
@@ -28,7 +24,7 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "file": "giaitri/games/tactics-online/touch-gear.test.js",
       "type": "update"
     }
   ]

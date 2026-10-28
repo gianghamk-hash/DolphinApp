@@ -202,3 +202,9 @@
 #game .touchItemTray .touchGear{touch-action:none!important;-webkit-touch-callout:none!important;overscroll-behavior:contain}
 #game .touchItemTray .touchItemSlots{touch-action:pan-x}
 #game .touchGearGhost{pointer-events:none!important}
+
+/* DOM nameplates remain visible even when 3D sprite textures are unavailable. */
+#game #heroNameLayer{position:absolute;inset:0;z-index:16;pointer-events:none;overflow:hidden}
+#game .battleHeroName{position:absolute;display:none;transform:translate(-50%,-50%);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 6px;border:1px solid #83e7d9;border-radius:5px;background:#09232deb;color:#fff8e9;font-size:clamp(9px,1.8vw,12px);line-height:1.2;font-weight:800;text-shadow:0 1px 2px #000;box-shadow:0 2px 4px #000a}
+#game .battleHeroName.isEnemy{border-color:#ff969e;background:#421c29e8}
+@media(orientation:portrait) and (max-width:650px){#game .battleHeroName{font-size:9px;max-width:74px;padding:1px 4px}}

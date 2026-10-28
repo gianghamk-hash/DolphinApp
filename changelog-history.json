@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.154",
+      "releaseDate": "2026-10-28T06:07:48.344Z",
+      "summary": "Merge pull request #94 from gianghamk-hash/feat/tft-phase3-unique-abilities-statuses-20261028",
+      "details": [
+        "Merge pull request #94 from gianghamk-hash/feat/tft-phase3-unique-abilities-statuses-20261028"
+      ]
+    },
+    {
       "version": "1.0.153",
       "releaseDate": "2026-10-28T06:04:43.617Z",
       "summary": "Merge pull request #93 from gianghamk-hash/feat/tft-phase3-combat-feedback-20261028",
@@ -390,14 +398,6 @@
       "summary": "feat: TFT weapon-specific hero attack animation [Phase 1B]",
       "details": [
         "feat: TFT weapon-specific hero attack animation [Phase 1B]"
-      ]
-    },
-    {
-      "version": "1.0.104",
-      "releaseDate": "2026-10-26T13:01:50.856Z",
-      "summary": "feat: TFT Phase 1 articulated character animation improvements",
-      "details": [
-        "feat: TFT Phase 1 articulated character animation improvements"
       ]
     }
   ]

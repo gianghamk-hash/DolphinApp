@@ -3,7 +3,7 @@ const catalog=require('./catalog.json'),defs=require('./hero-visual-defs.js');
 const {buildIdentity,ORIGINS}=require('./hero-identity.js');
 test('all 30 heroes receive their actual catalog origins and classes',()=>{
  const mapped=buildIdentity(defs,catalog);
- assert.equal(Object.keys(mapped).length,30);
+ assert.equal(Object.keys(mapped).length,36);
  for(const hero of catalog.heroes){
   const d=mapped[hero.id];
   assert.equal(d.displayName,hero.name);

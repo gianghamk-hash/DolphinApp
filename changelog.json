@@ -1,18 +1,18 @@
 {
-  "version": "1.0.149",
-  "previousVersion": "1.0.148",
-  "commit": "37a09b0",
-  "previousCommit": "4b734b6",
-  "buildDate": "2026-10-28T05:36:45.464Z",
-  "summary": "Merge pull request #89 from gianghamk-hash/feat/tft-mobile-combat-controls-20261028",
+  "version": "1.0.150",
+  "previousVersion": "1.0.149",
+  "commit": "cb20470",
+  "previousCommit": "37a09b0",
+  "buildDate": "2026-10-28T05:49:52.875Z",
+  "summary": "feat(tft): phase 1 skill states and complete trait threshold regression (#90)",
   "changes": {
-    "totalCommits": 153,
-    "filesChanged": 4,
+    "totalCommits": 154,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #89 from gianghamk-hash/feat/tft-mobile-combat-controls-20261028"
+    "feat(tft): phase 1 skill states and complete trait threshold regression (#90)"
   ],
   "fileChanges": [
     {
@@ -21,14 +21,6 @@
     },
     {
       "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.css",
       "type": "update"
     }
   ]

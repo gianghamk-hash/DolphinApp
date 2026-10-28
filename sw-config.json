@@ -1,5 +1,5 @@
 {
-  "version": "1.0.149",
+  "version": "1.0.150",
   "releaseDate": "2026-10-28",
-  "notes": "Merge pull request #89 from gianghamk-hash/feat/tft-mobile-combat-controls-20261028"
+  "notes": "feat(tft): phase 1 skill states and complete trait threshold regression (#90)"
 }

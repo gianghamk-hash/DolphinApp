@@ -81,3 +81,39 @@ test('equipment allows at most three occupied slots on a hero',()=>{
  assert.throws(()=>E.action(state,'a',{type:'EQUIP',unitId:'u',component:extra},1009),/3 ô đồ/);
  assert.equal(p.units.u.items.length,3);
 });
+
+test('all trait thresholds activate at the exact distinct deployed hero count',()=>{
+ const s=setup(),p=s.players.a;
+ for(const [key,definition] of Object.entries(E.C.origins)){
+  const available=E.C.heroes.filter(h=>[...h.origins,...h.classes].includes(key));
+  for(const threshold of Object.keys(definition.thresholds).map(Number)){
+   p.units={};p.board={};
+   assert.ok(available.length>=threshold,'insufficient heroes for '+key+' '+threshold);
+   available.slice(0,threshold-1).forEach((h,i)=>{const id='u'+i;p.units[id]={id,heroId:h.id,star:1,items:[]};p.board['r'+Math.floor(i/8)+'c'+i%8]=id;});
+   const before=E.activeTraits(p)[key];
+   assert.ok(!before||before.tier<threshold,key+' activated early at '+threshold);
+   const h=available[threshold-1],id='final';p.units[id]={id,heroId:h.id,star:1,items:[]};p.board['r'+Math.floor((threshold-1)/8)+'c'+(threshold-1)%8]=id;
+   assert.equal(E.activeTraits(p)[key].tier,threshold,key+' missed '+threshold);
+  }
+ }
+});
+test('skills produce distinct deterministic control and healing events',()=>{
+ const s=setup(),p=s.players.a;
+ function run(kind){
+  p.units={};p.board={};
+  const own=E.C.heroes.find(h=>h.ability.kind===kind);
+  assert.ok(own,'missing '+kind);
+  p.units.a={id:'a',heroId:own.id,star:1,items:[]};p.board.r0c3='a';
+  s.round=1;
+  // Deterministic fixture: guarantee the skill can fire before combat ends.
+  const before={manaStart:own.manaStart,range:own.range,attack:own.attack};
+  own.manaStart=own.manaMax;own.range=8;own.attack=1;
+  try{
+   const battle=E.simulate({a:'a',b:null,pve:true,ghost:false},s,{a:E.clone(p)},123);
+   return battle.events;
+  }finally{Object.assign(own,before);}
+ }
+ assert.ok(run('stun').some(e=>e.type==='stun'));
+ assert.ok(run('drain').some(e=>e.type==='heal'));
+ assert.ok(run('dash').some(e=>e.type==='move'));
+});

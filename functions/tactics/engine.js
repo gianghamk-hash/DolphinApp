@@ -161,6 +161,7 @@ function createEngine(C){
   for(let t=0;t<PHASES.COMBAT;t+=200){
    const living=units.filter(x=>x.alive);if(!living.some(x=>x.owner===0)||!living.some(x=>x.owner===1))break;
    for(const u of living){if(!u.alive)continue;
+    if(u.stunnedUntil>t){u.fsm="Stunned";continue;}
     if(u.regen)u.hp=Math.min(u.maxHp,u.hp+u.regen*.2);
    if(u.effects&&u.effects.includes('manaRegen'))u.mana=Math.min(u.manaMax,u.mana+1);
    if(u.burnUntil>t&&u.burnDps){u.hp=Math.max(0,u.hp-u.burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
@@ -177,8 +178,19 @@ function createEngine(C){
       if(u.effects&&u.effects.includes('apGrowth'))u.abilityPower=Math.min(250,u.abilityPower+8);
       if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",amount:u.ability.power});}
       else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",amount:u.ability.power});}
-      else {const multi=u.ability.kind==="aoe";const targets=multi?foes.filter(v=>dist(target,v)<=u.ability.radius):[target];
-       for(const v of targets){const power=u.ability.power*(1+u.abilityPower/100);deal(u,v,power*100/(100+Math.max(-50,v.magicResist)),t,true);}}
+      else {
+       const kind=u.ability.kind,area=kind==="aoe"||kind==="blast";
+       const targets=area?foes.filter(v=>v.alive&&dist(target,v)<=Math.max(1,u.ability.radius||1)):[target];
+       for(const v of targets){
+        if(!v.alive)continue;
+        const power=u.ability.power*(1+u.abilityPower/100);
+        const dealt=Math.max(1,Math.round(power*100/(100+Math.max(-50,v.magicResist))));
+        const before=v.hp;deal(u,v,dealt,t,true);
+        if(kind==="stun"&&v.alive){v.stunnedUntil=Math.max(v.stunnedUntil||0,t+1200);emit({t,actor:u.id,target:v.id,type:"stun",amount:1200});}
+        if(kind==="drain"){const healed=Math.max(0,before-v.hp)*.35;u.hp=Math.min(u.maxHp,u.hp+healed);emit({t,actor:u.id,type:"heal",amount:Math.round(healed)});}
+       }
+       if(kind==="dash"){const spaces=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(pos=>pos.x>=0&&pos.x<8&&pos.y>=0&&pos.y<8&&!units.some(v=>v.alive&&v!==u&&v.x===pos.x&&v.y===pos.y));if(spaces.length){const pos=spaces.sort((a,b)=>Math.abs(a.x-u.x)+Math.abs(a.y-u.y)-Math.abs(b.x-u.x)-Math.abs(b.y-u.y))[0];u.x=pos.x;u.y=pos.y;emit({t,actor:u.id,type:"move",x:u.x,y:u.y});}}
+      }
     }else{u.fsm="Attacking";const crit=rnd()<u.critChance?1.5+u.critDamage:1;
       const effectiveArmor=Math.max(-50,target.armor);const physical=u.attack*crit*100/(100+effectiveArmor);
       deal(u,target,physical*(1-u.trueDamageRatio)+u.attack*u.trueDamageRatio,t,false);

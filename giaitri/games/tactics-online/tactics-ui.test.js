@@ -58,3 +58,16 @@ test('mana and casting effects are connected to replay events',()=>{
  assert.match(html,/CombatFX\.castAura/);
  assert.match(html,/e\.type==='skill'/);
 });
+
+test('all 27 equipment entries have original vector icon symbols',()=>{
+ const sprite=fs.readFileSync(path.join(__dirname,'assets/item-icons.svg'),'utf8');
+ const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog.json'),'utf8'));
+ const ids=[...catalog.components,...catalog.recipes].map(x=>x.id);
+ assert.equal(ids.length,27);
+ assert.equal(new Set(ids).size,27);
+ for(const id of ids)assert.ok(sprite.includes('id="item-'+id+'"'),'missing original artwork for '+id);
+ assert.match(html,/ITEM_SPRITE='assets\/item-icons\.svg'/);
+ assert.match(html,/class="tftItemArtwork"/);
+ assert.match(html,/class="tftItemFallback"/);
+ assert.match(css,/\.tftItemArtworkReady \.tftItemArtwork/);
+});

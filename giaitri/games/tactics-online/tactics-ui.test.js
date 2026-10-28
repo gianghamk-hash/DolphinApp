@@ -80,3 +80,17 @@ test('battle characters show cached names for allies opponents and PvE',()=>{
  assert.match(html,/Visuals\.unit\(h,unit\.star\|\|1,enemy,displayName\|\|h\.name\)/);
  assert.match(html,/true,'Quái PvE'/);
 });
+
+test('hero names appear as HTML overlays during preparation and combat',()=>{
+ assert.match(html,/id="heroNameLayer"/);
+ assert.match(html,/function syncHeroNames\(\)/);
+ assert.match(html,/tag\.textContent=displayName\|\|h\.name/);
+ assert.match(html,/node\.localToWorld\(loc\)/);
+ assert.match(html,/syncHeroNames\(\);renderer\.render/);
+ assert.match(css,/#game #heroNameLayer/);
+ assert.match(css,/#game \.battleHeroName/);
+});
+test('creating heroes does not require CanvasTexture support',()=>{
+ const visuals=require('node:fs').readFileSync(require('node:path').join(__dirname,'visuals.js'),'utf8');
+ assert.doesNotMatch(visuals,/const tag=nameplate\(displayName\|\|hero\.name,enemy\)/);
+});

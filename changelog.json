@@ -1,26 +1,30 @@
 {
-  "version": "1.0.150",
-  "previousVersion": "1.0.149",
-  "commit": "cb20470",
-  "previousCommit": "37a09b0",
-  "buildDate": "2026-10-28T05:49:52.875Z",
-  "summary": "feat(tft): phase 1 skill states and complete trait threshold regression (#90)",
+  "version": "1.0.151",
+  "previousVersion": "1.0.150",
+  "commit": "44e240c",
+  "previousCommit": "cb20470",
+  "buildDate": "2026-10-28T05:52:15.338Z",
+  "summary": "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028",
   "changes": {
-    "totalCommits": 154,
-    "filesChanged": 2,
+    "totalCommits": 155,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tft): phase 1 skill states and complete trait threshold regression (#90)"
+    "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/engine.js",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     },
     {
-      "file": "functions/tactics/engine.test.js",
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.150",
+      "releaseDate": "2026-10-28T05:49:52.875Z",
+      "summary": "feat(tft): phase 1 skill states and complete trait threshold regression (#90)",
+      "details": [
+        "feat(tft): phase 1 skill states and complete trait threshold regression (#90)"
+      ]
+    },
+    {
       "version": "1.0.149",
       "releaseDate": "2026-10-28T05:36:45.464Z",
       "summary": "Merge pull request #89 from gianghamk-hash/feat/tft-mobile-combat-controls-20261028",
@@ -390,14 +398,6 @@
       "summary": "fix: single-source Auto Bump and reliable APK version build",
       "details": [
         "fix: single-source Auto Bump and reliable APK version build"
-      ]
-    },
-    {
-      "version": "1.0.100",
-      "releaseDate": "2026-10-25T05:58:06.423Z",
-      "summary": "FIX LỖI (#10)",
-      "details": [
-        "FIX LỖI (#10)"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.150",
-  "buildDate": "2026-10-28T05:49:52.875Z",
-  "commit": "cb20470",
-  "notes": "feat(tft): phase 1 skill states and complete trait threshold regression (#90)",
+  "version": "1.0.151",
+  "buildDate": "2026-10-28T05:52:15.338Z",
+  "commit": "44e240c",
+  "notes": "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028",
   "forceUpdate": false
 }

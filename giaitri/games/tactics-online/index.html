@@ -1,6 +1,7 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Dolphin Tactics 3D — 4 player online</title>
+<link rel="stylesheet" href="tactics-ui.css?v=1">
 <style>
 :root{color-scheme:dark;--gold:#ffd788;--panel:#0e3042;--aqua:#5edad8;background:#071824;color:#e8f9fc;font-family:system-ui,sans-serif}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 70% 0%,#1b4e62,#06141f 72%);min-height:100dvh}
@@ -620,12 +621,12 @@ function setup3D(){
  $('stage').prepend(renderer.domElement);stageScene.add(new THREE.HemisphereLight(0xc1f4ff,0x214052,2.5));
  const light=new THREE.DirectionalLight(0xffe2a9,1.6);light.position.set(2,10,3);stageScene.add(light);
  board=new THREE.Group();characters=new THREE.Group();stageScene.add(board,characters);
- let ground=new THREE.Mesh(new THREE.CylinderGeometry(5.3,5.45,.48,8),new THREE.MeshStandardMaterial({color:0x185266,metalness:.3,roughness:.5}));ground.position.y=-.3;stageScene.add(ground);
+ let ground=new THREE.Mesh(new THREE.CylinderGeometry(5.3,5.45,.48,8),new THREE.MeshStandardMaterial({color:0x123848,metalness:.52,roughness:.39}));ground.position.y=-.3;stageScene.add(ground);
  for(let i=0;i<8;i++){const angle=i*Math.PI/4;const pedestal=new THREE.Mesh(new THREE.CylinderGeometry(.18,.29,.55,6),new THREE.MeshStandardMaterial({color:0x2f7180}));pedestal.position.set(Math.cos(angle)*5.4,.06,Math.sin(angle)*5.4);stageScene.add(pedestal);
  const crystal=new THREE.Mesh(new THREE.OctahedronGeometry(.18),new THREE.MeshBasicMaterial({color:i%2?0xffbb77:0x5ff1df}));crystal.position.set(Math.cos(angle)*5.4,.46,Math.sin(angle)*5.4);stageScene.add(crystal);}
- const centralLine=new THREE.Mesh(new THREE.BoxGeometry(7.5,.03,.05),new THREE.MeshBasicMaterial({color:0xf3be7b}));centralLine.position.y=.1;stageScene.add(centralLine);
+ const centralLine=new THREE.Mesh(new THREE.BoxGeometry(7.5,.03,.05),new THREE.MeshBasicMaterial({color:0xf8d686}));centralLine.position.y=.1;stageScene.add(centralLine);
  for(let row=0;row<8;row++)for(let col=0;col<8;col++){
-  const m=new THREE.Mesh(new THREE.BoxGeometry(.89,.11,.81),new THREE.MeshStandardMaterial({color:(row+col)%2?(row<4?0x1d4e62:0x346272):(row<4?0x276479:0x3c7a87)}));
+  const m=new THREE.Mesh(new THREE.BoxGeometry(.89,.11,.81),new THREE.MeshStandardMaterial({color:(row+col)%2?(row<4?0x153d53:0x236779):(row<4?0x1d5369:0x307d8e),metalness:.27,roughness:.46,emissive:row<4?0x04202d:0x06312f,emissiveIntensity:.24}));
   m.position.set((col-3.5)*.94,0,(row-3.5)*.86);m.userData.tile={col,row};board.add(m);
  }
  function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);const aspect=rect.width/Math.max(1,rect.height),span=Math.max(5.2,5.4/aspect);camera.left=-span*aspect;camera.right=span*aspect;camera.top=span;camera.bottom=-span;camera.zoom=zoomLevel;camera.updateProjectionMatrix();}

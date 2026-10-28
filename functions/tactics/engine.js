@@ -192,7 +192,22 @@ function createEngine(C){
     if(u.mana>=u.manaMax){u.fsm="Casting Spell";u.mana=0;emit({t,actor:u.id,type:"mana",amount:0,max:u.manaMax,source:"cast"});
       emit({t,actor:u.id,type:"skill",skill:u.ability.kind,skillId:u.ability.id,skillName:u.ability.name,vfx:u.ability.vfx,sfx:u.ability.sfx});
       if(u.effects&&u.effects.includes('apGrowth'))u.abilityPower=Math.min(250,u.abilityPower+8);
-      if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;emit({t,actor:u.id,type:"cleanse"});}}
+      if(["teamHeal","teamShield","teamHaste"].includes(u.ability.kind)){
+       const allies=units.filter(v=>v.alive&&v.owner===u.owner&&dist(u,v)<=u.ability.radius+1).sort((a,b)=>(a.hp/a.maxHp)-(b.hp/b.maxHp)||a.id.localeCompare(b.id)).slice(0,4);
+       for(const v of allies){
+        if(u.ability.kind==="teamHeal"){
+         const amount=Math.min(v.maxHp-v.hp,Math.round(u.ability.power*(1+u.abilityPower/100)));v.hp+=amount;
+         emit({t,actor:u.id,target:v.id,type:"heal",amount,skill:u.ability.kind});
+        }else if(u.ability.kind==="teamShield"){
+         const amount=Math.round(u.ability.power*(1+u.abilityPower/100));v.shield+=amount;
+         emit({t,actor:u.id,target:v.id,type:"shield",amount,skill:u.ability.kind});
+        }else{
+         v.hasteUntil=Math.max(v.hasteUntil||0,t+(u.ability.durationMs||3500));
+         v.hasteRatio=Math.max(v.hasteRatio||0,Math.min(.35,u.ability.power));
+         emit({t,actor:u.id,target:v.id,type:"haste",amount:v.hasteRatio,duration:u.ability.durationMs||3500});
+        }
+       }
+      }else if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;emit({t,actor:u.id,type:"cleanse"});}}
       else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",skill:"shield",amount:u.ability.power});}
       else {
        const kind=u.ability.kind,area=kind==="aoe"||kind==="blast";
@@ -215,7 +230,8 @@ function createEngine(C){
       if(target.alive&&rnd()<u.doubleHitChance)deal(u,target,physical*.8,t,false);
       u.mana=Math.min(u.manaMax,u.mana+10+u.bonusMana);emit({t,actor:u.id,type:"mana",amount:u.mana,max:u.manaMax,source:"attack"});u.attacks++;
     }
-    const speed=Math.min(3,u.attackSpeed+Math.min(.9,u.attacks*u.stackAttackSpeed));
+    const haste=u.hasteUntil>t?(u.hasteRatio||0):0;
+    const speed=Math.min(3,(u.attackSpeed+Math.min(.9,u.attacks*u.stackAttackSpeed))*(1+haste));
     u.nextAttack=t+1000/(u.slowUntil>t?Math.max(.2,speed*.65):speed);
    }
   }

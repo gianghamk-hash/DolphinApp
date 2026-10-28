@@ -1238,7 +1238,8 @@
         "hp": 150,
         "mana": 0
       },
-      "effect": "stat"
+      "effect": "lifesteal",
+      "description": "Hồi 15% sát thương thực tế gây ra vào HP (không tính sát thương hấp thụ bởi khiên)."
     },
     {
       "id": "I06",
@@ -1346,7 +1347,8 @@
         "hp": 0,
         "mana": 20
       },
-      "effect": "apGrowth"
+      "effect": "apGrowth",
+      "description": "Tăng 8 AP sau mỗi lần tung chiêu, tối đa 250 AP."
     },
     {
       "id": "I12",
@@ -1400,7 +1402,8 @@
         "hp": 150,
         "mana": 0
       },
-      "effect": "burn"
+      "effect": "burn",
+      "description": "Đốt mục tiêu trong 3 giây, sát thương theo thời gian; không cộng dồn cùng nguồn và lấy hiệu ứng mạnh nhất."
     },
     {
       "id": "I15",
@@ -1508,7 +1511,8 @@
         "hp": 150,
         "mana": 20
       },
-      "effect": "stat"
+      "effect": "manaPulse",
+      "description": "Hồi 2 Mana mỗi giây trong chiến đấu (ngoài 20 Mana khởi đầu)."
     },
     {
       "id": "I21",
@@ -1526,7 +1530,8 @@
         "hp": 0,
         "mana": 40
       },
-      "effect": "manaRegen"
+      "effect": "manaRegen",
+      "description": "Hồi 5 Mana mỗi giây trong giao tranh."
     }
   ],
   "pve": {

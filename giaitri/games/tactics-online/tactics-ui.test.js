@@ -94,3 +94,6 @@ test('creating heroes does not require CanvasTexture support',()=>{
  const visuals=require('node:fs').readFileSync(require('node:path').join(__dirname,'visuals.js'),'utf8');
  assert.doesNotMatch(visuals,/const tag=nameplate\(displayName\|\|hero\.name,enemy\)/);
 });
+
+// Keep the handbook tests in the established UI CI workflow.
+require('./guide.test.js');

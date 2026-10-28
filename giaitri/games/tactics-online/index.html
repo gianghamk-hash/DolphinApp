@@ -299,10 +299,10 @@ window.zoomBoard=direction=>{zoomLevel=direction===0?1:Math.max(.7,Math.min(2.4,
 const STAT_LABELS={attack:'Công',abilityPower:'Sức mạnh phép',armor:'Giáp',magicResist:'Kháng phép',hp:'Máu',mana:'Năng lượng',regen:'Hồi máu/giây',bonusMana:'Năng lượng thêm',adjacentShield:'Khiên đồng đội',hpRatio:'Máu tăng',trueDamageRatio:'Sát thương chuẩn',stackAttackSpeed:'Tốc đánh tích lũy',cloneRatio:'Bóng phân thân',omnivamp:'Hút máu toàn phần',critChance:'Tỉ lệ chí mạng',critDamage:'Sát thương chí mạng',doubleHitChance:'Tỉ lệ đánh đôi'};
 const PERCENT_STATS=new Set(['hpRatio','trueDamageRatio','stackAttackSpeed','cloneRatio','omnivamp','critChance','critDamage','doubleHitChance']);
 const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng'};
-const EFFECT_LABELS={stat:'Tăng chỉ số',burn:'Thiêu đốt mục tiêu',apGrowth:'Tăng sức mạnh phép khi tung chiêu',manaRegen:'Hồi năng lượng',crit:'Tăng chí mạng',doubleHit:'Đòn đánh thứ hai'};
+const EFFECT_LABELS={stat:'Tăng chỉ số',burn:'Thiêu đốt mục tiêu',apGrowth:'Tăng sức mạnh phép khi tung chiêu',manaRegen:'Hồi 5 Mana/giây',manaPulse:'Hồi 2 Mana/giây',lifesteal:'Hút máu 15%',crit:'Tăng chí mạng',doubleHit:'Đòn đánh thứ hai'};
 const itemDef=id=>catalog.components.find(c=>c.id===id)||catalog.recipes.find(c=>c.id===id);
 function statLabel(k,v){return (STAT_LABELS[k]||k)+' +'+(PERCENT_STATS.has(k)?Math.round(v*100)+'%':Number.isInteger(v)?v:Number(v).toFixed(1));}
-function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
+function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+(def.components?' · '+safe(def.components.map(x=>itemDef(x)?.name||x).join(' + ')):'')+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
 function selectedHeroInfo(){
  const u=state?.players?.[uid]?.units?.[selected];
@@ -711,6 +711,13 @@ function finishGearDrag(e){
  const parts=p.units[target].items||[];
   const recipeAvailable=parts.some(x=>E.RECIPE[[x,drag.item].sort().join('+')]);
   if(parts.length>=3&&!recipeAvailable){info('Tướng chỉ có tối đa 3 ô trang bị.');return;}
+  const match=parts.find(x=>E.RECIPE[[x,drag.item].sort().join('+')]);
+  const crafted=match&&E.RECIPE[[match,drag.item].sort().join('+')];
+  const before=E.combatStats(p,p.units[target],E.activeTraits(p));
+  const proposed={...p.units[target],items:crafted?parts.map(x=>x===match?crafted.id:x):[...parts,drag.item]};
+  const after=E.combatStats(p,proposed,E.activeTraits(p));
+  const delta=['hp','attack','armor','magicResist','abilityPower','mana'].map(k=>{const v=Math.round((after[k]-before[k])*10)/10;return v?(STAT_LABELS[k]||k)+': '+(v>0?'+':'')+v:null}).filter(Boolean).join(', ');
+  if(crafted&&!window.confirm('Ghép '+(itemDef(match)?.name||match)+' + '+(itemDef(drag.item)?.name||drag.item)+' → '+crafted.name+'?\\n'+(crafted.description||EFFECT_LABELS[crafted.effect]||'')+'\\n'+delta))return;
   Promise.resolve(send({type:'EQUIP',unitId:target,component:drag.item})).then(()=>{
    const sparkle=document.createElement('div');sparkle.className='equipSuccessFx';sparkle.textContent='✨ TRANG BỊ';sparkle.style.left=e.clientX+'px';sparkle.style.top=e.clientY+'px';document.body.appendChild(sparkle);setTimeout(()=>sparkle.remove(),850);
   }).catch(showError);

@@ -148,3 +148,31 @@ test('casting consumes full mana and creates a matching skill timeline event',()
  assert.ok(events.some(e=>e.type==='mana'&&e.actor==='caster'&&e.amount===0&&e.t===cast.t));
  assert.ok(events.some(e=>e.type==='mana'&&e.actor==='caster'&&e.amount>0));
 });
+
+test('equipment v2: 21 craft pairs, completed gear priority and item effects',()=>{
+ const s=setup(),p=s.players.a;
+ for(const recipe of E.C.recipes){
+  p.units={u:{id:'u',heroId:'H01',star:1,items:[]}};p.bench={'0':'u'};
+  p.inventory=[...recipe.components];
+  E.action(s,'a',{type:'EQUIP',unitId:'u',component:recipe.components[0]},1000);
+  E.action(s,'a',{type:'EQUIP',unitId:'u',component:recipe.components[1]},1001);
+  assert.deepEqual(p.units.u.items,[recipe.id],recipe.id);
+ }
+ assert.equal(E.combatStats(p,{id:'test',heroId:'H01',star:1,items:['I05']},{}).omnivamp,.15);
+ assert.ok(E.combatStats(p,{id:'test',heroId:'H01',star:1,items:['I20']},{}).effects.includes('manaPulse'));
+ p.units={a:{id:'a',heroId:'H01',star:1,items:['sword']},b:{id:'b',heroId:'H01',star:1,items:['I05','I20']},c:{id:'c',heroId:'H01',star:1,items:['I14']}};
+ p.bench={'0':'a','1':'b','2':'c'};p.inventory=[];
+ E.mergeTriples(p);
+ assert.equal(Object.values(p.units)[0].star,2);
+ assert.deepEqual(new Set(Object.values(p.units)[0].items),new Set(['I05','I20','I14']));
+ assert.deepEqual(p.inventory,['sword']);
+});
+test('equipment v2: sell and unequip return items without losing ownership',()=>{
+ const s=setup(),p=s.players.a;
+ p.units={u:{id:'u',heroId:'H01',star:1,items:['I05','I20']}};p.bench={'0':'u'};
+ E.action(s,'a',{type:'UNEQUIP',unitId:'u',slot:1},1000);
+ assert.deepEqual(p.inventory,['I20']);
+ E.action(s,'a',{type:'SELL',unitId:'u'},1001);
+ assert.deepEqual(p.inventory,['I20','I05']);
+ assert.equal(p.units.u,undefined);
+});

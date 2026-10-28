@@ -28,7 +28,15 @@
       "ability": {
         "kind": "strike",
         "power": 121,
-        "radius": 1
+        "radius": 1,
+        "id": "SK01",
+        "name": "Kiếm Quang Thiết Vệ",
+        "durationMs": 0,
+        "vfx": "hero-h01",
+        "sfx": "hero-h01",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -52,7 +60,15 @@
       "ability": {
         "kind": "dash",
         "power": 121,
-        "radius": 1
+        "radius": 1,
+        "id": "SK02",
+        "name": "Truy Kích Hắc Kiếm",
+        "durationMs": 0,
+        "vfx": "hero-h02",
+        "sfx": "hero-h02",
+        "effectScale": 1.04,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -76,7 +92,15 @@
       "ability": {
         "kind": "bolt",
         "power": 121,
-        "radius": 1
+        "radius": 1,
+        "id": "SK03",
+        "name": "Pháo Quang Tuyến",
+        "durationMs": 0,
+        "vfx": "hero-h03",
+        "sfx": "hero-h03",
+        "effectScale": 1.08,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -100,7 +124,15 @@
       "ability": {
         "kind": "heal",
         "power": 106,
-        "radius": 1
+        "radius": 1,
+        "id": "SK04",
+        "name": "Dưỡng Sinh Linh Tiễn",
+        "durationMs": 0,
+        "vfx": "hero-h04",
+        "sfx": "hero-h04",
+        "effectScale": 1.12,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -124,7 +156,15 @@
       "ability": {
         "kind": "shield",
         "power": 106,
-        "radius": 1
+        "radius": 1,
+        "id": "SK05",
+        "name": "Lôi Khiên Hộ Thể",
+        "durationMs": 0,
+        "vfx": "hero-h05",
+        "sfx": "hero-h05",
+        "effectScale": 1.16,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -148,7 +188,15 @@
       "ability": {
         "kind": "blast",
         "power": 121,
-        "radius": 1
+        "radius": 1,
+        "id": "SK06",
+        "name": "Ảo Thuật Bùng Nổ",
+        "durationMs": 0,
+        "vfx": "hero-h06",
+        "sfx": "hero-h06",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -172,7 +220,15 @@
       "ability": {
         "kind": "drain",
         "power": 121,
-        "radius": 1
+        "radius": 1,
+        "id": "SK07",
+        "name": "Huyết Phủ Cuồng Chiến",
+        "durationMs": 0,
+        "vfx": "hero-h07",
+        "sfx": "hero-h07",
+        "effectScale": 1.04,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -196,7 +252,15 @@
       "ability": {
         "kind": "stun",
         "power": 121,
-        "radius": 1
+        "radius": 1,
+        "id": "SK08",
+        "name": "Đạn Choáng Xuyên Tâm",
+        "durationMs": 1200,
+        "vfx": "hero-h08",
+        "sfx": "hero-h08",
+        "effectScale": 1.08,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -220,7 +284,15 @@
       "ability": {
         "kind": "strike",
         "power": 160,
-        "radius": 1
+        "radius": 1,
+        "id": "SK09",
+        "name": "Kiếm Ảnh Hư Không",
+        "durationMs": 0,
+        "vfx": "hero-h09",
+        "sfx": "hero-h09",
+        "effectScale": 1.12,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -244,7 +316,15 @@
       "ability": {
         "kind": "dash",
         "power": 160,
-        "radius": 1
+        "radius": 1,
+        "id": "SK10",
+        "name": "Cơ Giáp Xung Phong",
+        "durationMs": 0,
+        "vfx": "hero-h10",
+        "sfx": "hero-h10",
+        "effectScale": 1.16,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -268,7 +348,15 @@
       "ability": {
         "kind": "bolt",
         "power": 160,
-        "radius": 1
+        "radius": 1,
+        "id": "SK11",
+        "name": "Tinh Cầu Ma Lực",
+        "durationMs": 0,
+        "vfx": "hero-h11",
+        "sfx": "hero-h11",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -292,7 +380,15 @@
       "ability": {
         "kind": "heal",
         "power": 139,
-        "radius": 1
+        "radius": 1,
+        "id": "SK12",
+        "name": "Hồi Phục Thú Vương",
+        "durationMs": 0,
+        "vfx": "hero-h12",
+        "sfx": "hero-h12",
+        "effectScale": 1.04,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -316,7 +412,15 @@
       "ability": {
         "kind": "shield",
         "power": 139,
-        "radius": 1
+        "radius": 1,
+        "id": "SK13",
+        "name": "Màn Chắn Xạ Kích",
+        "durationMs": 0,
+        "vfx": "hero-h13",
+        "sfx": "hero-h13",
+        "effectScale": 1.08,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -340,7 +444,15 @@
       "ability": {
         "kind": "blast",
         "power": 160,
-        "radius": 1
+        "radius": 1,
+        "id": "SK14",
+        "name": "Ảnh Phân Kích",
+        "durationMs": 0,
+        "vfx": "hero-h14",
+        "sfx": "hero-h14",
+        "effectScale": 1.12,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -364,7 +476,15 @@
       "ability": {
         "kind": "drain",
         "power": 160,
-        "radius": 1
+        "radius": 1,
+        "id": "SK15",
+        "name": "Huyết Nguyệt Phù",
+        "durationMs": 0,
+        "vfx": "hero-h15",
+        "sfx": "hero-h15",
+        "effectScale": 1.16,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -388,7 +508,15 @@
       "ability": {
         "kind": "stun",
         "power": 198,
-        "radius": 1
+        "radius": 1,
+        "id": "SK16",
+        "name": "Tiễn Phong Khống Chế",
+        "durationMs": 1000,
+        "vfx": "hero-h16",
+        "sfx": "hero-h16",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -412,7 +540,15 @@
       "ability": {
         "kind": "strike",
         "power": 198,
-        "radius": 1
+        "radius": 1,
+        "id": "SK17",
+        "name": "Ám Sát Vô Ảnh",
+        "durationMs": 0,
+        "vfx": "hero-h17",
+        "sfx": "hero-h17",
+        "effectScale": 1.04,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -436,7 +572,15 @@
       "ability": {
         "kind": "dash",
         "power": 198,
-        "radius": 1
+        "radius": 1,
+        "id": "SK18",
+        "name": "Lướt Liên Hoa",
+        "durationMs": 0,
+        "vfx": "hero-h18",
+        "sfx": "hero-h18",
+        "effectScale": 1.08,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -460,7 +604,15 @@
       "ability": {
         "kind": "bolt",
         "power": 198,
-        "radius": 1
+        "radius": 1,
+        "id": "SK19",
+        "name": "Đạn Sóng Thép",
+        "durationMs": 0,
+        "vfx": "hero-h19",
+        "sfx": "hero-h19",
+        "effectScale": 1.12,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -484,7 +636,15 @@
       "ability": {
         "kind": "heal",
         "power": 173,
-        "radius": 1
+        "radius": 1,
+        "id": "SK20",
+        "name": "Ánh Sáng Tái Sinh",
+        "durationMs": 0,
+        "vfx": "hero-h20",
+        "sfx": "hero-h20",
+        "effectScale": 1.16,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -508,7 +668,15 @@
       "ability": {
         "kind": "shield",
         "power": 173,
-        "radius": 1
+        "radius": 1,
+        "id": "SK21",
+        "name": "Khiên Hắc Linh",
+        "durationMs": 0,
+        "vfx": "hero-h21",
+        "sfx": "hero-h21",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -532,7 +700,15 @@
       "ability": {
         "kind": "aoe",
         "power": 237,
-        "radius": 2
+        "radius": 2,
+        "id": "SK22",
+        "name": "Long Thương Quét Trận",
+        "durationMs": 0,
+        "vfx": "hero-h22",
+        "sfx": "hero-h22",
+        "effectScale": 1.04,
+        "cleanse": false,
+        "status": "slow"
       }
     },
     {
@@ -556,7 +732,15 @@
       "ability": {
         "kind": "aoe",
         "power": 237,
-        "radius": 2
+        "radius": 2,
+        "id": "SK23",
+        "name": "Mưa Đạn Ảo Ảnh",
+        "durationMs": 0,
+        "vfx": "hero-h23",
+        "sfx": "hero-h23",
+        "effectScale": 1.08,
+        "cleanse": false,
+        "status": "burn"
       }
     },
     {
@@ -580,7 +764,15 @@
       "ability": {
         "kind": "aoe",
         "power": 237,
-        "radius": 2
+        "radius": 2,
+        "id": "SK24",
+        "name": "Hỏa Vực Bạo Phát",
+        "durationMs": 0,
+        "vfx": "hero-h24",
+        "sfx": "hero-h24",
+        "effectScale": 1.12,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -604,7 +796,15 @@
       "ability": {
         "kind": "aoe",
         "power": 237,
-        "radius": 2
+        "radius": 2,
+        "id": "SK25",
+        "name": "Địa Chấn Thiên Giáng",
+        "durationMs": 0,
+        "vfx": "hero-h25",
+        "sfx": "hero-h25",
+        "effectScale": 1.16,
+        "cleanse": false,
+        "status": "slow"
       }
     },
     {
@@ -628,7 +828,15 @@
       "ability": {
         "kind": "aoe",
         "power": 237,
-        "radius": 2
+        "radius": 2,
+        "id": "SK26",
+        "name": "Viêm Ngục Phần Thiên",
+        "durationMs": 0,
+        "vfx": "hero-h26",
+        "sfx": "hero-h26",
+        "effectScale": 1,
+        "cleanse": false,
+        "status": "burn"
       }
     },
     {
@@ -653,7 +861,15 @@
       "ability": {
         "kind": "aoe",
         "power": 275,
-        "radius": 2
+        "radius": 2,
+        "id": "SK27",
+        "name": "Song Giới Hỗn Mang",
+        "durationMs": 0,
+        "vfx": "hero-h27",
+        "sfx": "hero-h27",
+        "effectScale": 1.04,
+        "cleanse": false,
+        "status": null
       }
     },
     {
@@ -677,7 +893,15 @@
       "ability": {
         "kind": "aoe",
         "power": 275,
-        "radius": 2
+        "radius": 2,
+        "id": "SK28",
+        "name": "Thủy Triều Đại Hải",
+        "durationMs": 0,
+        "vfx": "hero-h28",
+        "sfx": "hero-h28",
+        "effectScale": 1.08,
+        "cleanse": false,
+        "status": "slow"
       }
     },
     {
@@ -701,7 +925,15 @@
       "ability": {
         "kind": "aoe",
         "power": 275,
-        "radius": 2
+        "radius": 2,
+        "id": "SK29",
+        "name": "Thần Thuẫn Chấn Địa",
+        "durationMs": 0,
+        "vfx": "hero-h29",
+        "sfx": "hero-h29",
+        "effectScale": 1.12,
+        "cleanse": false,
+        "status": "burn"
       }
     },
     {
@@ -726,7 +958,15 @@
       "ability": {
         "kind": "aoe",
         "power": 275,
-        "radius": 2
+        "radius": 2,
+        "id": "SK30",
+        "name": "Vương Giả Hắc Quang",
+        "durationMs": 0,
+        "vfx": "hero-h30",
+        "sfx": "hero-h30",
+        "effectScale": 1.16,
+        "cleanse": false,
+        "status": null
       }
     }
   ],

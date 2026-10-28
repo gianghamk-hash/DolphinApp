@@ -190,7 +190,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp"></div></div>
+<main id="game" class="hidden"><section><div id="stage"><div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="heroNameLayer" aria-hidden="true"></div><div id="boardHelp"></div></div>
 <div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><span class="touchItemTitle">🎒 TRANG BỊ</span><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div><div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
@@ -507,7 +507,7 @@ function openUnitPopup(x,y,id){
 }
 document.addEventListener('pointerdown',e=>{if(!$('unitPopup').contains(e.target)&&!e.target.closest('#bench')&&e.target!==renderer?.domElement)closeUnitPopup();});
 function renderBoard(){
- if(!board||!state)return;Animator.clear();characters.clear();characterById.clear();
+ if(!board||!state)return;Animator.clear();characters.clear();characterById.clear();$('heroNameLayer').replaceChildren();
  const p=state.players[uid];if(!p)return;
  const enemyId=state.pairs.find(x=>x.a===uid||x.b===uid);
  const opponent=enemyId?.a===uid?enemyId.b:enemyId?.a;
@@ -516,6 +516,7 @@ function renderBoard(){
   const g=Visuals.unit(h,unit.star||1,enemy,displayName||h.name);g.position.set(x,0,z);
   g.userData.uid=unit.id;g.traverse(m=>m.userData.unitId=unit.id);
   characters.add(g);characterById.set(unit.id,g);ModelLibrary.attach(unit.heroId,g);
+  const tag=document.createElement('span');tag.className='battleHeroName'+(enemy?' isEnemy':' isAlly');tag.textContent=displayName||h.name;tag.dataset.unitId=unit.id;$('heroNameLayer').appendChild(tag);
  };
  for(let [pos,id] of Object.entries(p.board||{})){let u=p.units[id],m=pos.match(/^r(\d)c(\d)$/);if(u&&m)add(u,(+m[2]-3.5)*.94,(+m[1]+.5)*.86,u.id!==id);}
  if(state.roundPhase==='COMBAT'&&!opponent&&enemyId?.pve){
@@ -526,6 +527,21 @@ function renderBoard(){
  }
  if(state.roundPhase==='COMBAT'&&opponent&&state.combatSnapshot&&state.combatSnapshot[opponent]){
   const other=state.combatSnapshot[opponent];for(const [pos,id] of Object.entries(other.board||{})){let u=other.units[id],m=pos.match(/^r(\d)c(\d)$/);if(u&&m)add(u,(+m[2]-3.5)*.94,(-(+m[1])-.5)*.86,true);}
+ }
+}
+function syncHeroNames(){
+ const layer=$('heroNameLayer');if(!layer||!camera||!renderer)return;
+ const viewport=renderer.domElement.getBoundingClientRect(),bounds=layer.getBoundingClientRect();
+ if(!viewport.width||!viewport.height||!bounds.width||!bounds.height)return;
+ for(const tag of layer.children){
+  const node=characterById.get(tag.dataset.unitId);
+  if(!node||!node.visible||!node.parent){tag.style.display='none';continue;}
+  node.updateWorldMatrix(true,false);
+  const loc=new THREE.Vector3(0,2.65,0);node.localToWorld(loc);loc.project(camera);
+  if(loc.z< -1||loc.z>1||Math.abs(loc.x)>1.1||Math.abs(loc.y)>1.1){tag.style.display='none';continue;}
+  const x=viewport.left+(loc.x+1)*viewport.width/2-bounds.left;
+  const y=viewport.top+(1-loc.y)*viewport.height/2-bounds.top;
+  tag.style.display='block';tag.style.left=x+'px';tag.style.top=y+'px';
  }
 }
 function startReplay(){
@@ -792,7 +808,7 @@ function setup3D(){
    qualityWindowStart=now;qualitySamples=0;qualityFrameTime=0;
   }
   if(now-last<33)return;
-  last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);renderer.render(stageScene,camera);
+  last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);syncHeroNames();renderer.render(stageScene,camera);
  }
  requestAnimationFrame(frame);
 }

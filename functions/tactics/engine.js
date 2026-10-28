@@ -12,7 +12,11 @@ function createEngine(C){
  function assert(ok,msg){if(!ok)throw Error(msg);}
  function nextRand(s){s.randomState=(Math.imul(s.randomState||1,1664525)+1013904223)>>>0;return s.randomState/4294967296;}
  function shuffle(s,a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(nextRand(s)*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
- function shopRoll(s,level){const pool=C.heroes.filter(h=>h.cost<=Math.min(5,Math.max(1,Math.ceil(level/2)+1)));return Array.from({length:5},()=>pool[Math.floor(nextRand(s)*pool.length)].id);}
+ const COPIES_BY_COST={1:18,2:15,3:12,4:10,5:8};
+ function ownedCopies(s,heroId){let owned=0;for(const player of Object.values(s.players||{}))for(const u of Object.values(player.units||{}))if(u.heroId===heroId)owned+=Math.pow(3,u.star-1);return owned;}
+ function remainingCopies(s,heroId){const h=HERO[heroId];return h?Math.max(0,COPIES_BY_COST[h.cost]-ownedCopies(s,heroId)):0;}
+ function shopRoll(s,level){const pool=C.heroes.filter(h=>h.cost<=Math.min(5,Math.max(1,Math.ceil(level/2)+1))&&remainingCopies(s,h.id)>0);
+  return Array.from({length:5},()=>{if(!pool.length)return '';const total=pool.reduce((n,h)=>n+remainingCopies(s,h.id),0);let roll=nextRand(s)*total;for(const h of pool){roll-=remainingCopies(s,h.id);if(roll<0)return h.id;}return pool[pool.length-1].id;});}
  function freshPlayer(uid,name,room){return {uid,displayName:String(name||"Người chơi").slice(0,32),hp:100,gold:10,level:3,xp:0,board:{},bench:{},units:{},shop:shopRoll(room,3),inventory:[],shopLocked:false,pendingMerge:false,streaks:{win:0,loss:0},ready:false,eliminated:false};}
  function roomNew(uid,name,now,seed){
   const s={status:"waiting",round:1,roundPhase:"PREPARATION",phaseStartedAt:0,phaseEndsAt:0,
@@ -72,7 +76,7 @@ function createEngine(C){
   const p=s.players[uid];assert(p&&!p.eliminated,"Người chơi không hợp lệ");
   assert(a&&typeof a.type==="string","Thiếu thao tác");assert(shopAction||!p.ready,"Đã sẵn sàng");
   if(a.type==="BUY"){const i=a.index;assert(Number.isInteger(i)&&i>=0&&i<5,"Ô shop sai");
-    const id=p.shop[i],h=HERO[id],slot=firstBench(p);assert(h&&slot!==null&&p.gold>=h.cost,"Không đủ vàng hoặc bench đầy");
+    const id=p.shop[i],h=HERO[id],slot=firstBench(p);assert(h&&slot!==null&&p.gold>=h.cost,"Không đủ vàng hoặc bench đầy");assert(remainingCopies(s,id)>0,"Tướng đã hết trong bể chung");
     p.gold-=h.cost;const unitId='u'+(++s.sequence);p.units[unitId]={id:unitId,heroId:id,star:1,items:[]};p.bench[slot]=unitId;p.shop[i]="";if(s.roundPhase==="PREPARATION")mergeTriples(p);else p.pendingMerge=true;
   }else if(a.type==="ROLL"){assert(!p.shopLocked,"Shop đang khóa, hãy mở khóa trước khi đổi Shop");assert(p.gold>=2,"Không đủ 2 vàng");p.gold-=2;p.shop=shopRoll(s,p.level);
   }else if(a.type==="TOGGLE_SHOP_LOCK"){p.shopLocked=!p.shopLocked;
@@ -252,12 +256,14 @@ function createEngine(C){
   }else if(s.roundPhase==="COMBAT")finalize(s,now);
   else if(s.roundPhase==="TRANSITION"){s.round++;s.roundPhase="PREPARATION";s.phaseStartedAt=now;s.phaseEndsAt=now+PHASES.PREPARATION;
     for(const uid of s.playerOrder){const p=s.players[uid];if(p.eliminated)continue;
-      p.gold=Math.min(80,p.gold+5+Math.min(5,Math.floor(p.gold/10)));p.ready=false;if(!p.shopLocked)p.shop=shopRoll(s,p.level);if(p.pendingMerge){mergeTriples(p);p.pendingMerge=false;}
+      const streak=Math.max(p.streaks.win,p.streaks.loss),streakBonus=streak>=5?3:streak>=4?2:streak>=2?1:0;
+      p.lastEconomy={base:5,interest:Math.min(5,Math.floor(p.gold/10)),streak:streakBonus};
+      p.gold=Math.min(80,p.gold+p.lastEconomy.base+p.lastEconomy.interest+streakBonus);p.ready=false;if(!p.shopLocked)p.shop=shopRoll(s,p.level);if(p.pendingMerge){mergeTriples(p);p.pendingMerge=false;}
 
     }}
   s.updatedAt=now;return s;
  }
- return {C,HERO,COMP,RECIPE,PHASES,clone,assert,nextRand,shopRoll,freshPlayer,roomNew,boardKey,
+ return {C,HERO,COMP,RECIPE,PHASES,clone,assert,nextRand,shopRoll,ownedCopies,remainingCopies,COPIES_BY_COST,freshPlayer,roomNew,boardKey,
  legalBoard,legalBench,findPosition,firstBench,mergeTriples,traitCounts,activeTraits,itemStats,combatStats,
  action,LEVEL_XP,maxLevel,slotsForLevel,pairings,findStep,simulate,finalize,advance};
 }

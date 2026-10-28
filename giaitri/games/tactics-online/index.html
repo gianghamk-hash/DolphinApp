@@ -301,6 +301,8 @@ const PERCENT_STATS=new Set(['hpRatio','trueDamageRatio','stackAttackSpeed','clo
 const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng'};
 const EFFECT_LABELS={stat:'Tăng chỉ số',burn:'Thiêu đốt mục tiêu',apGrowth:'Tăng sức mạnh phép khi tung chiêu',manaRegen:'Hồi 5 Mana/giây',manaPulse:'Hồi 2 Mana/giây',lifesteal:'Hút máu 15%',crit:'Tăng chí mạng',doubleHit:'Đòn đánh thứ hai'};
 const itemDef=id=>catalog.components.find(c=>c.id===id)||catalog.recipes.find(c=>c.id===id);
+const ITEM_ICONS={sword:'⚔️',rod:'🪄',vest:'🛡️',cloak:'🧥',belt:'❤️',tear:'💧',I01:'🗡️',I02:'⚡',I03:'🛡️',I04:'⚔️',I05:'🩸',I06:'🔋',I07:'👑',I08:'🔱',I09:'🪬',I10:'🌿',I11:'✨',I12:'🦔',I13:'🐉',I14:'🔥',I15:'⚙️',I16:'🧥',I17:'💚',I18:'🌙',I19:'💖',I20:'🔮',I21:'💠'};
+function itemIcon(id){return '<span class="tftItemIcon tftItemIcon-'+safe(id)+'" aria-hidden="true">'+(ITEM_ICONS[id]||'📦')+'</span>';}
 function statLabel(k,v){return (STAT_LABELS[k]||k)+' +'+(PERCENT_STATS.has(k)?Math.round(v*100)+'%':Number.isInteger(v)?v:Number(v).toFixed(1));}
 function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+(def.components?' · '+safe(def.components.map(x=>itemDef(x)?.name||x).join(' + ')):'')+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
@@ -311,7 +313,7 @@ function selectedHeroInfo(){
  const p=state.players[uid],t=E.activeTraits(p),combat=E.combatStats(p,u,t);
  const skill=h.ability||{},spell=skill.name||SKILL_LABELS[skill.kind]||skill.kind;
  const stats=[['❤ HP',combat.hp],['⚔ ATK',combat.attack],['🛡 Giáp',combat.armor],['✦ Kháng phép',combat.magicResist],['🏹 Tầm đánh',combat.range],['⏱ Tốc đánh',Number(combat.attackSpeed).toFixed(2)],['🔮 Mana',combat.mana+'/'+combat.manaMax],['✨ AP',combat.abilityPower]];
- const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
+ const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemIcon(id)+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
  $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div><div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+'</div>';
 }
 function setupMP(){
@@ -463,7 +465,7 @@ function paintControls(){
  syncBattleHudScale();
  // The touch tray mirrors the inventory; the original select remains as a fallback.
  const tray=$('touchItemSlots');
- if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" title="'+safe(itemDef(id)?.name||id)+'" '+(!prep?'disabled':'')+'><span>💠</span><small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
+ if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" title="'+safe(itemDef(id)?.name||id)+'" '+(!prep?'disabled':'')+'>'+itemIcon(id)+'<small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
  // Inventory is now exclusively displayed underneath the board.
  selectedHeroInfo();
  $('lockShopBtn').textContent=p.shopLocked?'🔒':'🔓';
@@ -587,8 +589,12 @@ function update(){
  if(!renderer)setup3D();
  const banner=$('battleBanner');
  banner.className=state.roundPhase==='COMBAT'?'combat':state.roundPhase==='TRANSITION'?'result':'';
- banner.textContent=state.status==='finished'?'🏆 KẾT THÚC':state.roundPhase==='COMBAT'?'⚔ '+combatType()+' — VÒNG '+state.round:state.roundPhase==='TRANSITION'?'🏁 '+combatType()+' — KẾT QUẢ VÒNG '+state.round:'🛒 '+combatType()+' — CHUẨN BỊ VÒNG '+state.round;
- $('boardHelp').textContent=state.roundPhase==='COMBAT'?'Theo dõi các tướng di chuyển, tấn công và dùng kỹ năng':state.roundPhase==='TRANSITION'?'Kết quả đã được tính, chuẩn bị vòng tiếp theo':'Chạm tướng tại Bench, sau đó chạm ô trống trên sân để bố trí';
+ const myReport=(state.reports||[]).find(rep=>rep.pair?.a===uid||rep.pair?.b===uid);
+ const myVictory=myReport&&myReport.winner===uid;
+ const roundOutcome=!myReport?'':myReport.winner===null&&myReport.loser===null?'🤝 HÒA':myVictory?'🏆 CHIẾN THẮNG':'💔 THẤT BẠI';
+ banner.textContent=state.status==='finished'?(state.winnerId===uid?'🏆 VÔ ĐỊCH':'🏁 KẾT THÚC'):state.roundPhase==='COMBAT'?'⚔ '+combatType()+' — VÒNG '+state.round:state.roundPhase==='TRANSITION'?roundOutcome+' · VÒNG '+state.round:'🛒 '+combatType()+' — CHUẨN BỊ VÒNG '+state.round;
+ if(state.roundPhase==='TRANSITION'&&myReport){const me=state.players?.[uid],streak=Math.max(me?.streaks?.win||0,me?.streaks?.loss||0);$('boardHelp').textContent=roundOutcome+(myReport.loser===uid?' · Trừ '+myReport.damage+' HP':'')+(streak>=2?' · Chuỗi '+streak:'')+' · Chuẩn bị vòng tiếp theo';}
+ if(state.roundPhase!=='TRANSITION'||!myReport)$('boardHelp').textContent=state.roundPhase==='COMBAT'?'Theo dõi các tướng di chuyển, tấn công và dùng kỹ năng':state.roundPhase==='TRANSITION'?'Kết quả đã được tính, chuẩn bị vòng tiếp theo':'Chạm tướng tại Bench, sau đó chạm ô trống trên sân để bố trí';
  paintPlayers();paintControls();
  if(state.status==="finished"){$("phaseLabel").textContent="🏆 CHIẾN THẮNG: "+(state.players[state.winnerId]?.displayName||"Hòa");}
  const key=state.round+"-"+state.roundPhase;

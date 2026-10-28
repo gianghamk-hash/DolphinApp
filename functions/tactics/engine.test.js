@@ -176,3 +176,24 @@ test('equipment v2: sell and unequip return items without losing ownership',()=>
  assert.deepEqual(p.inventory,['I20','I05']);
  assert.equal(p.units.u,undefined);
 });
+
+test('shared shop copies are contested and released on sale',()=>{
+ const s=setup(),p=s.players.a,h=E.C.heroes.find(x=>x.cost===1);
+ const cap=E.COPIES_BY_COST[1];assert.ok(cap>0);
+ p.units={};p.bench={};p.board={};p.inventory=[];
+ for(let i=0;i<cap;i++)p.units['pool'+i]={id:'pool'+i,heroId:h.id,star:1,items:[]};
+ assert.equal(E.remainingCopies(s,h.id),0);
+ p.shop[0]=h.id;p.gold=150;
+ assert.throws(()=>E.action(s,'a',{type:'BUY',index:0},1000),/hết trong bể/);
+ E.action(s,'a',{type:'SELL',unitId:'pool0'},1000);
+ assert.equal(E.remainingCopies(s,h.id),1);
+});
+test('win and loss streak gold uses 2, 4 and 5 thresholds',()=>{
+ for(const [streak,expected] of [[0,0],[1,0],[2,1],[3,1],[4,2],[5,3],[6,3]]){
+  const s=setup(),p=s.players.a;
+  s.roundPhase='TRANSITION';s.phaseEndsAt=1000;p.gold=0;p.streaks.win=streak;
+  E.advance(s,1000);
+  assert.equal(p.lastEconomy.streak,expected);
+  assert.equal(p.gold,5+expected);
+ }
+});

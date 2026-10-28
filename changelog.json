@@ -1,30 +1,34 @@
 {
-  "version": "1.0.143",
-  "previousVersion": "1.0.142",
-  "commit": "aaace29",
-  "previousCommit": "87d8b4f",
-  "buildDate": "2026-10-27T15:09:52.639Z",
-  "summary": "fix(dark): deep black background and transparent clock",
+  "version": "1.0.144",
+  "previousVersion": "1.0.143",
+  "commit": "8d11623",
+  "previousCommit": "aaace29",
+  "buildDate": "2026-10-28T02:33:43.759Z",
+  "summary": "feat(tft): refreshed arena, hero shop and armory UI",
   "changes": {
-    "totalCommits": 147,
-    "filesChanged": 3,
+    "totalCommits": 148,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(dark): deep black background and transparent clock"
+    "feat(tft): refreshed arena, hero shop and armory UI"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/dark-clock.yml",
+      "file": ".github/workflows/tft-ui-redesign.yml",
       "type": "update"
     },
     {
-      "file": "dark-clock.test.js",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     },
     {
-      "file": "theme-system.js",
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     }
   ]

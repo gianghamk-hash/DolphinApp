@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.143",
+      "releaseDate": "2026-10-27T15:09:52.639Z",
+      "summary": "fix(dark): deep black background and transparent clock",
+      "details": [
+        "fix(dark): deep black background and transparent clock"
+      ]
+    },
+    {
       "version": "1.0.142",
       "releaseDate": "2026-10-27T15:03:07.184Z",
       "summary": "refactor(theme): only Dark Light and Gray display modes",
@@ -387,14 +395,6 @@
     {
       "version": "1.0.94",
       "releaseDate": "2026-10-25T02:51:38.786Z",
-      "summary": "FIX LỖI",
-      "details": [
-        "FIX LỖI"
-      ]
-    },
-    {
-      "version": "1.0.93",
-      "releaseDate": "2026-10-25T02:43:14.916Z",
       "summary": "FIX LỖI",
       "details": [
         "FIX LỖI"

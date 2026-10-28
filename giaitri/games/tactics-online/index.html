@@ -203,7 +203,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 </aside></main><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupBench" onclick="moveSelectedToBench();closeUnitPopup()">↩ Về hàng chờ</button><button id="popupSell" onclick="sellSelected();closeUnitPopup()">🪙 Bán tướng</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script>
+<script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script>
 <script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script type="module">
@@ -425,8 +425,8 @@ function paintControls(){
  const slots=E.slotsForLevel(p.level),xpGoal=E.LEVEL_XP[p.level]||0,boardCount=Object.keys(p.board||{}).length;
  $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+(xpGoal?"/"+xpGoal:" (MAX)")+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
  $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
- $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;
- return '<button class="shopHero tier'+cost+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
+ $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;const hint=window.DolphinTFTShopHints.hints(p,id,catalog);const marked=hint.upgrade||hint.synergy;const reason=hint.upgrade?"Có thể ghép lên 2 sao":hint.synergy?"Cùng tộc/hệ: "+hint.traits.map(t=>catalog.origins[t]?.label||t).join(", "):"";
+ return '<button class="shopHero tier'+cost+(marked?' shopRecommended':'')+(hint.upgrade?' shopUpgrade':'')+(hint.synergy?' shopSynergy':'')+'" title="'+safe(reason)+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
  (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
  $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');

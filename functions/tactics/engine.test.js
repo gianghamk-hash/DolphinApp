@@ -2,9 +2,9 @@ const test=require('node:test'),assert=require('node:assert/strict');
 const E=require('./engine');
 function setup(){const s=E.roomNew('a','A',100,123456);for(const id of ['b','c','d']){s.playerOrder.push(id);s.players[id]=E.freshPlayer(id,id,s);}s.status='in_game';s.phaseEndsAt=30100;return s;}
 test('catalog: 30 champions, five cost tiers, 21 item recipes',()=>{
- assert.equal(E.C.heroes.length,30);assert.equal(E.C.recipes.length,21);
- assert.deepEqual([1,2,3,4,5].map(i=>E.C.heroes.filter(h=>h.cost===i).length),[8,7,6,5,4]);
- assert.equal(new Set(E.C.heroes.map(h=>h.id)).size,30);
+ assert.equal(E.C.heroes.length,36);assert.equal(E.C.recipes.length,21);
+ assert.deepEqual([1,2,3,4,5].map(i=>E.C.heroes.filter(h=>h.cost===i).length),[9,8,8,6,5]);
+ assert.equal(new Set(E.C.heroes.map(h=>h.id)).size,36);
 });
 test('three identical units combine to 2-star and three 2-star combine to 3-star',()=>{
  const s=setup(),p=s.players.a;p.gold=150;
@@ -49,7 +49,7 @@ test('server state denies actions during combat and supports deterministic PvE r
 test('30-second combat has bounded authoritative timeline and tuned hero classes',()=>{
  assert.equal(E.PHASES.COMBAT,30000);
  assert.equal(E.PHASES.PREPARATION,30000);
- assert.equal(E.C.heroes.length,30);
+ assert.equal(E.C.heroes.length,36);
  for(const hero of E.C.heroes){
   assert.ok(hero.hp>=300&&hero.hp<=2000,hero.id+' HP');
   assert.ok(hero.attack>=40&&hero.attack<=200,hero.id+' attack');
@@ -120,7 +120,7 @@ test('skills produce distinct deterministic control and healing events',()=>{
 
 test('all 30 heroes have distinct skill identities and supported status metadata',()=>{
  const heroes=E.C.heroes,ids=new Set(),names=new Set();
- assert.equal(heroes.length,30);
+ assert.equal(heroes.length,36);
  for(const h of heroes){
   assert.ok(h.ability.id&&h.ability.name&&h.ability.vfx&&h.ability.sfx,h.id);
   assert.ok(!ids.has(h.ability.id)&&!names.has(h.ability.name),h.id);
@@ -200,8 +200,8 @@ test('win and loss streak gold uses 2, 4 and 5 thresholds',()=>{
 
 test('all 30 MLBB primary roles are aligned without changing hero identity or skill',()=>{
  const expected=['Assassin','Fighter','Ranger','Ranger','Sorcerer','Sorcerer','Fighter','Ranger','Assassin','Tank','Sorcerer','Fighter','Ranger','Assassin','Sorcerer','Ranger','Assassin','Ranger','Fighter','Support','Sorcerer','Fighter','Ranger','Fighter','Tank','Sorcerer','Sorcerer','Sorcerer','Tank','Fighter'];
- assert.deepEqual(E.C.heroes.map(h=>h.classes[0]),expected);
- assert.equal(E.C.heroes.length,30);
+ assert.deepEqual(E.C.heroes.slice(0,30).map(h=>h.classes[0]),expected);
+ assert.equal(E.C.heroes.length,36);
  for(const hero of E.C.heroes){
   assert.ok(E.C.origins[hero.classes[0]],hero.id);
   assert.ok(hero.ability.id&&hero.ability.kind,hero.id);
@@ -210,4 +210,22 @@ test('all 30 MLBB primary roles are aligned without changing hero identity or sk
  assert.equal(E.C.origins.Fighter.label,'Đấu Sĩ');
  assert.equal(E.C.origins.Tank.label,'Đỡ Đòn');
  assert.equal(E.C.origins.Support.label,'Hỗ Trợ');
+});
+
+test('six support skills heal, shield and haste friendly units',()=>{
+ const additions=E.C.heroes.slice(30);
+ assert.equal(additions.length,6);
+ assert.deepEqual(additions.map(h=>h.cost),[1,2,3,3,4,5]);
+ assert.ok(additions.every(h=>h.classes.includes('Support')));
+ for(const kind of ['teamHeal','teamShield','teamHaste']){
+  const hero=additions.find(h=>h.ability.kind===kind),s=setup(),p=s.players.a;
+  p.units={support:{id:'support',heroId:hero.id,star:2,items:[]},friend:{id:'friend',heroId:'H01',star:2,items:[]}};
+  p.board={r0c2:'support',r0c3:'friend'};
+  const before=hero.manaStart;hero.manaStart=hero.manaMax;
+  try{
+   const events=E.simulate({a:'a',b:null,pve:true,ghost:false},s,{a:E.clone(p)},123).events;
+   assert.ok(events.some(e=>e.type==='skill'&&e.actor==='support'),kind+' not cast');
+   assert.ok(events.some(e=>e.type===({teamHeal:'heal',teamShield:'shield',teamHaste:'haste'})[kind]&&e.target==='friend'),kind+' not applied to ally');
+  }finally{hero.manaStart=before;}
+ }
 });

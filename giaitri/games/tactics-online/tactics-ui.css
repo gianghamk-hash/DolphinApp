@@ -1,0 +1,41 @@
+/* DOLPHIN TACTICS: Arena / Market / Armory v2.
+   Pure presentation layer; gameplay actions and element IDs remain unchanged. */
+:root{--tft-cyan:#72e8e4;--tft-gold:#ffd786;--tft-outline:rgba(135,210,220,.32);--tft-ink:#dff8fa}
+#game #stage{background:radial-gradient(ellipse at 50% 30%,#17455a 0%,#091f31 65%,#040e1b 100%);border:1px solid rgba(116,229,232,.62);border-radius:20px;box-shadow:inset 0 0 36px rgba(23,165,186,.17),0 0 0 1px rgba(243,205,126,.2),0 12px 34px rgba(0,0,0,.3)}
+#game #stage:before{content:'';position:absolute;inset:0;z-index:1;pointer-events:none;border-radius:inherit;background:linear-gradient(135deg,rgba(169,251,255,.11),transparent 25%,transparent 78%,rgba(255,217,140,.08))}
+#game #boardHelp{z-index:6;left:50%;bottom:7px;transform:translateX(-50%);max-width:90%;width:max-content;text-align:center;background:rgba(4,21,35,.75);border:1px solid rgba(118,218,219,.35);color:#d4fafa;border-radius:99px;padding:5px 11px;box-shadow:0 3px 15px #0006}
+#game #zoomControls button,#game #stageFullscreen{background:rgba(8,33,49,.83)!important;border:1px solid rgba(130,238,228,.53)!important;color:#d6ffff!important;box-shadow:inset 0 1px #ffffff19,0 4px 15px #0005;border-radius:11px}
+#game #battleBanner{border:1px solid #f1d48b;background:linear-gradient(120deg,#183c50e8,#0b2335eb);box-shadow:0 0 18px rgba(246,207,120,.22);color:#ffe3a0}
+#game>aside .panel{background:linear-gradient(145deg,rgba(20,60,75,.96),rgba(7,28,44,.96))!important;border:1px solid var(--tft-outline);border-radius:16px;box-shadow:inset 0 1px 0 #ffffff12,0 7px 24px #0003}
+#game>aside .panel h2,#game .foldPanel>summary{letter-spacing:.07em;color:var(--tft-gold);text-shadow:0 0 10px rgba(255,213,134,.14)}
+#game #shop{gap:6px;align-items:stretch}
+#game #shop .shopHero{position:relative;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-height:85px!important;padding:7px 5px!important;border:1px solid rgba(146,186,209,.45)!important;border-bottom:3px solid var(--tier-color,#a9bac5)!important;border-radius:12px;background:radial-gradient(circle at 50% 0%,color-mix(in srgb,var(--tier-color,#a9bac5) 25%,transparent),transparent 72%),linear-gradient(145deg,#173e50,#0b1f30)!important;color:#e7f9ff;box-shadow:inset 0 1px #ffffff1a,0 5px 12px #0004;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;touch-action:manipulation}
+#game #shop .shopHero:before{content:'';pointer-events:none;position:absolute;inset:0;border-radius:inherit;background:linear-gradient(130deg,#ffffff13,transparent 42%)}
+#game #shop .shopHero.tier1{--tier-color:#aebfc9}
+#game #shop .shopHero.tier2{--tier-color:#60df9f}
+#game #shop .shopHero.tier3{--tier-color:#69bfff}
+#game #shop .shopHero.tier4{--tier-color:#c18bff}
+#game #shop .shopHero.tier5{--tier-color:#ffd26f}
+#game #shop .shopHero:not(:disabled):active{transform:scale(.97);border-color:var(--tier-color)!important;box-shadow:0 0 16px color-mix(in srgb,var(--tier-color) 40%,transparent)}
+#game #shop .shopHero:disabled{opacity:.5;filter:saturate(.5)}
+#game #shop .shopRank{position:relative;color:var(--tier-color);font-size:10px;letter-spacing:.03em}
+#game #shop .shopAvatar{position:relative;font-size:clamp(19px,2.8vw,30px);filter:drop-shadow(0 0 7px var(--tier-color));line-height:1.2}
+#game #shop .shopHero strong{position:relative;color:#fff7da;text-shadow:0 1px 4px #000;font-size:clamp(9px,1vw,11px);font-weight:900}
+#game #shop .shopHero small{position:relative;color:#b7dce1}
+#game #rollShopBtn,#game #buyXpBtn,#game #lockShopBtn{background:linear-gradient(135deg,#16475a,#0c293c)!important;border:1px solid rgba(116,212,221,.48)!important;box-shadow:inset 0 1px #ffffff27,0 3px 10px #0004}
+#game #lockShopBtn.shopLocked{border-color:#ffd481!important;box-shadow:inset 0 0 0 1px #ffda86,0 0 14px #ffc45a42!important}
+#game .foldPanel{border-color:rgba(241,205,136,.4)!important}
+#game #items{padding:6px 0;color:#d1eef2}
+#game #items>div{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+#game .itemChip{display:inline-flex;align-items:center;gap:4px;padding:6px 8px!important;margin:1px!important;border:1px solid rgba(146,220,222,.42);background:linear-gradient(130deg,#20495b,#112e41);border-radius:9px;color:#e5faff;box-shadow:inset 0 1px #ffffff16;font-size:10px}
+#game #equipmentOwners{margin-top:8px;color:#d4eef3;line-height:1.5}
+#game #equipmentOwners .itemChip{display:flex;align-items:center;width:100%;max-width:100%;margin-top:5px!important;border-left:3px solid #f1cf84}
+#game #equipItem{background:#0a293a!important;border:1px solid #76aeb9!important;color:#effbff!important;min-width:0;max-width:100%;flex:1}
+#game #equipButton{background:linear-gradient(120deg,#ffe49f,#e8b45c)!important;color:#172c36!important;border:1px solid #ffe3a1!important;font-weight:900}
+#game #equipButton:disabled{opacity:.4}
+#game .benchBar{border-color:rgba(110,219,220,.4);background:linear-gradient(130deg,#153e50,#0b2537);border-radius:12px}
+#game #bench button{background:linear-gradient(140deg,#204657,#0d2c3d);border:1px solid rgba(135,210,218,.36);color:#e1f6f8;border-radius:8px}
+#game #bench button.gold{background:linear-gradient(140deg,#fce5aa,#e7b659);color:#24363b}
+@media(max-height:520px) and (orientation:landscape){#game #shop .shopHero{min-height:62px!important;padding:4px 3px!important}#game #shop .shopAvatar{font-size:16px}#game>aside .panel{border-radius:11px}#game .itemChip{padding:3px 5px!important}}
+@media(orientation:portrait) and (max-width:650px){#game #shop .shopHero{min-height:82px!important}#game #shop .shopHero strong{font-size:10px}}
+@media(prefers-reduced-motion:reduce){#game #shop .shopHero{transition:none!important}}

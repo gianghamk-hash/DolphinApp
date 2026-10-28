@@ -1,0 +1,26 @@
+name: TFT UI Redesign Checks
+on:
+  pull_request:
+    paths:
+      - 'giaitri/games/tactics-online/index.html'
+      - 'giaitri/games/tactics-online/tactics-ui.css'
+      - 'giaitri/games/tactics-online/tactics-ui.test.js'
+      - '.github/workflows/tft-ui-redesign.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'giaitri/games/tactics-online/index.html'
+      - 'giaitri/games/tactics-online/tactics-ui.css'
+      - 'giaitri/games/tactics-online/tactics-ui.test.js'
+      - '.github/workflows/tft-ui-redesign.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test giaitri/games/tactics-online/tactics-ui.test.js giaitri/games/tactics-online/combat-timeline.test.js giaitri/games/tactics-online/extreme-ai.test.js

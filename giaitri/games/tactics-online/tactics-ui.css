@@ -208,3 +208,31 @@
 #game .battleHeroName{position:absolute;display:none;transform:translate(-50%,-50%);max-width:110px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;padding:2px 6px;border:1px solid #83e7d9;border-radius:5px;background:#09232deb;color:#fff8e9;font-size:clamp(9px,1.8vw,12px);line-height:1.2;font-weight:800;text-shadow:0 1px 2px #000;box-shadow:0 2px 4px #000a}
 #game .battleHeroName.isEnemy{border-color:#ff969e;background:#421c29e8}
 @media(orientation:portrait) and (max-width:650px){#game .battleHeroName{font-size:9px;max-width:74px;padding:1px 4px}}
+
+
+/* Start screen handbook — touch-first, readable on mobile and desktop. */
+#guideMenu{margin:14px auto 0;max-width:720px;text-align:left}
+#guideMenu h3{color:#ffdb8a;text-align:center;font-size:15px;letter-spacing:.08em;margin:4px 0 12px}
+.guideButtons{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.guideButtons button{display:flex;gap:10px;align-items:center;justify-content:center;min-width:0;min-height:59px;padding:12px 10px;font-size:13px;font-weight:850;letter-spacing:.02em;text-align:center;border:1px solid #619da9;border-radius:12px;background:linear-gradient(150deg,#215066,#102f43);color:#f5f9f3;box-shadow:inset 0 1px #ffffff23,0 4px 12px #0005;cursor:pointer}
+.guideButtons button:last-child{grid-column:1/-1}
+.guideButtons button:hover,.guideButtons button:focus-visible{border-color:#ffe19a;outline:2px solid #ffe19a;outline-offset:1px}
+.guideModal{position:fixed;inset:0;z-index:2147483590;background:#020d17db;display:flex;align-items:center;justify-content:center;padding:12px}
+.guideModal.hidden{display:none!important}
+.guideDialog{width:min(960px,100%);max-height:min(90dvh,900px);display:flex;flex-direction:column;min-height:0;border:1px solid #719eae;border-radius:17px;overflow:hidden;background:#092434;box-shadow:0 20px 70px #000b;color:#e6f6f7}
+.guideDialogHead{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:12px 16px;background:#11384b;border-bottom:1px solid #476978}
+.guideDialogHead h2{font-size:18px;color:#ffdc89;margin:0}
+#guideClose{flex:0 0 auto;min-height:40px;padding:8px 13px;border:1px solid #87afba;border-radius:9px;color:#fff;background:#244957;font-weight:800;cursor:pointer}
+.guideTabs{display:flex;gap:6px;padding:9px 12px;overflow-x:auto;overscroll-behavior-x:contain;border-bottom:1px solid #365969}
+.guideTabs button{white-space:nowrap;flex:0 0 auto;padding:9px 12px;border:1px solid #47788b;border-radius:9px;background:#143c4f;color:#d9f1f2;cursor:pointer;font-weight:700;font-size:12px}
+.guideTabs button.active{border-color:#f2c56f;color:#ffe0a0;background:#244659}
+.guideContent{padding:16px;overflow-y:auto;overscroll-behavior:contain;min-height:0;line-height:1.55}
+.guideSection{margin:0 0 20px}.guideSection h3{color:#ffdd96;font-size:16px;margin:0 0 9px}
+.guideContent p{margin:4px 0 9px}.guideContent li{margin-bottom:8px}.guideContent ul{padding-left:22px}
+.guideCards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.guideCard,.guideRow{min-width:0;padding:12px;background:#143447;border:1px solid #467080;border-radius:11px}
+.guideCardHead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.guideCard strong,.guideRow strong{color:#ffe0a6}.guideCard p{font-size:13px}
+.guideBadge{padding:3px 7px;border-radius:7px;background:#315469;color:#ffdc98;font-size:11px;font-weight:800;white-space:nowrap}
+.guideRow{margin-bottom:9px}.guideRow p{margin-top:5px}
+@media(max-width:630px){.guideButtons{grid-template-columns:1fr 1fr;gap:7px}.guideButtons button{font-size:11px;min-height:55px;padding:9px 5px;gap:5px;flex-direction:column}.guideModal{padding:5px}.guideDialog{max-height:96dvh;border-radius:10px}.guideDialogHead{padding:9px 11px}.guideDialogHead h2{font-size:14px}.guideContent{padding:11px}.guideCards{grid-template-columns:1fr}.guideTabs{padding:7px}.guideTabs button{padding:8px;font-size:11px}}

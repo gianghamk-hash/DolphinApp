@@ -178,7 +178,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .shopIconBtn{width:43px;min-width:43px!important;height:40px;padding:5px!important;display:inline-grid;place-items:center;font-size:21px!important;line-height:1;border-radius:10px}.shopIconBtn:disabled{opacity:.35;cursor:not-allowed}#rollShopBtn:disabled{filter:grayscale(1)}#game #lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 30 tướng · 6 Tộc · 5 Hệ · 3 sao</div></div>
-<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
+<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
 <h2>🐉 DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">OFFLINE</button><button onclick="chooseOnline()">ONLINE</button></div>
 
@@ -538,6 +538,16 @@ function showDamage(node,amount){
  el.style.left=((v.x+1)*.5*layer.clientWidth)+'px';el.style.top=((-v.y+1)*.5*layer.clientHeight)+'px';
  layer.append(el);setTimeout(()=>el.remove(),900);
 }
+let combatAudioCtx=null,combatSoundOn=false;
+window.toggleCombatSound=async()=>{combatSoundOn=!combatSoundOn;const btn=$('combatSoundBtn');btn.textContent=combatSoundOn?'🔊 Âm thanh':'🔇 Âm thanh';btn.setAttribute('aria-pressed',String(combatSoundOn));if(combatSoundOn){try{const Audio=window.AudioContext||window.webkitAudioContext;if(Audio){combatAudioCtx ||= new Audio();await combatAudioCtx.resume();}}catch(e){combatSoundOn=false;btn.textContent='🔇 Âm thanh';btn.setAttribute('aria-pressed','false');}}};
+function playCombatSound(type){if(!combatSoundOn||!combatAudioCtx||combatAudioCtx.state!=='running')return;
+ try{const ctx=combatAudioCtx,osc=ctx.createOscillator(),gain=ctx.createGain(),now=ctx.currentTime;
+ const notes={attack:170,cast:350,stun:110,burn:140,heal:480,shield:260,die:90,dash:510,drain:220,blast:180};
+ osc.type=type==='heal'||type==='shield'?'sine':'triangle';osc.frequency.setValueAtTime(notes[type]||310,now);osc.frequency.exponentialRampToValueAtTime(Math.max(65,(notes[type]||310)*.7),now+.1);
+ gain.gain.setValueAtTime(.0001,now);gain.gain.exponentialRampToValueAtTime(.025,now+.015);gain.gain.exponentialRampToValueAtTime(.0001,now+.14);
+ osc.connect(gain);gain.connect(ctx.destination);osc.start(now);osc.stop(now+.15);
+ }catch(_){}
+}
 function tickReplay(){
  if(!replay||!state||state.roundPhase!=='COMBAT')return;
  const elapsed=Date.now()-replay.start;
@@ -550,16 +560,20 @@ function tickReplay(){
  while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
   const eventIndex=replay.index++;
   const e=replay.events[eventIndex],node=characterById.get(e.actor),target=characterById.get(e.target);
+  if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.skill||'spell',.8);playCombatSound(e.skill||'cast');}
+  if(e.type==='stun'&&target){CombatFX.pulse(stageScene,target,'stun',.65);playCombatSound('stun');}
+  if(e.type==='burn'&&target){CombatFX.pulse(stageScene,target,'burn',.6);playCombatSound('burn');}
+
   if(e.type==='move'&&node){
    Animator.play(node,'run',performance.now(),{to:new THREE.Vector3((e.x-3.5)*.94,0,((replay.mirror?7-e.y:e.y)-3.5)*.86)});
   }
   if((e.type==='attack'||e.type==='cast')&&target){
-   if(node){if(!CombatCues.consume(eventIndex))Animator.play(node,e.type==='cast'?'cast':'attack');if(e.type==='cast'){Animator.burst(stageScene,node,'cast');CombatFX.pulse(stageScene,target,hero[state.combatSnapshot?.[uid]?.units?.[e.actor]?.heroId]?.ability?.kind==='aoe'?'aoe':'spell',1);}Visuals.strike(stageScene,node,target,e.type==='cast',visualFX);}
+   if(node){if(!CombatCues.consume(eventIndex))Animator.play(node,e.type==='cast'?'cast':'attack');if(e.type==='cast'){Animator.burst(stageScene,node,'cast');CombatFX.pulse(stageScene,target,e.skill||'spell',1);}Visuals.strike(stageScene,node,target,e.type==='cast',visualFX);}
    const stat=battleHealth.get(e.target);if(stat){stat.hp=Math.max(0,stat.hp-(e.amount||0));Visuals.updateBars(target,stat.hp/stat.max);}
-   showDamage(target,e.amount);Animator.play(target,'hit');Animator.burst(stageScene,target,'hit');CombatFX.pulse(stageScene,target,'critical',.45);
+   showDamage(target,e.amount);playCombatSound(e.type);Animator.play(target,'hit');Animator.burst(stageScene,target,'hit');CombatFX.pulse(stageScene,target,'critical',.45);
   }
-  if((e.type==='heal'||e.type==='shield')&&node){Animator.play(node,e.type);Animator.burst(stageScene,node,e.type);CombatFX.pulse(stageScene,node,e.type);Visuals.updateBars(node,.95,.5);}
-  if(e.type==='die'&&node){Animator.play(node,'death');Animator.burst(stageScene,node,'death');CombatFX.pulse(stageScene,node,'death');}
+  if((e.type==='heal'||e.type==='shield')&&node){playCombatSound(e.type);Animator.play(node,e.type);Animator.burst(stageScene,node,e.type);CombatFX.pulse(stageScene,node,e.type);Visuals.updateBars(node,.95,.5);}
+  if(e.type==='die'&&node){playCombatSound('die');Animator.play(node,'death');Animator.burst(stageScene,node,'death');CombatFX.pulse(stageScene,node,'death');}
  }
 }
 function update(){

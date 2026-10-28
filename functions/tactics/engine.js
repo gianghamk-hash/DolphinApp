@@ -151,11 +151,11 @@ function createEngine(C){
   }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
   const events=[],emit=e=>{if(events.length<1200)events.push(e);};
-  function deal(src,tgt,amount,t,spell){
+  function deal(src,tgt,amount,t,spell,skillKind=null){
    if(!tgt.alive)return;let dealt=Math.max(1,Math.round(amount));const absorbed=Math.min(tgt.shield,dealt);tgt.shield-=absorbed;dealt-=absorbed;
    tgt.hp=Math.max(0,tgt.hp-dealt);src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
-   if(src.effects&&src.effects.includes('burn')){tgt.burnUntil=t+3000;tgt.burnDps=Math.max(8,tgt.maxHp*.015);}
-   tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt});
+   if(src.effects&&src.effects.includes('burn')){tgt.burnUntil=t+3000;tgt.burnDps=Math.max(8,tgt.maxHp*.015);emit({t,actor:src.id,target:tgt.id,type:"burn",amount:3000});}
+   tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt,skill:spell?skillKind:null});
    if(tgt.hp<=0){tgt.alive=false;tgt.fsm="Dead";emit({t,actor:tgt.id,type:"die"});}
   }
   for(let t=0;t<PHASES.COMBAT;t+=200){
@@ -175,9 +175,10 @@ function createEngine(C){
     if(dist(u,target)>u.range){u.fsm="Moving";if(t>=u.nextMove){let step=findStep(u,target,units);if(step){u.x=step.x;u.y=step.y;u.nextMove=t+550;emit({t,actor:u.id,type:"move",x:u.x,y:u.y});}}continue;}
     if(t<u.nextAttack)continue;
     if(u.mana>=u.manaMax){u.fsm="Casting Spell";u.mana=0;
+      emit({t,actor:u.id,type:"skill",skill:u.ability.kind});
       if(u.effects&&u.effects.includes('apGrowth'))u.abilityPower=Math.min(250,u.abilityPower+8);
-      if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",amount:u.ability.power});}
-      else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",amount:u.ability.power});}
+      if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});}
+      else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",skill:"shield",amount:u.ability.power});}
       else {
        const kind=u.ability.kind,area=kind==="aoe"||kind==="blast";
        const targets=area?foes.filter(v=>v.alive&&dist(target,v)<=Math.max(1,u.ability.radius||1)):[target];
@@ -185,7 +186,7 @@ function createEngine(C){
         if(!v.alive)continue;
         const power=u.ability.power*(1+u.abilityPower/100);
         const dealt=Math.max(1,Math.round(power*100/(100+Math.max(-50,v.magicResist))));
-        const before=v.hp;deal(u,v,dealt,t,true);
+        const before=v.hp;deal(u,v,dealt,t,true,kind);
         if(kind==="stun"&&v.alive){v.stunnedUntil=Math.max(v.stunnedUntil||0,t+1200);emit({t,actor:u.id,target:v.id,type:"stun",amount:1200});}
         if(kind==="drain"){const healed=Math.max(0,before-v.hp)*.35;u.hp=Math.min(u.maxHp,u.hp+healed);emit({t,actor:u.id,type:"heal",amount:Math.round(healed)});}
        }

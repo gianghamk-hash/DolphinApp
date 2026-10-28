@@ -703,22 +703,24 @@ trayRoot.addEventListener('pointerdown',e=>{
  document.body.appendChild(ghost);
  itemDrag={pointer:e.pointerId,item,startX:e.clientX,startY:e.clientY,ghost};
  ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
- try{tile.setPointerCapture(e.pointerId);}catch(_){}
+ try{trayRoot.setPointerCapture(e.pointerId);}catch(_){}
 });
 document.addEventListener('pointermove',e=>{
  if(!itemDrag||itemDrag.pointer!==e.pointerId)return;
- e.preventDefault();itemDrag.ghost.style.left=e.clientX+'px';itemDrag.ghost.style.top=e.clientY+'px';
+ if(e.pointerType==='touch'&&e.cancelable)e.preventDefault();itemDrag.ghost.style.left=e.clientX+'px';itemDrag.ghost.style.top=e.clientY+'px';
 });
 function finishGearDrag(e){
  if(!itemDrag||itemDrag.pointer!==e.pointerId)return;
  const drag=itemDrag;itemDrag=null;drag.ghost.remove();
+ try{if(trayRoot.hasPointerCapture(e.pointerId))trayRoot.releasePointerCapture(e.pointerId);}catch(_){}
  if(e.type==='pointercancel')return;
  const p=state?.players?.[uid];
  if(!p||state.roundPhase!=='PREPARATION'||p.ready||!p.inventory.includes(drag.item))return;
  let target=boardUnitAt(e.clientX,e.clientY);
+ if(!target){const tile=boardHit(e.clientX,e.clientY);if(tile&&tile.row>=4)target=p.board['r'+(tile.row-4)+'c'+tile.col];}
  if(!target){
   const b=document.elementFromPoint(e.clientX,e.clientY)?.closest?.('#bench [data-bench]');
-  if(b)target=p.bench[Number(b.dataset.bench)];
+  if(b)target=p.bench[String(b.dataset.bench)];
  }
  if(!target||!p.units[target]){info('Thả trang bị lên tướng trên bàn cờ hoặc hàng chờ.');return;}
  const parts=p.units[target].items||[];
@@ -732,6 +734,7 @@ function finishGearDrag(e){
   const delta=['hp','attack','armor','magicResist','abilityPower','mana'].map(k=>{const v=Math.round((after[k]-before[k])*10)/10;return v?(STAT_LABELS[k]||k)+': '+(v>0?'+':'')+v:null}).filter(Boolean).join(', ');
   if(crafted&&!window.confirm('Ghép '+(itemDef(match)?.name||match)+' + '+(itemDef(drag.item)?.name||drag.item)+' → '+crafted.name+'?\\n'+(crafted.description||EFFECT_LABELS[crafted.effect]||'')+'\\n'+delta))return;
   Promise.resolve(send({type:'EQUIP',unitId:target,component:drag.item})).then(()=>{
+   if(!host){info('Đã gửi yêu cầu trang bị — chờ đồng bộ từ chủ phòng.');return;}
    const sparkle=document.createElement('div');sparkle.className='equipSuccessFx';sparkle.textContent='✨ TRANG BỊ';sparkle.style.left=e.clientX+'px';sparkle.style.top=e.clientY+'px';document.body.appendChild(sparkle);setTimeout(()=>sparkle.remove(),850);
   }).catch(showError);
 }

@@ -197,3 +197,8 @@
 #game .touchGear .tftItemIcon{width:32px;height:32px;flex:0 0 32px}
 #game .itemChip .tftItemIcon{width:30px;height:30px;display:inline-grid}
 @media(orientation:portrait) and (max-width:650px){#game .touchGear .tftItemIcon{width:27px;height:27px;flex-basis:27px}}
+
+/* Equipment dragging must override generic mobile tap gestures. */
+#game .touchItemTray .touchGear{touch-action:none!important;-webkit-touch-callout:none!important;overscroll-behavior:contain}
+#game .touchItemTray .touchItemSlots{touch-action:pan-x}
+#game .touchGearGhost{pointer-events:none!important}

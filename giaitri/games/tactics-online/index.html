@@ -687,8 +687,12 @@ function finishGearDrag(e){
   if(b)target=p.bench[Number(b.dataset.bench)];
  }
  if(!target||!p.units[target]){info('Thả trang bị lên tướng trên bàn cờ hoặc hàng chờ.');return;}
- send({type:'EQUIP',unitId:target,component:drag.item});
-  const sparkle=document.createElement('div');sparkle.className='equipSuccessFx';sparkle.textContent='✨ TRANG BỊ';sparkle.style.left=e.clientX+'px';sparkle.style.top=e.clientY+'px';document.body.appendChild(sparkle);setTimeout(()=>sparkle.remove(),850);
+ const parts=p.units[target].items||[];
+  const recipeAvailable=parts.some(x=>E.RECIPE[[x,drag.item].sort().join('+')]);
+  if(parts.length>=3&&!recipeAvailable){info('Tướng chỉ có tối đa 3 ô trang bị.');return;}
+  Promise.resolve(send({type:'EQUIP',unitId:target,component:drag.item})).then(()=>{
+   const sparkle=document.createElement('div');sparkle.className='equipSuccessFx';sparkle.textContent='✨ TRANG BỊ';sparkle.style.left=e.clientX+'px';sparkle.style.top=e.clientY+'px';document.body.appendChild(sparkle);setTimeout(()=>sparkle.remove(),850);
+  }).catch(showError);
 }
 document.addEventListener('pointerup',finishGearDrag);
 document.addEventListener('pointercancel',finishGearDrag);

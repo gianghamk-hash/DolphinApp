@@ -863,6 +863,9 @@
         },
         "4": {
           "bonusMana": 12
+        },
+        "6": {
+          "bonusMana": 20
         }
       },
       "label": "Pháp Sư"

@@ -1,0 +1,30 @@
+name: TFT Trait HUD Tests
+on:
+  pull_request:
+    paths:
+      - 'giaitri/games/tactics-online/index.html'
+      - 'giaitri/games/tactics-online/tactics-ui.css'
+      - 'giaitri/games/tactics-online/**.test.js'
+      - 'giaitri/games/tactics-online/catalog.json'
+      - 'functions/tactics/catalog.json'
+      - '.github/workflows/tft-trait-hud.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'giaitri/games/tactics-online/index.html'
+      - 'giaitri/games/tactics-online/tactics-ui.css'
+      - 'giaitri/games/tactics-online/**.test.js'
+      - 'giaitri/games/tactics-online/catalog.json'
+      - 'functions/tactics/catalog.json'
+      - '.github/workflows/tft-trait-hud.yml'
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test giaitri/games/tactics-online/trait-hud.test.js giaitri/games/tactics-online/tactics-ui.test.js giaitri/games/tactics-online/touch-gear.test.js

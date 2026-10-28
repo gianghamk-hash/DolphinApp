@@ -4,7 +4,7 @@ function createCombatFX(T){
  const active=[];
  const MAX_FX=28;
  const ringGeometry=new T.RingGeometry(.3,.42,20);
- const auraGeometry=new T.TorusGeometry(.72,.055,6,24);
+ const auraGeometry=new T.RingGeometry(.65,.82,24);
  function pulse(scene,node,type='spell',radius=.7){
   if(!node||!node.parent||active.length>=MAX_FX)return;
   const colors={spell:0x9577ff,aoe:0xffb15e,heal:0x69e5a0,shield:0x6ccaff,critical:0xffde83,death:0xee7084,cleanse:0x9fffe3,slow:0x79baff,stun:0xffdb73,burn:0xff683e,dash:0x61dfff,drain:0x8aeea1,blast:0xff975a,bolt:0x7ec7ff,strike:0xffcf77};

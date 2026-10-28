@@ -21,3 +21,18 @@ test('responsive controls and reduced-motion design are preserved',()=>{
  assert.match(css,/@media\(orientation:portrait\) and \(max-width:650px\)/);
  assert.match(css, /prefers-reduced-motion:reduce/);
 });
+
+test('phase 2 portrait layout uses measured header and constrained viewport',()=>{
+ assert.match(html,/function syncPortraitHeader\(/);
+ assert.match(css,/--tft-header-height/);
+ assert.match(css,/max-height:700px/);
+ assert.match(css,/safe-area-inset-bottom/);
+ assert.match(css,/#game>aside\{height:auto!important;min-height:0!important;flex:1 1 0!important;overflow-y:auto!important/);
+});
+test('drag interactions provide source and destination cues and clean up on cancel',()=>{
+ assert.match(html,/function clearUnitDragFeedback\(/);
+ assert.match(html,/isDragSource/);
+ assert.match(html,/isDropTarget/);
+ assert.match(html,/pointercancel.*clearUnitDragFeedback/);
+ assert.match(css,/\.benchBar\.isDropTarget/);
+});

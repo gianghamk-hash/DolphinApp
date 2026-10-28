@@ -1,7 +1,7 @@
 {
-  "version": "1.0.162",
-  "buildDate": "2026-10-28T09:09:52.442Z",
-  "commit": "f6b18bc",
-  "notes": "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028",
+  "version": "1.0.163",
+  "buildDate": "2026-10-28T09:19:30.898Z",
+  "commit": "e8ba0ed",
+  "notes": "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028",
   "forceUpdate": false
 }

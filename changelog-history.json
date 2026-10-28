@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.162",
+      "releaseDate": "2026-10-28T09:09:52.442Z",
+      "summary": "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028",
+      "details": [
+        "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028"
+      ]
+    },
+    {
       "version": "1.0.161",
       "releaseDate": "2026-10-28T08:56:31.663Z",
       "summary": "Merge pull request #101 from gianghamk-hash/fix/tft-reliable-board-nameplates-20261028",
@@ -390,14 +398,6 @@
       "summary": "feat(tactics): activate validated Saber GLB automatically",
       "details": [
         "feat(tactics): activate validated Saber GLB automatically"
-      ]
-    },
-    {
-      "version": "1.0.112",
-      "releaseDate": "2026-10-26T15:45:03.093Z",
-      "summary": "feat(tactics): add Blender automated Saber Chibi build pipeline",
-      "details": [
-        "feat(tactics): add Blender automated Saber Chibi build pipeline"
       ]
     }
   ]

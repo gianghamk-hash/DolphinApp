@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.155",
+      "releaseDate": "2026-10-28T06:28:16.241Z",
+      "summary": "Merge pull request #95 from gianghamk-hash/fix/tft-mana-cast-vfx-20261028",
+      "details": [
+        "Merge pull request #95 from gianghamk-hash/fix/tft-mana-cast-vfx-20261028"
+      ]
+    },
+    {
       "version": "1.0.154",
       "releaseDate": "2026-10-28T06:07:48.344Z",
       "summary": "Merge pull request #94 from gianghamk-hash/feat/tft-phase3-unique-abilities-statuses-20261028",
@@ -390,14 +398,6 @@
       "summary": "perf: TFT Android combat effects and adaptive rendering",
       "details": [
         "perf: TFT Android combat effects and adaptive rendering"
-      ]
-    },
-    {
-      "version": "1.0.105",
-      "releaseDate": "2026-10-26T13:09:20.007Z",
-      "summary": "feat: TFT weapon-specific hero attack animation [Phase 1B]",
-      "details": [
-        "feat: TFT weapon-specific hero attack animation [Phase 1B]"
       ]
     }
   ]

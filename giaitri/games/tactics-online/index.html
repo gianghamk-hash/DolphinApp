@@ -199,7 +199,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:9px"><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 
 
-</aside></main><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupBench" onclick="moveSelectedToBench();closeUnitPopup()">↩ Về hàng chờ</button><button id="popupSell" onclick="sellSelected();closeUnitPopup()">🪙 Bán tướng</button></div></div>
+</aside></main><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupSell" onclick="requestSellSelected()">🪙 Bán tướng</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script>
@@ -394,6 +394,7 @@ function init(){
  }catch(e){showError(e);}
 }
 window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
+window.requestSellSelected=()=>{const p=state?.players?.[uid],u=p?.units?.[selected],h=u&&hero[u.heroId];if(!u||state.roundPhase!=="PREPARATION"||p.ready)return;if(window.confirm("Xác nhận bán "+(h?.name||"tướng")+" ★"+u.star+"? Không thể hoàn tác."))sellSelected();closeUnitPopup();};
 window.moveSelectedToBench=()=>{
  const p=state?.players?.[uid];if(!p||!selected||state?.roundPhase!=='PREPARATION')return;
  if(!Object.values(p.board||{}).includes(selected)){info('Hãy chọn một tướng trên bàn cờ trước.');return;}
@@ -437,7 +438,7 @@ window.showTraitInfo=key=>{
  const p=state?.players?.[uid],trait=p&&traitProgress(p,key);if(!trait)return;
  const {def,levels,tier,count,max}=trait,el=$('traitInfo');
  const rows=levels.map(n=>'<div class="traitTier '+(n===tier?'isCurrent':n<tier?'isPassed':'')+'"><strong>'+n+' tướng</strong><span>'+safe(Object.entries(def.thresholds[n]||{}).map(([k,v])=>statLabel(k,v)).join(' · '))+'</span></div>').join('');
- el.innerHTML='<div class="traitPopupTitle"><span>'+safe(def.label||key)+' · '+count+'/'+max+'</span><button type="button" id="closeTraitInfo" aria-label="Đóng chi tiết">✕</button></div><p>'+(tier?'Đã kích hoạt mốc '+tier+' tướng':'Chưa đạt mốc kích hoạt đầu tiên')+'</p>'+rows;
+ el.innerHTML='<div class="traitPopupTitle"><span>'+safe(def.label||key)+' · '+count+'/'+max+'</span><button type="button" id="closeTraitInfo" aria-label="Đóng chi tiết">✕</button></div><p>Chỉ tướng thuộc '+safe(def.label||key)+' nhận hiệu ứng. '+(tier?'Mốc đang kích hoạt: '+tier+' tướng.':'Chưa đủ tướng kích hoạt.')+' Chỉ áp dụng mốc cao nhất, không cộng dồn các mốc.</p>'+rows;
  el.classList.remove('hidden');$('closeTraitInfo').onclick=()=>el.classList.add('hidden');
 };
 $('traitRail').addEventListener('click',e=>{const btn=e.target.closest('[data-trait]');if(btn)showTraitInfo(btn.dataset.trait);});
@@ -451,7 +452,7 @@ function paintControls(){
  return '<button class="shopHero tier'+cost+(marked?' shopRecommended':'')+(hint.upgrade?' shopUpgrade':'')+(hint.synergy?' shopSynergy':'')+'" title="'+safe(reason)+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
  (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
- $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
+ $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>';}).join('');
  const icons={Mech:'🤖',Void:'🕳️',Arcane:'🔮',Beast:'🐺',Shadow:'🌑',Celestial:'☀️',Brawler:'⚔️',Assassin:'🗡️',Ranger:'🏹',Guardian:'🛡️',Sorcerer:'✨'};
  // Include every represented trait, even before its first activation threshold.
  const represented=new Set();
@@ -480,6 +481,7 @@ function paintControls(){
  });
 }
 window.buyHero=i=>send({type:'BUY',index:i});
+window.inspectCombatUnit=(x,y)=>{if(state?.roundPhase!=='COMBAT')return;const id=boardUnitAt(x,y);if(id){selected=id;selectedHeroInfo();$('heroInfo')?.scrollIntoView({block:'nearest',behavior:'smooth'});}};
 window.tapBench=i=>{let p=state?.players[uid],id=p?.bench[i];if(selected&&selected!==id){send({type:'MOVE',unitId:selected,to:'bench',index:String(i)});selected=null;closeUnitPopup();}else{selected=id||null;paintControls();if(id)openUnitPopup(window.innerWidth/2,window.innerHeight*.68,id);else closeUnitPopup();}};
 window.closeUnitPopup=()=>{$('unitPopup').classList.add('hidden');};
 function openUnitPopup(x,y,id){
@@ -487,7 +489,7 @@ function openUnitPopup(x,y,id){
  selected=id;
  const popup=$('unitPopup'),onBoard=Object.values(state.players[uid].board||{}).includes(id);
  const prep=state.roundPhase==='PREPARATION'&&!state.players[uid].ready;
- $('popupBench').style.display=prep&&onBoard?'block':'none';
+ // Return to bench by dragging a deployed unit onto the bench instead.
  $('popupSell').style.display=prep?'block':'none';
  if(!prep){closeUnitPopup();return;}
  popup.classList.remove('hidden');
@@ -618,7 +620,8 @@ $('stage').addEventListener('pointerup',endPinch);
 $('stage').addEventListener('pointercancel',endPinch);
 $('stage').addEventListener('pointerdown',e=>{
  if(pinchPointers.size>1||Date.now()-lastPinchAt<350)return;
- if(e.target!==renderer?.domElement||!state||state.roundPhase!=='PREPARATION')return;
+ if(e.target===renderer?.domElement&&state?.roundPhase==='COMBAT'){inspectCombatUnit(e.clientX,e.clientY);return;}
+  if(e.target!==renderer?.domElement||!state||state.roundPhase!=='PREPARATION')return;
  const id=boardUnitAt(e.clientX,e.clientY);
  if(id)dragUnit={id,source:'board',x:e.clientX,y:e.clientY};
 });
@@ -685,6 +688,7 @@ function finishGearDrag(e){
  }
  if(!target||!p.units[target]){info('Thả trang bị lên tướng trên bàn cờ hoặc hàng chờ.');return;}
  send({type:'EQUIP',unitId:target,component:drag.item});
+  const sparkle=document.createElement('div');sparkle.className='equipSuccessFx';sparkle.textContent='✨ TRANG BỊ';sparkle.style.left=e.clientX+'px';sparkle.style.top=e.clientY+'px';document.body.appendChild(sparkle);setTimeout(()=>sparkle.remove(),850);
 }
 document.addEventListener('pointerup',finishGearDrag);
 document.addEventListener('pointercancel',finishGearDrag);

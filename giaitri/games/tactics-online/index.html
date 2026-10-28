@@ -183,7 +183,19 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <h2>🐉 DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">OFFLINE</button><button onclick="chooseOnline()">ONLINE</button></div>
 
 
-<div id="lobby" class="hidden">
+<section id="guideMenu" aria-label="Hướng dẫn chơi">
+ <h3>📖 HƯỚNG DẪN CHƠI</h3>
+ <div class="guideButtons">
+ <button type="button" onclick="openTacticsGuide('gameplay')">🎮 <span>CƠ CHẾ CHƠI</span></button>
+ <button type="button" onclick="openTacticsGuide('controls')">🕹️ <span>HƯỚNG DẪN NÚT BẤM</span></button>
+ <button type="button" onclick="openTacticsGuide('heroes')">🦸 <span>TƯỚNG & KỸ NĂNG</span></button>
+ <button type="button" onclick="openTacticsGuide('traits')">✨ <span>TỘC / HỆ</span></button>
+ <button type="button" onclick="openTacticsGuide('economy')">🪙 <span>KINH TẾ & VÀNG</span></button>
+ <button type="button" onclick="openTacticsGuide('items')">🛡️ <span>TRANG BỊ</span></button>
+ <button type="button" onclick="openTacticsGuide('tips')">💡 <span>MẸO CHƠI NHANH</span></button>
+ </div>
+ </section>
+ <div id="lobby" class="hidden">
 <input id="nick" maxlength="32" placeholder="Tên người chơi" value="Khách Dolphin"/>
 <div class="flex" style="margin-top:10px"><button class="gold" onclick="createRoom()">TẠO PHÒNG</button><input id="code" placeholder="MÃ PHÒNG 6 KÝ TỰ" maxlength="6" style="max-width:180px;text-transform:uppercase"/><button onclick="joinRoom()">THAM GIA</button></div>
 <div id="lobbyStatus" class="small" style="margin-top:12px"></div><div id="networkStatus" role="status" class="small" style="margin-top:4px"></div><button id="reconnectBtn" class="hidden" onclick="reconnectRoom()">↻ KẾT NỐI LẠI PHÒNG</button>
@@ -199,10 +211,18 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:9px"><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 
 
-</aside></main><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupSell" onclick="requestSellSelected()">🪙 Bán tướng</button></div></div>
+</aside></main>
+ <div id="guideModal" class="guideModal hidden" role="dialog" aria-modal="true" aria-labelledby="guideTitle" tabindex="-1">
+  <div class="guideDialog">
+   <div class="guideDialogHead"><h2 id="guideTitle">HƯỚNG DẪN</h2><button type="button" id="guideClose" onclick="closeTacticsGuide()" aria-label="Đóng hướng dẫn">✕ ĐÓNG</button></div>
+   <nav class="guideTabs" id="guideTabs" aria-label="Các mục hướng dẫn"></nav>
+   <div id="guideContent" class="guideContent" tabindex="0"></div>
+  </div>
+ </div>
+ <div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupSell" onclick="requestSellSelected()">🪙 Bán tướng</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script>
+<script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
 <script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script type="module">
@@ -212,6 +232,35 @@ import {clone as cloneSkeleton} from "https://cdn.jsdelivr.net/npm/three@0.165.0
 const $=id=>document.getElementById(id);
 const firebaseConfig={apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"};
 const catalog=await fetch("../../../functions/tactics/catalog.json").then(r=>{if(!r.ok)throw Error("Thiếu catalog");return r.json()});
+const guide=window.DolphinTacticsGuide(catalog);
+let guidePreviousFocus=null;
+window.openTacticsGuide=topic=>{
+ const selected=guide.topics.find(t=>t[0]===topic);if(!selected)return;
+ const modal=$('guideModal');
+ if(modal.classList.contains('hidden'))guidePreviousFocus=document.activeElement;
+ $('guideTitle').textContent=selected[1]+' '+selected[2];
+ $('guideContent').innerHTML=guide.render(topic);
+ $('guideContent').scrollTop=0;
+ $('guideTabs').innerHTML=guide.topics.map(([id,icon,title])=>'<button type="button" class="'+(id===topic?'active':'')+'" data-topic="'+id+'">'+icon+' '+guide.escape(title)+'</button>').join('');
+ modal.classList.remove('hidden');$('guideClose').focus();
+};
+window.closeTacticsGuide=()=>{
+ $('guideModal').classList.add('hidden');
+ if(guidePreviousFocus&&guidePreviousFocus.isConnected)guidePreviousFocus.focus();
+};
+$('guideTabs').addEventListener('click',event=>{const button=event.target.closest('[data-topic]');if(button)openTacticsGuide(button.dataset.topic)});
+$('guideModal').addEventListener('click',event=>{if(event.target===$('guideModal'))closeTacticsGuide()});
+document.addEventListener('keydown',event=>{
+ if($('guideModal').classList.contains('hidden'))return;
+ if(event.key==='Escape'){event.preventDefault();closeTacticsGuide()}
+ if(event.key==='Tab'){
+  const focusable=Array.from($('guideModal').querySelectorAll('button:not([disabled]),[tabindex="0"]'));
+  if(!focusable.length)return;
+  const first=focusable[0],last=focusable[focusable.length-1];
+  if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus()}
+  else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus()}
+ }
+});
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),RigFactory=window.DolphinCreateRigFactory(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),RigAnimator=window.DolphinCreateRigAnimator(),Skinner=window.DolphinCreateSkinner(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),CombatFX=window.DolphinCreateCombatFX(THREE),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles,RigAnimator,Skinner),ModelLibrary=window.DolphinTacticsCreateModelLibrary(THREE,GLTFLoader,'assets/models/',RigFactory,Skinner,cloneSkeleton);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();

@@ -190,15 +190,14 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp"></div></div>
+<main id="game" class="hidden"><section><div id="stage"><div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="boardHelp"></div></div>
 <div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><span class="touchItemTitle">🎒 TRANG BỊ</span><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div><div class="playerDock" id="players"></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
 <div class="flex" style="margin:8px 0"><button id="rollShopBtn" class="shopIconBtn" onclick="send({type:'ROLL'})" title="Đổi Shop · 2 vàng" aria-label="Đổi Shop · 2 vàng">🔄</button><button id="buyXpBtn" class="shopIconBtn" onclick="send({type:'BUY_XP'})" title="Mua 4 XP · 4 vàng" aria-label="Mua 4 XP · 4 vàng">⭐</button><button id="lockShopBtn" class="shopIconBtn" onclick="send({type:'TOGGLE_SHOP_LOCK'})" title="Khóa Shop" aria-label="Khóa Shop">🔓</button></div><div id="shop"></div>
 <div id="heroInfo" role="status"></div>
 <div class="flex" style="margin-top:9px"><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
-<div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div>
-<details class="panel foldPanel" open><summary>🎒 TRANG BỊ & GHÉP ĐỒ</summary><div id="items" class="small"></div><div class="flex" style="margin-top:7px"><select id="equipItem" aria-label="Chọn vật phẩm trong kho"></select><button id="equipButton" onclick="equipSelected()">Trang bị cho tướng</button></div><div id="equipmentOwners" class="small" style="margin-top:10px"></div></details>
+
 
 </aside></main><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupBench" onclick="moveSelectedToBench();closeUnitPopup()">↩ Về hàng chờ</button><button id="popupSell" onclick="sellSelected();closeUnitPopup()">🪙 Bán tướng</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
@@ -414,11 +413,30 @@ function paintPlayers(){
  }).join('');
 }
 function viewUnit(p,id){const u=p.units[id],h=u&&hero[u.heroId];return h?h.name+" ★".repeat(u.star):"Trống";}
+function traitProgress(p,key){
+ const def=catalog.origins[key];if(!def)return null;
+ const unique=new Set();let count=0;
+ for(const id of Object.values(p.board||{})){const u=p.units?.[id];if(!u||unique.has(u.heroId))continue;
+ unique.add(u.heroId);const h=hero[u.heroId];if(h&&[...(h.origins||[]),...(h.classes||[])].includes(key))count++;}
+ const levels=Object.keys(def.thresholds).map(Number).sort((a,b)=>a-b);
+ const tier=levels.filter(n=>n<=count).pop()||0;
+ return {key,count,tier,max:levels[levels.length-1],levels,def,active:tier>0};
+}
+function syncBattleHudScale(){
+ const stage=$('stage'),w=stage?.clientWidth||500,h=stage?.clientHeight||400;
+ // Visual HUD remains anchored to viewport edges; zoom affects only the 3D camera.
+ // Scale to available stage area, not camera zoom, preserving readable information.
+ const ratio=Math.min(w/600,h/420,1);
+ const scale=Math.max(.68,Math.min(1,ratio));
+ stage?.style.setProperty('--tft-hud-scale',String(scale));
+ const narrow=w<420;
+ stage?.classList.toggle('hudCompact',narrow);
+}
 window.showTraitInfo=key=>{
- const p=state?.players?.[uid],active=p&&E.activeTraits(p)[key],def=catalog.origins[key];
- if(!active||!def)return;
- const el=$('traitInfo'),details=Object.entries(active.buff||{}).map(([k,v])=>statLabel(k,v)).join(' · ');
- el.innerHTML='<strong>'+safe(def.label||key)+' · '+active.count+' tướng</strong><div>'+safe(details)+'</div><button type="button" id="closeTraitInfo">Đóng</button>';
+ const p=state?.players?.[uid],trait=p&&traitProgress(p,key);if(!trait)return;
+ const {def,levels,tier,count,max}=trait,el=$('traitInfo');
+ const rows=levels.map(n=>'<div class="traitTier '+(n===tier?'isCurrent':n<tier?'isPassed':'')+'"><strong>'+n+' tướng</strong><span>'+safe(Object.entries(def.thresholds[n]||{}).map(([k,v])=>statLabel(k,v)).join(' · '))+'</span></div>').join('');
+ el.innerHTML='<div class="traitPopupTitle"><span>'+safe(def.label||key)+' · '+count+'/'+max+'</span><button type="button" id="closeTraitInfo" aria-label="Đóng chi tiết">✕</button></div><p>'+(tier?'Đã kích hoạt mốc '+tier+' tướng':'Chưa đạt mốc kích hoạt đầu tiên')+'</p>'+rows;
  el.classList.remove('hidden');$('closeTraitInfo').onclick=()=>el.classList.add('hidden');
 };
 $('traitRail').addEventListener('click',e=>{const btn=e.target.closest('[data-trait]');if(btn)showTraitInfo(btn.dataset.trait);});
@@ -433,20 +451,18 @@ function paintControls(){
  (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
  $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(u?'★'+u.star+' '+safe(hero[u.heroId].name):'·')+'</button>';}).join('');
- const buffs=E.activeTraits(p);
  const icons={Mech:'🤖',Void:'🕳️',Arcane:'🔮',Beast:'🐺',Shadow:'🌑',Celestial:'☀️',Brawler:'⚔️',Assassin:'🗡️',Ranger:'🏹',Guardian:'🛡️',Sorcerer:'✨'};
- $('traitRail').innerHTML=Object.keys(buffs).map(key=>'<button class="traitOrb" type="button" data-trait="'+safe(key)+'" title="'+safe(catalog.origins[key]?.label||key)+'">'+(icons[key]||'✨')+'</button>').join('');
- if(!$('traitRail').children.length)$('traitInfo').classList.add('hidden');
+ // Include every represented trait, even before its first activation threshold.
+ const represented=new Set();
+ for(const id of Object.values(p.board||{})){const u=p.units?.[id],h=u&&hero[u.heroId];if(h)[...(h.origins||[]),...(h.classes||[])].forEach(t=>represented.add(t));}
+ const traits=[...represented].map(k=>traitProgress(p,k)).filter(Boolean).sort((a,b)=>Number(b.active)-Number(a.active)||b.count-a.count||a.key.localeCompare(b.key));
+ $('traitRail').innerHTML=traits.map(t=>'<button class="traitOrb '+(t.active?'isActive':'isInactive')+'" type="button" data-trait="'+safe(t.key)+'" title="'+safe(t.def.label||t.key)+' · '+t.count+'/'+t.max+'" aria-label="'+safe(t.def.label||t.key)+' '+t.count+'/'+t.max+(t.active?' đã kích hoạt mốc '+t.tier:' chưa kích hoạt')+'"><span class="traitIcon">'+(icons[t.key]||'✨')+'</span><span class="traitCount">'+t.count+'/'+t.max+'</span><span class="traitState">'+(t.active?'●':'○')+'</span></button>').join('');
+ if(!traits.length)$('traitInfo').classList.add('hidden');
+ syncBattleHudScale();
  // The touch tray mirrors the inventory; the original select remains as a fallback.
  const tray=$('touchItemSlots');
  if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" title="'+safe(itemDef(id)?.name||id)+'" '+(!prep?'disabled':'')+'><span>💠</span><small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
- $("items").innerHTML='<strong>🎒 Kho vật phẩm: '+p.inventory.length+'</strong><div>'+(p.inventory.length?p.inventory.map(id=>'<span class="itemChip">'+itemText(id)+'</span>').join(''):'Chưa có vật phẩm — nhận thêm khi thắng quái PvE')+'</div>';
- const prevItem=$("equipItem").value;
- $("equipItem").innerHTML=p.inventory.map(id=>'<option value="'+safe(id)+'">'+itemText(id)+'</option>').join('');
- if(p.inventory.includes(prevItem))$("equipItem").value=prevItem;
- $("equipButton").disabled=!prep||!selected||!p.units[selected]||!p.inventory.length;
- const equipped=Object.values(p.units).filter(u=>u.items?.length);
- $("equipmentOwners").innerHTML='<strong>🛡 Đã trang bị: '+equipped.length+' tướng</strong>'+(equipped.length?equipped.map(u=>'<div class="itemChip">'+safe(hero[u.heroId]?.name||u.heroId)+' ★'+u.star+': '+u.items.map(id=>safe(itemDef(id)?.name||id)).join(', ')+'</div>').join(''):'<div>Chưa có tướng nào được trang bị.</div>');
+ // Inventory is now exclusively displayed underneath the board.
  selectedHeroInfo();
  $('lockShopBtn').textContent=p.shopLocked?'🔒':'🔓';
  $('lockShopBtn').title=p.shopLocked?'Đang khóa shop — giữ nguyên khi sang vòng sau':'Nhấn để khóa shop';
@@ -690,7 +706,7 @@ function setup3D(){
   m.position.set((col-3.5)*.94,0,(row-3.5)*.86);m.userData.tile={col,row};board.add(m);
  }
  function resize(){let rect=$('stage').getBoundingClientRect();renderer.setSize(rect.width,rect.height,false);const aspect=rect.width/Math.max(1,rect.height),span=Math.max(5.2,5.4/aspect);camera.left=-span*aspect;camera.right=span*aspect;camera.top=span;camera.bottom=-span;camera.zoom=zoomLevel;camera.updateProjectionMatrix();}
- addEventListener('resize',resize);if(window.ResizeObserver)new ResizeObserver(resize).observe($('stage'));resize();
+ addEventListener('resize',()=>{resize();syncBattleHudScale();});if(window.ResizeObserver)new ResizeObserver(()=>{resize();syncBattleHudScale();}).observe($('stage'));resize();syncBattleHudScale();
  renderer.domElement.addEventListener('pointerup',e=>{
   if(!state||state.roundPhase!=='PREPARATION'||Date.now()-lastPinchAt<350||pinchPointers.size>1)return;
   const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);

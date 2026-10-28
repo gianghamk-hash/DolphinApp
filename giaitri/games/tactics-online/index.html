@@ -302,7 +302,14 @@ const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn côn
 const EFFECT_LABELS={stat:'Tăng chỉ số',burn:'Thiêu đốt mục tiêu',apGrowth:'Tăng sức mạnh phép khi tung chiêu',manaRegen:'Hồi 5 Mana/giây',manaPulse:'Hồi 2 Mana/giây',lifesteal:'Hút máu 15%',crit:'Tăng chí mạng',doubleHit:'Đòn đánh thứ hai'};
 const itemDef=id=>catalog.components.find(c=>c.id===id)||catalog.recipes.find(c=>c.id===id);
 const ITEM_ICONS={sword:'⚔️',rod:'🪄',vest:'🛡️',cloak:'🧥',belt:'❤️',tear:'💧',I01:'🗡️',I02:'⚡',I03:'🛡️',I04:'⚔️',I05:'🩸',I06:'🔋',I07:'👑',I08:'🔱',I09:'🪬',I10:'🌿',I11:'✨',I12:'🦔',I13:'🐉',I14:'🔥',I15:'⚙️',I16:'🧥',I17:'💚',I18:'🌙',I19:'💖',I20:'🔮',I21:'💠'};
-function itemIcon(id){return '<span class="tftItemIcon tftItemIcon-'+safe(id)+'" aria-hidden="true">'+(ITEM_ICONS[id]||'📦')+'</span>';}
+const ITEM_SPRITE='assets/item-icons.svg';
+const EQUIPMENT_ICON_IDS=new Set([...catalog.components,...catalog.recipes].map(x=>x.id));
+function itemIcon(id){
+ const fallback=ITEM_ICONS[id]||'📦';
+ if(!EQUIPMENT_ICON_IDS.has(id))return '<span class="tftItemIcon" aria-hidden="true">'+fallback+'</span>';
+ return '<span class="tftItemIcon tftItemIcon-'+safe(id)+'" aria-hidden="true"><svg class="tftItemArtwork" viewBox="0 0 96 96" focusable="false"><use href="'+ITEM_SPRITE+'#item-'+safe(id)+'"></use></svg><span class="tftItemFallback">'+fallback+'</span></span>';
+}
+fetch(ITEM_SPRITE,{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('missing equipment sprite');return r.text()}).then(svg=>{if(svg.includes('id="item-I21"')&&svg.includes('id="item-sword"'))document.documentElement.classList.add('tftItemArtworkReady')}).catch(()=>{});
 function statLabel(k,v){return (STAT_LABELS[k]||k)+' +'+(PERCENT_STATS.has(k)?Math.round(v*100)+'%':Number.isInteger(v)?v:Number(v).toFixed(1));}
 function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+(def.components?' · '+safe(def.components.map(x=>itemDef(x)?.name||x).join(' + ')):'')+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};

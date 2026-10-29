@@ -379,3 +379,20 @@ test('Package E: ranking is not based on client-submitted score or placement',()
  assert.match(ranking,/async function submitTacticsMatch\(\)/);
  assert.doesNotMatch(ranking,/recentMatches:/);
 });
+
+test('Package F: timed attack buffs expire and emit a combat event',()=>{
+ const room=setup(),p=room.players.a,h=E.HERO.H03,old=h.manaStart,range=h.range;
+ p.units={caster:{id:'caster',heroId:h.id,star:1,items:[]}};
+ p.board={r0c2:'caster'};room.round=15;h.manaStart=h.manaMax;h.range=8;
+ try{
+  const report=E.simulate({a:'a',b:null,pve:true},room,{a:E.clone(p)},42);
+  assert.ok(report.events.some(e=>e.type==='signatureEffect'&&e.effect==='empower'&&e.duration===3500));
+  assert.ok(report.events.some(e=>e.type==='signatureExpire'&&e.effect==='empower'));
+  assert.equal(report.events.at(-1).type,'end');
+ }finally{h.manaStart=old;h.range=range;}
+});
+test('Package F: combat events no longer silently truncate at 1200',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const code=fs.readFileSync(path.join(__dirname,'engine.js'),'utf8');
+ assert.doesNotMatch(code,/events\.length\s*<\s*1200/);
+});

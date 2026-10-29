@@ -157,7 +157,24 @@ function createEngine(C){
   }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
   for(const u of units)u.baseShield=u.shield||0;
-  const events=[],emit=e=>{if(events.length<1200)events.push(e);};
+  const events=[],emit=e=>{events.push(e);};
+  function modifyStat(actor,target,stat,type,delta,t,duration){
+   target.timedStats ||= {};
+   const key=actor.id+':'+type,prev=target.timedStats[key];
+   if(prev)target[stat]-=prev.delta;
+   const base=target[stat];
+   const applied=stat==='attack'?Math.max(0,Math.min(delta,Math.round(base*.35))):Math.max(-Math.round(Math.max(0,base+50)*.5),delta);
+   target[stat]+=applied;
+   target.timedStats[key]={stat,delta:applied,until:t+duration};
+   emit({t,actor:actor.id,target:target.id,type:'signatureEffect',effect:type,amount:Math.abs(applied),duration});
+  }
+  function expireStats(target,t){
+   for(const [key,value] of Object.entries(target.timedStats||{})){
+    if(value.until>t)continue;
+    target[value.stat]-=value.delta;delete target.timedStats[key];
+    emit({t,actor:target.id,target:target.id,type:'signatureExpire',effect:key.split(':').at(-1)});
+   }
+  }
   function applyBurn(src,tgt,t,duration,dps,source){
    tgt.burns ||= {};
    const key=source+':'+src.id;
@@ -198,7 +215,7 @@ function createEngine(C){
   for(let t=0;t<PHASES.COMBAT;t+=200){
    const living=units.filter(x=>x.alive);if(!living.some(x=>x.owner===0)||!living.some(x=>x.owner===1))break;
    for(const u of living){if(!u.alive)continue;
-    expireShields(u,t);
+    expireShields(u,t);expireStats(u,t);
     const activeBurns=Object.values(u.burns||{}).filter(x=>x.until>t);
     const burnDps=Math.max(...activeBurns.map(x=>x.dps),0);
     if(burnDps){const amount=Math.min(u.hp,burnDps*.2);u.hp-=amount;
@@ -282,15 +299,15 @@ function createEngine(C){
         const amount=sig.power*(1+u.abilityPower/100),dur=sig.durationMs||1200;
         switch(sig.effect){
          case 'shock':v.stunnedUntil=Math.max(v.stunnedUntil||0,t+dur);emit({t,actor:u.id,target:v.id,type:'stun',amount:dur});break;
-         case 'armorBreak':v.armor=Math.max(-50,v.armor-Math.round(amount*.2));emit({t,actor:u.id,target:v.id,type:'signatureEffect',effect:sig.effect,amount:Math.round(amount*.2)});break;
-         case 'sunder':v.magicResist=Math.max(-50,v.magicResist-Math.round(amount*.2));emit({t,actor:u.id,target:v.id,type:'signatureEffect',effect:sig.effect,amount:Math.round(amount*.2)});break;
+         case 'armorBreak':modifyStat(u,v,'armor',sig.effect,-Math.round(amount*.2),t,3500);break;
+         case 'sunder':modifyStat(u,v,'magicResist',sig.effect,-Math.round(amount*.2),t,3500);break;
          case 'frost':v.slowUntil=Math.max(v.slowUntil||0,t+dur);emit({t,actor:u.id,target:v.id,type:'slow',amount:dur});break;
          case 'ignite':applyBurn(u,v,t,dur,Math.max(8,amount*.1),'signature');break;
          case 'renew':{const healed=Math.min(v.maxHp-v.hp,amount);v.hp+=healed;emit({t,actor:u.id,target:v.id,type:'heal',amount:healed,skill:sig.id});break;}
          case 'fortify':case 'guard':{const granted=grantShield(v,amount,t);emit({t,actor:u.id,target:v.id,type:'shield',amount:granted,skill:sig.id});break;}
          case 'quickstep':v.hasteEffects ||= {};v.hasteEffects[sig.id+':'+u.id]={until:t+dur,ratio:Math.min(.35,amount/300)};emit({t,actor:u.id,target:v.id,type:'haste',amount:Math.min(.35,amount/300),duration:dur});break;
          case 'siphon':{const healed=Math.min(v.maxHp-v.hp,amount*.5);v.hp+=healed;emit({t,actor:u.id,target:v.id,type:'heal',amount:healed,skill:sig.id});break;}
-         case 'empower':v.attack+=Math.round(amount*.16);emit({t,actor:u.id,target:v.id,type:'signatureEffect',effect:sig.effect,amount:Math.round(amount*.16)});break;
+         case 'empower':modifyStat(u,v,'attack',sig.effect,Math.round(amount*.16),t,3500);break;
          case 'spark':v.mana=Math.min(v.manaMax,v.mana+Math.round(amount*.3));emit({t,actor:u.id,target:v.id,type:'mana',amount:v.mana,max:v.manaMax,source:sig.id});break;
         }
        }

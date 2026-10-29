@@ -343,7 +343,18 @@ function connectionWatch(){
 addEventListener('online',()=>{if(roomId&&!offline){onlineMessage('Đã có mạng — chờ đồng bộ lại');connectionWatch();}});
 addEventListener('offline',()=>{if(roomId&&!offline)connectionWatch();});
 connectivityTimer=setInterval(connectionWatch,5000);
-const showError=e=>{console.error(e);info("⚠ "+(e?.message||e));};
+function multiplayerErrorMessage(error){
+ const code=String(error?.code||'').toLowerCase().replace(/^functions\//,'');
+ const raw=String(error?.message||error||'');
+ if(code==='permission-denied')return 'Tài khoản Firebase chưa có hồ sơ nhân viên được xác minh trên máy chủ. Liên hệ quản lý để liên kết UID và xác minh nhân viên.';
+ if(code==='unauthenticated')return 'Không đăng nhập được Firebase. Kiểm tra Authentication > Anonymous và kết nối mạng.';
+ if(code==='not-found')return 'Cloud Function TFT chưa được triển khai hoặc sai vùng asia-southeast1.';
+ if(code==='unavailable'||code==='deadline-exceeded')return 'Không kết nối được máy chủ TFT. Kiểm tra mạng và trạng thái Firebase Functions.';
+ if(code==='failed-precondition'||code==='resource-exhausted'||code==='invalid-argument')return raw;
+ if(code==='internal'||/\binternal\b/i.test(raw))return 'Máy chủ TFT gặp lỗi nội bộ. Kiểm tra Logs của tacticsCreateRoom trên Firebase Functions và cấu hình Realtime Database (databaseURL, quyền truy cập).';
+ return raw;
+}
+const showError=e=>{console.error('[TFT online]',e?.code||'',e);info('⚠ '+multiplayerErrorMessage(e));};
 function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
 function dispatch(work){
  queue=queue.then(async()=>{if(!host)return;await work();}).catch(showError);

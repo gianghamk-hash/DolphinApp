@@ -199,7 +199,7 @@ test('win and loss streak gold uses 2, 4 and 5 thresholds',()=>{
 });
 
 test('all 30 MLBB primary roles are aligned without changing hero identity or skill',()=>{
- const expected=['Assassin','Fighter','Ranger','Ranger','Sorcerer','Sorcerer','Fighter','Ranger','Assassin','Tank','Sorcerer','Fighter','Ranger','Assassin','Sorcerer','Ranger','Assassin','Ranger','Fighter','Support','Sorcerer','Fighter','Ranger','Fighter','Tank','Sorcerer','Sorcerer','Sorcerer','Tank','Fighter'];
+ const expected=['Assassin','Fighter','Ranger','Ranger','Sorcerer','Sorcerer','Tank','Ranger','Assassin','Tank','Sorcerer','Fighter','Ranger','Assassin','Sorcerer','Ranger','Assassin','Ranger','Fighter','Support','Sorcerer','Fighter','Ranger','Fighter','Tank','Sorcerer','Sorcerer','Sorcerer','Tank','Fighter'];
  assert.deepEqual(E.C.heroes.slice(0,30).map(h=>h.classes[0]),expected);
  assert.equal(E.C.heroes.length,36);
  for(const hero of E.C.heroes){
@@ -286,3 +286,28 @@ test('replay exposes buffed initial unit stats and effective combat events',()=>
 
 // Package D deterministic stress suite runs in engine CI.
 require('../../giaitri/games/tactics-online/stress.test.js');
+
+test('role balancing: all 36 champions have role-appropriate HP, armor, speed and range',()=>{
+ const heroes=E.C.heroes;
+ assert.equal(heroes.length,36);
+ const oneGoldTanks=heroes.filter(h=>h.cost===1&&h.classes.includes('Tank'));
+ assert.ok(oneGoldTanks.length>=1,'need at least one affordable one-gold frontline tank');
+ assert.equal(E.HERO.H07.classes[0],'Tank');
+ const roles=['Tank','Fighter','Assassin','Ranger','Sorcerer','Support'];
+ for(const h of heroes){
+  const role=h.classes[0];
+  assert.ok(roles.includes(role),h.name);
+  assert.ok(h.hp>0&&h.attack>0&&h.attackSpeed>0,h.name);
+  assert.ok(h.armor>=0&&h.magicResist>=0,h.name);
+  assert.equal(h.range,['Tank','Fighter','Assassin'].includes(role)?1:3,h.name+' must use role range');
+ }
+ for(let tier=1;tier<=5;tier++){
+  const same=heroes.filter(h=>h.cost===tier);
+  const tanks=same.filter(h=>h.classes[0]==='Tank');
+  const others=same.filter(h=>['Ranger','Sorcerer','Assassin'].includes(h.classes[0]));
+  if(tanks.length&&others.length){
+   assert.ok(Math.min(...tanks.map(h=>h.hp))>Math.max(...others.map(h=>h.hp)),tier+' tank frontline HP');
+   assert.ok(Math.min(...tanks.map(h=>h.armor))>Math.max(...others.map(h=>h.armor)),tier+' tank armor');
+  }
+ }
+});

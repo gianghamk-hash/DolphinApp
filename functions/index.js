@@ -33,24 +33,34 @@ async function verifiedName(uid){
    throw new HttpsError('permission-denied','Tài khoản chưa được quản lý xác minh nhân viên');
  return String(value.name).trim().slice(0,32);
 }
+// Casual rooms accept a synchronized display name but remain unranked.
+// Competitive ranking independently requires verified staffIdentity on the server.
+async function casualRoomName(uid,name){
+ const snap=await getDatabase().ref('staffIdentity/'+uid).once('value');
+ const identity=safeStaffIdentity(snap.val());
+ if(identity)return {name:identity.name.slice(0,32),verified:true};
+ const label=nameOf(name);
+ if(!label||label.length<2)throw new HttpsError('invalid-argument','Hãy thiết lập tên nhân viên trước khi tạo phòng');
+ return {name:label,verified:false};
+}
 exports.tacticsCreateRoom=onCall(opts,async req=>{
- const uid=requireUid(req),name=await verifiedName(uid);
+ const uid=requireUid(req),identity=await casualRoomName(uid,req.data?.name),name=identity.name;
  await throttle(uid,1500);
  for(let tries=0;tries<8;tries++){
   const code=roomCode(),now=Date.now(),seed=crypto.randomBytes(4).readUInt32BE(0)||1;
-  const x=await rooms().child(code).transaction(v=>v===null?E.roomNew(uid,name,now,seed):undefined,undefined,false);
+  const x=await rooms().child(code).transaction(v=>v===null?Object.assign(E.roomNew(uid,name,now,seed),{rankingEligible:identity.verified}):undefined,undefined,false);
   if(x.committed){await getDatabase().ref('roomPresence/'+code+'/'+uid).set(true);return {roomId:code,uid};}
  }
  throw new HttpsError('unavailable','Không tạo được phòng');
 });
 exports.tacticsJoinRoom=onCall(opts,async req=>{
- const uid=requireUid(req),name=await verifiedName(uid),id=roomIdOf(req.data&&req.data.roomId);
+ const uid=requireUid(req),identity=await casualRoomName(uid,req.data?.name),name=identity.name,id=roomIdOf(req.data&&req.data.roomId);
  const state=await transact(rooms().child(id),s=>{
   E.assert(s&&s.players,'Phòng không tồn tại');
   if(s.players[uid])return s; // Reconnect existing member to active room.
   E.assert(s.status==='waiting','Phòng đã bắt đầu, không thể tham gia mới');
   E.assert(s.playerOrder.length<4,'Phòng đã đủ bốn người');
-  s.playerOrder.push(uid);s.players[uid]=E.freshPlayer(uid,name,s);s.updatedAt=Date.now();return s;
+  s.playerOrder.push(uid);s.players[uid]=E.freshPlayer(uid,name,s);s.rankingEligible=!!s.rankingEligible&&identity.verified;s.updatedAt=Date.now();return s;
  });
  await getDatabase().ref('roomPresence/'+id+'/'+uid).set(true);
  return {roomId:id,players:state.playerOrder.length};
@@ -154,7 +164,9 @@ exports.tacticsSubmitVerifiedResult=onCall(opts,async req=>{
  ]);
  const identity=safeStaffIdentity(staffSnap.val());
  if(!identity)throw new HttpsError('permission-denied','Nhân viên chưa được xác thực trên máy chủ');
- const room=roomSnap.val(),placement=placementFromVerifiedRoom(room,uid);
+ const room=roomSnap.val();
+ if(!room?.rankingEligible)throw new HttpsError('failed-precondition','Trận thường không được tính điểm KING OF TFT');
+ const placement=placementFromVerifiedRoom(room,uid);
  if(!placement)throw new HttpsError('failed-precondition','Chưa có thứ hạng được máy chủ xác thực');
  const matchId=id+':'+String(room.seed),score=[0,25,18,12,6][placement];
  const ref=rankRef().child(uid);

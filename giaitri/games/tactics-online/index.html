@@ -3,8 +3,16 @@
 <title>Dolphin Tactics 3D — 4 player online</title>
 <link rel="stylesheet" href="tactics-ui.css?v=1">
 <style>
-/* Android APK only — wider battleground and less secondary chrome. */
-html.tft-android-apk #game:not(.hidden){grid-template-columns:minmax(0,1fr) clamp(145px,23vw,205px)!important;gap:3px!important;padding:2px!important}
+/* Android APK — balanced board and shop sidebar. */
+/* Ensure five shop cards have readable names in landscape APK. */
+@media (orientation:landscape){
+ html.tft-android-apk #game>aside{min-width:0!important}
+ html.tft-android-apk #game #shop{grid-template-columns:repeat(5,minmax(0,1fr))!important;gap:4px!important}
+ html.tft-android-apk #game #shop button{min-width:0!important;padding:5px 3px!important;font-size:10px!important;overflow-wrap:normal!important;word-break:normal!important}
+ html.tft-android-apk #game #shop .shopHero strong{font-size:10px!important;overflow-wrap:normal!important;word-break:normal!important}
+}
+
+html.tft-android-apk #game:not(.hidden){grid-template-columns:minmax(0,1fr) clamp(305px,31vw,410px)!important;gap:5px!important;padding:3px!important}
 html.tft-android-apk #appShell>header{height:25px!important;min-height:25px!important;padding:1px 5px!important}
 html.tft-android-apk #game:not(.hidden){height:calc(100dvh - 25px)!important}
 html.tft-android-apk #game>section{min-width:0!important;overflow-y:auto!important}

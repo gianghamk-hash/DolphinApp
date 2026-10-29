@@ -1,30 +1,50 @@
 {
-  "version": "1.0.179",
-  "previousVersion": "1.0.178",
-  "commit": "1d743cd",
-  "previousCommit": "73407ed",
-  "buildDate": "2026-10-29T05:45:45.045Z",
-  "summary": "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029",
+  "version": "1.0.180",
+  "previousVersion": "1.0.179",
+  "commit": "619f894",
+  "previousCommit": "1d743cd",
+  "buildDate": "2026-10-29T05:59:11.941Z",
+  "summary": "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029",
   "changes": {
-    "totalCommits": 183,
-    "filesChanged": 4,
+    "totalCommits": 184,
+    "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029"
+    "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/animation.js",
+      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h31.glb",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/combat-fx.js",
+      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h32.glb",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/model-loader.js",
+      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h33.glb",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h34.glb",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h35.glb",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h36.glb",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/assets/models/manifest.json",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     },
     {

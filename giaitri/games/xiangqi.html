@@ -684,6 +684,7 @@ function showLobby(){
   lbSubmitted = false;
   if (unsubGame){ unsubGame(); unsubGame = null; }
   localStorage.removeItem('dolphin_xq_game');
+  mpHost=false;mpPlayers=[];
 }
 function showGameView(){
   $('lobbyView').style.display = 'none';
@@ -910,8 +911,9 @@ function checkResultModal(){
   }
 }
 
-window.closeResultAndLeave = function(){
+window.closeResultAndLeave = async function(){
   $('resultModal').classList.remove('show');
+  try{if(MP.getRoomId())await MP.leaveRoom();}catch(e){console.warn(e);}
   showLobby();
 };
 window.leaveGame=async function(){
@@ -936,6 +938,7 @@ window.goBack = function(){
   if (currentGame && currentGame.status === 'playing'){
     if (!confirm('Ván đang chơi. Thoát?')) return;
   }
+  if(MP.getRoomId())MP.leaveRoom().catch(console.warn);
   window.location.href = '/DolphinApp/giaitri/index.html';
 };
 

@@ -352,7 +352,7 @@ test('signature effect events and assassin carry approach match skill descriptio
    const expected=eventType[hero.ability.signature.effect];
    assert.ok(report.events.some(e=>e.type===expected&&e.actor==='caster'),hero.id+' needs a real '+expected+' combat event');
    assert.ok(report.events.some(e=>e.type==='signature'&&e.skillId===hero.ability.signature.id),hero.id+' needs signature VFX cue');
-   if(hero.classes.includes('Assassin'))assert.ok(report.events.some(e=>e.type==='move'&&e.actor==='caster'&&e.source==='assassinJump'),hero.id+' must approach enemy carry');
+   if(hero.classes.includes('Assassin'))assert.ok(report.events.some(e=>e.type==='move'&&e.actor==='caster'&&e.source==='assassinSkill'),hero.id+' must approach enemy carry');
   }finally{hero.manaStart=mana;hero.range=range;}
  }
 });

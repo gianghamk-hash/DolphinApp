@@ -1,5 +1,5 @@
 {
-  "version": "1.0.200",
+  "version": "1.0.201",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #141 from gianghamk-hash/fix/android-webview-js-dialogs-20261029"
+  "notes": "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029"
 }

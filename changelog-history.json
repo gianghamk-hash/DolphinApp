@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.200",
+      "releaseDate": "2026-10-29T13:36:52.190Z",
+      "summary": "Merge pull request #141 from gianghamk-hash/fix/android-webview-js-dialogs-20261029",
+      "details": [
+        "Merge pull request #141 from gianghamk-hash/fix/android-webview-js-dialogs-20261029"
+      ]
+    },
+    {
       "version": "1.0.199",
       "releaseDate": "2026-10-29T13:24:36.614Z",
       "summary": "Merge pull request #140 from gianghamk-hash/fix/android-tft-landscape-only-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028",
       "details": [
         "Merge pull request #91 from gianghamk-hash/feat/tft-phase2-mobile-ux-20261028"
-      ]
-    },
-    {
-      "version": "1.0.150",
-      "releaseDate": "2026-10-28T05:49:52.875Z",
-      "summary": "feat(tft): phase 1 skill states and complete trait threshold regression (#90)",
-      "details": [
-        "feat(tft): phase 1 skill states and complete trait threshold regression (#90)"
       ]
     }
   ]

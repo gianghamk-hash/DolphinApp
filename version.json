@@ -1,7 +1,7 @@
 {
-  "version": "1.0.200",
-  "buildDate": "2026-10-29T13:36:52.190Z",
-  "commit": "449d8ce",
-  "notes": "Merge pull request #141 from gianghamk-hash/fix/android-webview-js-dialogs-20261029",
+  "version": "1.0.201",
+  "buildDate": "2026-10-29T13:51:05.725Z",
+  "commit": "df35070",
+  "notes": "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029",
   "forceUpdate": false
 }

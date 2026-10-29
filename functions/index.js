@@ -108,3 +108,73 @@ exports.tacticsRoomSweep=onSchedule({schedule:'every 1 minutes',region:'asia-sou
   try{await advanceById(id,null);}catch(e){console.warn('sweep',id,e.message);}
  }
 });
+
+
+/* Package E — verified TFT rankings.
+ * Only server-side authoritative RTDB rooms are eligible. This intentionally
+ * does not accept user-submitted placement, score, display name or match ID.
+ * Staff identities must be provisioned by a trusted administrator at
+ * /staffIdentity/<Firebase Auth UID> with {verified:true,employeeId,name}.
+ * RTDB security rules MUST deny client writes to staffIdentity,
+ * tacticsRankVerified and rooms; see tactics/ranking-security.md.
+ */
+const rankRef=()=>getDatabase().ref('tacticsRankVerified');
+function safeStaffIdentity(value){
+ if(!value||value.verified!==true||typeof value.employeeId!=='string'||!value.employeeId.trim()||
+    typeof value.name!=='string'||!value.name.trim())return null;
+ return {employeeId:value.employeeId.trim().slice(0,96),name:value.name.trim().slice(0,64)};
+}
+function placementFromVerifiedRoom(room,uid){
+ if(!room||room.status!=='finished'||!Array.isArray(room.playerOrder)||room.playerOrder.length!==4||
+    !room.playerOrder.includes(uid)||!room.winnerId||!room.playerOrder.includes(room.winnerId))return null;
+ // Placements recorded by authoritative engine. Never infer loser order from
+ // final HP; eliminated users all finish at 0 HP.
+ const order=room.finalPlacements;
+ if(!order||typeof order!=='object')return null;
+ const values=room.playerOrder.map(id=>order[id]);
+ if(new Set(values).size!==4||values.some(v=>!Number.isInteger(v)||v<1||v>4))return null;
+ if(order[room.winnerId]!==1)return null;
+ return order[uid];
+}
+exports.tacticsSubmitVerifiedResult=onCall(opts,async req=>{
+ const uid=requireUid(req),id=roomIdOf(req.data?.roomId);
+ await throttle(uid,400);
+ const [staffSnap,roomSnap]=await Promise.all([
+  getDatabase().ref('staffIdentity/'+uid).once('value'),
+  rooms().child(id).once('value')
+ ]);
+ const identity=safeStaffIdentity(staffSnap.val());
+ if(!identity)throw new HttpsError('permission-denied','Nhân viên chưa được xác thực trên máy chủ');
+ const room=roomSnap.val(),placement=placementFromVerifiedRoom(room,uid);
+ if(!placement)throw new HttpsError('failed-precondition','Chưa có thứ hạng được máy chủ xác thực');
+ const matchId=id+':'+String(room.seed),score=[0,25,18,12,6][placement];
+ const ref=rankRef().child(uid);
+ let alreadyCounted=false;
+ const result=await ref.transaction(previous=>{
+  const v=previous||{};
+  const matches=v.matches||{};
+  if(matches[matchId]){alreadyCounted=true;return;}
+  // The receipt set is never truncated, including after 100+ matches.
+  matches[matchId]={placement,score};
+  return {employeeId:identity.employeeId,player:identity.name,matches,
+   totalScore:(v.totalScore||0)+score,totalGames:(v.totalGames||0)+1,
+   wins:(v.wins||0)+(placement===1?1:0),losses:(v.losses||0)+(placement!==1?1:0),
+   totalPlacement:(v.totalPlacement||0)+placement,lastPlayed:Date.now()};
+ },undefined,false);
+ if(!result.committed&&!alreadyCounted)
+  throw new HttpsError('aborted','Không thể xác nhận kết quả');
+ return {accepted:result.committed,alreadyCounted,placement,score};
+});
+exports.tacticsLeaderboard=onCall(opts,async req=>{
+ requireUid(req);
+ const limit=Math.max(1,Math.min(30,Number(req.data?.limit)||30));
+ const snap=await rankRef().once('value');
+ const rows=Object.entries(snap.val()||{}).map(([uid,x])=>({
+   uid,player:String(x.player||'').slice(0,64),totalScore:Number(x.totalScore)||0,
+   totalGames:Number(x.totalGames)||0,wins:Number(x.wins)||0,
+   totalPlacement:Number(x.totalPlacement)||0,lastPlayed:Number(x.lastPlayed)||0
+ })).filter(x=>x.totalGames>0)
+ .sort((a,b)=>b.totalScore-a.totalScore||b.wins-a.wins||a.lastPlayed-b.lastPlayed)
+ .slice(0,limit);
+ return {rows,verified:true};
+});

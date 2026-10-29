@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.211",
+      "releaseDate": "2026-10-29T15:01:28.536Z",
+      "summary": "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029",
+      "details": [
+        "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029"
+      ]
+    },
+    {
       "version": "1.0.210",
       "releaseDate": "2026-10-29T14:54:54.718Z",
       "summary": "Merge pull request #151 from gianghamk-hash/fix/show-manager-master-iframe-auth-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028",
       "details": [
         "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028"
-      ]
-    },
-    {
-      "version": "1.0.161",
-      "releaseDate": "2026-10-28T08:56:31.663Z",
-      "summary": "Merge pull request #101 from gianghamk-hash/fix/tft-reliable-board-nameplates-20261028",
-      "details": [
-        "Merge pull request #101 from gianghamk-hash/fix/tft-reliable-board-nameplates-20261028"
       ]
     }
   ]

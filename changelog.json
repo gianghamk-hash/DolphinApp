@@ -1,18 +1,18 @@
 {
-  "version": "1.0.211",
-  "previousVersion": "1.0.210",
-  "commit": "a9268b8",
-  "previousCommit": "dad44e2",
-  "buildDate": "2026-10-29T15:01:28.536Z",
-  "summary": "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029",
+  "version": "1.0.212",
+  "previousVersion": "1.0.211",
+  "commit": "bf45119",
+  "previousCommit": "a9268b8",
+  "buildDate": "2026-10-29T15:07:45.703Z",
+  "summary": "Merge pull request #153 from gianghamk-hash/fix/show-delete-error-diagnostics-20261029",
   "changes": {
-    "totalCommits": 215,
+    "totalCommits": 216,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029"
+    "Merge pull request #153 from gianghamk-hash/fix/show-delete-error-diagnostics-20261029"
   ],
   "fileChanges": [
     {

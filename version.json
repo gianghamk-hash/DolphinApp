@@ -1,7 +1,7 @@
 {
-  "version": "1.0.211",
-  "buildDate": "2026-10-29T15:01:28.536Z",
-  "commit": "a9268b8",
-  "notes": "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029",
+  "version": "1.0.212",
+  "buildDate": "2026-10-29T15:07:45.703Z",
+  "commit": "bf45119",
+  "notes": "Merge pull request #153 from gianghamk-hash/fix/show-delete-error-diagnostics-20261029",
   "forceUpdate": false
 }

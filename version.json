@@ -1,7 +1,7 @@
 {
-  "version": "1.0.165",
-  "buildDate": "2026-10-29T00:57:02.796Z",
-  "commit": "8b96c57",
-  "notes": "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029",
+  "version": "1.0.166",
+  "buildDate": "2026-10-29T01:02:50.614Z",
+  "commit": "fb3d804",
+  "notes": "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029",
   "forceUpdate": false
 }

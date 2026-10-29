@@ -1,34 +1,26 @@
 {
-  "version": "1.0.165",
-  "previousVersion": "1.0.164",
-  "commit": "8b96c57",
-  "previousCommit": "a4f46a3",
-  "buildDate": "2026-10-29T00:57:02.796Z",
-  "summary": "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029",
+  "version": "1.0.166",
+  "previousVersion": "1.0.165",
+  "commit": "fb3d804",
+  "previousCommit": "8b96c57",
+  "buildDate": "2026-10-29T01:02:50.614Z",
+  "summary": "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029",
   "changes": {
-    "totalCommits": 169,
-    "filesChanged": 4,
+    "totalCommits": 170,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029"
+    "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/engine.js",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     },
     {
-      "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/extreme-ai.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/extreme-ai.test.js",
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.165",
+      "releaseDate": "2026-10-29T00:57:02.796Z",
+      "summary": "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029",
+      "details": [
+        "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029"
+      ]
+    },
+    {
       "version": "1.0.164",
       "releaseDate": "2026-10-28T09:38:51.366Z",
       "summary": "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028",
@@ -390,14 +398,6 @@
       "summary": "fix(ci): bound Blender apt install and use minimal dependencies (#55)",
       "details": [
         "fix(ci): bound Blender apt install and use minimal dependencies (#55)"
-      ]
-    },
-    {
-      "version": "1.0.115",
-      "releaseDate": "2026-10-26T16:35:42.670Z",
-      "summary": "fix(ci): retry Saber GLB deployment after concurrent main changes",
-      "details": [
-        "fix(ci): retry Saber GLB deployment after concurrent main changes"
       ]
     }
   ]

@@ -39,11 +39,11 @@
         "status": null,
         "signature": {
           "id": "SIG01",
-          "name": "Saber — Chấn động",
-          "effect": "shock",
+          "name": "Saber — Tăng tốc đánh",
+          "effect": "quickstep",
           "pattern": "focused",
           "power": 33,
-          "durationMs": 650
+          "durationMs": 2800
         }
       }
     },
@@ -79,8 +79,8 @@
         "status": null,
         "signature": {
           "id": "SIG02",
-          "name": "Alucard — Phá giáp",
-          "effect": "armorBreak",
+          "name": "Alucard — Hồi máu",
+          "effect": "siphon",
           "pattern": "focused",
           "power": 36,
           "durationMs": 0
@@ -119,11 +119,11 @@
         "status": null,
         "signature": {
           "id": "SIG03",
-          "name": "Layla — Bứt tốc",
-          "effect": "quickstep",
+          "name": "Layla — Tăng công",
+          "effect": "empower",
           "pattern": "focused",
           "power": 39,
-          "durationMs": 2800
+          "durationMs": 0
         }
       }
     },
@@ -159,11 +159,11 @@
         "status": null,
         "signature": {
           "id": "SIG04",
-          "name": "Miya — Tái sinh",
-          "effect": "renew",
-          "pattern": "focused",
+          "name": "Miya — Tăng tốc đánh",
+          "effect": "quickstep",
+          "pattern": "sweep",
           "power": 42,
-          "durationMs": 0
+          "durationMs": 2800
         }
       }
     },
@@ -199,11 +199,11 @@
         "status": null,
         "signature": {
           "id": "SIG05",
-          "name": "Eudora — Gia cố",
-          "effect": "fortify",
+          "name": "Eudora — Thiêu đốt",
+          "effect": "ignite",
           "pattern": "focused",
           "power": 45,
-          "durationMs": 0
+          "durationMs": 2400
         }
       }
     },
@@ -239,11 +239,11 @@
         "status": null,
         "signature": {
           "id": "SIG06",
-          "name": "Nana — Thiêu đốt",
-          "effect": "ignite",
+          "name": "Nana — Làm chậm",
+          "effect": "frost",
           "pattern": "focused",
           "power": 48,
-          "durationMs": 2400
+          "durationMs": 1800
         }
       }
     },
@@ -279,11 +279,11 @@
         "status": null,
         "signature": {
           "id": "SIG07",
-          "name": "Balmond — Hút sinh lực",
-          "effect": "siphon",
+          "name": "Balmond — Làm choáng",
+          "effect": "shock",
           "pattern": "focused",
           "power": 51,
-          "durationMs": 0
+          "durationMs": 650
         }
       }
     },
@@ -319,11 +319,11 @@
         "status": null,
         "signature": {
           "id": "SIG08",
-          "name": "Clint — Làm chậm",
-          "effect": "frost",
+          "name": "Clint — Giảm giáp",
+          "effect": "armorBreak",
           "pattern": "focused",
           "power": 54,
-          "durationMs": 1800
+          "durationMs": 0
         }
       }
     },
@@ -359,9 +359,9 @@
         "status": null,
         "signature": {
           "id": "SIG09",
-          "name": "Gusion — Cường hóa",
-          "effect": "empower",
-          "pattern": "focused",
+          "name": "Gusion — Giảm giáp",
+          "effect": "armorBreak",
+          "pattern": "sweep",
           "power": 68,
           "durationMs": 0
         }
@@ -399,8 +399,8 @@
         "status": null,
         "signature": {
           "id": "SIG10",
-          "name": "Johnson — Xuyên kháng phép",
-          "effect": "sunder",
+          "name": "Johnson — Khiên bản thân/đồng minh",
+          "effect": "fortify",
           "pattern": "focused",
           "power": 71,
           "durationMs": 0
@@ -439,11 +439,11 @@
         "status": null,
         "signature": {
           "id": "SIG11",
-          "name": "Cyclops — Nạp năng lượng",
-          "effect": "spark",
-          "pattern": "focused",
+          "name": "Cyclops — Làm choáng",
+          "effect": "shock",
+          "pattern": "sweep",
           "power": 74,
-          "durationMs": 0
+          "durationMs": 650
         }
       }
     },
@@ -479,9 +479,9 @@
         "status": null,
         "signature": {
           "id": "SIG12",
-          "name": "Roger — Che chở",
-          "effect": "guard",
-          "pattern": "focused",
+          "name": "Roger — Tăng công",
+          "effect": "empower",
+          "pattern": "sweep",
           "power": 77,
           "durationMs": 0
         }
@@ -519,11 +519,11 @@
         "status": null,
         "signature": {
           "id": "SIG13",
-          "name": "Lesley — Chấn động",
-          "effect": "shock",
+          "name": "Lesley — Thiêu đốt",
+          "effect": "ignite",
           "pattern": "sweep",
           "power": 44,
-          "durationMs": 650
+          "durationMs": 2400
         }
       }
     },
@@ -559,11 +559,11 @@
         "status": null,
         "signature": {
           "id": "SIG14",
-          "name": "Hayabusa — Phá giáp",
-          "effect": "armorBreak",
-          "pattern": "sweep",
+          "name": "Hayabusa — Làm choáng",
+          "effect": "shock",
+          "pattern": "chain",
           "power": 47,
-          "durationMs": 0
+          "durationMs": 650
         }
       }
     },
@@ -599,11 +599,11 @@
         "status": null,
         "signature": {
           "id": "SIG15",
-          "name": "Kagura — Bứt tốc",
-          "effect": "quickstep",
-          "pattern": "sweep",
+          "name": "Kagura — Giảm kháng phép",
+          "effect": "sunder",
+          "pattern": "focused",
           "power": 50,
-          "durationMs": 2800
+          "durationMs": 0
         }
       }
     },
@@ -639,11 +639,11 @@
         "status": null,
         "signature": {
           "id": "SIG16",
-          "name": "Irithel — Tái sinh",
-          "effect": "renew",
-          "pattern": "sweep",
+          "name": "Irithel — Làm choáng",
+          "effect": "shock",
+          "pattern": "burst",
           "power": 64,
-          "durationMs": 0
+          "durationMs": 650
         }
       }
     },
@@ -679,8 +679,8 @@
         "status": null,
         "signature": {
           "id": "SIG17",
-          "name": "Karina — Gia cố",
-          "effect": "fortify",
+          "name": "Karina — Giảm kháng phép",
+          "effect": "sunder",
           "pattern": "sweep",
           "power": 67,
           "durationMs": 0
@@ -719,11 +719,11 @@
         "status": null,
         "signature": {
           "id": "SIG18",
-          "name": "Hanabi — Thiêu đốt",
-          "effect": "ignite",
-          "pattern": "sweep",
+          "name": "Hanabi — Bơm Mana",
+          "effect": "spark",
+          "pattern": "focused",
           "power": 70,
-          "durationMs": 2400
+          "durationMs": 0
         }
       }
     },
@@ -759,8 +759,8 @@
         "status": null,
         "signature": {
           "id": "SIG19",
-          "name": "Ruby — Hút sinh lực",
-          "effect": "siphon",
+          "name": "Ruby — Khiên bản thân/đồng minh",
+          "effect": "fortify",
           "pattern": "sweep",
           "power": 73,
           "durationMs": 0
@@ -799,11 +799,11 @@
         "status": null,
         "signature": {
           "id": "SIG20",
-          "name": "Rafaela — Làm chậm",
-          "effect": "frost",
-          "pattern": "sweep",
+          "name": "Rafaela — Hồi phục đồng minh",
+          "effect": "renew",
+          "pattern": "focused",
           "power": 76,
-          "durationMs": 1800
+          "durationMs": 0
         }
       }
     },
@@ -839,9 +839,9 @@
         "status": null,
         "signature": {
           "id": "SIG21",
-          "name": "Zhask — Cường hóa",
-          "effect": "empower",
-          "pattern": "sweep",
+          "name": "Zhask — Giảm giáp",
+          "effect": "armorBreak",
+          "pattern": "chain",
           "power": 79,
           "durationMs": 0
         }
@@ -879,11 +879,11 @@
         "status": "slow",
         "signature": {
           "id": "SIG22",
-          "name": "Zilong — Xuyên kháng phép",
-          "effect": "sunder",
-          "pattern": "sweep",
+          "name": "Zilong — Thiêu đốt",
+          "effect": "ignite",
+          "pattern": "chain",
           "power": 93,
-          "durationMs": 0
+          "durationMs": 2400
         }
       }
     },
@@ -919,9 +919,9 @@
         "status": "burn",
         "signature": {
           "id": "SIG23",
-          "name": "Claude — Nạp năng lượng",
-          "effect": "spark",
-          "pattern": "sweep",
+          "name": "Claude — Giảm kháng phép",
+          "effect": "sunder",
+          "pattern": "chain",
           "power": 96,
           "durationMs": 0
         }
@@ -959,11 +959,11 @@
         "status": null,
         "signature": {
           "id": "SIG24",
-          "name": "Thamuz — Che chở",
-          "effect": "guard",
-          "pattern": "sweep",
+          "name": "Thamuz — Làm choáng",
+          "effect": "shock",
+          "pattern": "arc",
           "power": 99,
-          "durationMs": 0
+          "durationMs": 650
         }
       }
     },
@@ -999,11 +999,11 @@
         "status": "slow",
         "signature": {
           "id": "SIG25",
-          "name": "Gatotkaca — Chấn động",
-          "effect": "shock",
-          "pattern": "chain",
+          "name": "Gatotkaca — Làm chậm",
+          "effect": "frost",
+          "pattern": "sweep",
           "power": 66,
-          "durationMs": 650
+          "durationMs": 1800
         }
       }
     },
@@ -1039,9 +1039,9 @@
         "status": "burn",
         "signature": {
           "id": "SIG26",
-          "name": "Valir — Phá giáp",
-          "effect": "armorBreak",
-          "pattern": "chain",
+          "name": "Valir — Bơm Mana",
+          "effect": "spark",
+          "pattern": "sweep",
           "power": 69,
           "durationMs": 0
         }
@@ -1080,11 +1080,11 @@
         "status": null,
         "signature": {
           "id": "SIG27",
-          "name": "Lunox — Bứt tốc",
-          "effect": "quickstep",
+          "name": "Lunox — Tăng công",
+          "effect": "empower",
           "pattern": "chain",
           "power": 83,
-          "durationMs": 2800
+          "durationMs": 0
         }
       }
     },
@@ -1120,11 +1120,11 @@
         "status": "slow",
         "signature": {
           "id": "SIG28",
-          "name": "Kadita — Tái sinh",
-          "effect": "renew",
-          "pattern": "chain",
+          "name": "Kadita — Thiêu đốt",
+          "effect": "ignite",
+          "pattern": "burst",
           "power": 86,
-          "durationMs": 0
+          "durationMs": 2400
         }
       }
     },
@@ -1160,9 +1160,9 @@
         "status": "burn",
         "signature": {
           "id": "SIG29",
-          "name": "Tigreal — Gia cố",
-          "effect": "fortify",
-          "pattern": "chain",
+          "name": "Tigreal — Bảo vệ đồng minh",
+          "effect": "guard",
+          "pattern": "focused",
           "power": 89,
           "durationMs": 0
         }
@@ -1201,11 +1201,11 @@
         "status": null,
         "signature": {
           "id": "SIG30",
-          "name": "Argus — Thiêu đốt",
-          "effect": "ignite",
+          "name": "Argus — Tăng tốc đánh",
+          "effect": "quickstep",
           "pattern": "chain",
           "power": 92,
-          "durationMs": 2400
+          "durationMs": 2800
         }
       }
     },
@@ -1241,9 +1241,9 @@
         "status": null,
         "signature": {
           "id": "SIG31",
-          "name": "Diggie — Hút sinh lực",
-          "effect": "siphon",
-          "pattern": "chain",
+          "name": "Diggie — Bảo vệ đồng minh",
+          "effect": "guard",
+          "pattern": "sweep",
           "power": 51,
           "durationMs": 0
         }
@@ -1281,11 +1281,11 @@
         "status": null,
         "signature": {
           "id": "SIG32",
-          "name": "Angela — Làm chậm",
-          "effect": "frost",
+          "name": "Angela — Khiên bản thân/đồng minh",
+          "effect": "fortify",
           "pattern": "chain",
           "power": 65,
-          "durationMs": 1800
+          "durationMs": 0
         }
       }
     },
@@ -1321,11 +1321,11 @@
         "status": null,
         "signature": {
           "id": "SIG33",
-          "name": "Floryn — Cường hóa",
-          "effect": "empower",
-          "pattern": "chain",
+          "name": "Floryn — Tăng tốc đánh",
+          "effect": "quickstep",
+          "pattern": "burst",
           "power": 79,
-          "durationMs": 0
+          "durationMs": 2800
         }
       }
     },
@@ -1361,8 +1361,8 @@
         "status": null,
         "signature": {
           "id": "SIG34",
-          "name": "Mathilda — Xuyên kháng phép",
-          "effect": "sunder",
+          "name": "Mathilda — Bơm Mana",
+          "effect": "spark",
           "pattern": "chain",
           "power": 82,
           "durationMs": 0
@@ -1401,9 +1401,9 @@
         "status": null,
         "signature": {
           "id": "SIG35",
-          "name": "Estes — Nạp năng lượng",
-          "effect": "spark",
-          "pattern": "chain",
+          "name": "Estes — Tăng công",
+          "effect": "empower",
+          "pattern": "burst",
           "power": 96,
           "durationMs": 0
         }
@@ -1441,9 +1441,9 @@
         "status": null,
         "signature": {
           "id": "SIG36",
-          "name": "Faramis — Che chở",
-          "effect": "guard",
-          "pattern": "chain",
+          "name": "Faramis — Hồi máu",
+          "effect": "siphon",
+          "pattern": "sweep",
           "power": 110,
           "durationMs": 0
         }

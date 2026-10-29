@@ -68,7 +68,16 @@ function createAI(E){
   front.forEach((u,i)=>{const row=i<8?0:1;board['r'+row+'c'+shift[i%8]]=u.id;});
   rear.forEach((u,i)=>{const row=3-Math.floor(i/8);board['r'+row+'c'+shift[i%8]]=u.id;});
   let k=0;const active=new Set(chosen.map(u=>u.id));
-  for(const u of Object.values(p.units))if(!active.has(u.id)&&k<8)bench[String(k++)]=u.id;
+  // Keep every owned unit addressable, even if an inconsistent external state
+  // contains more than eight reserves; never silently orphan inventory.
+  const reserves=Object.values(p.units).filter(u=>!active.has(u.id));
+  for(const u of reserves.slice(0,8))bench[String(k++)]=u.id;
+  if(reserves.length>8){
+   // Do not manufacture extra bench slots or delete ownership. Preserve the
+   // previous legal placement if possible and let the engine reject overflow.
+   throw Error('AI bench overflow: '+reserves.length+' reserves for eight slots');
+  }
+  if(new Set([...Object.values(board),...Object.values(bench)]).size!==Object.keys(p.units).length)throw Error('AI lineup ownership mismatch');
   p.board=board;p.bench=bench;
  }
  function draftScore(p,h,threat){

@@ -1,30 +1,42 @@
 {
-  "version": "1.0.167",
-  "previousVersion": "1.0.166",
-  "commit": "40c03d1",
-  "previousCommit": "fb3d804",
-  "buildDate": "2026-10-29T01:12:26.478Z",
-  "summary": "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029",
+  "version": "1.0.168",
+  "previousVersion": "1.0.167",
+  "commit": "b40d124",
+  "previousCommit": "40c03d1",
+  "buildDate": "2026-10-29T01:20:59.794Z",
+  "summary": "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029",
   "changes": {
-    "totalCommits": 171,
-    "filesChanged": 3,
+    "totalCommits": 172,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029"
+    "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029"
   ],
   "fileChanges": [
-    {
-      "file": "giaitri/games/tactics-online/balance-sim.js",
-      "type": "update"
-    },
     {
       "file": "giaitri/games/tactics-online/extreme-ai.js",
       "type": "update"
     },
     {
       "file": "giaitri/games/tactics-online/extreme-ai.test.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/touch-gear.test.js",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.167",
+      "releaseDate": "2026-10-29T01:12:26.478Z",
+      "summary": "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029",
+      "details": [
+        "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029"
+      ]
+    },
+    {
       "version": "1.0.166",
       "releaseDate": "2026-10-29T01:02:50.614Z",
       "summary": "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(tactics): restore valid GLB manifest JSON",
       "details": [
         "fix(tactics): restore valid GLB manifest JSON"
-      ]
-    },
-    {
-      "version": "1.0.117",
-      "releaseDate": "2026-10-26T17:12:36.884Z",
-      "summary": "fix(ci): avoid premature Blender apt timeout",
-      "details": [
-        "fix(ci): avoid premature Blender apt timeout"
       ]
     }
   ]

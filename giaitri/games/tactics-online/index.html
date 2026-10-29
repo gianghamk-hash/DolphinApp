@@ -623,10 +623,10 @@ function syncHeroNames(){
   const x=viewport.left+(loc.x+1)*viewport.width/2-bounds.left;
   const y=viewport.top+(1-loc.y)*viewport.height/2-bounds.top;
   tag.style.display='block';tag.style.left=x+'px';tag.style.top=y+'px';
-  const effect=combatStatuses.get(tag.dataset.unitId);
+  const effects=combatStatuses.get(tag.dataset.unitId)||{};
   const elapsed=replay?Math.max(0,Date.now()-replay.start):0;
-  const active=effect&&state?.roundPhase==='COMBAT'&&effect.until>elapsed;
-  const statusName=active?({stun:'Choáng',slow:'Chậm',burn:'Đốt',haste:'Tốc đánh'}[effect.type]||''):'';
+  const active=state?.roundPhase==='COMBAT'?Object.entries(effects).filter(([,until])=>until>elapsed).map(([type])=>({stun:'Choáng',slow:'Chậm',burn:'Đốt',haste:'Tốc đánh'}[type]||'')).filter(Boolean):[];
+  const statusName=active.join(' · ');
   tag.dataset.status=statusName;
   tag.title=statusName?statusName:'';
  }
@@ -638,7 +638,7 @@ function startReplay(){
  // Host-authoritative result is never trusted from this local preview. Server recomputes on COMBAT expiry.
  const match=pair; // Use server pairing orientation for deterministic outcomes.
  const room={round:state.round};const report=E.simulate(match,room,state.combatSnapshot,(state.seed+state.pairs.indexOf(pair)*977+state.round*1033)>>>0);
- combatMetrics.clear();combatStatuses.clear();battleHealth=new Map();for(const id of [pair.a,pair.b].filter(Boolean)){const p=state.combatSnapshot[id];if(!p)continue;for(const u of Object.values(p.units||{})){const h=hero[u.heroId];if(h)battleHealth.set(u.id,{hp:h.hp*Math.pow(1.8,u.star-1),max:h.hp*Math.pow(1.8,u.star-1),mana:0,manaMax:h.manaMax});}}replay={events:report.events,index:0,start:state.phaseStartedAt,mirror:pair.a!==uid,units:new Map()};
+ combatMetrics.clear();combatStatuses.clear();battleHealth=new Map();for(const stat of report.initialStats||[]){battleHealth.set(stat.id,{hp:stat.hp,max:stat.maxHp,mana:stat.mana,manaMax:stat.manaMax,shield:stat.shield||0});}replay={events:report.events,index:0,start:state.phaseStartedAt,mirror:pair.a!==uid,units:new Map()};
 }
 function showDamage(node,amount){
  if(!node||!renderer||!camera)return;
@@ -672,8 +672,8 @@ function tickReplay(){
  while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
   const eventIndex=replay.index++;
   const e=replay.events[eventIndex],node=characterById.get(e.actor),target=characterById.get(e.target);
-  if(e.actor&&e.actor!=='system'){const m=combatMetrics.get(e.actor)||{damage:0,heal:0,shield:0,casts:0};if(e.type==='attack'||e.type==='cast')m.damage+=e.amount||0;if(e.type==='skill')m.casts++;if(e.type==='heal')m.heal+=e.amount||0;if(e.type==='shield')m.shield+=e.amount||0;combatMetrics.set(e.actor,m);}
-  if(e.target&&['stun','slow','burn','haste'].includes(e.type)){combatStatuses.set(e.target,{type:e.type,until:e.t+(e.duration||e.amount||1200)});}
+  if(e.actor&&e.actor!=='system'){const m=combatMetrics.get(e.actor)||{damage:0,heal:0,shield:0,casts:0};if(['attack','cast','damageTick'].includes(e.type))m.damage+=e.amount||0;if(e.type==='skill')m.casts++;if(e.type==='heal')m.heal+=e.amount||0;if(e.type==='shield')m.shield+=e.amount||0;combatMetrics.set(e.actor,m);}
+  if(e.target&&['stun','slow','burn','haste'].includes(e.type)){const statuses=combatStatuses.get(e.target)||{};statuses[e.type]=Math.max(statuses[e.type]||0,e.t+(e.duration||((e.type==='burn')?e.amount:1200)));combatStatuses.set(e.target,statuses);}
   if(e.type==='cleanse')combatStatuses.delete(e.actor);
   if(e.type==='mana'&&node){const stat=battleHealth.get(e.actor)||{hp:1,max:1};stat.mana=e.amount;stat.manaMax=e.max||1;battleHealth.set(e.actor,stat);Visuals.updateBars(node,Math.max(0,stat.hp/stat.max),Math.max(0,Math.min(1,stat.mana/stat.manaMax)));}
   if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.vfx||e.skill||'spell',1.15);CombatFX.castAura(stageScene,node,e.vfx||e.skill);playCombatSound(e.sfx||e.skill||'cast');}
@@ -692,6 +692,7 @@ function tickReplay(){
    showDamage(target,e.amount);playCombatSound(e.type);Animator.play(target,'hit');Animator.burst(stageScene,target,'hit');CombatFX.pulse(stageScene,target,'critical',.45);
   }
   if((e.type==='heal'||e.type==='shield')&&(target||node)){const affected=target||node;playCombatSound(e.type);Animator.play(affected,e.type);Animator.burst(stageScene,affected,e.type);CombatFX.pulse(stageScene,affected,e.type);if(e.type==='heal'){const hp=battleHealth.get(e.target||e.actor);if(hp){hp.hp=Math.min(hp.max,hp.hp+(e.amount||0));Visuals.updateBars(affected,hp.hp/hp.max);}}}
+  if(e.type==='damageTick'&&target){const hp=battleHealth.get(e.target);if(hp){hp.hp=Math.max(0,hp.hp-(e.amount||0));Visuals.updateBars(target,hp.hp/hp.max,(hp.mana||0)/(hp.manaMax||1));}showDamage(target,e.amount);}
   if(e.type==='die'&&node){combatStatuses.delete(e.actor);playCombatSound('die');Animator.play(node,'death');Animator.burst(stageScene,node,'death');CombatFX.pulse(stageScene,node,'death');}
  }
  const now=performance.now();if(selected&&now-lastMetricPaint>=1000){lastMetricPaint=now;selectedHeroInfo();}

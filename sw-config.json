@@ -1,5 +1,5 @@
 {
-  "version": "1.0.215",
+  "version": "1.0.216",
   "releaseDate": "2026-10-29",
-  "notes": "Create CNAME"
+  "notes": "Delete CNAME"
 }

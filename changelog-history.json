@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.215",
+      "releaseDate": "2026-10-29T15:46:49.657Z",
+      "summary": "Create CNAME",
+      "details": [
+        "Create CNAME"
+      ]
+    },
+    {
       "version": "1.0.214",
       "releaseDate": "2026-10-29T15:22:52.613Z",
       "summary": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029",
       "details": [
         "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029"
-      ]
-    },
-    {
-      "version": "1.0.165",
-      "releaseDate": "2026-10-29T00:57:02.796Z",
-      "summary": "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029",
-      "details": [
-        "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029"
       ]
     }
   ]

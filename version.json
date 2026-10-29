@@ -1,7 +1,7 @@
 {
-  "version": "1.0.215",
-  "buildDate": "2026-10-29T15:46:49.657Z",
-  "commit": "101a31f",
-  "notes": "Create CNAME",
+  "version": "1.0.216",
+  "buildDate": "2026-10-29T16:43:44.639Z",
+  "commit": "bef8f49",
+  "notes": "Delete CNAME",
   "forceUpdate": false
 }

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.173",
+  "version": "1.0.174",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #113 from gianghamk-hash/balance/tft-role-stats-cost1-tank-20261029"
+  "notes": "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)"
 }

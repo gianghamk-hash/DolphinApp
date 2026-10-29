@@ -63,7 +63,7 @@ function createEngine(C){
   const effects=(u.items||[]).map(id=>C.recipes.find(i=>i.id===id)?.effect).filter(Boolean);
   return {hp,maxHp:hp,attack:Math.round(h.attack*factor+(items.attack||0)),armor:h.armor+(items.armor||0)+(b.armor||0),
    magicResist:h.magicResist+(items.magicResist||0),attackSpeed:h.attackSpeed,range:h.range,
-   mana:h.manaStart+(items.mana||0),manaMax:h.manaMax,ability:h.ability,assassinJump:h.classes.includes('Assassin'),
+   mana:h.manaStart+(items.mana||0),manaMax:h.manaMax,ability:h.ability,assassinJump:!!(traits.Assassin&&h.classes.includes('Assassin')),
    abilityPower:(items.abilityPower||0)+(b.abilityPower||0),effects,shield:0,regen:b.regen||0,bonusMana:b.bonusMana||0,
    trueDamageRatio:b.trueDamageRatio||0,omnivamp:(b.omnivamp||0)+(effects.includes('lifesteal')?.15:0),critChance:(b.critChance||0)+(effects.includes('crit')?.25:0),critDamage:(b.critDamage||0)+(effects.includes('crit')?.4:0),
    stackAttackSpeed:b.stackAttackSpeed||0,doubleHitChance:b.doubleHitChance||0,
@@ -148,21 +148,16 @@ function createEngine(C){
     cloneRatio:0,adjacentShield:0,alive:true,shadowUsed:false,attacks:0,nextAttack:0,nextMove:0,fsm:"Idle"});}
   }
   const initialStats=units.map(u=>({id:u.id,hp:u.hp,maxHp:u.maxHp,mana:u.mana,manaMax:u.manaMax,shield:u.shield||0}));
-  // Assassins always close on the most dangerous opposing carry; trait
-  // thresholds still govern crit buffs independently of this class passive.
-  const openingMoves=[];
+  // Trait-enabled assassins use the original opening jump.
   for(const u of units){if(!u.assassinJump)continue;
-   const opposing=units.filter(v=>v.owner!==u.owner).sort((a,b)=>b.attack-a.attack||a.id.localeCompare(b.id));
-   if(!opposing.length)continue;
-   const carry=opposing[0],backY=u.owner===0?0:7;
-   const cols=[carry.x,carry.x-1,carry.x+1,carry.x-2,carry.x+2].filter(x=>x>=0&&x<8);
-   for(const x of cols){
-    if(!units.some(v=>v!==u&&v.x===x&&v.y===backY)) {u.x=x;u.y=backY;openingMoves.push({t:0,actor:u.id,type:'move',x:u.x,y:u.y,source:'assassinJump'});break;}
+   const backY=u.owner===0?0:7;
+   for(const x of [u.x,(u.x+1)%8,(u.x+7)%8]){
+    if(!units.some(v=>v!==u&&v.x===x&&v.y===backY)){u.x=x;u.y=backY;break;}
    }
   }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
   for(const u of units)u.baseShield=u.shield||0;
-  const events=[...openingMoves],emit=e=>{if(events.length<1200)events.push(e);};
+  const events=[],emit=e=>{if(events.length<1200)events.push(e);};
   function applyBurn(src,tgt,t,duration,dps,source){
    tgt.burns ||= {};
    const key=source+':'+src.id;
@@ -257,6 +252,15 @@ function createEngine(C){
         if(kind==="drain"){const healed=Math.max(0,before-v.hp)*.35;const actual=Math.min(u.maxHp-u.hp,healed);u.hp+=actual;emit({t,actor:u.id,target:u.id,type:"heal",amount:actual,source:"drain"});}
        }
        if(kind==="dash"){const spaces=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(pos=>pos.x>=0&&pos.x<8&&pos.y>=0&&pos.y<8&&!units.some(v=>v.alive&&v!==u&&v.x===pos.x&&v.y===pos.y));if(spaces.length){const pos=spaces.sort((a,b)=>Math.abs(a.x-u.x)+Math.abs(a.y-u.y)-Math.abs(b.x-u.x)-Math.abs(b.y-u.y))[0];u.x=pos.x;u.y=pos.y;emit({t,actor:u.id,type:"move",x:u.x,y:u.y});}}
+      }
+      if(HERO[u.heroId]?.classes.includes('Assassin')){
+       const carries=units.filter(v=>v.alive&&v.owner!==u.owner).sort((a,b)=>b.attack-a.attack||a.id.localeCompare(b.id));
+       if(carries.length){
+        const carry=carries[0];
+        const spaces=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:carry.x+dx,y:carry.y+dy}))
+          .filter(pos=>pos.x>=0&&pos.x<8&&pos.y>=0&&pos.y<8&&!units.some(v=>v.alive&&v!==u&&v.x===pos.x&&v.y===pos.y));
+        if(spaces.length){const pos=spaces[0];u.x=pos.x;u.y=pos.y;emit({t,actor:u.id,type:'move',x:u.x,y:u.y,source:'assassinSkill'});}
+       }
       }
       const sig=u.ability.signature;
       if(sig){

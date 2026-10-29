@@ -1,5 +1,5 @@
 {
-  "version": "1.0.203",
+  "version": "1.0.204",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #144 from gianghamk-hash/fix/tft-phase-banner-nonblocking-20261029"
+  "notes": "Merge pull request #145 from gianghamk-hash/fix/tft-apk-balanced-columns-20261029"
 }

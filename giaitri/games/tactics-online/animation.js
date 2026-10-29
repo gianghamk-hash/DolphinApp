@@ -90,6 +90,7 @@ function createAnimator(T,profiles={},rigAnimator=null,skinner=null){
    }}
   }
   for(const node of nodes.values()){
+   if(!node.parent||!node.visible)continue; // Skip mixer and idle updates for hidden/disconnected actors.
    const ext=node.userData.gltfModel?.userData?.externalAnimations;
    if(ext){ext.mixer.update(Math.min(.05,Math.max(0,(now-ext.last)/1000)));ext.last=now;}
    else if(skinner&&node.userData.gltfModel)skinner.tick(node.userData.gltfModel,now);

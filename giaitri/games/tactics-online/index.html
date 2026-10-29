@@ -3,6 +3,25 @@
 <title>Dolphin Tactics 3D — 4 player online</title>
 <link rel="stylesheet" href="tactics-ui.css?v=1">
 <style>
+/* Android APK only — wider battleground and less secondary chrome. */
+html.tft-android-apk #game:not(.hidden){grid-template-columns:minmax(0,1fr) clamp(145px,23vw,205px)!important;gap:3px!important;padding:2px!important}
+html.tft-android-apk #appShell>header{height:25px!important;min-height:25px!important;padding:1px 5px!important}
+html.tft-android-apk #game:not(.hidden){height:calc(100dvh - 25px)!important}
+html.tft-android-apk #game>section{min-width:0!important;overflow-y:auto!important}
+html.tft-android-apk #game>section>#stage{height:auto!important;min-height:0!important;flex:1 1 auto!important}
+html.tft-android-apk #game>section>.playerDock{gap:1px!important;padding:1px!important}
+html.tft-android-apk #game>section>.playerDock .hpEntry{padding:1px!important;min-height:0!important}
+html.tft-android-apk #game>section>.playerDock .hpIdentity strong{font-size:8px!important}
+html.tft-android-apk #game>section>.playerDock .hpValue,html.tft-android-apk #game>section>.playerDock .hpLevel{font-size:8px!important}
+html.tft-android-apk #game>section>.benchBar{padding:2px 3px!important;margin-top:1px!important}
+html.tft-android-apk #game>section>.benchBar #bench button{min-height:25px!important;padding:2px!important}
+html.tft-android-apk #game>aside .panel{padding:4px!important;margin-bottom:3px!important}
+html.tft-android-apk #game>aside{padding-bottom:8px!important}
+@media (orientation:portrait){
+ html.tft-android-apk #game:not(.hidden){height:auto!important;display:flex!important;flex-direction:column!important}
+ html.tft-android-apk #game>section>#stage{height:62dvh!important;min-height:300px!important;flex:none!important}
+}
+
 :root{color-scheme:dark;--gold:#ffd788;--panel:#0e3042;--aqua:#5edad8;background:#071824;color:#e8f9fc;font-family:system-ui,sans-serif}
 *{box-sizing:border-box}body{margin:0;background:radial-gradient(circle at 70% 0%,#1b4e62,#06141f 72%);min-height:100dvh}
 header{background:#09232ff4;border-bottom:1px solid #407d89;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:8px}
@@ -319,6 +338,12 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
 <script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-functions-compat.js"></script><script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
+<script>
+(function(){
+ const ua=navigator.userAgent||'';
+ if(/DolphinStaff|DolphinManager/i.test(ua))document.documentElement.classList.add('tft-android-apk');
+})();
+</script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
 import {GLTFLoader} from "https://cdn.jsdelivr.net/npm/three@0.165.0/examples/jsm/loaders/GLTFLoader.js";

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.198",
-  "buildDate": "2026-10-29T13:15:30.768Z",
-  "commit": "5b89df9",
-  "notes": "Merge pull request #139 from gianghamk-hash/fix/tft-compact-hp-rail-20261029",
+  "version": "1.0.199",
+  "buildDate": "2026-10-29T13:24:36.614Z",
+  "commit": "3287155",
+  "notes": "Merge pull request #140 from gianghamk-hash/fix/android-tft-landscape-only-20261029",
   "forceUpdate": false
 }

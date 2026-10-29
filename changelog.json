@@ -1,22 +1,26 @@
 {
-  "version": "1.0.198",
-  "previousVersion": "1.0.197",
-  "commit": "5b89df9",
-  "previousCommit": "65879c6",
-  "buildDate": "2026-10-29T13:15:30.768Z",
-  "summary": "Merge pull request #139 from gianghamk-hash/fix/tft-compact-hp-rail-20261029",
+  "version": "1.0.199",
+  "previousVersion": "1.0.198",
+  "commit": "3287155",
+  "previousCommit": "5b89df9",
+  "buildDate": "2026-10-29T13:24:36.614Z",
+  "summary": "Merge pull request #140 from gianghamk-hash/fix/android-tft-landscape-only-20261029",
   "changes": {
-    "totalCommits": 202,
-    "filesChanged": 1,
+    "totalCommits": 203,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #139 from gianghamk-hash/fix/tft-compact-hp-rail-20261029"
+    "Merge pull request #140 from gianghamk-hash/fix/android-tft-landscape-only-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": ".github/workflows/build.yml",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

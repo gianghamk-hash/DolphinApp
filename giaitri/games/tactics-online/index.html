@@ -223,7 +223,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
-<script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="../../../dolphin-multiplayer.js?v=2.0"></script>
+<script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-functions-compat.js"></script><script src="authority-adapter.js"></script><script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
@@ -262,6 +262,7 @@ document.addEventListener('keydown',event=>{
  }
 });
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),RigFactory=window.DolphinCreateRigFactory(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),RigAnimator=window.DolphinCreateRigAnimator(),Skinner=window.DolphinCreateSkinner(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),CombatFX=window.DolphinCreateCombatFX(THREE),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles,RigAnimator,Skinner),ModelLibrary=window.DolphinTacticsCreateModelLibrary(THREE,GLTFLoader,'assets/models/',RigFactory,Skinner,cloneSkeleton);
+const authority=window.DolphinCreateTacticsAuthorityAdapter(firebaseConfig);MP.registerAdapter('dolphin-tactics',authority);
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
@@ -452,13 +453,13 @@ function sendOnlineAction(action){
 window.createRoom=async()=>{
  try{if(!requireStaff())return;if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
   const r=await MP.createRoom('dolphin-tactics',{name:staffName(),maxPlayers:4});
-  roomId=r.roomId;uid=MP.getDeviceId();host=true;$('code').value=roomId;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:staffName()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Mã phòng '+roomId+' — mời thêm 3 người');}
+  roomId=r.roomId;uid=MP.getPlayerId();host=true;$('code').value=roomId;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:staffName()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Mã phòng '+roomId+' — mời thêm 3 người');}
  catch(e){showError(e);}
 };
 window.joinRoom=async()=>{
  try{if(!requireStaff())return;if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
   const r=await MP.joinRoom($('code').value.trim().toUpperCase(),'dolphin-tactics',{name:staffName()});
-  roomId=r.roomId;uid=MP.getDeviceId();host=!!r.isHost;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:staffName()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Đã vào phòng '+roomId);}
+  roomId=r.roomId;uid=MP.getPlayerId();host=!!r.isHost;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:staffName()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Đã vào phòng '+roomId);}
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
@@ -469,20 +470,14 @@ window.leaveRoom=async()=>{
 };
 window.startRoom=async()=>{
  if(offline||!host||roster.length!==4)return showError(Error('Cần đủ 4 người online'));
- return dispatch(async()=>{
-  const seed=(Math.floor(Math.random()*2147483647)||1),now=Date.now(),people=roster.slice();
-  let room=E.roomNew(people[0].id,people[0].name,now,seed);
-  room.hostId=uid;room.playerOrder=people.map(p=>p.id);room.players={};
-  for(const p of people)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
-  room.status='in_game';room.round=1;room.roundPhase='PREPARATION';
-  room.phaseStartedAt=now;room.phaseEndsAt=now+30000;
-  room.clientSequences={};room.clientAcks={};hostState=room;ModelLibrary.preload(Object.keys(hero));await publish();await MP.updateRoomStatus('playing');
- });
+ try{await authority.startRoom();ModelLibrary.preload(Object.keys(hero));}
+ catch(e){showError(e);}
 };
 window.send=async action=>{
  if(!state||state.status!=='in_game'||state.roundPhase!=='PREPARATION')return;
+ if(!offline){try{return await authority.action(action);}catch(e){showError(e);return false;}}
  if(host)return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();});
- return sendOnlineAction(action);
+ return false;
 };
 function init(){
  try{
@@ -929,6 +924,7 @@ setInterval(()=>{
  if(!state||state.status!=='in_game')return;
  const now=Date.now();
  $('timer').textContent=Math.max(0,Math.ceil((state.phaseEndsAt-now)/1000))+'s';
+ if(!offline){if(now<state.phaseEndsAt||advancing)return;advancing=true;authority.advance().catch(e=>{if(!String(e?.message||e).includes('Chưa hết'))console.warn('[TFT advance]',e);}).finally(()=>{advancing=false;});return;}
  if(!host||!hostState||now<hostState.phaseEndsAt||advancing)return;
  advancing=true;
  dispatch(async()=>{

@@ -1,22 +1,26 @@
 {
-  "version": "1.0.207",
-  "previousVersion": "1.0.206",
-  "commit": "b8607ef",
-  "previousCommit": "8b1f123",
-  "buildDate": "2026-10-29T14:29:51.849Z",
-  "summary": "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029",
+  "version": "1.0.208",
+  "previousVersion": "1.0.207",
+  "commit": "e8d547a",
+  "previousCommit": "b8607ef",
+  "buildDate": "2026-10-29T14:39:25.247Z",
+  "summary": "Merge pull request #149 from gianghamk-hash/fix/tft-apk-lobby-scroll-fullscreen-20261029",
   "changes": {
-    "totalCommits": 211,
-    "filesChanged": 1,
+    "totalCommits": 212,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029"
+    "Merge pull request #149 from gianghamk-hash/fix/tft-apk-lobby-scroll-fullscreen-20261029"
   ],
   "fileChanges": [
     {
       "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

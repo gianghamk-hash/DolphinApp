@@ -253,6 +253,31 @@ function createEngine(C){
        }
        if(kind==="dash"){const spaces=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(pos=>pos.x>=0&&pos.x<8&&pos.y>=0&&pos.y<8&&!units.some(v=>v.alive&&v!==u&&v.x===pos.x&&v.y===pos.y));if(spaces.length){const pos=spaces.sort((a,b)=>Math.abs(a.x-u.x)+Math.abs(a.y-u.y)-Math.abs(b.x-u.x)-Math.abs(b.y-u.y))[0];u.x=pos.x;u.y=pos.y;emit({t,actor:u.id,type:"move",x:u.x,y:u.y});}}
       }
+      const sig=u.ability.signature;
+      if(sig){
+       const friendly=units.filter(v=>v.alive&&v.owner===u.owner).sort((a,b)=>(a.hp/a.maxHp)-(b.hp/b.maxHp)||a.id.localeCompare(b.id));
+       const hostile=units.filter(v=>v.alive&&v.owner!==u.owner).sort((a,b)=>dist(u,a)-dist(u,b)||a.id.localeCompare(b.id));
+       const count=sig.pattern==='focused'?1:sig.pattern==='sweep'?2:3;
+       const friendlyEffect=['renew','fortify','quickstep','siphon','empower','spark','guard'].includes(sig.effect);
+       const affected=(friendlyEffect?friendly:hostile).slice(0,count);
+       emit({t,actor:u.id,type:'signature',skillId:sig.id,skillName:sig.name,vfx:u.ability.vfx,pattern:sig.pattern});
+       for(const v of affected){
+        const amount=sig.power*(1+u.abilityPower/100),dur=sig.durationMs||1200;
+        switch(sig.effect){
+         case 'shock':v.stunnedUntil=Math.max(v.stunnedUntil||0,t+dur);emit({t,actor:u.id,target:v.id,type:'stun',amount:dur});break;
+         case 'armorBreak':v.armor=Math.max(-50,v.armor-Math.round(amount*.2));emit({t,actor:u.id,target:v.id,type:'signatureEffect',effect:sig.effect,amount:Math.round(amount*.2)});break;
+         case 'sunder':v.magicResist=Math.max(-50,v.magicResist-Math.round(amount*.2));emit({t,actor:u.id,target:v.id,type:'signatureEffect',effect:sig.effect,amount:Math.round(amount*.2)});break;
+         case 'frost':v.slowUntil=Math.max(v.slowUntil||0,t+dur);emit({t,actor:u.id,target:v.id,type:'slow',amount:dur});break;
+         case 'ignite':applyBurn(u,v,t,dur,Math.max(8,amount*.1),'signature');break;
+         case 'renew':{const healed=Math.min(v.maxHp-v.hp,amount);v.hp+=healed;emit({t,actor:u.id,target:v.id,type:'heal',amount:healed,skill:sig.id});break;}
+         case 'fortify':case 'guard':{const granted=grantShield(v,amount,t);emit({t,actor:u.id,target:v.id,type:'shield',amount:granted,skill:sig.id});break;}
+         case 'quickstep':v.hasteEffects ||= {};v.hasteEffects[sig.id+':'+u.id]={until:t+dur,ratio:Math.min(.35,amount/300)};emit({t,actor:u.id,target:v.id,type:'haste',amount:Math.min(.35,amount/300),duration:dur});break;
+         case 'siphon':{const healed=Math.min(v.maxHp-v.hp,amount*.5);v.hp+=healed;emit({t,actor:u.id,target:v.id,type:'heal',amount:healed,skill:sig.id});break;}
+         case 'empower':v.attack+=Math.round(amount*.16);emit({t,actor:u.id,target:v.id,type:'signatureEffect',effect:sig.effect,amount:Math.round(amount*.16)});break;
+         case 'spark':v.mana=Math.min(v.manaMax,v.mana+Math.round(amount*.3));emit({t,actor:u.id,target:v.id,type:'mana',amount:v.mana,max:v.manaMax,source:sig.id});break;
+        }
+       }
+      }
     }else{u.fsm="Attacking";const crit=rnd()<u.critChance?1.5+u.critDamage:1;
       const effectiveArmor=Math.max(-50,target.armor);const physical=u.attack*crit*100/(100+effectiveArmor);
       deal(u,target,physical*(1-u.trueDamageRatio)+u.attack*u.trueDamageRatio,t,false);

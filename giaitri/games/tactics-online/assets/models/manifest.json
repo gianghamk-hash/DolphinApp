@@ -242,10 +242,88 @@
       "scale": 1,
       "quality": "stylized-chibi",
       "targetHeight": 1.02
+    },
+    "H31": {
+      "file": "heroes/chibi/h31.glb",
+      "name": "Diggie",
+      "archetype": "staff",
+      "scale": 1,
+      "quality": "stylized-chibi",
+      "targetHeight": 1.02,
+      "animations": [
+        "idle",
+        "attack",
+        "cast"
+      ]
+    },
+    "H32": {
+      "file": "heroes/chibi/h32.glb",
+      "name": "Angela",
+      "archetype": "staff",
+      "scale": 1,
+      "quality": "stylized-chibi",
+      "targetHeight": 1.02,
+      "animations": [
+        "idle",
+        "attack",
+        "cast"
+      ]
+    },
+    "H33": {
+      "file": "heroes/chibi/h33.glb",
+      "name": "Floryn",
+      "archetype": "staff",
+      "scale": 1,
+      "quality": "stylized-chibi",
+      "targetHeight": 1.02,
+      "animations": [
+        "idle",
+        "attack",
+        "cast"
+      ]
+    },
+    "H34": {
+      "file": "heroes/chibi/h34.glb",
+      "name": "Mathilda",
+      "archetype": "staff",
+      "scale": 1,
+      "quality": "stylized-chibi",
+      "targetHeight": 1.02,
+      "animations": [
+        "idle",
+        "attack",
+        "cast"
+      ]
+    },
+    "H35": {
+      "file": "heroes/chibi/h35.glb",
+      "name": "Estes",
+      "archetype": "staff",
+      "scale": 1,
+      "quality": "stylized-chibi",
+      "targetHeight": 1.02,
+      "animations": [
+        "idle",
+        "attack",
+        "cast"
+      ]
+    },
+    "H36": {
+      "file": "heroes/chibi/h36.glb",
+      "name": "Faramis",
+      "archetype": "staff",
+      "scale": 1,
+      "quality": "stylized-chibi",
+      "targetHeight": 1.02,
+      "animations": [
+        "idle",
+        "attack",
+        "cast"
+      ]
     }
   },
   "pipeline": "GLB-first stylized-chibi",
-  "instructions": "Set quality=stylized-chibi only after adding verified rigged or static authored GLB file. Existing tiny placeholder GLBs remain procedural fallback.",
+  "instructions": "36 original support/hero GLB assets declared. Verify animated GLB visual quality and mobile performance on device.",
   "defaults": {
     "targetHeight": 1.02
   }

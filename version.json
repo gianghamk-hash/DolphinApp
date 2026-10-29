@@ -1,7 +1,7 @@
 {
-  "version": "1.0.213",
-  "buildDate": "2026-10-29T15:14:03.648Z",
-  "commit": "fbb35b8",
-  "notes": "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029",
+  "version": "1.0.214",
+  "buildDate": "2026-10-29T15:22:52.613Z",
+  "commit": "457cba0",
+  "notes": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029",
   "forceUpdate": false
 }

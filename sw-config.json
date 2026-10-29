@@ -1,5 +1,5 @@
 {
-  "version": "1.0.213",
+  "version": "1.0.214",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029"
+  "notes": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029"
 }

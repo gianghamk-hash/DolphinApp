@@ -1,18 +1,18 @@
 {
-  "version": "1.0.213",
-  "previousVersion": "1.0.212",
-  "commit": "fbb35b8",
-  "previousCommit": "bf45119",
-  "buildDate": "2026-10-29T15:14:03.648Z",
-  "summary": "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029",
+  "version": "1.0.214",
+  "previousVersion": "1.0.213",
+  "commit": "457cba0",
+  "previousCommit": "fbb35b8",
+  "buildDate": "2026-10-29T15:22:52.613Z",
+  "summary": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029",
   "changes": {
-    "totalCommits": 217,
+    "totalCommits": 218,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029"
+    "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029"
   ],
   "fileChanges": [
     {

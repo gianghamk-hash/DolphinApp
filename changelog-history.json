@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.213",
+      "releaseDate": "2026-10-29T15:14:03.648Z",
+      "summary": "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029",
+      "details": [
+        "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029"
+      ]
+    },
+    {
       "version": "1.0.212",
       "releaseDate": "2026-10-29T15:07:45.703Z",
       "summary": "Merge pull request #153 from gianghamk-hash/fix/show-delete-error-diagnostics-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028",
       "details": [
         "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028"
-      ]
-    },
-    {
-      "version": "1.0.163",
-      "releaseDate": "2026-10-28T09:19:30.898Z",
-      "summary": "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028",
-      "details": [
-        "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028"
       ]
     }
   ]

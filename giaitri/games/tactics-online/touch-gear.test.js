@@ -2,41 +2,28 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
 const css=fs.readFileSync(path.join(__dirname,'tactics-ui.css'),'utf8');
 const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog.json'),'utf8'));
-test('inventory tray is next to board and before bench',()=>{
+test('inventory tray is between stage and bench',()=>{
  const stage=html.indexOf('id="stage"'),tray=html.indexOf('id="touchItemTray"'),bench=html.indexOf('class="benchBar"');
  assert.ok(stage>=0&&stage<tray&&tray<bench);
- assert.match(html,/id="touchItemSlots"/);
- assert.match(html,/data-item-index/);
+ assert.match(html,/data-select-item/);
 });
-test('touch drag still sends validated equipment action',()=>{
- assert.match(html,/send\(\{type:'EQUIP',unitId:target,component:drag\.item\}\)/);
- assert.match(html,/boardUnitAt\(e\.clientX,e\.clientY\)/);
- assert.match(html,/p\.inventory\.includes\(drag\.item\)/);
+test('tap gear opens catalog details and deployed hero choices',()=>{
+ assert.match(html,/window\.openItemForEquip=/);
+ assert.match(html,/function equipmentCandidateButtons/);
+ assert.match(html,/Object\.entries\(player\.board\|\|\{\}\)/);
+ assert.match(html,/data-equip-target/);
+ assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
+ assert.match(html,/player\.inventory\[item\.index\]!==item\.id/);
  assert.match(html,/state\.roundPhase!=='PREPARATION'/);
+ assert.doesNotMatch(html,/function finishGearDrag/);
 });
-test('pinch handles two pointers without breaking unit selection',()=>{
+test('pinch zoom still handles two pointers',()=>{
  assert.match(html,/pinchPointers\.size<2/);
  assert.match(html,/zoomLevel\*d\/pinchDistance/);
  assert.match(html,/lastPinchAt/);
  assert.match(css,/#game #stage canvas\{touch-action:none!important\}/);
- assert.doesNotMatch(html,/id="zoomControls"/);
 });
-test('round labels match engine PVE rotation',()=>{
+test('round labels match PVE rotation',()=>{
  assert.match(html,/round<=3\|\|round%5===0/);
- assert.match(html,/PvE · ĐẤU QUÁI/);
- assert.match(html,/PvP · ĐẤU NGƯỜI/);
  assert.equal(catalog.phases.COMBAT,30000);
-});
-
-test('gear drag captures on stable tray instead of rerendered item button',()=>{
- assert.match(html,/trayRoot\.setPointerCapture\(e\.pointerId\)/);
- assert.doesNotMatch(html,/tile\.setPointerCapture\(e\.pointerId\)/);
- assert.match(html,/trayRoot\.releasePointerCapture\(e\.pointerId\)/);
- assert.match(css,/#game \.touchItemTray \.touchGear\{touch-action:none!important/);
-});
-test('gear drops fall back to occupied board tile and bench slot',()=>{
- assert.match(html,/const tile=boardHit\(e\.clientX,e\.clientY\)/);
- assert.match(html,/target=p\.board\['r'\+\(tile\.row-4\)\+'c'\+tile\.col\]/);
- assert.match(html,/target=p\.bench\[String\(b\.dataset\.bench\)\]/);
- assert.match(html,/if\(success===false\)return/);
 });

@@ -1,26 +1,30 @@
 {
-  "version": "1.0.166",
-  "previousVersion": "1.0.165",
-  "commit": "fb3d804",
-  "previousCommit": "8b96c57",
-  "buildDate": "2026-10-29T01:02:50.614Z",
-  "summary": "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029",
+  "version": "1.0.167",
+  "previousVersion": "1.0.166",
+  "commit": "40c03d1",
+  "previousCommit": "fb3d804",
+  "buildDate": "2026-10-29T01:12:26.478Z",
+  "summary": "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029",
   "changes": {
-    "totalCommits": 170,
-    "filesChanged": 2,
+    "totalCommits": 171,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029"
+    "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "giaitri/games/tactics-online/balance-sim.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "file": "giaitri/games/tactics-online/extreme-ai.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/extreme-ai.test.js",
       "type": "update"
     }
   ]

@@ -1,7 +1,7 @@
 {
-  "version": "1.0.166",
-  "buildDate": "2026-10-29T01:02:50.614Z",
-  "commit": "fb3d804",
-  "notes": "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029",
+  "version": "1.0.167",
+  "buildDate": "2026-10-29T01:12:26.478Z",
+  "commit": "40c03d1",
+  "notes": "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029",
   "forceUpdate": false
 }

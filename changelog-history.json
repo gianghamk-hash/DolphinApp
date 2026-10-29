@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.166",
+      "releaseDate": "2026-10-29T01:02:50.614Z",
+      "summary": "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029",
+      "details": [
+        "Merge pull request #106 from gianghamk-hash/fix/tft-online-reliability-phase2-20261029"
+      ]
+    },
+    {
       "version": "1.0.165",
       "releaseDate": "2026-10-29T00:57:02.796Z",
       "summary": "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(ci): avoid premature Blender apt timeout",
       "details": [
         "fix(ci): avoid premature Blender apt timeout"
-      ]
-    },
-    {
-      "version": "1.0.116",
-      "releaseDate": "2026-10-26T16:59:04.737Z",
-      "summary": "fix(ci): bound Blender apt install and use minimal dependencies (#55)",
-      "details": [
-        "fix(ci): bound Blender apt install and use minimal dependencies (#55)"
       ]
     }
   ]

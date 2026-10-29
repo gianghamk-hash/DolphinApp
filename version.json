@@ -1,7 +1,7 @@
 {
-  "version": "1.0.182",
-  "buildDate": "2026-10-29T06:22:37.704Z",
-  "commit": "2329430",
-  "notes": "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029",
+  "version": "1.0.183",
+  "buildDate": "2026-10-29T06:42:07.939Z",
+  "commit": "befb511",
+  "notes": "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029",
   "forceUpdate": false
 }

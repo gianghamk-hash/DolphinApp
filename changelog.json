@@ -1,18 +1,18 @@
 {
-  "version": "1.0.216",
-  "previousVersion": "1.0.215",
-  "commit": "bef8f49",
-  "previousCommit": "101a31f",
-  "buildDate": "2026-10-29T16:43:44.639Z",
-  "summary": "Delete CNAME",
+  "version": "1.0.217",
+  "previousVersion": "1.0.216",
+  "commit": "014a2a0",
+  "previousCommit": "bef8f49",
+  "buildDate": "2026-10-29T16:44:05.632Z",
+  "summary": "Create CNAME",
   "changes": {
-    "totalCommits": 220,
+    "totalCommits": 221,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Delete CNAME"
+    "Create CNAME"
   ],
   "fileChanges": [
     {

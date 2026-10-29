@@ -12,7 +12,7 @@
  html.tft-android-apk #game #shop .shopHero strong{font-size:10px!important;overflow-wrap:normal!important;word-break:normal!important}
 }
 
-html.tft-android-apk #game:not(.hidden){grid-template-columns:minmax(0,1fr) clamp(365px,38vw,510px)!important;gap:5px!important;padding:3px!important}
+html.tft-android-apk #game:not(.hidden){grid-template-columns:minmax(0,1fr) clamp(320px,33vw,440px)!important;gap:5px!important;padding:3px!important}
 html.tft-android-apk #appShell>header{height:25px!important;min-height:25px!important;padding:1px 5px!important}
 html.tft-android-apk #game:not(.hidden){height:calc(100dvh - 25px)!important}
 html.tft-android-apk #game>section{min-width:0!important;overflow-y:auto!important}
@@ -298,6 +298,22 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 /* Phase badge: narrow, top-edge status only; never overlay combat units. */
 #battleBanner{top:2px!important;max-width:calc(100% - 130px)!important;padding:3px 8px!important;border-radius:8px!important;font-size:clamp(9px,1vw,12px)!important;line-height:1.15!important;letter-spacing:0!important;white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;pointer-events:none!important}
 #battleBanner.hidden{display:none!important}
+
+/* Android TFT landscape: keep all four health entries and bench outside flex compression. */
+@media (orientation:landscape){
+ html.tft-android-apk #game>section{display:flex!important;flex-direction:column!important;min-height:0!important}
+ html.tft-android-apk #game>section>#stage{order:0!important;flex:1 1 0!important;min-height:160px!important}
+ html.tft-android-apk #game>section>.playerDock{order:1!important;position:relative!important;inset:auto!important;width:100%!important;max-width:100%!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;flex:0 0 auto!important;min-height:38px!important;max-height:none!important;gap:3px!important;padding:2px!important;overflow:visible!important}
+ html.tft-android-apk #game>section>.playerDock .hpEntry{display:flex!important;flex-direction:column!important;align-items:center!important;justify-content:center!important;min-width:0!important;min-height:34px!important;max-height:none!important;padding:2px 1px!important;overflow:hidden!important}
+ html.tft-android-apk #game>section>.playerDock .hpIdentity{width:100%!important;min-width:0!important;text-align:center!important;align-items:center!important}
+ html.tft-android-apk #game>section>.playerDock .hpIdentity strong{display:block!important;width:100%!important;font-size:10px!important;line-height:1.1!important;white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important}
+ html.tft-android-apk #game>section>.playerDock .hpMeta{display:flex!important;justify-content:center!important;flex-wrap:nowrap!important;gap:4px!important;font-size:9px!important;white-space:nowrap!important}
+ html.tft-android-apk #game>section>.playerDock .hpValue,html.tft-android-apk #game>section>.playerDock .hpLevel{font-size:9px!important}
+ html.tft-android-apk #game>section>#touchItemTray{order:2!important;flex:0 0 auto!important;min-height:35px!important}
+ html.tft-android-apk #game>section>.benchBar{order:3!important;flex:0 0 auto!important;min-height:80px!important;overflow:visible!important}
+ html.tft-android-apk #game>section>.benchBar #bench{display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important}
+ html.tft-android-apk #game>section>.benchBar #bench button{min-height:35px!important}
+}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>

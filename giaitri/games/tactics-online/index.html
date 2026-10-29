@@ -374,6 +374,10 @@ const PERCENT_STATS=new Set(['hpRatio','trueDamageRatio','stackAttackSpeed','clo
 const SKILL_LABELS={strike:'Đòn đánh cường hóa',dash:'Lướt tấn công',bolt:'Đạn năng lượng',heal:'Hồi máu',shield:'Tạo khiên',blast:'Bùng nổ',drain:'Hút sinh lực',stun:'Làm choáng',aoe:'Sát thương diện rộng',teamHeal:'Hồi máu đồng đội',teamShield:'Khiên đồng đội',teamHaste:'Tăng tốc đánh đồng đội'};
 const EFFECT_LABELS={stat:'Tăng chỉ số',burn:'Thiêu đốt mục tiêu',apGrowth:'Tăng sức mạnh phép khi tung chiêu',manaRegen:'Hồi 5 Mana/giây',manaPulse:'Hồi 2 Mana/giây',lifesteal:'Hút máu 15%',crit:'Tăng chí mạng',doubleHit:'Đòn đánh thứ hai'};
 const itemDef=id=>catalog.components.find(c=>c.id===id)||catalog.recipes.find(c=>c.id===id);
+const ROLE_ICONS=Object.freeze({Tank:'🛡️',Fighter:'⚔️',Assassin:'🗡️',Ranger:'🏹',Sorcerer:'🔮',Support:'✚'});
+const ROLE_NAMES=Object.freeze({Tank:'Đỡ Đòn',Fighter:'Đấu Sĩ',Assassin:'Sát Thủ',Ranger:'Xạ Thủ',Sorcerer:'Pháp Sư',Support:'Hỗ Trợ'});
+function primaryRole(h){return h?.classes?.find(k=>ROLE_ICONS[k])||'';}
+function roleIcon(h){return ROLE_ICONS[primaryRole(h)]||'❔';}
 const ITEM_ICONS={sword:'⚔️',rod:'🪄',vest:'🛡️',cloak:'🧥',belt:'❤️',tear:'💧',I01:'🗡️',I02:'⚡',I03:'🛡️',I04:'⚔️',I05:'🩸',I06:'🔋',I07:'👑',I08:'🔱',I09:'🪬',I10:'🌿',I11:'✨',I12:'🦔',I13:'🐉',I14:'🔥',I15:'⚙️',I16:'🧥',I17:'💚',I18:'🌙',I19:'💖',I20:'🔮',I21:'💠'};
 const ITEM_SPRITE='assets/item-icons.svg';
 const EQUIPMENT_ICON_IDS=new Set([...catalog.components,...catalog.recipes].map(x=>x.id));
@@ -568,7 +572,7 @@ function paintControls(){
  $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
  $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;const hint=window.DolphinTFTShopHints.hints(p,id,catalog);const marked=hint.upgrade||hint.synergy;const reason=hint.upgrade?"Có thể ghép lên 2 sao":hint.synergy?"Cùng tộc/hệ: "+hint.traits.map(t=>catalog.origins[t]?.label||t).join(", "):"";
  return '<button class="shopHero tier'+cost+(marked?' shopRecommended':'')+(hint.upgrade?' shopUpgrade':'')+(hint.synergy?' shopSynergy':'')+'" title="'+safe(reason)+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
- (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar">'+['⚔','🛡','🏹','✦','♛'][cost-1]+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
+ (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar" title="'+safe(ROLE_NAMES[primaryRole(h)]||'Vai trò chưa xác định')+'">'+roleIcon(h)+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
  $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>';}).join('');
  const icons={Mech:'🤖',Void:'🕳️',Arcane:'🔮',Beast:'🐺',Shadow:'🌑',Celestial:'☀️',Brawler:'⚔️',Assassin:'🗡️',Ranger:'🏹',Guardian:'🛡️',Sorcerer:'✨'};

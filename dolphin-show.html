@@ -26,7 +26,7 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 .combo-card{border:2px solid rgba(229,180,85,.3);border-radius:12px;padding:12px;cursor:pointer;transition:.2s;background:rgba(0,0,0,.3)}
 .combo-card.active{border-color:#FBBF24;background:rgba(251,191,36,.15);box-shadow:0 0 15px rgba(251,191,36,.2)}
 </style>
-<script src="master.js" defer></script>
+<script src="master.js?v=20261029-manager-show" defer></script>
 <link rel="manifest" href="/DolphinApp/manifest.json">
 <meta name="theme-color" content="#123634">
 <meta name="color-scheme" content="dark">
@@ -695,20 +695,33 @@ window.saveService = async () => {
 let passMode = 'deleteShow';
 window.openPass = (mode = 'deleteShow') => {
   passMode = mode;
-  // Only the activated Master on the native Manager APK can bypass
-  // this UI password prompt. Staff APK and browser/PWA use the PIN as before.
-  // Dolphin Show runs inside the landing page iframe. Read the Manager
-  // identity and active Master status from either same-origin context.
-  // Never grant this exception to Staff APK or browser/PWA.
-  let nativeManager = (navigator.userAgent || '').includes('DolphinManager/');
-  let verifiedMaster = window.MasterSystem?.isMaster?.() === true;
+  // Manager APK must activate Master first. Never silently fall back to the
+  // old delete password when the native Manager app has not activated Master.
+  const ua = navigator.userAgent || '';
+  let nativeManager = ua.includes('DolphinManager/');
+  let masterEnabled = window.MasterSystem?.isMaster?.() === true;
   try {
     if (window.parent && window.parent !== window && window.parent.location.origin === location.origin) {
       nativeManager = nativeManager || (window.parent.navigator.userAgent || '').includes('DolphinManager/');
-      verifiedMaster = verifiedMaster || window.parent.MasterSystem?.isMaster?.() === true;
+      masterEnabled = masterEnabled || window.parent.MasterSystem?.isMaster?.() === true;
     }
-  } catch (error) { console.warn('[Show] Không đọc được trạng thái Master từ ứng dụng cha', error); }
-  if (mode === 'deleteShow' && nativeManager && verifiedMaster) {
+  } catch(error) { console.warn('[Show] Parent Master check unavailable', error); }
+  // Master device activation persists in origin-local storage, shared with the
+  // Dolphin home iframe even if master.js itself failed to initialize.
+  try { masterEnabled = masterEnabled || localStorage.getItem('dolphinMasterDevice') === 'true'; } catch(error) {}
+  if (mode === 'deleteShow' && nativeManager) {
+    if (!masterEnabled) {
+      closeM('m-pass');
+      const message = 'Manager APK chưa được kích hoạt Master trên thiết bị này. Hãy kích hoạt Master trước khi xóa bàn không cần mật khẩu.';
+      toast(message, '🔒');
+      // Expose an explicit activation action; never auto-grant Master rights.
+      if (window.confirm(message + '\\n\\nMở màn hình kích hoạt Master?')) {
+        if (window.MasterSystem?.activate) window.MasterSystem.activate();
+        else if (window.parent?.MasterSystem?.activate) window.parent.MasterSystem.activate();
+        else toast('Không tải được Master. Hãy về trang chính và chạm 5 lần vào logo DOLPHIN.', '⚠');
+      }
+      return;
+    }
     if (window.confirm('Xác nhận xóa bàn ' + $('s-id').value + ' và toàn bộ dữ liệu order?')) {
       doDeleteShow();
     }

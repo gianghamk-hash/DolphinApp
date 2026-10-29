@@ -96,3 +96,6 @@ test('AI preserves every owned champion in its board or bench',()=>{
  assert.equal(placed.length,Object.keys(p.units).length);
  assert.equal(new Set(placed).size,placed.length);
 });
+
+// Run deterministic stress coverage in the established Tactics CI suite.
+require('./stress.test.js');

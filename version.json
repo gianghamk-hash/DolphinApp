@@ -1,7 +1,7 @@
 {
-  "version": "1.0.199",
-  "buildDate": "2026-10-29T13:24:36.614Z",
-  "commit": "3287155",
-  "notes": "Merge pull request #140 from gianghamk-hash/fix/android-tft-landscape-only-20261029",
+  "version": "1.0.200",
+  "buildDate": "2026-10-29T13:36:52.190Z",
+  "commit": "449d8ce",
+  "notes": "Merge pull request #141 from gianghamk-hash/fix/android-webview-js-dialogs-20261029",
   "forceUpdate": false
 }

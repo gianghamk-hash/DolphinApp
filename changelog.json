@@ -1,26 +1,22 @@
 {
-  "version": "1.0.199",
-  "previousVersion": "1.0.198",
-  "commit": "3287155",
-  "previousCommit": "5b89df9",
-  "buildDate": "2026-10-29T13:24:36.614Z",
-  "summary": "Merge pull request #140 from gianghamk-hash/fix/android-tft-landscape-only-20261029",
+  "version": "1.0.200",
+  "previousVersion": "1.0.199",
+  "commit": "449d8ce",
+  "previousCommit": "3287155",
+  "buildDate": "2026-10-29T13:36:52.190Z",
+  "summary": "Merge pull request #141 from gianghamk-hash/fix/android-webview-js-dialogs-20261029",
   "changes": {
-    "totalCommits": 203,
-    "filesChanged": 2,
+    "totalCommits": 204,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #140 from gianghamk-hash/fix/android-tft-landscape-only-20261029"
+    "Merge pull request #141 from gianghamk-hash/fix/android-webview-js-dialogs-20261029"
   ],
   "fileChanges": [
     {
       "file": ".github/workflows/build.yml",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

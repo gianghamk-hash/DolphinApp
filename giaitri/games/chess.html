@@ -127,6 +127,9 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 
 </style>
 <link rel="stylesheet" href="arena-landing.css?v=1">
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="../../dolphin-multiplayer.js?v=2.0"></script>
 </head>
 <body class="pb-6">
 
@@ -154,10 +157,10 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
       <div class="text-left mb-4">
         <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">🎮 Chế độ chơi</div>
         <div class="flex gap-2" id="modeSelect">
-          <button class="mode-btn active" data-mode="pvp" onclick="setMode('pvp')">
+          <button class="mode-btn active" data-mode="online" onclick="setMode('online')">
             <span style="font-size:18px">👥</span>
             <span>2 Người</span>
-            <span class="sub">Cùng 1 máy</span>
+            <span class="sub">2 điện thoại · Online</span>
           </button>
           <button class="mode-btn" data-mode="ai" onclick="setMode('ai')">
             <span style="font-size:18px">🤖</span>
@@ -167,6 +170,12 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
         </div>
       </div>
 
+      <div id="chessOnlineLobby" class="glass rounded-xl p-3 mb-4 text-left">
+        <div class="text-xs text-teal-300 mb-2">Cờ Vua Online · Hai thiết bị</div>
+        <div class="flex gap-2 flex-wrap"><button onclick="chessCreateRoom()" class="btn-gold px-3 py-2 rounded-xl">TẠO PHÒNG</button><input id="chessRoomCode" maxlength="6" placeholder="MÃ PHÒNG" class="p-2 w-28 rounded-xl bg-slate-800 text-white uppercase"><button onclick="chessJoinRoom()" class="btn-outline px-3 py-2 rounded-xl">THAM GIA</button></div>
+        <div id="chessRoomStatus" role="status" class="text-xs mt-2 text-teal-300">Chưa vào phòng</div>
+        <button onclick="chessLeaveRoom()" class="btn-outline px-3 py-2 rounded-xl mt-2">RỜI PHÒNG</button>
+      </div>
       <div class="text-left mb-5" id="difficultyBox" style="display:none">
         <div class="text-[10px] font-black text-teal-400 uppercase tracking-wider mb-2">⚙️ Độ khó</div>
         <div class="flex gap-2" id="diffSelect">
@@ -306,7 +315,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   var selected = null;
   var validMoves = [];
   var lastMove = null;
-  var mode = 'pvp';
+  var mode = 'online';
   var difficulty = 2;
   var aiThinking = false;
   var gameOver = false;
@@ -321,6 +330,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
       b.classList.toggle('active', b.dataset.mode === m);
     });
     $('difficultyBox').style.display = m === 'ai' ? 'block' : 'none';
+    $('chessOnlineLobby').style.display = m === 'online' ? 'block' : 'none';
   };
 
   window.setDiff = function(d){
@@ -332,6 +342,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 
   // ═══════════════════════ GAME FLOW ═══════════════════════
   window.startGame = function(){
+    if(mode==='online'){chessMsg('Tạo phòng hoặc nhập mã phòng ở phía trên.');return;}
     game = new Chess();
     selected = null;
     validMoves = [];
@@ -361,6 +372,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   };
 
   window.doRestart = function(){
+    if(mode==='online')return chessMsg('Không thể tự khởi động lại ván Online.');
     closeResult();
     game = new Chess();
     selected = null;
@@ -373,6 +385,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   };
 
   window.doUndo = function(){
+    if(mode==='online')return chessMsg('Không thể tự hoàn tác ván Online.');
     if (aiThinking) return;
     if (game.history().length === 0) return;
 
@@ -506,6 +519,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 
   // ═══════════════════════ CLICK HANDLER ═══════════════════════
   function handleClick(sq){
+    if(mode==='online'&&(!chessReady||game.turn()!==(chessHost?'w':'b')))return;
     if (gameOver) return;
     if (aiThinking) return;
     if (mode === 'ai' && game.turn() === 'b') return;
@@ -541,6 +555,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   }
 
   function makeMove(from, to, promo){
+    if(mode==='online'&&!chessHost){MP.sendInputStrict({type:'chess-move',from:from,to:to,promotion:promo||'q',ply:game.history().length}).catch(function(e){chessMsg(e.message)});return;}
     var result = game.move({ from: from, to: to, promotion: promo || 'q' });
     if (!result) return;
 
@@ -550,6 +565,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 
     render();
     checkGameEnd();
+    if(mode==='online'&&chessHost)chessPublish();
 
     if (!gameOver && mode === 'ai' && game.turn() === 'b'){
       scheduleAiMove();
@@ -717,8 +733,39 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   window.openRules = function(){ $('rulesModal').classList.add('show'); };
   window.closeRules = function(){ $('rulesModal').classList.remove('show'); };
 
+
+  var MP=window.DolphinMP,chessRoom='',chessHost=false,chessReady=false,chessPlayers=[];
+  function chessMsg(msg){var e=$('chessRoomStatus');if(e)e.textContent=msg;}
+  function chessShow(){game=new Chess();selected=null;validMoves=[];lastMove=null;gameOver=false;aiThinking=false;pendingPromo=null;$('menuView').style.display='none';$('gameView').style.display='block';render();}
+  async function chessPublish(){if(!chessHost||!chessReady)return;var moves=game.history({verbose:true}).map(function(m){return {from:m.from,to:m.to,promotion:m.promotion||'q'};});try{await MP.sendStateStrict({kind:'chess',started:true,moves:moves,at:Date.now()});}catch(e){chessMsg('Lỗi đồng bộ: '+e.message)}}
+  function chessRestore(s){
+    if(!chessRoom||!s||s.kind!=='chess'||!s.started||!Array.isArray(s.moves))return;
+    var next=new Chess();for(var m of s.moves){if(!m||!next.move({from:m.from,to:m.to,promotion:m.promotion||'q'}))return;}
+    chessReady=true;if($('gameView').style.display==='none')chessShow();game=next;
+    selected=null;validMoves=[];var last=s.moves[s.moves.length-1];lastMove=last?{from:last.from,to:last.to}:null;gameOver=false;render();checkGameEnd();
+  }
+  async function chessStart(){
+    if(!chessHost||chessReady||chessPlayers.length!==2)return;
+    chessReady=true;chessShow();await MP.updateRoomStatus('in_game');await chessPublish();
+  }
+  function chessSetup(){
+    if(!MP||!window.firebase)return chessMsg('Thiếu thư viện Dolphin Multiplayer.');
+    try{if(!firebase.apps.length)firebase.initializeApp({apiKey:"AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",authDomain:"dolphin-f6d67.firebaseapp.com",projectId:"dolphin-f6d67"});window.db=firebase.firestore();}catch(e){return chessMsg(e.message);}
+    MP.onRoom(function(r){if(r.game!=='dolphin-chess')return;chessRoom=r.id;chessHost=r.isHost;chessMsg('PHÒNG '+r.id+' · '+(chessHost?'Quân Trắng':'Quân Đen'));});
+    MP.onPlayers(function(r){if(!chessRoom)return;chessPlayers=r.players||[];chessMsg('PHÒNG '+chessRoom+' · '+chessPlayers.length+'/2');if(chessHost&&chessPlayers.length===2)chessStart().catch(function(e){chessMsg(e.message)});});
+    MP.onState(chessRestore);
+    MP.onInput(function(p){if(!chessHost||!chessReady||!p||p.type!=='chess-move'||p.playerId===MP.getPlayerId()||game.turn()!=='b'||p.ply!==game.history().length)return;
+      if(!game.moves({verbose:true}).some(function(m){return m.from===p.from&&m.to===p.to&&(!m.promotion||m.promotion===(p.promotion||'q'));}))return;
+      var move=game.move({from:p.from,to:p.to,promotion:p.promotion||'q'});if(!move)return;selected=null;validMoves=[];lastMove={from:p.from,to:p.to};render();checkGameEnd();chessPublish();
+    });
+    MP.onError(function(e){chessMsg('Lỗi Multiplayer: '+(e.err?.message||e.type||'không xác định'));});
+  }
+  window.chessCreateRoom=async function(){try{if(MP.getRoomId())throw Error('Hãy rời phòng cũ');var r=await MP.createRoom('dolphin-chess',{name:localStorage.getItem('dolphinStaffName')||'Người chơi',maxPlayers:2});chessRoom=r.roomId;chessHost=true;$('chessRoomCode').value=r.roomId;chessMsg('Mã phòng '+r.roomId+' · Đợi đối thủ');}catch(e){chessMsg(e.message)}};
+  window.chessJoinRoom=async function(){try{if(MP.getRoomId())throw Error('Hãy rời phòng cũ');var r=await MP.joinRoom($('chessRoomCode').value.trim().toUpperCase(),'dolphin-chess',{name:localStorage.getItem('dolphinStaffName')||'Người chơi'});chessRoom=r.roomId;chessHost=r.isHost;chessMsg('Đã vào phòng '+r.roomId);}catch(e){chessMsg(e.message)}};
+  window.chessLeaveRoom=async function(){try{if(MP.getRoomId())await MP.leaveRoom();chessRoom='';chessReady=false;chessPlayers=[];chessHost=false;$('gameView').style.display='none';$('menuView').style.display='block';chessMsg('Đã rời phòng');}catch(e){chessMsg(e.message)}};
   // ═══════════════════════ INIT ═══════════════════════
   function init(){
+    chessSetup();
     var board = $('chessBoard');
     if (board){
       board.addEventListener('click', function(e){

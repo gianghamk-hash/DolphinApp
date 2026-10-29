@@ -1,7 +1,7 @@
 {
-  "version": "1.0.191",
-  "buildDate": "2026-10-29T10:30:45.729Z",
-  "commit": "77dc17b",
-  "notes": "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029",
+  "version": "1.0.192",
+  "buildDate": "2026-10-29T12:36:08.110Z",
+  "commit": "8f25398",
+  "notes": "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029",
   "forceUpdate": false
 }

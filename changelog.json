@@ -1,22 +1,22 @@
 {
-  "version": "1.0.191",
-  "previousVersion": "1.0.190",
-  "commit": "77dc17b",
-  "previousCommit": "cc77490",
-  "buildDate": "2026-10-29T10:30:45.729Z",
-  "summary": "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029",
+  "version": "1.0.192",
+  "previousVersion": "1.0.191",
+  "commit": "8f25398",
+  "previousCommit": "77dc17b",
+  "buildDate": "2026-10-29T12:36:08.110Z",
+  "summary": "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029",
   "changes": {
-    "totalCommits": 195,
+    "totalCommits": 196,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029"
+    "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/battleship.html",
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

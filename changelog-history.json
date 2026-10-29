@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.191",
+      "releaseDate": "2026-10-29T10:30:45.729Z",
+      "summary": "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029",
+      "details": [
+        "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029"
+      ]
+    },
+    {
       "version": "1.0.190",
       "releaseDate": "2026-10-29T10:25:31.337Z",
       "summary": "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b",
@@ -390,14 +398,6 @@
       "summary": "refactor(theme): only Dark Light and Gray display modes",
       "details": [
         "refactor(theme): only Dark Light and Gray display modes"
-      ]
-    },
-    {
-      "version": "1.0.141",
-      "releaseDate": "2026-10-27T10:38:56.020Z",
-      "summary": "feat(theme): animated CSS artwork for seasonal landing scenes",
-      "details": [
-        "feat(theme): animated CSS artwork for seasonal landing scenes"
       ]
     }
   ]

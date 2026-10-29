@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.193",
+      "releaseDate": "2026-10-29T12:49:31.292Z",
+      "summary": "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029",
+      "details": [
+        "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029"
+      ]
+    },
+    {
       "version": "1.0.192",
       "releaseDate": "2026-10-29T12:36:08.110Z",
       "summary": "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029",
@@ -390,14 +398,6 @@
       "summary": "feat(tft): refreshed arena, hero shop and armory UI",
       "details": [
         "feat(tft): refreshed arena, hero shop and armory UI"
-      ]
-    },
-    {
-      "version": "1.0.143",
-      "releaseDate": "2026-10-27T15:09:52.639Z",
-      "summary": "fix(dark): deep black background and transparent clock",
-      "details": [
-        "fix(dark): deep black background and transparent clock"
       ]
     }
   ]

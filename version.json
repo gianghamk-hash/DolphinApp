@@ -1,7 +1,7 @@
 {
-  "version": "1.0.193",
-  "buildDate": "2026-10-29T12:49:31.292Z",
-  "commit": "bdde841",
-  "notes": "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029",
+  "version": "1.0.194",
+  "buildDate": "2026-10-29T12:54:51.629Z",
+  "commit": "1e480e0",
+  "notes": "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029",
   "forceUpdate": false
 }

@@ -1,20 +1,24 @@
 {
-  "version": "1.0.193",
-  "previousVersion": "1.0.192",
-  "commit": "bdde841",
-  "previousCommit": "8f25398",
-  "buildDate": "2026-10-29T12:49:31.292Z",
-  "summary": "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029",
+  "version": "1.0.194",
+  "previousVersion": "1.0.193",
+  "commit": "1e480e0",
+  "previousCommit": "bdde841",
+  "buildDate": "2026-10-29T12:54:51.629Z",
+  "summary": "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029",
   "changes": {
-    "totalCommits": 197,
-    "filesChanged": 1,
+    "totalCommits": 198,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029"
+    "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029"
   ],
   "fileChanges": [
+    {
+      "file": "functions/tactics/engine.js",
+      "type": "update"
+    },
     {
       "file": "giaitri/games/tactics-online/index.html",
       "type": "update"

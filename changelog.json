@@ -1,18 +1,18 @@
 {
-  "version": "1.0.185",
-  "previousVersion": "1.0.184",
-  "commit": "c30ef94",
-  "previousCommit": "97609f6",
-  "buildDate": "2026-10-29T08:41:38.756Z",
-  "summary": "fix(tft): show actionable Firebase create-room errors (#126)",
+  "version": "1.0.186",
+  "previousVersion": "1.0.185",
+  "commit": "c8e993b",
+  "previousCommit": "c30ef94",
+  "buildDate": "2026-10-29T09:19:54.143Z",
+  "summary": "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029",
   "changes": {
-    "totalCommits": 189,
+    "totalCommits": 190,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(tft): show actionable Firebase create-room errors (#126)"
+    "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029"
   ],
   "fileChanges": [
     {

@@ -112,3 +112,16 @@ test('online guests wait for acknowledgement and do not overlap inputs',()=>{
  assert.match(html,/setTimeout\(\(\)=>\{if\(onlinePending!==pending\)return/);
  assert.match(html,/return sendOnlineAction\(action\)/);
 });
+
+test('phase 4 combat statistics are bounded and derived from replay events',()=>{
+ for(const key of ['combatMetrics','combatStatuses','metricsHtml','m.damage+=e.amount','m.heal+=e.amount','m.shield+=e.amount','m.casts++'])assert.ok(html.includes(key),key);
+ assert.match(html,/now-lastMetricPaint>=1000/);
+ assert.match(css,/\.combatMetrics/);
+});
+test('phase 4 status tags follow 3D units and equipment confirmations respect host result',()=>{
+ assert.match(html,/tag\.dataset\.status=statusName/);
+ assert.match(html,/effect\.until>elapsed/);
+ assert.match(css,/\.battleHeroName\[data-status/);
+ assert.match(html,/if\(success===false\)return/);
+ assert.match(html,/if\(!host\)\{return;\}/);
+});

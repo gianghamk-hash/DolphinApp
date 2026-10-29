@@ -219,6 +219,9 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .equipTargetGrid small{display:block;margin-top:5px;font-size:11px}
 .selectedGearDetail{border:1px solid #b39a60;border-radius:12px;padding:10px;background:#18374a}
 .benchBar #bench .benchUnitWrap{min-width:0;display:flex;flex-direction:column;gap:3px}.benchBar #bench .benchUnitWrap>button:first-child{min-width:0;width:100%;flex:1}.benchBar #bench .benchSellBtn{min-height:26px!important;width:100%;padding:2px!important;border:1px solid #dcb875!important;background:#3b2d22!important;color:#ffe3a0!important;font-size:9px!important;font-weight:900!important;border-radius:6px!important}.benchBar #bench .benchSellBtn:active{background:#6b4b21!important}
+.sellConfirmModal{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.75);touch-action:manipulation}
+.sellConfirmModal.hidden{display:none!important}.sellConfirmPanel{width:min(100%,390px);background:#113447;border:2px solid #f4c779;border-radius:18px;padding:20px;text-align:center;box-shadow:0 20px 65px #000a}
+.sellConfirmPanel h2{font-size:17px;color:#ffe29d}.sellConfirmPanel p{font-size:14px;line-height:1.6;margin:16px 0;color:white}.sellConfirmActions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.sellConfirmActions button{min-height:50px;font-size:14px}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -262,7 +265,10 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
    <div id="guideContent" class="guideContent" tabindex="0"></div>
   </div>
  </div>
- <div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupSell" onclick="requestSellSelected()">🪙 Bán tướng</button></div></div>
+ <div id="sellConfirmModal" class="sellConfirmModal hidden" role="dialog" aria-modal="true" aria-labelledby="sellConfirmTitle">
+ <div class="sellConfirmPanel"><h2 id="sellConfirmTitle">🪙 XÁC NHẬN BÁN TƯỚNG</h2><p id="sellConfirmText"></p>
+ <div class="sellConfirmActions"><button id="sellCancelBtn" type="button">Hủy</button><button id="sellAcceptBtn" type="button" class="gold">Xác nhận bán</button></div></div>
+</div><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupSell" onclick="requestSellSelected()">🪙 Bán tướng</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
@@ -600,13 +606,31 @@ function init(){
   info('Chọn chế độ Offline hoặc Online để bắt đầu.');
  }catch(e){showError(e);}
 }
+let sellConfirmResolve=null;
+function confirmTftSale(message){
+ if(sellConfirmResolve){sellConfirmResolve(false);sellConfirmResolve=null;}
+ const modal=$('sellConfirmModal');$('sellConfirmText').textContent=message;modal.classList.remove('hidden');
+ closeUnitPopup();
+ return new Promise(resolve=>{
+  sellConfirmResolve=resolve;
+  const finish=accepted=>{
+   modal.classList.add('hidden');
+   sellConfirmResolve=null;
+   $('sellAcceptBtn').onclick=null;$('sellCancelBtn').onclick=null;
+   resolve(accepted);
+  };
+  $('sellAcceptBtn').onclick=()=>finish(true);
+  $('sellCancelBtn').onclick=()=>finish(false);
+ });
+}
 window.sellUnitById=async unitId=>{
  const p=state?.players?.[uid],u=p?.units?.[unitId],h=u&&hero[u.heroId];
  if(!p||!u){info('Không tìm thấy tướng cần bán.');return false;}
  if(state?.status!=='in_game'||state?.roundPhase!=='PREPARATION'||p.ready){info('Chỉ được bán tướng khi đang chuẩn bị và chưa sẵn sàng.');return false;}
  if(!Object.values(p.board||{}).includes(unitId)&&!Object.values(p.bench||{}).includes(unitId)){info('Tướng không nằm trên bàn hoặc hàng chờ.');return false;}
  const gross=(h?.cost||0)*(u.star===1?1:u.star===2?3:9),fee=(u.star===1&&h?.cost===1)?0:Math.ceil(gross*0.20),gold=Math.max(0,gross-fee);
- if(!window.confirm('Bán '+(h?.name||'tướng')+' ★'+u.star+' để nhận '+gold+' vàng (phí bán '+fee+' vàng)?'))return false;
+ const accepted=await confirmTftSale('Bán '+(h?.name||'tướng')+' ★'+u.star+' để nhận '+gold+' vàng (phí bán '+fee+' vàng)?');
+ if(!accepted)return false;
  const result=await send({type:'SELL',unitId});
  if(result===false)return false;
  if(selected===unitId)selected=null;

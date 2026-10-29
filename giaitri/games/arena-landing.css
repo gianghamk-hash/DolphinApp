@@ -1,0 +1,31 @@
+/* Shared Dolphin Games landing treatment — visual-only, no changes to game logic. */
+:root{--arena-gold:#f6cd75;--arena-cyan:#78e2e5;--arena-bg:#071927}
+#lobbyView>.glass:first-child,#menuView>.glass:first-child,#lobbyModal .modal-card{
+ position:relative;isolation:isolate;overflow:hidden;
+ background:radial-gradient(ellipse at 50% -18%,rgba(31,122,157,.35),transparent 60%),linear-gradient(145deg,#102e43 0%,#11243b 55%,#171e34 100%)!important;
+ border:1px solid rgba(246,205,117,.65)!important;border-radius:23px!important;
+ box-shadow:inset 0 1px rgba(255,255,255,.12),0 18px 44px rgba(0,5,17,.32)!important;
+}
+#lobbyView>.glass:first-child:before,#menuView>.glass:first-child:before,#lobbyModal .modal-card:before{
+ content:"DOLPHIN · TACTICAL ARCADE";display:block;position:relative;z-index:1;color:var(--arena-cyan);
+ font:800 9px/1.5 'Nunito',sans-serif;letter-spacing:.22em;text-align:center;
+ margin:0 auto 12px;opacity:.9
+}
+#lobbyView>.glass:first-child h2,#menuView>.glass:first-child h2,#lobbyModal .modal-card h2{
+ font-family:'Nunito',sans-serif!important;font-size:clamp(19px,4vw,27px)!important;
+ font-weight:900!important;letter-spacing:.085em!important;color:#f6d489!important;
+ text-shadow:0 3px 20px rgba(247,203,105,.23);margin-bottom:9px!important;
+}
+#lobbyView>.glass:first-child p,#menuView>.glass:first-child p,#lobbyModal .modal-card>p{
+ color:#badddf!important;line-height:1.65!important
+}
+#lobbyView>.glass:first-child button,#menuView>.glass:first-child button,#lobbyModal .modal-card button{
+ min-height:44px;border-radius:12px!important;transition:filter .16s,transform .16s;
+}
+#lobbyView>.glass:first-child button:active,#menuView>.glass:first-child button:active,#lobbyModal .modal-card button:active{transform:scale(.985)}
+#lobbyView>.glass:first-child .btn-gold,#menuView>.glass:first-child .btn-gold,#lobbyModal .modal-card .btn-gold{
+ background:linear-gradient(120deg,#ffdf90,#d8a749)!important;color:#102334!important;
+ border:1px solid #ffe6a5!important;font-weight:900!important;
+ box-shadow:0 5px 17px rgba(226,169,68,.18)
+}
+@media(prefers-reduced-motion:reduce){#lobbyView button,#menuView button,#lobbyModal button{transition:none!important}}

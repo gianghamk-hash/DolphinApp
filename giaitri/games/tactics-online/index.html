@@ -402,6 +402,15 @@ function setupMP(){
  MP.onState(snapshot=>{
   if(!snapshot||!snapshot.players)return;
   state=snapshot;onlineStateAt=Date.now();
+  if(snapshot.status==='finished'&&!offline){
+   const receiptKey='dolphin_tactics_verified_'+roomId+'_'+uid;
+   if(!sessionStorage.getItem(receiptKey)){
+    sessionStorage.setItem(receiptKey,'pending');
+    authority.submitVerifiedResult().then(()=>sessionStorage.setItem(receiptKey,'done')).catch(error=>{
+     sessionStorage.removeItem(receiptKey);console.warn('[TFT verified score]',error);
+    });
+   }
+  }
   
   if(uid)seq=Math.max(seq,Number(snapshot.clientSequences?.[uid])||0);
    settleOnlineAction(snapshot);

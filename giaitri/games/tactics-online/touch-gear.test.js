@@ -38,5 +38,5 @@ test('gear drops fall back to occupied board tile and bench slot',()=>{
  assert.match(html,/const tile=boardHit\(e\.clientX,e\.clientY\)/);
  assert.match(html,/target=p\.board\['r'\+\(tile\.row-4\)\+'c'\+tile\.col\]/);
  assert.match(html,/target=p\.bench\[String\(b\.dataset\.bench\)\]/);
- assert.match(html,/chờ đồng bộ từ chủ phòng/);
+ assert.match(html,/if\(success===false\)return/);
 });

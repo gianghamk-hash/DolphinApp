@@ -338,3 +338,21 @@ test('all 36 signatures create authoritative cast and visual event',()=>{
   }finally{h.manaStart=beforeMana;h.range=beforeRange;}
  }
 });
+
+test('signature effect events and assassin carry approach match skill descriptions',()=>{
+ const eventType={shock:'stun',armorBreak:'signatureEffect',quickstep:'haste',renew:'heal',fortify:'shield',ignite:'burn',siphon:'heal',frost:'slow',empower:'signatureEffect',sunder:'signatureEffect',spark:'mana',guard:'shield'};
+ for(const hero of E.C.heroes){
+  const state=setup(),p=state.players.a;
+  p.units={caster:{id:'caster',heroId:hero.id,star:1,items:[]}};
+  p.board={r0c3:'caster'};state.round=20;
+  const mana=hero.manaStart,range=hero.range;
+  hero.manaStart=hero.manaMax;hero.range=8;
+  try{
+   const report=E.simulate({a:'a',b:null,pve:true},state,{a:E.clone(p)},12345);
+   const expected=eventType[hero.ability.signature.effect];
+   assert.ok(report.events.some(e=>e.type===expected&&e.actor==='caster'),hero.id+' needs a real '+expected+' combat event');
+   assert.ok(report.events.some(e=>e.type==='signature'&&e.skillId===hero.ability.signature.id),hero.id+' needs signature VFX cue');
+   if(hero.classes.includes('Assassin'))assert.ok(report.events.some(e=>e.type==='move'&&e.actor==='caster'&&e.source==='assassinJump'),hero.id+' must approach enemy carry');
+  }finally{hero.manaStart=mana;hero.range=range;}
+ }
+});

@@ -396,3 +396,35 @@ test('Package F: combat events no longer silently truncate at 1200',()=>{
  const code=fs.readFileSync(path.join(__dirname,'engine.js'),'utf8');
  assert.doesNotMatch(code,/events\.length\s*<\s*1200/);
 });
+
+test('automatic XP accrues between completed rounds, levels up and never double-grants in same phase',()=>{
+ const s=setup(),p=s.players.a;
+ s.status='in_game';s.roundPhase='TRANSITION';s.phaseEndsAt=1000;s.round=4;
+ const before=p.xp;
+ E.advance(s,1000);
+ assert.equal(s.round,5);assert.equal(s.roundPhase,'PREPARATION');
+ assert.equal(p.xp,before+2);assert.equal(p.lastRoundXp,2);
+ assert.throws(()=>E.advance(s,1001));
+ assert.equal(p.xp,before+2);
+});
+test('all 36 champions use role-correct attack ranges; Ruby attacks in melee',()=>{
+ const expected={Tank:1,Fighter:1,Assassin:1,Ranger:3,Sorcerer:3,Support:3};
+ assert.equal(E.C.heroes.length,36);
+ for(const hero of E.C.heroes)assert.equal(hero.range,expected[hero.classes[0]],hero.name+' range');
+ assert.equal(E.HERO.H19.ability.kind,'aoe');
+ assert.equal(E.HERO.H19.ability.radius,1);
+});
+test('item bonuses apply to wearer only and class trait buffs only to matching heroes',()=>{
+ const s=setup(),p=s.players.a;
+ const unit=(id,heroId,items=[])=>({id,heroId,star:1,items});
+ p.units={fighter:unit('fighter','H02'),mage:unit('mage','H05'),ally:unit('ally','H12')};
+ p.board={r0c0:'fighter',r0c1:'mage',r0c2:'ally'};
+ const trait=E.activeTraits(p),f=E.combatStats(p,p.units.fighter,trait),m=E.combatStats(p,p.units.mage,trait);
+ // Two Fighters gain HP; Sorcerer does not inherit the Fighter buff.
+ assert.equal(f.hp,Math.round(E.HERO.H02.hp*1.15));
+ assert.equal(m.hp,E.HERO.H05.hp);
+ p.units.fighter.items=['sword','vest'];
+ const equipped=E.combatStats(p,p.units.fighter,trait),mage=E.combatStats(p,p.units.mage,trait);
+ assert.equal(equipped.attack,f.attack+12);assert.equal(equipped.armor,f.armor+20);
+ assert.equal(mage.attack,m.attack);assert.equal(mage.armor,m.armor);
+});

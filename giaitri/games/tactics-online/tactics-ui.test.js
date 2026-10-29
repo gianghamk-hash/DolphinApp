@@ -6,7 +6,7 @@ test('redesign stylesheet loaded and all action targets remain intact',()=>{
  for(const id of ['stage','shop','touchItemTray','touchItemSlots','traitRail','traitInfo','bench','rollShopBtn','lockShopBtn','buyXpBtn']){
  assert.match(html,new RegExp('id="'+id+'"'));
  }
- for(const action of ['buyHero','finishGearDrag','TOGGLE_SHOP_LOCK','ROLL','BUY_XP']){
+ for(const action of ['buyHero','equipSelectedItem','TOGGLE_SHOP_LOCK','ROLL','BUY_XP']){
  assert.ok(html.includes(action),action+' must remain available');
  }
 });
@@ -122,8 +122,8 @@ test('phase 4 status tags follow 3D units and equipment confirmations respect ho
  assert.match(html,/tag\.dataset\.status=statusName/);
  assert.match(html,/Object\.entries\(effects\)\.filter\(\(\[,until\]\)=>until>elapsed\)/);
  assert.match(css,/\.battleHeroName\[data-status/);
- assert.match(html,/if\(success===false\)return/);
- assert.match(html,/if\(!host\)\{return;\}/);
+ assert.match(html,/player\.inventory\[item\.index\]!==item\.id/);
+ assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
 });
 
 test('critical online actions reject expired and invalid request identifiers',()=>{
@@ -249,7 +249,7 @@ test('equipment details expose components, recipes, stats and effects without ch
  assert.match(html,/catalog\.components\.map/);
  assert.match(html,/catalog\.recipes/);
  assert.match(html,/def\.description\|\|EFFECT_LABELS/);
- assert.match(html,/finishGearDrag/);
+ assert.match(html,/window\.openItemForEquip=/); assert.match(html,/window\.equipSelectedItem=/);
 });
 test('PvP matchup label uses live pair and opponent HP',()=>{
  assert.match(html,/id="pvpOpponent"/);
@@ -258,4 +258,12 @@ test('PvP matchup label uses live pair and opponent HP',()=>{
  assert.match(html,/enemy\.displayName/);
  assert.match(html,/enemy\.hp/);
  assert.match(html,/paintPlayers\(\);paintOpponent\(\);paintControls\(\)/);
+});
+
+test('equipment tap opens target list for all deployed heroes without pointer hit testing',()=>{
+ assert.match(html,/function equipmentCandidateButtons\(itemId\)/);
+ assert.match(html,/Object\.entries\(player\.board\|\|\{\}\)/);
+ assert.match(html,/data-equip-target/);
+ assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
+ assert.doesNotMatch(html,/function finishGearDrag/);
 });

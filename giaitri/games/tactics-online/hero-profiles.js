@@ -168,7 +168,7 @@
     "weapon": "shield",
     "color": 13166235,
     "impact": 1.3,
-    "skill": "bolt",
+    "skill": "aoe",
     "origin": "Mech"
   },
   "H20": {

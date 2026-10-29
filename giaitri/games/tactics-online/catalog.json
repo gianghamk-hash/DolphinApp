@@ -746,11 +746,11 @@
       "manaStart": 0,
       "manaMax": 100,
       "ability": {
-        "kind": "bolt",
+        "kind": "aoe",
         "power": 198,
         "radius": 1,
         "id": "SK19",
-        "name": "Đạn Sóng Thép",
+        "name": "Huyết Liêm Cận Chiến",
         "durationMs": 0,
         "vfx": "hero-h19",
         "sfx": "hero-h19",

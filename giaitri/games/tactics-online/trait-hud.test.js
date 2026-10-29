@@ -25,7 +25,7 @@ test('old duplicate equipment panel removed, touch gear stays',()=>{
  assert.doesNotMatch(html,/id="equipButton"/);
  assert.doesNotMatch(html,/id="equipItem"/);
  assert.match(html,/id="touchItemTray"/);
- assert.match(html,/send\(\{type:'EQUIP',unitId:target,component:drag\.item\}\)/);
+ assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
 });
 
 test('stage traits and sibling player HP rail share camera scale',()=>{

@@ -48,6 +48,14 @@ function createEngine(C){
    const h=HERO[u.heroId];if(!h)continue;for(const key of [...h.origins,...h.classes])counts[key]=(counts[key]||0)+1;}
   return counts;
  }
+ function grantRoundXp(p,amount=2){
+  if(p.eliminated||p.level>=maxLevel)return 0;
+  p.xp+=amount;
+  while(p.level<maxLevel&&p.xp>=(LEVEL_XP[p.level]||Infinity)){
+   p.xp-=LEVEL_XP[p.level];p.level++;
+  }
+  return amount;
+ }
  function activeTraits(p){const counts=traitCounts(p),active={};
   Object.keys(counts).forEach(k=>{const def=TRAITS[k];if(!def)return;const levels=Object.keys(def.thresholds).map(Number).filter(t=>counts[k]>=t);if(levels.length){const tier=Math.max(...levels);active[k]={count:counts[k],tier,buff:def.thresholds[tier]};}});
   return active;
@@ -93,7 +101,7 @@ function createEngine(C){
   }else if(a.type==="SELL"){const u=p.units[a.unitId];assert(u,"Không tìm thấy tướng");
     const pos=findPosition(p,u.id);if(pos)delete p[pos.kind][pos.key];p.gold+=HERO[u.heroId].cost*(u.star===1?1:u.star===2?3:9);
     p.inventory.push(...u.items);delete p.units[u.id];
-  }else if(a.type==="EQUIP"){const u=p.units[a.unitId],comp=a.component;assert(u&&COMP[comp],"Tướng hoặc trang bị không hợp lệ");
+  }else if(a.type==="EQUIP"){const u=p.units[a.unitId],comp=a.component;assert(u&&COMP[comp],"Tướng hoặc trang bị không hợp lệ");assert(!!findPosition(p,u.id),"Chỉ trang bị cho tướng đang sở hữu trên sân hoặc hàng chờ");
     const idx=p.inventory.indexOf(comp);assert(idx!==-1,"Không sở hữu trang bị");
     const other=u.items.findIndex(x=>!!COMP[x]&&!!RECIPE[[x,comp].sort().join("+")]);
     if(other!==-1){const recipe=RECIPE[[u.items[other],comp].sort().join("+")];u.items.splice(other,1,recipe.id);}
@@ -368,14 +376,14 @@ function createEngine(C){
     for(const uid of s.playerOrder){const p=s.players[uid];if(p.eliminated)continue;
       const streak=Math.max(p.streaks.win,p.streaks.loss),streakBonus=streak>=5?3:streak>=4?2:streak>=2?1:0;
       p.lastEconomy={base:5,interest:Math.min(5,Math.floor(p.gold/10)),streak:streakBonus};
-      p.gold=Math.min(80,p.gold+p.lastEconomy.base+p.lastEconomy.interest+streakBonus);p.ready=false;if(!p.shopLocked)p.shop=shopRoll(s,p.level);if(p.pendingMerge){mergeTriples(p);p.pendingMerge=false;}
+      p.gold=Math.min(80,p.gold+p.lastEconomy.base+p.lastEconomy.interest+streakBonus);p.lastRoundXp=grantRoundXp(p,2);p.ready=false;if(!p.shopLocked)p.shop=shopRoll(s,p.level);if(p.pendingMerge){mergeTriples(p);p.pendingMerge=false;}
 
     }}
   s.updatedAt=now;return s;
  }
  return {C,HERO,COMP,RECIPE,PHASES,clone,assert,nextRand,shopRoll,ownedCopies,remainingCopies,COPIES_BY_COST,freshPlayer,roomNew,boardKey,
  legalBoard,legalBench,findPosition,firstBench,mergeTriples,traitCounts,activeTraits,itemStats,combatStats,
- action,LEVEL_XP,maxLevel,slotsForLevel,pairings,findStep,simulate,finalize,advance};
+ action,grantRoundXp,LEVEL_XP,maxLevel,slotsForLevel,pairings,findStep,simulate,finalize,advance};
 }
 if(typeof module!=="undefined"&&module.exports)module.exports=createEngine(require("./catalog.json"));
 else root.DolphinTacticsCreateEngine=createEngine;

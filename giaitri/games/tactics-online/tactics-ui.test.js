@@ -213,3 +213,26 @@ test('Android HP rail maintains readable font size and full HP number',()=>{
  assert.match(html,/#game>section>\.playerDock\{width:148px!important/);
  assert.match(html,/\.hpValue\{font-size:12px!important/);
 });
+
+test('shop uses catalog class icons instead of gold-cost icons',()=>{
+ assert.match(html,/const ROLE_ICONS=Object\.freeze/);
+ assert.match(html,/roleIcon\(h\)/);
+ assert.doesNotMatch(html,/\['⚔','🛡','🏹','✦','♛'\]\[cost-1\]/);
+ const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog.json'),'utf8'));
+ const expected={Tank:'🛡️',Fighter:'⚔️',Assassin:'🗡️',Ranger:'🏹',Sorcerer:'🔮',Support:'✚'};
+ assert.equal(catalog.heroes.length,36);
+ for(const h of catalog.heroes)assert.ok(expected[h.classes[0]],h.name+' role icon');
+ for(const [name,role] of [['Johnson','Tank'],['Cyclops','Sorcerer'],['Nana','Sorcerer'],['Gusion','Assassin'],['Alucard','Fighter']]){
+  assert.equal(catalog.heroes.find(h=>h.name===name).classes[0],role);
+ }
+});
+test('landing handbook reflects current catalog roles and signature skills',()=>{
+ const createGuide=require('./guide.js');
+ const c=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog.json'),'utf8'));
+ const guide=createGuide(c);
+ const heroes=guide.render('heroes'),gameplay=guide.render('gameplay');
+ assert.match(heroes,/Đỡ Đòn/);assert.match(heroes,/Pháp Sư/);
+ assert.match(heroes,/Kỹ năng đặc trưng/);
+ for(const h of c.heroes)assert.ok(heroes.includes(h.ability.signature.name),h.name+' missing signature');
+ assert.match(gameplay,/36 tướng/);
+});

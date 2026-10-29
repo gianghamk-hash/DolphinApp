@@ -246,6 +246,27 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 }
 #sellConfirmModal:not(.hidden){z-index:2147483647!important;position:fixed!important;inset:0!important;display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;background:rgba(0,0,0,.85)!important}
 #sellConfirmModal .sellConfirmPanel{position:relative;z-index:1;max-height:calc(100dvh - 28px);overflow-y:auto}
+
+/* TFT: compact one-line HP rail; conserve vertical room for the battle board. */
+#game>section>.playerDock{gap:3px!important;padding:2px 3px!important;flex:0 0 auto!important}
+#game>section>.playerDock .hpEntry{display:flex!important;flex-direction:row!important;align-items:center!important;justify-content:center!important;gap:3px!important;min-height:0!important;padding:2px 3px!important;border-radius:6px!important}
+#game>section>.playerDock .hpPortrait{display:none!important}
+#game>section>.playerDock .hpIdentity{width:auto!important;min-width:0!important;display:flex!important;flex-direction:column!important;align-items:center!important;gap:1px!important;text-align:center!important}
+#game>section>.playerDock .hpIdentity strong{font-size:clamp(8px,.88vw,11px)!important;font-weight:800!important;max-width:100%!important;line-height:1.1!important;overflow:hidden!important;text-overflow:ellipsis!important;white-space:nowrap!important}
+#game>section>.playerDock .hpIdentity small.hpMeta{display:flex!important;flex-wrap:nowrap!important;gap:4px!important;justify-content:center!important;line-height:1!important}
+#game>section>.playerDock .hpValue,#game>section>.playerDock .hpLevel{font-size:clamp(8px,.85vw,11px)!important;line-height:1.1!important}
+#game>section>#stage{flex:1 1 auto!important;min-height:0!important}
+@media(orientation:landscape){
+ #game>section>.playerDock .hpEntry{max-height:37px!important}
+ #game>section>.benchBar{padding:3px 5px!important;margin-top:2px!important}
+ #game>section>#touchItemTray{padding:3px 6px!important;min-height:0!important}
+ #game>section{overflow-y:auto!important}
+}
+@media(orientation:portrait){
+ #game>section>#stage{height:clamp(340px,62dvh,720px)!important;min-height:340px!important}
+ #game>section>.playerDock .hpIdentity strong{font-size:9px!important}
+ #game>section>.playerDock .hpValue,#game>section>.playerDock .hpLevel{font-size:9px!important}
+}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -273,7 +294,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
 <main id="game" class="hidden"><section><div id="stage"><div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="heroNameLayer" aria-hidden="true"></div><div id="boardHelp"></div></div>
-<div id="players" class="playerDock" aria-label="Máu và cấp của người chơi"></div><div id="pvpOpponent" class="pvpOpponent" role="status" aria-live="polite"></div><div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><button type="button" id="itemInfoOpen" class="touchItemTitle" onclick="openItemInfo()" aria-label="Xem chi tiết trang bị">🎒 TRANG BỊ <span aria-hidden="true">ⓘ</span></button><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div>
+<div id="players" class="playerDock" aria-label="Máu và cấp của người chơi"></div><div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><button type="button" id="itemInfoOpen" class="touchItemTitle" onclick="openItemInfo()" aria-label="Xem chi tiết trang bị">🎒 TRANG BỊ <span aria-hidden="true">ⓘ</span></button><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
 <div class="flex" style="margin:8px 0"><button id="rollShopBtn" class="shopIconBtn" onclick="send({type:'ROLL'})" title="Đổi Shop · 2 vàng" aria-label="Đổi Shop · 2 vàng">🔄</button><button id="buyXpBtn" class="shopIconBtn" onclick="send({type:'BUY_XP'})" title="Mua 4 XP · 4 vàng" aria-label="Mua 4 XP · 4 vàng">⭐</button><button id="lockShopBtn" class="shopIconBtn" onclick="send({type:'TOGGLE_SHOP_LOCK'})" title="Khóa Shop" aria-label="Khóa Shop">🔓</button></div><div id="shop"></div>
@@ -678,18 +699,7 @@ window.moveSelectedToBench=()=>{
 function isPvERound(round){return round<=3||round%5===0;}
 function combatType(){return isPvERound(Number(state?.round||1))?"PvE · ĐẤU QUÁI":"PvP · ĐẤU NGƯỜI";}
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
-function paintOpponent(){
- const label=$('pvpOpponent');if(!label)return;
- if(!state||state.status!=='in_game'){label.textContent='';label.classList.add('hidden');return;}
- const pair=state.pairs?.find(p=>p.a===uid||p.b===uid);
- if(state.roundPhase==='PREPARATION'||state.roundPhase==='COMBAT'){
-  const enemyId=pair?.a===uid?pair.b:pair?.b===uid?pair.a:null;
-  const enemy=enemyId&&state.players?.[enemyId];
-  const pve=pair?.pve||(!enemyId&&isPvERound(Number(state.round||1)));
-  label.textContent=pve?'⚔ Đối thủ vòng này: QUÁI PvE':enemy?'⚔ PvP · Đối thủ: '+enemy.displayName+' · ❤ '+Math.max(0,enemy.hp)+' HP · Lv'+enemy.level:'⚔ Đang ghép đối thủ PvP';
-  label.classList.remove('hidden');
- }else{label.classList.add('hidden');label.textContent='';}
-}
+function paintOpponent(){/* Opponent details already appear on the battlefield HUD. */}
 function paintPlayers(){
  $('players').innerHTML=state.playerOrder.map(id=>{
   const p=state.players[id];if(!p)return '';

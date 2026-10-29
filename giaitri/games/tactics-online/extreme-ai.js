@@ -7,10 +7,13 @@
 function createAI(E){
  const H=E.HERO,traits=E.C.origins;
  const uniq=arr=>[...new Set(arr)];
+ const AI_STYLES={AI_1:'economy',AI_2:'tempo',AI_3:'adaptive'};
+ function styleFor(uid){return AI_STYLES[uid]||'balanced';}
  const starValue=u=>Math.pow(1.8,u.star-1);
  function value(u){
   const h=H[u.heroId];
-  return (h.hp*.065+h.attack*1.9+h.cost*12)*starValue(u)+(u.items||[]).length*17;
+  const support=h.classes.includes('Support')?Math.min(65,(h.ability.power||0)*.16):0;
+  return (h.hp*.065+h.attack*1.9+h.cost*12+support)*starValue(u)+(u.items||[]).length*17;
  }
  function countsFor(units){
   const c={},seen=new Set();
@@ -82,13 +85,14 @@ function createAI(E){
    (pairs===2?280:pairs===1?95:0)+(twoStars===2&&pairs===2?190:0)-
    Math.min(5,contested)*13;
  }
- function economicPlan(p,round){
+ function economicPlan(p,round,style='balanced'){
   const danger=p.hp<35,healthy=p.hp>65;
   // Interest is one gold per 10 saved gold, up to 5.
-  const reserve=danger?2:round<=3?0:round<=7?10:healthy?30:10;
+  const baseline=danger?2:round<=3?0:round<=7?10:healthy?30:10;
+  const reserve=style==='economy'&&!danger?Math.min(50,baseline+15):style==='tempo'?Math.max(0,baseline-10):baseline;
   const wantLevel=p.level<Math.min(9,Math.max(4,Math.floor(round/2)+2));
   const levelReserve=wantLevel&&p.gold>=reserve+8?4:0;
-  return {reserve,rollBudget:danger?Math.min(16,p.gold):p.gold>=45?12:p.gold>=25?6:2,
+  return {reserve,rollBudget:style==='tempo'?Math.min(18,p.gold):danger?Math.min(16,p.gold):style==='economy'?4:p.gold>=45?12:p.gold>=25?6:2,
    xpBudget:wantLevel?Math.min(16,Math.max(0,p.gold-reserve-3)):0,
    levelReserve,danger};
  }
@@ -97,14 +101,14 @@ function createAI(E){
   const active=Object.values(p.board).map(id=>p.units[id]).filter(Boolean).sort((a,b)=>value(b)-value(a));
   for(let n=0;n<18&&p.inventory.length&&active.length;n++){
    const before=p.inventory.length;
-   const component=p.inventory[0];
+   const component=p.inventory.find(id=>!!E.COMP[id]);
    const prop=E.COMP[component];
    if(!prop)break;
    const isMagic=prop.stat==='abilityPower'||prop.stat==='mana';
    const candidates=active.slice().sort((a,b)=>{
     const ha=H[a.heroId],hb=H[b.heroId];
-    const qa=value(a)+(isMagic&&ha.classes.includes('Sorcerer')?200:0)+(!isMagic&&ha.range<=1?50:0);
-    const qb=value(b)+(isMagic&&hb.classes.includes('Sorcerer')?200:0)+(!isMagic&&hb.range<=1?50:0);
+    const qa=value(a)+(isMagic&&(ha.classes.includes('Sorcerer')||ha.classes.includes('Support'))?200:0)+(!isMagic&&ha.range<=1?50:0);
+    const qb=value(b)+(isMagic&&(hb.classes.includes('Sorcerer')||hb.classes.includes('Support'))?200:0)+(!isMagic&&hb.range<=1?50:0);
     return qb-qa;
    });
    let equipped=false;
@@ -117,14 +121,14 @@ function createAI(E){
  }
  function takeTurn(s,uid,now){
   const p=s.players[uid];if(!p||p.eliminated||s.roundPhase!=='PREPARATION'||p.ready)return;
-  const threat=opponentThreat(s,uid),round=s.round,plan=economicPlan(p,round);
+  const threat=opponentThreat(s,uid),round=s.round,style=styleFor(uid),plan=economicPlan(p,round,style);
   function available(){return Object.keys(p.bench).length<8;}
   function buyOffers(limit){
    let bought=0;
    while(available()&&bought<limit){
     const choices=p.shop.map((id,i)=>({i,h:H[id]})).filter(x=>x.h&&p.gold>=x.h.cost);
     if(!choices.length)break;
-    choices.sort((a,b)=>draftScore(p,b.h,threat)-draftScore(p,a.h,threat));
+    choices.sort((a,b)=>draftScore(p,b.h,style==='adaptive'?threat:{...threat,contest:{}})-draftScore(p,a.h,style==='adaptive'?threat:{...threat,contest:{}}));
     const choice=choices[0],score=draftScore(p,choice.h,threat);
     const merge=Object.values(p.units).filter(u=>u.heroId===choice.h.id&&u.star===1).length>=2;
     if(p.gold-choice.h.cost<plan.reserve&&!plan.danger&&!merge)break;
@@ -151,7 +155,7 @@ function createAI(E){
   planBoard(p,threat);
   E.action(s,uid,{type:'READY'},now);
  }
- return {takeTurn,bestLineup,teamScore,economicPlan,opponentThreat,draftScore};
+ return {takeTurn,bestLineup,teamScore,economicPlan,opponentThreat,draftScore,styleFor,AI_STYLES};
 }
 if(typeof module!=='undefined'&&module.exports)module.exports=createAI;
 else root.DolphinTacticsCreateAI=createAI;

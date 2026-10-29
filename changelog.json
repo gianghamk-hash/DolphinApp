@@ -1,22 +1,22 @@
 {
-  "version": "1.0.189",
-  "previousVersion": "1.0.188",
-  "commit": "485b646",
-  "previousCommit": "4f242af",
-  "buildDate": "2026-10-29T10:06:35.468Z",
-  "summary": "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029",
+  "version": "1.0.190",
+  "previousVersion": "1.0.189",
+  "commit": "cc77490",
+  "previousCommit": "485b646",
+  "buildDate": "2026-10-29T10:25:31.337Z",
+  "summary": "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b",
   "changes": {
-    "totalCommits": 193,
+    "totalCommits": 194,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029"
+    "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/caro.html",
+      "file": "giaitri/games/xiangqi.html",
       "type": "update"
     }
   ]

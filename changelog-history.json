@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.189",
+      "releaseDate": "2026-10-29T10:06:35.468Z",
+      "summary": "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029",
+      "details": [
+        "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029"
+      ]
+    },
+    {
       "version": "1.0.188",
       "releaseDate": "2026-10-29T09:49:38.470Z",
       "summary": "Merge pull request #129 from gianghamk-hash/feat/chess-shared-multiplayer-20261029",
@@ -390,14 +398,6 @@
       "summary": "feat(landing): animated flames around royal Top 1 names",
       "details": [
         "feat(landing): animated flames around royal Top 1 names"
-      ]
-    },
-    {
-      "version": "1.0.139",
-      "releaseDate": "2026-10-27T10:13:52.211Z",
-      "summary": "feat(ranking): hide scoring explanations and integrate seasonal theme",
-      "details": [
-        "feat(ranking): hide scoring explanations and integrate seasonal theme"
       ]
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.214",
+      "releaseDate": "2026-10-29T15:22:52.613Z",
+      "summary": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029",
+      "details": [
+        "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029"
+      ]
+    },
+    {
       "version": "1.0.213",
       "releaseDate": "2026-10-29T15:14:03.648Z",
       "summary": "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029",
       "details": [
         "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029"
-      ]
-    },
-    {
-      "version": "1.0.164",
-      "releaseDate": "2026-10-28T09:38:51.366Z",
-      "summary": "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028",
-      "details": [
-        "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028"
       ]
     }
   ]

@@ -1,22 +1,22 @@
 {
-  "version": "1.0.214",
-  "previousVersion": "1.0.213",
-  "commit": "457cba0",
-  "previousCommit": "fbb35b8",
-  "buildDate": "2026-10-29T15:22:52.613Z",
-  "summary": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029",
+  "version": "1.0.215",
+  "previousVersion": "1.0.214",
+  "commit": "101a31f",
+  "previousCommit": "457cba0",
+  "buildDate": "2026-10-29T15:46:49.657Z",
+  "summary": "Create CNAME",
   "changes": {
-    "totalCommits": 218,
+    "totalCommits": 219,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029"
+    "Create CNAME"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-show.html",
+      "file": "CNAME",
       "type": "update"
     }
   ]

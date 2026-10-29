@@ -1,5 +1,5 @@
 {
-  "version": "1.0.214",
+  "version": "1.0.215",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029"
+  "notes": "Create CNAME"
 }

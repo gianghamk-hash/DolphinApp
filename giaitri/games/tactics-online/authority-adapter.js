@@ -34,7 +34,7 @@ function createAdapter(config){
   async createRoom(){await identity();const result=await call('tacticsCreateRoom',{});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:true};},
   async joinRoom(code){await identity();const result=await call('tacticsJoinRoom',{roomId:code});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:false};},
   subscribe({roomId:id,emit}){roomId=id;onStop={emit};void fetchState();timer=setInterval(fetchState,2200);return ()=>{clearInterval(timer);timer=null;onStop=null;last='';roomId='';};},
-  async leaveRoom(){if(roomId)await call('tacticsLeaveRoom',{roomId});},
+  async leaveRoom(id){const leaving=id||roomId;if(leaving)await call('tacticsLeaveRoom',{roomId:leaving});},
   async startRoom(){const res=await call('tacticsStartRoom',{roomId});await fetchState();return res;},
   async action(action){const res=await call('tacticsAction',{roomId,action});await fetchState();return res;},
   async advance(){const res=await call('tacticsAdvanceRoom',{roomId});await fetchState();return res;},

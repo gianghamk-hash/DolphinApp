@@ -33,7 +33,7 @@
     "weapon": "shield",
     "color": 6610050,
     "impact": 1.1,
-    "skill": "heal",
+    "skill": "bolt",
     "origin": "Beast"
   },
   "H05": {
@@ -42,7 +42,7 @@
     "weapon": "staff",
     "color": 11706623,
     "impact": 1.5,
-    "skill": "shield",
+    "skill": "blast",
     "origin": "Shadow"
   },
   "H06": {
@@ -96,7 +96,7 @@
     "weapon": "fists",
     "color": 12351994,
     "impact": 1.2,
-    "skill": "bolt",
+    "skill": "blast",
     "origin": "Shadow"
   },
   "H12": {
@@ -114,7 +114,7 @@
     "weapon": "bow",
     "color": 12640511,
     "impact": 1.5,
-    "skill": "shield",
+    "skill": "bolt",
     "origin": "Mech"
   },
   "H14": {
@@ -132,7 +132,7 @@
     "weapon": "staff",
     "color": 4443628,
     "impact": 1.4,
-    "skill": "drain",
+    "skill": "blast",
     "origin": "Arcane"
   },
   "H16": {
@@ -159,7 +159,7 @@
     "weapon": "bow",
     "color": 6283442,
     "impact": 1.6,
-    "skill": "dash",
+    "skill": "blast",
     "origin": "Celestial"
   },
   "H19": {
@@ -177,7 +177,7 @@
     "weapon": "staff",
     "color": 16047239,
     "impact": 1.3,
-    "skill": "heal",
+    "skill": "teamHeal",
     "origin": "Void"
   },
   "H21": {
@@ -186,7 +186,7 @@
     "weapon": "fists",
     "color": 10973912,
     "impact": 1.4,
-    "skill": "shield",
+    "skill": "blast",
     "origin": "Arcane"
   },
   "H22": {

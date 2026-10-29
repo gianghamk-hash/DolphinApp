@@ -23,9 +23,21 @@ function createRigAnimator(){
    if(caster){right.rotation.z=wave*.8;left.rotation.z=-wave*.4;}
    if(heavy)rig.spine.rotation.x=-wave*.2;
   }else if(type==='cast'){
-   left.rotation.z=-wave*.85;right.rotation.z=wave*.85;
-   rig.leftForearm.rotation.x=-wave*.64;rig.rightForearm.rotation.x=-wave*.64;
-   rig.head.rotation.x=-wave*.12;rig.spine.rotation.y=wave*.3;
+   // Stable hero-style-specific choreography even when an external GLB spell
+   // clip is unavailable. Six casting families and a per-style motion accent.
+   const hash=[...String(style)].reduce((v,c)=>(Math.imul(v,31)+c.charCodeAt(0))>>>0,7);
+   const family=hash%6,accent=.84+(hash%13)*.032;
+   const lift=family===0?1.22:family===1?.6:family===2?1.5:family===3?.92:family===4?1.15:.72;
+   left.rotation.z=-wave*lift*accent;
+   right.rotation.z=wave*(family===2?.38:family===4?1.3:.85)*accent;
+   rig.leftForearm.rotation.x=-wave*(family===1?1.05:.64);
+   rig.rightForearm.rotation.x=-wave*(family===3?1.2:.64);
+   rig.spine.rotation.y=wave*(family%2===0?1:-1)*(.12+(hash%7)*.047);
+   rig.spine.rotation.x=-wave*(family===5?.28:.05);
+   rig.head.rotation.x=-wave*(family===4?.21:.1);
+   if(family===2){left.rotation.x=-wave*.6;right.rotation.x=-wave*.82;}
+   if(family===3){rig.hips.rotation.y=wave*.38;left.rotation.x=-wave*.32;}
+   if(family===5){rig.hips.rotation.x=-wave*.18;right.rotation.x=-wave*1.05;}
   }else if(type==='hit'){rig.spine.rotation.z=wave*.2;rig.head.rotation.z=wave*.12;}
   else if(type==='death'){rig.hips.rotation.z=-progress*1.1;rig.spine.rotation.x=progress*.3;}
   else if(type==='heal'||type==='shield'){left.rotation.z=-wave*.4;right.rotation.z=wave*.4;rig.head.rotation.x=-wave*.09;}

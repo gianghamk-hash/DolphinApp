@@ -17,11 +17,11 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 495,
-      "attack": 51,
+      "hp": 485,
+      "attack": 64,
       "armor": 15,
-      "magicResist": 15,
-      "attackSpeed": 0.65,
+      "magicResist": 16,
+      "attackSpeed": 0.85,
       "range": 1,
       "manaStart": 0,
       "manaMax": 60,
@@ -36,7 +36,15 @@
         "sfx": "hero-h01",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG01",
+          "name": "Saber — Tăng tốc đánh",
+          "effect": "quickstep",
+          "pattern": "focused",
+          "power": 33,
+          "durationMs": 2800
+        }
       }
     },
     {
@@ -49,11 +57,11 @@
       "classes": [
         "Fighter"
       ],
-      "hp": 465,
-      "attack": 58,
-      "armor": 15,
-      "magicResist": 15,
-      "attackSpeed": 0.72,
+      "hp": 645,
+      "attack": 59,
+      "armor": 23,
+      "magicResist": 21,
+      "attackSpeed": 0.755,
       "range": 1,
       "manaStart": 0,
       "manaMax": 60,
@@ -68,7 +76,15 @@
         "sfx": "hero-h02",
         "effectScale": 1.04,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG02",
+          "name": "Alucard — Hồi máu",
+          "effect": "siphon",
+          "pattern": "focused",
+          "power": 36,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -81,11 +97,11 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 490,
-      "attack": 61,
-      "armor": 15,
+      "hp": 460,
+      "attack": 58,
+      "armor": 12,
       "magicResist": 15,
-      "attackSpeed": 0.79,
+      "attackSpeed": 0.795,
       "range": 3,
       "manaStart": 0,
       "manaMax": 60,
@@ -100,7 +116,15 @@
         "sfx": "hero-h03",
         "effectScale": 1.08,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG03",
+          "name": "Layla — Tăng công",
+          "effect": "empower",
+          "pattern": "focused",
+          "power": 39,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -113,26 +137,34 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 575,
-      "attack": 62,
-      "armor": 15,
+      "hp": 475,
+      "attack": 61,
+      "armor": 12,
       "magicResist": 15,
-      "attackSpeed": 0.8600000000000001,
-      "range": 1,
+      "attackSpeed": 0.82,
+      "range": 3,
       "manaStart": 0,
       "manaMax": 60,
       "ability": {
-        "kind": "heal",
+        "kind": "bolt",
         "power": 106,
         "radius": 1,
         "id": "SK04",
-        "name": "Dưỡng Sinh Linh Tiễn",
+        "name": "Liên Tiễn Phong Linh",
         "durationMs": 0,
         "vfx": "hero-h04",
         "sfx": "hero-h04",
         "effectScale": 1.12,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG04",
+          "name": "Miya — Tăng tốc đánh",
+          "effect": "quickstep",
+          "pattern": "sweep",
+          "power": 42,
+          "durationMs": 2800
+        }
       }
     },
     {
@@ -145,26 +177,34 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 540,
-      "attack": 50,
-      "armor": 15,
-      "magicResist": 15,
-      "attackSpeed": 0.93,
+      "hp": 485,
+      "attack": 46,
+      "armor": 13,
+      "magicResist": 23,
+      "attackSpeed": 0.675,
       "range": 3,
       "manaStart": 0,
       "manaMax": 60,
       "ability": {
-        "kind": "shield",
+        "kind": "blast",
         "power": 106,
-        "radius": 1,
+        "radius": 2,
         "id": "SK05",
-        "name": "Lôi Khiên Hộ Thể",
+        "name": "Lôi Vực Trấn Áp",
         "durationMs": 0,
         "vfx": "hero-h05",
         "sfx": "hero-h05",
         "effectScale": 1.16,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG05",
+          "name": "Eudora — Thiêu đốt",
+          "effect": "ignite",
+          "pattern": "focused",
+          "power": 45,
+          "durationMs": 2400
+        }
       }
     },
     {
@@ -177,12 +217,12 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 585,
-      "attack": 55,
-      "armor": 15,
-      "magicResist": 15,
-      "attackSpeed": 0.65,
-      "range": 1,
+      "hp": 455,
+      "attack": 40,
+      "armor": 13,
+      "magicResist": 23,
+      "attackSpeed": 0.625,
+      "range": 3,
       "manaStart": 0,
       "manaMax": 60,
       "ability": {
@@ -196,7 +236,15 @@
         "sfx": "hero-h06",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG06",
+          "name": "Nana — Làm chậm",
+          "effect": "frost",
+          "pattern": "focused",
+          "power": 48,
+          "durationMs": 1800
+        }
       }
     },
     {
@@ -207,13 +255,13 @@
         "Mech"
       ],
       "classes": [
-        "Fighter"
+        "Tank"
       ],
-      "hp": 450,
-      "attack": 63,
-      "armor": 15,
-      "magicResist": 15,
-      "attackSpeed": 0.72,
+      "hp": 760,
+      "attack": 40,
+      "armor": 35,
+      "magicResist": 29,
+      "attackSpeed": 0.56,
       "range": 1,
       "manaStart": 0,
       "manaMax": 60,
@@ -228,7 +276,15 @@
         "sfx": "hero-h07",
         "effectScale": 1.04,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG07",
+          "name": "Balmond — Làm choáng",
+          "effect": "shock",
+          "pattern": "focused",
+          "power": 51,
+          "durationMs": 650
+        }
       }
     },
     {
@@ -241,11 +297,11 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 475,
-      "attack": 66,
-      "armor": 15,
+      "hp": 490,
+      "attack": 64,
+      "armor": 12,
       "magicResist": 15,
-      "attackSpeed": 0.79,
+      "attackSpeed": 0.845,
       "range": 3,
       "manaStart": 0,
       "manaMax": 60,
@@ -260,7 +316,15 @@
         "sfx": "hero-h08",
         "effectScale": 1.08,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG08",
+          "name": "Clint — Giảm giáp",
+          "effect": "armorBreak",
+          "pattern": "focused",
+          "power": 54,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -273,11 +337,11 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 650,
-      "attack": 60,
-      "armor": 18,
-      "magicResist": 18,
-      "attackSpeed": 0.8600000000000001,
+      "hp": 570,
+      "attack": 76,
+      "armor": 19,
+      "magicResist": 20,
+      "attackSpeed": 0.825,
       "range": 1,
       "manaStart": 0,
       "manaMax": 80,
@@ -292,7 +356,15 @@
         "sfx": "hero-h09",
         "effectScale": 1.12,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG09",
+          "name": "Gusion — Giảm giáp",
+          "effect": "armorBreak",
+          "pattern": "sweep",
+          "power": 68,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -305,12 +377,12 @@
       "classes": [
         "Tank"
       ],
-      "hp": 610,
-      "attack": 65,
-      "armor": 18,
-      "magicResist": 18,
-      "attackSpeed": 0.93,
-      "range": 3,
+      "hp": 910,
+      "attack": 49,
+      "armor": 44,
+      "magicResist": 36,
+      "attackSpeed": 0.56,
+      "range": 1,
       "manaStart": 0,
       "manaMax": 80,
       "ability": {
@@ -324,7 +396,15 @@
         "sfx": "hero-h10",
         "effectScale": 1.16,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG10",
+          "name": "Johnson — Khiên bản thân/đồng minh",
+          "effect": "fortify",
+          "pattern": "focused",
+          "power": 71,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -337,26 +417,34 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 655,
-      "attack": 71,
-      "armor": 18,
-      "magicResist": 18,
-      "attackSpeed": 0.65,
-      "range": 1,
+      "hp": 580,
+      "attack": 54,
+      "armor": 17,
+      "magicResist": 28,
+      "attackSpeed": 0.675,
+      "range": 3,
       "manaStart": 0,
       "manaMax": 80,
       "ability": {
-        "kind": "bolt",
+        "kind": "blast",
         "power": 160,
-        "radius": 1,
+        "radius": 2,
         "id": "SK11",
-        "name": "Tinh Cầu Ma Lực",
+        "name": "Tinh Cầu Liên Hoàn",
         "durationMs": 0,
         "vfx": "hero-h11",
         "sfx": "hero-h11",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG11",
+          "name": "Cyclops — Làm choáng",
+          "effect": "shock",
+          "pattern": "sweep",
+          "power": 74,
+          "durationMs": 650
+        }
       }
     },
     {
@@ -369,11 +457,11 @@
       "classes": [
         "Fighter"
       ],
-      "hp": 615,
-      "attack": 80,
-      "armor": 18,
-      "magicResist": 18,
-      "attackSpeed": 0.72,
+      "hp": 745,
+      "attack": 66,
+      "armor": 29,
+      "magicResist": 26,
+      "attackSpeed": 0.705,
       "range": 1,
       "manaStart": 0,
       "manaMax": 80,
@@ -388,7 +476,15 @@
         "sfx": "hero-h12",
         "effectScale": 1.04,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG12",
+          "name": "Roger — Tăng công",
+          "effect": "empower",
+          "pattern": "sweep",
+          "power": 77,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -401,26 +497,34 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 540,
-      "attack": 64,
-      "armor": 18,
-      "magicResist": 18,
-      "attackSpeed": 0.79,
+      "hp": 575,
+      "attack": 74,
+      "armor": 16,
+      "magicResist": 19,
+      "attackSpeed": 0.82,
       "range": 3,
       "manaStart": 0,
       "manaMax": 80,
       "ability": {
-        "kind": "shield",
+        "kind": "bolt",
         "power": 139,
         "radius": 1,
         "id": "SK13",
-        "name": "Màn Chắn Xạ Kích",
+        "name": "Tâm Điểm Xạ Kích",
         "durationMs": 0,
         "vfx": "hero-h13",
         "sfx": "hero-h13",
         "effectScale": 1.08,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG13",
+          "name": "Lesley — Thiêu đốt",
+          "effect": "ignite",
+          "pattern": "sweep",
+          "power": 44,
+          "durationMs": 2400
+        }
       }
     },
     {
@@ -433,11 +537,11 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 630,
-      "attack": 64,
-      "armor": 18,
-      "magicResist": 18,
-      "attackSpeed": 0.8600000000000001,
+      "hp": 600,
+      "attack": 82,
+      "armor": 19,
+      "magicResist": 20,
+      "attackSpeed": 0.875,
       "range": 1,
       "manaStart": 0,
       "manaMax": 80,
@@ -452,7 +556,15 @@
         "sfx": "hero-h14",
         "effectScale": 1.12,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG14",
+          "name": "Hayabusa — Làm choáng",
+          "effect": "shock",
+          "pattern": "chain",
+          "power": 47,
+          "durationMs": 650
+        }
       }
     },
     {
@@ -465,26 +577,34 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 595,
-      "attack": 69,
-      "armor": 18,
-      "magicResist": 18,
-      "attackSpeed": 0.93,
+      "hp": 550,
+      "attack": 48,
+      "armor": 17,
+      "magicResist": 28,
+      "attackSpeed": 0.625,
       "range": 3,
       "manaStart": 0,
       "manaMax": 80,
       "ability": {
-        "kind": "drain",
+        "kind": "blast",
         "power": 160,
-        "radius": 1,
+        "radius": 2,
         "id": "SK15",
-        "name": "Huyết Nguyệt Phù",
+        "name": "Huyết Nguyệt Vũ",
         "durationMs": 0,
         "vfx": "hero-h15",
         "sfx": "hero-h15",
         "effectScale": 1.16,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG15",
+          "name": "Kagura — Giảm kháng phép",
+          "effect": "sunder",
+          "pattern": "focused",
+          "power": 50,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -497,12 +617,12 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 755,
-      "attack": 87,
-      "armor": 21,
-      "magicResist": 21,
-      "attackSpeed": 0.65,
-      "range": 1,
+      "hp": 695,
+      "attack": 88,
+      "armor": 20,
+      "magicResist": 24,
+      "attackSpeed": 0.82,
+      "range": 3,
       "manaStart": 0,
       "manaMax": 100,
       "ability": {
@@ -516,7 +636,15 @@
         "sfx": "hero-h16",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG16",
+          "name": "Irithel — Làm choáng",
+          "effect": "shock",
+          "pattern": "burst",
+          "power": 64,
+          "durationMs": 650
+        }
       }
     },
     {
@@ -529,11 +657,11 @@
       "classes": [
         "Assassin"
       ],
-      "hp": 715,
-      "attack": 77,
-      "armor": 21,
-      "magicResist": 21,
-      "attackSpeed": 0.72,
+      "hp": 725,
+      "attack": 97,
+      "armor": 24,
+      "magicResist": 25,
+      "attackSpeed": 0.875,
       "range": 1,
       "manaStart": 0,
       "manaMax": 100,
@@ -548,7 +676,15 @@
         "sfx": "hero-h17",
         "effectScale": 1.04,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG17",
+          "name": "Karina — Giảm kháng phép",
+          "effect": "sunder",
+          "pattern": "sweep",
+          "power": 67,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -561,26 +697,34 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 745,
-      "attack": 80,
-      "armor": 21,
-      "magicResist": 21,
-      "attackSpeed": 0.79,
+      "hp": 680,
+      "attack": 85,
+      "armor": 20,
+      "magicResist": 24,
+      "attackSpeed": 0.795,
       "range": 3,
       "manaStart": 0,
       "manaMax": 100,
       "ability": {
-        "kind": "dash",
+        "kind": "blast",
         "power": 198,
-        "radius": 1,
+        "radius": 2,
         "id": "SK18",
-        "name": "Lướt Liên Hoa",
+        "name": "Liên Hoa Phi Nhận",
         "durationMs": 0,
         "vfx": "hero-h18",
         "sfx": "hero-h18",
         "effectScale": 1.08,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG18",
+          "name": "Hanabi — Bơm Mana",
+          "effect": "spark",
+          "pattern": "focused",
+          "power": 70,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -593,11 +737,11 @@
       "classes": [
         "Fighter"
       ],
-      "hp": 705,
-      "attack": 80,
-      "armor": 21,
-      "magicResist": 21,
-      "attackSpeed": 0.8600000000000001,
+      "hp": 925,
+      "attack": 82,
+      "armor": 36,
+      "magicResist": 33,
+      "attackSpeed": 0.73,
       "range": 1,
       "manaStart": 0,
       "manaMax": 100,
@@ -612,7 +756,15 @@
         "sfx": "hero-h19",
         "effectScale": 1.12,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG19",
+          "name": "Ruby — Khiên bản thân/đồng minh",
+          "effect": "fortify",
+          "pattern": "sweep",
+          "power": 73,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -625,18 +777,18 @@
       "classes": [
         "Support"
       ],
-      "hp": 670,
-      "attack": 85,
-      "armor": 21,
-      "magicResist": 21,
-      "attackSpeed": 0.93,
+      "hp": 790,
+      "attack": 58,
+      "armor": 30,
+      "magicResist": 39,
+      "attackSpeed": 0.655,
       "range": 3,
       "manaStart": 0,
       "manaMax": 100,
       "ability": {
-        "kind": "heal",
+        "kind": "teamHeal",
         "power": 173,
-        "radius": 1,
+        "radius": 2,
         "id": "SK20",
         "name": "Ánh Sáng Tái Sinh",
         "durationMs": 0,
@@ -644,7 +796,15 @@
         "sfx": "hero-h20",
         "effectScale": 1.16,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG20",
+          "name": "Rafaela — Hồi phục đồng minh",
+          "effect": "renew",
+          "pattern": "focused",
+          "power": 76,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -657,26 +817,34 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 730,
-      "attack": 73,
+      "hp": 670,
+      "attack": 58,
       "armor": 21,
-      "magicResist": 21,
-      "attackSpeed": 0.65,
-      "range": 1,
+      "magicResist": 35,
+      "attackSpeed": 0.625,
+      "range": 3,
       "manaStart": 0,
       "manaMax": 100,
       "ability": {
-        "kind": "shield",
+        "kind": "blast",
         "power": 173,
-        "radius": 1,
+        "radius": 2,
         "id": "SK21",
-        "name": "Khiên Hắc Linh",
+        "name": "Hắc Linh Bạo Phát",
         "durationMs": 0,
         "vfx": "hero-h21",
         "sfx": "hero-h21",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG21",
+          "name": "Zhask — Giảm giáp",
+          "effect": "armorBreak",
+          "pattern": "chain",
+          "power": 79,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -689,11 +857,11 @@
       "classes": [
         "Fighter"
       ],
-      "hp": 855,
-      "attack": 94,
-      "armor": 24,
-      "magicResist": 24,
-      "attackSpeed": 0.72,
+      "hp": 1140,
+      "attack": 96,
+      "armor": 44,
+      "magicResist": 40,
+      "attackSpeed": 0.73,
       "range": 1,
       "manaStart": 0,
       "manaMax": 120,
@@ -708,7 +876,15 @@
         "sfx": "hero-h22",
         "effectScale": 1.04,
         "cleanse": false,
-        "status": "slow"
+        "status": "slow",
+        "signature": {
+          "id": "SIG22",
+          "name": "Zilong — Thiêu đốt",
+          "effect": "ignite",
+          "pattern": "chain",
+          "power": 93,
+          "durationMs": 2400
+        }
       }
     },
     {
@@ -721,11 +897,11 @@
       "classes": [
         "Ranger"
       ],
-      "hp": 900,
-      "attack": 96,
-      "armor": 24,
-      "magicResist": 24,
-      "attackSpeed": 0.79,
+      "hp": 860,
+      "attack": 106,
+      "armor": 25,
+      "magicResist": 29,
+      "attackSpeed": 0.845,
       "range": 3,
       "manaStart": 0,
       "manaMax": 120,
@@ -740,7 +916,15 @@
         "sfx": "hero-h23",
         "effectScale": 1.08,
         "cleanse": false,
-        "status": "burn"
+        "status": "burn",
+        "signature": {
+          "id": "SIG23",
+          "name": "Claude — Giảm kháng phép",
+          "effect": "sunder",
+          "pattern": "chain",
+          "power": 96,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -753,11 +937,11 @@
       "classes": [
         "Fighter"
       ],
-      "hp": 1055,
-      "attack": 95,
-      "armor": 24,
-      "magicResist": 24,
-      "attackSpeed": 0.8600000000000001,
+      "hp": 1125,
+      "attack": 93,
+      "armor": 44,
+      "magicResist": 40,
+      "attackSpeed": 0.705,
       "range": 1,
       "manaStart": 0,
       "manaMax": 120,
@@ -772,7 +956,15 @@
         "sfx": "hero-h24",
         "effectScale": 1.12,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG24",
+          "name": "Thamuz — Làm choáng",
+          "effect": "shock",
+          "pattern": "arc",
+          "power": 99,
+          "durationMs": 650
+        }
       }
     },
     {
@@ -785,12 +977,12 @@
       "classes": [
         "Tank"
       ],
-      "hp": 800,
-      "attack": 83,
-      "armor": 24,
-      "magicResist": 24,
-      "attackSpeed": 0.93,
-      "range": 3,
+      "hp": 1330,
+      "attack": 70,
+      "armor": 65,
+      "magicResist": 53,
+      "attackSpeed": 0.56,
+      "range": 1,
       "manaStart": 0,
       "manaMax": 120,
       "ability": {
@@ -804,7 +996,15 @@
         "sfx": "hero-h25",
         "effectScale": 1.16,
         "cleanse": false,
-        "status": "slow"
+        "status": "slow",
+        "signature": {
+          "id": "SIG25",
+          "name": "Gatotkaca — Làm chậm",
+          "effect": "frost",
+          "pattern": "sweep",
+          "power": 66,
+          "durationMs": 1800
+        }
       }
     },
     {
@@ -817,12 +1017,12 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 870,
-      "attack": 89,
-      "armor": 24,
-      "magicResist": 24,
-      "attackSpeed": 0.65,
-      "range": 1,
+      "hp": 845,
+      "attack": 76,
+      "armor": 27,
+      "magicResist": 42,
+      "attackSpeed": 0.675,
+      "range": 3,
       "manaStart": 0,
       "manaMax": 120,
       "ability": {
@@ -836,7 +1036,15 @@
         "sfx": "hero-h26",
         "effectScale": 1,
         "cleanse": false,
-        "status": "burn"
+        "status": "burn",
+        "signature": {
+          "id": "SIG26",
+          "name": "Valir — Bơm Mana",
+          "effect": "spark",
+          "pattern": "sweep",
+          "power": 69,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -850,12 +1058,12 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 1015,
-      "attack": 111,
-      "armor": 27,
-      "magicResist": 27,
-      "attackSpeed": 0.72,
-      "range": 1,
+      "hp": 985,
+      "attack": 83,
+      "armor": 33,
+      "magicResist": 51,
+      "attackSpeed": 0.625,
+      "range": 3,
       "manaStart": 0,
       "manaMax": 140,
       "ability": {
@@ -869,7 +1077,15 @@
         "sfx": "hero-h27",
         "effectScale": 1.04,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG27",
+          "name": "Lunox — Tăng công",
+          "effect": "empower",
+          "pattern": "chain",
+          "power": 83,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -882,11 +1098,11 @@
       "classes": [
         "Sorcerer"
       ],
-      "hp": 1070,
-      "attack": 113,
-      "armor": 27,
-      "magicResist": 27,
-      "attackSpeed": 0.79,
+      "hp": 1000,
+      "attack": 86,
+      "armor": 33,
+      "magicResist": 51,
+      "attackSpeed": 0.65,
       "range": 3,
       "manaStart": 0,
       "manaMax": 140,
@@ -901,7 +1117,15 @@
         "sfx": "hero-h28",
         "effectScale": 1.08,
         "cleanse": false,
-        "status": "slow"
+        "status": "slow",
+        "signature": {
+          "id": "SIG28",
+          "name": "Kadita — Thiêu đốt",
+          "effect": "ignite",
+          "pattern": "burst",
+          "power": 86,
+          "durationMs": 2400
+        }
       }
     },
     {
@@ -914,11 +1138,11 @@
       "classes": [
         "Tank"
       ],
-      "hp": 1260,
-      "attack": 93,
-      "armor": 27,
-      "magicResist": 27,
-      "attackSpeed": 0.8600000000000001,
+      "hp": 1585,
+      "attack": 86,
+      "armor": 77,
+      "magicResist": 63,
+      "attackSpeed": 0.585,
       "range": 1,
       "manaStart": 0,
       "manaMax": 140,
@@ -933,7 +1157,15 @@
         "sfx": "hero-h29",
         "effectScale": 1.12,
         "cleanse": false,
-        "status": "burn"
+        "status": "burn",
+        "signature": {
+          "id": "SIG29",
+          "name": "Tigreal — Bảo vệ đồng minh",
+          "effect": "guard",
+          "pattern": "focused",
+          "power": 89,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -947,12 +1179,12 @@
       "classes": [
         "Fighter"
       ],
-      "hp": 1195,
-      "attack": 98,
-      "armor": 27,
-      "magicResist": 27,
-      "attackSpeed": 0.93,
-      "range": 3,
+      "hp": 1355,
+      "attack": 108,
+      "armor": 53,
+      "magicResist": 49,
+      "attackSpeed": 0.705,
+      "range": 1,
       "manaStart": 0,
       "manaMax": 140,
       "ability": {
@@ -966,7 +1198,15 @@
         "sfx": "hero-h30",
         "effectScale": 1.16,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG30",
+          "name": "Argus — Tăng tốc đánh",
+          "effect": "quickstep",
+          "pattern": "chain",
+          "power": 92,
+          "durationMs": 2800
+        }
       }
     },
     {
@@ -979,11 +1219,11 @@
       "classes": [
         "Support"
       ],
-      "hp": 460,
-      "attack": 42,
-      "armor": 17,
-      "magicResist": 20,
-      "attackSpeed": 0.61,
+      "hp": 535,
+      "attack": 43,
+      "armor": 19,
+      "magicResist": 26,
+      "attackSpeed": 0.63,
       "range": 3,
       "manaStart": 0,
       "manaMax": 70,
@@ -998,7 +1238,15 @@
         "sfx": "hero-h31",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG31",
+          "name": "Diggie — Bảo vệ đồng minh",
+          "effect": "guard",
+          "pattern": "sweep",
+          "power": 51,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -1011,11 +1259,11 @@
       "classes": [
         "Support"
       ],
-      "hp": 570,
-      "attack": 47,
-      "armor": 20,
-      "magicResist": 20,
-      "attackSpeed": 0.65,
+      "hp": 660,
+      "attack": 52,
+      "armor": 24,
+      "magicResist": 32,
+      "attackSpeed": 0.655,
       "range": 3,
       "manaStart": 0,
       "manaMax": 85,
@@ -1030,7 +1278,15 @@
         "sfx": "hero-h32",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG32",
+          "name": "Angela — Khiên bản thân/đồng minh",
+          "effect": "fortify",
+          "pattern": "chain",
+          "power": 65,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -1043,11 +1299,11 @@
       "classes": [
         "Support"
       ],
-      "hp": 620,
+      "hp": 760,
       "attack": 52,
-      "armor": 23,
-      "magicResist": 20,
-      "attackSpeed": 0.62,
+      "armor": 30,
+      "magicResist": 39,
+      "attackSpeed": 0.605,
       "range": 3,
       "manaStart": 0,
       "manaMax": 95,
@@ -1062,7 +1318,15 @@
         "sfx": "hero-h33",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG33",
+          "name": "Floryn — Tăng tốc đánh",
+          "effect": "quickstep",
+          "pattern": "burst",
+          "power": 79,
+          "durationMs": 2800
+        }
       }
     },
     {
@@ -1075,11 +1339,11 @@
       "classes": [
         "Support"
       ],
-      "hp": 650,
-      "attack": 52,
-      "armor": 23,
-      "magicResist": 20,
-      "attackSpeed": 0.72,
+      "hp": 775,
+      "attack": 55,
+      "armor": 30,
+      "magicResist": 39,
+      "attackSpeed": 0.63,
       "range": 3,
       "manaStart": 0,
       "manaMax": 100,
@@ -1094,7 +1358,15 @@
         "sfx": "hero-h34",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG34",
+          "name": "Mathilda — Bơm Mana",
+          "effect": "spark",
+          "pattern": "chain",
+          "power": 82,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -1107,11 +1379,11 @@
       "classes": [
         "Support"
       ],
-      "hp": 760,
-      "attack": 57,
-      "armor": 26,
-      "magicResist": 20,
-      "attackSpeed": 0.64,
+      "hp": 950,
+      "attack": 66,
+      "armor": 37,
+      "magicResist": 48,
+      "attackSpeed": 0.655,
       "range": 3,
       "manaStart": 0,
       "manaMax": 115,
@@ -1126,7 +1398,15 @@
         "sfx": "hero-h35",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG35",
+          "name": "Estes — Tăng công",
+          "effect": "empower",
+          "pattern": "burst",
+          "power": 96,
+          "durationMs": 0
+        }
       }
     },
     {
@@ -1139,11 +1419,11 @@
       "classes": [
         "Support"
       ],
-      "hp": 880,
-      "attack": 62,
-      "armor": 29,
-      "magicResist": 20,
-      "attackSpeed": 0.7,
+      "hp": 1105,
+      "attack": 70,
+      "armor": 45,
+      "magicResist": 58,
+      "attackSpeed": 0.605,
       "range": 3,
       "manaStart": 0,
       "manaMax": 130,
@@ -1158,7 +1438,15 @@
         "sfx": "hero-h36",
         "effectScale": 1,
         "cleanse": false,
-        "status": null
+        "status": null,
+        "signature": {
+          "id": "SIG36",
+          "name": "Faramis — Hồi máu",
+          "effect": "siphon",
+          "pattern": "sweep",
+          "power": 110,
+          "durationMs": 0
+        }
       }
     }
   ],

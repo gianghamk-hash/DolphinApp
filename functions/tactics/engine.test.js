@@ -311,3 +311,48 @@ test('role balancing: all 36 champions have role-appropriate HP, armor, speed an
   }
  }
 });
+
+test('every champion has a distinct typed signature with unique identity',()=>{
+ const entries=E.C.heroes.map(h=>h.ability.signature);
+ assert.equal(entries.length,36);
+ assert.equal(new Set(entries.map(s=>s.id)).size,36);
+ assert.equal(new Set(entries.map(s=>s.effect+':'+s.pattern)).size,36);
+ const valid={Tank:new Set(['shock','fortify','frost','guard']),Assassin:new Set(['quickstep','armorBreak','shock','sunder']),Ranger:new Set(['empower','quickstep','armorBreak','ignite','shock','spark','sunder']),Sorcerer:new Set(['ignite','frost','shock','sunder','armorBreak','spark','empower']),Support:new Set(['renew','guard','fortify','quickstep','spark','empower','siphon']),Fighter:new Set(['siphon','empower','fortify','ignite','shock','quickstep'])};
+ E.C.heroes.forEach(h=>assert.ok(valid[h.classes[0]].has(h.ability.signature.effect),h.name+' role signature'));
+
+ for(const s of entries){assert.ok(s.name&&s.power>0);assert.ok(['focused','sweep','chain','burst','arc'].includes(s.pattern));}
+});
+test('all 36 signatures create authoritative cast and visual event',()=>{
+ for(const h of E.C.heroes){
+  const state=setup(),p=state.players.a;
+  p.units={caster:{id:'caster',heroId:h.id,star:1,items:[]}};
+  p.board={r0c1:'caster'};
+  const beforeMana=h.manaStart, beforeRange=h.range;
+  h.manaStart=h.manaMax;h.range=8;
+  try{
+   const report=E.simulate({a:'a',b:null,pve:true},state,{a:E.clone(p)},42);
+   const signature=report.events.find(e=>e.type==='signature'&&e.skillId===h.ability.signature.id);
+   assert.ok(signature,h.name+' signature did not trigger');
+   assert.equal(signature.vfx,h.ability.vfx);
+   assert.ok(report.events.some(e=>e.type==='skill'&&e.actor==='caster'),h.name+' missing skill animation event');
+  }finally{h.manaStart=beforeMana;h.range=beforeRange;}
+ }
+});
+
+test('signature effect events and assassin carry approach match skill descriptions',()=>{
+ const eventType={shock:'stun',armorBreak:'signatureEffect',quickstep:'haste',renew:'heal',fortify:'shield',ignite:'burn',siphon:'heal',frost:'slow',empower:'signatureEffect',sunder:'signatureEffect',spark:'mana',guard:'shield'};
+ for(const hero of E.C.heroes){
+  const state=setup(),p=state.players.a;
+  p.units={caster:{id:'caster',heroId:hero.id,star:1,items:[]}};
+  p.board={r0c3:'caster'};state.round=20;
+  const mana=hero.manaStart,range=hero.range;
+  hero.manaStart=hero.manaMax;hero.range=8;
+  try{
+   const report=E.simulate({a:'a',b:null,pve:true},state,{a:E.clone(p)},12345);
+   const expected=eventType[hero.ability.signature.effect];
+   assert.ok(report.events.some(e=>e.type===expected&&e.actor==='caster'),hero.id+' needs a real '+expected+' combat event');
+   assert.ok(report.events.some(e=>e.type==='signature'&&e.skillId===hero.ability.signature.id),hero.id+' needs signature VFX cue');
+   if(hero.classes.includes('Assassin'))assert.ok(report.events.some(e=>e.type==='move'&&e.actor==='caster'&&e.source==='assassinSkill'),hero.id+' must approach enemy carry');
+  }finally{hero.manaStart=mana;hero.range=range;}
+ }
+});

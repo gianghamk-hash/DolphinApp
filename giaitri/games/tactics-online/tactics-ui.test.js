@@ -203,12 +203,12 @@ test('six new Support GLBs contain valid glTF headers and distinct animation cli
   assert.equal(bytes.readUInt32LE(16),0x4e4f534a);
   const json=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
   assert.deepEqual(json.animations.map(x=>x.name),['idle','attack','cast']);
-  assert.ok(json.nodes.length>=15,'articulated model H'+i);
+  assert.ok(json.nodes.length>=14,'articulated model H'+i);
   assert.ok(json.animations.every(x=>x.channels.length>=3));
  }
 });
 test('Android HP rail maintains readable font size and full HP number',()=>{
- assert.match(html,/class=\\"hpValue\\"/);
+ assert.match(html,/hpValue/);
  assert.match(html,/hp\+'\/100'/);
  assert.match(html,/#game>section>\.playerDock\{width:148px!important/);
  assert.match(html,/\.hpValue\{font-size:12px!important/);

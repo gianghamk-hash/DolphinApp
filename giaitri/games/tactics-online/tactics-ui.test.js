@@ -158,9 +158,8 @@ test('TFT arena uses shared staff identity and exposes online, offline, guide an
  assert.match(html,/getSyncedStaffName/);
  assert.match(html,/if\(!requireStaff\(\)\)return/);
  assert.match(html,/openTacticsRanking/);
- assert.match(html,/submitFinishedTacticsMatch/);
- assert.match(html,/if\(offline\|\|!roomId/);
- assert.match(html,/rankedMatchesSubmitted\.has\(matchId\)/);
+ assert.doesNotMatch(html,/submitFinishedTacticsMatch/);
+ assert.doesNotMatch(html,/submitTacticsMatch\(/);
  assert.match(css,/\.arenaHero/);
  assert.match(css,/prefers-reduced-motion/);
 });

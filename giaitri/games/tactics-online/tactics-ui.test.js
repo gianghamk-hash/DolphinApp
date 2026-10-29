@@ -150,3 +150,17 @@ test('rendering retains Three.js models when online state changes without board 
  assert.match(html,/lastBoardSignature=signature;renderBoard\(\)/);
  assert.doesNotMatch(html,/else if\(state\.roundPhase==='PREPARATION'\)renderBoard\(\)/);
 });
+
+test('TFT arena uses shared staff identity and exposes online, offline, guide and rankings',()=>{
+ assert.match(html,/class="arenaHero"/);
+ assert.match(html,/id="arenaStaffName"/);
+ assert.match(html,/id="nick"[^>]*readonly/);
+ assert.match(html,/getSyncedStaffName/);
+ assert.match(html,/if\(!requireStaff\(\)\)return/);
+ assert.match(html,/openTacticsRanking/);
+ assert.match(html,/submitFinishedTacticsMatch/);
+ assert.match(html,/if\(offline\|\|!roomId/);
+ assert.match(html,/rankedMatchesSubmitted\.has\(matchId\)/);
+ assert.match(css,/\.arenaHero/);
+ assert.match(css,/prefers-reduced-motion/);
+});

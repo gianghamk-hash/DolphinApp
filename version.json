@@ -1,7 +1,7 @@
 {
-  "version": "1.0.188",
-  "buildDate": "2026-10-29T09:49:38.470Z",
-  "commit": "4f242af",
-  "notes": "Merge pull request #129 from gianghamk-hash/feat/chess-shared-multiplayer-20261029",
+  "version": "1.0.189",
+  "buildDate": "2026-10-29T10:06:35.468Z",
+  "commit": "485b646",
+  "notes": "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029",
   "forceUpdate": false
 }

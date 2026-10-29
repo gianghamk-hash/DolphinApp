@@ -1,22 +1,22 @@
 {
-  "version": "1.0.188",
-  "previousVersion": "1.0.187",
-  "commit": "4f242af",
-  "previousCommit": "02ed492",
-  "buildDate": "2026-10-29T09:49:38.470Z",
-  "summary": "Merge pull request #129 from gianghamk-hash/feat/chess-shared-multiplayer-20261029",
+  "version": "1.0.189",
+  "previousVersion": "1.0.188",
+  "commit": "485b646",
+  "previousCommit": "4f242af",
+  "buildDate": "2026-10-29T10:06:35.468Z",
+  "summary": "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029",
   "changes": {
-    "totalCommits": 192,
+    "totalCommits": 193,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #129 from gianghamk-hash/feat/chess-shared-multiplayer-20261029"
+    "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/chess.html",
+      "file": "giaitri/games/caro.html",
       "type": "update"
     }
   ]

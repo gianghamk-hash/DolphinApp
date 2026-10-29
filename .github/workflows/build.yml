@@ -216,8 +216,12 @@ jobs:
           package com.dolphin.cruise;
 
           import android.annotation.SuppressLint;
+          import android.app.AlertDialog;
           import android.content.pm.ActivityInfo;
           import android.webkit.JavascriptInterface;
+          import android.webkit.JsResult;
+          import android.webkit.JsPromptResult;
+          import android.webkit.WebChromeClient;
           import android.net.Uri;
           import android.os.Bundle;
           import android.view.View;
@@ -289,6 +293,49 @@ jobs:
                   s.setCacheMode(WebSettings.LOAD_DEFAULT);
                   s.setMixedContentMode(WebSettings.MIXED_CONTENT_COMPATIBILITY_MODE);
                   s.setUserAgentString(s.getUserAgentString() + " ${UA_EXTRA}");
+
+                  // Android WebView does not display JavaScript confirm/alert/prompt
+                  // unless a WebChromeClient handles them. Staff-name locking uses confirm().
+                  webView.setWebChromeClient(new WebChromeClient() {
+                      @Override
+                      public boolean onJsConfirm(WebView view, String url, String message, JsResult result) {
+                          new AlertDialog.Builder(MainActivity.this)
+                              .setTitle("Xác nhận")
+                              .setMessage(message)
+                              .setCancelable(false)
+                              .setPositiveButton("Đồng ý", (dialog, which) -> result.confirm())
+                              .setNegativeButton("Hủy", (dialog, which) -> result.cancel())
+                              .show();
+                          return true;
+                      }
+
+                      @Override
+                      public boolean onJsAlert(WebView view, String url, String message, JsResult result) {
+                          new AlertDialog.Builder(MainActivity.this)
+                              .setTitle("Thông báo")
+                              .setMessage(message)
+                              .setCancelable(false)
+                              .setPositiveButton("Đóng", (dialog, which) -> result.confirm())
+                              .show();
+                          return true;
+                      }
+
+                      @Override
+                      public boolean onJsPrompt(WebView view, String url, String message, String defaultValue, JsPromptResult result) {
+                          android.widget.EditText field = new android.widget.EditText(MainActivity.this);
+                          field.setSingleLine(true);
+                          field.setText(defaultValue == null ? "" : defaultValue);
+                          new AlertDialog.Builder(MainActivity.this)
+                              .setTitle("Nhập thông tin")
+                              .setMessage(message)
+                              .setView(field)
+                              .setCancelable(false)
+                              .setPositiveButton("Đồng ý", (dialog, which) -> result.confirm(field.getText().toString()))
+                              .setNegativeButton("Hủy", (dialog, which) -> result.cancel())
+                              .show();
+                          return true;
+                      }
+                  });
 
                   webView.addJavascriptInterface(new AndroidGameBridge(), "AndroidGame");
                   webView.setWebViewClient(new WebViewClient() {

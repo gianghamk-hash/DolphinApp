@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.176",
+      "releaseDate": "2026-10-29T05:19:27.247Z",
+      "summary": "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029",
+      "details": [
+        "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029"
+      ]
+    },
+    {
       "version": "1.0.175",
       "releaseDate": "2026-10-29T04:25:13.068Z",
       "summary": "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(ui): compact connection indicators in child apps",
       "details": [
         "fix(ui): compact connection indicators in child apps"
-      ]
-    },
-    {
-      "version": "1.0.126",
-      "releaseDate": "2026-10-27T01:25:21.747Z",
-      "summary": "fix(landing): hide notification bell when permission granted",
-      "details": [
-        "fix(landing): hide notification bell when permission granted"
       ]
     }
   ]

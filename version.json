@@ -1,7 +1,7 @@
 {
-  "version": "1.0.176",
-  "buildDate": "2026-10-29T05:19:27.247Z",
-  "commit": "ac40f13",
-  "notes": "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029",
+  "version": "1.0.177",
+  "buildDate": "2026-10-29T05:29:01.965Z",
+  "commit": "9a2edb7",
+  "notes": "Merge pull request #118 from gianghamk-hash/fix/tft-package-f-combat-accuracy-20261029",
   "forceUpdate": false
 }

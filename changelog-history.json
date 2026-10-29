@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.174",
+      "releaseDate": "2026-10-29T03:38:54.513Z",
+      "summary": "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)",
+      "details": [
+        "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)"
+      ]
+    },
+    {
       "version": "1.0.173",
       "releaseDate": "2026-10-29T03:08:25.137Z",
       "summary": "Merge pull request #113 from gianghamk-hash/balance/tft-role-stats-cost1-tank-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music",
       "details": [
         "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music"
-      ]
-    },
-    {
-      "version": "1.0.124",
-      "releaseDate": "2026-10-26T18:22:02.736Z",
-      "summary": "feat(arcade): optional fullscreen for all seven non-TFT games",
-      "details": [
-        "feat(arcade): optional fullscreen for all seven non-TFT games"
       ]
     }
   ]

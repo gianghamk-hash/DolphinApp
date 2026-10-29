@@ -1,5 +1,5 @@
 {
-  "version": "1.0.174",
+  "version": "1.0.175",
   "releaseDate": "2026-10-29",
-  "notes": "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)"
+  "notes": "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029"
 }

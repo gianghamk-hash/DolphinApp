@@ -1,38 +1,22 @@
 {
-  "version": "1.0.174",
-  "previousVersion": "1.0.173",
-  "commit": "06102de",
-  "previousCommit": "21879c3",
-  "buildDate": "2026-10-29T03:38:54.513Z",
-  "summary": "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)",
+  "version": "1.0.175",
+  "previousVersion": "1.0.174",
+  "commit": "c5feef2",
+  "previousCommit": "06102de",
+  "buildDate": "2026-10-29T04:25:13.068Z",
+  "summary": "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029",
   "changes": {
-    "totalCommits": 178,
-    "filesChanged": 7,
+    "totalCommits": 179,
+    "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)"
+    "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/engine.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/hero-profiles.js",
+      "file": "dolphin-leaderboard.js",
       "type": "update"
     },
     {
@@ -40,7 +24,15 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/rig-animator.js",
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

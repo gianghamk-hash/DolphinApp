@@ -155,6 +155,7 @@ function createEngine(C){
    }
   }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
+  for(const u of units)u.baseShield=u.shield||0;
   const events=[],emit=e=>{if(events.length<1200)events.push(e);};
   function applyBurn(src,tgt,t,duration,dps,source){
    tgt.burns ||= {};
@@ -181,7 +182,10 @@ function createEngine(C){
    if(!tgt.alive)return;
    let incoming=Math.max(1,Math.round(amount)),absorbed=Math.min(tgt.shield,incoming);
    tgt.shield-=absorbed;incoming-=absorbed;
-   for(const layer of tgt.shieldLayers||[]){const take=Math.min(layer.remaining,absorbed);layer.remaining-=take;absorbed-=take;if(!absorbed)break;}
+   // Consume permanent trait shield first, then time-limited ability layers.
+   const baseUsed=Math.min(tgt.baseShield||0,absorbed);tgt.baseShield=Math.max(0,(tgt.baseShield||0)-baseUsed);
+   let temporaryUsed=absorbed-baseUsed;
+   for(const layer of tgt.shieldLayers||[]){const take=Math.min(layer.remaining,temporaryUsed);layer.remaining-=take;temporaryUsed-=take;if(!temporaryUsed)break;}
    const dealt=Math.min(tgt.hp,incoming);
    tgt.hp-=dealt;src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
    if(src.effects&&src.effects.includes('burn'))applyBurn(src,tgt,t,3000,Math.max(8,tgt.maxHp*.015),'item');

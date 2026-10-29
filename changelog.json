@@ -1,38 +1,34 @@
 {
-  "version": "1.0.164",
-  "previousVersion": "1.0.163",
-  "commit": "a4f46a3",
-  "previousCommit": "e8ba0ed",
-  "buildDate": "2026-10-28T09:38:51.366Z",
-  "summary": "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028",
+  "version": "1.0.165",
+  "previousVersion": "1.0.164",
+  "commit": "8b96c57",
+  "previousCommit": "a4f46a3",
+  "buildDate": "2026-10-29T00:57:02.796Z",
+  "summary": "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029",
   "changes": {
-    "totalCommits": 168,
-    "filesChanged": 5,
+    "totalCommits": 169,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028"
+    "Merge pull request #105 from gianghamk-hash/fix/tft-gameplay-integrity-phase1-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/guide.js",
+      "file": "functions/tactics/engine.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/guide.test.js",
+      "file": "functions/tactics/engine.test.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "giaitri/games/tactics-online/extreme-ai.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/tactics-ui.css",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "file": "giaitri/games/tactics-online/extreme-ai.test.js",
       "type": "update"
     }
   ]

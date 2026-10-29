@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.164",
+      "releaseDate": "2026-10-28T09:38:51.366Z",
+      "summary": "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028",
+      "details": [
+        "Merge pull request #104 from gianghamk-hash/feat/tft-start-screen-guide-20261028"
+      ]
+    },
+    {
       "version": "1.0.163",
       "releaseDate": "2026-10-28T09:19:30.898Z",
       "summary": "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028",
@@ -390,14 +398,6 @@
       "summary": "fix(ci): retry Saber GLB deployment after concurrent main changes",
       "details": [
         "fix(ci): retry Saber GLB deployment after concurrent main changes"
-      ]
-    },
-    {
-      "version": "1.0.114",
-      "releaseDate": "2026-10-26T16:03:43.910Z",
-      "summary": "fix: Blender GLB export NumPy dependency",
-      "details": [
-        "fix: Blender GLB export NumPy dependency"
       ]
     }
   ]

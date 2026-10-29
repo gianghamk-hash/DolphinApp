@@ -263,3 +263,12 @@ test('phase 1: source-scoped haste and burn/status ordering are preserved',()=>{
  assert.match(engine,/Object\.values\(u\.hasteEffects\|\|\{\}\)/);
  assert.ok(engine.indexOf('const burnDps=Math.max(')<engine.indexOf('if(u.stunnedUntil>t)'));
 });
+
+test('critical shield ledger keeps permanent and temporary absorption separate',()=>{
+ const src=require('node:fs').readFileSync(require('node:path').join(__dirname,'engine.js'),'utf8');
+ assert.match(src,/u\.baseShield=u\.shield\|\|0/);
+ assert.match(src,/const baseUsed=Math\.min\(tgt\.baseShield\|\|0,absorbed\)/);
+ assert.match(src,/let temporaryUsed=absorbed-baseUsed/);
+ assert.match(src,/l\.until<=t/);
+ assert.match(src,/baseShield:0,shieldLayers:\[\]/);
+});

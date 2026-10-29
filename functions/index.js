@@ -26,24 +26,32 @@ async function throttle(uid,wait){
  const x=await ref.transaction(v=>!v||now-(v.last||0)>=wait?{last:now}:undefined,undefined,false);
  if(!x.committed)throw new HttpsError('resource-exhausted','Thao tác quá nhanh');
 }
+async function verifiedName(uid){
+ const snap=await getDatabase().ref('staffIdentity/'+uid).once('value');
+ const value=snap.val();
+ if(!value||value.verified!==true||!value.employeeId||!value.name)
+   throw new HttpsError('permission-denied','Tài khoản chưa được quản lý xác minh nhân viên');
+ return String(value.name).trim().slice(0,32);
+}
 exports.tacticsCreateRoom=onCall(opts,async req=>{
- const uid=requireUid(req),name=nameOf(req.data&&req.data.name);
+ const uid=requireUid(req),name=await verifiedName(uid);
  await throttle(uid,1500);
  for(let tries=0;tries<8;tries++){
   const code=roomCode(),now=Date.now(),seed=crypto.randomBytes(4).readUInt32BE(0)||1;
   const x=await rooms().child(code).transaction(v=>v===null?E.roomNew(uid,name,now,seed):undefined,undefined,false);
-  if(x.committed)return {roomId:code,uid};
+  if(x.committed){await getDatabase().ref('roomPresence/'+code+'/'+uid).set(true);return {roomId:code,uid};}
  }
  throw new HttpsError('unavailable','Không tạo được phòng');
 });
 exports.tacticsJoinRoom=onCall(opts,async req=>{
- const uid=requireUid(req),name=nameOf(req.data&&req.data.name),id=roomIdOf(req.data&&req.data.roomId);
+ const uid=requireUid(req),name=await verifiedName(uid),id=roomIdOf(req.data&&req.data.roomId);
  const state=await transact(rooms().child(id),s=>{
   E.assert(s&&s.status==='waiting','Phòng không tồn tại hoặc đã bắt đầu');
   if(s.players[uid])return s;
   E.assert(s.playerOrder.length<4,'Phòng đã đủ bốn người');
   s.playerOrder.push(uid);s.players[uid]=E.freshPlayer(uid,name,s);s.updatedAt=Date.now();return s;
  });
+ await getDatabase().ref('roomPresence/'+id+'/'+uid).set(true);
  return {roomId:id,players:state.playerOrder.length};
 });
 // Remove a waiting-room participant without touching live combat rosters.
@@ -177,4 +185,11 @@ exports.tacticsLeaderboard=onCall(opts,async req=>{
  .sort((a,b)=>b.totalScore-a.totalScore||b.wins-a.wins||a.lastPlayed-b.lastPlayed)
  .slice(0,limit);
  return {rows,verified:true};
+});
+
+exports.tacticsGetRoom=onCall(opts,async req=>{
+ const uid=requireUid(req),id=roomIdOf(req.data?.roomId);
+ const state=(await rooms().child(id).once('value')).val();
+ if(!state||!state.players?.[uid])throw new HttpsError('permission-denied','Không thuộc phòng');
+ return {state};
 });

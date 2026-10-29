@@ -6,7 +6,7 @@ test('three expert bots autonomously draft, position, level and mark ready',()=>
  for(const uid of ['AI_1','AI_2','AI_3']){
   AI.takeTurn(r,uid,1000);
   const p=r.players[uid];assert.equal(p.ready,true);
-  assert.ok(Object.keys(p.board).length>0);
+  assert.ok(Object.keys(p.board).length>0,uid+' had no board; gold='+p.gold+' shop='+JSON.stringify(p.shop)+' units='+Object.keys(p.units).length);
   assert.ok(Object.keys(p.board).length<=p.level);
   assert.ok(Object.keys(p.bench).length<=8);
  }

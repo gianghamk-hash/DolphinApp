@@ -267,7 +267,7 @@ let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
 let pinchPointers=new Map(),pinchDistance=0,lastPinchAt=0,itemDrag=null;
 const combatMetrics=new Map(),combatStatuses=new Map();let lastMetricPaint=0;
-let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
+let lastBoardSignature='',seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
 function onlineMessage(message,problem=false){
@@ -452,7 +452,7 @@ window.joinRoom=async()=>{
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- try{if(onlinePending){const pending=onlinePending;onlinePending=null;clearTimeout(pending.timeout);pending.resolve(false);}if(!offline)await MP.leaveRoom();offline=false;roomId='';roomHostId='';onlineStateAt=0;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;localStorage.removeItem(reconnectKey);
+ try{if(onlinePending){const pending=onlinePending;onlinePending=null;clearTimeout(pending.timeout);pending.resolve(false);}if(!offline)await MP.leaveRoom();offline=false;roomId='';roomHostId='';onlineStateAt=0;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';lastBoardSignature='';replay=null;localStorage.removeItem(reconnectKey);
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';$('reconnectBtn').classList.add('hidden');onlineMessage('');
   info('Đã rời phòng');}catch(e){showError(e);}
@@ -714,8 +714,15 @@ function update(){
  paintPlayers();paintControls();
  if(state.status==="finished"){$("phaseLabel").textContent="🏆 CHIẾN THẮNG: "+(state.players[state.winnerId]?.displayName||"Hòa");}
  const key=state.round+"-"+state.roundPhase;
- if(key!==seenPhaseKey){seenPhaseKey=key;renderBoard();startReplay();}
- else if(state.roundPhase==='PREPARATION')renderBoard();
+ const boardSignature=()=>{
+  const me=state.players?.[uid];
+  if(!me)return '';
+  const fingerprint=p=>Object.entries(p?.board||{}).sort(([a],[b])=>a.localeCompare(b)).map(([slot,id])=>[slot,id,p.units?.[id]?.heroId,p.units?.[id]?.star]);
+  return JSON.stringify([fingerprint(me),state.roundPhase==='COMBAT'?state.pairs?.find(pair=>pair.a===uid||pair.b===uid):null]);
+ };
+ const signature=boardSignature();
+ if(key!==seenPhaseKey){seenPhaseKey=key;lastBoardSignature=signature;renderBoard();startReplay();}
+ else if(state.roundPhase==='PREPARATION'&&signature!==lastBoardSignature){lastBoardSignature=signature;renderBoard();}
 
 }
 // Pointer-based drag to place: works on mobile touch as well as mouse.

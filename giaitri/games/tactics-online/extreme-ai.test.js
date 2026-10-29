@@ -87,3 +87,12 @@ test('deterministic simulation preserves legal units and economy',()=>{
  assert.ok(result.rounds>=3);
  assert.ok(result.events>0);
 });
+
+test('AI preserves every owned champion in its board or bench',()=>{
+ const room=E.roomNew('AI_1','AI',100,4921),p=room.players.AI_1;
+ room.status='in_game';room.phaseEndsAt=30100;
+ AI.takeTurn(room,'AI_1',1000);
+ const placed=[...Object.values(p.board),...Object.values(p.bench)];
+ assert.equal(placed.length,Object.keys(p.units).length);
+ assert.equal(new Set(placed).size,placed.length);
+});

@@ -31,7 +31,7 @@ function createAI(E){
   return score;
  }
  function bestLineup(p){
-  const all=Object.values(p.units),capacity=Math.min(p.level,8,all.length);
+  const all=Object.values(p.units),capacity=Math.min(p.level,9,all.length);
   if(!capacity)return [];
   const pool=all.sort((a,b)=>value(b)-value(a)).slice(0,Math.min(13,all.length));
   let best=[],max=-Infinity;

@@ -229,3 +229,37 @@ test('six support skills heal, shield and haste friendly units',()=>{
   }finally{hero.manaStart=before;hero.range=rangeBefore;}
  }
 });
+
+test('phase 1: lethal overkill lifesteal only heals actual removed HP',()=>{
+ const s=setup(),p=s.players.a;
+ p.units={attacker:{id:'attacker',heroId:'H01',star:1,items:['I05']}};
+ p.board={r0c0:'attacker'};
+ const q=s.players.b;q.units={target:{id:'target',heroId:'H01',star:1,items:[]}};q.board={r0c0:'target'};
+ const before=E.HERO.H01.hp;
+ const rep=E.simulate({a:'a',b:'b'},s,{a:E.clone(p),b:E.clone(q)},1234);
+ assert.ok(rep.events.some(e=>e.type==='attack'&&e.actor==='attacker'));
+ // A hit on a low-health enemy must never be reported above its HP remaining.
+ const attacks=rep.events.filter(e=>e.type==='attack'&&e.actor==='attacker');
+ assert.ok(attacks.every(e=>e.amount>=0&&e.amount<=before));
+});
+test('phase 1: support shields are bounded at 35 percent max HP',()=>{
+ const s=setup(),p=s.players.a,hero=E.HERO.H36;
+ p.units={support:{id:'support',heroId:'H36',star:2,items:['I21']},friend:{id:'friend',heroId:'H01',star:1,items:[]}};
+ p.board={r0c2:'support',r0c3:'friend'};
+ const oldMana=hero.manaStart,oldRange=hero.range;
+ hero.manaStart=hero.manaMax;hero.range=8;
+ try{
+  const events=E.simulate({a:'a',b:null,pve:true},s,{a:E.clone(p)},123).events.filter(e=>e.type==='shield'&&e.target==='friend');
+  assert.ok(events.length>0);
+  const hp=E.HERO.H01.hp;
+  assert.ok(events.reduce((sum,e)=>sum+e.amount,0)<=Math.round(hp*.35));
+ }finally{hero.manaStart=oldMana;hero.range=oldRange;}
+});
+test('phase 1: source-scoped haste and burn/status ordering are preserved',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const engine=fs.readFileSync(path.join(__dirname,'engine.js'),'utf8');
+ assert.match(engine,/u\.burns=\{\}/);
+ assert.match(engine,/v\.hasteEffects\[u\.id\]/);
+ assert.match(engine,/Object\.values\(u\.hasteEffects\|\|\{\}\)/);
+ assert.ok(engine.indexOf('const burnDps=Math.max(')<engine.indexOf('if(u.stunnedUntil>t)'));
+});

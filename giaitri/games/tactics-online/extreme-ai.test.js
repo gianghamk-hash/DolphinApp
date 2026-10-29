@@ -50,3 +50,12 @@ test('Phase 3: economy reserve decreases under critical HP',()=>{
  const danger={hp:20,gold:40,level:5};
  assert.ok(AI.economicPlan(healthy,9).reserve>AI.economicPlan(danger,9).reserve);
 });
+
+test('level 9 AI selects nine deployed champions when available',()=>{
+ const s=E.roomNew('a','A',100,919),p=s.players.a;
+ p.level=9;p.units={};
+ for(let i=0;i<10;i++){const id='u'+i;p.units[id]={id,heroId:E.C.heroes[i].id,star:1,items:[]};}
+ const lineup=AI.bestLineup(p);
+ assert.equal(lineup.length,9);
+ assert.equal(new Set(lineup.map(x=>x.id)).size,9);
+});

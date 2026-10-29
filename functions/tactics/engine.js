@@ -162,9 +162,28 @@ function createEngine(C){
    tgt.burns[key]={until:t+duration,dps};
    emit({t,actor:src.id,target:tgt.id,type:'burn',source,amount:duration});
   }
+  // Skill shields have a 5s lifetime and share a 35% max-HP ceiling.
+  // Trait shields stay as their original permanent starting shield.
+  function grantShield(target,amount,t){
+   const cap=Math.round(target.maxHp*.35),layers=target.shieldLayers ||= [];
+   const existing=layers.reduce((sum,l)=>sum+l.remaining,0);
+   const granted=Math.max(0,Math.min(Math.round(amount),cap-existing));
+   if(granted){layers.push({remaining:granted,until:t+5000});target.shield+=granted;}
+   return granted;
+  }
+  function expireShields(u,t){
+   if(!u.shieldLayers)return;
+   const expired=u.shieldLayers.filter(l=>l.until<=t);
+   if(expired.length)u.shield=Math.max(0,u.shield-expired.reduce((sum,l)=>sum+l.remaining,0));
+   u.shieldLayers=u.shieldLayers.filter(l=>l.until>t&&l.remaining>0);
+  }
   function deal(src,tgt,amount,t,spell,skillKind=null){
-   if(!tgt.alive)return;let dealt=Math.max(1,Math.round(amount));const absorbed=Math.min(tgt.shield,dealt);tgt.shield-=absorbed;dealt-=absorbed;
-   tgt.hp=Math.max(0,tgt.hp-dealt);src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
+   if(!tgt.alive)return;
+   let incoming=Math.max(1,Math.round(amount)),absorbed=Math.min(tgt.shield,incoming);
+   tgt.shield-=absorbed;incoming-=absorbed;
+   for(const layer of tgt.shieldLayers||[]){const take=Math.min(layer.remaining,absorbed);layer.remaining-=take;absorbed-=take;if(!absorbed)break;}
+   const dealt=Math.min(tgt.hp,incoming);
+   tgt.hp-=dealt;src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
    if(src.effects&&src.effects.includes('burn'))applyBurn(src,tgt,t,3000,Math.max(8,tgt.maxHp*.015),'item');
    if(dealt>0){tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:tgt.id,type:"mana",amount:tgt.mana,max:tgt.manaMax,source:"damage"});}
    emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt,skill:spell?skillKind:null});
@@ -173,13 +192,14 @@ function createEngine(C){
   for(let t=0;t<PHASES.COMBAT;t+=200){
    const living=units.filter(x=>x.alive);if(!living.some(x=>x.owner===0)||!living.some(x=>x.owner===1))break;
    for(const u of living){if(!u.alive)continue;
+    expireShields(u,t);
+    const activeBurns=Object.values(u.burns||{}).filter(x=>x.until>t);
+    const burnDps=Math.max(...activeBurns.map(x=>x.dps),0);
+    if(burnDps){u.hp=Math.max(0,u.hp-burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
     if(u.stunnedUntil>t){u.fsm="Stunned";continue;}
     if(u.regen)u.hp=Math.min(u.maxHp,u.hp+u.regen*.2);
    const manaTick=(u.effects&&u.effects.includes('manaRegen')?1:0)+(u.effects&&u.effects.includes('manaPulse')?0.4:0);
    if(manaTick){u.mana=Math.min(u.manaMax,u.mana+manaTick);emit({t,actor:u.id,type:'mana',amount:u.mana,max:u.manaMax,source:'item'});}
-   const activeBurns=Object.values(u.burns||{}).filter(x=>x.until>t);
-   const burnDps=Math.max(...activeBurns.map(x=>x.dps),u.burnUntil>t?(u.burnDps||0):0,0);
-   if(burnDps){u.hp=Math.max(0,u.hp-burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
     if(u.cloneRatio&&!u.shadowUsed&&u.hp<u.maxHp*.5&&units.length<32){u.shadowUsed=true;const positions=[[1,0],[-1,0],[0,1],[0,-1]];
       const free=positions.map(([dx,dy])=>({x:u.x+dx,y:u.y+dy})).find(p=>p.x>=0&&p.x<8&&p.y>=0&&p.y<8&&!units.some(v=>v.alive&&v.x===p.x&&v.y===p.y));
       if(free){const cloneUnit={...u,id:u.id+"_shadow",...free,maxHp:u.maxHp*u.cloneRatio,hp:u.maxHp*u.cloneRatio,attack:u.attack*u.cloneRatio,cloneRatio:0,shadowUsed:true,shield:0};units.push(cloneUnit);emit({t,actor:cloneUnit.id,type:"shield"});}
@@ -199,16 +219,16 @@ function createEngine(C){
          const amount=Math.min(v.maxHp-v.hp,Math.round(u.ability.power*(1+u.abilityPower/100)));v.hp+=amount;
          emit({t,actor:u.id,target:v.id,type:"heal",amount,skill:u.ability.kind});
         }else if(u.ability.kind==="teamShield"){
-         const amount=Math.round(u.ability.power*(1+u.abilityPower/100));v.shield+=amount;
+         const amount=grantShield(v,u.ability.power*(1+u.abilityPower/100),t);
          emit({t,actor:u.id,target:v.id,type:"shield",amount,skill:u.ability.kind});
         }else{
-         v.hasteUntil=Math.max(v.hasteUntil||0,t+(u.ability.durationMs||3500));
-         v.hasteRatio=Math.max(v.hasteRatio||0,Math.min(.35,u.ability.power));
-         emit({t,actor:u.id,target:v.id,type:"haste",amount:v.hasteRatio,duration:u.ability.durationMs||3500});
+         v.hasteEffects ||= {};
+         v.hasteEffects[u.id]={until:t+(u.ability.durationMs||3500),ratio:Math.min(.35,u.ability.power)};
+         emit({t,actor:u.id,target:v.id,type:"haste",amount:v.hasteEffects[u.id].ratio,duration:u.ability.durationMs||3500});
         }
        }
-      }else if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;emit({t,actor:u.id,type:"cleanse"});}}
-      else if(u.ability.kind==="shield"){u.shield+=u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100);emit({t,actor:u.id,type:"shield",skill:"shield",amount:u.ability.power});}
+      }else if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;u.burns={};emit({t,actor:u.id,type:"cleanse"});}}
+      else if(u.ability.kind==="shield"){const amount=grantShield(u,u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100),t);emit({t,actor:u.id,type:"shield",skill:"shield",amount});}
       else {
        const kind=u.ability.kind,area=kind==="aoe"||kind==="blast";
        const targets=area?foes.filter(v=>v.alive&&dist(target,v)<=Math.max(1,u.ability.radius||1)):[target];
@@ -230,7 +250,7 @@ function createEngine(C){
       if(target.alive&&rnd()<u.doubleHitChance)deal(u,target,physical*.8,t,false);
       u.mana=Math.min(u.manaMax,u.mana+10+u.bonusMana);emit({t,actor:u.id,type:"mana",amount:u.mana,max:u.manaMax,source:"attack"});u.attacks++;
     }
-    const haste=u.hasteUntil>t?(u.hasteRatio||0):0;
+    const haste=Math.max(0,...Object.values(u.hasteEffects||{}).filter(x=>x.until>t).map(x=>x.ratio));
     const speed=Math.min(3,(u.attackSpeed+Math.min(.9,u.attacks*u.stackAttackSpeed))*(1+haste));
     u.nextAttack=t+1000/(u.slowUntil>t?Math.max(.2,speed*.65):speed);
    }

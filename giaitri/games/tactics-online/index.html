@@ -266,7 +266,7 @@ let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=nul
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
 let pinchPointers=new Map(),pinchDistance=0,lastPinchAt=0,itemDrag=null;
-const combatMetrics=new Map(),combatStatuses=new Map();
+const combatMetrics=new Map(),combatStatuses=new Map();let lastMetricPaint=0;
 let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
@@ -688,6 +688,7 @@ function tickReplay(){
   if((e.type==='heal'||e.type==='shield')&&(target||node)){const affected=target||node;playCombatSound(e.type);Animator.play(affected,e.type);Animator.burst(stageScene,affected,e.type);CombatFX.pulse(stageScene,affected,e.type);if(e.type==='heal'){const hp=battleHealth.get(e.target||e.actor);if(hp){hp.hp=Math.min(hp.max,hp.hp+(e.amount||0));Visuals.updateBars(affected,hp.hp/hp.max);}}}
   if(e.type==='die'&&node){combatStatuses.delete(e.actor);playCombatSound('die');Animator.play(node,'death');Animator.burst(stageScene,node,'death');CombatFX.pulse(stageScene,node,'death');}
  }
+ const now=performance.now();if(selected&&now-lastMetricPaint>=1000){lastMetricPaint=now;selectedHeroInfo();}
 }
 function update(){
  if(!state)return;$("start").classList.toggle("hidden",state.hostId!==uid||state.playerOrder.length!==4||state.status!=="waiting");

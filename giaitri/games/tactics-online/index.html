@@ -270,26 +270,8 @@ const combatMetrics=new Map(),combatStatuses=new Map();let lastMetricPaint=0;
 let lastBoardSignature='',seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
-const rankedMatchesSubmitted=new Set();
-async function submitFinishedTacticsMatch(snapshot){
- if(offline||!roomId||snapshot?.status!=='finished'||!snapshot?.players?.[uid]||!staffName())return;
- const playerOrder=snapshot.playerOrder||[];
- if(playerOrder.length!==4||!snapshot.winnerId)return;
- const matchId=roomId+':'+snapshot.seed;
- if(rankedMatchesSubmitted.has(matchId))return;
- const standings=playerOrder.slice().sort((a,b)=>{
-  if(a===snapshot.winnerId)return -1;if(b===snapshot.winnerId)return 1;
-  return (snapshot.players[b]?.hp||0)-(snapshot.players[a]?.hp||0)||a.localeCompare(b);
- });
- const placement=standings.indexOf(uid)+1;
- if(placement<1)return;
- rankedMatchesSubmitted.add(matchId);
- try{
-  const ok=await window.DolphinLeaderboard?.submitTacticsMatch(matchId,placement,{round:snapshot.round});
-  if(!ok)rankedMatchesSubmitted.delete(matchId);
- }catch(e){rankedMatchesSubmitted.delete(matchId);console.warn('[TFT score]',e);}
-}
-
+// Package E: browser-hosted rooms are NOT eligible for verified competitive rating.
+// Server-authoritative rooms use tacticsSubmitVerifiedResult after secure completion.
 function staffName(){return (window.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'').trim();}
 function syncArenaIdentity(){const name=staffName();$('nick').value=name;$('arenaStaffName').textContent=name||'CHƯA ĐỒNG BỘ NHÂN VIÊN';$('arenaStaffHint').textContent=name?'Tên được đồng bộ từ hệ thống Dolphin':'Hãy thiết lập tên trong ứng dụng Dolphin trước khi chơi';return name;}
 window.addEventListener('dolphinStaffNameChanged',syncArenaIdentity);
@@ -324,7 +306,7 @@ function dispatch(work){
  queue=queue.then(async()=>{if(!host)return;await work();}).catch(showError);
  return queue;
 }
-async function publish(){if(host&&hostState){state=E.clone(hostState);update();if(!offline){await MP.sendStateStrict(E.clone(hostState));if(state.status==='finished')void submitFinishedTacticsMatch(state);}}}
+async function publish(){if(host&&hostState){state=E.clone(hostState);update();if(!offline){await MP.sendStateStrict(E.clone(hostState));}}}
 function offlineAI(now){if(!offline||!hostState||hostState.roundPhase!=='PREPARATION')return;
  for(const id of ['AI_1','AI_2','AI_3'])if(!hostState.players[id].eliminated&&!hostState.players[id].ready)AI.takeTurn(hostState,id,now);
 }
@@ -419,7 +401,7 @@ function setupMP(){
  MP.onState(snapshot=>{
   if(!snapshot||!snapshot.players)return;
   state=snapshot;onlineStateAt=Date.now();
-  if(snapshot.status==='finished')void submitFinishedTacticsMatch(snapshot);
+  
   if(uid)seq=Math.max(seq,Number(snapshot.clientSequences?.[uid])||0);
    settleOnlineAction(snapshot);
   if(host&&(!hostState||snapshot.round>hostState.round||snapshot.updatedAt>hostState.updatedAt))hostState=E.clone(snapshot);

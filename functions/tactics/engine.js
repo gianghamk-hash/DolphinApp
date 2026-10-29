@@ -320,6 +320,8 @@ function createEngine(C){
   assert(s.roundPhase==="COMBAT","Chưa ở phase chiến đấu");
   const snap=s.combatSnapshot||clone(s.players);
   const reports=s.pairs.map((pair,i)=>simulate(pair,s,snap,(s.seed+i*977+s.round*1033)>>>0));
+  const beforeHp=Object.fromEntries(s.playerOrder.map(id=>[id,s.players[id]?.hp||0]));
+  const beforeEliminated=new Set(s.playerOrder.filter(id=>s.players[id]?.eliminated));
   for(const rep of reports){
    // PvE rewards drop only after actually winning the PvE encounter.
    if(rep.pair.pve&&rep.winner===rep.pair.a&&s.players[rep.pair.a]){
@@ -330,8 +332,12 @@ function createEngine(C){
    if(rep.winner&&s.players[rep.winner]&&!s.players[rep.winner].eliminated){const p=s.players[rep.winner];p.streaks.win++;p.streaks.loss=0;}
   }
   s.reports=reports;
+  s.finalPlacements ||= {};
+  const newlyEliminated=s.playerOrder.filter(id=>!beforeEliminated.has(id)&&s.players[id].eliminated)
+    .sort((a,b)=>beforeHp[a]-beforeHp[b]||a.localeCompare(b));
+  for(const id of newlyEliminated)s.finalPlacements[id]=s.playerOrder.length-Object.keys(s.finalPlacements).length;
   const alive=s.playerOrder.filter(uid=>!s.players[uid].eliminated);
-  if(alive.length<=1){s.status="finished";s.winnerId=alive[0]||null;s.roundPhase="TRANSITION";s.phaseEndsAt=now;return s;}
+  if(alive.length<=1){if(alive.length===1)s.finalPlacements[alive[0]]=1;s.status="finished";s.winnerId=alive[0]||null;s.roundPhase="TRANSITION";s.phaseEndsAt=now;return s;}
   s.roundPhase="TRANSITION";s.phaseStartedAt=now;s.phaseEndsAt=now+PHASES.TRANSITION;s.combatSnapshot=null;return s;
  }
  function advance(s,now){

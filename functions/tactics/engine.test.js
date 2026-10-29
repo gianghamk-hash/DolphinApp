@@ -356,3 +356,26 @@ test('signature effect events and assassin carry approach match skill descriptio
   }finally{hero.manaStart=mana;hero.range=range;}
  }
 });
+
+test('Package E: server records distinct authoritative placements for four players',()=>{
+ const room=E.roomNew('a','A',0,200);
+ for(const id of ['b','c','d']){room.players[id]=E.freshPlayer(id,id,room);room.playerOrder.push(id);}
+ room.status='in_game';room.roundPhase='COMBAT';room.phaseEndsAt=30000;room.round=1;
+ room.players.b.hp=1;room.players.c.hp=2;room.players.d.hp=3;
+ room.pairs=[{a:'a',b:'b'},{a:'c',b:'d'}];
+ room.combatSnapshot=E.clone(room.players);
+ E.advance(room,30000);
+ const values=Object.values(room.finalPlacements||{});
+ assert.equal(new Set(values).size,values.length);
+ assert.ok(values.every(x=>Number.isInteger(x)&&x>=1&&x<=4));
+});
+test('Package E: ranking is not based on client-submitted score or placement',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const server=fs.readFileSync(path.join(__dirname,'../index.js'),'utf8');
+ const ranking=fs.readFileSync(path.join(__dirname,'../../dolphin-leaderboard.js'),'utf8');
+ assert.match(server,/placementFromVerifiedRoom\(room,uid\)/);
+ assert.match(server,/getDatabase\(\)\.ref\('staffIdentity\/'.*uid\)/);
+ assert.match(server,/if\(matches\[matchId\]\)/);
+ assert.match(ranking,/async function submitTacticsMatch\(\)/);
+ assert.doesNotMatch(ranking,/recentMatches:/);
+});

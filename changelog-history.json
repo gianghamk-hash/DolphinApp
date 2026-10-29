@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.186",
+      "releaseDate": "2026-10-29T09:19:54.143Z",
+      "summary": "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029",
+      "details": [
+        "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029"
+      ]
+    },
+    {
       "version": "1.0.185",
       "releaseDate": "2026-10-29T08:41:38.756Z",
       "summary": "fix(tft): show actionable Firebase create-room errors (#126)",
@@ -390,14 +398,6 @@
       "summary": "fix(ranking): count Lounge work completions in weekly points",
       "details": [
         "fix(ranking): count Lounge work completions in weekly points"
-      ]
-    },
-    {
-      "version": "1.0.136",
-      "releaseDate": "2026-10-27T05:48:17.144Z",
-      "summary": "revert(halloween): restore original animated background",
-      "details": [
-        "revert(halloween): restore original animated background"
       ]
     }
   ]

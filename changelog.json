@@ -1,22 +1,42 @@
 {
-  "version": "1.0.186",
-  "previousVersion": "1.0.185",
-  "commit": "c8e993b",
-  "previousCommit": "c30ef94",
-  "buildDate": "2026-10-29T09:19:54.143Z",
-  "summary": "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029",
+  "version": "1.0.187",
+  "previousVersion": "1.0.186",
+  "commit": "02ed492",
+  "previousCommit": "c8e993b",
+  "buildDate": "2026-10-29T09:42:10.563Z",
+  "summary": "feat(games): unify arcade landing screens with TFT-inspired styling (#128)",
   "changes": {
-    "totalCommits": 190,
-    "filesChanged": 1,
+    "totalCommits": 191,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029"
+    "feat(games): unify arcade landing screens with TFT-inspired styling (#128)"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "giaitri/games/arena-landing.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/battleship.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/caro.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/chess.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/snake-coop-online.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/xiangqi.html",
       "type": "update"
     }
   ]

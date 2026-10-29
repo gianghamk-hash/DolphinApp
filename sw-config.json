@@ -1,5 +1,5 @@
 {
-  "version": "1.0.186",
+  "version": "1.0.187",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029"
+  "notes": "feat(games): unify arcade landing screens with TFT-inspired styling (#128)"
 }

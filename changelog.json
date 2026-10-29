@@ -1,30 +1,22 @@
 {
-  "version": "1.0.184",
-  "previousVersion": "1.0.183",
-  "commit": "97609f6",
-  "previousCommit": "befb511",
-  "buildDate": "2026-10-29T08:39:55.734Z",
-  "summary": "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029",
+  "version": "1.0.185",
+  "previousVersion": "1.0.184",
+  "commit": "c30ef94",
+  "previousCommit": "97609f6",
+  "buildDate": "2026-10-29T08:41:38.756Z",
+  "summary": "fix(tft): show actionable Firebase create-room errors (#126)",
   "changes": {
-    "totalCommits": 188,
-    "filesChanged": 3,
+    "totalCommits": 189,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029"
+    "fix(tft): show actionable Firebase create-room errors (#126)"
   ],
   "fileChanges": [
     {
-      "file": "functions/index.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/authority-adapter.js",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     }
   ]

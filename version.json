@@ -1,7 +1,7 @@
 {
-  "version": "1.0.184",
-  "buildDate": "2026-10-29T08:39:55.734Z",
-  "commit": "97609f6",
-  "notes": "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029",
+  "version": "1.0.185",
+  "buildDate": "2026-10-29T08:41:38.756Z",
+  "commit": "c30ef94",
+  "notes": "fix(tft): show actionable Firebase create-room errors (#126)",
   "forceUpdate": false
 }

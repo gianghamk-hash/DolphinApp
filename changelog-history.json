@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.184",
+      "releaseDate": "2026-10-29T08:39:55.734Z",
+      "summary": "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029",
+      "details": [
+        "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029"
+      ]
+    },
+    {
       "version": "1.0.183",
       "releaseDate": "2026-10-29T06:42:07.939Z",
       "summary": "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029",
@@ -390,14 +398,6 @@
       "summary": "feat(halloween): responsive portrait and landscape landing photographs",
       "details": [
         "feat(halloween): responsive portrait and landscape landing photographs"
-      ]
-    },
-    {
-      "version": "1.0.134",
-      "releaseDate": "2026-10-27T05:12:31.151Z",
-      "summary": "fix(landing): frameless Top 1 honor cards and no subtitle",
-      "details": [
-        "fix(landing): frameless Top 1 honor cards and no subtitle"
       ]
     }
   ]

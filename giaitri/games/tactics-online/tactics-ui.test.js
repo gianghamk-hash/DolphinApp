@@ -120,7 +120,7 @@ test('phase 4 combat statistics are bounded and derived from replay events',()=>
 });
 test('phase 4 status tags follow 3D units and equipment confirmations respect host result',()=>{
  assert.match(html,/tag\.dataset\.status=statusName/);
- assert.match(html,/effect\.until>elapsed/);
+ assert.match(html,/Object\.entries\(effects\)\.filter\(\(\[,until\]\)=>until>elapsed\)/);
  assert.match(css,/\.battleHeroName\[data-status/);
  assert.match(html,/if\(success===false\)return/);
  assert.match(html,/if\(!host\)\{return;\}/);

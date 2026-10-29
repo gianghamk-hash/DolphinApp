@@ -246,3 +246,28 @@
 #game .battleHeroName[data-status="Tốc đánh"]{border-color:#82ef9e}
 #game .touchItemTray .touchGear{user-select:none;-webkit-user-select:none;touch-action:none!important}
 @media(max-width:650px){#game .combatMetrics{font-size:10px;padding:6px}#game .battleHeroName[data-status]:not([data-status=""]):after{font-size:8px}}
+
+/* Dolphin Tactics Arena landing — visual-only, no gameplay overlay during combat. */
+#overlay .arenaHero{position:relative;overflow:hidden;isolation:isolate;text-align:center;border:1px solid #b69a5b;border-radius:22px;padding:25px 15px 18px;background:radial-gradient(ellipse at 50% 18%,#33477e 0%,#162449 36%,#091525 90%);box-shadow:inset 0 0 48px #6f6ad129,0 16px 45px #0009}
+#overlay .arenaHero:before{content:"";position:absolute;inset:-40%;z-index:-1;pointer-events:none;background:conic-gradient(from 25deg,transparent,#63d7df19,transparent,#e9bd5822,transparent);animation:arenaOrbit 34s linear infinite}
+#overlay .arenaSigil{margin:auto;color:#f8d383;font-size:35px;width:67px;height:67px;display:grid;place-items:center;border:1px solid #c8a75e;border-radius:50%;background:#162d49;box-shadow:0 0 25px #e6b96050}
+#overlay .arenaEyebrow{letter-spacing:.24em;color:#b0dae8;font-size:10px;font-weight:800;margin:12px 0 4px}
+#overlay .arenaHero h2{font-size:clamp(27px,6vw,46px)!important;letter-spacing:.08em;margin:0;color:#fff2cc;text-shadow:0 3px 20px #000}
+#overlay .arenaHero h2 span{color:#f7c86c}
+#overlay .arenaMotto{font-size:11px;letter-spacing:.15em;font-weight:900;color:#b5e8ed}
+#overlay .arenaSummary{font-size:10px;color:#ced8e9}
+#overlay .arenaBoard{width:min(100%,480px);height:108px;margin:12px auto 17px;display:flex;align-items:center;justify-content:space-evenly;perspective:480px;transform:rotateX(15deg);background:repeating-conic-gradient(#224e66 0% 25%,#122944 0% 50%) 50%/58px 58px;border:2px solid #7cabb5;box-shadow:0 10px 30px #0008,inset 0 0 24px #74c8ce30;border-radius:9px}
+#overlay .arenaBoard span{font-size:32px;color:#f2cf80;text-shadow:0 0 15px #ebd586,2px 6px 4px #000}
+#overlay .arenaIdentity{display:flex;align-items:center;flex-direction:column;gap:4px;border:1px solid #59869e;border-radius:13px;padding:10px;background:#061b33c9}
+#overlay .arenaIdentity span{color:#a8cee6;font-size:10px;letter-spacing:.12em}
+#overlay .arenaIdentity strong{font-size:15px;color:#ffe0a0}
+#overlay .arenaIdentity small{font-size:10px;color:#b3c7d8}
+#overlay .arenaActions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:13px}
+#overlay .arenaActions button{min-height:52px;padding:10px 5px;border-radius:11px;font-weight:900;font-size:12px;background:#19385a;border:1px solid #547e9b;color:#edf9fa}
+#overlay .arenaActions .gold{background:linear-gradient(145deg,#f9d882,#c9933d);color:#10243d;border-color:#ffeba5}
+#overlay .arenaPillars{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin-top:14px}
+#overlay .arenaPillars span{font-size:10px;color:#bcdce5;background:#0f2b47;padding:5px 9px;border-radius:30px}
+#overlay #nick{background:#172e48;opacity:.9;cursor:default}
+@keyframes arenaOrbit{to{transform:rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){#overlay .arenaHero:before{animation:none}}
+@media(max-width:410px){#overlay .arenaHero{padding:16px 9px}#overlay .arenaActions button{font-size:10px}#overlay .arenaPillars{gap:4px}}

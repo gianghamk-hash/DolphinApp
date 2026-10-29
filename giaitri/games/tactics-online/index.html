@@ -265,7 +265,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
-<script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-functions-compat.js"></script><script src="authority-adapter.js"></script><script src="../../../dolphin-multiplayer.js?v=2.0"></script>
+<script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-functions-compat.js"></script><script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
@@ -304,7 +304,7 @@ document.addEventListener('keydown',event=>{
  }
 });
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),RigFactory=window.DolphinCreateRigFactory(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),RigAnimator=window.DolphinCreateRigAnimator(),Skinner=window.DolphinCreateSkinner(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),CombatFX=window.DolphinCreateCombatFX(THREE),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles,RigAnimator,Skinner),ModelLibrary=window.DolphinTacticsCreateModelLibrary(THREE,GLTFLoader,'assets/models/',RigFactory,Skinner,cloneSkeleton);
-const authority=window.DolphinCreateTacticsAuthorityAdapter(firebaseConfig);MP.registerAdapter('dolphin-tactics',authority);
+// Reuse the existing 4-seat Firestore transport (mp_rooms) without Cloud Functions.
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
@@ -501,15 +501,7 @@ function setupMP(){
  MP.onState(snapshot=>{
   if(!snapshot||!snapshot.players)return;
   state=snapshot;onlineStateAt=Date.now();
-  if(snapshot.status==='finished'&&!offline){
-   const receiptKey='dolphin_tactics_verified_'+roomId+'_'+uid;
-   if(!sessionStorage.getItem(receiptKey)){
-    sessionStorage.setItem(receiptKey,'pending');
-    authority.submitVerifiedResult().then(()=>sessionStorage.setItem(receiptKey,'done')).catch(error=>{
-     sessionStorage.removeItem(receiptKey);console.warn('[TFT verified score]',error);
-    });
-   }
-  }
+  // Browser-hosted Firestore matches are not eligible for verified server-side rankings.
   
   if(uid)seq=Math.max(seq,Number(snapshot.clientSequences?.[uid])||0);
    settleOnlineAction(snapshot);
@@ -578,12 +570,23 @@ window.leaveRoom=async()=>{
 };
 window.startRoom=async()=>{
  if(offline||!host||roster.length!==4)return showError(Error('Cần đủ 4 người online'));
- try{await authority.startRoom();ModelLibrary.preload(Object.keys(hero));}
+ try{await dispatch(async()=>{
+  const now=Date.now(),players=roster.map(p=>({id:p.id,name:p.name}));
+  if(players.length!==4)throw Error('Cần đủ bốn người chơi');
+  const seed=Math.floor(Math.random()*2147483647)||1;
+  const room=E.roomNew(uid,staffName(),now,seed);
+  room.playerOrder=players.map(p=>p.id);room.players={};
+  for(const p of players)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
+  room.status='in_game';room.round=1;room.roundPhase='PREPARATION';room.phaseStartedAt=now;
+  room.phaseEndsAt=now+E.PHASES.PREPARATION;room.updatedAt=now;
+  hostState=room;await MP.updateRoomStatus('in_game');await publish();
+  ModelLibrary.preload(Object.keys(hero));
+ });}
  catch(e){showError(e);}
 };
 window.send=async action=>{
  if(!state||state.status!=='in_game'||state.roundPhase!=='PREPARATION')return;
- if(!offline){try{return await authority.action(action);}catch(e){showError(e);return false;}}
+ if(!offline&&!host)return sendOnlineAction(action);
  if(host)return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();});
  return false;
 };
@@ -1005,7 +1008,6 @@ setInterval(()=>{
  if(!state||state.status!=='in_game')return;
  const now=Date.now();
  $('timer').textContent=Math.max(0,Math.ceil((state.phaseEndsAt-now)/1000))+'s';
- if(!offline){if(now<state.phaseEndsAt||advancing)return;advancing=true;authority.advance().catch(e=>{if(!String(e?.message||e).includes('Chưa hết'))console.warn('[TFT advance]',e);}).finally(()=>{advancing=false;});return;}
  if(!host||!hostState||now<hostState.phaseEndsAt||advancing)return;
  advancing=true;
  dispatch(async()=>{

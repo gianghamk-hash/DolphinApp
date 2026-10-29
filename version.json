@@ -1,7 +1,7 @@
 {
-  "version": "1.0.170",
-  "buildDate": "2026-10-29T02:00:10.388Z",
-  "commit": "c752279",
-  "notes": "Merge pull request #110 from gianghamk-hash/fix/tft-replay-combat-accuracy-package-b-20261029",
+  "version": "1.0.171",
+  "buildDate": "2026-10-29T02:03:42.243Z",
+  "commit": "f8b007e",
+  "notes": "Merge pull request #111 from gianghamk-hash/fix/tft-ai-render-stability-package-c-20261029",
   "forceUpdate": false
 }

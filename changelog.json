@@ -1,18 +1,18 @@
 {
-  "version": "1.0.210",
-  "previousVersion": "1.0.209",
-  "commit": "dad44e2",
-  "previousCommit": "978865c",
-  "buildDate": "2026-10-29T14:54:54.718Z",
-  "summary": "Merge pull request #151 from gianghamk-hash/fix/show-manager-master-iframe-auth-20261029",
+  "version": "1.0.211",
+  "previousVersion": "1.0.210",
+  "commit": "a9268b8",
+  "previousCommit": "dad44e2",
+  "buildDate": "2026-10-29T15:01:28.536Z",
+  "summary": "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029",
   "changes": {
-    "totalCommits": 214,
+    "totalCommits": 215,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #151 from gianghamk-hash/fix/show-manager-master-iframe-auth-20261029"
+    "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029"
   ],
   "fileChanges": [
     {

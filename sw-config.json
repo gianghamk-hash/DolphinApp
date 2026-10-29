@@ -1,5 +1,5 @@
 {
-  "version": "1.0.210",
+  "version": "1.0.211",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #151 from gianghamk-hash/fix/show-manager-master-iframe-auth-20261029"
+  "notes": "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029"
 }

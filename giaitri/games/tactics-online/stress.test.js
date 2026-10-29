@@ -27,7 +27,7 @@ test('Package D: 6 different seeds survive 18 rounds without invalid economy or 
  for(let i=0;i<6;i++){const result=run(20261029+i*97,18);validReport(result);}
 });
 test('Package D: reproducible simulation never changes results for the same seed',()=>{
- const first=run(871223,16),second=run(871223,22);
+ const first=run(871223,16),second=run(871223,16);
  assert.deepEqual(first,second);
 });
 test('Package D: 4-game batch reports consistent round and event aggregation',()=>{
@@ -49,7 +49,7 @@ test('Package D: equipped champions preserve legal inventory after repeated trad
  p.inventory=['sword','sword','sword','sword'];
  E.action(s,'a',{type:'EQUIP',unitId:u.id,component:'sword'},200);
  E.action(s,'a',{type:'EQUIP',unitId:u.id,component:'sword'},201);
- const count=()=>p.inventory.length+Object.values(p.units).reduce((sum,x)=>sum+(x.items||[]).reduce((n,item)=>n+(E.COMP[item]?1:2),0),0);
+ const count=()=>p.inventory.reduce((n,item)=>n+(E.COMP[item]?1:2),0)+Object.values(p.units).reduce((sum,x)=>sum+(x.items||[]).reduce((n,item)=>n+(E.COMP[item]?1:2),0),0);
  assert.equal(count(),4);
  E.action(s,'a',{type:'SELL',unitId:u.id},202);
  assert.equal(count(),4);

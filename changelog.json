@@ -1,18 +1,18 @@
 {
-  "version": "1.0.206",
-  "previousVersion": "1.0.205",
-  "commit": "8b1f123",
-  "previousCommit": "dfd7d50",
-  "buildDate": "2026-10-29T14:25:16.480Z",
-  "summary": "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029",
+  "version": "1.0.207",
+  "previousVersion": "1.0.206",
+  "commit": "b8607ef",
+  "previousCommit": "8b1f123",
+  "buildDate": "2026-10-29T14:29:51.849Z",
+  "summary": "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029",
   "changes": {
-    "totalCommits": 210,
+    "totalCommits": 211,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029"
+    "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029"
   ],
   "fileChanges": [
     {

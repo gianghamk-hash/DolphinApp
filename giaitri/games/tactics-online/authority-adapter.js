@@ -10,7 +10,7 @@ function createAdapter(config){
  const call=(name,data)=>functions.httpsCallable(name)(data).then(x=>x.data);
  let roomId='',uid='',last='',onStop=null,polling=false,timer=null;
  async function identity(){
-  if(!auth.currentUser)await auth.signInAnonymously();
+  if(!auth.currentUser){try{await auth.signInAnonymously();}catch(err){if(err?.code==='auth/operation-not-allowed')throw Error('Firebase Authentication chưa bật Anonymous sign-in; cần bật tại Authentication → Sign-in method.');throw err;}}
   uid=auth.currentUser.uid;
   return uid;
  }
@@ -31,8 +31,8 @@ function createAdapter(config){
   finally{polling=false;}
  }
  return {
-  async createRoom(){await identity();const result=await call('tacticsCreateRoom',{});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:true};},
-  async joinRoom(code){await identity();const result=await call('tacticsJoinRoom',{roomId:code});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:false};},
+  async createRoom(options={}){await identity();const result=await call('tacticsCreateRoom',{name:options.name});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:true};},
+  async joinRoom(code,options={}){await identity();const result=await call('tacticsJoinRoom',{roomId:code,name:options.name});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:false};},
   subscribe({roomId:id,emit}){roomId=id;onStop={emit};void fetchState();timer=setInterval(fetchState,2200);return ()=>{clearInterval(timer);timer=null;onStop=null;last='';roomId='';};},
   async leaveRoom(id){const leaving=id||roomId;if(leaving)await call('tacticsLeaveRoom',{roomId:leaving});},
   async startRoom(){const res=await call('tacticsStartRoom',{roomId});await fetchState();return res;},

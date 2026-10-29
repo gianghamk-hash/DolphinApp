@@ -1,7 +1,7 @@
 {
-  "version": "1.0.171",
-  "buildDate": "2026-10-29T02:03:42.243Z",
-  "commit": "f8b007e",
-  "notes": "Merge pull request #111 from gianghamk-hash/fix/tft-ai-render-stability-package-c-20261029",
+  "version": "1.0.172",
+  "buildDate": "2026-10-29T02:14:02.595Z",
+  "commit": "31a185b",
+  "notes": "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029",
   "forceUpdate": false
 }

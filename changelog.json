@@ -1,22 +1,22 @@
 {
-  "version": "1.0.171",
-  "previousVersion": "1.0.170",
-  "commit": "f8b007e",
-  "previousCommit": "c752279",
-  "buildDate": "2026-10-29T02:03:42.243Z",
-  "summary": "Merge pull request #111 from gianghamk-hash/fix/tft-ai-render-stability-package-c-20261029",
+  "version": "1.0.172",
+  "previousVersion": "1.0.171",
+  "commit": "31a185b",
+  "previousCommit": "f8b007e",
+  "buildDate": "2026-10-29T02:14:02.595Z",
+  "summary": "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029",
   "changes": {
-    "totalCommits": 175,
-    "filesChanged": 4,
+    "totalCommits": 176,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #111 from gianghamk-hash/fix/tft-ai-render-stability-package-c-20261029"
+    "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/extreme-ai.js",
+      "file": "functions/tactics/engine.test.js",
       "type": "update"
     },
     {
@@ -24,11 +24,7 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "file": "giaitri/games/tactics-online/stress.test.js",
       "type": "update"
     }
   ]

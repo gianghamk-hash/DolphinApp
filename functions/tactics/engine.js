@@ -99,7 +99,7 @@ function createEngine(C){
     if(other&&other!==a.unitId)old[where.key]=other;else delete old[where.key];
     map[key]=a.unitId;
   }else if(a.type==="SELL"){const u=p.units[a.unitId];assert(u,"Không tìm thấy tướng");
-    const pos=findPosition(p,u.id);if(pos)delete p[pos.kind][pos.key];p.gold+=HERO[u.heroId].cost*(u.star===1?1:u.star===2?3:9);
+    const pos=findPosition(p,u.id);if(pos)delete p[pos.kind][pos.key];const gross=HERO[u.heroId].cost*(u.star===1?1:u.star===2?3:9);p.gold+=Math.max(0,gross-Math.ceil(gross*0.20));
     p.inventory.push(...u.items);delete p.units[u.id];
   }else if(a.type==="EQUIP"){const u=p.units[a.unitId],comp=a.component;assert(u&&COMP[comp],"Tướng hoặc trang bị không hợp lệ");assert(!!findPosition(p,u.id),"Chỉ trang bị cho tướng đang sở hữu trên sân hoặc hàng chờ");
     const idx=p.inventory.indexOf(comp);assert(idx!==-1,"Không sở hữu trang bị");

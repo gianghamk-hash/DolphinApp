@@ -678,6 +678,7 @@ function tickReplay(){
   if(e.type==='cleanse')combatStatuses.delete(e.actor);
   if(e.type==='mana'&&node){const stat=battleHealth.get(e.actor)||{hp:1,max:1};stat.mana=e.amount;stat.manaMax=e.max||1;battleHealth.set(e.actor,stat);Visuals.updateBars(node,Math.max(0,stat.hp/stat.max),Math.max(0,Math.min(1,stat.mana/stat.manaMax)));}
   if(e.type==='signature'&&node){CombatFX.castAura(stageScene,node,e.vfx||'spell');CombatFX.pulse(stageScene,node,e.vfx||'spell',1.1);}
+  if(e.type==='signatureEffect'&&target){CombatFX.pulse(stageScene,target,e.effect==='empower'?'heal':'blast',.58);}
   if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.vfx||e.skill||'spell',1.15);CombatFX.castAura(stageScene,node,e.vfx||e.skill);playCombatSound(e.sfx||e.skill||'cast');}
   if(e.type==='cleanse'&&node){CombatFX.pulse(stageScene,node,'cleanse',.75);playCombatSound('heal');}
   if(e.type==='haste'&&target){CombatFX.pulse(stageScene,target,'heal',.75);playCombatSound('heal');}

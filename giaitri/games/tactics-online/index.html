@@ -190,6 +190,28 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 #game>section>.playerDock .hpLevel{font-size:10px!important;color:#b9d8e4!important}
 @media(max-width:390px){#game>section>.playerDock{width:138px!important;right:5px!important}#game>section>.playerDock .hpIdentity strong{font-size:10px!important}}
 @media(orientation:landscape){#game>section>.playerDock{width:144px!important;top:40px!important}}
+
+/* Below-map player HP rail: four readable columns on Android and desktop. */
+#game>section>.playerDock{order:1!important;position:relative!important;inset:auto!important;top:auto!important;right:auto!important;left:auto!important;bottom:auto!important;width:100%!important;max-width:100%!important;display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;gap:4px!important;padding:5px!important;pointer-events:auto!important;box-sizing:border-box!important}
+#game>section>.playerDock .hpEntry{display:flex!important;flex-direction:column!important;align-items:center!important;gap:3px!important;padding:6px 2px!important;min-width:0!important;border:1px solid #39758a!important;border-radius:9px!important;background:#103344!important}
+#game>section>.playerDock .hpIdentity{width:100%!important;text-align:center!important;align-items:center!important}
+#game>section>.playerDock .hpIdentity strong{width:100%!important;font-size:10px!important}
+#game>section>.playerDock .hpIdentity small.hpMeta{justify-content:center!important;font-size:10px!important}
+#game>section>.playerDock .hpValue{font-size:11px!important}
+#game>section>.playerDock .hpPortrait{width:25px!important;height:25px!important;flex:0 0 25px!important}
+#game>section>#touchItemTray{order:3!important}
+#game>section>.benchBar{order:4!important}
+#game>section>#stage{order:0!important}
+#game>section>.pvpOpponent{order:2!important;text-align:center;padding:7px;border:1px solid #527d9c;background:#112c43;color:#f7e1a1;border-radius:10px;font-size:12px;font-weight:800}
+#game>section>.pvpOpponent.hidden{display:none!important}
+#itemInfoOpen{background:transparent;border:0;color:inherit;cursor:pointer;font:inherit;padding:0;text-align:left}
+.itemInfoModal{position:fixed;inset:0;z-index:2147483500;background:#000b;display:grid;place-items:center;padding:12px}
+.itemInfoModal.hidden{display:none!important}
+.itemInfoPanel{background:#092b3c;color:#f0fcfe;border:1px solid #71a7b2;border-radius:14px;width:min(720px,100%);max-height:82dvh;overflow:auto;padding:14px}
+.itemInfoPanel header{display:flex;justify-content:space-between;align-items:center;gap:10px;background:transparent}
+.itemInfoGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px;margin-top:10px}
+.itemInfoCard{background:#163749;border:1px solid #477986;padding:9px;border-radius:10px;font-size:12px}
+.itemInfoCard strong{display:block}.itemInfoCard span{color:#b6d6dc}.itemInfoCard p{margin:5px 0}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -217,7 +239,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
 <main id="game" class="hidden"><section><div id="stage"><div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="heroNameLayer" aria-hidden="true"></div><div id="boardHelp"></div></div>
-<div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><span class="touchItemTitle">🎒 TRANG BỊ</span><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div><div class="playerDock" id="players"></div>
+<div id="players" class="playerDock" aria-label="Máu và cấp của người chơi"></div><div id="pvpOpponent" class="pvpOpponent" role="status" aria-live="polite"></div><div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><button type="button" id="itemInfoOpen" class="touchItemTitle" onclick="openItemInfo()" aria-label="Xem chi tiết trang bị">🎒 TRANG BỊ <span aria-hidden="true">ⓘ</span></button><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
 <div class="flex" style="margin:8px 0"><button id="rollShopBtn" class="shopIconBtn" onclick="send({type:'ROLL'})" title="Đổi Shop · 2 vàng" aria-label="Đổi Shop · 2 vàng">🔄</button><button id="buyXpBtn" class="shopIconBtn" onclick="send({type:'BUY_XP'})" title="Mua 4 XP · 4 vàng" aria-label="Mua 4 XP · 4 vàng">⭐</button><button id="lockShopBtn" class="shopIconBtn" onclick="send({type:'TOGGLE_SHOP_LOCK'})" title="Khóa Shop" aria-label="Khóa Shop">🔓</button></div><div id="shop"></div>
@@ -225,7 +247,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div class="flex" style="margin-top:9px"><button class="gold" onclick="send({type:'READY'})">SẴN SÀNG ✓</button></div></div>
 
 
-</aside></main>
+</aside></main><div id="itemInfoModal" class="itemInfoModal hidden" role="dialog" aria-modal="true" aria-label="Chi tiết trang bị"><section class="itemInfoPanel"><header><strong>🎒 CHI TIẾT TRANG BỊ</strong><button type="button" onclick="closeItemInfo()" aria-label="Đóng chi tiết trang bị">✕</button></header><div id="itemInfoContent"></div></section></div>
  <div id="guideModal" class="guideModal hidden" role="dialog" aria-modal="true" aria-labelledby="guideTitle" tabindex="-1">
   <div class="guideDialog">
    <div class="guideDialogHead"><h2 id="guideTitle">HƯỚNG DẪN</h2><button type="button" id="guideClose" onclick="closeTacticsGuide()" aria-label="Đóng hướng dẫn">✕ ĐÓNG</button></div>
@@ -388,6 +410,21 @@ function itemIcon(id){
 }
 fetch(ITEM_SPRITE,{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('missing equipment sprite');return r.text()}).then(svg=>{if(svg.includes('id="item-I21"')&&svg.includes('id="item-sword"'))document.documentElement.classList.add('tftItemArtworkReady')}).catch(()=>{});
 function statLabel(k,v){return (STAT_LABELS[k]||k)+' +'+(PERCENT_STATS.has(k)?Math.round(v*100)+'%':Number.isInteger(v)?v:Number(v).toFixed(1));}
+window.openItemInfo=()=>{
+ const inventory=state?.players?.[uid]?.inventory||[];
+ const components=Object.fromEntries(catalog.components.map(c=>[c.id,c]));
+ const cards=[...catalog.components,...catalog.recipes].map(def=>{
+  const owned=inventory.filter(id=>id===def.id).length;
+  const stats=def.bonus||{[def.stat]:def.value};
+  const benefits=Object.entries(stats).filter(([,v])=>v).map(([k,v])=>statLabel(k,v)).join(' · ');
+  const recipe=def.components?.map(id=>components[id]?.name||id).join(' + ');
+  return '<article class="itemInfoCard"><strong>'+itemIcon(def.id)+' '+safe(def.name)+'</strong><span>'+(owned?'Trong kho: '+owned:'Chưa sở hữu')+'</span><p>'+safe(benefits||'Không có chỉ số cộng thêm')+'</p>'+(recipe?'<p><b>Ghép:</b> '+safe(recipe)+'</p>':'')+(def.effect&&def.effect!=='stat'?'<p><b>Hiệu ứng:</b> '+safe(def.description||EFFECT_LABELS[def.effect]||def.effect)+'</p>':'')+'</article>';
+ }).join('');
+ $('itemInfoContent').innerHTML='<p class="small">Chạm vật phẩm trong khay để xem chi tiết; kéo để trang bị trong giai đoạn Chuẩn bị.</p><div class="itemInfoGrid">'+cards+'</div>';
+ $('itemInfoModal').classList.remove('hidden');
+};
+window.closeItemInfo=()=>{$('itemInfoModal').classList.add('hidden');};
+$('itemInfoModal').addEventListener('click',e=>{if(e.target===$('itemInfoModal'))closeItemInfo();});
 function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+(def.components?' · '+safe(def.components.map(x=>itemDef(x)?.name||x).join(' + ')):'')+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
 function selectedHeroInfo(){
@@ -527,6 +564,18 @@ window.moveSelectedToBench=()=>{
 function isPvERound(round){return round<=3||round%5===0;}
 function combatType(){return isPvERound(Number(state?.round||1))?"PvE · ĐẤU QUÁI":"PvP · ĐẤU NGƯỜI";}
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
+function paintOpponent(){
+ const label=$('pvpOpponent');if(!label)return;
+ if(!state||state.status!=='in_game'){label.textContent='';label.classList.add('hidden');return;}
+ const pair=state.pairs?.find(p=>p.a===uid||p.b===uid);
+ if(state.roundPhase==='PREPARATION'||state.roundPhase==='COMBAT'){
+  const enemyId=pair?.a===uid?pair.b:pair?.b===uid?pair.a:null;
+  const enemy=enemyId&&state.players?.[enemyId];
+  const pve=pair?.pve||(!enemyId&&isPvERound(Number(state.round||1)));
+  label.textContent=pve?'⚔ Đối thủ vòng này: QUÁI PvE':enemy?'⚔ PvP · Đối thủ: '+enemy.displayName+' · ❤ '+Math.max(0,enemy.hp)+' HP · Lv'+enemy.level:'⚔ Đang ghép đối thủ PvP';
+  label.classList.remove('hidden');
+ }else{label.classList.add('hidden');label.textContent='';}
+}
 function paintPlayers(){
  $('players').innerHTML=state.playerOrder.map(id=>{
   const p=state.players[id];if(!p)return '';
@@ -745,7 +794,7 @@ function update(){
  banner.textContent=state.status==='finished'?(state.winnerId===uid?'🏆 VÔ ĐỊCH':'🏁 KẾT THÚC'):state.roundPhase==='COMBAT'?'⚔ '+combatType()+' — VÒNG '+state.round:state.roundPhase==='TRANSITION'?roundOutcome+' · VÒNG '+state.round:'🛒 '+combatType()+' — CHUẨN BỊ VÒNG '+state.round;
  if(state.roundPhase==='TRANSITION'&&myReport){const me=state.players?.[uid],streak=Math.max(me?.streaks?.win||0,me?.streaks?.loss||0);$('boardHelp').textContent=roundOutcome+(myReport.loser===uid?' · Trừ '+myReport.damage+' HP':'')+(streak>=2?' · Chuỗi '+streak:'')+' · Chuẩn bị vòng tiếp theo';}
  if(state.roundPhase!=='TRANSITION'||!myReport)$('boardHelp').textContent=state.roundPhase==='COMBAT'?'Theo dõi các tướng di chuyển, tấn công và dùng kỹ năng':state.roundPhase==='TRANSITION'?'Kết quả đã được tính, chuẩn bị vòng tiếp theo':'Chạm tướng tại Bench, sau đó chạm ô trống trên sân để bố trí';
- paintPlayers();paintControls();
+ paintPlayers();paintOpponent();paintControls();
  if(state.status==="finished"){$("phaseLabel").textContent="🏆 CHIẾN THẮNG: "+(state.players[state.winnerId]?.displayName||"Hòa");}
  const key=state.round+"-"+state.roundPhase;
  const boardSignature=()=>{

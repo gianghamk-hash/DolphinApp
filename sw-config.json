@@ -1,5 +1,5 @@
 {
-  "version": "1.0.169",
+  "version": "1.0.170",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029"
+  "notes": "Merge pull request #110 from gianghamk-hash/fix/tft-replay-combat-accuracy-package-b-20261029"
 }

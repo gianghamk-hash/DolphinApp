@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.169",
+      "releaseDate": "2026-10-29T01:55:29.925Z",
+      "summary": "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029",
+      "details": [
+        "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029"
+      ]
+    },
+    {
       "version": "1.0.168",
       "releaseDate": "2026-10-29T01:20:59.794Z",
       "summary": "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029",
@@ -390,14 +398,6 @@
       "summary": "ci(tactics): batch chibi GLBs using prebuilt Blender container",
       "details": [
         "ci(tactics): batch chibi GLBs using prebuilt Blender container"
-      ]
-    },
-    {
-      "version": "1.0.119",
-      "releaseDate": "2026-10-26T17:33:46.537Z",
-      "summary": "feat(tactics): generate remaining 29 rigged chibi heroes",
-      "details": [
-        "feat(tactics): generate remaining 29 rigged chibi heroes"
       ]
     }
   ]

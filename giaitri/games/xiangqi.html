@@ -180,6 +180,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     <p style="font-size:12px;color:#bfe9dc;margin:0 0 14px;line-height:1.5">Bàn 9×10 · 16 quân mỗi bên<br>Chơi 2 người trên 2 điện thoại</p>
     <button onclick="createGame()" class="btn-gold" style="width:100%;padding:14px;border-radius:12px;font-size:13px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">➕ TẠO VÁN MỚI (CẦM ĐỎ)</button>
     <button onclick="autoJoinOrCreate()" class="btn-outline" style="width:100%;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px">⚡ VÀO VÁN NHANH</button>
+    <button onclick="joinXiangqiCode()" class="btn-outline" style="width:100%;padding:12px;border-radius:12px;font-size:12px;margin-bottom:8px">🔗 VÀO PHÒNG BẰNG MÃ 6 KÝ TỰ</button>
     <button onclick="openRules()" class="btn-outline" style="width:100%;padding:12px;border-radius:12px;font-size:12px;text-transform:uppercase;letter-spacing:.06em">📖 XEM LUẬT</button>
     <div style="font-size:10px;color:#7ec9be;margin-top:12px" id="myNameDisplay"></div>
   </div>
@@ -267,7 +268,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 <div id="toast" class="toast"></div>
 
 <script src="/DolphinApp/dolphin-leaderboard.js?v=1.0"></script>
-<script type="module">
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script><script src="../../dolphin-multiplayer.js?v=2"></script><script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, getDoc, query, where } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -277,6 +278,7 @@ const firebaseConfig = {
   authDomain: "dolphin-f6d67.firebaseapp.com",
   projectId: "dolphin-f6d67"
 };
+const MP=window.DolphinMP; let mpHost=false,mpPlayers=[],mpLobby=null,mpQueue=Promise.resolve();
 const COL_GAMES = 'xiangqi_games';
 const ROWS = 10, COLS = 9;
 
@@ -586,32 +588,16 @@ function hasAnyLegalMove(board, side){
 //   FIREBASE
 // ═══════════════════════════════════
 function initFirebase(){
-  const app = initializeApp(firebaseConfig, 'xiangqi-app');
-  auth = getAuth(app);
-  db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
-    updateCloudStatus('online');
-    currentUser = getStaffName();
-    updateMyNameDisplay();
-    startGamesListener();
-    setTimeout(cleanupOldGames, 3000);
-    const savedGameId = localStorage.getItem('dolphin_xq_game');
-    if (savedGameId) checkAndRejoin(savedGameId);
-  }).catch(err => { console.warn('[Xiangqi] init:', err); updateCloudStatus('offline'); });
+ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);window.db=firebase.firestore();db=window.db;currentUser=getStaffName();updateMyNameDisplay();mpSetup();startGamesListener();updateCloudStatus('online');}
+ catch(e){updateCloudStatus('offline');showToast(e.message);}
 }
-
-async function checkAndRejoin(gameId){
-  try {
-    const snap = await getDoc(doc(db, COL_GAMES, gameId));
-    if (snap.exists()){
-      const g = snap.data();
-      if (g.player1 === currentUser){ myPlayerNum = 1; mySide = 'r'; currentGameId = gameId; subscribeGame(gameId); }
-      else if (g.player2 === currentUser){ myPlayerNum = 2; mySide = 'b'; currentGameId = gameId; subscribeGame(gameId); }
-      else localStorage.removeItem('dolphin_xq_game');
-    } else localStorage.removeItem('dolphin_xq_game');
-  } catch(e){ console.warn(e); }
+function mpSetup(){
+ MP.onRoom(r=>{if(r.id!==currentGameId)return;mpHost=!!r.isHost;myPlayerNum=mpHost?1:2;mySide=mpHost?'r':'b';});
+ MP.onPlayers(({players})=>{if(!currentGameId)return;mpPlayers=players||[];const guest=mpPlayers.find(p=>p.side==='p2');if(mpHost&&guest&&currentGame?.status==='waiting'){currentGame={...currentGame,player2:guest.name,status:'playing'};renderGame();MP.updateRoomStatus('in_game').then(()=>MP.sendStateStrict(currentGame)).catch(console.warn);}});
+ MP.onState(g=>{if(!currentGameId||g?.kind!=='xiangqi')return;currentGame=g;showGameView();renderGame();if(g.status==='finished')checkResultModal();});
+ MP.onInput(input=>{if(!mpHost||!currentGameId||input.playerId===MP.getPlayerId())return;mpQueue=mpQueue.then(()=>input.type==='xiangqi-move'?mpMove(input.from,input.to,2,input.ply):input.type==='xiangqi-resign'?mpResign(2):null).catch(console.warn);});
+ MP.onError(e=>{console.warn(e);showToast('Lỗi kết nối Multiplayer');});
 }
-
 function updateCloudStatus(s){
   const dot = $('cloudDot'), text = $('cloudText');
   if (!dot || !text) return;
@@ -633,14 +619,7 @@ function updateMyNameDisplay(){
 }
 
 function startGamesListener(){
-  if (unsubGames) unsubGames();
-  const q = query(collection(db, COL_GAMES), where('status', '==', 'waiting'));
-  unsubGames = onSnapshot(q, snap => {
-    const games = [];
-    snap.forEach(d => games.push(Object.assign({ id: d.id }, d.data())));
-    games.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    renderGamesList(games);
-  }, err => console.warn('[Xiangqi] listen:', err));
+ if(mpLobby)mpLobby();mpLobby=window.db.collection('mp_rooms').where('game','==','dolphin-xiangqi').where('status','==','waiting').limit(20).onSnapshot(s=>renderGamesList(s.docs.map(d=>({id:d.id,player1:'Chủ phòng',createdAt:d.data().createdAt}))),console.warn);
 }
 function renderGamesList(games){
   const el = $('gamesList');
@@ -666,58 +645,20 @@ function renderGamesList(games){
 // ═══════════════════════════════════
 //   CREATE / JOIN
 // ═══════════════════════════════════
-window.createGame = async function(){
-  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-  if (!db){ alert('Đang kết nối... vui lòng thử lại sau'); return; }
-  try {
-    const board = initialBoard();
-    const gameData = {
-      player1: currentUser, player2: null,
-      board: boardToData(board),   // ✅ Object 1 chiều, không phải nested array
-      turn: 1,
-      status: 'waiting',
-      winner: null,
-      lastMove: null,
-      createdAt: Date.now(), updatedAt: Date.now(),
-      dateVN: getVNDateStr(), finishedAt: null
-    };
-    const ref = await addDoc(collection(db, COL_GAMES), gameData);
-    currentGameId = ref.id; myPlayerNum = 1; mySide = 'r';
-    localStorage.setItem('dolphin_xq_game', ref.id);
-    subscribeGame(ref.id);
-  } catch(e){ console.error(e); alert('Lỗi tạo ván: ' + e.message); }
+window.createGame=async function(){
+ if(!currentUser)return alert('Nhập tên nhân viên trước');if(MP.getRoomId())return alert('Rời phòng hiện tại trước');
+ try{const r=await MP.createRoom('dolphin-xiangqi',{name:currentUser,maxPlayers:2});currentGameId=r.roomId;mpHost=true;myPlayerNum=1;mySide='r';
+ currentGame={kind:'xiangqi',player1:currentUser,player2:null,board:boardToData(initialBoard()),turn:1,status:'waiting',winner:null,lastMove:null,ply:0,createdAt:Date.now(),updatedAt:Date.now()};
+ showGameView();renderGame();await MP.sendStateStrict(currentGame);alert('Mã phòng Cờ Tướng: '+r.roomId);}
+ catch(e){alert('Tạo phòng lỗi: '+e.message);}
 };
-
-window.autoJoinOrCreate = async function(){
-  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-  const snap = await getDocs(query(collection(db, COL_GAMES), where('status', '==', 'waiting')));
-  let found = null;
-  snap.forEach(d => { const g = d.data(); if (g.player1 !== currentUser && !found) found = d.id; });
-  if (found) joinGame(found); else createGame();
+window.autoJoinOrCreate=async function(){if(!currentUser)return;try{const snap=await window.db.collection('mp_rooms').where('game','==','dolphin-xiangqi').where('status','==','waiting').limit(20).get();const other=snap.docs.find(d=>d.data().hostId!==MP.getDeviceId());if(other)joinGame(other.id);else createGame();}catch(e){alert(e.message);}};
+window.joinGame=async function(code){
+ if(!currentUser)return alert('Nhập tên nhân viên trước');if(MP.getRoomId())return alert('Rời phòng hiện tại trước');
+ try{const r=await MP.joinRoom(String(code).trim().toUpperCase(),'dolphin-xiangqi',{name:currentUser});currentGameId=r.roomId;mpHost=!!r.isHost;myPlayerNum=r.side==='p1'?1:2;mySide=myPlayerNum===1?'r':'b';showToast('Đã vào phòng '+r.roomId);}
+ catch(e){alert('Vào phòng lỗi: '+e.message);}
 };
-
-window.joinGame = async function(gameId){
-  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-  currentGameId = gameId;
-  try {
-    const docRef = doc(db, COL_GAMES, gameId);
-    const snap = await getDoc(docRef);
-    if (!snap.exists()) throw new Error('Ván không tồn tại');
-    const g = snap.data();
-    if (g.player1 === currentUser){ myPlayerNum = 1; mySide = 'r'; }
-    else if (g.player2 === currentUser){ myPlayerNum = 2; mySide = 'b'; }
-    else if (!g.player2 && g.status === 'waiting'){
-      await updateDoc(docRef, { player2: currentUser, status: 'playing', updatedAt: Date.now() });
-      myPlayerNum = 2; mySide = 'b';
-    } else throw new Error('Ván đã đầy hoặc đã kết thúc');
-    localStorage.setItem('dolphin_xq_game', gameId);
-    subscribeGame(gameId);
-  } catch(e){
-    console.error(e); alert('Không thể vào ván: ' + e.message);
-    currentGameId = null; localStorage.removeItem('dolphin_xq_game');
-  }
-};
-
+window.joinXiangqiCode=function(){const code=prompt('Nhập mã phòng 6 ký tự');if(code)joinGame(code);};
 function subscribeGame(gameId){
   if (unsubGame) unsubGame();
   unsubGame = onSnapshot(doc(db, COL_GAMES, gameId), snap => {
@@ -744,6 +685,7 @@ function showLobby(){
   lbSubmitted = false;
   if (unsubGame){ unsubGame(); unsubGame = null; }
   localStorage.removeItem('dolphin_xq_game');
+  mpHost=false;mpPlayers=[];
 }
 function showGameView(){
   $('lobbyView').style.display = 'none';
@@ -889,55 +831,29 @@ function onCellClick(r, c){
   renderGame();
 }
 
-async function makeMove(from, to){
-  const g = currentGame;
-  if (!g) return;
-  const board = dataToBoard(g.board);
-  const piece = board[from.r][from.c];
-  if (!piece) return;
-
-  const captured = board[to.r][to.c];
-  const newBoard = cloneBoard(board);
-  newBoard[to.r][to.c] = newBoard[from.r][from.c];
-  newBoard[from.r][from.c] = null;
-
-  const oppSide = mySide === 'r' ? 'b' : 'r';
-  const oppInCheck = isInCheck(newBoard, oppSide);
-  const oppHasMove = hasAnyLegalMove(newBoard, oppSide);
-
-  const upd = {
-    board: boardToData(newBoard),   // ✅ Object 1 chiều
-    turn: myPlayerNum === 1 ? 2 : 1,
-    lastMove: { from: {r: from.r, c: from.c}, to: {r: to.r, c: to.c}, by: myPlayerNum, ts: Date.now() },
-    updatedAt: Date.now()
-  };
-
-  let gameEnd = false;
-  if (!oppHasMove){
-    upd.status = 'finished';
-    upd.winner = myPlayerNum;
-    upd.finishedAt = Date.now();
-    gameEnd = true;
-  }
-
-  try {
-    if (captured) playCapture(); else playMove();
-    if (oppInCheck && !gameEnd) setTimeout(playCheck, 200);
-
-    selectedPiece = null;
-    validMoves = [];
-
-    await updateDoc(doc(db, COL_GAMES, currentGameId), upd);
-
-    if (oppInCheck && !gameEnd){
-      setTimeout(() => showToast('⚠️ CHIẾU TƯỚNG!'), 250);
-    }
-    if (gameEnd){
-      setTimeout(() => showToast('🏆 CHIẾU BÍ!'), 250);
-    }
-  } catch(e){ console.warn(e); showToast('❌ Lỗi gửi nước đi'); }
+async function makeMove(from,to){
+ if(!currentGame||currentGame.status!=='playing'||currentGame.turn!==myPlayerNum)return;
+ if(!mpHost){try{await MP.sendInputStrict({type:'xiangqi-move',from,to,ply:currentGame.ply||0});}catch(e){showToast(e.message);}return;}
+ await mpMove(from,to,1,currentGame.ply||0);
 }
-
+async function mpMove(from,to,player,ply){
+ const g=currentGame,side=player===1?'r':'b';
+ if(!mpHost||!g||g.status!=='playing'||g.turn!==player||(g.ply||0)!==ply)return;
+ if(!from||!to||![from.r,from.c,to.r,to.c].every(Number.isInteger)||from.r<0||from.r>9||to.r<0||to.r>9||from.c<0||from.c>8||to.c<0||to.c>8)return;
+ const board=dataToBoard(g.board),piece=board[from.r][from.c];
+ if(!piece||piece.s!==side||!getLegalMoves(board,from.r,from.c).some(p=>p.r===to.r&&p.c===to.c))return;
+ const nextBoard=cloneBoard(board),captured=nextBoard[to.r][to.c];nextBoard[to.r][to.c]=piece;nextBoard[from.r][from.c]=null;
+ const opp=side==='r'?'b':'r',finished=!hasAnyLegalMove(nextBoard,opp);
+ const next={...g,board:boardToData(nextBoard),turn:player===1?2:1,ply:ply+1,lastMove:{from,to,by:player,ts:Date.now()},updatedAt:Date.now()};
+ if(finished){next.status='finished';next.winner=player;next.finishedAt=Date.now();}
+ await MP.sendStateStrict(next);currentGame=next;selectedPiece=null;validMoves=[];renderGame();
+ if(captured)playCapture();else playMove();if(isInCheck(nextBoard,opp)&&!finished)showToast('CHIẾU TƯỚNG!');
+}
+async function mpResign(player){
+ if(!mpHost||currentGame?.status!=='playing')return;
+ const g={...currentGame,status:'finished',winner:player===1?2:1,finishedAt:Date.now(),resigned:true,resignedBy:player===1?currentGame.player1:currentGame.player2};
+ await MP.sendStateStrict(g);currentGame=g;renderGame();
+}
 // ═══════════════════════════════════
 //   RESULT
 // ═══════════════════════════════════
@@ -996,50 +912,24 @@ function checkResultModal(){
   }
 }
 
-window.closeResultAndLeave = function(){
+window.closeResultAndLeave = async function(){
   $('resultModal').classList.remove('show');
+  try{if(MP.getRoomId())await MP.leaveRoom();}catch(e){console.warn(e);}
   showLobby();
 };
-window.leaveGame = function(){
-  if (currentGame && currentGame.status === 'playing'){
-    if (!confirm('Ván đang chơi. Rời ván sẽ tính là đầu hàng?')) return;
-    resignGame();
-  }
-  showLobby();
+window.leaveGame=async function(){
+ if(currentGame?.status==='playing'&&!confirm('Rời ván đang chơi?'))return;
+ if(currentGame?.status==='playing')await window.resignGame(true);
+ try{await MP.leaveRoom();}catch(e){console.warn(e);}showLobby();
 };
-window.resignGame = async function(){
-  if (!currentGame || currentGame.status !== 'playing') return;
-  if (!confirm('Bạn chắc chắn muốn đầu hàng?')) return;
-  try {
-    await updateDoc(doc(db, COL_GAMES, currentGameId), {
-      status: 'finished',
-      winner: myPlayerNum === 1 ? 2 : 1,
-      finishedAt: Date.now(),
-      resigned: true, resignedBy: currentUser
-    });
-  } catch(e){ console.warn(e); }
+window.resignGame=async function(skip){
+ if(currentGame?.status!=='playing'||(!skip&&!confirm('Bạn chắc chắn muốn đầu hàng?')))return;
+ if(mpHost)await mpResign(1);else await MP.sendInputStrict({type:'xiangqi-resign'}).catch(e=>showToast(e.message));
 };
-
 // ═══════════════════════════════════
 //   CLEANUP
 // ═══════════════════════════════════
-async function cleanupOldGames(){
-  if (!db) return;
-  try {
-    const now = Date.now();
-    const snap = await getDocs(query(collection(db, COL_GAMES)));
-    for (const d of snap.docs){
-      const g = d.data();
-      const age = now - (g.createdAt || 0);
-      let del = false;
-      if (g.status === 'waiting' && age > WAITING_TIMEOUT) del = true;
-      if (g.status === 'finished' && g.finishedAt && (now - g.finishedAt) > FINISHED_TIMEOUT) del = true;
-      if (age > 24 * 60 * 60 * 1000) del = true;
-      if (del) await deleteDoc(d.ref);
-    }
-  } catch(e){ console.warn(e); }
-}
-
+async function cleanupOldGames(){/* Legacy collection retained for existing historical data. */}
 // ═══════════════════════════════════
 //   MODALS
 // ═══════════════════════════════════
@@ -1049,6 +939,7 @@ window.goBack = function(){
   if (currentGame && currentGame.status === 'playing'){
     if (!confirm('Ván đang chơi. Thoát?')) return;
   }
+  if(MP.getRoomId())MP.leaveRoom().catch(console.warn);
   window.location.href = '/DolphinApp/giaitri/index.html';
 };
 

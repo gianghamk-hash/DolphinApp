@@ -626,7 +626,7 @@
         "Support"
       ],
       "hp": 790,
-      "attack": 54,
+      "attack": 58,
       "armor": 30,
       "magicResist": 39,
       "attackSpeed": 0.655,
@@ -980,7 +980,7 @@
         "Support"
       ],
       "hp": 535,
-      "attack": 36,
+      "attack": 43,
       "armor": 19,
       "magicResist": 26,
       "attackSpeed": 0.63,
@@ -1012,7 +1012,7 @@
         "Support"
       ],
       "hp": 660,
-      "attack": 46,
+      "attack": 52,
       "armor": 24,
       "magicResist": 32,
       "attackSpeed": 0.655,
@@ -1044,7 +1044,7 @@
         "Support"
       ],
       "hp": 760,
-      "attack": 48,
+      "attack": 52,
       "armor": 30,
       "magicResist": 39,
       "attackSpeed": 0.605,
@@ -1076,7 +1076,7 @@
         "Support"
       ],
       "hp": 775,
-      "attack": 51,
+      "attack": 55,
       "armor": 30,
       "magicResist": 39,
       "attackSpeed": 0.63,
@@ -1108,7 +1108,7 @@
         "Support"
       ],
       "hp": 950,
-      "attack": 63,
+      "attack": 66,
       "armor": 37,
       "magicResist": 48,
       "attackSpeed": 0.655,
@@ -1140,7 +1140,7 @@
         "Support"
       ],
       "hp": 1105,
-      "attack": 66,
+      "attack": 70,
       "armor": 45,
       "magicResist": 58,
       "attackSpeed": 0.605,

@@ -286,6 +286,10 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
  #game>section>.playerDock .hpIdentity strong{font-size:9px!important}
  #game>section>.playerDock .hpValue,#game>section>.playerDock .hpLevel{font-size:9px!important}
 }
+
+/* Phase badge: narrow, top-edge status only; never overlay combat units. */
+#battleBanner{top:2px!important;max-width:calc(100% - 130px)!important;padding:3px 8px!important;border-radius:8px!important;font-size:clamp(9px,1vw,12px)!important;line-height:1.15!important;letter-spacing:0!important;white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;pointer-events:none!important}
+#battleBanner.hidden{display:none!important}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -936,7 +940,7 @@ function update(){
  $("overlay").classList.add("hidden");$("game").classList.remove("hidden");
  if(!renderer)setup3D();
  const banner=$('battleBanner');
- banner.className=state.roundPhase==='COMBAT'?'combat':state.roundPhase==='TRANSITION'?'result':'';
+ banner.className=state.roundPhase==='PREPARATION'?'':'hidden';
  const myReport=(state.reports||[]).find(rep=>rep.pair?.a===uid||rep.pair?.b===uid);
  const myVictory=myReport&&myReport.winner===uid;
  const roundOutcome=!myReport?'':myReport.winner===null&&myReport.loser===null?'🤝 HÒA':myVictory?'🏆 CHIẾN THẮNG':'💔 THẤT BẠI';

@@ -1,5 +1,5 @@
 {
-  "version": "1.0.178",
+  "version": "1.0.179",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #119 from gianghamk-hash/feat/tft-authority-online-merge-main-20261029"
+  "notes": "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029"
 }

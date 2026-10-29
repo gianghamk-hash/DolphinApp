@@ -1,7 +1,7 @@
 {
-  "version": "1.0.178",
-  "buildDate": "2026-10-29T05:35:59.802Z",
-  "commit": "73407ed",
-  "notes": "Merge pull request #119 from gianghamk-hash/feat/tft-authority-online-merge-main-20261029",
+  "version": "1.0.179",
+  "buildDate": "2026-10-29T05:45:45.045Z",
+  "commit": "1d743cd",
+  "notes": "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029",
   "forceUpdate": false
 }

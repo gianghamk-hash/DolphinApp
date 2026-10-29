@@ -734,21 +734,46 @@ window.openPass = (mode = 'deleteShow') => {
   $('pass-input').focus();
 };
 window.verifyPass = () => {
-  if (hashStr($('pass-input').value) === PASS_HASH) {
-    closeM('m-pass');
-    if (passMode === 'delete' && window.doDelete) window.doDelete();
-    if (passMode === 'deleteShow') doDeleteShow();
+  const entered = $('pass-input').value;
+  if (hashStr(entered) !== PASS_HASH) {
+    $('pass-err').classList.remove('hidden');
+    toast('Mật khẩu xóa bàn chưa đúng.', '🔒');
+    return;
   }
-  else $('pass-err').classList.remove('hidden');
+  closeM('m-pass');
+  if (passMode === 'delete' && window.doDelete) return window.doDelete();
+  if (passMode === 'deleteShow') return doDeleteShow();
 };
+let showDeletePending = false;
 const doDeleteShow = async () => {
-  const label = $('s-id').value;
-  try { 
-    await deleteDoc(doc(db, COL_LIVE, key(label))); 
-    closeM('m-service'); 
-    toast(`Đã xóa bàn ${label} và toàn bộ dữ liệu order`, '🗑'); 
+  if (showDeletePending) return;
+  const label = String($('s-id').value || '').trim();
+  if (!label || !bookings[key(label)]) {
+    toast('Không tìm thấy bàn cần xóa. Hãy mở lại bàn và thử lại.', '⚠️');
+    return;
   }
-  catch (e) { toast('Lỗi khi xóa bàn!', '❌'); }
+  if (!db) {
+    toast('Chưa kết nối Firestore nên chưa thể xóa bàn.', '❌');
+    return;
+  }
+  showDeletePending = true;
+  try {
+    await deleteDoc(doc(db, COL_LIVE, key(label)));
+    delete bookings[key(label)];
+    render();
+    closeM('m-service');
+    toast(`Đã xóa bàn ${label} và dữ liệu order của bàn`, '🗑');
+  } catch (e) {
+    console.error('[Dolphin Show] delete table failed', {table:label,collection:COL_LIVE,code:e?.code,message:e?.message}, e);
+    const code = String(e?.code || '');
+    const reason = code === 'permission-denied' ? 'Firestore từ chối quyền xóa (permission-denied).'
+      : code === 'unavailable' ? 'Không kết nối được Firestore (unavailable).'
+      : code === 'unauthenticated' ? 'Phiên đăng nhập Firebase chưa hợp lệ (unauthenticated).'
+      : code === 'failed-precondition' ? 'Firestore chưa đáp ứng điều kiện xóa (failed-precondition).'
+      : 'Firestore báo lỗi: ' + (code || String(e?.message || 'không xác định'));
+    toast('Không thể xóa bàn ' + label + '. ' + reason, '❌');
+    window.alert('Không thể xóa bàn ' + label + '.\\n' + reason + '\\nDữ liệu bàn chưa được xóa.');
+  } finally { showDeletePending = false; }
 };
 
 /* ===== QUẢN TRỊ: ĐÓNG CA / LƯU TRỮ / TRA CỨU ===== */

@@ -299,6 +299,24 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 #battleBanner{top:2px!important;max-width:calc(100% - 130px)!important;padding:3px 8px!important;border-radius:8px!important;font-size:clamp(9px,1vw,12px)!important;line-height:1.15!important;letter-spacing:0!important;white-space:nowrap!important;text-overflow:ellipsis!important;overflow:hidden!important;pointer-events:none!important}
 #battleBanner.hidden{display:none!important}
 
+/* Explicit 6.5/3.5 width allocation; HP/equipment/bench remain in left column. */
+@media (orientation:landscape){
+ html.tft-android-apk #game:not(.hidden){
+  grid-template-columns:minmax(0,65fr) minmax(0,35fr)!important;
+  width:100%!important;max-width:none!important;box-sizing:border-box!important;
+ }
+ html.tft-android-apk #game>section{width:100%!important;min-width:0!important;display:flex!important;flex-direction:column!important;align-items:stretch!important}
+ html.tft-android-apk #game>section>.playerDock{
+  position:relative!important;inset:auto!important;left:auto!important;right:auto!important;top:auto!important;bottom:auto!important;
+  width:100%!important;max-width:100%!important;min-width:0!important;box-sizing:border-box!important;
+  display:grid!important;grid-template-columns:repeat(4,minmax(0,1fr))!important;
+  transform:none!important;justify-self:stretch!important;align-self:stretch!important;
+ }
+ html.tft-android-apk #game>section>.playerDock .hpEntry{width:100%!important;min-width:0!important;box-sizing:border-box!important}
+ html.tft-android-apk #game>section>#touchItemTray,
+ html.tft-android-apk #game>section>.benchBar{width:100%!important;min-width:0!important;max-width:100%!important;box-sizing:border-box!important;align-self:stretch!important}
+ html.tft-android-apk #game>aside{width:100%!important;min-width:0!important;box-sizing:border-box!important}
+}
 /* Android TFT landscape: keep all four health entries and bench outside flex compression. */
 @media (orientation:landscape){
  html.tft-android-apk #game>section{display:flex!important;flex-direction:column!important;min-height:0!important}

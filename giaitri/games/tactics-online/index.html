@@ -266,6 +266,7 @@ let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=nul
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
 let pinchPointers=new Map(),pinchDistance=0,lastPinchAt=0,itemDrag=null;
+const combatMetrics=new Map(),combatStatuses=new Map();
 let seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
@@ -369,8 +370,10 @@ function selectedHeroInfo(){
  const p=state.players[uid],t=E.activeTraits(p),combat=E.combatStats(p,u,t);
  const skill=h.ability||{},spell=skill.name||SKILL_LABELS[skill.kind]||skill.kind;
  const stats=[['❤ HP',combat.hp],['⚔ ATK',combat.attack],['🛡 Giáp',combat.armor],['✦ Kháng phép',combat.magicResist],['🏹 Tầm đánh',combat.range],['⏱ Tốc đánh',Number(combat.attackSpeed).toFixed(2)],['🔮 Mana',combat.mana+'/'+combat.manaMax],['✨ AP',combat.abilityPower]];
+ const metrics=combatMetrics.get(selected);
+ const metricsHtml=metrics?'<div class="combatMetrics">⚔ Sát thương '+Math.round(metrics.damage||0)+' · ❤ Hồi phục '+Math.round(metrics.heal||0)+' · 🛡 Khiên '+Math.round(metrics.shield||0)+' · ✦ Kỹ năng '+(metrics.casts||0)+'</div>':'';
  const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemIcon(id)+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
- $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div><div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+'</div>';
+ $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div><div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+metricsHtml+'</div>';
 }
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
@@ -623,7 +626,7 @@ function startReplay(){
  // Host-authoritative result is never trusted from this local preview. Server recomputes on COMBAT expiry.
  const match=pair; // Use server pairing orientation for deterministic outcomes.
  const room={round:state.round};const report=E.simulate(match,room,state.combatSnapshot,(state.seed+state.pairs.indexOf(pair)*977+state.round*1033)>>>0);
- battleHealth=new Map();for(const id of [pair.a,pair.b].filter(Boolean)){const p=state.combatSnapshot[id];if(!p)continue;for(const u of Object.values(p.units||{})){const h=hero[u.heroId];if(h)battleHealth.set(u.id,{hp:h.hp*Math.pow(1.8,u.star-1),max:h.hp*Math.pow(1.8,u.star-1),mana:0,manaMax:h.manaMax});}}replay={events:report.events,index:0,start:state.phaseStartedAt,mirror:pair.a!==uid,units:new Map()};
+ combatMetrics.clear();combatStatuses.clear();battleHealth=new Map();for(const id of [pair.a,pair.b].filter(Boolean)){const p=state.combatSnapshot[id];if(!p)continue;for(const u of Object.values(p.units||{})){const h=hero[u.heroId];if(h)battleHealth.set(u.id,{hp:h.hp*Math.pow(1.8,u.star-1),max:h.hp*Math.pow(1.8,u.star-1),mana:0,manaMax:h.manaMax});}}replay={events:report.events,index:0,start:state.phaseStartedAt,mirror:pair.a!==uid,units:new Map()};
 }
 function showDamage(node,amount){
  if(!node||!renderer||!camera)return;
@@ -657,6 +660,9 @@ function tickReplay(){
  while(replay.index<replay.events.length&&replay.events[replay.index].t<=elapsed){
   const eventIndex=replay.index++;
   const e=replay.events[eventIndex],node=characterById.get(e.actor),target=characterById.get(e.target);
+  if(e.actor&&e.actor!=='system'){const m=combatMetrics.get(e.actor)||{damage:0,heal:0,shield:0,casts:0};if(e.type==='attack'||e.type==='cast')m.damage+=e.amount||0;if(e.type==='skill')m.casts++;if(e.type==='heal')m.heal+=e.amount||0;if(e.type==='shield')m.shield+=e.amount||0;combatMetrics.set(e.actor,m);}
+  if(e.target&&['stun','slow','burn','haste'].includes(e.type)){combatStatuses.set(e.target,{type:e.type,until:e.t+(e.duration||e.amount||1200)});}
+  if(e.type==='cleanse')combatStatuses.delete(e.actor);
   if(e.type==='mana'&&node){const stat=battleHealth.get(e.actor)||{hp:1,max:1};stat.mana=e.amount;stat.manaMax=e.max||1;battleHealth.set(e.actor,stat);Visuals.updateBars(node,Math.max(0,stat.hp/stat.max),Math.max(0,Math.min(1,stat.mana/stat.manaMax)));}
   if(e.type==='skill'&&node){Animator.play(node,'cast');CombatFX.pulse(stageScene,node,e.vfx||e.skill||'spell',1.15);CombatFX.castAura(stageScene,node,e.vfx||e.skill);playCombatSound(e.sfx||e.skill||'cast');}
   if(e.type==='cleanse'&&node){CombatFX.pulse(stageScene,node,'cleanse',.75);playCombatSound('heal');}
@@ -674,7 +680,7 @@ function tickReplay(){
    showDamage(target,e.amount);playCombatSound(e.type);Animator.play(target,'hit');Animator.burst(stageScene,target,'hit');CombatFX.pulse(stageScene,target,'critical',.45);
   }
   if((e.type==='heal'||e.type==='shield')&&(target||node)){const affected=target||node;playCombatSound(e.type);Animator.play(affected,e.type);Animator.burst(stageScene,affected,e.type);CombatFX.pulse(stageScene,affected,e.type);if(e.type==='heal'){const hp=battleHealth.get(e.target||e.actor);if(hp){hp.hp=Math.min(hp.max,hp.hp+(e.amount||0));Visuals.updateBars(affected,hp.hp/hp.max);}}}
-  if(e.type==='die'&&node){playCombatSound('die');Animator.play(node,'death');Animator.burst(stageScene,node,'death');CombatFX.pulse(stageScene,node,'death');}
+  if(e.type==='die'&&node){combatStatuses.delete(e.actor);playCombatSound('die');Animator.play(node,'death');Animator.burst(stageScene,node,'death');CombatFX.pulse(stageScene,node,'death');}
  }
 }
 function update(){
@@ -822,8 +828,9 @@ function finishGearDrag(e){
   const after=E.combatStats(p,proposed,E.activeTraits(p));
   const delta=['hp','attack','armor','magicResist','abilityPower','mana'].map(k=>{const v=Math.round((after[k]-before[k])*10)/10;return v?(STAT_LABELS[k]||k)+': '+(v>0?'+':'')+v:null}).filter(Boolean).join(', ');
   if(crafted&&!window.confirm('Ghép '+(itemDef(match)?.name||match)+' + '+(itemDef(drag.item)?.name||drag.item)+' → '+crafted.name+'?\\n'+(crafted.description||EFFECT_LABELS[crafted.effect]||'')+'\\n'+delta))return;
-  Promise.resolve(send({type:'EQUIP',unitId:target,component:drag.item})).then(()=>{
-   if(!host){info('Đã gửi yêu cầu trang bị — chờ đồng bộ từ chủ phòng.');return;}
+  Promise.resolve(send({type:'EQUIP',unitId:target,component:drag.item})).then(success=>{
+   if(success===false)return;
+   if(!host){return;}
    const sparkle=document.createElement('div');sparkle.className='equipSuccessFx';sparkle.textContent='✨ TRANG BỊ';sparkle.style.left=e.clientX+'px';sparkle.style.top=e.clientY+'px';document.body.appendChild(sparkle);setTimeout(()=>sparkle.remove(),850);
   }).catch(showError);
 }

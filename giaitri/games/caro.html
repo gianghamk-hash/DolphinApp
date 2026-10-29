@@ -128,7 +128,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 
 </style>
 <link rel="stylesheet" href="arena-landing.css?v=1">
-</head>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script><script src="../../dolphin-multiplayer.js?v=2"></script></head>
 <body>
 
 <div class="caro-hd">
@@ -151,6 +151,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
       <p class="text-[12px] text-teal-300 mb-4">Bàn 20×20 tự mở rộng · 5 quân liền kề thắng (Luật quốc tế)</p>
       <button onclick="createGame()" class="btn-gold w-full py-3.5 rounded-xl text-[13px] uppercase tracking-wider mb-2">➕ TẠO VÁN MỚI</button>
       <button onclick="openRules()" class="btn-outline w-full py-3 rounded-xl text-[12px] uppercase tracking-wider">📖 XEM QUY TẮC CHƠI</button>
+      <button onclick="joinCaroCode()" class="btn-outline w-full py-3 rounded-xl text-[12px] mt-2">🔗 VÀO PHÒNG BẰNG MÃ</button>
       <div class="text-[10px] text-teal-400 mt-3" id="myNameDisplay"></div>
     </div>
     <div class="glass rounded-2xl p-4">
@@ -262,6 +263,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   var WAITING_TIMEOUT = 30 * 60 * 1000;
   var FINISHED_TIMEOUT = 2 * 60 * 60 * 1000;
 
+  var MP=window.DolphinMP, mpHost=false, mpPlayers=[], mpLobbyUnsub=null;
   var state = {
     db: null, auth: null, modules: null, initialized: false,
     currentUser: '', currentGame: null, currentGameId: null,
@@ -303,48 +305,37 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   };
 
   function initFirebase(){
-    if (state.initialized) return;
-    state.initialized = true;
-    Promise.all([
-      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js"),
-      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js"),
-      import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js")
-    ]).then(function(mods){
-      state.modules = { app: mods[0], auth: mods[1], db: mods[2] };
-      var app = mods[0].initializeApp(FIREBASE_CONFIG, 'caro-app');
-      state.auth = mods[1].getAuth(app);
-      state.db = mods[2].getFirestore(app);
-      return mods[1].signInAnonymously(state.auth);
-    }).then(function(){
-      state.currentUser = getStaffName();
-      updateMyNameDisplay();
+    if(state.initialized)return;state.initialized=true;
+    try {
+      if(!firebase.apps.length)firebase.initializeApp(FIREBASE_CONFIG);
+      window.db=firebase.firestore();state.db=window.db;
+      firebase.auth().signInAnonymously().catch(e=>console.warn('[Caro auth]',e));
+      MP.onRoom(room=>{if(room.id!==state.currentGameId)return;mpHost=room.isHost;state.myPlayerNum=mpHost?1:2;});
+      MP.onPlayers(payload=>{
+        if(!state.currentGameId)return;mpPlayers=payload.players||[];
+        if(!mpHost||!state.currentGame)return;
+        const g=state.currentGame,p2=mpPlayers.find(p=>p.side==='p2');
+        if(g.status==='waiting'&&p2){
+          const next={...g,player2:p2.name,status:'playing',updatedAt:Date.now()};
+          state.currentGame=next;MP.updateRoomStatus('in_game').then(()=>MP.sendStateStrict(next)).catch(console.warn);
+        }
+      });
+      MP.onState(g=>{if(!state.currentGameId||g?.kind!=='caro')return;state.currentGame=g;hideLoading();if($('lobbyView').style.display!=='none')showGameView();renderGame();});
+      MP.onInput(input=>{if(!mpHost||!state.currentGameId||input.playerId===MP.getPlayerId())return;
+        if(input.type==='caro-move')applyCaroMove(input.r,input.c,2,input.ply);
+        if(input.type==='caro-chat')applyCaroChat(input.text,input.name);
+        if(input.type==='caro-resign')applyCaroResign(2);
+      });
+      MP.onError(e=>console.warn('[Caro MP]',e));
       startGamesListener();
-      setTimeout(cleanupOldGames, 3000);
-      var p = new URLSearchParams(location.search);
-      var gid = p.get('game');
-      if (gid) joinGameById(gid);
-    }).catch(function(err){ console.warn('[Caro] init:', err); });
+    }catch(e){alert('Không kết nối được Multiplayer: '+e.message);}
   }
-
-  function updateMyNameDisplay(){
-    var el = $('myNameDisplay');
-    if (!el) return;
-    if (state.currentUser) el.innerHTML = '👤 Bạn chơi với tên: <b class="text-gold-400">' + esc(state.currentUser) + '</b>';
-    else el.innerHTML = '<span class="text-red-400 font-bold">⚠️ Chưa có tên — vào Lễ Tân để nhập tên!</span>';
-  }
-
   function startGamesListener(){
-    if (state.unsubGames) state.unsubGames();
-    var m = state.modules; if (!m) return;
-    var q = m.db.query(m.db.collection(state.db, COL_GAMES), m.db.where('status', '==', 'waiting'), m.db.limit(20));
-    state.unsubGames = m.db.onSnapshot(q, function(snap){
-      var games = [];
-      snap.forEach(function(d){ games.push(Object.assign({ id: d.id }, d.data())); });
-      games.sort(function(a, b){ return (b.createdAt || 0) - (a.createdAt || 0); });
-      renderGamesList(games);
-    }, function(err){ console.warn('[Caro] listen:', err); });
+    if(mpLobbyUnsub)mpLobbyUnsub();
+    mpLobbyUnsub=window.db.collection('mp_rooms').where('game','==','dolphin-caro').where('status','==','waiting').limit(20).onSnapshot(snap=>{
+      renderGamesList(snap.docs.map(d=>({id:d.id,player1:'Chủ phòng',createdAt:d.data().createdAt})));
+    },console.warn);
   }
-
   function renderGamesList(games){
     var el = $('gamesList'); if (!el) return;
     var c = $('gamesCount'); if (c) c.textContent = games.length + ' ván';
@@ -361,61 +352,28 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     }).join('');
   }
 
-  window.createGame = function(){
-    if (!state.currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-    if (!state.db){ alert('Đang kết nối... vui lòng thử lại sau'); return; }
-    showLoading('Đang tạo ván...');
-    var m = state.modules;
-    var gd = {
-      player1: state.currentUser, player2: null, cells: {},
-      view: { minR: -INITIAL_RADIUS, maxR: INITIAL_RADIUS - 1, minC: -INITIAL_RADIUS, maxC: INITIAL_RADIUS - 1 },
-      currentTurn: 1, status: 'waiting', winner: null, winningCells: null,
-      moves: [], chat: [], createdAt: Date.now(), updatedAt: Date.now(),
-      dateVN: getVNDateStr(), finishedAt: null
-    };
-    m.db.addDoc(m.db.collection(state.db, COL_GAMES), gd).then(function(ref){
-      state.currentGameId = ref.id;
-      joinGame(ref.id);
-    }).catch(function(err){ console.error(err); hideLoading(); alert('Lỗi tạo ván: ' + err.message); });
+  window.createGame=async function(){
+    if(!state.currentUser)return alert('Hãy nhập tên nhân viên');
+    if(MP.getRoomId())return alert('Hãy rời phòng hiện tại');
+    showLoading('Đang tạo phòng...');
+    try {
+      const r=await MP.createRoom('dolphin-caro',{name:state.currentUser,maxPlayers:2});
+      state.currentGameId=r.roomId;mpHost=true;state.myPlayerNum=1;
+      const g={kind:'caro',player1:state.currentUser,player2:null,cells:{},view:{minR:-INITIAL_RADIUS,maxR:INITIAL_RADIUS-1,minC:-INITIAL_RADIUS,maxC:INITIAL_RADIUS-1},currentTurn:1,status:'waiting',winner:null,winningCells:null,moves:[],chat:[],createdAt:Date.now(),updatedAt:Date.now()};
+      state.currentGame=g;showGameView();renderGame();await MP.sendStateStrict(g);hideLoading();
+      alert('Mã phòng: '+r.roomId+' — gửi cho người chơi thứ hai.');
+    }catch(e){hideLoading();alert('Tạo phòng thất bại: '+e.message);}
   };
-
-  window.joinGame = function(gameId){
-    if (!state.currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-    state.currentGameId = gameId;
-    showLoading('Đang vào ván...');
-    var m = state.modules;
-    var ref = m.db.doc(state.db, COL_GAMES, gameId);
-    m.db.getDoc(ref).then(function(snap){
-      if (!snap.exists()) throw new Error('Ván không tồn tại');
-      var g = snap.data();
-      var myName = state.currentUser;
-      if (g.player1 === myName){ state.myPlayerNum = 1; subscribeGame(gameId); return; }
-      if (g.player2 === myName){ state.myPlayerNum = 2; subscribeGame(gameId); return; }
-      if (!g.player2 && g.status === 'waiting'){
-        return m.db.updateDoc(ref, { player2: myName, status: 'playing', updatedAt: Date.now() }).then(function(){ state.myPlayerNum = 2; subscribeGame(gameId); });
-      }
-      throw new Error('Ván đã đầy hoặc đã kết thúc');
-    }).catch(function(err){ console.error(err); hideLoading(); alert('Không thể vào ván: ' + err.message); state.currentGameId = null; });
+  window.joinGame=async function(code){
+    if(!state.currentUser)return alert('Hãy nhập tên nhân viên');
+    if(MP.getRoomId())return alert('Hãy rời phòng hiện tại');
+    try{
+      const r=await MP.joinRoom(String(code).trim().toUpperCase(),'dolphin-caro',{name:state.currentUser});
+      state.currentGameId=r.roomId;mpHost=!!r.isHost;state.myPlayerNum=r.side==='p1'?1:2;showLoading('Đang đồng bộ phòng...');
+    }catch(e){hideLoading();alert('Không vào được phòng: '+e.message);}
   };
-
-  window.joinGameById = function(gameId){
-    if (!state.currentUser){ setTimeout(function(){ joinGameById(gameId); }, 1000); return; }
-    joinGame(gameId);
-  };
-
-  function subscribeGame(gameId){
-    if (state.unsubGame) state.unsubGame();
-    var m = state.modules;
-    var ref = m.db.doc(state.db, COL_GAMES, gameId);
-    state.unsubGame = m.db.onSnapshot(ref, function(snap){
-      if (!snap.exists()){ showLobby(); return; }
-      state.currentGame = snap.data();
-      hideLoading();
-      if ($('lobbyView').style.display !== 'none') showGameView();
-      renderGame();
-    }, function(err){ console.warn('[Caro] subscribe:', err); hideLoading(); alert('Mất kết nối với ván.'); showLobby(); });
-  }
-
+  window.joinGameById=window.joinGame;
+  window.joinCaroCode=function(){const code=prompt('Nhập mã phòng 6 ký tự');if(code)joinGame(code);};
   function renderGame(){
     var g = state.currentGame;
     if (!g) return;
@@ -497,24 +455,34 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   }
   window.renderBoard = renderBoard;
 
-  window.clickCell = function(r, c){
-    var g = state.currentGame;
-    if (!g || g.status !== 'playing') return;
-    if (state.myPlayerNum !== g.currentTurn) return;
-    if (getCell(g.cells, r, c) !== 0) return;
-    var cells = Object.assign({}, g.cells);
-    cells[cellKey(r, c)] = state.myPlayerNum;
-    var moves = (g.moves || []).slice();
-    moves.push({ r: r, c: c, p: state.myPlayerNum, t: Date.now() });
-    var win = checkWin(cells, r, c, state.myPlayerNum);
-    var view = expandViewIfNeeded(g.view, r, c);
-    var upd = { cells: cells, moves: moves, view: view, currentTurn: state.myPlayerNum === 1 ? 2 : 1, updatedAt: Date.now() };
-    if (win){ upd.status = 'finished'; upd.winner = state.myPlayerNum; upd.winningCells = win; upd.finishedAt = Date.now(); }
-    else if (moves.length >= MAX_MOVES){ upd.status = 'finished'; upd.winner = null; upd.finishedAt = Date.now(); }
-    var m = state.modules;
-    m.db.updateDoc(m.db.doc(state.db, COL_GAMES, state.currentGameId), upd).catch(function(err){ console.error('Update error:', err); });
+  window.clickCell=function(r,c){
+    const g=state.currentGame;
+    if(!g||g.status!=='playing'||g.currentTurn!==state.myPlayerNum)return;
+    if(!mpHost){MP.sendInputStrict({type:'caro-move',r,c,ply:g.moves.length}).catch(e=>alert('Không gửi được nước đi: '+e.message));return;}
+    applyCaroMove(r,c,1,g.moves.length);
   };
-
+  function applyCaroMove(r,c,player,ply){
+    const g=state.currentGame;
+    if(!mpHost||!g||g.status!=='playing'||g.currentTurn!==player||ply!==g.moves.length||
+       !Number.isSafeInteger(r)||!Number.isSafeInteger(c)||Math.abs(r)>1000||Math.abs(c)>1000||getCell(g.cells,r,c)!==0)return;
+    const cells={...g.cells};cells[cellKey(r,c)]=player;
+    const moves=[...g.moves,{r,c,p:player,t:Date.now()}];
+    const win=checkWin(cells,r,c,player);
+    const next={...g,cells,moves,view:expandViewIfNeeded(g.view,r,c),currentTurn:player===1?2:1,updatedAt:Date.now()};
+    if(win){next.status='finished';next.winner=player;next.winningCells=win;next.finishedAt=Date.now();}
+    else if(moves.length>=MAX_MOVES){next.status='finished';next.winner=null;next.finishedAt=Date.now();}
+    state.currentGame=next;renderGame();MP.sendStateStrict(next).catch(e=>alert('Không đồng bộ được: '+e.message));
+  }
+  function applyCaroResign(player){
+    if(!mpHost||state.currentGame?.status!=='playing')return;
+    const g=state.currentGame,next={...g,status:'finished',winner:player===1?2:1,finishedAt:Date.now(),resigned:true,resignedBy:player===1?g.player1:g.player2};
+    state.currentGame=next;renderGame();MP.sendStateStrict(next).catch(console.warn);
+  }
+  function applyCaroChat(text,name){
+    if(!mpHost||!text||!state.currentGame)return;
+    const g=state.currentGame,chat=[...(g.chat||[]),{sender:String(name||'Khách').slice(0,40),text:String(text).slice(0,250),timestamp:Date.now()}].slice(-100);
+    const next={...g,chat};state.currentGame=next;renderGameChat(chat);MP.sendStateStrict(next).catch(console.warn);
+  }
   function expandViewIfNeeded(view, r, c){
     var v = { minR: view.minR, maxR: view.maxR, minC: view.minC, maxC: view.maxC };
     if (r - v.minR < EXPAND_THRESHOLD) v.minR -= EXPAND_STEP;
@@ -559,24 +527,12 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     requestAnimationFrame(function(){ el.scrollTop = el.scrollHeight; });
   }
 
-  window.sendGameChat = function(){
-    var input = $('gameChatInput');
-    var text = input.value.trim();
-    if (!text || !state.currentGameId || !state.currentUser) return;
-    var m = state.modules;
-    var ref = m.db.doc(state.db, COL_GAMES, state.currentGameId);
-    m.db.getDoc(ref).then(function(snap){
-      if (!snap.exists()) return;
-      var chat = (snap.data().chat || []).slice();
-      chat.push({ sender: state.currentUser, text: text, timestamp: Date.now() });
-      if (chat.length > 100) chat = chat.slice(-100);
-      return m.db.updateDoc(ref, { chat: chat });
-    }).then(function(){ input.value = ''; }).catch(function(e){ console.warn(e); });
+  window.sendGameChat=function(){
+    const input=$('gameChatInput'),text=input.value.trim();if(!text||!state.currentGameId)return;
+    input.value='';
+    if(mpHost)applyCaroChat(text,state.currentUser);
+    else MP.sendInputStrict({type:'caro-chat',text:text.slice(0,250),name:state.currentUser}).catch(e=>alert(e.message));
   };
-
-  var ci = document.getElementById('gameChatInput');
-  if (ci) ci.addEventListener('keydown', function(e){ if (e.key === 'Enter'){ e.preventDefault(); window.sendGameChat(); } });
-
   function showGameView(){ $('lobbyView').style.display = 'none'; $('gameView').style.display = 'block'; state.lastViewKey = ''; }
   function showLobby(){
     $('gameView').style.display = 'none';
@@ -586,25 +542,21 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     if (state.unsubGame){ state.unsubGame(); state.unsubGame = null; }
   }
 
-  window.resignGame = function(){
-    var g = state.currentGame;
-    if (!g || g.status !== 'playing') return;
-    if (!confirm('Bạn chắc chắn muốn đầu hàng?')) return;
-    var winner = state.myPlayerNum === 1 ? 2 : 1;
-    var m = state.modules;
-    m.db.updateDoc(m.db.doc(state.db, COL_GAMES, state.currentGameId), { status: 'finished', winner: winner, finishedAt: Date.now(), resigned: true, resignedBy: state.currentUser });
+  window.resignGame=function(){
+    if(state.currentGame?.status!=='playing'||!confirm('Bạn chắc chắn muốn đầu hàng?'))return;
+    if(mpHost)applyCaroResign(1);
+    else MP.sendInputStrict({type:'caro-resign'}).catch(e=>alert(e.message));
   };
-
   window.leaveGame = function(){
     var g = state.currentGame;
     if (g && g.status === 'playing'){
       if (!confirm('Ván đang chơi. Rời ván sẽ tính là đầu hàng?')) return;
       window.resignGame();
     }
-    showLobby();
+    MP.leaveRoom().catch(console.warn);showLobby();
   };
 
-  window.closeResultAndLeave = function(){ var m = $('resultModal'); if (m) m.classList.remove('show'); showLobby(); };
+  window.closeResultAndLeave = function(){var m=$('resultModal');if(m)m.classList.remove('show');MP.leaveRoom().catch(console.warn);showLobby();};
 
   var lastResultShown = null;
   function checkResultModal(){
@@ -635,28 +587,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     }
   }
 
-  function cleanupOldGames(){
-    if (!state.db || !state.modules) return;
-    var m = state.modules;
-    var now = Date.now();
-    var q = m.db.query(m.db.collection(state.db, COL_GAMES), m.db.limit(100));
-    m.db.getDocs(q).then(function(snap){
-      var tasks = [];
-      snap.forEach(function(d){
-        var g = d.data();
-        var age = now - (g.createdAt || 0);
-        var del = false;
-        if (g.status === 'waiting' && age > WAITING_TIMEOUT) del = true;
-        if (g.status === 'finished' && g.finishedAt && (now - g.finishedAt) > FINISHED_TIMEOUT) del = true;
-        if (age > 24 * 60 * 60 * 1000) del = true;
-        if (del) tasks.push(m.db.deleteDoc(m.db.doc(state.db, COL_GAMES, d.id)));
-      });
-      if (tasks.length) Promise.all(tasks).then(function(){ console.log('[Caro] Cleaned ' + tasks.length); });
-    });
-  }
-
-  window.addEventListener('resize', function(){ state.lastViewKey = ''; if (state.currentGame) renderBoard(state.currentGame); });
-
+  function cleanupOldGames(){/* Existing Firestore multiplayer manages its own room lifecycle. */}
   function init(){ state.currentUser = getStaffName(); updateMyNameDisplay(); initFirebase(); }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();

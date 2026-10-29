@@ -1,46 +1,22 @@
 {
-  "version": "1.0.180",
-  "previousVersion": "1.0.179",
-  "commit": "619f894",
-  "previousCommit": "1d743cd",
-  "buildDate": "2026-10-29T05:59:11.941Z",
-  "summary": "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029",
+  "version": "1.0.181",
+  "previousVersion": "1.0.180",
+  "commit": "3dfdc9a",
+  "previousCommit": "619f894",
+  "buildDate": "2026-10-29T06:08:02.968Z",
+  "summary": "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029",
   "changes": {
-    "totalCommits": 184,
-    "filesChanged": 9,
+    "totalCommits": 185,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029"
+    "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h31.glb",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h32.glb",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h33.glb",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h34.glb",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h35.glb",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/heroes/chibi/h36.glb",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/assets/models/manifest.json",
+      "file": "giaitri/games/tactics-online/guide.js",
       "type": "update"
     },
     {

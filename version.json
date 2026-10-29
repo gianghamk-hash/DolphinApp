@@ -1,7 +1,7 @@
 {
-  "version": "1.0.180",
-  "buildDate": "2026-10-29T05:59:11.941Z",
-  "commit": "619f894",
-  "notes": "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029",
+  "version": "1.0.181",
+  "buildDate": "2026-10-29T06:08:02.968Z",
+  "commit": "3dfdc9a",
+  "notes": "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029",
   "forceUpdate": false
 }

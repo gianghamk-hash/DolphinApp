@@ -300,7 +300,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 <div id="toast" class="toast"></div>
 
 <script src="/DolphinApp/dolphin-leaderboard.js?v=1.0"></script>
-<script type="module">
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script><script src="../../dolphin-multiplayer.js?v=2"></script><script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, addDoc, updateDoc, deleteDoc, doc, onSnapshot, getDocs, getDoc, query, where, runTransaction } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
@@ -310,6 +310,7 @@ const firebaseConfig = {
   authDomain: "dolphin-f6d67.firebaseapp.com",
   projectId: "dolphin-f6d67"
 };
+const MP=window.DolphinMP;let mpHost=false,mpLobby=null,mpRoster=[],mpQueue=Promise.resolve(),myFleet=[],enemyFleet=[],mpVersion=0;
 const COL_GAMES = 'battleship_games';
 const SHIPS_DEF = [
   { id: 'c1', name: 'Siêu Hạm', size: 5, icon: '🚢' },
@@ -422,39 +423,45 @@ function getSunkShips(ships, shots){
 
 // ═══════════════ FIREBASE INIT ═══════════════
 function initFirebase(){
-  const app = initializeApp(firebaseConfig, 'battleship-app');
-  auth = getAuth(app);
-  db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
-    updateCloudStatus('online');
-    currentUser = getStaffName();
-    updateMyNameDisplay();
-    startGamesListener();
-    setTimeout(cleanupOldGames, 3000);
-    const savedGameId = localStorage.getItem('dolphin_bs_game');
-    if (savedGameId) checkAndRejoin(savedGameId);
-  }).catch(err => { console.warn('[Battleship] init:', err); updateCloudStatus('offline'); });
+ try{if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);window.db=firebase.firestore();db=window.db;currentUser=getStaffName();updateMyNameDisplay();setupMultiplayer();startGamesListener();updateCloudStatus('online');}
+ catch(e){updateCloudStatus('offline');showToast('Lỗi Multiplayer: '+e.message);}
 }
-
-/* ✅ Rejoin dựa vào Device ID */
-async function checkAndRejoin(gameId){
-  try {
-    const snap = await getDoc(doc(db, COL_GAMES, gameId));
-    if (snap.exists()){
-      const g = snap.data();
-      const myDevice = getDeviceId();
-      if (g.player1Device === myDevice){ myPlayerNum = 1; currentGameId = gameId; subscribeGame(gameId); return; }
-      if (g.player2Device === myDevice){ myPlayerNum = 2; currentGameId = gameId; subscribeGame(gameId); return; }
-      // Fallback ván cũ không có device
-      if (!g.player1Device && !g.player2Device){
-        if (g.player1 === currentUser){ myPlayerNum = 1; currentGameId = gameId; subscribeGame(gameId); return; }
-        if (g.player2 === currentUser){ myPlayerNum = 2; currentGameId = gameId; subscribeGame(gameId); return; }
-      }
-      localStorage.removeItem('dolphin_bs_game');
-    } else localStorage.removeItem('dolphin_bs_game');
-  } catch(e){ console.warn(e); }
+function publicGame(g){const x={...g};delete x.player1Ships;delete x.player2Ships;return x;}
+function localGame(g){return g?{...g,player1Ships:myPlayerNum===1?myFleet:[],player2Ships:myPlayerNum===2?myFleet:[]}:null;}
+function showBattle(){if(!currentGame)return;showGameView();if(currentGame.status==='waiting'||currentGame.status==='placing')renderPlacingPhase();else{renderPlayingPhase();if(currentGame.status==='finished')checkResultModal();}}
+async function publishGame(g){const x={...publicGame(g),kind:'battleship',version:++mpVersion};await MP.sendStateStrict(x);currentGame=localGame(x);showBattle();}
+function validFleet(ships){
+ if(!Array.isArray(ships)||ships.length!==SHIPS_DEF.length)return false;
+ const prior=[];
+ for(const def of SHIPS_DEF){
+  const x=ships.find(s=>s.id===def.id);
+  if(!x||x.size!==def.size||!['h','v'].includes(x.orient)||!Number.isInteger(x.r)||!Number.isInteger(x.c)||!canPlace(prior,x.r,x.c,x.size,x.orient))return false;
+  prior.push({...x,cells:computeCells(x)});
+ }
+ return true;
 }
-
+function setupMultiplayer(){
+ MP.onRoom(r=>{if(r.id!==currentGameId)return;mpHost=!!r.isHost;myPlayerNum=mpHost?1:2;});
+ MP.onPlayers(({players})=>{
+  if(!currentGameId)return;mpRoster=players||[];
+  const p2=mpRoster.find(p=>p.side==='p2');
+  if(mpHost&&p2&&currentGame?.status==='waiting'){
+   const next={...currentGame,player2:p2.name,status:'placing',updatedAt:Date.now()};
+   MP.updateRoomStatus('in_game').then(()=>publishGame(next)).catch(console.warn);
+  }
+ });
+ MP.onState(g=>{if(!currentGameId||g?.kind!=='battleship')return;mpVersion=Math.max(mpVersion,g.version||0);currentGame=localGame(g);showBattle();});
+ MP.onInput(m=>{
+  if(!mpHost||!currentGameId||!m||m.playerId===MP.getPlayerId())return;
+  mpQueue=mpQueue.then(async()=>{
+   if(m.type==='bs-fleet'&&currentGame?.status==='placing'&&validFleet(m.ships))enemyFleet=m.ships.map(x=>({...x,cells:computeCells(x)}));
+   else if(m.type==='bs-ready')await readyFor(2);
+   else if(m.type==='bs-fire')await fireFor(m.r,m.c,2,m.version);
+   else if(m.type==='bs-resign')await resignFor(2);
+  }).catch(e=>{console.warn(e);showToast('Đồng bộ thất bại');});
+ });
+ MP.onError(e=>{console.warn(e);showToast('Lỗi kết nối Multiplayer');});
+}
 function updateCloudStatus(s){
   const dot = $('cloudDot'), text = $('cloudText');
   if (!dot || !text) return;
@@ -479,14 +486,9 @@ function updateMyNameDisplay(){
 
 // ═══════════════ GAMES LIST ═══════════════
 function startGamesListener(){
-  if (unsubGames) unsubGames();
-  const q = query(collection(db, COL_GAMES), where('status', '==', 'waiting'));
-  unsubGames = onSnapshot(q, snap => {
-    const games = [];
-    snap.forEach(d => games.push(Object.assign({ id: d.id }, d.data())));
-    games.sort((a, b) => (b.createdAt || 0) - (a.createdAt || 0));
-    renderGamesList(games);
-  }, err => console.warn('[Battleship] listen:', err));
+ if(mpLobby)mpLobby();
+ mpLobby=window.db.collection('mp_rooms').where('game','==','dolphin-battleship').where('status','==','waiting').limit(20)
+  .onSnapshot(s=>renderGamesList(s.docs.map(d=>({id:d.id,player1:'Chủ phòng',createdAt:d.data().createdAt}))),console.warn);
 }
 function renderGamesList(games){
   const el = $('gamesList');
@@ -512,96 +514,20 @@ function renderGamesList(games){
 }
 
 // ═══════════════ CREATE / JOIN ═══════════════
-window.createGame = async function(){
-  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-  if (!db){ alert('Đang kết nối... vui lòng thử lại sau'); return; }
-  try {
-    const myDevice = getDeviceId();
-    const gameData = {
-      player1: currentUser, player2: null,
-      player1Device: myDevice,       // ✅ NEW
-      player2Device: null,           // ✅ NEW
-      player1Ships: [], player2Ships: [],
-      player1Shots: {}, player2Shots: {},
-      player1Ready: false, player2Ready: false,
-      status: 'waiting', turn: null, winner: null,
-      createdAt: Date.now(), updatedAt: Date.now(),
-      dateVN: getVNDateStr(), finishedAt: null
-    };
-    const ref = await addDoc(collection(db, COL_GAMES), gameData);
-    currentGameId = ref.id; myPlayerNum = 1;
-    localStorage.setItem('dolphin_bs_game', ref.id);
-    subscribeGame(ref.id);
-  } catch(e){ console.error(e); alert('Lỗi tạo ván: ' + e.message); }
+window.createGame=async function(){
+ if(!currentUser)return alert('Cần nhập tên nhân viên');if(MP.getRoomId())return alert('Hãy rời phòng hiện tại');
+ try{const r=await MP.createRoom('dolphin-battleship',{name:currentUser,maxPlayers:2});
+ currentGameId=r.roomId;myPlayerNum=1;mpHost=true;myFleet=[];enemyFleet=[];mpVersion=0;
+ await publishGame({kind:'battleship',player1:currentUser,player2:null,player1Ready:false,player2Ready:false,player1Shots:{},player2Shots:{},status:'waiting',turn:null,winner:null,createdAt:Date.now(),updatedAt:Date.now()});
+ alert('Mã phòng Battleship: '+r.roomId);}catch(e){alert('Tạo phòng lỗi: '+e.message);}
 };
-
-window.autoJoinOrCreate = async function(){
-  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-  const myDevice = getDeviceId();
-  const snap = await getDocs(query(collection(db, COL_GAMES), where('status', '==', 'waiting')));
-  let found = null;
-  snap.forEach(d => {
-    const g = d.data();
-    /* ✅ Bỏ qua ván do CHÍNH THIẾT BỊ NÀY tạo */
-    const isMine = g.player1Device === myDevice || (!g.player1Device && g.player1 === currentUser);
-    if (!isMine && !found) found = d.id;
-  });
-  if (found) joinGame(found); else createGame();
+window.autoJoinOrCreate=async function(){try{const s=await window.db.collection('mp_rooms').where('game','==','dolphin-battleship').where('status','==','waiting').limit(20).get();const other=s.docs.find(d=>d.data().hostId!==MP.getDeviceId());if(other)joinGame(other.id);else createGame();}catch(e){showToast(e.message);}};
+window.joinGame=async function(code){
+ if(!currentUser)return alert('Cần nhập tên nhân viên');if(MP.getRoomId())return alert('Hãy rời phòng hiện tại');
+ try{const r=await MP.joinRoom(String(code).trim().toUpperCase(),'dolphin-battleship',{name:currentUser});currentGameId=r.roomId;myPlayerNum=r.side==='p1'?1:2;mpHost=!!r.isHost;myFleet=[];enemyFleet=[];showToast('Đã tham gia '+r.roomId);}
+ catch(e){alert('Tham gia lỗi: '+e.message);}
 };
-
-/* ✅ Join dựa vào Device ID — cùng tên NV vẫn phân biệt được */
-window.joinGame = async function(gameId){
-  if (!currentUser){ alert('Vui lòng nhập tên nhân viên trước!'); return; }
-  currentGameId = gameId;
-  try {
-    const docRef = doc(db, COL_GAMES, gameId);
-    const snap = await getDoc(docRef);
-    if (!snap.exists()) throw new Error('Ván không tồn tại');
-    const g = snap.data();
-    const myDevice = getDeviceId();
-
-    // Ưu tiên 1: Device khớp
-    if (g.player1Device === myDevice){
-      myPlayerNum = 1;
-    } else if (g.player2Device === myDevice){
-      myPlayerNum = 2;
-    }
-    // Ưu tiên 2: Ván cũ chưa có device → dùng tên
-    else if (!g.player1Device && !g.player2Device){
-      if (g.player1 === currentUser && !g.player2){ myPlayerNum = 1; }
-      else if (g.player2 === currentUser){ myPlayerNum = 2; }
-    }
-    // Ưu tiên 3: Slot trống → vào làm P2
-    if (myPlayerNum === 0){
-      if (!g.player2 && g.status === 'waiting'){
-        await updateDoc(docRef, {
-          player2: currentUser,
-          player2Device: myDevice,       // ✅ Gắn device cho P2
-          status: 'placing',
-          turn: null,
-          updatedAt: Date.now()
-        });
-        myPlayerNum = 2;
-      } else {
-        throw new Error('Ván đã đầy hoặc đã kết thúc');
-      }
-    }
-    // Nếu đã xác định P2 qua device nhưng player2Device trống → backfill
-    else if (myPlayerNum === 2 && !g.player2Device){
-      await updateDoc(docRef, { player2Device: myDevice, updatedAt: Date.now() });
-    }
-    else if (myPlayerNum === 1 && !g.player1Device){
-      await updateDoc(docRef, { player1Device: myDevice, updatedAt: Date.now() });
-    }
-
-    localStorage.setItem('dolphin_bs_game', gameId);
-    subscribeGame(gameId);
-  } catch(e){
-    console.error(e); alert('Không thể vào ván: ' + e.message);
-    currentGameId = null; localStorage.removeItem('dolphin_bs_game');
-  }
-};
-
+window.joinBattleshipCode=function(){const x=prompt('Nhập mã phòng Battleship');if(x)joinGame(x);};
 function subscribeGame(gameId){
   if (unsubGame) unsubGame();
   unsubGame = onSnapshot(doc(db, COL_GAMES, gameId), snap => {
@@ -628,7 +554,7 @@ function showLobby(){
   selectedShipIdx = -1; pendingPlacement = null;
   lbSubmitted = false;
   if (unsubGame){ unsubGame(); unsubGame = null; }
-  localStorage.removeItem('dolphin_bs_game');
+  localStorage.removeItem('dolphin_bs_game');myFleet=[];enemyFleet=[];mpHost=false;
 }
 function showGameView(){
   $('lobbyView').style.display = 'none';
@@ -738,38 +664,19 @@ window.rotateShip = function(){
   renderPlacingBoard();
 };
 
-window.clearShips = async function(){
-  const myShipsKey = myPlayerNum === 1 ? 'player1Ships' : 'player2Ships';
-  try {
-    await updateDoc(doc(db, COL_GAMES, currentGameId), { [myShipsKey]: [], updatedAt: Date.now() });
-    selectedShipIdx = 0; pendingPlacement = null;
-  } catch(e){ console.warn(e); }
+async function saveMyFleet(ships){
+ if(currentGame?.status!=='placing')return;
+ myFleet=ships;currentGame=localGame(publicGame(currentGame));showBattle();
+ if(mpHost)await publishGame({...currentGame,updatedAt:Date.now()});
+ else await MP.sendInputStrict({type:'bs-fleet',ships:ships.map(x=>({id:x.id,name:x.name,size:x.size,r:x.r,c:x.c,orient:x.orient}))});
+}
+window.clearShips=async function(){try{await saveMyFleet([]);selectedShipIdx=0;pendingPlacement=null;}catch(e){showToast(e.message);}};
+window.randomPlaceShips=async function(){
+ const ships=[];
+ for(const d of SHIPS_DEF){for(let n=0;n<500;n++){const orient=Math.random()<.5?'h':'v',r=Math.floor(Math.random()*SIZE),c=Math.floor(Math.random()*SIZE);if(canPlace(ships,r,c,d.size,orient)){const x={id:d.id,name:d.name,size:d.size,r,c,orient};x.cells=computeCells(x);ships.push(x);break;}}}
+ if(ships.length!==SHIPS_DEF.length)return showToast('Không xếp đủ tàu');
+ try{await saveMyFleet(ships);selectedShipIdx=-1;pendingPlacement=null;playClick();}catch(e){showToast(e.message);}
 };
-
-window.randomPlaceShips = async function(){
-  const myShipsKey = myPlayerNum === 1 ? 'player1Ships' : 'player2Ships';
-  const newShips = [];
-  for (const def of SHIPS_DEF){
-    let placed = false, tries = 0;
-    while (!placed && tries < 500){
-      tries++;
-      const orient = Math.random() < 0.5 ? 'h' : 'v';
-      const r = Math.floor(Math.random() * SIZE);
-      const c = Math.floor(Math.random() * SIZE);
-      if (canPlace(newShips, r, c, def.size, orient)){
-        const s = { id: def.id, name: def.name, size: def.size, r, c, orient };
-        s.cells = computeCells(s);
-        newShips.push(s); placed = true;
-      }
-    }
-  }
-  try {
-    await updateDoc(doc(db, COL_GAMES, currentGameId), { [myShipsKey]: newShips, updatedAt: Date.now() });
-    selectedShipIdx = -1; pendingPlacement = null;
-    playClick();
-  } catch(e){ console.warn(e); }
-};
-
 function buildBoardHTML(boardEl){
   boardEl.innerHTML = '';
   const corner = document.createElement('div');
@@ -877,7 +784,7 @@ async function placingBoardClick(r, c){
   myShips.push(ship);
 
   try {
-    await updateDoc(doc(db, COL_GAMES, currentGameId), { [myShipsKey]: myShips, updatedAt: Date.now() });
+    await saveMyFleet(myShips);
     playBoom();
     pendingPlacement = null;
     const placedIds = new Set(myShips.map(s => s.id));
@@ -888,24 +795,17 @@ async function placingBoardClick(r, c){
   } catch(e){ console.warn(e); }
 }
 
-window.readyUp = async function(){
-  const myReadyKey = myPlayerNum === 1 ? 'player1Ready' : 'player2Ready';
-  const myShipsKey = myPlayerNum === 1 ? 'player1Ships' : 'player2Ships';
-  const myShips = currentGame[myShipsKey] || [];
-  if (myShips.length < 5) return;
-  try {
-    await updateDoc(doc(db, COL_GAMES, currentGameId), { [myReadyKey]: true, updatedAt: Date.now() });
-    const fresh = (await getDoc(doc(db, COL_GAMES, currentGameId))).data();
-    if (fresh.player1Ready && fresh.player2Ready){
-      await updateDoc(doc(db, COL_GAMES, currentGameId), {
-        status: 'playing',
-        turn: Math.random() < 0.5 ? 1 : 2,
-        updatedAt: Date.now()
-      });
-    }
-  } catch(e){ console.warn(e); }
+async function readyFor(player){
+ if(!mpHost||currentGame?.status!=='placing')return;
+ if(!validFleet(player===1?myFleet:enemyFleet))return;
+ const key=player===1?'player1Ready':'player2Ready';const next={...currentGame,[key]:true,updatedAt:Date.now()};
+ if(next.player1Ready&&next.player2Ready){next.status='playing';next.turn=Math.random()<.5?1:2;}
+ await publishGame(next);
+}
+window.readyUp=async function(){
+ if(!validFleet(myFleet))return showToast('Cần đặt đủ 5 thuyền');
+ try{if(mpHost)await readyFor(1);else await MP.sendInputStrict({type:'bs-ready'});}catch(e){showToast(e.message);}
 };
-
 // ═══════════════ PLAYING ═══════════════
 window.switchBattleTab = function(tab){
   battleTab = tab;
@@ -1028,63 +928,24 @@ function renderDefendBoard(){
   }
 }
 
-async function attackCell(r, c){
-  if (!currentGame) return;
-  if (currentGame.turn !== myPlayerNum || currentGame.status !== 'playing') return;
-
-  const myShotsKey = myPlayerNum === 1 ? 'player1Shots' : 'player2Shots';
-  const oppShipsKey = myPlayerNum === 1 ? 'player2Ships' : 'player1Ships';
-
-  try {
-    let isHit = false;
-    let isSunk = false;
-    let sunkShipName = '';
-
-    await runTransaction(db, async (tx) => {
-      const ref = doc(db, COL_GAMES, currentGameId);
-      const snap = await tx.get(ref);
-      if (!snap.exists()) throw new Error('Ván không tồn tại');
-      const g = snap.data();
-      if (g.turn !== myPlayerNum || g.status !== 'playing') throw new Error('Không phải lượt bạn');
-
-      const k = cellKey(r, c);
-      const myShots = Object.assign({}, g[myShotsKey] || {});
-      if (myShots[k]) throw new Error('Ô này đã bắn');
-
-      const oppShips = g[oppShipsKey] || [];
-      const hitShip = oppShips.find(s => s.cells.some(cell => cell.r === r && cell.c === c));
-      isHit = !!hitShip;
-      myShots[k] = isHit ? 'hit' : 'miss';
-
-      if (isHit && hitShip){
-        const allHit = hitShip.cells.every(cell => myShots[cellKey(cell.r, cell.c)] === 'hit');
-        if (allHit){ isSunk = true; sunkShipName = hitShip.name; }
-      }
-
-      let hits = 0;
-      for (const key in myShots) if (myShots[key] === 'hit') hits++;
-
-      const upd = { [myShotsKey]: myShots, updatedAt: Date.now() };
-      if (hits >= TOTAL_SHIP_CELLS){
-        upd.status = 'finished'; upd.winner = myPlayerNum; upd.finishedAt = Date.now();
-      } else if (!isHit) upd.turn = myPlayerNum === 1 ? 2 : 1;
-      tx.update(ref, upd);
-    });
-
-    if (isHit){
-      playBoom();
-      showFloatAt(r, c, '+1', 'hit');
-      if (isSunk){
-        setTimeout(() => { playSunk(); showToast('💥 ĐÃ CHÌM: ' + sunkShipName + '!'); }, 300);
-        showFloatAt(r, c, 'CHÌM!', 'sunk');
-      }
-    } else {
-      playSplash();
-      showFloatAt(r, c, 'MISS', 'miss');
-    }
-  } catch(e){ console.warn('[attack]', e); }
+async function attackCell(r,c){
+ if(currentGame?.status!=='playing'||currentGame.turn!==myPlayerNum)return;
+ try{if(mpHost)await fireFor(r,c,1,mpVersion);else await MP.sendInputStrict({type:'bs-fire',r,c,version:mpVersion});}
+ catch(e){showToast('Không bắn được: '+e.message);}
 }
-
+async function fireFor(r,c,player,version){
+ const g=currentGame;
+ if(!mpHost||!g||g.status!=='playing'||g.turn!==player||version!==mpVersion||
+ !Number.isInteger(r)||!Number.isInteger(c)||r<0||r>=SIZE||c<0||c>=SIZE)return;
+ const key=cellKey(r,c),shotKey=player===1?'player1Shots':'player2Shots',fleet=player===1?enemyFleet:myFleet;
+ if(!validFleet(fleet))return;const shots={...(g[shotKey]||{})};if(shots[key])return;
+ const hit=fleet.some(s=>computeCells(s).some(x=>x.r===r&&x.c===c));shots[key]=hit?'hit':'miss';
+ const next={...g,[shotKey]:shots,updatedAt:Date.now()};
+ if(Object.values(shots).filter(x=>x==='hit').length>=TOTAL_SHIP_CELLS){next.status='finished';next.winner=player;next.finishedAt=Date.now();}
+ else if(!hit)next.turn=player===1?2:1;
+ await publishGame(next);
+ if(hit){playBoom();showFloatAt(r,c,'+1','hit');}else{playSplash();showFloatAt(r,c,'MISS','miss');}
+}
 function showFloatAt(r, c, text, cls){
   const board = $('attackBoard');
   const cell = getCellEl(board, r, c);
@@ -1155,9 +1016,8 @@ function checkResultModal(){
   }
 }
 
-window.closeResultAndLeave = function(){
-  $('resultModal').classList.remove('show');
-  showLobby();
+window.closeResultAndLeave = async function(){
+  $('resultModal').classList.remove('show');try{if(MP.getRoomId())await MP.leaveRoom();}catch(e){console.warn(e);}showLobby();
 };
 window.leaveGame = function(){
   if (currentGame && currentGame.status === 'playing'){
@@ -1166,35 +1026,16 @@ window.leaveGame = function(){
   }
   showLobby();
 };
-window.resignGame = async function(){
-  if (!currentGame || currentGame.status !== 'playing') return;
-  if (!confirm('Bạn chắc chắn muốn đầu hàng?')) return;
-  try {
-    await updateDoc(doc(db, COL_GAMES, currentGameId), {
-      status: 'finished', winner: myPlayerNum === 1 ? 2 : 1,
-      finishedAt: Date.now(), resigned: true, resignedBy: currentUser
-    });
-  } catch(e){ console.warn(e); }
-};
-
-// ═══════════════ CLEANUP ═══════════════
-async function cleanupOldGames(){
-  if (!db) return;
-  try {
-    const now = Date.now();
-    const snap = await getDocs(query(collection(db, COL_GAMES)));
-    for (const d of snap.docs){
-      const g = d.data();
-      const age = now - (g.createdAt || 0);
-      let del = false;
-      if (g.status === 'waiting' && age > WAITING_TIMEOUT) del = true;
-      if (g.status === 'finished' && g.finishedAt && (now - g.finishedAt) > FINISHED_TIMEOUT) del = true;
-      if (age > 24 * 60 * 60 * 1000) del = true;
-      if (del) await deleteDoc(d.ref);
-    }
-  } catch(e){ console.warn(e); }
+async function resignFor(player){
+ if(!mpHost||currentGame?.status!=='playing')return;
+ await publishGame({...currentGame,status:'finished',winner:player===1?2:1,finishedAt:Date.now(),resigned:true,resignedBy:player===1?currentGame.player1:currentGame.player2});
 }
-
+window.resignGame=async function(){
+ if(currentGame?.status!=='playing'||!confirm('Bạn chắc chắn muốn đầu hàng?'))return;
+ try{if(mpHost)await resignFor(1);else await MP.sendInputStrict({type:'bs-resign'});}catch(e){showToast(e.message);}
+};
+// ═══════════════ CLEANUP ═══════════════
+async function cleanupOldGames(){/* Legacy data preserved. */}
 // ═══════════════ MODALS ═══════════════
 window.openRules = () => $('rulesModal').classList.add('show');
 window.closeRules = () => $('rulesModal').classList.remove('show');

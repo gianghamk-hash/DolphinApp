@@ -605,8 +605,8 @@ window.sellUnitById=async unitId=>{
  if(!p||!u){info('Không tìm thấy tướng cần bán.');return false;}
  if(state?.status!=='in_game'||state?.roundPhase!=='PREPARATION'||p.ready){info('Chỉ được bán tướng khi đang chuẩn bị và chưa sẵn sàng.');return false;}
  if(!Object.values(p.board||{}).includes(unitId)&&!Object.values(p.bench||{}).includes(unitId)){info('Tướng không nằm trên bàn hoặc hàng chờ.');return false;}
- const gold=(h?.cost||0)*(u.star===1?1:u.star===2?3:9);
- if(!window.confirm('Bán '+(h?.name||'tướng')+' ★'+u.star+' để nhận '+gold+' vàng?'))return false;
+ const gross=(h?.cost||0)*(u.star===1?1:u.star===2?3:9),fee=Math.ceil(gross*0.20),gold=Math.max(0,gross-fee);
+ if(!window.confirm('Bán '+(h?.name||'tướng')+' ★'+u.star+' để nhận '+gold+' vàng (phí bán '+fee+' vàng)?'))return false;
  const result=await send({type:'SELL',unitId});
  if(result===false)return false;
  if(selected===unitId)selected=null;

@@ -428,3 +428,17 @@ test('item bonuses apply to wearer only and class trait buffs only to matching h
  assert.equal(equipped.attack,f.attack+12);assert.equal(equipped.armor,f.armor+20);
  assert.equal(mage.attack,m.attack);assert.equal(mage.armor,m.armor);
 });
+
+test('casual room creation is possible with synced player name without verified employee identity',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const server=fs.readFileSync(path.join(__dirname,'../index.js'),'utf8');
+ const client=fs.readFileSync(path.join(__dirname,'../../giaitri/games/tactics-online/authority-adapter.js'),'utf8');
+ assert.match(server,/async function casualRoomName\(uid,name\)/);
+ assert.match(server,/const label=nameOf\(name\)/);
+ assert.match(server,/rankingEligible:identity\.verified/);
+ assert.match(server,/s\.rankingEligible=!!s\.rankingEligible&&identity\.verified/);
+ assert.match(server,/if\(!room\?\.rankingEligible\)throw/);
+ assert.match(client,/tacticsCreateRoom',\{name:options\.name\}/);
+ assert.match(client,/tacticsJoinRoom',\{roomId:code,name:options\.name\}/);
+ assert.match(client,/auth\/operation-not-allowed/);
+});

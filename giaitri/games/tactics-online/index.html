@@ -218,6 +218,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .equipTargetGrid button:disabled{opacity:.38}
 .equipTargetGrid small{display:block;margin-top:5px;font-size:11px}
 .selectedGearDetail{border:1px solid #b39a60;border-radius:12px;padding:10px;background:#18374a}
+.benchBar #bench .benchUnitWrap{min-width:0;display:flex;flex-direction:column;gap:3px}.benchBar #bench .benchUnitWrap>button:first-child{min-width:0;width:100%;flex:1}.benchBar #bench .benchSellBtn{min-height:26px!important;width:100%;padding:2px!important;border:1px solid #dcb875!important;background:#3b2d22!important;color:#ffe3a0!important;font-size:9px!important;font-weight:900!important;border-radius:6px!important}.benchBar #bench .benchSellBtn:active{background:#6b4b21!important}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -599,8 +600,20 @@ function init(){
   info('Chọn chế độ Offline hoặc Online để bắt đầu.');
  }catch(e){showError(e);}
 }
-window.sellSelected=()=>{if(selected)send({type:"SELL",unitId:selected});selected=null;};
-window.requestSellSelected=()=>{const p=state?.players?.[uid],u=p?.units?.[selected],h=u&&hero[u.heroId];if(!u||state.roundPhase!=="PREPARATION"||p.ready)return;if(window.confirm("Xác nhận bán "+(h?.name||"tướng")+" ★"+u.star+"? Không thể hoàn tác."))sellSelected();closeUnitPopup();};
+window.sellUnitById=async unitId=>{
+ const p=state?.players?.[uid],u=p?.units?.[unitId],h=u&&hero[u.heroId];
+ if(!p||!u){info('Không tìm thấy tướng cần bán.');return false;}
+ if(state?.status!=='in_game'||state?.roundPhase!=='PREPARATION'||p.ready){info('Chỉ được bán tướng khi đang chuẩn bị và chưa sẵn sàng.');return false;}
+ if(!Object.values(p.board||{}).includes(unitId)&&!Object.values(p.bench||{}).includes(unitId)){info('Tướng không nằm trên bàn hoặc hàng chờ.');return false;}
+ const gold=(h?.cost||0)*(u.star===1?1:u.star===2?3:9);
+ if(!window.confirm('Bán '+(h?.name||'tướng')+' ★'+u.star+' để nhận '+gold+' vàng?'))return false;
+ const result=await send({type:'SELL',unitId});
+ if(result===false)return false;
+ if(selected===unitId)selected=null;
+ closeUnitPopup();return true;
+};
+window.sellSelected=()=>selected?window.sellUnitById(selected):Promise.resolve(false);
+window.requestSellSelected=()=>window.sellSelected();
 window.moveSelectedToBench=()=>{
  const p=state?.players?.[uid];if(!p||!selected||state?.roundPhase!=='PREPARATION')return;
  if(!Object.values(p.board||{}).includes(selected)){info('Hãy chọn một tướng trên bàn cờ trước.');return;}
@@ -670,7 +683,7 @@ function paintControls(){
  return '<button class="shopHero tier'+cost+(marked?' shopRecommended':'')+(hint.upgrade?' shopUpgrade':'')+(hint.synergy?' shopSynergy':'')+'" title="'+safe(reason)+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
  (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar" title="'+safe(ROLE_NAMES[primaryRole(h)]||'Vai trò chưa xác định')+'">'+roleIcon(h)+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
  }).join('');
- $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>';}).join('');
+ $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<div class="benchUnitWrap"><button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>'+(h?'<button type="button" class="benchSellBtn" aria-label="Bán '+safe(h.name)+'" onclick="sellUnitById(\''+id+'\')">🪙 BÁN</button>':'')+'</div>';}).join('');
  const icons={Mech:'🤖',Void:'🕳️',Arcane:'🔮',Beast:'🐺',Shadow:'🌑',Celestial:'☀️',Brawler:'⚔️',Assassin:'🗡️',Ranger:'🏹',Guardian:'🛡️',Sorcerer:'✨'};
  // Include every represented trait, even before its first activation threshold.
  const represented=new Set();

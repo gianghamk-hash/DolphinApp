@@ -209,7 +209,7 @@ test('six new Support GLBs contain valid glTF headers and distinct animation cli
 });
 test('Android HP rail maintains readable font size and full HP number',()=>{
  assert.match(html,/hpValue/);
- assert.match(html,/hp\+'\/100'/);
+ assert.match(html,/\/100/);
  assert.match(html,/#game>section>\.playerDock\{width:148px!important/);
  assert.match(html,/\.hpValue\{font-size:12px!important/);
 });

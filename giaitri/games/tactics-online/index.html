@@ -390,23 +390,46 @@ function setupMP(){
   if(!snapshot||!snapshot.players)return;
   state=snapshot;onlineStateAt=Date.now();
   if(uid)seq=Math.max(seq,Number(snapshot.clientSequences?.[uid])||0);
+   settleOnlineAction(snapshot);
   if(host&&(!hostState||snapshot.round>hostState.round||snapshot.updatedAt>hostState.updatedAt))hostState=E.clone(snapshot);
   update();
  });
  MP.onInput(({playerId,action,sequence})=>{
   if(!host||!action||!Number.isSafeInteger(sequence))return;
   dispatch(async()=>{
-   if(!hostState||hostState.status!=='in_game')return;
-   hostState.clientSequences ||= {};
+   if(!hostState||hostState.status!=='in_game'||!hostState.players[playerId])return;
+   hostState.clientSequences ||= {};hostState.clientAcks ||= {};
    if(sequence<=(hostState.clientSequences[playerId]||0))return;
-   E.action(hostState,playerId,action,Date.now());
+   let accepted=true,reason='';
+   try{E.action(hostState,playerId,action,Date.now());}
+   catch(error){accepted=false;reason=String(error?.message||error).slice(0,180);}
    hostState.clientSequences[playerId]=sequence;
+   hostState.clientAcks[playerId]={sequence,accepted,reason};
+   hostState.updatedAt=Math.max(hostState.updatedAt||0,Date.now());
    await publish();
   });
  });
  MP.onError(e=>{onlineMessage('⚠ Sự cố đồng bộ phòng',true);showError(e.err||e.message||e.type||e);});
 }
-let seq=0;
+let seq=0,onlinePending=null;
+function settleOnlineAction(snapshot){
+ if(!onlinePending||!uid)return;
+ const ack=snapshot.clientAcks?.[uid];
+ if(!ack||ack.sequence<onlinePending.sequence)return;
+ const pending=onlinePending;onlinePending=null;clearTimeout(pending.timeout);
+ if(ack.accepted){info('✓ '+pending.label+' thành công');pending.resolve(true);}
+ else{info('⚠ '+(ack.reason||'Thao tác bị từ chối'));pending.resolve(false);}
+}
+function sendOnlineAction(action){
+ if(onlinePending){info('Đang chờ xác nhận thao tác trước từ chủ phòng');return Promise.resolve(false);}
+ if(!navigator.onLine){info('⚠ Mất kết nối — không gửi thao tác');return Promise.resolve(false);}
+ const sequence=++seq,label=action?.type||'Thao tác';
+ return new Promise(resolve=>{
+  const pending={sequence,label,resolve,timeout:null};onlinePending=pending;
+  pending.timeout=setTimeout(()=>{if(onlinePending!==pending)return;onlinePending=null;info('⚠ Chưa có xác nhận. Kiểm tra trạng thái trước khi thử lại.');resolve(false);},12000);
+  MP.sendInputStrict({action,sequence}).catch(e=>{if(onlinePending!==pending)return;clearTimeout(pending.timeout);onlinePending=null;info('⚠ Gửi thao tác thất bại: '+(e.message||e));resolve(false);});
+ });
+}
 window.createRoom=async()=>{
  try{if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
   const r=await MP.createRoom('dolphin-tactics',{name:$('nick').value.trim()||'Khách',maxPlayers:4});
@@ -420,7 +443,7 @@ window.joinRoom=async()=>{
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- try{if(!offline)await MP.leaveRoom();offline=false;roomId='';roomHostId='';onlineStateAt=0;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;localStorage.removeItem(reconnectKey);
+ try{if(onlinePending){const pending=onlinePending;onlinePending=null;clearTimeout(pending.timeout);pending.resolve(false);}if(!offline)await MP.leaveRoom();offline=false;roomId='';roomHostId='';onlineStateAt=0;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';replay=null;localStorage.removeItem(reconnectKey);
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';$('reconnectBtn').classList.add('hidden');onlineMessage('');
   info('Đã rời phòng');}catch(e){showError(e);}
@@ -434,13 +457,13 @@ window.startRoom=async()=>{
   for(const p of people)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
   room.status='in_game';room.round=1;room.roundPhase='PREPARATION';
   room.phaseStartedAt=now;room.phaseEndsAt=now+30000;
-  room.clientSequences={};hostState=room;ModelLibrary.preload(Object.keys(hero));await publish();await MP.updateRoomStatus('playing');
+  room.clientSequences={};room.clientAcks={};hostState=room;ModelLibrary.preload(Object.keys(hero));await publish();await MP.updateRoomStatus('playing');
  });
 };
 window.send=async action=>{
  if(!state||state.status!=='in_game'||state.roundPhase!=='PREPARATION')return;
  if(host)return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();});
- await MP.sendInputStrict({action,sequence:++seq});
+ return sendOnlineAction(action);
 };
 function init(){
  try{

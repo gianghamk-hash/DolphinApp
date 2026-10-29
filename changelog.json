@@ -1,22 +1,22 @@
 {
-  "version": "1.0.201",
-  "previousVersion": "1.0.200",
-  "commit": "df35070",
-  "previousCommit": "449d8ce",
-  "buildDate": "2026-10-29T13:51:05.725Z",
-  "summary": "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029",
+  "version": "1.0.202",
+  "previousVersion": "1.0.201",
+  "commit": "3120ed4",
+  "previousCommit": "df35070",
+  "buildDate": "2026-10-29T13:59:27.086Z",
+  "summary": "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029",
   "changes": {
-    "totalCommits": 205,
+    "totalCommits": 206,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029"
+    "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029"
   ],
   "fileChanges": [
     {
-      "file": "master.js",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     }
   ]

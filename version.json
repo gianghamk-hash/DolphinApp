@@ -1,7 +1,7 @@
 {
-  "version": "1.0.201",
-  "buildDate": "2026-10-29T13:51:05.725Z",
-  "commit": "df35070",
-  "notes": "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029",
+  "version": "1.0.202",
+  "buildDate": "2026-10-29T13:59:27.086Z",
+  "commit": "3120ed4",
+  "notes": "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029",
   "forceUpdate": false
 }

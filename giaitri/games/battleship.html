@@ -161,6 +161,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
       <p class="text-[12px] text-teal-300 mb-4">Bàn cờ 10×10 · Đặt 5 thuyền · Bắn hạ đối thủ</p>
       <button onclick="createGame()" class="btn-gold w-full py-3.5 rounded-xl text-[13px] uppercase tracking-wider mb-2">➕ TẠO VÁN MỚI</button>
       <button onclick="autoJoinOrCreate()" class="btn-outline w-full py-3 rounded-xl text-[12px] uppercase tracking-wider mb-2">⚡ VÀO VÁN NHANH</button>
+      <button onclick="joinBattleshipCode()" class="btn-outline w-full py-3 rounded-xl text-[12px] uppercase tracking-wider mb-2">🔗 THAM GIA BẰNG MÃ PHÒNG</button>
       <button onclick="openRules()" class="btn-outline w-full py-3 rounded-xl text-[12px] uppercase tracking-wider">📖 XEM LUẬT</button>
       <div class="text-[10px] text-teal-400 mt-3" id="myNameDisplay"></div>
       <div class="text-[9px] text-teal-500 mt-1" id="myDeviceDisplay"></div>
@@ -433,6 +434,7 @@ async function publishGame(g){const x={...publicGame(g),kind:'battleship',versio
 function validFleet(ships){
  if(!Array.isArray(ships)||ships.length!==SHIPS_DEF.length)return false;
  const prior=[];
+ if(new Set(ships.map(x=>x.id)).size!==SHIPS_DEF.length)return false;
  for(const def of SHIPS_DEF){
   const x=ships.find(s=>s.id===def.id);
   if(!x||x.size!==def.size||!['h','v'].includes(x.orient)||!Number.isInteger(x.r)||!Number.isInteger(x.c)||!canPlace(prior,x.r,x.c,x.size,x.orient))return false;
@@ -1019,11 +1021,12 @@ function checkResultModal(){
 window.closeResultAndLeave = async function(){
   $('resultModal').classList.remove('show');try{if(MP.getRoomId())await MP.leaveRoom();}catch(e){console.warn(e);}showLobby();
 };
-window.leaveGame = function(){
+window.leaveGame = async function(){
   if (currentGame && currentGame.status === 'playing'){
     if (!confirm('Ván đang chơi. Rời ván sẽ tính là đầu hàng?')) return;
-    resignGame();
+    try{if(mpHost)await resignFor(1);else await MP.sendInputStrict({type:'bs-resign'});}catch(e){showToast(e.message);}
   }
+  try{if(MP.getRoomId())await MP.leaveRoom();}catch(e){console.warn(e);}
   showLobby();
 };
 async function resignFor(player){
@@ -1043,6 +1046,7 @@ window.goBack = function(){
   if (currentGame && currentGame.status === 'playing'){
     if (!confirm('Ván đang chơi. Thoát?')) return;
   }
+  if(MP.getRoomId())MP.leaveRoom().catch(console.warn);
   window.location.href = '/DolphinApp/giaitri/index.html';
 };
 

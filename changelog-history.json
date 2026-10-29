@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.187",
+      "releaseDate": "2026-10-29T09:42:10.563Z",
+      "summary": "feat(games): unify arcade landing screens with TFT-inspired styling (#128)",
+      "details": [
+        "feat(games): unify arcade landing screens with TFT-inspired styling (#128)"
+      ]
+    },
+    {
       "version": "1.0.186",
       "releaseDate": "2026-10-29T09:19:54.143Z",
       "summary": "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(ranking): apply separate Lounge work point weights",
       "details": [
         "fix(ranking): apply separate Lounge work point weights"
-      ]
-    },
-    {
-      "version": "1.0.137",
-      "releaseDate": "2026-10-27T09:59:29.159Z",
-      "summary": "fix(ranking): count Lounge work completions in weekly points",
-      "details": [
-        "fix(ranking): count Lounge work completions in weekly points"
       ]
     }
   ]

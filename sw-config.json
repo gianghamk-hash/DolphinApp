@@ -1,5 +1,5 @@
 {
-  "version": "1.0.187",
+  "version": "1.0.188",
   "releaseDate": "2026-10-29",
-  "notes": "feat(games): unify arcade landing screens with TFT-inspired styling (#128)"
+  "notes": "Merge pull request #129 from gianghamk-hash/feat/chess-shared-multiplayer-20261029"
 }

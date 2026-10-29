@@ -1,42 +1,22 @@
 {
-  "version": "1.0.187",
-  "previousVersion": "1.0.186",
-  "commit": "02ed492",
-  "previousCommit": "c8e993b",
-  "buildDate": "2026-10-29T09:42:10.563Z",
-  "summary": "feat(games): unify arcade landing screens with TFT-inspired styling (#128)",
+  "version": "1.0.188",
+  "previousVersion": "1.0.187",
+  "commit": "4f242af",
+  "previousCommit": "02ed492",
+  "buildDate": "2026-10-29T09:49:38.470Z",
+  "summary": "Merge pull request #129 from gianghamk-hash/feat/chess-shared-multiplayer-20261029",
   "changes": {
-    "totalCommits": 191,
-    "filesChanged": 6,
+    "totalCommits": 192,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(games): unify arcade landing screens with TFT-inspired styling (#128)"
+    "Merge pull request #129 from gianghamk-hash/feat/chess-shared-multiplayer-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/arena-landing.css",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/battleship.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/caro.html",
-      "type": "update"
-    },
-    {
       "file": "giaitri/games/chess.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake-coop-online.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/xiangqi.html",
       "type": "update"
     }
   ]

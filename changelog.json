@@ -1,18 +1,18 @@
 {
-  "version": "1.0.204",
-  "previousVersion": "1.0.203",
-  "commit": "86e0055",
-  "previousCommit": "c791388",
-  "buildDate": "2026-10-29T14:15:17.769Z",
-  "summary": "Merge pull request #145 from gianghamk-hash/fix/tft-apk-balanced-columns-20261029",
+  "version": "1.0.205",
+  "previousVersion": "1.0.204",
+  "commit": "dfd7d50",
+  "previousCommit": "86e0055",
+  "buildDate": "2026-10-29T14:19:31.822Z",
+  "summary": "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029",
   "changes": {
-    "totalCommits": 208,
+    "totalCommits": 209,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #145 from gianghamk-hash/fix/tft-apk-balanced-columns-20261029"
+    "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029"
   ],
   "fileChanges": [
     {

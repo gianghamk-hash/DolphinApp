@@ -697,8 +697,17 @@ window.openPass = (mode = 'deleteShow') => {
   passMode = mode;
   // Only the activated Master on the native Manager APK can bypass
   // this UI password prompt. Staff APK and browser/PWA use the PIN as before.
-  const nativeManager = (navigator.userAgent || '').includes('DolphinManager/');
-  const verifiedMaster = window.MasterSystem?.isMaster?.() === true;
+  // Dolphin Show runs inside the landing page iframe. Read the Manager
+  // identity and active Master status from either same-origin context.
+  // Never grant this exception to Staff APK or browser/PWA.
+  let nativeManager = (navigator.userAgent || '').includes('DolphinManager/');
+  let verifiedMaster = window.MasterSystem?.isMaster?.() === true;
+  try {
+    if (window.parent && window.parent !== window && window.parent.location.origin === location.origin) {
+      nativeManager = nativeManager || (window.parent.navigator.userAgent || '').includes('DolphinManager/');
+      verifiedMaster = verifiedMaster || window.parent.MasterSystem?.isMaster?.() === true;
+    }
+  } catch (error) { console.warn('[Show] Không đọc được trạng thái Master từ ứng dụng cha', error); }
   if (mode === 'deleteShow' && nativeManager && verifiedMaster) {
     if (window.confirm('Xác nhận xóa bàn ' + $('s-id').value + ' và toàn bộ dữ liệu order?')) {
       doDeleteShow();

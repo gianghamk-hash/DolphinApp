@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.177",
+      "releaseDate": "2026-10-29T05:29:01.965Z",
+      "summary": "Merge pull request #118 from gianghamk-hash/fix/tft-package-f-combat-accuracy-20261029",
+      "details": [
+        "Merge pull request #118 from gianghamk-hash/fix/tft-package-f-combat-accuracy-20261029"
+      ]
+    },
+    {
       "version": "1.0.176",
       "releaseDate": "2026-10-29T05:19:27.247Z",
       "summary": "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029",
@@ -390,14 +398,6 @@
       "summary": "feat(rewards): live top-10 badges and King of Sales avatar frame",
       "details": [
         "feat(rewards): live top-10 badges and King of Sales avatar frame"
-      ]
-    },
-    {
-      "version": "1.0.127",
-      "releaseDate": "2026-10-27T01:33:31.748Z",
-      "summary": "fix(ui): compact connection indicators in child apps",
-      "details": [
-        "fix(ui): compact connection indicators in child apps"
       ]
     }
   ]

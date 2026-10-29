@@ -93,39 +93,29 @@
     }
   }
 
-  // TFT results are provisional client-reported scores until staff identity
-  // and match results can be verified by a trusted server endpoint.
-  async function submitTacticsMatch(matchId, placement, meta){
-    var name=getStaffName();
-    if(!name || !matchId || !Number.isInteger(placement) || placement<1 || placement>4) return false;
-    if(!(await init()) || !auth.currentUser) return false;
-    var score=[0,25,18,12,6][placement];
-    var userId=auth.currentUser.uid;
-    var ref=modules.db.doc(db,COL,'dolphin-tactics__'+userId);
+  // Security: never submit competitive TFT rankings from a browser.
+  // Verified results are computed exclusively from server-authoritative RTDB rooms.
+  async function submitTacticsMatch(){
+    console.warn('[TFT] Client score submissions disabled; authoritative callable required.');
+    return false;
+  }
+  async function fetchVerifiedTacticsLeaderboard(limit){
+    if(!(await init())||!auth.currentUser)return [];
     try{
-      await modules.db.runTransaction(db,async function(tx){
-        var snap=await tx.get(ref),cur=snap.exists()?snap.data():{};
-        var seen=Array.isArray(cur.recentMatches)?cur.recentMatches:[];
-        if(seen.includes(matchId))return;
-        tx.set(ref,{
-          game:'dolphin-tactics',player:name,uid:userId,
-          bestScore:Math.max(cur.bestScore||0,score),
-          totalScore:(cur.totalScore||0)+score,
-          totalGames:(cur.totalGames||0)+1,
-          wins:(cur.wins||0)+(placement===1?1:0),
-          losses:(cur.losses||0)+(placement!==1?1:0),
-          totalPlacement:(cur.totalPlacement||0)+placement,
-          bestPlacement:Math.min(cur.bestPlacement||4,placement),
-          recentMatches:[...seen.slice(-99),matchId],
-          lastPlayed:Date.now(),lastMeta:{placement,mode:'online',provisional:true}
-        },{merge:true});
-      });
-      invalidate('dolphin-tactics');return true;
-    }catch(error){console.warn('[TFT leaderboard] result submission failed:',error);return false;}
+      var funcs=await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js");
+      var app=modules.app.getApp('dolphin-lb');
+      var endpoint=funcs.httpsCallable(funcs.getFunctions(app,'asia-southeast1'),'tacticsLeaderboard');
+      var response=await endpoint({limit:Math.max(1,Math.min(30,limit||30))});
+      return Array.isArray(response.data?.rows)?response.data.rows:[];
+    }catch(error){
+      console.warn('[TFT] Verified leaderboard unavailable',error);
+      return [];
+    }
   }
     async function getLeaderboard(game, limit){
     limit = limit || 30;
     if (!game) return [];
+    if (game === 'dolphin-tactics') return fetchVerifiedTacticsLeaderboard(limit);
     if (cache.lb[game] && (Date.now() - (cache.ts[game] || 0) < 30000)){
       return cache.lb[game].slice(0, limit);
     }

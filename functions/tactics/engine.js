@@ -155,6 +155,7 @@ function createEngine(C){
    }
   }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
+  for(const u of units)u.baseShield=u.shield||0;
   const events=[],emit=e=>{if(events.length<1200)events.push(e);};
   function applyBurn(src,tgt,t,duration,dps,source){
    tgt.burns ||= {};
@@ -181,7 +182,10 @@ function createEngine(C){
    if(!tgt.alive)return;
    let incoming=Math.max(1,Math.round(amount)),absorbed=Math.min(tgt.shield,incoming);
    tgt.shield-=absorbed;incoming-=absorbed;
-   for(const layer of tgt.shieldLayers||[]){const take=Math.min(layer.remaining,absorbed);layer.remaining-=take;absorbed-=take;if(!absorbed)break;}
+   // Consume permanent trait shield first, then time-limited ability layers.
+   const baseUsed=Math.min(tgt.baseShield||0,absorbed);tgt.baseShield=Math.max(0,(tgt.baseShield||0)-baseUsed);
+   let temporaryUsed=absorbed-baseUsed;
+   for(const layer of tgt.shieldLayers||[]){const take=Math.min(layer.remaining,temporaryUsed);layer.remaining-=take;temporaryUsed-=take;if(!temporaryUsed)break;}
    const dealt=Math.min(tgt.hp,incoming);
    tgt.hp-=dealt;src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
    if(src.effects&&src.effects.includes('burn'))applyBurn(src,tgt,t,3000,Math.max(8,tgt.maxHp*.015),'item');
@@ -202,7 +206,7 @@ function createEngine(C){
    if(manaTick){u.mana=Math.min(u.manaMax,u.mana+manaTick);emit({t,actor:u.id,type:'mana',amount:u.mana,max:u.manaMax,source:'item'});}
     if(u.cloneRatio&&!u.shadowUsed&&u.hp<u.maxHp*.5&&units.length<32){u.shadowUsed=true;const positions=[[1,0],[-1,0],[0,1],[0,-1]];
       const free=positions.map(([dx,dy])=>({x:u.x+dx,y:u.y+dy})).find(p=>p.x>=0&&p.x<8&&p.y>=0&&p.y<8&&!units.some(v=>v.alive&&v.x===p.x&&v.y===p.y));
-      if(free){const cloneUnit={...u,id:u.id+"_shadow",...free,maxHp:u.maxHp*u.cloneRatio,hp:u.maxHp*u.cloneRatio,attack:u.attack*u.cloneRatio,cloneRatio:0,shadowUsed:true,shield:0};units.push(cloneUnit);emit({t,actor:cloneUnit.id,type:"shield"});}
+      if(free){const cloneUnit={...u,id:u.id+"_shadow",...free,maxHp:u.maxHp*u.cloneRatio,hp:u.maxHp*u.cloneRatio,attack:u.attack*u.cloneRatio,cloneRatio:0,shadowUsed:true,shield:0,baseShield:0,shieldLayers:[]};units.push(cloneUnit);emit({t,actor:cloneUnit.id,type:"shield"});}
     }
     const foes=units.filter(v=>v.alive&&v.owner!==u.owner);if(!foes.length)break;
     foes.sort((x,y)=>dist(u,x)-dist(u,y)||x.id.localeCompare(y.id));const target=foes[0];

@@ -397,17 +397,23 @@ function setupMP(){
   if(host&&(!hostState||snapshot.round>hostState.round||snapshot.updatedAt>hostState.updatedAt))hostState=E.clone(snapshot);
   update();
  });
- MP.onInput(({playerId,action,sequence})=>{
-  if(!host||!action||!Number.isSafeInteger(sequence))return;
+ MP.onInput(({playerId,action,sequence,actionId,expiresAt})=>{
+  if(!host||!action||!Number.isSafeInteger(sequence)||sequence<1)return;
   dispatch(async()=>{
    if(!hostState||hostState.status!=='in_game'||!hostState.players[playerId])return;
    hostState.clientSequences ||= {};hostState.clientAcks ||= {};
    if(sequence<=(hostState.clientSequences[playerId]||0))return;
    let accepted=true,reason='';
-   try{E.action(hostState,playerId,action,Date.now());}
+   const receivedAt=Date.now();
+   try{
+    // An expired command must never change the roster, gold or equipment.
+    if(!Number.isFinite(expiresAt)||receivedAt>expiresAt)throw Error('Yêu cầu đã hết hạn, hãy kiểm tra trạng thái trước khi thử lại');
+    if(actionId!==playerId+':'+sequence)throw Error('Mã yêu cầu không hợp lệ');
+    E.action(hostState,playerId,action,receivedAt);
+   }
    catch(error){accepted=false;reason=String(error?.message||error).slice(0,180);}
    hostState.clientSequences[playerId]=sequence;
-   hostState.clientAcks[playerId]={sequence,accepted,reason};
+   hostState.clientAcks[playerId]={sequence,actionId,accepted,reason};
    hostState.updatedAt=Math.max(hostState.updatedAt||0,Date.now());
    await publish();
   });
@@ -418,7 +424,7 @@ let seq=0,onlinePending=null;
 function settleOnlineAction(snapshot){
  if(!onlinePending||!uid)return;
  const ack=snapshot.clientAcks?.[uid];
- if(!ack||ack.sequence<onlinePending.sequence)return;
+ if(!ack||ack.sequence!==onlinePending.sequence||ack.actionId!==uid+':'+onlinePending.sequence)return;
  const pending=onlinePending;onlinePending=null;clearTimeout(pending.timeout);
  if(ack.accepted){info('✓ '+pending.label+' thành công');pending.resolve(true);}
  else{info('⚠ '+(ack.reason||'Thao tác bị từ chối'));pending.resolve(false);}
@@ -426,11 +432,11 @@ function settleOnlineAction(snapshot){
 function sendOnlineAction(action){
  if(onlinePending){info('Đang chờ xác nhận thao tác trước từ chủ phòng');return Promise.resolve(false);}
  if(!navigator.onLine){info('⚠ Mất kết nối — không gửi thao tác');return Promise.resolve(false);}
- const sequence=++seq,label=action?.type||'Thao tác';
+ const sequence=++seq,label=action?.type||'Thao tác',actionId=uid+':'+sequence,expiresAt=Date.now()+12000;
  return new Promise(resolve=>{
   const pending={sequence,label,resolve,timeout:null};onlinePending=pending;
   pending.timeout=setTimeout(()=>{if(onlinePending!==pending)return;onlinePending=null;info('⚠ Chưa có xác nhận. Kiểm tra trạng thái trước khi thử lại.');resolve(false);},12000);
-  MP.sendInputStrict({action,sequence}).catch(e=>{if(onlinePending!==pending)return;clearTimeout(pending.timeout);onlinePending=null;info('⚠ Gửi thao tác thất bại: '+(e.message||e));resolve(false);});
+  MP.sendInputStrict({action,sequence,actionId,expiresAt}).catch(e=>{if(onlinePending!==pending)return;clearTimeout(pending.timeout);onlinePending=null;info('⚠ Gửi thao tác thất bại: '+(e.message||e));resolve(false);});
  });
 }
 window.createRoom=async()=>{

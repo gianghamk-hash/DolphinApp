@@ -99,7 +99,7 @@ test('creating heroes does not require CanvasTexture support',()=>{
 require('./guide.test.js');
 
 test('online host persists both accepted and rejected action acknowledgements',()=>{
- assert.match(html,/hostState\.clientAcks\[playerId\]=\{sequence,accepted,reason\}/);
+ assert.match(html,/hostState\.clientAcks\[playerId\]=\{sequence,actionId,accepted,reason\}/);
  assert.match(html,/catch\(error\)\{accepted=false/);
  assert.match(html,/hostState\.clientSequences\[playerId\]=sequence/);
  assert.match(html,/if\(sequence<=\(hostState\.clientSequences\[playerId\]\|\|0\)\)return/);
@@ -108,7 +108,7 @@ test('online guests wait for acknowledgement and do not overlap inputs',()=>{
  assert.match(html,/function sendOnlineAction\(action\)/);
  assert.match(html,/if\(onlinePending\)/);
  assert.match(html,/function settleOnlineAction\(snapshot\)/);
- assert.match(html,/if\(!ack\|\|ack\.sequence<onlinePending\.sequence\)return/);
+ assert.match(html,/if\(!ack\|\|ack\.sequence!==onlinePending\.sequence\|\|ack\.actionId!==uid\+':'\+onlinePending\.sequence\)return/);
  assert.match(html,/setTimeout\(\(\)=>\{if\(onlinePending!==pending\)return/);
  assert.match(html,/return sendOnlineAction\(action\)/);
 });
@@ -124,4 +124,14 @@ test('phase 4 status tags follow 3D units and equipment confirmations respect ho
  assert.match(css,/\.battleHeroName\[data-status/);
  assert.match(html,/if\(success===false\)return/);
  assert.match(html,/if\(!host\)\{return;\}/);
+});
+
+test('critical online actions reject expired and invalid request identifiers',()=>{
+ assert.match(html,/MP\.onInput\(\(\{playerId,action,sequence,actionId,expiresAt\}\)=>/);
+ assert.match(html,/receivedAt>expiresAt/);
+ assert.match(html,/actionId!==playerId\+':'\+sequence/);
+ assert.match(html,/hostState\.clientSequences\[playerId\]=sequence/);
+ assert.match(html,/hostState\.clientAcks\[playerId\]=\{sequence,actionId,accepted,reason\}/);
+ assert.match(html,/MP\.sendInputStrict\(\{action,sequence,actionId,expiresAt\}\)/);
+ assert.match(html,/ack\.actionId!==uid\+':'\+onlinePending\.sequence/);
 });

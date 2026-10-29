@@ -265,6 +265,32 @@ body>.sticky button:first-child:active{transform:scale(.86)}
 .ic-crown{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M11.562 3.266a.5.5 0 0 1 .876 0L15.39 8.87a1 1 0 0 0 1.516.294L21.183 5.5a.5.5 0 0 1 .798.519l-2.834 10.246a1 1 0 0 1-.956.734H5.81a1 1 0 0 1-.957-.734L2.02 6.02a.5.5 0 0 1 .798-.519l4.276 3.664a1 1 0 0 0 1.516-.294z'/%3E%3Cpath d='M5 21h14'/%3E%3C/svg%3E")}
 .ic-hash{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cline x1='4' x2='20' y1='9' y2='9'/%3E%3Cline x1='4' x2='20' y1='15' y2='15'/%3E%3Cline x1='10' x2='8' y1='3' y2='21'/%3E%3Cline x1='16' x2='14' y1='3' y2='21'/%3E%3C/svg%3E")}
 .ic-shield{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 13c0 5-3.5 7.5-7.66 8.95a1 1 0 0 1-.67-.01C7.5 20.5 4 18 4 13V6a1 1 0 0 1 1-1c2 0 4.5-1.2 6.24-2.72a1.17 1.17 0 0 1 1.52 0C14.51 3.81 17 5 19 5a1 1 0 0 1 1 1z'/%3E%3C/svg%3E")}
+
+/* Mobile arcade launcher, inspired by an app drawer */
+.arcade-menu{padding-bottom:calc(136px + env(safe-area-inset-bottom,0px))}
+.arcade-featured{display:flex;align-items:center;gap:14px;width:100%;min-height:124px;text-align:left;padding:17px;border-radius:25px;margin-bottom:22px;cursor:pointer;font-family:inherit;color:#fff;border:1px solid rgba(246,200,119,.6);background:radial-gradient(circle at 14% 50%,rgba(251,154,83,.25),transparent 46%),linear-gradient(125deg,#31202d,#111c29 70%);box-shadow:0 12px 32px rgba(0,0,0,.28),inset 0 1px rgba(255,255,255,.1)}
+.featured-art{display:grid;place-items:center;width:78px;height:78px;flex:0 0 78px;font-size:46px;border-radius:22px;background:linear-gradient(140deg,#5a2d4b,#291a3b);border:1px solid rgba(255,203,130,.34);filter:drop-shadow(0 5px 12px rgba(0,0,0,.3))}
+.featured-info{display:flex;flex-direction:column;gap:6px;min-width:0}
+.featured-kicker{font-size:9px;letter-spacing:.13em;font-weight:900;color:#ffd58b}
+.featured-title{font-size:clamp(16px,4vw,22px);font-weight:900;line-height:1.12;letter-spacing:.03em}
+.featured-sub{font-size:11px;font-weight:700;color:#b7cbc9}
+.featured-arrow{margin-left:auto;font-size:32px;color:#ffd58b}
+.arcade-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));column-gap:10px;row-gap:22px;padding:4px 0 15px}
+.arcade-app{appearance:none;min-width:0;display:flex;flex-direction:column;align-items:center;gap:9px;padding:3px 0 7px;border:0;background:none;font-family:inherit;color:#f6f7fa;cursor:pointer}
+.arcade-icon{width:min(21vw,82px);height:min(21vw,82px);min-width:58px;min-height:58px;max-width:82px;max-height:82px;border-radius:23%;display:flex;justify-content:center;align-items:center;gap:1px;font-weight:900;font-size:35px;line-height:1;box-shadow:0 8px 18px rgba(0,0,0,.35),inset 0 1px rgba(255,255,255,.23);border:1px solid rgba(255,255,255,.16);transition:transform .15s}
+.arcade-app:active .arcade-icon,.arcade-featured:active{transform:scale(.95)}
+.arcade-app:focus-visible,.arcade-featured:focus-visible{outline:2px solid #fbd77a;outline-offset:4px}
+.arcade-label{font-size:11px;font-weight:800;line-height:1.2;text-align:center;min-height:26px;max-width:100%;overflow-wrap:break-word}
+.icon-caro{background:linear-gradient(145deg,#267d78,#133a56);color:#fff5d8}.icon-caro span{color:#ffca76;font-size:30px}
+.icon-chess{background:linear-gradient(145deg,#373c5d,#111629);color:#ffe7af}
+.icon-xiangqi{background:linear-gradient(145deg,#8e3934,#46141c);color:#ffe6b1}
+.icon-ship{background:linear-gradient(145deg,#2a84b6,#12334d);color:#dcf7ff}
+.icon-snake-coop{background:linear-gradient(145deg,#77448a,#3a235e)}
+.icon-snake{background:linear-gradient(145deg,#3a854d,#153925);color:#d3ffa4}
+.icon-2048{background:linear-gradient(145deg,#d98c42,#87502d);color:#fff6e3;font-size:22px}
+@media(min-width:430px){.arcade-grid{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:12px}}
+@media(max-width:345px){.arcade-grid{column-gap:5px}.arcade-icon{min-width:56px;min-height:56px}.arcade-label{font-size:10px}.arcade-featured{padding:12px;gap:9px}.featured-art{width:64px;height:64px;flex-basis:64px;font-size:38px}}
+@media(prefers-reduced-motion:reduce){.arcade-icon{transition:none}}
 </style>
 </head>
 <body>
@@ -335,51 +361,20 @@ body>.sticky button:first-child:active{transform:scale(.86)}
   </div>
 
   <div id="tab-game" class="tab-content hidden">
-    <div id="gameMenuView">
-      <div class="glass rounded-2xl p-5 mb-4 text-center">
-        <div class="hero-tile"><i class="ic ic-gamepad"></i></div>
-        <h2 class="text-[15px] font-black text-gold-400 uppercase tracking-widest mb-1">KHO GAME</h2>
-        <p class="text-[12px] text-teal-300">Chọn 1 game để chơi</p>
-      </div>
-      <div class="game-menu-grid">
-        <button class="game-menu-btn" onclick="openGame('dolphin-tactics-online')" style="border-color:rgba(255,210,112,.7);background:linear-gradient(130deg,rgba(61,40,18,.55),rgba(19,80,89,.85))">
-          <span class="gm-icon">🐉</span><span class="gm-title">Dolphin Tactics 3D</span><span class="gm-sub">4 người online · 30 tướng</span>
-        </button>
-        <button class="game-menu-btn" onclick="openGame('caro')">
-          <span class="gm-icon"><i class="ic ic-gamepad"></i></span>
-          <span class="gm-title">Cờ Caro</span>
-          <span class="gm-sub">1v1 online</span>
-        </button>
-        <button class="game-menu-btn" onclick="openGame('chess')">
-          <span class="gm-icon"><i class="ic ic-crown"></i></span>
-          <span class="gm-title">Cờ Vua</span>
-          <span class="gm-sub">Đấu máy · 2 người</span>
-        </button>
-        <button class="game-menu-btn" onclick="openGame('game2048')">
-          <span class="gm-icon"><i class="ic ic-hash"></i></span>
-          <span class="gm-title">2048</span>
-          <span class="gm-sub">Ghép số đạt 2048</span>
-        </button>
-        <button class="game-menu-btn" onclick="openGame('battleship')">
-          <span class="gm-icon"><i class="ic ic-ship"></i></span>
-          <span class="gm-title">Battleship</span>
-          <span class="gm-sub">Nhà Vua Giang Đoàn</span>
-        </button>
-        <button class="game-menu-btn" onclick="openGame('snake')">
-          <span class="gm-icon"><i class="ic ic-snake"></i></span>
-          <span class="gm-title">Rắn Săn Mồi Cô Đơn</span>
-          <span class="gm-sub">Thanh Hương</span>
-        </button>
-        <button class="game-menu-btn" onclick="openGame('snake-coop-online')" style="border-color:rgba(244,114,182,.55);background:linear-gradient(135deg,rgba(60,20,40,.55),rgba(26,74,69,.9))">
-          <span class="gm-icon"><i class="ic ic-snake2"></i></span>
-          <span class="gm-title">Rắn Đôi Có Tình Yêu</span>
-          <span class="gm-sub">Chu Nam</span>
-        </button>
-        <button class="game-menu-btn" onclick="openGame('xiangqi')">
-          <span class="gm-icon"><i class="ic ic-shield"></i></span>
-          <span class="gm-title">Cờ Tướng</span>
-          <span class="gm-sub">1v1 online</span>
-        </button>
+    <div id="gameMenuView" class="arcade-menu">
+      <button class="arcade-featured" onclick="openGame('dolphin-tactics-online')" aria-label="Chơi Dolphin Tactics 3D">
+        <span class="featured-art" aria-hidden="true">🐉</span>
+        <span class="featured-info"><span class="featured-kicker">GAME NỔI BẬT · ONLINE</span><span class="featured-title">DOLPHIN TACTICS 3D</span><span class="featured-sub">4 người online · 30 tướng</span></span>
+        <span class="featured-arrow" aria-hidden="true">›</span>
+      </button>
+      <div class="arcade-grid" aria-label="Danh sách trò chơi">
+        <button class="arcade-app" onclick="openGame('caro')"><span class="arcade-icon icon-caro">✕<span>◯</span></span><span class="arcade-label">Cờ Caro</span></button>
+        <button class="arcade-app" onclick="openGame('chess')"><span class="arcade-icon icon-chess">♛</span><span class="arcade-label">Cờ Vua</span></button>
+        <button class="arcade-app" onclick="openGame('xiangqi')"><span class="arcade-icon icon-xiangqi">將</span><span class="arcade-label">Cờ Tướng</span></button>
+        <button class="arcade-app" onclick="openGame('battleship')"><span class="arcade-icon icon-ship"><i class="ic ic-ship"></i></span><span class="arcade-label">Battleship</span></button>
+        <button class="arcade-app" onclick="openGame('snake-coop-online')"><span class="arcade-icon icon-snake-coop">🐍</span><span class="arcade-label">Rắn Đôi</span></button>
+        <button class="arcade-app" onclick="openGame('snake')"><span class="arcade-icon icon-snake"><i class="ic ic-snake"></i></span><span class="arcade-label">Rắn Offline</span></button>
+        <button class="arcade-app" onclick="openGame('game2048')"><span class="arcade-icon icon-2048">2048</span><span class="arcade-label">2048</span></button>
       </div>
     </div>
     <div id="gameIframeView" class="hidden">

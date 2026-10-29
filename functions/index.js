@@ -46,8 +46,9 @@ exports.tacticsCreateRoom=onCall(opts,async req=>{
 exports.tacticsJoinRoom=onCall(opts,async req=>{
  const uid=requireUid(req),name=await verifiedName(uid),id=roomIdOf(req.data&&req.data.roomId);
  const state=await transact(rooms().child(id),s=>{
-  E.assert(s&&s.status==='waiting','Phòng không tồn tại hoặc đã bắt đầu');
-  if(s.players[uid])return s;
+  E.assert(s&&s.players,'Phòng không tồn tại');
+  if(s.players[uid])return s; // Reconnect existing member to active room.
+  E.assert(s.status==='waiting','Phòng đã bắt đầu, không thể tham gia mới');
   E.assert(s.playerOrder.length<4,'Phòng đã đủ bốn người');
   s.playerOrder.push(uid);s.players[uid]=E.freshPlayer(uid,name,s);s.updatedAt=Date.now();return s;
  });

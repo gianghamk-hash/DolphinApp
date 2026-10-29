@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.183",
+      "releaseDate": "2026-10-29T06:42:07.939Z",
+      "summary": "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029",
+      "details": [
+        "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029"
+      ]
+    },
+    {
       "version": "1.0.182",
       "releaseDate": "2026-10-29T06:22:37.704Z",
       "summary": "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(landing): frameless Top 1 honor cards and no subtitle",
       "details": [
         "fix(landing): frameless Top 1 honor cards and no subtitle"
-      ]
-    },
-    {
-      "version": "1.0.133",
-      "releaseDate": "2026-10-27T05:07:20.055Z",
-      "summary": "fix(landing): fully transparent royal leader cards",
-      "details": [
-        "fix(landing): fully transparent royal leader cards"
       ]
     }
   ]

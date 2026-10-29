@@ -1,26 +1,22 @@
 {
-  "version": "1.0.183",
-  "previousVersion": "1.0.182",
-  "commit": "befb511",
-  "previousCommit": "2329430",
-  "buildDate": "2026-10-29T06:42:07.939Z",
-  "summary": "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029",
+  "version": "1.0.184",
+  "previousVersion": "1.0.183",
+  "commit": "97609f6",
+  "previousCommit": "befb511",
+  "buildDate": "2026-10-29T08:39:55.734Z",
+  "summary": "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029",
   "changes": {
-    "totalCommits": 187,
-    "filesChanged": 10,
+    "totalCommits": 188,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029"
+    "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/engine.js",
+      "file": "functions/index.js",
       "type": "update"
     },
     {
@@ -28,31 +24,7 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/guide.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/hero-profiles.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/touch-gear.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/trait-hud.test.js",
+      "file": "giaitri/games/tactics-online/authority-adapter.js",
       "type": "update"
     }
   ]

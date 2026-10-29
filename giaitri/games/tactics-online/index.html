@@ -222,6 +222,30 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .sellConfirmModal{position:fixed;inset:0;z-index:2147483647;display:flex;align-items:center;justify-content:center;padding:18px;background:rgba(0,0,0,.75);touch-action:manipulation}
 .sellConfirmModal.hidden{display:none!important}.sellConfirmPanel{width:min(100%,390px);background:#113447;border:2px solid #f4c779;border-radius:18px;padding:20px;text-align:center;box-shadow:0 20px 65px #000a}
 .sellConfirmPanel h2{font-size:17px;color:#ffe29d}.sellConfirmPanel p{font-size:14px;line-height:1.6;margin:16px 0;color:white}.sellConfirmActions{display:grid;grid-template-columns:1fr 1fr;gap:12px}.sellConfirmActions button{min-height:50px;font-size:14px}
+
+/* Desktop/Web/PWA stage-first layout: reduce secondary HUD footprint. */
+@media (min-width:801px) and (orientation:landscape){
+ #game:not(.hidden){grid-template-columns:minmax(0,3.3fr) minmax(258px,.82fr)!important;gap:5px!important}
+ #game>section>#stage{min-height:clamp(330px,64dvh,800px)!important;flex:1 1 auto!important}
+ #game>section>.playerDock{padding:2px 4px!important;gap:2px!important}
+ #game>section>.playerDock .hpEntry{padding:1px!important;gap:3px!important;min-height:39px!important}
+ #game>section>.playerDock .hpPortrait{height:23px!important;width:23px!important;flex-basis:23px!important}
+ #game>section>.playerDock .hpIdentity strong{font-size:9px!important}
+ #game>section>.playerDock .hpIdentity small.hpMeta{font-size:9px!important}
+ #game>section>.benchBar{padding:3px 5px!important;margin-top:2px!important}
+ #game>section>.benchBar #bench button{min-height:30px!important}
+ #game>section>.panel{padding:4px!important;margin-bottom:3px!important}
+ #game>aside .panel{padding:5px!important}
+ #game>aside{padding-bottom:12px!important}
+}
+@media (max-width:800px) and (orientation:landscape){
+ #game:not(.hidden){grid-template-columns:minmax(0,2.7fr) minmax(220px,.8fr)!important}
+ #game>section>#stage{flex:1 1 auto!important;min-height:240px!important}
+ #game>section>.playerDock .hpEntry{min-height:34px!important}
+ #game>section>.benchBar{padding:3px!important;margin-top:2px!important}
+}
+#sellConfirmModal:not(.hidden){z-index:2147483647!important;position:fixed!important;inset:0!important;display:flex!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;background:rgba(0,0,0,.85)!important}
+#sellConfirmModal .sellConfirmPanel{position:relative;z-index:1;max-height:calc(100dvh - 28px);overflow-y:auto}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -609,12 +633,18 @@ function init(){
 let sellConfirmResolve=null;
 function confirmTftSale(message){
  if(sellConfirmResolve){sellConfirmResolve(false);sellConfirmResolve=null;}
- const modal=$('sellConfirmModal');$('sellConfirmText').textContent=message;modal.classList.remove('hidden');
+ const modal=$('sellConfirmModal');
+ // Render outside the clipped game layout on Android WebView; fullscreen needs the fullscreen subtree.
+ const target=document.fullscreenElement||document.body;
+ if(modal.parentElement!==target)target.appendChild(modal);
+ $('sellConfirmText').textContent=message;
+ modal.classList.remove('hidden');modal.style.display='flex';
  closeUnitPopup();
+ $('sellAcceptBtn').focus({preventScroll:true});
  return new Promise(resolve=>{
   sellConfirmResolve=resolve;
   const finish=accepted=>{
-   modal.classList.add('hidden');
+   modal.classList.add('hidden');modal.style.display='none';
    sellConfirmResolve=null;
    $('sellAcceptBtn').onclick=null;$('sellCancelBtn').onclick=null;
    resolve(accepted);

@@ -236,3 +236,26 @@ test('landing handbook reflects current catalog roles and signature skills',()=>
  for(const h of c.heroes)assert.ok(heroes.includes(h.ability.signature.name),h.name+' missing signature');
  assert.match(gameplay,/36 tướng/);
 });
+
+test('player HP rail is horizontal, below 3D stage and above equipment',()=>{
+ const stage=html.indexOf('id="stage"'),hp=html.indexOf('id="players"'),tray=html.indexOf('id="touchItemTray"');
+ assert.ok(stage>=0&&hp>stage&&tray>hp);
+ assert.match(html,/#game>section>\.playerDock\{order:1!important/);
+ assert.match(html,/grid-template-columns:repeat\(4,minmax\(0,1fr\)\)!important/);
+});
+test('equipment details expose components, recipes, stats and effects without changing gear flow',()=>{
+ assert.match(html,/id="itemInfoModal"/);
+ assert.match(html,/window\.openItemInfo=/);
+ assert.match(html,/catalog\.components\.map/);
+ assert.match(html,/catalog\.recipes/);
+ assert.match(html,/def\.description\|\|EFFECT_LABELS/);
+ assert.match(html,/finishGearDrag/);
+});
+test('PvP matchup label uses live pair and opponent HP',()=>{
+ assert.match(html,/id="pvpOpponent"/);
+ assert.match(html,/function paintOpponent\(/);
+ assert.match(html,/state\.pairs\?\.find/);
+ assert.match(html,/enemy\.displayName/);
+ assert.match(html,/enemy\.hp/);
+ assert.match(html,/paintPlayers\(\);paintOpponent\(\);paintControls\(\)/);
+});

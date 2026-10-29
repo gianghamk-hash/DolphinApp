@@ -667,7 +667,7 @@ function paintControls(){
  syncBattleHudScale();
  // The touch tray mirrors the inventory; the original select remains as a fallback.
  const tray=$('touchItemSlots');
- if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" data-select-item="'+i+'" title="'+safe(itemDef(id)?.name||id)+'" '+(!prep?'disabled':'')+'>'+itemIcon(id)+'<small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
+ if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" data-select-item="'+i+'" title="'+safe(itemDef(id)?.name||id)+'">'+itemIcon(id)+'<small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
  // Inventory is now exclusively displayed underneath the board.
  selectedHeroInfo();
  $('lockShopBtn').textContent=p.shopLocked?'🔒':'🔓';
@@ -925,63 +925,15 @@ document.addEventListener('pointerup',e=>{
 });
 // Inventory drag-and-drop shares the existing EQUIP engine command and validations.
 const trayRoot=$('touchItemTray');
-let gearTap=null;
 trayRoot.addEventListener('click',e=>{
  const tile=e.target.closest('[data-select-item]');
  if(!tile)return;
- if(gearTap?.moved){gearTap=null;return;}
  openItemForEquip(Number(tile.dataset.selectItem));
 });
 
-trayRoot.addEventListener('pointerdown',e=>{
- const tile=e.target.closest('[data-item-index]');
- if(!tile||tile.disabled||state?.roundPhase!=='PREPARATION'||state.players?.[uid]?.ready)return;
- const index=Number(tile.dataset.itemIndex),item=state.players?.[uid]?.inventory?.[index];gearTap={x:e.clientX,y:e.clientY,moved:false};
- if(!item)return;
- e.preventDefault();
- const ghost=tile.cloneNode(true);ghost.removeAttribute('data-item-index');ghost.classList.add('touchGearGhost');
- document.body.appendChild(ghost);
- itemDrag={pointer:e.pointerId,item,startX:e.clientX,startY:e.clientY,ghost};
- ghost.style.left=e.clientX+'px';ghost.style.top=e.clientY+'px';
- try{trayRoot.setPointerCapture(e.pointerId);}catch(_){}
-});
-document.addEventListener('pointermove',e=>{
- if(!itemDrag||itemDrag.pointer!==e.pointerId)return;
- if(gearTap&&Math.hypot(e.clientX-gearTap.x,e.clientY-gearTap.y)>9)gearTap.moved=true;
- if(e.pointerType='touch'&&e.cancelable)e.preventDefault();itemDrag.ghost.style.left=e.clientX+'px';itemDrag.ghost.style.top=e.clientY+'px';
-});
-function finishGearDrag(e){
- if(!itemDrag||itemDrag.pointer!==e.pointerId)return;
- const drag=itemDrag;itemDrag=null;drag.ghost.remove();
- try{if(trayRoot.hasPointerCapture(e.pointerId))trayRoot.releasePointerCapture(e.pointerId);}catch(_){}
- if(e.type==='pointercancel')return;
- const p=state?.players?.[uid];
- if(!p||state.roundPhase!=='PREPARATION'||p.ready||!p.inventory.includes(drag.item))return;
- let target=boardUnitAt(e.clientX,e.clientY);
- if(!target){const tile=boardHit(e.clientX,e.clientY);if(tile&&tile.row>=4)target=p.board['r'+(tile.row-4)+'c'+tile.col];}
- if(!target){
-  const b=document.elementFromPoint(e.clientX,e.clientY)?.closest?.('#bench [data-bench]');
-  if(b)target=p.bench[String(b.dataset.bench)];
- }
- if(!target||!p.units[target]){info('Thả trang bị lên tướng trên bàn cờ hoặc hàng chờ.');return;}
- const parts=p.units[target].items||[];
-  const recipeAvailable=parts.some(x=>E.RECIPE[[x,drag.item].sort().join('+')]);
-  if(parts.length>=3&&!recipeAvailable){info('Tướng chỉ có tối đa 3 ô trang bị.');return;}
-  const match=parts.find(x=>E.RECIPE[[x,drag.item].sort().join('+')]);
-  const crafted=match&&E.RECIPE[[match,drag.item].sort().join('+')];
-  const before=E.combatStats(p,p.units[target],E.activeTraits(p));
-  const proposed={...p.units[target],items:crafted?parts.map(x=>x===match?crafted.id:x):[...parts,drag.item]};
-  const after=E.combatStats(p,proposed,E.activeTraits(p));
-  const delta=['hp','attack','armor','magicResist','abilityPower','mana'].map(k=>{const v=Math.round((after[k]-before[k])*10)/10;return v?(STAT_LABELS[k]||k)+': '+(v>0?'+':'')+v:null}).filter(Boolean).join(', ');
-  if(crafted&&!window.confirm('Ghép '+(itemDef(match)?.name||match)+' + '+(itemDef(drag.item)?.name||drag.item)+' → '+crafted.name+'?\\n'+(crafted.description||EFFECT_LABELS[crafted.effect]||'')+'\\n'+delta))return;
-  Promise.resolve(send({type:'EQUIP',unitId:target,component:drag.item})).then(success=>{
-   if(success===false)return;
-   if(!host){return;}
-   const sparkle=document.createElement('div');sparkle.className='equipSuccessFx';sparkle.textContent='✨ TRANG BỊ';sparkle.style.left=e.clientX+'px';sparkle.style.top=e.clientY+'px';document.body.appendChild(sparkle);setTimeout(()=>sparkle.remove(),850);
-  }).catch(showError);
-}
-document.addEventListener('pointerup',finishGearDrag);
-document.addEventListener('pointercancel',finishGearDrag);
+// Gear assignment is selection-based on mobile: no pointer capture or board hit-test.
+// All deployed heroes are reachable regardless of their board row.
+
 function syncPortraitHeader(){const head=$('appShell')?.querySelector('header');if(head)$('appShell').style.setProperty('--tft-header-height',Math.ceil(head.getBoundingClientRect().height)+'px');}
 window.addEventListener('resize',syncPortraitHeader,{passive:true});
 if(window.ResizeObserver){const header=$('appShell')?.querySelector('header');if(header)new ResizeObserver(syncPortraitHeader).observe(header);}

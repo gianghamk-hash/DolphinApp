@@ -1,7 +1,7 @@
 {
-  "version": "1.0.196",
-  "buildDate": "2026-10-29T13:03:30.070Z",
-  "commit": "5d2fd0f",
-  "notes": "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029",
+  "version": "1.0.197",
+  "buildDate": "2026-10-29T13:09:33.509Z",
+  "commit": "65879c6",
+  "notes": "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029",
   "forceUpdate": false
 }

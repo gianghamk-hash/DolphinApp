@@ -1,18 +1,18 @@
 {
-  "version": "1.0.196",
-  "previousVersion": "1.0.195",
-  "commit": "5d2fd0f",
-  "previousCommit": "1cf6ea2",
-  "buildDate": "2026-10-29T13:03:30.070Z",
-  "summary": "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029",
+  "version": "1.0.197",
+  "previousVersion": "1.0.196",
+  "commit": "65879c6",
+  "previousCommit": "5d2fd0f",
+  "buildDate": "2026-10-29T13:09:33.509Z",
+  "summary": "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029",
   "changes": {
-    "totalCommits": 200,
+    "totalCommits": 201,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029"
+    "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029"
   ],
   "fileChanges": [
     {

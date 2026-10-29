@@ -266,29 +266,8 @@
   // ═══════════════════════════════════════════════════════════
   // BADGE + MODAL QUẢN LÝ
   // ═══════════════════════════════════════════════════════════
-  function injectCrownBadge(){
-    if (!isMasterDevice()) return;
-    if (isManagerApp()) return;  // ✅ Ẩn trên Manager.apk
-    if (document.getElementById('masterCrownBadge')) return;
-    if (!document.body) return;
-    var badge = document.createElement('div');
-    badge.id = 'masterCrownBadge';
-    badge.textContent = '👑';
-    badge.title = 'MÁY CHỦ — Bấm để quản lý';
-    badge.style.cssText = 'position:fixed;top:8px;right:8px;z-index:99999;width:38px;height:38px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#FBD77A,#F4B842);border:2px solid #123634;border-radius:50%;font-size:19px;cursor:pointer;box-shadow:0 4px 16px rgba(244,184,66,.7);animation:masterCrownPulse 2s ease-in-out infinite;user-select:none;-webkit-user-select:none';
-    badge.onclick = openMasterModal;
-    document.body.appendChild(badge);
-    if (!document.getElementById('masterCrownPulseStyle')) {
-      var s = document.createElement('style');
-      s.id = 'masterCrownPulseStyle';
-      s.textContent = '@keyframes masterCrownPulse{0%,100%{transform:scale(1)}50%{transform:scale(1.12)}}';
-      document.head.appendChild(s);
-    }
-  }
-
   function injectActivateButton(){
-    if (isMasterDevice()) return;
-    if (isManagerApp()) return;  // ✅ Ẩn trên Manager.apk
+    if (isMasterDevice()) { document.getElementById('masterActivateBtn')?.remove(); return; }
     if (document.getElementById('masterActivateBtn')) return;
     if (!document.body) return;
     var btn = document.createElement('div');
@@ -336,7 +315,7 @@
       var code = input.value.trim();
       if (!code) { showMsg('error', 'Vui lòng nhập mã!'); return; }
       if (verifyMasterCode(code)) {
-        try { localStorage.setItem(MASTER_KEY, 'true'); } catch(e){}
+        try { localStorage.setItem(MASTER_KEY, 'true'); document.getElementById('masterActivateBtn')?.remove(); } catch(e){}
         showMsg('success', '✅ ĐÃ KÍCH HOẠT! Đang tải lại...');
         setTimeout(function(){ modal.remove(); location.reload(); }, 900);
       } else {
@@ -471,11 +450,9 @@
     startHooking();
     if (document.readyState === 'loading') {
       document.addEventListener('DOMContentLoaded', function(){
-        setTimeout(injectCrownBadge, 600);
         setTimeout(injectActivateButton, 600);
       });
     } else {
-      setTimeout(injectCrownBadge, 600);
       setTimeout(injectActivateButton, 600);
     }
   }

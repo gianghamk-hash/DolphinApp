@@ -249,7 +249,7 @@ test('equipment details expose components, recipes, stats and effects without ch
  assert.match(html,/catalog\.components\.map/);
  assert.match(html,/catalog\.recipes/);
  assert.match(html,/def\.description\|\|EFFECT_LABELS/);
- assert.match(html,/finishGearDrag/);
+ assert.match(html,/window\.openItemForEquip=/); assert.match(html,/window\.equipSelectedItem=/);
 });
 test('PvP matchup label uses live pair and opponent HP',()=>{
  assert.match(html,/id="pvpOpponent"/);
@@ -258,4 +258,12 @@ test('PvP matchup label uses live pair and opponent HP',()=>{
  assert.match(html,/enemy\.displayName/);
  assert.match(html,/enemy\.hp/);
  assert.match(html,/paintPlayers\(\);paintOpponent\(\);paintControls\(\)/);
+});
+
+test('equipment tap opens target list for all deployed heroes without pointer hit testing',()=>{
+ assert.match(html,/function equipmentCandidateButtons\(itemId\)/);
+ assert.match(html,/Object\.entries\(player\.board\|\|\{\}\)/);
+ assert.match(html,/data-equip-target/);
+ assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
+ assert.doesNotMatch(html,/function finishGearDrag/);
 });

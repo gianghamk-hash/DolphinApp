@@ -1,7 +1,7 @@
 {
-  "version": "1.0.175",
-  "buildDate": "2026-10-29T04:25:13.068Z",
-  "commit": "c5feef2",
-  "notes": "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029",
+  "version": "1.0.176",
+  "buildDate": "2026-10-29T05:19:27.247Z",
+  "commit": "ac40f13",
+  "notes": "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029",
   "forceUpdate": false
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.175",
+      "releaseDate": "2026-10-29T04:25:13.068Z",
+      "summary": "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029",
+      "details": [
+        "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029"
+      ]
+    },
+    {
       "version": "1.0.174",
       "releaseDate": "2026-10-29T03:38:54.513Z",
       "summary": "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)",
@@ -390,14 +398,6 @@
       "summary": "fix(landing): hide notification bell when permission granted",
       "details": [
         "fix(landing): hide notification bell when permission granted"
-      ]
-    },
-    {
-      "version": "1.0.125",
-      "releaseDate": "2026-10-27T00:26:06.029Z",
-      "summary": "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music",
-      "details": [
-        "fix(ui): hide theme badge, show Dolphin loading logo, remove Lounge music"
       ]
     }
   ]

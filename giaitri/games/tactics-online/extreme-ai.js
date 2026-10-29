@@ -89,7 +89,7 @@ function createAI(E){
   const danger=p.hp<35,healthy=p.hp>65;
   // Interest is one gold per 10 saved gold, up to 5.
   const baseline=danger?2:round<=3?0:round<=7?10:healthy?30:10;
-  const reserve=style==='economy'&&!danger?Math.min(50,baseline+15):style==='tempo'?Math.max(0,baseline-10):baseline;
+  const reserve=style==='economy'&&!danger&&round>3?Math.min(50,baseline+15):style==='tempo'?Math.max(0,baseline-10):baseline;
   const wantLevel=p.level<Math.min(9,Math.max(4,Math.floor(round/2)+2));
   const levelReserve=wantLevel&&p.gold>=reserve+8?4:0;
   return {reserve,rollBudget:style==='tempo'?Math.min(18,p.gold):danger?Math.min(16,p.gold):style==='economy'?4:p.gold>=45?12:p.gold>=25?6:2,

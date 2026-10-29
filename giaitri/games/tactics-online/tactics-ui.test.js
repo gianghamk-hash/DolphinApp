@@ -120,7 +120,7 @@ test('phase 4 combat statistics are bounded and derived from replay events',()=>
 });
 test('phase 4 status tags follow 3D units and equipment confirmations respect host result',()=>{
  assert.match(html,/tag\.dataset\.status=statusName/);
- assert.match(html,/effect\.until>elapsed/);
+ assert.match(html,/Object\.entries\(effects\)\.filter\(\(\[,until\]\)=>until>elapsed\)/);
  assert.match(css,/\.battleHeroName\[data-status/);
  assert.match(html,/if\(success===false\)return/);
  assert.match(html,/if\(!host\)\{return;\}/);
@@ -134,4 +134,12 @@ test('critical online actions reject expired and invalid request identifiers',()
  assert.match(html,/hostState\.clientAcks\[playerId\]=\{sequence,actionId,accepted,reason\}/);
  assert.match(html,/MP\.sendInputStrict\(\{action,sequence,actionId,expiresAt\}\)/);
  assert.match(html,/ack\.actionId!==uid\+':'\+onlinePending\.sequence/);
+});
+
+test('combat replay uses engine initial stats and displays burn damage plus concurrent effects',()=>{
+ assert.match(html,/for\(const stat of report\.initialStats\|\|\[\]\)/);
+ assert.match(html,/\['attack','cast','damageTick'\]\.includes\(e\.type\)/);
+ assert.match(html,/if\(e\.type==='damageTick'&&target\)/);
+ assert.match(html,/Object\.entries\(effects\)\.filter/);
+ assert.match(html,/statuses\[e\.type\]=Math\.max/);
 });

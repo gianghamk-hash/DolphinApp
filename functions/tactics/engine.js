@@ -147,6 +147,7 @@ function createEngine(C){
     trueDamageRatio:0,omnivamp:0,critChance:0,critDamage:0,stackAttackSpeed:0,doubleHitChance:0,
     cloneRatio:0,adjacentShield:0,alive:true,shadowUsed:false,attacks:0,nextAttack:0,nextMove:0,fsm:"Idle"});}
   }
+  const initialStats=units.map(u=>({id:u.id,hp:u.hp,maxHp:u.maxHp,mana:u.mana,manaMax:u.manaMax,shield:u.shield||0}));
   // Assassin backline jump happens before auto-combat; avoid occupied cells.
   for(const u of units){if(!u.assassinJump)continue;
    const backY=u.owner===0?0:7;
@@ -187,7 +188,8 @@ function createEngine(C){
    let temporaryUsed=absorbed-baseUsed;
    for(const layer of tgt.shieldLayers||[]){const take=Math.min(layer.remaining,temporaryUsed);layer.remaining-=take;temporaryUsed-=take;if(!temporaryUsed)break;}
    const dealt=Math.min(tgt.hp,incoming);
-   tgt.hp-=dealt;src.hp=Math.min(src.maxHp,src.hp+dealt*src.omnivamp);
+   tgt.hp-=dealt;const healing=Math.min(src.maxHp-src.hp,dealt*src.omnivamp);src.hp+=healing;
+   if(healing>0)emit({t,actor:src.id,target:src.id,type:'heal',amount:healing,source:'omnivamp'});
    if(src.effects&&src.effects.includes('burn'))applyBurn(src,tgt,t,3000,Math.max(8,tgt.maxHp*.015),'item');
    if(dealt>0){tgt.mana=Math.min(tgt.manaMax,tgt.mana+10+tgt.bonusMana);emit({t,actor:tgt.id,type:"mana",amount:tgt.mana,max:tgt.manaMax,source:"damage"});}
    emit({t,actor:src.id,target:tgt.id,type:spell?"cast":"attack",amount:dealt,skill:spell?skillKind:null});
@@ -199,9 +201,12 @@ function createEngine(C){
     expireShields(u,t);
     const activeBurns=Object.values(u.burns||{}).filter(x=>x.until>t);
     const burnDps=Math.max(...activeBurns.map(x=>x.dps),0);
-    if(burnDps){u.hp=Math.max(0,u.hp-burnDps*.2);if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
+    if(burnDps){const amount=Math.min(u.hp,burnDps*.2);u.hp-=amount;
+     const source=Object.entries(u.burns||{}).filter(([,v])=>v.until>t&&v.dps===burnDps).sort(([a],[b])=>a.localeCompare(b))[0]?.[0]||'';
+     emit({t,actor:source.split(':').slice(1).join(':')||u.id,target:u.id,type:'damageTick',amount,source:'burn'});
+     if(!u.hp){u.alive=false;emit({t,actor:u.id,type:'die'});continue;}}
     if(u.stunnedUntil>t){u.fsm="Stunned";continue;}
-    if(u.regen)u.hp=Math.min(u.maxHp,u.hp+u.regen*.2);
+    if(u.regen){const amount=Math.min(u.maxHp-u.hp,u.regen*.2);u.hp+=amount;if(amount>0)emit({t,actor:u.id,target:u.id,type:'heal',amount,source:'regen'});}
    const manaTick=(u.effects&&u.effects.includes('manaRegen')?1:0)+(u.effects&&u.effects.includes('manaPulse')?0.4:0);
    if(manaTick){u.mana=Math.min(u.manaMax,u.mana+manaTick);emit({t,actor:u.id,type:'mana',amount:u.mana,max:u.manaMax,source:'item'});}
     if(u.cloneRatio&&!u.shadowUsed&&u.hp<u.maxHp*.5&&units.length<32){u.shadowUsed=true;const positions=[[1,0],[-1,0],[0,1],[0,-1]];
@@ -231,7 +236,7 @@ function createEngine(C){
          emit({t,actor:u.id,target:v.id,type:"haste",amount:v.hasteEffects[u.id].ratio,duration:u.ability.durationMs||3500});
         }
        }
-      }else if(u.ability.kind==="heal"){u.hp=Math.min(u.maxHp,u.hp+u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100));emit({t,actor:u.id,type:"heal",skill:"heal",amount:u.ability.power});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;u.burns={};emit({t,actor:u.id,type:"cleanse"});}}
+      }else if(u.ability.kind==="heal"){const amount=Math.min(u.maxHp-u.hp,u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100));u.hp+=amount;emit({t,actor:u.id,target:u.id,type:"heal",skill:"heal",amount});if(u.ability.cleanse){u.stunnedUntil=0;u.slowUntil=0;u.burnUntil=0;u.burns={};emit({t,actor:u.id,type:"cleanse"});}}
       else if(u.ability.kind==="shield"){const amount=grantShield(u,u.ability.power*(u.ability.effectScale||1)*(1+u.abilityPower/100),t);emit({t,actor:u.id,type:"shield",skill:"shield",amount});}
       else {
        const kind=u.ability.kind,area=kind==="aoe"||kind==="blast";
@@ -244,7 +249,7 @@ function createEngine(C){
         if(v.alive&&u.ability.status==="slow"){v.slowUntil=Math.max(v.slowUntil||0,t+1800);emit({t,actor:u.id,target:v.id,type:"slow",amount:1800});}
         if(v.alive&&u.ability.status==="burn"){applyBurn(u,v,t,2200,Math.max(8,v.maxHp*.018),"skill");}
         if(kind==="stun"&&v.alive){const duration=u.ability.durationMs||1200;v.stunnedUntil=Math.max(v.stunnedUntil||0,t+duration);emit({t,actor:u.id,target:v.id,type:"stun",amount:duration});}
-        if(kind==="drain"){const healed=Math.max(0,before-v.hp)*.35;u.hp=Math.min(u.maxHp,u.hp+healed);emit({t,actor:u.id,type:"heal",amount:Math.round(healed)});}
+        if(kind==="drain"){const healed=Math.max(0,before-v.hp)*.35;const actual=Math.min(u.maxHp-u.hp,healed);u.hp+=actual;emit({t,actor:u.id,target:u.id,type:"heal",amount:actual,source:"drain"});}
        }
        if(kind==="dash"){const spaces=[[1,0],[-1,0],[0,1],[0,-1]].map(([dx,dy])=>({x:target.x+dx,y:target.y+dy})).filter(pos=>pos.x>=0&&pos.x<8&&pos.y>=0&&pos.y<8&&!units.some(v=>v.alive&&v!==u&&v.x===pos.x&&v.y===pos.y));if(spaces.length){const pos=spaces.sort((a,b)=>Math.abs(a.x-u.x)+Math.abs(a.y-u.y)-Math.abs(b.x-u.x)-Math.abs(b.y-u.y))[0];u.x=pos.x;u.y=pos.y;emit({t,actor:u.id,type:"move",x:u.x,y:u.y});}}
       }
@@ -267,7 +272,7 @@ function createEngine(C){
   const surviving=tie?[]:(winLeft?left:right);
   const damage=tie?0:2+Math.floor(room.round/3)+surviving.reduce((v,x)=>v+(x.star||1),0);
   emit({t:PHASES.COMBAT,actor:"system",type:"end",amount:damage});
-  return {pair,winner,loser:tie?null:pair.pve||pair.ghost?(winLeft?null:pair.a):(winLeft?pair.b:pair.a),damage,events};
+  return {initialStats,pair,winner,loser:tie?null:pair.pve||pair.ghost?(winLeft?null:pair.a):(winLeft?pair.b:pair.a),damage,events};
  }
  function finalize(s,now){
   assert(s.roundPhase==="COMBAT","Chưa ở phase chiến đấu");

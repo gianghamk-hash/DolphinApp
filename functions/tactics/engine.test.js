@@ -272,3 +272,14 @@ test('critical shield ledger keeps permanent and temporary absorption separate',
  assert.match(src,/l\.until<=t/);
  assert.match(src,/baseShield:0,shieldLayers:\[\]/);
 });
+
+test('replay exposes buffed initial unit stats and effective combat events',()=>{
+ const s=setup(),p=s.players.a;
+ p.units={a:{id:'a',heroId:'H31',star:2,items:[]}};p.board={r0c0:'a'};
+ const result=E.simulate({a:'a',b:null,pve:true},s,{a:E.clone(p)},42);
+ const initial=result.initialStats.find(u=>u.id==='a');
+ assert.ok(initial&&initial.maxHp>0&&initial.hp===initial.maxHp);
+ assert.ok(Number.isFinite(initial.mana)&&Number.isFinite(initial.manaMax));
+ assert.ok(result.events.some(e=>e.type==='skill'||e.type==='attack'));
+ assert.ok(result.events.filter(e=>e.type==='heal'||e.type==='damageTick').every(e=>Number.isFinite(e.amount)&&e.amount>=0));
+});

@@ -93,7 +93,37 @@
     }
   }
 
-  async function getLeaderboard(game, limit){
+  // TFT results are provisional client-reported scores until staff identity
+  // and match results can be verified by a trusted server endpoint.
+  async function submitTacticsMatch(matchId, placement, meta){
+    var name=getStaffName();
+    if(!name || !matchId || !Number.isInteger(placement) || placement<1 || placement>4) return false;
+    if(!(await init()) || !auth.currentUser) return false;
+    var score=[0,25,18,12,6][placement];
+    var userId=auth.currentUser.uid;
+    var ref=modules.db.doc(db,COL,'dolphin-tactics__'+userId);
+    try{
+      await modules.db.runTransaction(db,async function(tx){
+        var snap=await tx.get(ref),cur=snap.exists()?snap.data():{};
+        var seen=Array.isArray(cur.recentMatches)?cur.recentMatches:[];
+        if(seen.includes(matchId))return;
+        tx.set(ref,{
+          game:'dolphin-tactics',player:name,uid:userId,
+          bestScore:Math.max(cur.bestScore||0,score),
+          totalScore:(cur.totalScore||0)+score,
+          totalGames:(cur.totalGames||0)+1,
+          wins:(cur.wins||0)+(placement===1?1:0),
+          losses:(cur.losses||0)+(placement!==1?1:0),
+          totalPlacement:(cur.totalPlacement||0)+placement,
+          bestPlacement:Math.min(cur.bestPlacement||4,placement),
+          recentMatches:[...seen.slice(-99),matchId],
+          lastPlayed:Date.now(),lastMeta:{placement,mode:'online',provisional:true}
+        },{merge:true});
+      });
+      invalidate('dolphin-tactics');return true;
+    }catch(error){console.warn('[TFT leaderboard] result submission failed:',error);return false;}
+  }
+    async function getLeaderboard(game, limit){
     limit = limit || 30;
     if (!game) return [];
     if (cache.lb[game] && (Date.now() - (cache.ts[game] || 0) < 30000)){
@@ -110,7 +140,7 @@
       var arr = [];
       snap.forEach(function(d){ arr.push(d.data()); });
       arr.sort(function(a, b){
-        var s = (b.bestScore || 0) - (a.bestScore || 0);
+        var s = (game === 'dolphin-tactics' ? (b.totalScore || 0) - (a.totalScore || 0) : (b.bestScore || 0) - (a.bestScore || 0));
         if (s !== 0) return s;
         var w = (b.wins || 0) - (a.wins || 0);
         if (w !== 0) return w;
@@ -131,7 +161,7 @@
   }
 
   window.DolphinLeaderboard = {
-    init: init, submit: submit, getLeaderboard: getLeaderboard,
+    init: init, submit: submit, submitTacticsMatch: submitTacticsMatch, getLeaderboard: getLeaderboard,
     getStaffName: getStaffName, invalidate: invalidate,
     ready: function(){ return ready; }
   };

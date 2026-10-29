@@ -257,9 +257,17 @@ function createEngine(C){
       if(sig){
        const friendly=units.filter(v=>v.alive&&v.owner===u.owner).sort((a,b)=>(a.hp/a.maxHp)-(b.hp/b.maxHp)||a.id.localeCompare(b.id));
        const hostile=units.filter(v=>v.alive&&v.owner!==u.owner).sort((a,b)=>dist(u,a)-dist(u,b)||a.id.localeCompare(b.id));
-       const count=sig.pattern==='focused'?1:sig.pattern==='sweep'?2:3;
+       const count={focused:1,sweep:2,chain:3,burst:2,arc:3}[sig.pattern]||1;
        const friendlyEffect=['renew','fortify','quickstep','siphon','empower','spark','guard'].includes(sig.effect);
-       const affected=(friendlyEffect?friendly:hostile).slice(0,count);
+       const source=friendlyEffect?friendly:hostile;
+       // Each target pattern changes selection, not just a visual name.
+       const candidates=source.slice().sort((a,b)=>{
+        if(sig.pattern==='burst')return (a.hp/a.maxHp)-(b.hp/b.maxHp)||a.id.localeCompare(b.id);
+        if(sig.pattern==='arc')return (friendlyEffect?a.hp/a.maxHp:b.attack)-(friendlyEffect?b.hp/b.maxHp:a.attack)||a.id.localeCompare(b.id);
+        if(sig.pattern==='sweep')return dist(target,a)-dist(target,b)||a.id.localeCompare(b.id);
+        return dist(u,a)-dist(u,b)||a.id.localeCompare(b.id);
+       });
+       const affected=candidates.slice(0,count);
        emit({t,actor:u.id,type:'signature',skillId:sig.id,skillName:sig.name,vfx:u.ability.vfx,pattern:sig.pattern});
        for(const v of affected){
         const amount=sig.power*(1+u.abilityPower/100),dur=sig.durationMs||1200;

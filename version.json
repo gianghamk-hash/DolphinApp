@@ -1,7 +1,7 @@
 {
-  "version": "1.0.212",
-  "buildDate": "2026-10-29T15:07:45.703Z",
-  "commit": "bf45119",
-  "notes": "Merge pull request #153 from gianghamk-hash/fix/show-delete-error-diagnostics-20261029",
+  "version": "1.0.213",
+  "buildDate": "2026-10-29T15:14:03.648Z",
+  "commit": "fbb35b8",
+  "notes": "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029",
   "forceUpdate": false
 }

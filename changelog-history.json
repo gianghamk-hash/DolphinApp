@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.212",
+      "releaseDate": "2026-10-29T15:07:45.703Z",
+      "summary": "Merge pull request #153 from gianghamk-hash/fix/show-delete-error-diagnostics-20261029",
+      "details": [
+        "Merge pull request #153 from gianghamk-hash/fix/show-delete-error-diagnostics-20261029"
+      ]
+    },
+    {
       "version": "1.0.211",
       "releaseDate": "2026-10-29T15:01:28.536Z",
       "summary": "Merge pull request #152 from gianghamk-hash/fix/show-manager-master-auth-diagnostics-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028",
       "details": [
         "Merge pull request #103 from gianghamk-hash/feat/tft-six-support-heroes-20261028"
-      ]
-    },
-    {
-      "version": "1.0.162",
-      "releaseDate": "2026-10-28T09:09:52.442Z",
-      "summary": "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028",
-      "details": [
-        "Merge pull request #102 from gianghamk-hash/feat/tft-mlbb-role-alignment-20261028"
       ]
     }
   ]

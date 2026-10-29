@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.205",
+      "releaseDate": "2026-10-29T14:19:31.822Z",
+      "summary": "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029",
+      "details": [
+        "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029"
+      ]
+    },
+    {
       "version": "1.0.204",
       "releaseDate": "2026-10-29T14:15:17.769Z",
       "summary": "Merge pull request #145 from gianghamk-hash/fix/tft-apk-balanced-columns-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #96 from gianghamk-hash/feat/tft-equipment-v2-20261028",
       "details": [
         "Merge pull request #96 from gianghamk-hash/feat/tft-equipment-v2-20261028"
-      ]
-    },
-    {
-      "version": "1.0.155",
-      "releaseDate": "2026-10-28T06:28:16.241Z",
-      "summary": "Merge pull request #95 from gianghamk-hash/fix/tft-mana-cast-vfx-20261028",
-      "details": [
-        "Merge pull request #95 from gianghamk-hash/fix/tft-mana-cast-vfx-20261028"
       ]
     }
   ]

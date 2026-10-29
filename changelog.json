@@ -1,18 +1,18 @@
 {
-  "version": "1.0.205",
-  "previousVersion": "1.0.204",
-  "commit": "dfd7d50",
-  "previousCommit": "86e0055",
-  "buildDate": "2026-10-29T14:19:31.822Z",
-  "summary": "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029",
+  "version": "1.0.206",
+  "previousVersion": "1.0.205",
+  "commit": "8b1f123",
+  "previousCommit": "dfd7d50",
+  "buildDate": "2026-10-29T14:25:16.480Z",
+  "summary": "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029",
   "changes": {
-    "totalCommits": 209,
+    "totalCommits": 210,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029"
+    "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029"
   ],
   "fileChanges": [
     {

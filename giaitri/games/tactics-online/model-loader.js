@@ -37,7 +37,7 @@ function createModelLibrary(T,GLTFLoader,basePath='assets/models/',rigFactory=nu
  async function attach(id,holder){
   const generation=holder.userData.modelGeneration=(holder.userData.modelGeneration||0)+1;
   const asset=await get(id);
-  if(!holder.parent||holder.userData.modelGeneration!==generation||holder.userData.heroId!==id)return false;
+  if(!holder.parent||holder.userData.modelGeneration!==generation||(holder.userData.heroId&&holder.userData.heroId!==id))return false;
   let model=null,isAsset=false;
   if(asset){
    model=cloneSkeleton?cloneSkeleton(asset.model):asset.model.clone(true);normalize(model,asset.def);isAsset=true;

@@ -332,6 +332,29 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
  html.tft-android-apk #game>section>.benchBar #bench{display:grid!important;grid-template-columns:repeat(8,minmax(0,1fr))!important}
  html.tft-android-apk #game>section>.benchBar #bench button{min-height:35px!important}
 }
+
+/* Landing and lobby must scroll within WebView (also in pseudo/fullscreen).
+   Battle mode retains its independently scrollable shop sidebar. */
+html.tft-android-apk,html.tft-android-apk body{height:100%;overflow:hidden!important}
+html.tft-android-apk #appShell,
+html.tft-android-apk #appShell:fullscreen,
+html.tft-android-apk #appShell.pseudoFullscreen{
+ height:100dvh!important;max-height:100dvh!important;
+ display:flex!important;flex-direction:column!important;
+ overflow:hidden!important;min-height:0!important;
+}
+html.tft-android-apk #appShell>header{flex:0 0 auto!important}
+html.tft-android-apk #overlay:not(.hidden){
+ display:block!important;flex:1 1 auto!important;min-height:0!important;
+ max-width:none!important;width:100%!important;margin:0 auto!important;
+ overflow-x:hidden!important;overflow-y:auto!important;
+ overscroll-behavior-y:contain!important;touch-action:pan-y!important;
+ -webkit-overflow-scrolling:touch!important;
+ padding:12px 12px calc(42px + env(safe-area-inset-bottom))!important;
+ box-sizing:border-box!important;
+}
+html.tft-android-apk #overlay .arenaHero{max-width:760px;margin-left:auto;margin-right:auto}
+html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!important}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -511,7 +534,7 @@ window.toggleFullscreen=async()=>{
  const root=$('appShell');
  if(document.fullscreenElement){try{await document.exitFullscreen();}catch(e){}refreshFullButton();return;}
  if(pseudoFullscreen){pseudoFullscreen=false;root.classList.remove('pseudoFullscreen');
-  try{parent.postMessage({type:'dolphin-tactics-fullscreen',enabled:false},'*');}catch(e){}
+  try{parent.postMessage({type:'dolphin-tactics-fullscreen',enabled:false,inGame:!$('game').classList.contains('hidden')},'*');}catch(e){}
   refreshFullButton();return;}
  try{
   if(!root.requestFullscreen)throw Error('Unsupported WebView');
@@ -521,7 +544,7 @@ window.toggleFullscreen=async()=>{
  }catch(e){
   // APK WebView often refuses Fullscreen API from iframe. Use fullscreen-like layout.
   pseudoFullscreen=true;root.classList.add('pseudoFullscreen');
-  try{parent.postMessage({type:'dolphin-tactics-fullscreen',enabled:true},'*');}catch(err){}
+  try{parent.postMessage({type:'dolphin-tactics-fullscreen',enabled:true,inGame:!$('game').classList.contains('hidden')},'*');}catch(err){}
  }
  refreshFullButton();
 };

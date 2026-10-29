@@ -6,7 +6,7 @@ test('redesign stylesheet loaded and all action targets remain intact',()=>{
  for(const id of ['stage','shop','touchItemTray','touchItemSlots','traitRail','traitInfo','bench','rollShopBtn','lockShopBtn','buyXpBtn']){
  assert.match(html,new RegExp('id="'+id+'"'));
  }
- for(const action of ['buyHero','finishGearDrag','TOGGLE_SHOP_LOCK','ROLL','BUY_XP']){
+ for(const action of ['buyHero','equipSelectedItem','TOGGLE_SHOP_LOCK','ROLL','BUY_XP']){
  assert.ok(html.includes(action),action+' must remain available');
  }
 });
@@ -122,8 +122,8 @@ test('phase 4 status tags follow 3D units and equipment confirmations respect ho
  assert.match(html,/tag\.dataset\.status=statusName/);
  assert.match(html,/Object\.entries\(effects\)\.filter\(\(\[,until\]\)=>until>elapsed\)/);
  assert.match(css,/\.battleHeroName\[data-status/);
- assert.match(html,/if\(success===false\)return/);
- assert.match(html,/if\(!host\)\{return;\}/);
+ assert.match(html,/player\.inventory\[item\.index\]!==item\.id/);
+ assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
 });
 
 test('critical online actions reject expired and invalid request identifiers',()=>{

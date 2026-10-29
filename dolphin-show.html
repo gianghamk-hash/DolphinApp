@@ -695,6 +695,16 @@ window.saveService = async () => {
 let passMode = 'deleteShow';
 window.openPass = (mode = 'deleteShow') => {
   passMode = mode;
+  // Only the activated Master on the native Manager APK can bypass
+  // this UI password prompt. Staff APK and browser/PWA use the PIN as before.
+  const nativeManager = (navigator.userAgent || '').includes('DolphinManager/');
+  const verifiedMaster = window.MasterSystem?.isMaster?.() === true;
+  if (mode === 'deleteShow' && nativeManager && verifiedMaster) {
+    if (window.confirm('Xác nhận xóa bàn ' + $('s-id').value + ' và toàn bộ dữ liệu order?')) {
+      doDeleteShow();
+    }
+    return;
+  }
   $('pass-title').innerText = 'Nhập mật khẩu để xóa bàn';
   $('pass-input').value = '';
   $('pass-err').classList.add('hidden');

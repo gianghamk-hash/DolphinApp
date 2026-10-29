@@ -1,7 +1,7 @@
 {
-  "version": "1.0.190",
-  "buildDate": "2026-10-29T10:25:31.337Z",
-  "commit": "cc77490",
-  "notes": "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b",
+  "version": "1.0.191",
+  "buildDate": "2026-10-29T10:30:45.729Z",
+  "commit": "77dc17b",
+  "notes": "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029",
   "forceUpdate": false
 }

@@ -212,6 +212,12 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .itemInfoGrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(175px,1fr));gap:8px;margin-top:10px}
 .itemInfoCard{background:#163749;border:1px solid #477986;padding:9px;border-radius:10px;font-size:12px}
 .itemInfoCard strong{display:block}.itemInfoCard span{color:#b6d6dc}.itemInfoCard p{margin:5px 0}
+
+.equipTargetGrid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:8px}
+.equipTargetGrid button{border:1px solid #6fb5c4;border-radius:10px;background:#173c51;color:#fff;text-align:left;padding:12px 8px;min-height:60px}
+.equipTargetGrid button:disabled{opacity:.38}
+.equipTargetGrid small{display:block;margin-top:5px;font-size:11px}
+.selectedGearDetail{border:1px solid #b39a60;border-radius:12px;padding:10px;background:#18374a}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -410,6 +416,33 @@ function itemIcon(id){
 }
 fetch(ITEM_SPRITE,{cache:'force-cache'}).then(r=>{if(!r.ok)throw Error('missing equipment sprite');return r.text()}).then(svg=>{if(svg.includes('id="item-I21"')&&svg.includes('id="item-sword"'))document.documentElement.classList.add('tftItemArtworkReady')}).catch(()=>{});
 function statLabel(k,v){return (STAT_LABELS[k]||k)+' +'+(PERCENT_STATS.has(k)?Math.round(v*100)+'%':Number.isInteger(v)?v:Number(v).toFixed(1));}
+let selectedItemForEquip=null;
+function equipmentCandidateButtons(itemId){
+ const player=state?.players?.[uid];if(!player)return '<p>Chưa vào trận.</p>';
+ const entries=Object.entries(player.board||{}).map(([slot,id])=>({slot,id,u:player.units?.[id]})).filter(x=>x.u);
+ if(!entries.length)return '<p>Chưa có tướng trên bản đồ để mặc trang bị.</p>';
+ return '<h4>CHỌN TƯỚNG TRÊN BẢN ĐỒ</h4><div class="equipTargetGrid">'+entries.map(({id,u,slot})=>{
+  const h=hero[u.heroId],items=u.items||[],canCombine=items.some(x=>catalog.components.some(c=>c.id===x)&&catalog.recipes.some(recipe=>recipe.components?.includes(x)&&recipe.components?.includes(itemId)));
+  const canEquip=state.roundPhase==='PREPARATION'&&!player.ready&&(items.length<3||canCombine);
+  return '<button type="button" data-equip-target="'+safe(id)+'" '+(canEquip?'':'disabled')+'><strong>'+safe(h?.name||u.heroId)+' ★'+u.star+'</strong><small>'+safe(slot)+' · '+items.length+'/3 đồ'+(canCombine?' · Có thể ghép':'')+'</small></button>';
+ }).join('')+'</div>';
+}
+window.openItemForEquip=index=>{
+ const player=state?.players?.[uid],itemId=player?.inventory?.[index];if(!itemId)return;
+ selectedItemForEquip={id:itemId,index};const def=itemDef(itemId),stats=def.bonus||{[def.stat]:def.value};
+ const recipe=def.components?.map(id=>itemDef(id)?.name||id).join(' + ');
+ const lines=Object.entries(stats).filter(([,v])=>v).map(([key,val])=>statLabel(key,val)).join(' · ');
+ $('itemInfoContent').innerHTML='<div class="selectedGearDetail"><h3>'+itemIcon(itemId)+' '+safe(def.name)+'</h3><p>'+safe(lines)+'</p>'+(recipe?'<p><b>Công thức:</b> '+safe(recipe)+'</p>':'')+(def.effect&&def.effect!=='stat'?'<p><b>Hiệu ứng:</b> '+safe(def.description||EFFECT_LABELS[def.effect]||def.effect)+'</p>':'')+'</div>'+equipmentCandidateButtons(itemId);
+ $('itemInfoModal').classList.remove('hidden');
+};
+window.equipSelectedItem=async unitId=>{
+ const item=selectedItemForEquip,player=state?.players?.[uid];
+ if(!item||!player||state.roundPhase!=='PREPARATION'||player.ready)return;
+ if(player.inventory[item.index]!==item.id)return info('Trang bị đã thay đổi. Hãy chọn lại.');
+ if(!Object.values(player.board||{}).includes(unitId))return info('Chỉ chọn tướng trên bản đồ.');
+ try{await send({type:'EQUIP',unitId,component:item.id});closeItemInfo();}catch(error){info('Không thể mặc trang bị: '+(error?.message||error));}
+};
+$('itemInfoContent').addEventListener('click',e=>{const button=e.target.closest('[data-equip-target]');if(button&&!button.disabled)void equipSelectedItem(button.dataset.equipTarget);});
 window.openItemInfo=()=>{
  const inventory=state?.players?.[uid]?.inventory||[];
  const components=Object.fromEntries(catalog.components.map(c=>[c.id,c]));
@@ -423,7 +456,7 @@ window.openItemInfo=()=>{
  $('itemInfoContent').innerHTML='<p class="small">Chạm vật phẩm trong khay để xem chi tiết; kéo để trang bị trong giai đoạn Chuẩn bị.</p><div class="itemInfoGrid">'+cards+'</div>';
  $('itemInfoModal').classList.remove('hidden');
 };
-window.closeItemInfo=()=>{$('itemInfoModal').classList.add('hidden');};
+window.closeItemInfo=()=>{selectedItemForEquip=null;$('itemInfoModal').classList.add('hidden');};
 $('itemInfoModal').addEventListener('click',e=>{if(e.target===$('itemInfoModal'))closeItemInfo();});
 function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+(def.components?' · '+safe(def.components.map(x=>itemDef(x)?.name||x).join(' + ')):'')+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
@@ -634,7 +667,7 @@ function paintControls(){
  syncBattleHudScale();
  // The touch tray mirrors the inventory; the original select remains as a fallback.
  const tray=$('touchItemSlots');
- if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" title="'+safe(itemDef(id)?.name||id)+'" '+(!prep?'disabled':'')+'>'+itemIcon(id)+'<small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
+ if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" data-select-item="'+i+'" title="'+safe(itemDef(id)?.name||id)+'" '+(!prep?'disabled':'')+'>'+itemIcon(id)+'<small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
  // Inventory is now exclusively displayed underneath the board.
  selectedHeroInfo();
  $('lockShopBtn').textContent=p.shopLocked?'🔒':'🔓';
@@ -892,10 +925,18 @@ document.addEventListener('pointerup',e=>{
 });
 // Inventory drag-and-drop shares the existing EQUIP engine command and validations.
 const trayRoot=$('touchItemTray');
+let gearTap=null;
+trayRoot.addEventListener('click',e=>{
+ const tile=e.target.closest('[data-select-item]');
+ if(!tile)return;
+ if(gearTap?.moved){gearTap=null;return;}
+ openItemForEquip(Number(tile.dataset.selectItem));
+});
+
 trayRoot.addEventListener('pointerdown',e=>{
  const tile=e.target.closest('[data-item-index]');
  if(!tile||tile.disabled||state?.roundPhase!=='PREPARATION'||state.players?.[uid]?.ready)return;
- const index=Number(tile.dataset.itemIndex),item=state.players?.[uid]?.inventory?.[index];
+ const index=Number(tile.dataset.itemIndex),item=state.players?.[uid]?.inventory?.[index];gearTap={x:e.clientX,y:e.clientY,moved:false};
  if(!item)return;
  e.preventDefault();
  const ghost=tile.cloneNode(true);ghost.removeAttribute('data-item-index');ghost.classList.add('touchGearGhost');
@@ -906,7 +947,8 @@ trayRoot.addEventListener('pointerdown',e=>{
 });
 document.addEventListener('pointermove',e=>{
  if(!itemDrag||itemDrag.pointer!==e.pointerId)return;
- if(e.pointerType==='touch'&&e.cancelable)e.preventDefault();itemDrag.ghost.style.left=e.clientX+'px';itemDrag.ghost.style.top=e.clientY+'px';
+ if(gearTap&&Math.hypot(e.clientX-gearTap.x,e.clientY-gearTap.y)>9)gearTap.moved=true;
+ if(e.pointerType='touch'&&e.cancelable)e.preventDefault();itemDrag.ghost.style.left=e.clientX+'px';itemDrag.ghost.style.top=e.clientY+'px';
 });
 function finishGearDrag(e){
  if(!itemDrag||itemDrag.pointer!==e.pointerId)return;

@@ -311,3 +311,27 @@ test('role balancing: all 36 champions have role-appropriate HP, armor, speed an
   }
  }
 });
+
+test('every champion has a distinct typed signature with unique identity',()=>{
+ const entries=E.C.heroes.map(h=>h.ability.signature);
+ assert.equal(entries.length,36);
+ assert.equal(new Set(entries.map(s=>s.id)).size,36);
+ assert.equal(new Set(entries.map(s=>s.effect+':'+s.pattern)).size,36);
+ for(const s of entries){assert.ok(s.name&&s.power>0);assert.ok(['focused','sweep','chain'].includes(s.pattern));}
+});
+test('all 36 signatures create authoritative cast and visual event',()=>{
+ for(const h of E.C.heroes){
+  const state=setup(),p=state.players.a;
+  p.units={caster:{id:'caster',heroId:h.id,star:1,items:[]}};
+  p.board={r0c1:'caster'};
+  const beforeMana=h.manaStart, beforeRange=h.range;
+  h.manaStart=h.manaMax;h.range=8;
+  try{
+   const report=E.simulate({a:'a',b:null,pve:true},state,{a:E.clone(p)},42);
+   const signature=report.events.find(e=>e.type==='signature'&&e.skillId===h.ability.signature.id);
+   assert.ok(signature,h.name+' signature did not trigger');
+   assert.equal(signature.vfx,h.ability.vfx);
+   assert.ok(report.events.some(e=>e.type==='skill'&&e.actor==='caster'),h.name+' missing skill animation event');
+  }finally{h.manaStart=beforeMana;h.range=beforeRange;}
+ }
+});

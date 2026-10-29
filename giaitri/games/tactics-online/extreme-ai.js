@@ -66,7 +66,7 @@ function createAI(E){
   const shift=threat.carryColumn>=4?[4,3,5,2,6,1,7,0]:[3,4,2,5,1,6,0,7];
   const board={},bench={};
   front.forEach((u,i)=>{const row=i<8?0:1;board['r'+row+'c'+shift[i%8]]=u.id;});
-  rear.forEach((u,i)=>{board['r3c'+shift[i%8]]=u.id;});
+  rear.forEach((u,i)=>{const row=3-Math.floor(i/8);board['r'+row+'c'+shift[i%8]]=u.id;});
   let k=0;const active=new Set(chosen.map(u=>u.id));
   for(const u of Object.values(p.units))if(!active.has(u.id)&&k<8)bench[String(k++)]=u.id;
   p.board=board;p.bench=bench;

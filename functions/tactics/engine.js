@@ -206,7 +206,7 @@ function createEngine(C){
    if(manaTick){u.mana=Math.min(u.manaMax,u.mana+manaTick);emit({t,actor:u.id,type:'mana',amount:u.mana,max:u.manaMax,source:'item'});}
     if(u.cloneRatio&&!u.shadowUsed&&u.hp<u.maxHp*.5&&units.length<32){u.shadowUsed=true;const positions=[[1,0],[-1,0],[0,1],[0,-1]];
       const free=positions.map(([dx,dy])=>({x:u.x+dx,y:u.y+dy})).find(p=>p.x>=0&&p.x<8&&p.y>=0&&p.y<8&&!units.some(v=>v.alive&&v.x===p.x&&v.y===p.y));
-      if(free){const cloneUnit={...u,id:u.id+"_shadow",...free,maxHp:u.maxHp*u.cloneRatio,hp:u.maxHp*u.cloneRatio,attack:u.attack*u.cloneRatio,cloneRatio:0,shadowUsed:true,shield:0};units.push(cloneUnit);emit({t,actor:cloneUnit.id,type:"shield"});}
+      if(free){const cloneUnit={...u,id:u.id+"_shadow",...free,maxHp:u.maxHp*u.cloneRatio,hp:u.maxHp*u.cloneRatio,attack:u.attack*u.cloneRatio,cloneRatio:0,shadowUsed:true,shield:0,baseShield:0,shieldLayers:[]};units.push(cloneUnit);emit({t,actor:cloneUnit.id,type:"shield"});}
     }
     const foes=units.filter(v=>v.alive&&v.owner!==u.owner);if(!foes.length)break;
     foes.sort((x,y)=>dist(u,x)-dist(u,y)||x.id.localeCompare(y.id));const target=foes[0];

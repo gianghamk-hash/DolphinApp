@@ -472,6 +472,11 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     var url = GAME_URLS[gameKey];
     if (!url){ alert('Game không tồn tại: ' + gameKey); return; }
     currentGame = gameKey;
+    // APK: landscape is reserved for TFT; all other app surfaces remain portrait.
+    try { if (window.AndroidGame) {
+      if (gameKey === 'dolphin-tactics-online') window.AndroidGame.enterLandscapeFullscreen();
+      else window.AndroidGame.exitLandscapeFullscreen();
+    }} catch(e) { console.warn('[Arcade] orientation',e); }
 
     // ✅ Khóa scroll + fullscreen cho Snake
     if (LOCK_SCROLL_GAMES.indexOf(gameKey) !== -1){
@@ -510,6 +515,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     var frame=document.getElementById('gameFrame');
     if(!frame||ev.source!==frame.contentWindow||ev.origin!==location.origin)return;
     if(!ev.data||!['dolphin-tactics-fullscreen','dolphin-arcade-fullscreen'].includes(ev.data.type))return;
+    if(ev.data.type==='dolphin-tactics-fullscreen' && currentGame!=='dolphin-tactics-online')return;
     var view=document.getElementById('gameIframeView');
     if(!view)return;
     view.classList.toggle('fullscreen',!!ev.data.enabled);
@@ -519,13 +525,15 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     try {
       var androidBridge=window.AndroidGame;
       if(androidBridge){
-        if(ev.data.enabled && typeof androidBridge.enterLandscapeFullscreen==='function')androidBridge.enterLandscapeFullscreen();
-        if(!ev.data.enabled && typeof androidBridge.exitLandscapeFullscreen==='function')androidBridge.exitLandscapeFullscreen();
+        if(currentGame==='dolphin-tactics-online'){
+          if(typeof androidBridge.enterLandscapeFullscreen==='function')androidBridge.enterLandscapeFullscreen();
+        }
       }
     } catch(err){ console.warn('[Arcade] Native fullscreen bridge unavailable',err); }
   });
   window.closeGame = function(){
     if (!currentGame) return;
+    try { window.AndroidGame?.exitLandscapeFullscreen?.(); } catch(e) { console.warn('[Arcade] portrait restore',e); }
     currentGame = null;
     var frame = document.getElementById('gameFrame');
     if (frame) frame.src = 'about:blank';

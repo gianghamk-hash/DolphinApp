@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.194",
+      "releaseDate": "2026-10-29T12:54:51.629Z",
+      "summary": "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029",
+      "details": [
+        "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029"
+      ]
+    },
+    {
       "version": "1.0.193",
       "releaseDate": "2026-10-29T12:49:31.292Z",
       "summary": "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029",
@@ -390,14 +398,6 @@
       "summary": "feat(tft): 30s combat and smart gold shop hints",
       "details": [
         "feat(tft): 30s combat and smart gold shop hints"
-      ]
-    },
-    {
-      "version": "1.0.144",
-      "releaseDate": "2026-10-28T02:33:43.759Z",
-      "summary": "feat(tft): refreshed arena, hero shop and armory UI",
-      "details": [
-        "feat(tft): refreshed arena, hero shop and armory UI"
       ]
     }
   ]

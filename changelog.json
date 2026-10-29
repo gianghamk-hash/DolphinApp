@@ -1,30 +1,26 @@
 {
-  "version": "1.0.172",
-  "previousVersion": "1.0.171",
-  "commit": "31a185b",
-  "previousCommit": "f8b007e",
-  "buildDate": "2026-10-29T02:14:02.595Z",
-  "summary": "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029",
+  "version": "1.0.173",
+  "previousVersion": "1.0.172",
+  "commit": "21879c3",
+  "previousCommit": "31a185b",
+  "buildDate": "2026-10-29T03:08:25.137Z",
+  "summary": "Merge pull request #113 from gianghamk-hash/balance/tft-role-stats-cost1-tank-20261029",
   "changes": {
-    "totalCommits": 176,
-    "filesChanged": 3,
+    "totalCommits": 177,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029"
+    "Merge pull request #113 from gianghamk-hash/balance/tft-role-stats-cost1-tank-20261029"
   ],
   "fileChanges": [
     {
+      "file": "functions/tactics/catalog.json",
+      "type": "update"
+    },
+    {
       "file": "functions/tactics/engine.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/extreme-ai.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/stress.test.js",
       "type": "update"
     }
   ]

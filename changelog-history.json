@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.172",
+      "releaseDate": "2026-10-29T02:14:02.595Z",
+      "summary": "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029",
+      "details": [
+        "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029"
+      ]
+    },
+    {
       "version": "1.0.171",
       "releaseDate": "2026-10-29T02:03:42.243Z",
       "summary": "Merge pull request #111 from gianghamk-hash/fix/tft-ai-render-stability-package-c-20261029",
@@ -390,14 +398,6 @@
       "summary": "style(arcade): visual polish for seven games except TFT",
       "details": [
         "style(arcade): visual polish for seven games except TFT"
-      ]
-    },
-    {
-      "version": "1.0.122",
-      "releaseDate": "2026-10-26T18:03:56.760Z",
-      "summary": "balance(tactics): 20-second combat and class-based HP/damage",
-      "details": [
-        "balance(tactics): 20-second combat and class-based HP/damage"
       ]
     }
   ]

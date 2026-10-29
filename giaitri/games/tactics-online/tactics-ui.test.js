@@ -143,3 +143,10 @@ test('combat replay uses engine initial stats and displays burn damage plus conc
  assert.match(html,/Object\.entries\(effects\)\.filter/);
  assert.match(html,/statuses\[e\.type\]=Math\.max/);
 });
+
+test('rendering retains Three.js models when online state changes without board changes',()=>{
+ assert.match(html,/const boardSignature=\(\)=>/);
+ assert.match(html,/signature!==lastBoardSignature/);
+ assert.match(html,/lastBoardSignature=signature;renderBoard\(\)/);
+ assert.doesNotMatch(html,/else if\(state\.roundPhase==='PREPARATION'\)renderBoard\(\)/);
+});

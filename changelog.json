@@ -1,24 +1,20 @@
 {
-  "version": "1.0.195",
-  "previousVersion": "1.0.194",
-  "commit": "1cf6ea2",
-  "previousCommit": "1e480e0",
-  "buildDate": "2026-10-29T12:59:28.932Z",
-  "summary": "Merge pull request #136 from gianghamk-hash/fix/tft-one-gold-resale-20261029",
+  "version": "1.0.196",
+  "previousVersion": "1.0.195",
+  "commit": "5d2fd0f",
+  "previousCommit": "1cf6ea2",
+  "buildDate": "2026-10-29T13:03:30.070Z",
+  "summary": "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029",
   "changes": {
-    "totalCommits": 199,
-    "filesChanged": 2,
+    "totalCommits": 200,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #136 from gianghamk-hash/fix/tft-one-gold-resale-20261029"
+    "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029"
   ],
   "fileChanges": [
-    {
-      "file": "functions/tactics/engine.js",
-      "type": "update"
-    },
     {
       "file": "giaitri/games/tactics-online/index.html",
       "type": "update"

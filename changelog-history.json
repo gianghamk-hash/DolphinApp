@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.195",
+      "releaseDate": "2026-10-29T12:59:28.932Z",
+      "summary": "Merge pull request #136 from gianghamk-hash/fix/tft-one-gold-resale-20261029",
+      "details": [
+        "Merge pull request #136 from gianghamk-hash/fix/tft-one-gold-resale-20261029"
+      ]
+    },
+    {
       "version": "1.0.194",
       "releaseDate": "2026-10-29T12:54:51.629Z",
       "summary": "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029",
@@ -390,14 +398,6 @@
       "summary": "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels",
       "details": [
         "feat(tft): touch item tray, pinch zoom, PvE and PvP phase labels"
-      ]
-    },
-    {
-      "version": "1.0.145",
-      "releaseDate": "2026-10-28T02:48:38.864Z",
-      "summary": "feat(tft): 30s combat and smart gold shop hints",
-      "details": [
-        "feat(tft): 30s combat and smart gold shop hints"
       ]
     }
   ]

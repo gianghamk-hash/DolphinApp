@@ -1,7 +1,7 @@
 {
-  "version": "1.0.195",
-  "buildDate": "2026-10-29T12:59:28.932Z",
-  "commit": "1cf6ea2",
-  "notes": "Merge pull request #136 from gianghamk-hash/fix/tft-one-gold-resale-20261029",
+  "version": "1.0.196",
+  "buildDate": "2026-10-29T13:03:30.070Z",
+  "commit": "5d2fd0f",
+  "notes": "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029",
   "forceUpdate": false
 }

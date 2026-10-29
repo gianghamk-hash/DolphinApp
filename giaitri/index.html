@@ -409,6 +409,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
       <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')"><span><i class="ic ic-shield"></i></span> TƯỚNG</button>
       <button class="tab-btn" data-lb="chess" onclick="showLB('chess')"><span><i class="ic ic-crown"></i></span> VUA</button>
       <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')"><span><i class="ic ic-hash"></i></span> 2048</button>
+      <button class="tab-btn" data-lb="dolphin-tactics" onclick="showLB('dolphin-tactics')"><span>⚔️</span> TFT</button>
     </div>
 
     <div class="glass rounded-2xl p-4">
@@ -422,7 +423,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         <div class="text-center py-8 text-teal-500 text-[12px] font-bold">Đang tải...</div>
       </div>
       <div class="text-center text-[10px] text-teal-500 mt-3 italic">
-        <i class="ic ic-bulb"></i> Chỉ tính điểm khi có tên nhân viên · Cập nhật realtime
+        <i class="ic ic-bulb"></i> TFT: điểm Online tạm tính theo tài khoản thiết bị, chưa xác thực máy chủ · Làm mới định kỳ
       </div>
     </div>
   </div>
@@ -672,7 +673,8 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     chess:              { icon: '<i class="ic ic-crown"></i>',    title: 'CỜ VUA',            type: 'win' },
     game2048:           { icon: '<i class="ic ic-hash"></i>',   title: '2048',              type: 'score' },
     xiangqi:            { icon: '<i class="ic ic-shield"></i>',   title: 'CỜ TƯỚNG',          type: 'win' },
-    caro:               { icon: '<i class="ic ic-gamepad"></i>',   title: 'CỜ CARO',           type: 'win' }
+    caro:               { icon: '<i class="ic ic-gamepad"></i>',   title: 'CỜ CARO',           type: 'win' },
+    'dolphin-tactics':{ icon: '⚔️', title: 'DOLPHIN TACTICS · KING OF TFT', type: 'tft' }
   };
 
   function $(id){ return document.getElementById(id); }
@@ -727,7 +729,9 @@ body>.sticky button:first-child:active{transform:scale(.86)}
 
       var html = '<div style="overflow-x:auto"><table class="lb-table"><thead><tr>';
       html += '<th>#</th><th>Người chơi</th>';
-      if (meta.type === 'win'){
+      if (meta.type === 'tft'){
+        html += '<th class="num">Điểm</th><th class="num">Top 1</th><th class="num">Trận</th><th class="num">Hạng TB</th>';
+      } else if (meta.type === 'win'){
         html += '<th style="text-align:center">Thắng</th>';
         html += '<th style="text-align:center">Thua</th>';
         html += '<th style="text-align:center">Tỉ lệ</th>';
@@ -744,7 +748,12 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         html += '<tr class="' + (isMe ? 'me' : '') + '">';
         html += '<td class="rank ' + (i < 3 ? 'top' : '') + '">' + medal + '</td>';
         html += '<td class="' + (isMe ? 'me' : '') + '">' + esc(r.player) + (isMe ? ' <span style="font-size:9px;opacity:.7">(BẠN)</span>' : '') + '</td>';
-        if (meta.type === 'win'){
+        if (meta.type === 'tft'){
+          html += '<td class="num gold">' + (r.totalScore || 0) + '</td>';
+          html += '<td class="num good">' + (r.wins || 0) + '</td>';
+          html += '<td class="num">' + (r.totalGames || 0) + '</td>';
+          html += '<td class="num">' + (r.totalGames ? ((r.totalPlacement || 0)/r.totalGames).toFixed(2) : '—') + '</td>';
+        } else if (meta.type === 'win'){
           var total = (r.wins || 0) + (r.losses || 0);
           var rate = total > 0 ? Math.round((r.wins || 0) / total * 100) : 0;
           html += '<td class="num good">' + (r.wins || 0) + '</td>';
@@ -762,6 +771,9 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     });
   }
 
+  if(location.hash === '#tft-ranking'){
+    window.addEventListener('load',function(){showTab('leaderboard');showLB('dolphin-tactics');},{once:true});
+  }
   setInterval(function(){
     var tab = document.getElementById('tab-leaderboard');
     if (tab && !tab.classList.contains('hidden')) renderLB(currentLBGame);

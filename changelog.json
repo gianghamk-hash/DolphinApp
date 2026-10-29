@@ -1,22 +1,22 @@
 {
-  "version": "1.0.192",
-  "previousVersion": "1.0.191",
-  "commit": "8f25398",
-  "previousCommit": "77dc17b",
-  "buildDate": "2026-10-29T12:36:08.110Z",
-  "summary": "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029",
+  "version": "1.0.193",
+  "previousVersion": "1.0.192",
+  "commit": "bdde841",
+  "previousCommit": "8f25398",
+  "buildDate": "2026-10-29T12:49:31.292Z",
+  "summary": "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029",
   "changes": {
-    "totalCommits": 196,
+    "totalCommits": 197,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029"
+    "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/index.html",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     }
   ]

@@ -71,7 +71,8 @@ test('three bots pursue distinct economy, tempo and adaptive strategies',()=>{
 test('nine backline units get unique valid board positions',()=>{
  const r=E.roomNew('AI_1','AI',100,25),p=r.players.AI_1;
  p.level=9;p.units={};p.board={};p.bench={};
- for(let i=0;i<9;i++){const h=E.C.heroes.find(x=>x.range>1&&x.id!==Object.values(p.units).map(v=>v.heroId)[0])||E.C.heroes[2];p.units['u'+i]={id:'u'+i,heroId:h.id,star:1,items:[]};}
+ const ranged=E.C.heroes.filter(h=>h.range>1);assert.ok(ranged.length>=9);
+ for(let i=0;i<9;i++){const h=ranged[i];p.units['u'+i]={id:'u'+i,heroId:h.id,star:1,items:[]};}
  const threat=AI.opponentThreat(r,'AI_1');
  // Exercise the same plan through a normal turn; enough roster to fill nine slots.
  r.status='in_game';r.phaseEndsAt=30100;

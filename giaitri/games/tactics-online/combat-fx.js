@@ -2,7 +2,7 @@
 (function(root){'use strict';
 function createCombatFX(T){
  const active=[],pool=[];const POOL_LIMIT=28;
- function acquire(geometry,color){const mesh=pool.pop()||new T.Mesh(geometry,new T.MeshBasicMaterial({transparent:true,depthWrite:false,side:T.DoubleSide}));mesh.geometry=geometry;mesh.material.color.set(color);mesh.material.opacity=.85;mesh.scale.setScalar(1);return mesh;}
+ function acquire(geometry,color){const mesh=pool.pop()||new T.Mesh(geometry,new T.MeshBasicMaterial({transparent:true,depthWrite:false,side:T.DoubleSide}));mesh.geometry=geometry;if(mesh.material.color?.set)mesh.material.color.set(color);mesh.material.opacity=.85;mesh.scale.setScalar(1);return mesh;}
  function release(mesh){mesh.parent?.remove(mesh);if(pool.length<POOL_LIMIT)pool.push(mesh);else mesh.material.dispose();}
  const MAX_FX=28;
  const ringGeometry=new T.RingGeometry(.3,.42,20);

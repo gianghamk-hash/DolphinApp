@@ -163,3 +163,31 @@ test('TFT arena uses shared staff identity and exposes online, offline, guide an
  assert.match(css,/\.arenaHero/);
  assert.match(css,/prefers-reduced-motion/);
 });
+
+test('Package G asset manifest never claims non-existent support GLB assets',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const folder=path.join(__dirname,'assets/models');
+ const manifest=JSON.parse(fs.readFileSync(path.join(folder,'manifest.json'),'utf8'));
+ const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog.json'),'utf8'));
+ assert.equal(catalog.heroes.length,36);
+ assert.equal(Object.keys(manifest.heroes).length,30);
+ for(const [id,entry] of Object.entries(manifest.heroes)){
+  assert.ok(catalog.heroes.some(h=>h.id===id));
+  assert.ok(entry.file&&entry.quality==='stylized-chibi');
+ }
+});
+test('Package G limits model concurrency and ignores late model loads',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const js=fs.readFileSync(path.join(__dirname,'model-loader.js'),'utf8');
+ assert.match(js,/MAX_SIMULTANEOUS_LOADS=3/);
+ assert.match(js,/MAX_ASSET_CACHE=18/);
+ assert.match(js,/holder\.userData\.modelGeneration!==generation/);
+ assert.match(js,/ids\.slice\(0,8\)/);
+});
+test('Package G FX reuse and hidden animation optimization',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const fx=fs.readFileSync(path.join(__dirname,'combat-fx.js'),'utf8');
+ const motion=fs.readFileSync(path.join(__dirname,'animation.js'),'utf8');
+ assert.match(fx,/function acquire\(/);assert.match(fx,/function release\(/);
+ assert.match(motion,/if\(!node\.parent\|\|!node\.visible\)continue/);
+});

@@ -1,24 +1,20 @@
 {
-  "version": "1.0.181",
-  "previousVersion": "1.0.180",
-  "commit": "3dfdc9a",
-  "previousCommit": "619f894",
-  "buildDate": "2026-10-29T06:08:02.968Z",
-  "summary": "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029",
+  "version": "1.0.182",
+  "previousVersion": "1.0.181",
+  "commit": "2329430",
+  "previousCommit": "3dfdc9a",
+  "buildDate": "2026-10-29T06:22:37.704Z",
+  "summary": "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029",
   "changes": {
-    "totalCommits": 185,
-    "filesChanged": 3,
+    "totalCommits": 186,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029"
+    "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029"
   ],
   "fileChanges": [
-    {
-      "file": "giaitri/games/tactics-online/guide.js",
-      "type": "update"
-    },
     {
       "file": "giaitri/games/tactics-online/index.html",
       "type": "update"

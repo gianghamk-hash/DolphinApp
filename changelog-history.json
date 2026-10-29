@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.181",
+      "releaseDate": "2026-10-29T06:08:02.968Z",
+      "summary": "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029",
+      "details": [
+        "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029"
+      ]
+    },
+    {
       "version": "1.0.180",
       "releaseDate": "2026-10-29T05:59:11.941Z",
       "summary": "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(landing): transparent royal glass and TOP 1 label",
       "details": [
         "fix(landing): transparent royal glass and TOP 1 label"
-      ]
-    },
-    {
-      "version": "1.0.131",
-      "releaseDate": "2026-10-27T04:55:01.861Z",
-      "summary": "feat(landing): premium glass royal cards with flaming titles",
-      "details": [
-        "feat(landing): premium glass royal cards with flaming titles"
       ]
     }
   ]

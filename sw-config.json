@@ -1,5 +1,5 @@
 {
-  "version": "1.0.181",
+  "version": "1.0.182",
   "releaseDate": "2026-10-29",
-  "notes": "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029"
+  "notes": "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029"
 }

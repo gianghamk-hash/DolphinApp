@@ -110,7 +110,7 @@ test('online guests wait for acknowledgement and do not overlap inputs',()=>{
  assert.match(html,/function settleOnlineAction\(snapshot\)/);
  assert.match(html,/if\(!ack\|\|ack\.sequence!==onlinePending\.sequence\|\|ack\.actionId!==uid\+':'\+onlinePending\.sequence\)return/);
  assert.match(html,/setTimeout\(\(\)=>\{if\(onlinePending!==pending\)return/);
- assert.match(html,/return sendOnlineAction\(action\)/);
+ assert.match(html,/return await authority\.action\(action\)/);
 });
 
 test('phase 4 combat statistics are bounded and derived from replay events',()=>{

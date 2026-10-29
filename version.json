@@ -1,7 +1,7 @@
 {
-  "version": "1.0.208",
-  "buildDate": "2026-10-29T14:39:25.247Z",
-  "commit": "e8d547a",
-  "notes": "Merge pull request #149 from gianghamk-hash/fix/tft-apk-lobby-scroll-fullscreen-20261029",
+  "version": "1.0.209",
+  "buildDate": "2026-10-29T14:50:18.904Z",
+  "commit": "978865c",
+  "notes": "Merge pull request #150 from gianghamk-hash/fix/show-manager-master-delete-20261029",
   "forceUpdate": false
 }

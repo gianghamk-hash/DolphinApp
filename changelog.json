@@ -1,26 +1,22 @@
 {
-  "version": "1.0.208",
-  "previousVersion": "1.0.207",
-  "commit": "e8d547a",
-  "previousCommit": "b8607ef",
-  "buildDate": "2026-10-29T14:39:25.247Z",
-  "summary": "Merge pull request #149 from gianghamk-hash/fix/tft-apk-lobby-scroll-fullscreen-20261029",
+  "version": "1.0.209",
+  "previousVersion": "1.0.208",
+  "commit": "978865c",
+  "previousCommit": "e8d547a",
+  "buildDate": "2026-10-29T14:50:18.904Z",
+  "summary": "Merge pull request #150 from gianghamk-hash/fix/show-manager-master-delete-20261029",
   "changes": {
-    "totalCommits": 212,
-    "filesChanged": 2,
+    "totalCommits": 213,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #149 from gianghamk-hash/fix/tft-apk-lobby-scroll-fullscreen-20261029"
+    "Merge pull request #150 from gianghamk-hash/fix/show-manager-master-delete-20261029"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/index.html",
+      "file": "dolphin-show.html",
       "type": "update"
     }
   ]

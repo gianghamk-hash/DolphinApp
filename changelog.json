@@ -1,18 +1,18 @@
 {
-  "version": "1.0.202",
-  "previousVersion": "1.0.201",
-  "commit": "3120ed4",
-  "previousCommit": "df35070",
-  "buildDate": "2026-10-29T13:59:27.086Z",
-  "summary": "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029",
+  "version": "1.0.203",
+  "previousVersion": "1.0.202",
+  "commit": "c791388",
+  "previousCommit": "3120ed4",
+  "buildDate": "2026-10-29T14:09:43.106Z",
+  "summary": "Merge pull request #144 from gianghamk-hash/fix/tft-phase-banner-nonblocking-20261029",
   "changes": {
-    "totalCommits": 206,
+    "totalCommits": 207,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029"
+    "Merge pull request #144 from gianghamk-hash/fix/tft-phase-banner-nonblocking-20261029"
   ],
   "fileChanges": [
     {

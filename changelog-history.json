@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.202",
+      "releaseDate": "2026-10-29T13:59:27.086Z",
+      "summary": "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029",
+      "details": [
+        "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029"
+      ]
+    },
+    {
       "version": "1.0.201",
       "releaseDate": "2026-10-29T13:51:05.725Z",
       "summary": "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #93 from gianghamk-hash/feat/tft-phase3-combat-feedback-20261028",
       "details": [
         "Merge pull request #93 from gianghamk-hash/feat/tft-phase3-combat-feedback-20261028"
-      ]
-    },
-    {
-      "version": "1.0.152",
-      "releaseDate": "2026-10-28T05:58:30.419Z",
-      "summary": "Merge pull request #92 from gianghamk-hash/fix/tft-entry-module-duplicate-20261028",
-      "details": [
-        "Merge pull request #92 from gianghamk-hash/fix/tft-entry-module-duplicate-20261028"
       ]
     }
   ]

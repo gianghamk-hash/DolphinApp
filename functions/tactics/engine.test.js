@@ -283,3 +283,6 @@ test('replay exposes buffed initial unit stats and effective combat events',()=>
  assert.ok(result.events.some(e=>e.type==='skill'||e.type==='attack'));
  assert.ok(result.events.filter(e=>e.type==='heal'||e.type==='damageTick').every(e=>Number.isFinite(e.amount)&&e.amount>=0));
 });
+
+// Package D deterministic stress suite runs in engine CI.
+require('../../giaitri/games/tactics-online/stress.test.js');

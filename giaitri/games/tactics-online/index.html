@@ -180,7 +180,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
 <div id="overlay">
-<h2>🐉 DOLPHIN TACTICS 3D</h2><div class="grid" style="margin:12px 0"><button class="gold" onclick="startOffline()">OFFLINE</button><button onclick="chooseOnline()">ONLINE</button></div>
+<section class="arenaHero" aria-label="Dolphin Tactics Arena"><div class="arenaSigil" aria-hidden="true">⚔</div><p class="arenaEyebrow">DOLPHIN · TACTICAL ARENA</p><h2>DOLPHIN <span>TACTICS</span></h2><p class="arenaMotto">TRIỆU HỒI · BỐ TRẬN · CHINH PHỤC</p><p class="arenaSummary">36 TƯỚNG ✦ 12 TỘC/HỆ ✦ 21 CÔNG THỨC</p><div class="arenaBoard" aria-hidden="true"><span>♜</span><span>♞</span><span>✧</span><span>♛</span><span>♞</span></div><div class="arenaIdentity"><span>CHIẾN BINH DOLPHIN</span><strong id="arenaStaffName">Đang đồng bộ tên nhân viên…</strong><small id="arenaStaffHint">Danh tính dùng chung với app Giải Trí</small></div><div class="arenaActions"><button class="gold" onclick="chooseOnline()">⚔ ONLINE · 4 NGƯỜI</button><button onclick="startOffline()">✦ OFFLINE · 3 AI</button><button onclick="openTacticsGuide('gameplay')">📖 CẨM NANG</button><button onclick="openTacticsRanking()">🏆 BXH TFT</button></div><div class="arenaPillars"><span>♟ BỐ TRẬN</span><span>⚡ KỸ NĂNG</span><span>✧ KÍCH HỆ</span><span>🛡 TRANG BỊ</span></div></section>
 
 
 <section id="guideMenu" aria-label="Hướng dẫn chơi">
@@ -196,7 +196,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
  </div>
  </section>
  <div id="lobby" class="hidden">
-<input id="nick" maxlength="32" placeholder="Tên người chơi" value="Khách Dolphin"/>
+<input id="nick" maxlength="32" aria-label="Tên nhân viên Dolphin" readonly placeholder="Chưa đồng bộ tên nhân viên"/><div class="small" id="staffIdentityNotice">Tên lấy từ hệ thống nhân viên Dolphin, không chỉnh sửa tại TFT.</div>
 <div class="flex" style="margin-top:10px"><button class="gold" onclick="createRoom()">TẠO PHÒNG</button><input id="code" placeholder="MÃ PHÒNG 6 KÝ TỰ" maxlength="6" style="max-width:180px;text-transform:uppercase"/><button onclick="joinRoom()">THAM GIA</button></div>
 <div id="lobbyStatus" class="small" style="margin-top:12px"></div><div id="networkStatus" role="status" class="small" style="margin-top:4px"></div><button id="reconnectBtn" class="hidden" onclick="reconnectRoom()">↻ KẾT NỐI LẠI PHÒNG</button>
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
@@ -223,7 +223,7 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
-<script src="../../../dolphin-multiplayer.js?v=2.0"></script>
+<script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="../../../dolphin-multiplayer.js?v=2.0"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script type="module">
 import * as THREE from "https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js";
@@ -270,6 +270,11 @@ const combatMetrics=new Map(),combatStatuses=new Map();let lastMetricPaint=0;
 let lastBoardSignature='',seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
+function staffName(){return (window.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'').trim();}
+function syncArenaIdentity(){const name=staffName();$('nick').value=name;$('arenaStaffName').textContent=name||'CHƯA ĐỒNG BỘ NHÂN VIÊN';$('arenaStaffHint').textContent=name?'Tên được đồng bộ từ hệ thống Dolphin':'Hãy thiết lập tên trong ứng dụng Dolphin trước khi chơi';return name;}
+window.addEventListener('dolphinStaffNameChanged',syncArenaIdentity);
+function requireStaff(){const name=syncArenaIdentity();if(!name){info('⚠ Chưa có tên nhân viên. Hãy xác nhận tên trong DolphinApp trước.');return '';}return name;}
+window.openTacticsRanking=()=>{window.open('../../index.html#tft-ranking','_blank','noopener');};
 function onlineMessage(message,problem=false){
  $("networkStatus").textContent=message;
  $("networkStatus").style.color=problem?'#ffc181':'#8eeacb';
@@ -279,7 +284,7 @@ window.reconnectRoom=async()=>{
  try{
   const data=JSON.parse(localStorage.getItem(reconnectKey)||'null');
   if(!data?.code)throw Error('Chưa có phòng để kết nối lại');
-  $('code').value=data.code;$('nick').value=data.name||$('nick').value;
+  $('code').value=data.code;syncArenaIdentity();
   await window.joinRoom();
  }catch(e){showError(e);}
 };
@@ -308,7 +313,8 @@ window.startOffline=()=>{
  if(MP.getRoomId())return showError(Error('Rời phòng Online trước khi chơi Offline'));
  offline=true;host=true;uid='OFFLINE_HUMAN';roomId='';
  const now=Date.now(),seed=Math.floor(Math.random()*2147483647)||1;
- const ppl=[{id:uid,name:$('nick').value.trim()||'Người chơi'},{id:'AI_1',name:'AI 1'},{id:'AI_2',name:'AI 2'},{id:'AI_3',name:'AI 3'}];
+ const name=requireStaff();if(!name)return;
+ const ppl=[{id:uid,name},{id:'AI_1',name:'AI 1'},{id:'AI_2',name:'AI 2'},{id:'AI_3',name:'AI 3'}];
  const room=E.roomNew(uid,ppl[0].name,now,seed);room.playerOrder=ppl.map(p=>p.id);room.players={};
  for(const p of ppl)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
  room.status='in_game';room.phaseStartedAt=now;room.phaseEndsAt=now+30000;
@@ -441,15 +447,15 @@ function sendOnlineAction(action){
  });
 }
 window.createRoom=async()=>{
- try{if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
-  const r=await MP.createRoom('dolphin-tactics',{name:$('nick').value.trim()||'Khách',maxPlayers:4});
-  roomId=r.roomId;uid=MP.getDeviceId();host=true;$('code').value=roomId;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:$('nick').value.trim()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Mã phòng '+roomId+' — mời thêm 3 người');}
+ try{if(!requireStaff())return;if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
+  const r=await MP.createRoom('dolphin-tactics',{name:staffName(),maxPlayers:4});
+  roomId=r.roomId;uid=MP.getDeviceId();host=true;$('code').value=roomId;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:staffName()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Mã phòng '+roomId+' — mời thêm 3 người');}
  catch(e){showError(e);}
 };
 window.joinRoom=async()=>{
- try{if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
-  const r=await MP.joinRoom($('code').value.trim().toUpperCase(),'dolphin-tactics',{name:$('nick').value.trim()||'Khách'});
-  roomId=r.roomId;uid=MP.getDeviceId();host=!!r.isHost;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:$('nick').value.trim()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Đã vào phòng '+roomId);}
+ try{if(!requireStaff())return;if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
+  const r=await MP.joinRoom($('code').value.trim().toUpperCase(),'dolphin-tactics',{name:staffName()});
+  roomId=r.roomId;uid=MP.getDeviceId();host=!!r.isHost;localStorage.setItem(reconnectKey,JSON.stringify({code:roomId,name:staffName()}));$('reconnectBtn').classList.add('hidden');connectionWatch();info('Đã vào phòng '+roomId);}
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
@@ -479,7 +485,7 @@ function init(){
  try{
   if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
   window.db=firebase.firestore();
-  uid=MP.getDeviceId();setupMP();
+  uid=MP.getDeviceId();setupMP();syncArenaIdentity();
   try{const saved=JSON.parse(localStorage.getItem(reconnectKey)||'null');if(saved?.code){$('code').value=saved.code;$('lobby').classList.remove('hidden');$('reconnectBtn').classList.remove('hidden');onlineMessage('Có thể kết nối lại phòng '+saved.code);}}catch(e){}
   info('Chọn chế độ Offline hoặc Online để bắt đầu.');
  }catch(e){showError(e);}

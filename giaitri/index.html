@@ -291,6 +291,10 @@ body>.sticky button:first-child:active{transform:scale(.86)}
 @media(min-width:430px){.arcade-grid{grid-template-columns:repeat(4,minmax(0,1fr));column-gap:12px}}
 @media(max-width:345px){.arcade-grid{column-gap:5px}.arcade-icon{min-width:56px;min-height:56px}.arcade-label{font-size:10px}.arcade-featured{padding:12px;gap:9px}.featured-art{width:64px;height:64px;flex-basis:64px;font-size:38px}}
 @media(prefers-reduced-motion:reduce){.arcade-icon{transition:none}}
+/* Android TFT opens in a viewport-height frame, with back navigation retained. */
+#gameIframeView.tactics-apk-open{position:fixed!important;inset:0!important;z-index:9999!important;display:flex!important;flex-direction:column!important;overflow:hidden!important;background:#071824!important;padding:0!important;margin:0!important}
+#gameIframeView.tactics-apk-open .game-frame-wrap{flex:1 1 0!important;min-height:0!important;height:auto!important;overflow:hidden!important}
+#gameIframeView.tactics-apk-open iframe{width:100%!important;height:100%!important;touch-action:auto!important}
 </style>
 </head>
 <body>
@@ -472,6 +476,13 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     var url = GAME_URLS[gameKey];
     if (!url){ alert('Game không tồn tại: ' + gameKey); return; }
     currentGame = gameKey;
+    // Embedded TFT needs a viewport-sized iframe from the moment it opens.
+    // Keep the parent back button visible on the landing screen.
+    var gameView=document.getElementById('gameIframeView');
+    if(gameKey==='dolphin-tactics-online' && /DolphinStaff|DolphinManager/i.test(navigator.userAgent||'')){
+      gameView.classList.add('fullscreen','tactics-apk-open');
+      gameView.classList.remove('tactics-immersive');
+    }
     // APK: landscape is reserved for TFT; all other app surfaces remain portrait.
     try { if (window.AndroidGame) {
       if (gameKey === 'dolphin-tactics-online') window.AndroidGame.enterLandscapeFullscreen();
@@ -518,8 +529,11 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     if(ev.data.type==='dolphin-tactics-fullscreen' && currentGame!=='dolphin-tactics-online')return;
     var view=document.getElementById('gameIframeView');
     if(!view)return;
-    view.classList.toggle('fullscreen',!!ev.data.enabled);
-    view.classList.toggle('tactics-immersive',!!ev.data.enabled);
+    var isTft=currentGame==='dolphin-tactics-online';
+    var apkTft=isTft && /DolphinStaff|DolphinManager/i.test(navigator.userAgent||'');
+    view.classList.toggle('fullscreen',apkTft||!!ev.data.enabled);
+    // Preserve a visible parent exit button while still on the TFT lobby.
+    view.classList.toggle('tactics-immersive',!!ev.data.enabled && !!ev.data.inGame);
     // Only the same-origin Tactics frame can request native immersive mode.
     // Android host must explicitly provide this bridge in its APK build.
     try {
@@ -539,7 +553,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     if (frame) frame.src = 'about:blank';
     document.getElementById('gameIframeView').classList.add('hidden');
     document.getElementById('gameIframeView').classList.remove('fullscreen'); // ✅ tắt fullscreen
-    document.getElementById('gameIframeView').classList.remove('tactics-immersive');
+    document.getElementById('gameIframeView').classList.remove('tactics-immersive','tactics-apk-open');
     document.getElementById('gameMenuView').classList.remove('hidden');
     document.documentElement.classList.remove('game-locked');
     document.body.classList.remove('game-locked');

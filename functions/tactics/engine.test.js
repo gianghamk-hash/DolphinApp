@@ -317,7 +317,10 @@ test('every champion has a distinct typed signature with unique identity',()=>{
  assert.equal(entries.length,36);
  assert.equal(new Set(entries.map(s=>s.id)).size,36);
  assert.equal(new Set(entries.map(s=>s.effect+':'+s.pattern)).size,36);
- for(const s of entries){assert.ok(s.name&&s.power>0);assert.ok(['focused','sweep','chain'].includes(s.pattern));}
+ const valid={Tank:new Set(['shock','fortify','frost','guard']),Assassin:new Set(['quickstep','armorBreak','shock','sunder']),Ranger:new Set(['empower','quickstep','armorBreak','ignite','shock','spark','sunder']),Sorcerer:new Set(['ignite','frost','shock','sunder','armorBreak','spark','empower']),Support:new Set(['renew','guard','fortify','quickstep','spark','empower','siphon']),Fighter:new Set(['siphon','empower','fortify','ignite','shock','quickstep'])};
+ E.C.heroes.forEach(h=>assert.ok(valid[h.classes[0]].has(h.ability.signature.effect),h.name+' role signature'));
+
+ for(const s of entries){assert.ok(s.name&&s.power>0);assert.ok(['focused','sweep','chain','burst','arc'].includes(s.pattern));}
 });
 test('all 36 signatures create authoritative cast and visual event',()=>{
  for(const h of E.C.heroes){

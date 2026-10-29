@@ -176,6 +176,20 @@ display:grid;grid-template-columns:minmax(0,1.7fr) minmax(270px,.82fr);align-ite
 .hpInside{font-size:10px!important}.hpIdentity strong{font-size:7px!important;line-height:1.05!important}.hpIdentity small{font-size:7px!important;line-height:1.05!important}
 #lockShopBtn{min-width:39px!important;padding:7px 9px!important}#lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
 .shopIconBtn{width:43px;min-width:43px!important;height:40px;padding:5px!important;display:inline-grid;place-items:center;font-size:21px!important;line-height:1;border-radius:10px}.shopIconBtn:disabled{opacity:.35;cursor:not-allowed}#rollShopBtn:disabled{filter:grayscale(1)}#game #lockShopBtn.shopLocked{border-color:#ffdc8d!important;box-shadow:0 0 0 1px #ffdc8d inset}
+
+/* Android APK fix: readable persistent HP numbers for all human/AI players. */
+#game>section>.playerDock{width:148px!important;max-width:42vw!important;right:9px!important;top:52px!important;gap:6px!important;padding:7px!important;background:rgba(5,26,39,.93)!important;border:1px solid rgba(112,193,205,.52)!important;border-radius:13px!important;box-shadow:0 6px 18px #0008!important}
+#game>section>.playerDock .hpEntry{min-width:0!important;gap:7px!important;padding:3px 2px!important}
+#game>section>.playerDock .hpPortrait{width:31px!important;height:31px!important;flex:0 0 31px!important}
+#game>section>.playerDock .hpInside{font-size:14px!important}
+#game>section>.playerDock .hpIdentity{flex:1!important;min-width:0!important}
+#game>section>.playerDock .hpIdentity strong{font-size:11px!important;line-height:1.3!important;color:#fff!important}
+#game>section>.playerDock .hpIdentity small.hpMeta{font-size:11px!important;line-height:1.35!important;display:flex!important;gap:5px!important;align-items:center!important;flex-wrap:wrap!important}
+#game>section>.playerDock .hpValue{font-size:12px!important;font-weight:900!important;white-space:nowrap!important;color:#96f5bd!important;font-variant-numeric:tabular-nums!important}
+#game>section>.playerDock .hpEntry:not(.mine) .hpValue{color:#ffbab0!important}
+#game>section>.playerDock .hpLevel{font-size:10px!important;color:#b9d8e4!important}
+@media(max-width:390px){#game>section>.playerDock{width:138px!important;right:5px!important}#game>section>.playerDock .hpIdentity strong{font-size:10px!important}}
+@media(orientation:landscape){#game>section>.playerDock{width:144px!important;top:40px!important}}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
 <div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
@@ -513,7 +527,7 @@ function paintPlayers(){
  $('players').innerHTML=state.playerOrder.map(id=>{
   const p=state.players[id];if(!p)return '';
   const hp=Math.max(0,Math.min(100,Number(p.hp)||0)),angle=hp/100*360;
-  return '<div class="hpEntry '+(id===uid?'mine':'')+'" title="'+safe(p.displayName)+' · '+hp+' HP"><span class="hpPortrait" style="--hp:'+angle+'deg"><span class="hpInside">'+(id===uid?'🐬':'⚔')+'</span></span><span class="hpIdentity"><strong>'+safe(p.displayName)+'</strong><small>❤ '+hp+' · Lv'+p.level+'</small></span></div>';
+  return '<div class="hpEntry '+(id===uid?'mine':'')+'" title="'+safe(p.displayName)+' · '+hp+' HP"><span class="hpPortrait" style="--hp:'+angle+'deg"><span class="hpInside">'+(id===uid?'🐬':'⚔')+'</span></span><span class="hpIdentity"><strong>'+safe(p.displayName)+'</strong><small class="hpMeta"><span class="hpValue" aria-label="Máu còn lại">❤ '+hp+'/100</span><span class="hpLevel">Lv'+p.level+'</span></small></span></div>';
  }).join('');
 }
 function viewUnit(p,id){const u=p.units[id],h=u&&hero[u.heroId];return h?h.name+" ★".repeat(u.star):"Trống";}

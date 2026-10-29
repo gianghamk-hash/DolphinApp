@@ -170,7 +170,7 @@ test('Package G asset manifest never claims non-existent support GLB assets',()=
  const manifest=JSON.parse(fs.readFileSync(path.join(folder,'manifest.json'),'utf8'));
  const catalog=JSON.parse(fs.readFileSync(path.join(__dirname,'catalog.json'),'utf8'));
  assert.equal(catalog.heroes.length,36);
- assert.equal(Object.keys(manifest.heroes).length,30);
+ assert.equal(Object.keys(manifest.heroes).length,36);
  for(const [id,entry] of Object.entries(manifest.heroes)){
   assert.ok(catalog.heroes.some(h=>h.id===id));
   assert.ok(entry.file&&entry.quality==='stylized-chibi');
@@ -190,4 +190,26 @@ test('Package G FX reuse and hidden animation optimization',()=>{
  const motion=fs.readFileSync(path.join(__dirname,'animation.js'),'utf8');
  assert.match(fx,/function acquire\(/);assert.match(fx,/function release\(/);
  assert.match(motion,/if\(!node\.parent\|\|!node\.visible\)continue/);
+});
+
+test('six new Support GLBs contain valid glTF headers and distinct animation clips',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const root=path.join(__dirname,'assets/models/heroes/chibi');
+ for(let i=31;i<=36;i++){
+  const bytes=fs.readFileSync(path.join(root,'h'+i+'.glb'));
+  assert.equal(bytes.readUInt32LE(0),0x46546c67,'GLB magic H'+i);
+  assert.equal(bytes.readUInt32LE(4),2,'GLB version H'+i);
+  assert.equal(bytes.readUInt32LE(8),bytes.length,'GLB byte length H'+i);
+  assert.equal(bytes.readUInt32LE(16),0x4e4f534a);
+  const json=JSON.parse(bytes.subarray(20,20+bytes.readUInt32LE(12)).toString('utf8'));
+  assert.deepEqual(json.animations.map(x=>x.name),['idle','attack','cast']);
+  assert.ok(json.nodes.length>=14,'articulated model H'+i);
+  assert.ok(json.animations.every(x=>x.channels.length>=3));
+ }
+});
+test('Android HP rail maintains readable font size and full HP number',()=>{
+ assert.match(html,/hpValue/);
+ assert.match(html,/\/100/);
+ assert.match(html,/#game>section>\.playerDock\{width:148px!important/);
+ assert.match(html,/\.hpValue\{font-size:12px!important/);
 });

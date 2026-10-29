@@ -251,7 +251,7 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
-import {getFirestore, collection, addDoc, deleteDoc, doc, onSnapshot, getDocs, query, where, runTransaction, Timestamp, limit, startAfter } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import {getFirestore, collection, addDoc, deleteDoc, doc, getDocFromServer, onSnapshot, getDocs, query, where, runTransaction, Timestamp, limit, startAfter } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
 
 /* ===== CẤU HÌNH ===== */
 const firebaseConfig = { apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ", authDomain: "dolphin-f6d67.firebaseapp.com", projectId: "dolphin-f6d67" };
@@ -758,7 +758,11 @@ const doDeleteShow = async () => {
   }
   showDeletePending = true;
   try {
-    await deleteDoc(doc(db, COL_LIVE, key(label)));
+    const ref = doc(db, COL_LIVE, key(label));
+    await deleteDoc(ref);
+    // Verify on the server; do not mistake a local optimistic write for deletion.
+    const confirmed = await getDocFromServer(ref);
+    if (confirmed.exists()) throw new Error('Bàn vẫn tồn tại trên Firestore sau yêu cầu xóa.');
     delete bookings[key(label)];
     render();
     closeM('m-service');
@@ -772,7 +776,24 @@ const doDeleteShow = async () => {
       : code === 'failed-precondition' ? 'Firestore chưa đáp ứng điều kiện xóa (failed-precondition).'
       : 'Firestore báo lỗi: ' + (code || String(e?.message || 'không xác định'));
     toast('Không thể xóa bàn ' + label + '. ' + reason, '❌');
-    window.alert('Không thể xóa bàn ' + label + '.\\n' + reason + '\\nDữ liệu bàn chưa được xóa.');
+    // Persistent in-app dialog, independent of WebView JavaScript alert support.
+    const existing = document.getElementById('showDeleteErrorPanel');
+    if (existing) existing.remove();
+    const overlay = document.createElement('div');
+    overlay.id = 'showDeleteErrorPanel';
+    overlay.style.cssText = 'position:fixed;inset:0;z-index:2147483647;background:rgba(0,0,0,.88);display:flex;align-items:center;justify-content:center;padding:18px';
+    const card = document.createElement('div');
+    card.style.cssText = 'max-width:410px;width:100%;background:#201319;border:1px solid #f59e0b;border-radius:18px;padding:23px;color:#fff;font:14px system-ui;line-height:1.6';
+    const title = document.createElement('h3');
+    title.textContent = '❌ Chưa thể xóa bàn ' + label;
+    title.style.cssText = 'font-size:17px;font-weight:800;margin:0 0 12px';
+    const detail = document.createElement('p');
+    detail.textContent = reason + ' Dữ liệu bàn chưa được xác nhận xóa. Mã lỗi: ' + (code || 'unknown');
+    const dismiss = document.createElement('button');
+    dismiss.textContent = 'Đóng và giữ nguyên bàn';
+    dismiss.style.cssText = 'background:#f2c56d;color:#23150c;font-weight:800;border:0;border-radius:10px;width:100%;padding:13px;margin-top:12px';
+    dismiss.onclick = () => overlay.remove();
+    card.append(title,detail,dismiss);overlay.appendChild(card);document.body.appendChild(overlay);
   } finally { showDeletePending = false; }
 };
 

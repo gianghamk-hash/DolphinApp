@@ -1,7 +1,7 @@
 {
-  "version": "1.0.168",
-  "buildDate": "2026-10-29T01:20:59.794Z",
-  "commit": "b40d124",
-  "notes": "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029",
+  "version": "1.0.169",
+  "buildDate": "2026-10-29T01:55:29.925Z",
+  "commit": "63a6184",
+  "notes": "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029",
   "forceUpdate": false
 }

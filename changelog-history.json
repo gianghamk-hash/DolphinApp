@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.168",
+      "releaseDate": "2026-10-29T01:20:59.794Z",
+      "summary": "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029",
+      "details": [
+        "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029"
+      ]
+    },
+    {
       "version": "1.0.167",
       "releaseDate": "2026-10-29T01:12:26.478Z",
       "summary": "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029",
@@ -390,14 +398,6 @@
       "summary": "feat(tactics): generate remaining 29 rigged chibi heroes",
       "details": [
         "feat(tactics): generate remaining 29 rigged chibi heroes"
-      ]
-    },
-    {
-      "version": "1.0.118",
-      "releaseDate": "2026-10-26T17:17:59.771Z",
-      "summary": "fix(tactics): restore valid GLB manifest JSON",
-      "details": [
-        "fix(tactics): restore valid GLB manifest JSON"
       ]
     }
   ]

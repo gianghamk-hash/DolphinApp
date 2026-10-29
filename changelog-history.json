@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.197",
+      "releaseDate": "2026-10-29T13:09:33.509Z",
+      "summary": "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029",
+      "details": [
+        "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029"
+      ]
+    },
+    {
       "version": "1.0.196",
       "releaseDate": "2026-10-29T13:03:30.070Z",
       "summary": "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029",
@@ -390,14 +398,6 @@
       "summary": "fix(tft): synchronize trait and player HP HUD scaling (#88)",
       "details": [
         "fix(tft): synchronize trait and player HP HUD scaling (#88)"
-      ]
-    },
-    {
-      "version": "1.0.147",
-      "releaseDate": "2026-10-28T03:38:26.402Z",
-      "summary": "feat(tft): responsive trait HUD, full tier details and touch-only equipment",
-      "details": [
-        "feat(tft): responsive trait HUD, full tier details and touch-only equipment"
       ]
     }
   ]

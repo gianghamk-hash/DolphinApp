@@ -1,7 +1,7 @@
 {
-  "version": "1.0.197",
-  "buildDate": "2026-10-29T13:09:33.509Z",
-  "commit": "65879c6",
-  "notes": "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029",
+  "version": "1.0.198",
+  "buildDate": "2026-10-29T13:15:30.768Z",
+  "commit": "5b89df9",
+  "notes": "Merge pull request #139 from gianghamk-hash/fix/tft-compact-hp-rail-20261029",
   "forceUpdate": false
 }

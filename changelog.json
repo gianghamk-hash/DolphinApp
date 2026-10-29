@@ -1,18 +1,18 @@
 {
-  "version": "1.0.197",
-  "previousVersion": "1.0.196",
-  "commit": "65879c6",
-  "previousCommit": "5d2fd0f",
-  "buildDate": "2026-10-29T13:09:33.509Z",
-  "summary": "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029",
+  "version": "1.0.198",
+  "previousVersion": "1.0.197",
+  "commit": "5b89df9",
+  "previousCommit": "65879c6",
+  "buildDate": "2026-10-29T13:15:30.768Z",
+  "summary": "Merge pull request #139 from gianghamk-hash/fix/tft-compact-hp-rail-20261029",
   "changes": {
-    "totalCommits": 201,
+    "totalCommits": 202,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029"
+    "Merge pull request #139 from gianghamk-hash/fix/tft-compact-hp-rail-20261029"
   ],
   "fileChanges": [
     {

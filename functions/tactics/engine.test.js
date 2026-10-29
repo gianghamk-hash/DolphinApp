@@ -379,3 +379,31 @@ test('Package E: ranking is not based on client-submitted score or placement',()
  assert.match(ranking,/async function submitTacticsMatch\(\)/);
  assert.doesNotMatch(ranking,/recentMatches:/);
 });
+
+test('Package F: signature stat debuffs and buffs are temporary and reported',()=>{
+ const room=setup(),p=room.players.a;
+ const h=E.HERO.H03,old=h.manaStart,range=h.range;
+ p.units={caster:{id:'caster',heroId:h.id,star:1,items:[]}};
+ p.board={r0c2:'caster'};room.round=15;
+ h.manaStart=h.manaMax;h.range=8;
+ try{
+  const report=E.simulate({a:'a',b:null,pve:true},room,{a:E.clone(p)},42);
+  assert.ok(report.events.some(e=>e.type==='signatureEffect'&&e.effect==='empower'&&e.duration===3500));
+  assert.ok(report.events.some(e=>e.type==='signatureExpire'&&e.effect==='empower'));
+  assert.equal(report.events.at(-1).type,'end');
+ }finally{h.manaStart=old;h.range=range;}
+});
+test('Package F: event collector does not drop final combat event',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const code=fs.readFileSync(path.join(__dirname,'engine.js'),'utf8');
+ assert.doesNotMatch(code,/events\.length\s*<\s*1200/);
+});
+test('Authoritative adapter is registered for TFT and never sends client room state',()=>{
+ const fs=require('node:fs'),path=require('node:path');
+ const html=fs.readFileSync(path.join(__dirname,'../../giaitri/games/tactics-online/index.html'),'utf8');
+ const adapter=fs.readFileSync(path.join(__dirname,'../../giaitri/games/tactics-online/authority-adapter.js'),'utf8');
+ assert.match(html,/MP\.registerAdapter\('dolphin-tactics',authority\)/);
+ assert.match(adapter,/tacticsCreateRoom/);assert.match(adapter,/tacticsAction/);
+ assert.match(adapter,/tacticsAdvanceRoom/);
+ assert.doesNotMatch(adapter,/sendStateStrict/);
+});

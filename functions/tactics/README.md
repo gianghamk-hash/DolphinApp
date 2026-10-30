@@ -31,6 +31,14 @@ Existing Caro/Snake transports are unchanged.
 - Leaving an active match retains roster/ownership for reconnect and never closes
   the match for everyone. Waiting-room host departure transfers the organizer role.
   If all clients close, the casual match waits until someone reconnects.
+- At COMBAT start, a four-second banner names the actual PvP opponent, ghost owner
+  or PvE encounter. Its lifetime follows the phase start time; shop updates do
+  not restart it and late reconnects do not replay an expired announcement.
+- During COMBAT, purchases, hero/item inspection, XP, shop lock/unlock, rerolls
+  and bench-only moves/swaps remain available. Deployed units, gear assignment
+  and selling remain locked until PREPARATION. The frozen combat snapshot is
+  unchanged; a third copy bought during combat merges only on the next
+  PREPARATION transition, including any cascaded upgrades.
 
 **Trust boundary:** This is still casual, browser-computed play, as before.
 Transactions prevent concurrent lost updates; they do not make browsers trusted
@@ -44,6 +52,7 @@ Run from the repository root:
 
 ```sh
 node --test giaitri/games/tactics-online/online-transport.test.js giaitri/games/tactics-online/simulation-client.test.js
+node --test functions/tactics/combat-controls.test.js giaitri/games/tactics-online/phase-banner.test.js
 node --test giaitri/games/tactics-online/tactics-ui.test.js
 cd functions && npm test
 ```
@@ -62,7 +71,10 @@ FIRESTORE_EMULATOR_HOST=127.0.0.1:8088 node giaitri/games/tactics-online/online-
 `TFT_BASE_URL` defaults to `http://127.0.0.1:8765`. The browser check forces the
 `demo-dolphin-tft` project/emulator, and covers four separate browser contexts,
 purchases, moves, host removal, worker combat, round XP, reconnect and offline
-rejection. Actual boat Wi-Fi/4G latency and Android hardware FPS still need a
+rejection. It also exercises a named PvP announcement, automatic banner hiding,
+combat purchases/inspection/XP/lock/reroll, actual pointer drag/swap on the bench,
+unchanged combat snapshots and fusion deferred until PREPARATION. Actual boat
+Wi-Fi/4G latency and Android hardware FPS still need a
 physical-device session; emulator timings are not production latency claims.
 
 ## Separate server-authoritative backend (not the default browser route)

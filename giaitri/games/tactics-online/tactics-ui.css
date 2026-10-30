@@ -9,6 +9,12 @@
 #game>aside .panel{background:linear-gradient(145deg,rgba(20,60,75,.96),rgba(7,28,44,.96))!important;border:1px solid var(--tft-outline);border-radius:16px;box-shadow:inset 0 1px 0 #ffffff12,0 7px 24px #0003}
 #game>aside .panel h2,#game .foldPanel>summary{letter-spacing:.07em;color:var(--tft-gold);text-shadow:0 0 10px rgba(255,213,134,.14)}
 #game #shop{gap:6px;align-items:stretch}
+#game #shop .shopOffer{display:flex;flex-direction:column;gap:3px;min-width:0}
+#game #shop .shopOffer>.shopHero{width:100%;flex:1}
+#game #shop .shopInspect{min-height:26px!important;padding:3px 1px!important;font-size:9px!important;line-height:1.2;border-color:#6799ad;background:#113747;color:#dff4ff}
+#game #shop .shopInspect:focus-visible{outline:2px solid #ffe9a1;outline-offset:1px}
+#game .pendingMergeHint{color:#ffdfa0;font-size:10px;margin-top:3px}
+#game #battleBanner.combat{max-width:calc(100% - 110px)!important;white-space:normal!important;overflow:visible!important;overflow-wrap:anywhere;line-height:1.4!important;padding:8px 12px!important;background:#102e43f5;border-color:#ffda86;box-shadow:0 4px 20px #0009;color:#fff0c4;font-size:clamp(11px,1.5vw,16px)!important}
 #game #shop .shopHero{position:relative;display:flex;flex-direction:column;justify-content:space-between;overflow:hidden;min-height:85px!important;padding:7px 5px!important;border:1px solid rgba(146,186,209,.45)!important;border-bottom:3px solid var(--tier-color,#a9bac5)!important;border-radius:12px;background:radial-gradient(circle at 50% 0%,color-mix(in srgb,var(--tier-color,#a9bac5) 25%,transparent),transparent 72%),linear-gradient(145deg,#173e50,#0b1f30)!important;color:#e7f9ff;box-shadow:inset 0 1px #ffffff1a,0 5px 12px #0004;transition:transform .16s ease,border-color .16s ease,box-shadow .16s ease;touch-action:manipulation}
 #game #shop .shopHero:before{content:'';pointer-events:none;position:absolute;inset:0;border-radius:inherit;background:linear-gradient(130deg,#ffffff13,transparent 42%)}
 #game #shop .shopHero.tier1{--tier-color:#aebfc9}

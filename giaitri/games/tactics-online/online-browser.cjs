@@ -5,6 +5,8 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const {chromium}=require('playwright');
+const E=require('../../../functions/tactics/engine');
+const {opponentText}=require('./phase-banner');
 const host=process.env.FIRESTORE_EMULATOR_HOST;
 assert.ok(host&&/^(127\.0\.0\.1|localhost):\d+$/.test(host),'A local FIRESTORE_EMULATOR_HOST is required');
 const [emulatorHost,emulatorPort]=host.split(':');
@@ -79,10 +81,77 @@ async function main(){
   await contexts[2].setOffline(true);const offline=await pages[2].evaluate(()=>window.send({type:'ROLL'}));assert.equal(offline,false);
   await contexts[2].setOffline(false);
   await pages[2].waitForFunction(()=>document.getElementById('networkStatus').textContent.includes('Đã đồng bộ'),null,{timeout:20000});
+  // Deterministic PvP fixture in the emulator: one deployed copy and one bench
+  // copy of H01. Buying the third in COMBAT must not change this battle.
+  const current=await read(pages[1]),time=Date.now();
+  const fixture=E.roomNew(current.hostId,'Host',time,123456);
+  fixture.playerOrder=current.playerOrder;fixture.players={};fixture.round=4;fixture.status='in_game';fixture.phaseEndsAt=time;
+  for(const id of fixture.playerOrder){
+   const p=E.freshPlayer(id,current.players[id].displayName,fixture);fixture.players[id]=p;p.gold=80;p.inventory=['sword'];p.shop=['H01','H01','H02','H01','H05'];
+   for(const index of [0,1,2])E.action(fixture,id,{type:'BUY',index},time);
+   E.action(fixture,id,{type:'MOVE',unitId:Object.keys(p.units)[0],to:'board',index:'r0c3'},time);p.ready=true;
+  }
+  E.advance(fixture,time);fixture.phaseEndsAt=time+60000;fixture.revision=current.revision+1;
+  fixture.mode='casual';fixture.rankingEligible=false;
+  await pages[1].evaluate(async fixture=>{await db.collection('mp_rooms').doc(DolphinMP.getRoomId()).collection('data').doc('state').set(fixture);},fixture);
+  const me=current.playerOrder[1],reserve=fixture.players[me].bench['1'],extra=fixture.players[me].bench['2'];
+  await pages[1].waitForFunction(text=>document.getElementById('battleBanner').textContent===text,opponentText(fixture,me));
+  assert.ok(await pages[1].locator('#battleBanner').isVisible());
+  if(process.env.TFT_SCREENSHOT)await pages[1].screenshot({path:process.env.TFT_SCREENSHOT.replace('.png','-combat.png'),fullPage:true});
+  await pages[1].locator('#shop .shopInspect').nth(1).click();assert.match(await pages[1].locator('#heroInfo').textContent(),/Trong Shop/);
+  assert.equal((await read(pages[1])).players[me].gold,fixture.players[me].gold);
+  await pages[1].locator('#shop .shopHero').nth(3).click();
+  async function playerMatches(fn,args){
+   const until=Date.now()+15000;let observed;
+   do{
+    // Read from another participant: local prediction must not satisfy a
+    // persistence assertion before the transaction has actually committed.
+    observed=await read(pages[2]);if(fn(observed.players[me],args))return;
+    await pages[1].waitForTimeout(150);
+   }while(Date.now()<until);
+   assert.fail('Player condition not committed: '+JSON.stringify(observed.players[me]));
+  }
+  await playerMatches(p=>Object.keys(p.units).length===4);
+  const purchased=await read(pages[1]);assert.equal(purchased.players[me].pendingMerge,true);assert.ok(Object.values(purchased.players[me].units).every(u=>u.star===1));
+  assert.deepEqual(purchased.combatSnapshot,fixture.combatSnapshot);
+  async function dragBench(from,to){
+   const source=await pages[1].locator('#bench [data-bench="'+from+'"]').boundingBox(),target=await pages[1].locator('#bench [data-bench="'+to+'"]').boundingBox();
+   assert.ok(source&&target);await pages[1].mouse.move(source.x+source.width/2,source.y+source.height/2);await pages[1].mouse.down();
+   await pages[1].mouse.move(target.x+target.width/2,target.y+target.height/2,{steps:12});await pages[1].mouse.up();
+  }
+  await dragBench(1,7);await playerMatches((p,id)=>p.bench['7']===id&&!p.bench['1'],reserve);assert.equal((await read(pages[1])).players[me].bench['7'],reserve);
+  await dragBench(2,7);await playerMatches((p,id)=>p.bench['2']===id,reserve);const swapped=await read(pages[1]);
+  assert.equal(swapped.players[me].bench['7'],extra);assert.equal(swapped.players[me].bench['2'],reserve);assert.deepEqual(swapped.combatSnapshot,fixture.combatSnapshot);
+  await pages[1].waitForTimeout(400);await pages[1].locator('#bench [data-bench="7"]').click();
+  assert.ok((await pages[1].locator('#heroInfo').textContent()).includes(E.HERO.H02.name));
+  await pages[1].locator('#touchItemSlots [data-select-item]').first().click();
+  assert.ok(await pages[1].locator('#itemInfoModal').isVisible());
+  assert.ok((await pages[1].locator('#itemInfoContent').textContent()).includes(E.COMP.sword.name));
+  assert.equal(await pages[1].locator('[data-equip-target]:not(:disabled)').count(),0);
+  await pages[1].getByRole('button',{name:'Đóng chi tiết trang bị'}).click();
+  await pages[1].locator('#lockShopBtn').click();await playerMatches(p=>p.shopLocked);assert.ok(await pages[1].locator('#rollShopBtn').isDisabled());
+  await pages[1].locator('#lockShopBtn').click();await playerMatches(p=>!p.shopLocked);
+  await pages[1].locator('#buyXpBtn').click();await playerMatches(p=>p.xp===4);
+  const rollGold=(await read(pages[1])).players[me].gold;await pages[1].locator('#rollShopBtn').click();
+  await playerMatches((p,gold)=>p.gold===gold-2,rollGold);
+  // Inspection is still usable when purchasing is disabled by insufficient gold.
+  await pages[1].evaluate(async uid=>{
+   const ref=db.collection('mp_rooms').doc(DolphinMP.getRoomId()).collection('data').doc('state'),s=(await ref.get()).data();
+   s.players[uid].gold=0;s.revision++;await ref.set(s);
+  },me);
+  await pages[1].waitForFunction(()=>Array.from(document.querySelectorAll('#shop .shopHero')).every(b=>b.disabled));
+  await pages[1].locator('#shop .shopInspect').first().click();assert.match(await pages[1].locator('#heroInfo').textContent(),/Trong Shop/);
+  await pages[1].locator('#battleBanner').waitFor({state:'hidden',timeout:6000});
+  await pages[1].locator('#lockShopBtn').click();await playerMatches(p=>p.shopLocked);assert.ok(await pages[1].locator('#battleBanner').isHidden());
+  await expire(pages[1]);await phase('KẾT QUẢ');assert.equal(Object.keys((await read(pages[1])).players[me].units).length,4);
+  await expire(pages[1]);await phase('CHUẨN BỊ');
+  const merged=await read(pages[1]);assert.equal(merged.round,5);assert.equal(merged.players[me].pendingMerge,false);
+  assert.equal(Object.values(merged.players[me].units).filter(u=>u.heroId==='H01').length,1);
+  assert.equal(Object.values(merged.players[me].units).find(u=>u.heroId==='H01').star,2);
   await pages[1].setViewportSize({width:390,height:844});
   assert.ok(await pages[1].locator('#networkStatus').isVisible());
   if(process.env.TFT_SCREENSHOT)await pages[1].screenshot({path:process.env.TFT_SCREENSHOT,fullPage:true});
-  assert.deepEqual(errors,[]);console.log('PASS: 4 browser clients, purchases, movement, host removal, worker combat, exactly-once round XP, reconnect, offline rejection and portrait HUD');
+  assert.deepEqual(errors,[]);console.log('PASS: four clients, timed named PvP/PvE banner, combat shop/info/XP/lock/reroll, physical bench drag/swap, unchanged combat snapshot, deferred fusion, host removal and reconnect');
  }finally{await browser.close();}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

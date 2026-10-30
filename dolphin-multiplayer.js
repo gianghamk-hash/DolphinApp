@@ -436,6 +436,7 @@ window.DolphinMP = {
   onState:   cb => on('state', cb),
   onInput:   cb => on('input', cb),
   onError:   cb => on('error', cb),
+  onNetwork: cb => on('network', cb),
   getRoomId:   () => _roomId,
   getDeviceId: () => _deviceId,
   getPlayerId: () => _adapterPlayerId || _deviceId,

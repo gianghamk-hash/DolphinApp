@@ -141,7 +141,7 @@ function createEngine(C){
     visited.add(k);const step=first||{x:nx,y:ny};queue.push([nx,ny,step]);}
   }return best;
  }
- function simulate(pair,room,players,seed){
+  function simulate(pair,room,players,seed,options={}){
   let state=(seed^(room.round*2654435761))>>>0;
   function rnd(){state=(Math.imul(state||1,1664525)+1013904223)>>>0;return state/4294967296;}
   const a=players[pair.a],b=pair.b?players[pair.b]:null;
@@ -165,7 +165,7 @@ function createEngine(C){
   }
   for(const u of units){if(u.adjacentShield){for(const v of units){if(v.owner===u.owner&&dist(u,v)<=1)v.shield+=u.adjacentShield;}}}
   for(const u of units)u.baseShield=u.shield||0;
-  const events=[],emit=e=>{events.push(e);};
+   const events=[],emit=e=>{if(options.recordEvents!==false)events.push(e);};
   function modifyStat(actor,target,stat,type,delta,t,duration){
    target.timedStats ||= {};
    const key=actor.id+':'+type,prev=target.timedStats[key];
@@ -341,10 +341,10 @@ function createEngine(C){
   emit({t:PHASES.COMBAT,actor:"system",type:"end",amount:damage});
   return {initialStats,pair,winner,loser:tie?null:pair.pve||pair.ghost?(winLeft?null:pair.a):(winLeft?pair.b:pair.a),damage,events};
  }
- function finalize(s,now){
+  function finalize(s,now,options={}){
   assert(s.roundPhase==="COMBAT","Chưa ở phase chiến đấu");
   const snap=s.combatSnapshot||clone(s.players);
-  const reports=s.pairs.map((pair,i)=>simulate(pair,s,snap,(s.seed+i*977+s.round*1033)>>>0));
+   const reports=s.pairs.map((pair,i)=>simulate(pair,s,snap,(s.seed+i*977+s.round*1033)>>>0,options));
   const beforeHp=Object.fromEntries(s.playerOrder.map(id=>[id,s.players[id]?.hp||0]));
   const beforeEliminated=new Set(s.playerOrder.filter(id=>s.players[id]?.eliminated));
   for(const rep of reports){
@@ -365,13 +365,13 @@ function createEngine(C){
   if(alive.length<=1){if(alive.length===1)s.finalPlacements[alive[0]]=1;s.status="finished";s.winnerId=alive[0]||null;s.roundPhase="TRANSITION";s.phaseEndsAt=now;return s;}
   s.roundPhase="TRANSITION";s.phaseStartedAt=now;s.phaseEndsAt=now+PHASES.TRANSITION;s.combatSnapshot=null;return s;
  }
- function advance(s,now){
+  function advance(s,now,options={}){
   assert(s.status==="in_game","Phòng chưa bắt đầu");
   const allReady=s.roundPhase==="PREPARATION"&&s.playerOrder.filter(u=>!s.players[u].eliminated).every(u=>s.players[u].ready);
   assert(now>=s.phaseEndsAt||allReady,"Chưa hết thời gian phase");
   if(s.roundPhase==="PREPARATION"){s.roundPhase="COMBAT";s.phaseStartedAt=now;s.phaseEndsAt=now+PHASES.COMBAT;s.combatSnapshot=clone(s.players);
     s.pairs=pairings(s);s.reports=[];
-  }else if(s.roundPhase==="COMBAT")finalize(s,now);
+   }else if(s.roundPhase==="COMBAT")finalize(s,now,options);
   else if(s.roundPhase==="TRANSITION"){s.round++;s.roundPhase="PREPARATION";s.phaseStartedAt=now;s.phaseEndsAt=now+PHASES.PREPARATION;
     for(const uid of s.playerOrder){const p=s.players[uid];if(p.eliminated)continue;
       const streak=Math.max(p.streaks.win,p.streaks.loss),streakBonus=streak>=5?3:streak>=4?2:streak>=2?1:0;

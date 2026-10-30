@@ -355,9 +355,11 @@ html.tft-android-apk #overlay:not(.hidden){
 }
 html.tft-android-apk #overlay .arenaHero{max-width:760px;margin-left:auto;margin-right:auto}
 html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!important}
+#appShell>header>div:first-child{min-width:0;overflow:hidden}
+#appShell>header h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
-<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header>
+<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header><div id="networkStatus" role="status" aria-live="polite" hidden style="flex:0 0 auto;padding:2px 8px;font-size:10px;min-height:18px"></div>
 <div id="overlay">
 <section class="arenaHero" aria-label="Dolphin Tactics Arena"><div class="arenaSigil" aria-hidden="true">⚔</div><p class="arenaEyebrow">DOLPHIN · TACTICAL ARENA</p><h2>DOLPHIN <span>TACTICS</span></h2><p class="arenaMotto">TRIỆU HỒI · BỐ TRẬN · CHINH PHỤC</p><p class="arenaSummary">36 TƯỚNG ✦ 12 TỘC/HỆ ✦ 21 CÔNG THỨC</p><div class="arenaBoard" aria-hidden="true"><span>♜</span><span>♞</span><span>✧</span><span>♛</span><span>♞</span></div><div class="arenaIdentity"><span>CHIẾN BINH DOLPHIN</span><strong id="arenaStaffName">Đang đồng bộ tên nhân viên…</strong><small id="arenaStaffHint">Danh tính dùng chung với app Giải Trí</small></div><div class="arenaActions"><button class="gold" onclick="chooseOnline()">⚔ ONLINE · 4 NGƯỜI</button><button onclick="startOffline()">✦ OFFLINE · 3 AI</button><button onclick="openTacticsGuide('gameplay')">📖 CẨM NANG</button><button onclick="openTacticsRanking()">🏆 BXH TFT</button></div><div class="arenaPillars"><span>♟ BỐ TRẬN</span><span>⚡ KỸ NĂNG</span><span>✧ KÍCH HỆ</span><span>🛡 TRANG BỊ</span></div></section>
 
@@ -377,7 +379,7 @@ html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!imp
  <div id="lobby" class="hidden">
 <input id="nick" maxlength="32" aria-label="Tên nhân viên Dolphin" readonly placeholder="Chưa đồng bộ tên nhân viên"/><div class="small" id="staffIdentityNotice">Tên lấy từ hệ thống nhân viên Dolphin, không chỉnh sửa tại TFT.</div>
 <div class="flex" style="margin-top:10px"><button class="gold" onclick="createRoom()">TẠO PHÒNG</button><input id="code" placeholder="MÃ PHÒNG 6 KÝ TỰ" maxlength="6" style="max-width:180px;text-transform:uppercase"/><button onclick="joinRoom()">THAM GIA</button></div>
-<div id="lobbyStatus" class="small" style="margin-top:12px"></div><div id="networkStatus" role="status" class="small" style="margin-top:4px"></div><button id="reconnectBtn" class="hidden" onclick="reconnectRoom()">↻ KẾT NỐI LẠI PHÒNG</button>
+<div id="lobbyStatus" class="small" style="margin-top:12px"></div><button id="reconnectBtn" class="hidden" onclick="reconnectRoom()">↻ KẾT NỐI LẠI PHÒNG</button>
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
@@ -405,7 +407,7 @@ html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!imp
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
-<script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-functions-compat.js"></script><script src="../../../dolphin-multiplayer.js?v=2.0"></script>
+<script src="online-transport.js?v=2"></script><script src="simulation-client.js?v=2"></script><script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="../../../dolphin-multiplayer.js?v=2.1"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script>
 (function(){
@@ -450,13 +452,16 @@ document.addEventListener('keydown',event=>{
  }
 });
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),RigFactory=window.DolphinCreateRigFactory(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),RigAnimator=window.DolphinCreateRigAnimator(),Skinner=window.DolphinCreateSkinner(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),CombatFX=window.DolphinCreateCombatFX(THREE),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles,RigAnimator,Skinner),ModelLibrary=window.DolphinTacticsCreateModelLibrary(THREE,GLTFLoader,'assets/models/',RigFactory,Skinner,cloneSkeleton);
-// Reuse the existing 4-seat Firestore transport (mp_rooms) without Cloud Functions.
+// Casual atomic rooms use existing Firestore; no browser host relays actions.
+const simulation=window.DolphinTacticsSimulation.create(E,catalog);
+let onlineTransport=null;
+const gameNow=()=>offline?Date.now():onlineTransport?.now()||Date.now();
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
 let pinchPointers=new Map(),pinchDistance=0,lastPinchAt=0,itemDrag=null;
 const combatMetrics=new Map(),combatStatuses=new Map();let lastMetricPaint=0;
-let lastBoardSignature='',seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,onlineStateAt=0,roomHostId='',connectivityTimer=null;
+let lastBoardSignature='',seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,connectivityTimer=null,replayGeneration=0;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
 // Package E: browser-hosted rooms are NOT eligible for verified competitive rating.
@@ -469,6 +474,7 @@ window.openTacticsRanking=()=>{window.open('../../index.html#tft-ranking','_blan
 function onlineMessage(message,problem=false){
  $("networkStatus").textContent=message;
  $("networkStatus").style.color=problem?'#ffc181':'#8eeacb';
+ $("networkStatus").hidden=!message;
 }
 window.reconnectRoom=async()=>{
  if(offline||MP.getRoomId())return;
@@ -481,10 +487,11 @@ window.reconnectRoom=async()=>{
 };
 function connectionWatch(){
  if(offline||!roomId)return;
- if(!navigator.onLine){onlineMessage('⚠ Mất mạng — đang chờ kết nối...',true);return;}
- if(state?.status==='in_game'&&onlineStateAt&&Date.now()-onlineStateAt>20000){
-  onlineMessage('⚠ Chưa nhận trạng thái mới từ phòng; kiểm tra mạng hoặc Host',true);
- }else onlineMessage('● Kết nối phòng đang hoạt động');
+ const network=onlineTransport.getStatus();
+ if(!network.online){onlineMessage('⚠ Mất mạng — thao tác chưa được gửi',true);return;}
+ if(network.error){onlineMessage('⚠ '+network.error,true);return;}
+ if(network.pending){onlineMessage('↻ Đang đồng bộ '+network.pending+' thao tác');return;}
+ onlineMessage(network.lastServerAt?'● Đã đồng bộ':'↻ Đang kết nối phòng');
 }
 addEventListener('online',()=>{if(roomId&&!offline){onlineMessage('Đã có mạng — chờ đồng bộ lại');connectionWatch();}});
 addEventListener('offline',()=>{if(roomId&&!offline)connectionWatch();});
@@ -492,21 +499,21 @@ connectivityTimer=setInterval(connectionWatch,5000);
 function multiplayerErrorMessage(error){
  const code=String(error?.code||'').toLowerCase().replace(/^functions\//,'');
  const raw=String(error?.message||error||'');
- if(code==='permission-denied')return 'Tài khoản Firebase chưa có hồ sơ nhân viên được xác minh trên máy chủ. Liên hệ quản lý để liên kết UID và xác minh nhân viên.';
+ if(code==='permission-denied')return 'Không có quyền truy cập phòng. Hãy kiểm tra cấu hình Firebase hoặc tạo phòng mới.';
  if(code==='unauthenticated')return 'Không đăng nhập được Firebase. Kiểm tra Authentication > Anonymous và kết nối mạng.';
- if(code==='not-found')return 'Cloud Function TFT chưa được triển khai hoặc sai vùng asia-southeast1.';
- if(code==='unavailable'||code==='deadline-exceeded')return 'Không kết nối được máy chủ TFT. Kiểm tra mạng và trạng thái Firebase Functions.';
+ if(code==='not-found')return 'Không tìm thấy phòng. Hãy kiểm tra mã phòng hoặc tạo phòng mới.';
+ if(code==='unavailable'||code==='deadline-exceeded')return 'Kết nối đang chậm hoặc bị gián đoạn. Hãy chờ đồng bộ trước khi thử lại.';
  if(code==='failed-precondition'||code==='resource-exhausted'||code==='invalid-argument')return raw;
- if(code==='internal'||/\binternal\b/i.test(raw))return 'Máy chủ TFT gặp lỗi nội bộ. Kiểm tra Logs của tacticsCreateRoom trên Firebase Functions và cấu hình Realtime Database (databaseURL, quyền truy cập).';
+ if(code==='internal'||/\binternal\b/i.test(raw))return 'Có lỗi đồng bộ phòng. Hãy kết nối lại và kiểm tra trạng thái trận.';
  return raw;
 }
-const showError=e=>{console.error('[TFT online]',e?.code||'',e);info('⚠ '+multiplayerErrorMessage(e));};
+const showError=e=>{console.error('[TFT online]',e?.code||'',e);info('⚠ '+multiplayerErrorMessage(e));if(!offline)onlineMessage('⚠ '+multiplayerErrorMessage(e),true);};
 function safe(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','\'':'&#39;'}[c]));}
 function dispatch(work){
  queue=queue.then(async()=>{if(!host)return;await work();}).catch(showError);
  return queue;
 }
-async function publish(){if(host&&hostState){state=E.clone(hostState);update();if(!offline){await MP.sendStateStrict(E.clone(hostState));}}}
+async function publish(){if(offline&&hostState){state=E.clone(hostState);update();}}
 function offlineAI(now){if(!offline||!hostState||hostState.roundPhase!=='PREPARATION')return;
  for(const id of ['AI_1','AI_2','AI_3'])if(!hostState.players[id].eliminated&&!hostState.players[id].ready)AI.takeTurn(hostState,id,now);
 }
@@ -632,69 +639,23 @@ function selectedHeroInfo(){
 }
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
- MP.onRoom(room=>{host=!!room.isHost;roomId=room.id;roomHostId=room.hostId||'';$('roomTag').textContent="PHÒNG "+room.id;
+ MP.onRoom(room=>{
+  host=!!room.isHost;roomId=room.id;$('roomTag').textContent='PHÒNG '+room.id;
   $('leave').classList.remove('hidden');$('leaveTop').classList.remove('hidden');
-  if(room.status==='closed'){onlineMessage('⚠ Phòng đã đóng, không thể tiếp tục trận',true);info('Phòng đã đóng');}
+  if(room.status==='closed')onlineMessage('⚠ Phòng đã đóng',true);
  });
  MP.onPlayers(({players})=>{
   roster=players.sort((a,b)=>String(a.side).localeCompare(String(b.side)));
   $('lobbyStatus').textContent=roster.length+'/4: '+roster.map(p=>p.name).join(' · ');
-  if(roomHostId&&roomId&&!roster.some(p=>p.id===roomHostId)&&state?.status==='in_game'){
-   onlineMessage('⚠ Host mất kết nối — trận tạm dừng. Chờ Host quay lại hoặc tạo phòng khác.',true);
-  }
   $('start').classList.toggle('hidden',!host||roster.length!==4||state?.status==='in_game');
  });
- MP.onState(snapshot=>{
-  if(!snapshot||!snapshot.players)return;
-  state=snapshot;onlineStateAt=Date.now();
-  // Browser-hosted Firestore matches are not eligible for verified server-side rankings.
-  
-  if(uid)seq=Math.max(seq,Number(snapshot.clientSequences?.[uid])||0);
-   settleOnlineAction(snapshot);
-  if(host&&(!hostState||snapshot.round>hostState.round||snapshot.updatedAt>hostState.updatedAt))hostState=E.clone(snapshot);
-  update();
- });
- MP.onInput(({playerId,action,sequence,actionId,expiresAt})=>{
-  if(!host||!action||!Number.isSafeInteger(sequence)||sequence<1)return;
-  dispatch(async()=>{
-   if(!hostState||hostState.status!=='in_game'||!hostState.players[playerId])return;
-   hostState.clientSequences ||= {};hostState.clientAcks ||= {};
-   if(sequence<=(hostState.clientSequences[playerId]||0))return;
-   let accepted=true,reason='';
-   const receivedAt=Date.now();
-   try{
-    // An expired command must never change the roster, gold or equipment.
-    if(!Number.isFinite(expiresAt)||receivedAt>expiresAt)throw Error('Yêu cầu đã hết hạn, hãy kiểm tra trạng thái trước khi thử lại');
-    if(actionId!==playerId+':'+sequence)throw Error('Mã yêu cầu không hợp lệ');
-    E.action(hostState,playerId,action,receivedAt);
-   }
-   catch(error){accepted=false;reason=String(error?.message||error).slice(0,180);}
-   hostState.clientSequences[playerId]=sequence;
-   hostState.clientAcks[playerId]={sequence,actionId,accepted,reason};
-   hostState.updatedAt=Math.max(hostState.updatedAt||0,Date.now());
-   await publish();
-  });
- });
- MP.onError(e=>{onlineMessage('⚠ Sự cố đồng bộ phòng',true);showError(e.err||e.message||e.type||e);});
+ MP.onState(snapshot=>{if(!snapshot?.players)return;state=snapshot;update();connectionWatch();});
+ MP.onNetwork(connectionWatch);
+ MP.onError(e=>showError(e.err||e.message||e.type||e));
 }
-let seq=0,onlinePending=null;
-function settleOnlineAction(snapshot){
- if(!onlinePending||!uid)return;
- const ack=snapshot.clientAcks?.[uid];
- if(!ack||ack.sequence!==onlinePending.sequence||ack.actionId!==uid+':'+onlinePending.sequence)return;
- const pending=onlinePending;onlinePending=null;clearTimeout(pending.timeout);
- if(ack.accepted){info('✓ '+pending.label+' thành công');pending.resolve(true);}
- else{info('⚠ '+(ack.reason||'Thao tác bị từ chối'));pending.resolve(false);}
-}
-function sendOnlineAction(action){
- if(onlinePending){info('Đang chờ xác nhận thao tác trước từ chủ phòng');return Promise.resolve(false);}
- if(!navigator.onLine){info('⚠ Mất kết nối — không gửi thao tác');return Promise.resolve(false);}
- const sequence=++seq,label=action?.type||'Thao tác',actionId=uid+':'+sequence,expiresAt=Date.now()+12000;
- return new Promise(resolve=>{
-  const pending={sequence,label,resolve,timeout:null};onlinePending=pending;
-  pending.timeout=setTimeout(()=>{if(onlinePending!==pending)return;onlinePending=null;info('⚠ Chưa có xác nhận. Kiểm tra trạng thái trước khi thử lại.');resolve(false);},12000);
-  MP.sendInputStrict({action,sequence,actionId,expiresAt}).catch(e=>{if(onlinePending!==pending)return;clearTimeout(pending.timeout);onlinePending=null;info('⚠ Gửi thao tác thất bại: '+(e.message||e));resolve(false);});
- });
+async function sendOnlineAction(action){
+ try{await onlineTransport.action(action);return true;}
+ catch(error){showError(error);return false;}
 }
 window.createRoom=async()=>{
  try{if(!requireStaff())return;if(MP.getRoomId())throw Error('Hãy rời phòng hiện tại trước');
@@ -709,37 +670,29 @@ window.joinRoom=async()=>{
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- try{if(onlinePending){const pending=onlinePending;onlinePending=null;clearTimeout(pending.timeout);pending.resolve(false);}if(!offline)await MP.leaveRoom();offline=false;roomId='';roomHostId='';onlineStateAt=0;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';lastBoardSignature='';replay=null;localStorage.removeItem(reconnectKey);
+ try{if(!offline)await MP.leaveRoom();offline=false;roomId='';replayGeneration++;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';lastBoardSignature='';replay=null;localStorage.removeItem(reconnectKey);
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';$('reconnectBtn').classList.add('hidden');onlineMessage('');
   info('Đã rời phòng');}catch(e){showError(e);}
 };
 window.startRoom=async()=>{
  if(offline||!host||roster.length!==4)return showError(Error('Cần đủ 4 người online'));
- try{await dispatch(async()=>{
-  const now=Date.now(),players=roster.map(p=>({id:p.id,name:p.name}));
-  if(players.length!==4)throw Error('Cần đủ bốn người chơi');
-  const seed=Math.floor(Math.random()*2147483647)||1;
-  const room=E.roomNew(uid,staffName(),now,seed);
-  room.playerOrder=players.map(p=>p.id);room.players={};
-  for(const p of players)room.players[p.id]=E.freshPlayer(p.id,p.name,room);
-  room.status='in_game';room.round=1;room.roundPhase='PREPARATION';room.phaseStartedAt=now;
-  room.phaseEndsAt=now+E.PHASES.PREPARATION;room.updatedAt=now;
-  hostState=room;await MP.updateRoomStatus('in_game');await publish();
-  ModelLibrary.preload(Object.keys(hero));
- });}
- catch(e){showError(e);}
+ try{await onlineTransport.startRoom();ModelLibrary.preload(Object.keys(hero));}
+ catch(error){showError(error);}
 };
 window.send=async action=>{
- if(!state||state.status!=='in_game'||state.roundPhase!=='PREPARATION')return;
- if(!offline&&!host)return sendOnlineAction(action);
- if(host)return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();});
- return false;
+ if(!state||state.status!=='in_game')return false;
+ const shopAction=['BUY','ROLL','BUY_XP','TOGGLE_SHOP_LOCK'].includes(action?.type);
+ if(state.roundPhase!=='PREPARATION'&&!shopAction)return false;
+ if(!offline)return sendOnlineAction(action);
+ return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();return true;});
 };
 function init(){
  try{
   if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
   window.db=firebase.firestore();
+  onlineTransport=window.DolphinTacticsOnline.createTransport(E,window.db,{advance:(room,time)=>simulation.advance(room,time)});
+  MP.registerAdapter('dolphin-tactics',onlineTransport);onlineTransport.mount();
   uid=MP.getDeviceId();setupMP();syncArenaIdentity();
   try{const saved=JSON.parse(localStorage.getItem(reconnectKey)||'null');if(saved?.code){$('code').value=saved.code;$('lobby').classList.remove('hidden');$('reconnectBtn').classList.remove('hidden');onlineMessage('Có thể kết nối lại phòng '+saved.code);}}catch(e){}
   info('Chọn chế độ Offline hoặc Online để bắt đầu.');
@@ -793,7 +746,12 @@ window.moveSelectedToBench=()=>{
 function isPvERound(round){return round<=3||round%5===0;}
 function combatType(){return isPvERound(Number(state?.round||1))?"PvE · ĐẤU QUÁI":"PvP · ĐẤU NGƯỜI";}
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
-function paintOpponent(){/* Opponent details already appear on the battlefield HUD. */}
+function paintOpponent(){
+ if(state.roundPhase!=='COMBAT')return;
+ const pair=state.pairs?.find(pair=>pair.a===uid||pair.b===uid);
+ const enemy=state.players[pair?.a===uid?pair?.b:pair?.a];
+ if(enemy)$('boardHelp').textContent='⚔ Đối thủ: '+enemy.displayName+' · '+enemy.hp+' HP'+(pair.ghost?' · Bóng ma':'');
+}
 function paintPlayers(){
  $('players').innerHTML=state.playerOrder.map(id=>{
   const p=state.players[id];if(!p)return '';
@@ -923,21 +881,21 @@ function syncHeroNames(){
   const y=viewport.top+(1-loc.y)*viewport.height/2-bounds.top;
   tag.style.display='block';tag.style.left=x+'px';tag.style.top=y+'px';
   const effects=combatStatuses.get(tag.dataset.unitId)||{};
-  const elapsed=replay?Math.max(0,Date.now()-replay.start):0;
+  const elapsed=replay?Math.max(0,gameNow()-replay.start):0;
   const active=state?.roundPhase==='COMBAT'?Object.entries(effects).filter(([,until])=>until>elapsed).map(([type])=>({stun:'Choáng',slow:'Chậm',burn:'Đốt',haste:'Tốc đánh'}[type]||'')).filter(Boolean):[];
   const statusName=active.join(' · ');
   tag.dataset.status=statusName;
   tag.title=statusName?statusName:'';
  }
 }
-function startReplay(){
+async function startReplay(){
+ const generation=++replayGeneration;
  replay=null;CombatCues.reset();Animator.clear();CombatFX.clear();
  if(!state.combatSnapshot||state.roundPhase!=='COMBAT')return;
- const pair=state.pairs.find(x=>x.a===uid||x.b===uid);if(!pair)return;
- // Host-authoritative result is never trusted from this local preview. Server recomputes on COMBAT expiry.
- const match=pair; // Use server pairing orientation for deterministic outcomes.
- const room={round:state.round};const report=E.simulate(match,room,state.combatSnapshot,(state.seed+state.pairs.indexOf(pair)*977+state.round*1033)>>>0);
- combatMetrics.clear();combatStatuses.clear();battleHealth=new Map();for(const stat of report.initialStats||[]){battleHealth.set(stat.id,{hp:stat.hp,max:stat.maxHp,mana:stat.mana,manaMax:stat.manaMax,shield:stat.shield||0});}replay={events:report.events,index:0,start:state.phaseStartedAt,mirror:pair.a!==uid,units:new Map()};
+ const snapshot=state,pair=snapshot.pairs.find(x=>x.a===uid||x.b===uid);if(!pair)return;
+ const report=await simulation.simulate(pair,snapshot.round,snapshot.combatSnapshot,(snapshot.seed+snapshot.pairs.indexOf(pair)*977+snapshot.round*1033)>>>0);
+ if(generation!==replayGeneration||state?.round!==snapshot.round||state?.roundPhase!=='COMBAT')return;
+ combatMetrics.clear();combatStatuses.clear();battleHealth=new Map();for(const stat of report.initialStats||[]){battleHealth.set(stat.id,{hp:stat.hp,max:stat.maxHp,mana:stat.mana,manaMax:stat.manaMax,shield:stat.shield||0});}replay={events:report.events,index:0,start:snapshot.phaseStartedAt,mirror:pair.a!==uid,units:new Map()};
 }
 function showDamage(node,amount){
  if(!node||!renderer||!camera)return;
@@ -961,7 +919,7 @@ function playCombatSound(type){if(!combatSoundOn||!combatAudioCtx||combatAudioCt
 }
 function tickReplay(){
  if(!replay||!state||state.roundPhase!=='COMBAT')return;
- const elapsed=Date.now()-replay.start;
+ const elapsed=gameNow()-replay.start;
  // Prime the swing/cast *before* the simulation's recorded impact timestamp.
  // The authoritative hit, HP and death events are still applied at e.t.
  CombatCues.advance(replay.events,replay.index,elapsed,e=>{
@@ -1022,7 +980,7 @@ function update(){
   return JSON.stringify([fingerprint(me),state.roundPhase==='COMBAT'?state.pairs?.find(pair=>pair.a===uid||pair.b===uid):null]);
  };
  const signature=boardSignature();
- if(key!==seenPhaseKey){seenPhaseKey=key;lastBoardSignature=signature;renderBoard();startReplay();}
+ if(key!==seenPhaseKey){seenPhaseKey=key;lastBoardSignature=signature;renderBoard();void startReplay().catch(showError);}
  else if(state.roundPhase==='PREPARATION'&&signature!==lastBoardSignature){lastBoardSignature=signature;renderBoard();}
 
 }
@@ -1177,17 +1135,27 @@ function setup3D(){
 }
 setInterval(()=>{
  if(!state||state.status!=='in_game')return;
- const now=Date.now();
+ const now=gameNow();
  $('timer').textContent=Math.max(0,Math.ceil((state.phaseEndsAt-now)/1000))+'s';
- if(!host||!hostState||now<hostState.phaseEndsAt||advancing)return;
+ const allReady=state.roundPhase==='PREPARATION'&&state.playerOrder.filter(id=>!state.players[id].eliminated).every(id=>state.players[id].ready);
+ if(advancing||(!allReady&&now<state.phaseEndsAt))return;
+ if(!offline){
+  // Stagger requests to avoid four simultaneous transaction retries. Any member
+  // can advance; the committed phase key prevents duplicate results and rewards.
+  const stagger=Math.max(0,state.playerOrder.indexOf(uid))*150;
+  if(!allReady&&now<state.phaseEndsAt+stagger||now-lastAdvance<1500)return;
+  advancing=true;lastAdvance=now;
+  onlineTransport.advance().catch(showError).finally(()=>{advancing=false;});return;
+ }
+ if(!hostState)return;
  advancing=true;
  dispatch(async()=>{
   if(!hostState||hostState.status!=='in_game')return;
-  E.advance(hostState,Date.now());
-  if(offline&&hostState.status==='in_game'&&hostState.roundPhase==='PREPARATION')offlineAI(Date.now());
+  hostState=await simulation.advance(hostState,Date.now());
+  if(hostState.status==='in_game'&&hostState.roundPhase==='PREPARATION')offlineAI(Date.now());
   await publish();
  }).finally(()=>{advancing=false;});
-},500);
+},250);
 
 init();
 </script></body></html>

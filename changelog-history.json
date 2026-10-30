@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.2",
+      "releaseDate": "2026-10-30T02:26:46.428Z",
+      "summary": "fix(staff-id): retry uncached enrollment token transactions",
+      "details": [
+        "fix(staff-id): retry uncached enrollment token transactions"
+      ]
+    },
+    {
       "version": "1.1.1",
       "releaseDate": "2026-10-30T01:59:07.372Z",
       "summary": "fix(staff-id): show enrollment panel button in online widget",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #113 from gianghamk-hash/balance/tft-role-stats-cost1-tank-20261029",
       "details": [
         "Merge pull request #113 from gianghamk-hash/balance/tft-role-stats-cost1-tank-20261029"
-      ]
-    },
-    {
-      "version": "1.0.172",
-      "releaseDate": "2026-10-29T02:14:02.595Z",
-      "summary": "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029",
-      "details": [
-        "Merge pull request #112 from gianghamk-hash/test/tft-package-d-stress-20261029"
       ]
     }
   ]

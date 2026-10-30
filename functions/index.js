@@ -206,3 +206,64 @@ exports.tacticsGetRoom=onCall(opts,async req=>{
  if(!state||!state.players?.[uid])throw new HttpsError('permission-denied','Không thuộc phòng');
  return {state};
 });
+
+/* Staff ID issuance / device enrolment — server enforced.
+ * Deployment prerequisite: set STAFF_ADMIN_UIDS in Cloud Functions environment
+ * to comma-separated Firebase Authentication UIDs of authorized managers.
+ * Client-side Master flags / APK user-agent are NEVER authority here.
+ */
+const staffAdminIds=()=>new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()).filter(Boolean));
+function requireStaffAdmin(req){
+ const uid=requireUid(req);
+ if(!staffAdminIds().has(uid))throw new HttpsError('permission-denied','UID chưa được cấp quyền quản trị nhân sự');
+ return uid;
+}
+const staffCodePattern=/^DOL-[0-9]{4,6}$/;
+const staffRoot=()=>getDatabase().ref('staffRegistry');
+const staffTokenRoot=()=>getDatabase().ref('staffEnrollmentCodes');
+exports.staffCreateProfile=onCall(opts,async req=>{
+ requireStaffAdmin(req);
+ const employeeId=String(req.data?.employeeId||'').trim().toUpperCase();
+ const name=String(req.data?.name||'').trim().replace(/\s+/g,' ').slice(0,64);
+ if(!staffCodePattern.test(employeeId)||name.length<2)throw new HttpsError('invalid-argument','Mã DOL-0001 và tên nhân viên hợp lệ là bắt buộc');
+ const ref=staffRoot().child(employeeId);
+ const created=await ref.transaction(v=>v?undefined:{employeeId,name,active:true,createdAt:Date.now()},undefined,false);
+ if(!created.committed)throw new HttpsError('already-exists','Mã nhân viên đã được cấp');
+ return {employeeId,name};
+});
+exports.staffIssueLinkCode=onCall(opts,async req=>{
+ requireStaffAdmin(req);
+ const employeeId=String(req.data?.employeeId||'').trim().toUpperCase();
+ if(!staffCodePattern.test(employeeId))throw new HttpsError('invalid-argument','Mã nhân viên không hợp lệ');
+ const snap=await staffRoot().child(employeeId).once('value'),profile=snap.val();
+ if(!profile||!profile.active)throw new HttpsError('not-found','Không tìm thấy nhân viên đang hoạt động');
+ const code=crypto.randomBytes(18).toString('hex').toUpperCase();
+ const tokenHash=crypto.createHash('sha256').update(code).digest('hex');
+ await staffTokenRoot().child(tokenHash).set({employeeId,issuedAt:Date.now(),expiresAt:Date.now()+10*60*1000});
+ return {employeeId,name:profile.name,code,expiresInMinutes:10};
+});
+exports.staffClaimLinkCode=onCall(opts,async req=>{
+ const uid=requireUid(req);
+ const code=String(req.data?.code||'').trim().toUpperCase();
+ if(!/^[0-9A-F]{36}$/.test(code))throw new HttpsError('invalid-argument','Mã liên kết không hợp lệ');
+ await throttle(uid,2500);
+ const tokenHash=crypto.createHash('sha256').update(code).digest('hex');
+ const ref=staffTokenRoot().child(tokenHash);let issued=null;
+ const result=await ref.transaction(v=>{
+  if(!v||v.usedAt||v.expiresAt<Date.now())return;
+  issued=v;return {...v,usedAt:Date.now(),claimedUid:uid};
+ },undefined,false);
+ if(!result.committed||!issued)throw new HttpsError('failed-precondition','Mã hết hạn hoặc đã được sử dụng');
+ const snap=await staffRoot().child(issued.employeeId).once('value'),profile=snap.val();
+ if(!profile||!profile.active)throw new HttpsError('failed-precondition','Nhân viên không còn hoạt động');
+ await getDatabase().ref('staffIdentity/'+uid).set({employeeId:profile.employeeId,name:profile.name,verified:true,updatedAt:Date.now()});
+ return {employeeId:profile.employeeId,name:profile.name,verified:true};
+});
+exports.staffGetIdentity=onCall(opts,async req=>{
+ const uid=requireUid(req);
+ const snap=await getDatabase().ref('staffIdentity/'+uid).once('value'),v=snap.val();
+ if(!v||v.verified!==true)return {verified:false};
+ const profile=(await staffRoot().child(v.employeeId).once('value')).val();
+ if(!profile||!profile.active)return {verified:false};
+ return {verified:true,employeeId:profile.employeeId,name:profile.name};
+});

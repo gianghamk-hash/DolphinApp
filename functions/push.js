@@ -11,14 +11,15 @@ const {onDocumentWritten} = require('firebase-functions/v2/firestore');
 const REGION = 'asia-southeast1';
 const DEVICES = 'dolphin_push_devices';
 const DISPATCHES = 'dolphin_push_dispatches';
-const OUTLETS = ['bungalow','lounge','restaurant'];
+const OUTLETS = ['bungalow','lounge','restaurant','show'];
 const FEEDS = [
   ['bun_orders', 'Bungalow', 'order', 'bungalow'],
   ['lounge_orders', 'Lounge', 'order', 'lounge'],
   ['res_orders', 'Restaurant', 'order', 'restaurant'],
   ['bun_calls', 'Bungalow', 'call', 'bungalow'],
   ['lounge_calls', 'Lounge', 'call', 'lounge'],
-  ['res_calls', 'Restaurant', 'call', 'restaurant']
+  ['res_calls', 'Restaurant', 'call', 'restaurant'],
+  ['show_tables', 'Show', 'order', 'show']
 ];
 const digest = str => crypto.createHash('sha256').update(str).digest('hex');
 const staffCodePattern = /^DOL-[0-9]{4,6}$/;
@@ -50,7 +51,7 @@ function normalizeOutlets(value) {
 }
 function configuredOutlets(value) {
   if (!Array.isArray(value) || value.some(x => !OUTLETS.includes(x)))
-    throw new HttpsError('invalid-argument','Các outlet hợp lệ: bungalow, lounge, restaurant.');
+    throw new HttpsError('invalid-argument','Các outlet hợp lệ: bungalow, lounge, restaurant, show.');
   return normalizeOutlets(value);
 }
 
@@ -129,7 +130,7 @@ function needsAlert(before,after) {
   return Boolean(stamp(after) && stamp(after)!==stamp(before));
 }
 function safeTable(data) {
-  const raw=data.table || data.tableName || data.bungalow || data.room || '';
+  const raw=data.table || data.tableName || data.bungalow || data.room || data.label || '';
   return String(raw).replace(/[^\p{L}\p{N} ._-]/gu,'').slice(0,40);
 }
 function notificationPayload(collection,label,kind,id,data,outlet) {
@@ -144,9 +145,18 @@ function notificationPayload(collection,label,kind,id,data,outlet) {
     kind,outlet,eventId,type:'dolphin-order'
   };
 }
+function showService(booking) {
+  if(!booking || !booking.service)return null;
+  return {status:booking.service.status || 'pending',
+    timestamp:booking.service.savedAt || 0, table:booking.label || ''};
+}
 async function sendAlert(event,collection,label,kind,outlet) {
-  const before=event.data?.before.exists ? event.data.before.data() : null;
-  const after=event.data?.after.exists ? event.data.after.data() : null;
+  const rawBefore=event.data?.before.exists ? event.data.before.data() : null;
+  const rawAfter=event.data?.after.exists ? event.data.after.data() : null;
+  // Show stores an order under show_tables/{tableId}.service instead of
+  // the flat *_orders structure. Notify only when this service is pending.
+  const before=collection==='show_tables' ? showService(rawBefore) : rawBefore;
+  const after=collection==='show_tables' ? showService(rawAfter) : rawAfter;
   if(!needsAlert(before,after) || process.env.PUSH_ENABLED!=='true')return;
   const info=notificationPayload(collection,label,kind,event.params.id,after,outlet);
   const db=getFirestore();
@@ -196,4 +206,4 @@ for(const [collection,label,kind,outlet] of FEEDS)
     document:collection+'/{id}',region:REGION,maxInstances:5
   },event=>sendAlert(event,collection,label,kind,outlet));
 
-exports._pushTest={needsAlert,stamp,safeTable,normalizeOutlets,notificationPayload};
+exports._pushTest={needsAlert,stamp,safeTable,normalizeOutlets,showService,notificationPayload};

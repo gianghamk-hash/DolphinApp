@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.8",
+      "releaseDate": "2026-10-30T07:44:01.872Z",
+      "summary": "Fix order and service notifications and restore music (#163)",
+      "details": [
+        "Fix order and service notifications and restore music (#163)"
+      ]
+    },
+    {
       "version": "1.1.7",
       "releaseDate": "2026-10-30T06:59:55.666Z",
       "summary": "Fix game leaderboards and sync TFT final standings automatically (#162)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029",
       "details": [
         "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029"
-      ]
-    },
-    {
-      "version": "1.0.178",
-      "releaseDate": "2026-10-29T05:35:59.802Z",
-      "summary": "Merge pull request #119 from gianghamk-hash/feat/tft-authority-online-merge-main-20261029",
-      "details": [
-        "Merge pull request #119 from gianghamk-hash/feat/tft-authority-online-merge-main-20261029"
       ]
     }
   ]

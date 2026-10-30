@@ -1,7 +1,7 @@
 {
-  "version": "1.1.8",
-  "buildDate": "2026-10-30T07:44:01.872Z",
-  "commit": "b154da2",
-  "notes": "Fix order and service notifications and restore music (#163)",
+  "version": "1.1.9",
+  "buildDate": "2026-10-30T09:09:45.339Z",
+  "commit": "395e451",
+  "notes": "Fix custom-domain URLs and restore floating Back controls (#164)",
   "forceUpdate": false
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.4",
-  "buildDate": "2026-10-30T04:39:11.730Z",
-  "commit": "0de88eb",
-  "notes": "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization",
+  "version": "1.1.5",
+  "buildDate": "2026-10-30T06:04:17.100Z",
+  "commit": "bed17c2",
+  "notes": "Fix TFT online lag with compact atomic rooms and background combat (#160)",
   "forceUpdate": false
 }

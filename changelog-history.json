@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.4",
+      "releaseDate": "2026-10-30T04:39:11.730Z",
+      "summary": "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization",
+      "details": [
+        "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization"
+      ]
+    },
+    {
       "version": "1.1.3",
       "releaseDate": "2026-10-30T03:44:33.609Z",
       "summary": "fix(ranking): merge staff name case and spacing variants",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029",
       "details": [
         "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029"
-      ]
-    },
-    {
-      "version": "1.0.174",
-      "releaseDate": "2026-10-29T03:38:54.513Z",
-      "summary": "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)",
-      "details": [
-        "feat(tft): 36 distinctive hero skill signatures and combat VFX integration (#114)"
       ]
     }
   ]

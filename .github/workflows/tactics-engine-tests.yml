@@ -27,4 +27,4 @@ jobs:
           cd functions && npm test
           node --test ../giaitri/games/tactics-online/hero-identity.test.js ../giaitri/games/tactics-online/weapon-animation.test.js ../giaitri/games/tactics-online/combat-performance.test.js ../giaitri/games/tactics-online/combat-timeline.test.js ../giaitri/games/tactics-online/hero-quality.test.js ../giaitri/games/tactics-online/model-loader.test.js
       - name: Validate atomic online rooms and worker simulation
-        run: node --test giaitri/games/tactics-online/online-transport.test.js giaitri/games/tactics-online/simulation-client.test.js giaitri/games/tactics-online/tactics-ui.test.js
+        run: node --test giaitri/games/tactics-online/online-transport.test.js giaitri/games/tactics-online/simulation-client.test.js giaitri/games/tactics-online/phase-banner.test.js giaitri/games/tactics-online/tactics-ui.test.js

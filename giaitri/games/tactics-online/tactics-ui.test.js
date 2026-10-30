@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
 const css=fs.readFileSync(path.join(__dirname,'tactics-ui.css'),'utf8');
 test('redesign stylesheet loaded and all action targets remain intact',()=>{
- assert.match(html,/href="tactics-ui\.css\?v=1"/);
+ assert.match(html,/href="tactics-ui\.css\?v=2"/);
  for(const id of ['stage','shop','touchItemTray','touchItemSlots','traitRail','traitInfo','bench','rollShopBtn','lockShopBtn','buyXpBtn']){
  assert.match(html,new RegExp('id="'+id+'"'));
  }
@@ -244,12 +244,12 @@ test('equipment details expose components, recipes, stats and effects without ch
  assert.match(html,/def\.description\|\|EFFECT_LABELS/);
  assert.match(html,/window\.openItemForEquip=/); assert.match(html,/window\.equipSelectedItem=/);
 });
-test('PvP matchup label uses live pair and opponent HP',()=>{
- assert.match(html,/id="boardHelp"/);
+test('PvP announcement uses a visible timed banner independent of hidden board help',()=>{
+ assert.match(html,/id="battleBanner" role="status" aria-live="polite"/);
  assert.match(html,/function paintOpponent\(/);
- assert.match(html,/state\.pairs\?\.find/);
- assert.match(html,/enemy\.displayName/);
- assert.match(html,/enemy\.hp/);
+ assert.match(html,/roundBanner\.update\(state,uid\)/);
+ assert.match(html,/DolphinTacticsPhaseBanner\.create/);
+ assert.match(css,/#game #battleBanner\.combat/);
  assert.match(html,/paintPlayers\(\);paintOpponent\(\);paintControls\(\)/);
 });
 

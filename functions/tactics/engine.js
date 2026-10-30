@@ -28,6 +28,11 @@ function createEngine(C){
  const legalBench=k=>/^[0-7]$/.test(String(k));
  function findPosition(p,id){for(let k in p.board)if(p.board[k]===id)return {kind:"board",key:k};for(let k in p.bench)if(p.bench[k]===id)return {kind:"bench",key:k};return null;}
  function firstBench(p){for(let i=0;i<8;i++)if(!p.bench[String(i)])return String(i);return null;}
+ function canReorderBench(s,uid,a){
+  const p=s.players&&s.players[uid];
+  return !!(p&&a&&a.type==="MOVE"&&a.to==="bench"&&legalBench(a.index)&&findPosition(p,a.unitId)?.kind==="bench"&&
+   (s.roundPhase==="COMBAT"||s.roundPhase==="PREPARATION"&&!p.ready));
+ }
  function mergeTriples(p){
   let done=true;
   while(done){done=false;
@@ -80,9 +85,10 @@ function createEngine(C){
  function action(s,uid,a,now){
   assert(s.status==="in_game"&&now<=s.phaseEndsAt,"Trận đấu đã kết thúc hoặc giai đoạn đã hết");
   const shopAction=["BUY","ROLL","BUY_XP","TOGGLE_SHOP_LOCK"].includes(a?.type);
-  assert(shopAction||s.roundPhase==="PREPARATION","Chỉ thay đổi đội hình trong giai đoạn Chuẩn bị");
+  const benchMove=canReorderBench(s,uid,a);
+  assert(shopAction||benchMove||s.roundPhase==="PREPARATION","Chỉ thay đổi đội hình ra sân trong giai đoạn Chuẩn bị");
   const p=s.players[uid];assert(p&&!p.eliminated,"Người chơi không hợp lệ");
-  assert(a&&typeof a.type==="string","Thiếu thao tác");assert(shopAction||!p.ready,"Đã sẵn sàng");
+  assert(a&&typeof a.type==="string","Thiếu thao tác");assert(shopAction||benchMove||!p.ready,"Đã sẵn sàng");
   if(a.type==="BUY"){const i=a.index;assert(Number.isInteger(i)&&i>=0&&i<5,"Ô shop sai");
     const id=p.shop[i],h=HERO[id],slot=firstBench(p);assert(h&&slot!==null&&p.gold>=h.cost,"Không đủ vàng hoặc bench đầy");assert(remainingCopies(s,id)>0,"Tướng đã hết trong bể chung");
     p.gold-=h.cost;const unitId='u'+(++s.sequence);p.units[unitId]={id:unitId,heroId:id,star:1,items:[]};p.bench[slot]=unitId;p.shop[i]="";if(s.roundPhase==="PREPARATION")mergeTriples(p);else p.pendingMerge=true;
@@ -382,7 +388,7 @@ function createEngine(C){
   s.updatedAt=now;return s;
  }
  return {C,HERO,COMP,RECIPE,PHASES,clone,assert,nextRand,shopRoll,ownedCopies,remainingCopies,COPIES_BY_COST,freshPlayer,roomNew,boardKey,
- legalBoard,legalBench,findPosition,firstBench,mergeTriples,traitCounts,activeTraits,itemStats,combatStats,
+ legalBoard,legalBench,findPosition,firstBench,canReorderBench,mergeTriples,traitCounts,activeTraits,itemStats,combatStats,
  action,grantRoundXp,LEVEL_XP,maxLevel,slotsForLevel,pairings,findStep,simulate,finalize,advance};
 }
 if(typeof module!=="undefined"&&module.exports)module.exports=createEngine(require("./catalog.json"));

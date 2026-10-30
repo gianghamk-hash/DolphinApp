@@ -1,7 +1,7 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Dolphin Tactics 3D — 4 player online</title>
-<link rel="stylesheet" href="tactics-ui.css?v=1">
+<link rel="stylesheet" href="tactics-ui.css?v=2">
 <style>
 /* Android APK — balanced board and shop sidebar. */
 /* Ensure five shop cards have readable names in landscape APK. */
@@ -383,7 +383,7 @@ html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!imp
 <div class="flex" style="margin-top:8px"><button id="leave" class="hidden" onclick="leaveRoom()">RỜI PHÒNG</button></div>
 <button class="gold hidden" id="start" onclick="startRoom()">BẮT ĐẦU KHI ĐỦ 4 NGƯỜI</button>
 </div><div id="loginStatus" class="small"></div></div>
-<main id="game" class="hidden"><section><div id="stage"><div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="heroNameLayer" aria-hidden="true"></div><div id="boardHelp"></div></div>
+<main id="game" class="hidden"><section><div id="stage"><div class="traitRail" id="traitRail" aria-label="Tộc hệ kích hoạt"></div><div id="traitInfo" class="traitInfo hidden" role="dialog"></div><button id="stageFullscreen" onclick="toggleFullscreen()">⛶</button><div id="battleBanner" role="status" aria-live="polite" aria-atomic="true">🛒 CHUẨN BỊ</div><div id="damageLayer"></div><div id="heroNameLayer" aria-hidden="true"></div><div id="boardHelp"></div></div>
 <div id="players" class="playerDock" aria-label="Máu và cấp của người chơi"></div><div id="touchItemTray" class="touchItemTray" aria-label="Kho trang bị kéo thả"><button type="button" id="itemInfoOpen" class="touchItemTitle" onclick="openItemInfo()" aria-label="Xem chi tiết trang bị">🎒 TRANG BỊ <span aria-hidden="true">ⓘ</span></button><div id="touchItemSlots" class="touchItemSlots" aria-live="polite"></div></div><div class="benchBar"><div class="benchTitle">HÀNG CHỜ <span>8 Ô</span></div><div id="bench"></div></div>
 </section><aside>
 <div class="panel"><h2 id="phaseLabel">CHUẨN BỊ</h2><div class="small" id="economy"></div><div id="deployment" class="small" aria-live="polite"></div>
@@ -406,8 +406,8 @@ html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!imp
 </div><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupSell" onclick="requestSellSelected()">🪙 Bán tướng</button></div></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="../../../functions/tactics/engine.js"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
-<script src="online-transport.js?v=2"></script><script src="simulation-client.js?v=2"></script><script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="../../../dolphin-multiplayer.js?v=2.1"></script>
+<script src="../../../functions/tactics/engine.js?v=combat-controls-1"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
+<script src="phase-banner.js?v=1"></script><script src="online-transport.js?v=2"></script><script src="simulation-client.js?v=2"></script><script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="../../../dolphin-multiplayer.js?v=2.1"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script>
 (function(){
@@ -456,6 +456,8 @@ const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.Dolphin
 const simulation=window.DolphinTacticsSimulation.create(E,catalog);
 let onlineTransport=null;
 const gameNow=()=>offline?Date.now():onlineTransport?.now()||Date.now();
+const roundBanner=window.DolphinTacticsPhaseBanner.create($('battleBanner'),{clock:gameNow});
+let selectedShopHero='',suppressBenchClickUntil=0;
 let uid="",roomId="",state=null,selected=null,roster=[],host=false,hostState=null,queue=Promise.resolve(),offline=false;
 let stageScene,renderer,camera,board,characters,raycaster=new THREE.Raycaster(),mouse=new THREE.Vector2(),characterById=new Map();
 const CombatCues=window.DolphinTacticsCreateCombatCueScheduler();
@@ -625,17 +627,17 @@ $('itemInfoModal').addEventListener('click',e=>{if(e.target===$('itemInfoModal')
 function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=def.bonus||{[def.stat]:def.value};const stats=Object.entries(attrs).filter(([,v])=>v).map(([k,v])=>statLabel(k,v));return safe(def.name)+(def.components?' · '+safe(def.components.map(x=>itemDef(x)?.name||x).join(' + ')):'')+' · '+safe(stats.join(', '))+(def.effect&&def.effect!=='stat'?' · '+safe(EFFECT_LABELS[def.effect]||def.effect):'');}
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
 function selectedHeroInfo(){
- const u=state?.players?.[uid]?.units?.[selected];
+ const u=selectedShopHero?{id:'shop:'+selectedShopHero,heroId:selectedShopHero,star:1,items:[]}:state?.players?.[uid]?.units?.[selected];
  if(!u){$('heroInfo').innerHTML='';return;}
  const h=hero[u.heroId];if(!h)return;
  const p=state.players[uid],t=E.activeTraits(p),combat=E.combatStats(p,u,t);
  const skill=h.ability||{},spell=skill.name||SKILL_LABELS[skill.kind]||skill.kind;
  const signature=skill.signature?'<div style="margin-top:5px"><strong>✦ Đặc trưng: '+safe(skill.signature.name)+'</strong> · '+safe(skill.signature.effect)+' · '+safe(skill.signature.pattern)+' · '+safe(skill.signature.power)+'</div>':'';
  const stats=[['❤ HP',combat.hp],['⚔ ATK',combat.attack],['🛡 Giáp',combat.armor],['✦ Kháng phép',combat.magicResist],['🏹 Tầm đánh',combat.range],['⏱ Tốc đánh',Number(combat.attackSpeed).toFixed(2)],['🔮 Mana',combat.mana+'/'+combat.manaMax],['✨ AP',combat.abilityPower]];
- const metrics=combatMetrics.get(selected);
+ const metrics=combatMetrics.get(u.id);
  const metricsHtml=metrics?'<div class="combatMetrics">⚔ Sát thương '+Math.round(metrics.damage||0)+' · ❤ Hồi phục '+Math.round(metrics.heal||0)+' · 🛡 Khiên '+Math.round(metrics.shield||0)+' · ✦ Kỹ năng '+(metrics.casts||0)+'</div>':'';
  const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemIcon(id)+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
- $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong><div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div>'+signature+'<div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+metricsHtml+'</div>';
+ $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong>'+(selectedShopHero?'<div>Trong Shop · Giá '+h.cost+' vàng</div>':'')+'<div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div>'+signature+'<div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+metricsHtml+'</div>';
 }
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
@@ -670,7 +672,7 @@ window.joinRoom=async()=>{
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- try{if(!offline)await MP.leaveRoom();offline=false;roomId='';replayGeneration++;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';lastBoardSignature='';replay=null;localStorage.removeItem(reconnectKey);
+ try{if(!offline)await MP.leaveRoom();roundBanner.clear();offline=false;roomId='';selectedShopHero='';replayGeneration++;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';lastBoardSignature='';replay=null;localStorage.removeItem(reconnectKey);
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';$('reconnectBtn').classList.add('hidden');onlineMessage('');
   info('Đã rời phòng');}catch(e){showError(e);}
@@ -683,7 +685,7 @@ window.startRoom=async()=>{
 window.send=async action=>{
  if(!state||state.status!=='in_game')return false;
  const shopAction=['BUY','ROLL','BUY_XP','TOGGLE_SHOP_LOCK'].includes(action?.type);
- if(state.roundPhase!=='PREPARATION'&&!shopAction)return false;
+ if(state.roundPhase!=='PREPARATION'&&!shopAction&&!E.canReorderBench(state,uid,action))return false;
  if(!offline)return sendOnlineAction(action);
  return dispatch(async()=>{E.action(hostState,uid,action,Date.now());await publish();return true;});
 };
@@ -746,12 +748,7 @@ window.moveSelectedToBench=()=>{
 function isPvERound(round){return round<=3||round%5===0;}
 function combatType(){return isPvERound(Number(state?.round||1))?"PvE · ĐẤU QUÁI":"PvP · ĐẤU NGƯỜI";}
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
-function paintOpponent(){
- if(state.roundPhase!=='COMBAT')return;
- const pair=state.pairs?.find(pair=>pair.a===uid||pair.b===uid);
- const enemy=state.players[pair?.a===uid?pair?.b:pair?.a];
- if(enemy)$('boardHelp').textContent='⚔ Đối thủ: '+enemy.displayName+' · '+enemy.hp+' HP'+(pair.ghost?' · Bóng ma':'');
-}
+function paintOpponent(){roundBanner.update(state,uid);}
 function paintPlayers(){
  $('players').innerHTML=state.playerOrder.map(id=>{
   const p=state.players[id];if(!p)return '';
@@ -790,16 +787,16 @@ window.showTraitInfo=key=>{
 };
 $('traitRail').addEventListener('click',e=>{const btn=e.target.closest('[data-trait]');if(btn)showTraitInfo(btn.dataset.trait);});
 function paintControls(){
- const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready,shopEnabled=state.status==="in_game"&&!p.eliminated;
+ const p=state.players[uid];if(!p)return;const prep=state.status==="in_game"&&state.roundPhase==="PREPARATION"&&!p.ready,shopEnabled=state.status==="in_game"&&["PREPARATION","COMBAT"].includes(state.roundPhase)&&!p.eliminated;
  $("phaseLabel").textContent=phaseName[state.roundPhase]+' · '+combatType()+' · VÒNG '+state.round;
  const slots=E.slotsForLevel(p.level),xpGoal=E.LEVEL_XP[p.level]||0,boardCount=Object.keys(p.board||{}).length;
  $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+(xpGoal?"/"+xpGoal:" (MAX)")+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
- $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
- $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;const hint=window.DolphinTFTShopHints.hints(p,id,catalog);const marked=hint.upgrade||hint.synergy;const reason=hint.upgrade?"Có thể ghép lên 2 sao":hint.synergy?"Cùng tộc/hệ: "+hint.traits.map(t=>catalog.origins[t]?.label||t).join(", "):"";
- return '<button class="shopHero tier'+cost+(marked?' shopRecommended':'')+(hint.upgrade?' shopUpgrade':'')+(hint.synergy?' shopSynergy':'')+'" title="'+safe(reason)+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
- (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar" title="'+safe(ROLE_NAMES[primaryRole(h)]||'Vai trò chưa xác định')+'">'+roleIcon(h)+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>';
+ $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+(state.roundPhase==='COMBAT'&&p.pendingMerge?'<div class="pendingMergeHint">⏳ Dung hợp khi sang phase Chuẩn bị</div>':'')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
+ $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;const hint=window.DolphinTFTShopHints.hints(p,id,catalog);const marked=hint.upgrade||hint.synergy;const reason=hint.upgrade?(state.roundPhase==='COMBAT'?"Đủ bộ — dung hợp ở phase Chuẩn bị":"Có thể ghép lên 2 sao"):hint.synergy?"Cùng tộc/hệ: "+hint.traits.map(t=>catalog.origins[t]?.label||t).join(", "):"";
+ return '<div class="shopOffer"><button class="shopHero tier'+cost+(marked?' shopRecommended':'')+(hint.upgrade?' shopUpgrade':'')+(hint.synergy?' shopSynergy':'')+'" title="'+safe(reason)+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
+ (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar" title="'+safe(ROLE_NAMES[primaryRole(h)]||'Vai trò chưa xác định')+'">'+roleIcon(h)+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>'+(h?'<button type="button" class="shopInspect" onclick="inspectShopHero('+i+')" aria-label="Xem thông tin '+safe(h.name)+'" title="Xem thông tin '+safe(h.name)+'">ⓘ Thông tin</button>':'')+'</div>';
  }).join('');
- $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<div class="benchUnitWrap"><button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>'+(h?'<button type="button" class="benchSellBtn" aria-label="Bán '+safe(h.name)+'" onclick="sellUnitById(\''+id+'\')">🪙 BÁN</button>':'')+'</div>';}).join('');
+ $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<div class="benchUnitWrap"><button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>'+(h?'<button type="button" class="benchSellBtn" '+(prep?'':'disabled')+' aria-label="Bán '+safe(h.name)+'" onclick="sellUnitById(\''+id+'\')">🪙 BÁN</button>':'')+'</div>';}).join('');
  const icons={Mech:'🤖',Void:'🕳️',Arcane:'🔮',Beast:'🐺',Shadow:'🌑',Celestial:'☀️',Brawler:'⚔️',Assassin:'🗡️',Ranger:'🏹',Guardian:'🛡️',Sorcerer:'✨'};
  // Include every represented trait, even before its first activation threshold.
  const represented=new Set();
@@ -828,8 +825,25 @@ function paintControls(){
  });
 }
 window.buyHero=i=>send({type:'BUY',index:i});
-window.inspectCombatUnit=(x,y)=>{if(state?.roundPhase!=='COMBAT')return;const id=boardUnitAt(x,y);if(id){selected=id;selectedHeroInfo();$('heroInfo')?.scrollIntoView({block:'nearest',behavior:'smooth'});}};
-window.tapBench=i=>{let p=state?.players[uid],id=p?.bench[i];if(selected&&selected!==id){send({type:'MOVE',unitId:selected,to:'bench',index:String(i)});selected=null;closeUnitPopup();}else{selected=id||null;paintControls();if(id)openUnitPopup(window.innerWidth/2,window.innerHeight*.68,id);else closeUnitPopup();}};
+window.inspectShopHero=i=>{
+ const id=state?.players?.[uid]?.shop?.[i];if(!hero[id])return;
+ selected=null;selectedShopHero=id;selectedHeroInfo();
+ $('heroInfo').scrollIntoView({block:'nearest',behavior:'smooth'});
+};
+window.inspectCombatUnit=(x,y)=>{if(state?.roundPhase!=='COMBAT')return;const id=boardUnitAt(x,y);if(id){selectedShopHero='';selected=id;selectedHeroInfo();$('heroInfo')?.scrollIntoView({block:'nearest',behavior:'smooth'});}};
+window.tapBench=i=>{
+ if(Date.now()<suppressBenchClickUntil)return;
+ const p=state?.players?.[uid];if(!p)return;
+ const id=p.bench[i],action={type:'MOVE',unitId:selected,to:'bench',index:String(i)};
+ if(selected&&selected!==id&&E.canReorderBench(state,uid,action)){
+  send(action);selected=null;selectedShopHero='';closeUnitPopup();return;
+ }
+ if(selected&&selected!==id&&state.roundPhase==='PREPARATION'&&!p.ready&&Object.values(p.board).includes(selected)){
+  send(action);selected=null;selectedShopHero='';closeUnitPopup();return;
+ }
+ selectedShopHero='';selected=id||null;paintControls();
+ if(id){openUnitPopup(window.innerWidth/2,window.innerHeight*.68,id);$('heroInfo').scrollIntoView({block:'nearest',behavior:'smooth'});}else closeUnitPopup();
+};
 window.closeUnitPopup=()=>{$('unitPopup').classList.add('hidden');};
 function openUnitPopup(x,y,id){
  if(!state?.players?.[uid]?.units?.[id])return;
@@ -962,12 +976,9 @@ function update(){
  if(state.status==="waiting"){ $("overlay").classList.remove("hidden");$("game").classList.add("hidden");return;}
  $("overlay").classList.add("hidden");$("game").classList.remove("hidden");
  if(!renderer)setup3D();
- const banner=$('battleBanner');
- banner.className=state.roundPhase==='PREPARATION'?'':'hidden';
  const myReport=(state.reports||[]).find(rep=>rep.pair?.a===uid||rep.pair?.b===uid);
  const myVictory=myReport&&myReport.winner===uid;
  const roundOutcome=!myReport?'':myReport.winner===null&&myReport.loser===null?'🤝 HÒA':myVictory?'🏆 CHIẾN THẮNG':'💔 THẤT BẠI';
- banner.textContent=state.status==='finished'?(state.winnerId===uid?'🏆 VÔ ĐỊCH':'🏁 KẾT THÚC'):state.roundPhase==='COMBAT'?'⚔ '+combatType()+' — VÒNG '+state.round:state.roundPhase==='TRANSITION'?roundOutcome+' · VÒNG '+state.round:'🛒 '+combatType()+' — CHUẨN BỊ VÒNG '+state.round;
  if(state.roundPhase==='TRANSITION'&&myReport){const me=state.players?.[uid],streak=Math.max(me?.streaks?.win||0,me?.streaks?.loss||0);$('boardHelp').textContent=roundOutcome+(myReport.loser===uid?' · Trừ '+myReport.damage+' HP':'')+(streak>=2?' · Chuỗi '+streak:'')+' · Chuẩn bị vòng tiếp theo';}
  if(state.roundPhase!=='TRANSITION'||!myReport)$('boardHelp').textContent=state.roundPhase==='COMBAT'?'Theo dõi các tướng di chuyển, tấn công và dùng kỹ năng':state.roundPhase==='TRANSITION'?'Kết quả đã được tính, chuẩn bị vòng tiếp theo':'Chạm tướng tại Bench, sau đó chạm ô trống trên sân để bố trí';
  paintPlayers();paintOpponent();paintControls();
@@ -1032,7 +1043,7 @@ $('stage').addEventListener('pointerdown',e=>{
 });
 $('bench').addEventListener('pointerdown',e=>{
  const button=e.target.closest('[data-bench]'),slot=Number(button?.dataset.bench);
- if(!button||!state||state.roundPhase!=='PREPARATION')return;
+ if(!button||state?.status!=='in_game'||!['PREPARATION','COMBAT'].includes(state.roundPhase)||state.roundPhase==='PREPARATION'&&state.players[uid].ready)return;
  const unitId=state.players?.[uid]?.bench?.[slot];
  if(unitId){dragUnit={id:unitId,source:'bench',x:e.clientX,y:e.clientY};button.classList.add('isDragSource');}
 });
@@ -1044,12 +1055,14 @@ document.addEventListener('pointerup',e=>{
  if(Date.now()-lastPinchAt<350){dragUnit=null;return;}
  if(!dragUnit)return;
  const drag=dragUnit;dragUnit=null;
- if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<20||state?.roundPhase!=='PREPARATION')return;
+ if(Math.hypot(e.clientX-drag.x,e.clientY-drag.y)<20||!['PREPARATION','COMBAT'].includes(state?.roundPhase))return;
+ suppressBenchClickUntil=Date.now()+350;
  const element=document.elementFromPoint(e.clientX,e.clientY);
  const benchButton=element?.closest?.('#bench [data-bench]');
  if(benchButton){
   const slot=benchButton.dataset.bench;
-  if(drag.source==='board'){send({type:'MOVE',unitId:drag.id,to:'bench',index:String(slot)});selected=null;}
+  const action={type:'MOVE',unitId:drag.id,to:'bench',index:String(slot)};
+  if(E.canReorderBench(state,uid,action)||state.roundPhase==='PREPARATION'){send(action);selected=null;selectedShopHero='';}
   return;
  }
  // If dropped onto the bench strip between buttons, choose the first empty bench slot.
@@ -1061,7 +1074,7 @@ document.addEventListener('pointerup',e=>{
   return;
  }
  const tile=boardHit(e.clientX,e.clientY);
- if(tile&&tile.row>=4){
+ if(state.roundPhase==='PREPARATION'&&tile&&tile.row>=4){
   send({type:'MOVE',unitId:drag.id,to:'board',index:'r'+(tile.row-4)+'c'+tile.col});
   selected=null;
  }
@@ -1105,7 +1118,7 @@ function setup3D(){
   if(!state||state.roundPhase!=='PREPARATION'||Date.now()-lastPinchAt<350||pinchPointers.size>1)return;
   const rect=renderer.domElement.getBoundingClientRect();mouse.set((e.clientX-rect.left)/rect.width*2-1,-(e.clientY-rect.top)/rect.height*2+1);raycaster.setFromCamera(mouse,camera);
   let unit=raycaster.intersectObjects(characters.children,true)[0];
-  if(unit){let target=unit.object;while(target&&!target.userData.unitId)target=target.parent;if(target){selected=target.userData.unitId;paintControls();openUnitPopup(e.clientX,e.clientY,selected);return;}}
+  if(unit){let target=unit.object;while(target&&!target.userData.unitId)target=target.parent;if(target){selectedShopHero='';selected=target.userData.unitId;paintControls();openUnitPopup(e.clientX,e.clientY,selected);return;}}
   let tile=raycaster.intersectObjects(board.children,false)[0];
   if(tile&&selected){const {col,row}=tile.object.userData.tile;if(row>=4){send({type:'MOVE',unitId:selected,to:'board',index:'r'+(row-4)+'c'+col});selected=null;}}
  });

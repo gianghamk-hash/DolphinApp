@@ -8,7 +8,7 @@ function createAdapter(config){
  const app=fb.apps.find(x=>x.name===appName)||fb.initializeApp(config,appName);
  const auth=app.auth(),functions=app.functions('asia-southeast1');
  const call=(name,data)=>functions.httpsCallable(name)(data).then(x=>x.data);
- let roomId='',uid='',last='',onStop=null,polling=false,timer=null;
+ let roomId='',uid='',last='',onStop=null,polling=false,timer=null,failures=0,roomStatus='waiting';
  async function identity(){
   if(!auth.currentUser){try{await auth.signInAnonymously();}catch(err){if(err?.code==='auth/operation-not-allowed')throw Error('Firebase Authentication chưa bật Anonymous sign-in; cần bật tại Authentication → Sign-in method.');throw err;}}
   uid=auth.currentUser.uid;
@@ -19,6 +19,7 @@ function createAdapter(config){
   polling=true;
   try{
    const {state}=await call('tacticsGetRoom',{roomId});
+   failures=0;roomStatus=state.status;
    const snapshot=JSON.stringify(state);
    if(snapshot!==last){
     last=snapshot;
@@ -27,13 +28,13 @@ function createAdapter(config){
     onStop?.emit('players',{players:order.map((id,i)=>({id,name:state.players[id]?.displayName||'Người chơi',side:'p'+(i+1)}))});
     onStop?.emit('state',state);
    }
-  }catch(err){onStop?.emit('error',{type:'server',err});}
+  }catch(err){failures++;if(failures===1||failures%5===0)onStop?.emit('error',{type:'server',err});}
   finally{polling=false;}
  }
  return {
   async createRoom(options={}){await identity();const result=await call('tacticsCreateRoom',{name:options.name});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:true};},
   async joinRoom(code,options={}){await identity();const result=await call('tacticsJoinRoom',{roomId:code,name:options.name});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:false};},
-  subscribe({roomId:id,emit}){roomId=id;onStop={emit};void fetchState();timer=setInterval(fetchState,1200);return ()=>{clearInterval(timer);timer=null;onStop=null;last='';roomId='';};},
+  subscribe({roomId:id,emit}){roomId=id;onStop={emit};void fetchState();timer=setInterval(()=>{if(document.hidden||!navigator.onLine||failures>2)return;void fetchState();},1200);return ()=>{clearInterval(timer);timer=null;onStop=null;last='';roomId='';};},
   async leaveRoom(id){const leaving=id||roomId;if(leaving)await call('tacticsLeaveRoom',{roomId:leaving});},
   async startRoom(){const res=await call('tacticsStartRoom',{roomId});await fetchState();return res;},
   async action(action){const res=await call('tacticsAction',{roomId,action});await fetchState();return res;},

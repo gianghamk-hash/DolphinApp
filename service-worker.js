@@ -160,7 +160,8 @@ self.addEventListener('push', event => {
   if (!payload || payload.type !== 'dolphin-order') return;
   event.waitUntil((async () => {
     const windows = await self.clients.matchAll({type:'window', includeUncontrolled:true});
-    const visible = windows.filter(client => client.visibilityState === 'visible');
+    const visible = windows.filter(client => client.visibilityState === 'visible' &&
+      (/\/index\.html$/.test(new URL(client.url).pathname) || /\/manager\/dashboard\.html$/.test(new URL(client.url).pathname)));
     if (visible.length) {
       visible.forEach(client => client.postMessage({type:'DOLPHIN_PUSH_RECEIVED', eventId:payload.eventId}));
       return; // foreground Firestore watcher already renders the order alert

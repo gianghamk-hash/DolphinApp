@@ -199,6 +199,14 @@ function isInWeek(ts){
   return ts >= state.weekStart && ts < state.weekEnd;
 }
 
+function cleanStaffName(value){
+  return String(value || '').normalize('NFC').trim().replace(/\s+/g, ' ');
+}
+
+function staffNameKey(value){
+  return cleanStaffName(value).toLocaleLowerCase('vi-VN');
+}
+
 /* ════════ FIREBASE ════════ */
 try {
   const app = initializeApp(firebaseConfig);
@@ -317,14 +325,17 @@ function collectShowTables(){
 
 /* ════════ TÍNH DOANH THU ════════ */
 function calcRevenue(){
-  const emp = {};
+  const emp = new Map();
 
   function add(name, rev, label){
+    name = cleanStaffName(name);
     if (!name) return;
-    if (!emp[name]) emp[name] = { name: name, rev: 0, cnt: 0, details: [] };
-    emp[name].rev += rev;
-    emp[name].cnt += 1;
-    emp[name].details.push(label);
+    const key = staffNameKey(name);
+    if (!emp.has(key)) emp.set(key, { name, rev: 0, cnt: 0, details: [] });
+    const employee = emp.get(key);
+    employee.rev += rev;
+    employee.cnt += 1;
+    employee.details.push(label);
   }
 
   // 1. Lounge
@@ -356,7 +367,7 @@ function calcRevenue(){
     add(staff, price, label);
   });
 
-  return Object.values(emp)
+  return Array.from(emp.values())
     .filter(e => e.rev > 0)
     .sort((a, b) => b.rev - a.rev)
     .slice(0, TOP_N);
@@ -395,7 +406,7 @@ function renderRevenue(){
 /* ════════ ĐIỂM CÔNG VIỆC ════════ */
 function parseStaffNames(str){
   if (!str) return [];
-  return str.split('&').map(s => s.trim()).filter(Boolean);
+  return str.split('&').map(cleanStaffName).filter(Boolean);
 }
 
 function completedTimestamp(o, archiveDate){
@@ -428,24 +439,24 @@ function collectAllOrders(){
   return out;
 }
 function calcPoints(){
-  const emp = {};
-  function ensure(name){
-    if (!emp[name]) emp[name] = { name, points: 0, both: 0, onlyComplete: 0, onlyPrepare: 0 };
-    return emp[name];
+  const emp = new Map();
+  function ensure(key, name){
+    if (!emp.has(key)) emp.set(key, { name, points: 0, both: 0, onlyComplete: 0, onlyPrepare: 0 });
+    return emp.get(key);
   }
   collectAllOrders().forEach(o => {
     if(o.status!=='completed'||!isInWeek(o._completedTs))return;
-    const preparedNames=parseStaffNames(o.preparedBy);
-    const completedNames=parseStaffNames(o.completedBy);
-    new Set([...preparedNames,...completedNames]).forEach(name=>{
-      const e=ensure(name),didPrepare=preparedNames.includes(name),didComplete=completedNames.includes(name);
+    const preparedNames=new Map(parseStaffNames(o.preparedBy).map(name=>[staffNameKey(name),name]));
+    const completedNames=new Map(parseStaffNames(o.completedBy).map(name=>[staffNameKey(name),name]));
+    new Map([...preparedNames,...completedNames]).forEach((name,key)=>{
+      const e=ensure(key,name),didPrepare=preparedNames.has(key),didComplete=completedNames.has(key);
       const lounge=o._area==='lounge';
       if(didPrepare&&didComplete){e.points += lounge?0.25:1;e.both+=1;}
       else if(didComplete){e.points += lounge?0.25:1;e.onlyComplete+=1;}
       else if(didPrepare){e.points += lounge?0.1:0.5;e.onlyPrepare+=1;}
     });
   });
-  return Object.values(emp).map(e=>({...e,points:Number(e.points.toFixed(2))})).filter(e=>e.points>0).sort((a,b)=>b.points-a.points||a.name.localeCompare(b.name,'vi')).slice(0,TOP_N);
+  return Array.from(emp.values()).map(e=>({...e,points:Number(e.points.toFixed(2))})).filter(e=>e.points>0).sort((a,b)=>b.points-a.points||a.name.localeCompare(b.name,'vi')).slice(0,TOP_N);
 }
 
 function renderPoints(){
@@ -531,3 +542,4 @@ window.goBack = function(){
 </script>
 </body>
 </html>
+

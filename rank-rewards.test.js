@@ -56,3 +56,15 @@ test('outlet specific point rules preserved in ranking file',()=>{
  assert.match(file,/renderRevenue\(\);\s*renderPoints\(\);/);
  assert.match(file,/publishCategory\('work',data,state\.weekStart\)/);
 });
+
+test('same employee receives the merged rank badge regardless of case or spacing',()=>{
+ const {api}=harness();
+ api.publish([{name:'Giang Đập Chai',rev:9300000}],'week');
+ assert.equal(api.get('  GIANG   ĐẬP CHAI ').rank,1);
+ assert.equal(api.get('giang đập chai'.normalize('NFD')).value,9300000);
+ assert.ok(api.badge('GIANG ĐẬP CHAI').includes('KING OF SALES'));
+ assert.equal(api.get('Giang Đẹp Chai'),null);
+ api.publishCategory('work',[{name:'Giang Đập Chai',points:1.25}],'week');
+ assert.equal(api.get('giang đập chai','work').title,'WORK CHAMPION');
+});
+

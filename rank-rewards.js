@@ -7,13 +7,14 @@
  const TIERS={
  revenue:[{max:1,title:'KING OF SALES',emoji:'👑',tier:'king'},{max:3,title:'DIAMOND SALES',emoji:'💎',tier:'diamond'},{max:6,title:'MASTER SALES',emoji:'🔮',tier:'master'},{max:10,title:'SALES ELITE',emoji:'🐬',tier:'elite'}],
  work:[{max:1,title:'WORK CHAMPION',emoji:'👑',tier:'king'},{max:3,title:'WORK ELITE',emoji:'⚔️',tier:'diamond'},{max:6,title:'WORK MASTER',emoji:'🛡️',tier:'master'},{max:10,title:'WORK TOP 10',emoji:'⭐',tier:'elite'}]};
- function clean(s){return String(s||'').trim().normalize('NFC');}
+ function clean(s){return String(s||'').normalize('NFC').trim().replace(/\s+/g,' ');}
+ function nameKey(s){return clean(s).toLocaleLowerCase('vi-VN');}
  function read(k){try{return JSON.parse(localStorage.getItem(k)||'null');}catch(e){return null;}}
  function all(){return read(KEY)||{};}
  function current(category='revenue'){const v=all()[category];return v&&Array.isArray(v.entries)?v:{entries:[],week:'',updatedAt:0};}
  function history(category='revenue'){const v=read(HISTORY)||{};return Array.isArray(v[category])?v[category]:[];}
  function tier(rank,category='revenue'){return (TIERS[category]||TIERS.revenue).find(x=>rank>0&&rank<=x.max)||null;}
- function get(name,category='revenue'){const e=current(category).entries.find(x=>clean(x.name)===clean(name));return e?{...e,...tier(e.rank,category)}:null;}
+ function get(name,category='revenue'){const e=current(category).entries.find(x=>nameKey(x.name)===nameKey(name));return e?{...e,...tier(e.rank,category)}:null;}
  function escapeHTML(s){return String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
  function badge(name,category='revenue'){const r=get(name,category);return r?'<span class="drr-tag drr-'+r.tier+'" title="Top '+r.rank+' · '+escapeHTML(r.title)+'">'+r.emoji+' '+escapeHTML(r.title)+'</span>':'';}
  function publishCategory(category,rows,week){
@@ -51,3 +52,4 @@
  root.DolphinRankRewards={current,history,get,tier,publish,publishCategory,badge,escapeHTML,formatPeriod,installStyle};
  installStyle();
 })(typeof window!=='undefined'?window:globalThis);
+

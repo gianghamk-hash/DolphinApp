@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.5",
+      "releaseDate": "2026-10-30T06:04:17.100Z",
+      "summary": "Fix TFT online lag with compact atomic rooms and background combat (#160)",
+      "details": [
+        "Fix TFT online lag with compact atomic rooms and background combat (#160)"
+      ]
+    },
+    {
       "version": "1.1.4",
       "releaseDate": "2026-10-30T04:39:11.730Z",
       "summary": "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029",
       "details": [
         "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029"
-      ]
-    },
-    {
-      "version": "1.0.175",
-      "releaseDate": "2026-10-29T04:25:13.068Z",
-      "summary": "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029",
-      "details": [
-        "Merge pull request #115 from gianghamk-hash/feat/tft-landing-staff-leaderboard-20261029"
       ]
     }
   ]

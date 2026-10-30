@@ -1,18 +1,18 @@
 {
-  "version": "1.1.5",
-  "previousVersion": "1.1.4",
-  "commit": "bed17c2",
-  "previousCommit": "0de88eb",
-  "buildDate": "2026-10-30T06:04:17.100Z",
-  "summary": "Fix TFT online lag with compact atomic rooms and background combat (#160)",
+  "version": "1.1.6",
+  "previousVersion": "1.1.5",
+  "commit": "2d0af4c",
+  "previousCommit": "bed17c2",
+  "buildDate": "2026-10-30T06:28:28.819Z",
+  "summary": "Show TFT round opponents and enable combat shop and bench controls (#161)",
   "changes": {
-    "totalCommits": 229,
-    "filesChanged": 12,
+    "totalCommits": 230,
+    "filesChanged": 10,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix TFT online lag with compact atomic rooms and background combat (#160)"
+    "Show TFT round opponents and enable combat shop and bench controls (#161)"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,11 @@
       "type": "update"
     },
     {
-      "file": "dolphin-multiplayer.js",
+      "file": "functions/tactics/README.md",
       "type": "update"
     },
     {
-      "file": "functions/tactics/README.md",
+      "file": "functions/tactics/combat-controls.test.js",
       "type": "update"
     },
     {
@@ -40,23 +40,15 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/online-transport.js",
+      "file": "giaitri/games/tactics-online/phase-banner.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/online-transport.test.js",
+      "file": "giaitri/games/tactics-online/phase-banner.test.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/simulation-client.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/simulation-client.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/simulation-worker.js",
+      "file": "giaitri/games/tactics-online/tactics-ui.css",
       "type": "update"
     },
     {

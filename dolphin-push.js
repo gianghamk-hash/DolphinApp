@@ -1,5 +1,6 @@
-/* Dolphin Push for Manager APK, Safari iPhone Home Screen PWA and web browsers.
-   Firebase authorization is verified by Cloud Functions, never by claimed client roles. */
+/* Dolphin background push — same alerts for ALL enrolled team devices.
+   Neither Staff ID nor Staff online status is consulted for Push authorization.
+   A Manager-issued one-time device code keeps customers from subscribing. */
 (function(root){
   'use strict';
   if (!root.document || root.top !== root || /DolphinStaff/.test(navigator.userAgent)) return;
@@ -9,89 +10,139 @@
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const standalone = () => navigator.standalone === true ||
     !!(root.matchMedia && root.matchMedia('(display-mode: standalone)').matches);
-  const base = new URL('./', document.currentScript && document.currentScript.src || location.href);
+  const base = new URL('./',document.currentScript?.src || location.href);
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
-  let firebaseClient, registration, lastToken = '', busy = false, currentUid = '';
-  let button, message, control;
   const optInKey = 'dolphinPushEnabled';
-  function optedIn(){try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}}
+  let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
+  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton;
+  const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
   function setStatus(label,detail){
     if(button)button.textContent=label;
     if(message){message.textContent=detail||'';message.hidden=!detail;}
   }
   function setupGuide(){
-    setStatus('📲 Cài PWA để nhận Push',
-      'Trên iPhone: mở dolphinfb.store trong Safari → Chia sẻ (ô vuông có mũi tên lên) → Thêm vào Màn hình chính → mở biểu tượng Dolphin mới → nhấn Bật thông báo. iOS 16.4 trở lên là bắt buộc. Tab Safari thông thường KHÔNG nhận được Push khi khóa màn hình.');
+    setStatus('📲 Cài Dolphin PWA trên iPhone',
+      'Mở dolphinfb.store bằng Safari → Chia sẻ → Thêm vào Màn hình chính → mở Dolphin từ biểu tượng mới. iOS 16.4+ mới hỗ trợ nhận Push khi khóa màn hình.');
   }
   async function firebase(){
-    if(firebaseClient)return firebaseClient;
-    firebaseClient=(async()=>{
-      if(!cfg.apiKey || !cfg.projectId)throw new Error('Thiếu cấu hình Firebase.');
+    if(clientPromise)return clientPromise;
+    clientPromise=(async()=>{
+      if(!cfg.apiKey || !cfg.projectId)throw new Error('Thiếu Firebase Web config.');
       const [appSdk,authSdk,fnSdk]=await Promise.all([
         import(sdk+'firebase-app.js'),
         import(sdk+'firebase-auth.js'),
         import(sdk+'firebase-functions.js')
       ]);
-      // Share the same Auth session as Staff ID; using another named Firebase app
-      // would create an unrelated anonymous UID and reject verified iPhone staff.
-      const app=appSdk.getApps().find(a=>a.name==='staff-identity-app') ||
+      // A standalone Firebase Auth profile is intentional: Staff ID is NOT required.
+      const app=appSdk.getApps().find(a=>a.name==='dolphin-push') ||
         appSdk.initializeApp({
           apiKey:cfg.apiKey,authDomain:cfg.authDomain,projectId:cfg.projectId,
           messagingSenderId:cfg.messagingSenderId||undefined,appId:cfg.appId||undefined
-        },'staff-identity-app');
+        },'dolphin-push');
       const auth=authSdk.getAuth(app);
       if(!auth.currentUser)await authSdk.signInAnonymously(auth);
       currentUid=auth.currentUser.uid;
-      return {app,uid:currentUid,functions:fnSdk.getFunctions(app,'asia-southeast1'),callable:fnSdk.httpsCallable};
-    })().catch(e=>{firebaseClient=null;throw e;});
-    return firebaseClient;
+      return {app,functions:fnSdk.getFunctions(app,'asia-southeast1'),callable:fnSdk.httpsCallable};
+    })().catch(e=>{clientPromise=null;throw e;});
+    return clientPromise;
+  }
+  async function callable(name,data){
+    const fb=await firebase();
+    const response=await fb.callable(fb.functions,name)(data||{});
+    return response.data;
+  }
+  function accessUI(){
+    if(enrollPanel)enrollPanel.hidden=Boolean(access?.authorized);
+    if(issueButton)issueButton.hidden=access?.role!=='manager';
+  }
+  async function loadAccess(){
+    const data=await callable('pushGetMyAccess',{});
+    access=data||null;
+    if(data?.uid)currentUid=data.uid;
+    accessUI();
+    if(access?.authorized){
+      if(!lastToken)setStatus('🔔 Bật thông báo',
+        'Thiết bị đã được cấp quyền Push. Nhận tất cả order và yêu cầu phục vụ, không phân biệt Staff ID.');
+    }else{
+      setStatus('🔑 Kích hoạt Push cho thiết bị',
+        'Không cần Staff ID. Nhập mã Push sử dụng một lần do Manager cấp để ngăn khách đăng ký nhận thông tin nội bộ.');
+    }
+    return access;
+  }
+  async function claimCode(){
+    if(busy)return;
+    const code=String(inviteInput?.value||'').trim().toUpperCase().replace(/[\s-]/g,'');
+    if(!/^[0-9A-F]{32}$/.test(code)){
+      setStatus('🔑 Mã chưa hợp lệ','Nhập mã Push gồm 32 ký tự do Manager cấp; đây KHÔNG phải Staff ID.');
+      return;
+    }
+    busy=true; if(inviteButton)inviteButton.disabled=true;
+    try{
+      await callable('pushClaimDeviceCode',{code});
+      inviteInput.value='';
+      await loadAccess();
+      setStatus('🔔 Bật thông báo','Đã kích hoạt thiết bị. Nhấn Bật thông báo để cho phép iPhone/Safari nhận Push.');
+    }catch(e){showError(e);}
+    finally{busy=false;if(inviteButton)inviteButton.disabled=false;}
+  }
+  async function issueCode(){
+    if(busy)return;
+    busy=true;if(issueButton)issueButton.disabled=true;
+    try{
+      const response=await callable('pushIssueDeviceCodes',{count:1});
+      const code=response?.codes?.[0]||'';
+      if(issuedCode)issuedCode.textContent=code;
+      if(copyButton)copyButton.hidden=!code;
+      setStatus('🔔 Quản lý Push','Mã dành cho 1 thiết bị, có hiệu lực 24 giờ. Gửi riêng mã này cho nhân viên.');
+    }catch(e){showError(e);}
+    finally{busy=false;if(issueButton)issueButton.disabled=false;}
   }
   async function registerToken(token,platform){
     if(!token||token.length<20)throw new Error('FCM token chưa sẵn sàng.');
-    const fb=await firebase();
-    const result=await fb.callable(fb.functions,'pushRegisterDevice')({token,platform});
+    const data=await callable('pushRegisterDevice',{token,platform});
     lastToken=token;
     try{localStorage.setItem(optInKey,'1');}catch(e){}
-    const access=result.data||{};
-    const scope=access.role==='manager'?'Manager · tất cả outlet':
-      'Nhân viên · '+(access.outlets||[]).join(', ');
-    setStatus('🔔 Push đang bật · nhấn để tắt',scope);
-    return true;
+    setStatus('🔔 Push đang bật · nhấn để tắt',
+      (data?.role==='manager'?'Manager':'Nhân viên')+' · nhận tất cả outlet: Bungalow, Lounge, Restaurant, Show.');
   }
   async function webToken(){
-    if(!cfg.messagingSenderId||!cfg.appId||!cfg.vapidKey)
-      throw new Error('Chưa cấu hình messagingSenderId, appId hoặc VAPID public key trên máy chủ.');
+    if(!cfg.messagingSenderId || !cfg.appId || !cfg.vapidKey)
+      throw new Error('Thiếu messagingSenderId, appId hoặc VAPID public key trong push-config.js.');
     if(!('serviceWorker' in navigator)||!('Notification' in root)||!('PushManager' in root))
-      throw new Error('PWA hoặc trình duyệt chưa hỗ trợ Web Push (iPhone cần iOS 16.4+ và cài Home Screen).');
+      throw new Error('Trình duyệt chưa hỗ trợ Web Push. iPhone cần iOS 16.4+ và PWA trên Màn hình chính.');
     const fb=await firebase();
-    const messaging=await import(sdk+'firebase-messaging.js');
-    if(!(await messaging.isSupported()))throw new Error('Firebase Messaging không được trình duyệt này hỗ trợ.');
+    const msg=await import(sdk+'firebase-messaging.js');
+    if(!(await msg.isSupported()))throw new Error('Firebase Web Messaging không hỗ trợ môi trường này.');
     registration=await navigator.serviceWorker.register(new URL('service-worker.js',base).pathname,{scope:base.pathname});
     await navigator.serviceWorker.ready;
-    return messaging.getToken(messaging.getMessaging(fb.app),
+    return msg.getToken(msg.getMessaging(fb.app),
       {vapidKey:cfg.vapidKey,serviceWorkerRegistration:registration});
   }
   function showError(error){
     console.warn('[DolphinPush]',error);
     const code=String(error?.code||'');
     const detail=String(error?.message||error||'');
-    const denied=code.includes('permission-denied')||code.includes('failed-precondition');
-    setStatus(denied?'🔒 Chưa thể bật Push':'🔕 Push chưa hoạt động',
-      denied ? detail.slice(0,180)+' · UID: '+(currentUid||'chưa xác định')+'. Liên kết Staff ID và nhờ Manager phân công outlet nếu là nhân viên.' :
-        detail.slice(0,230));
+    const authErr=code.includes('permission-denied')||code.includes('failed-precondition');
+    setStatus(authErr?'🔒 Chưa được cấp Push':'🔕 Push chưa hoạt động',
+      detail.slice(0,220)+(authErr&&currentUid?' · UID thiết bị: '+currentUid:''));
   }
+  // IMPORTANT: iOS Notification.requestPermission MUST happen synchronously in the
+  // original tap handler. Do not await Firebase/Auth or network first.
   async function enable(){
     if(busy)return;
     if(ios&&!standalone()&&!native){setupGuide();return;}
+    if(!access?.authorized){
+      if(!access)loadAccess().catch(showError);
+      if(enrollPanel)enrollPanel.hidden=false;
+      setStatus('🔑 Nhập mã Push trước','Manager có thể tạo mã Push độc lập Staff ID ngay trong ứng dụng Dolphin.');
+      return;
+    }
     busy=true;
     try{
-      setStatus('⏳ Đang bật Push','');
       if(native){root.AndroidPush.requestToken();return;}
-      if(!('Notification' in root))throw new Error('iPhone cần iOS 16.4+ và PWA cài qua Safari.');
-      // iOS requires permission be requested in the direct user-click handler,
-      // before any asynchronous Firebase initialization, token or SW work.
+      if(!('Notification' in root))throw new Error('iPhone cần iOS 16.4+ và cài Dolphin trên Màn hình chính.');
       const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
-      if(permission!=='granted')throw new Error('Quyền thông báo bị từ chối. Kiểm tra Cài đặt → Thông báo → Dolphin.');
+      if(permission!=='granted')throw new Error('Chưa cấp quyền thông báo. Vào Cài đặt iPhone → Thông báo → Dolphin.');
       const token=await webToken();
       await registerToken(token,'web');
     }catch(e){showError(e);}
@@ -100,7 +151,8 @@
   async function resume(){
     if(!optedIn())return;
     if(ios&&!standalone()&&!native){setupGuide();return;}
-    if(native){try{root.AndroidPush.readToken();}catch(e){showError(e);}return;}
+    if(!access?.authorized)return;
+    if(native){root.AndroidPush.readToken();return;}
     if('Notification' in root && Notification.permission==='granted'){
       try{const token=await webToken();await registerToken(token,'web');}
       catch(e){showError(e);}
@@ -112,44 +164,56 @@
     catch(e){showError(e);}
   }
   async function disable(){
-    if(!lastToken){setStatus('🔕 Chưa có token để hủy','');return;}
+    if(busy)return;
+    busy=true;
     try{
-      const fb=await firebase();
-      await fb.callable(fb.functions,'pushUnregisterDevice')({token:lastToken});
+      if(lastToken)await callable('pushUnregisterDevice',{token:lastToken});
       lastToken='';
       try{localStorage.removeItem(optInKey);}catch(e){}
-      setStatus('🔕 Đã tắt Push','Thiết bị này không còn đăng ký trên máy chủ.');
+      setStatus('🔕 Đã tắt Push','Đã hủy thiết bị khỏi danh sách nhận Push.');
     }catch(e){showError(e);}
+    finally{busy=false;}
   }
   function makeControl(){
     if(document.getElementById('dolphin-push-control'))return;
-    control=document.createElement('div');
-    control.id='dolphin-push-control';
-    control.style.cssText='position:fixed;top:68px;right:12px;z-index:2147480000;display:flex;flex-direction:column;align-items:flex-end;gap:4px;max-width:min(330px,90vw);font:600 12px system-ui,sans-serif';
-    button=document.createElement('button');
-    button.type='button';
-    button.textContent='🔔 Bật thông báo';
+    const panel=document.createElement('div');panel.id='dolphin-push-control';
+    panel.style.cssText='position:fixed;top:68px;right:12px;z-index:2147480000;display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-width:min(340px,94vw);font:600 12px system-ui,sans-serif';
+    button=document.createElement('button');button.type='button';button.textContent='🔔 Bật thông báo';
     button.style.cssText='background:#123634;color:#FBD77A;border:1px solid #FBD77A;border-radius:99px;padding:8px 12px;box-shadow:0 4px 18px #0008;font:inherit;cursor:pointer';
-    button.addEventListener('click',()=>{if(lastToken)disable();else enable();});
-    message=document.createElement('div');
-    message.hidden=true;
-    message.style.cssText='background:#123634;color:#fff;border:1px solid #507c70;border-radius:10px;padding:10px;max-width:315px;overflow-wrap:anywhere;font:500 12px/1.5 system-ui,sans-serif;box-shadow:0 4px 18px #0008';
-    control.appendChild(button);control.appendChild(message);
-    document.body.appendChild(control);
-    if(ios&&!standalone()&&!native)setupGuide();
-    else if(!native&&(!cfg.vapidKey||!cfg.messagingSenderId||!cfg.appId))
-      setStatus('🔔 Cấu hình Push','Chưa cung cấp đủ cấu hình Firebase Web Push.');
-    else if(ios&&standalone()&&!optedIn())
-      setStatus('🔔 Bật thông báo iPhone','Nếu chưa xác minh Staff ID, vào mục Staff ID để liên kết thiết bị trước.');
+    button.addEventListener('click',()=>lastToken?disable():enable());
+    message=document.createElement('div');message.hidden=true;
+    message.style.cssText='background:#123634;color:#fff;border:1px solid #507c70;border-radius:10px;padding:10px;max-width:330px;overflow-wrap:anywhere;font:500 12px/1.5 system-ui,sans-serif;box-shadow:0 4px 18px #0008';
+    enrollPanel=document.createElement('div');enrollPanel.hidden=true;
+    enrollPanel.style.cssText='background:#123634;color:#fff;padding:10px;border:1px solid #507c70;border-radius:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:330px';
+    inviteInput=document.createElement('input');
+    inviteInput.placeholder='Mã Push 32 ký tự (không phải Staff ID)';
+    inviteInput.setAttribute('aria-label','Mã kích hoạt Push do Manager cấp');
+    inviteInput.autocapitalize='characters';inviteInput.autocomplete='off';
+    inviteInput.style.cssText='width:100%;box-sizing:border-box;padding:8px;color:#123634;background:white;border:0;border-radius:6px;font-size:12px';
+    inviteButton=document.createElement('button');inviteButton.type='button';inviteButton.textContent='Xác nhận mã Push';
+    inviteButton.style.cssText='background:#FBD77A;color:#123634;border:0;border-radius:6px;padding:8px 10px;font-weight:bold';
+    inviteButton.addEventListener('click',claimCode);
+    enrollPanel.append(inviteInput,inviteButton);
+    issueButton=document.createElement('button');issueButton.type='button';issueButton.hidden=true;
+    issueButton.textContent='🔑 Manager: Cấp mã Push cho nhân viên';
+    issueButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
+    issueButton.addEventListener('click',issueCode);
+    issuedCode=document.createElement('code');issuedCode.style.cssText='background:#123634;color:#FBD77A;overflow-wrap:anywhere;max-width:320px;font-size:12px';
+    copyButton=document.createElement('button');copyButton.type='button';copyButton.hidden=true;
+    copyButton.textContent='Sao chép mã';copyButton.style.cssText='padding:5px 9px;border-radius:6px';
+    copyButton.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(issuedCode.textContent);setStatus('Đã sao chép mã Push','Mỗi mã chỉ dùng một lần trên một thiết bị.');}catch(e){showError(e);}});
+    panel.append(button,message,enrollPanel,issueButton,issuedCode,copyButton);
+    document.body.appendChild(panel);
   }
-  root.DolphinPush={
-    enable,disable,resume,receiveNativeToken,
-    get active(){return !!lastToken;},
-    get uid(){return currentUid;},
-    get isIOS(){return ios;},
-    get isInstalled(){return standalone();}
-  };
-  function start(){makeControl();if(optedIn())resume().catch(showError);}
+  root.DolphinPush={enable,disable,resume,receiveNativeToken,
+    get active(){return !!lastToken;},get uid(){return currentUid;},
+    get isIOS(){return ios;},get isInstalled(){return standalone();}};
+  async function start(){
+    makeControl();
+    if(ios&&!standalone()&&!native){setupGuide();return;}
+    try{await loadAccess();if(optedIn())await resume();}
+    catch(e){showError(e);}
+  }
   if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();
 })(window);

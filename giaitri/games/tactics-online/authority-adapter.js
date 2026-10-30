@@ -33,7 +33,7 @@ function createAdapter(config){
  return {
   async createRoom(options={}){await identity();const result=await call('tacticsCreateRoom',{name:options.name});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:true};},
   async joinRoom(code,options={}){await identity();const result=await call('tacticsJoinRoom',{roomId:code,name:options.name});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:false};},
-  subscribe({roomId:id,emit}){roomId=id;onStop={emit};void fetchState();timer=setInterval(fetchState,2200);return ()=>{clearInterval(timer);timer=null;onStop=null;last='';roomId='';};},
+  subscribe({roomId:id,emit}){roomId=id;onStop={emit};void fetchState();timer=setInterval(fetchState,1200);return ()=>{clearInterval(timer);timer=null;onStop=null;last='';roomId='';};},
   async leaveRoom(id){const leaving=id||roomId;if(leaving)await call('tacticsLeaveRoom',{roomId:leaving});},
   async startRoom(){const res=await call('tacticsStartRoom',{roomId});await fetchState();return res;},
   async action(action){const res=await call('tacticsAction',{roomId,action});await fetchState();return res;},

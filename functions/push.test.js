@@ -2,7 +2,21 @@
 const test=require('node:test');
 const assert=require('node:assert/strict');
 const fs=require('node:fs');
-const { _pushTest }=require('./push');
+const vm=require('node:vm');
+const source=fs.readFileSync(__dirname+'/push.js','utf8');
+// Pure-helper tests run in the Tactics CI workflow too, which deliberately
+// does not install Firebase Admin. Stub module imports, never production code.
+const fakeModules={
+  'node:crypto':require('node:crypto'),
+  'firebase-admin/firestore':{getFirestore:()=>null,FieldPath:{documentId:()=>null}},
+  'firebase-admin/messaging':{getMessaging:()=>null},
+  'firebase-functions/v2/https':{onCall:(opts,fn)=>fn,HttpsError:class HttpsError extends Error{}},
+  'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn}
+};
+const ctx={exports:{},process,URLSearchParams,Date,console,
+  require:name=>{if(!(name in fakeModules))throw Error('Unknown mock: '+name);return fakeModules[name];}};
+vm.runInNewContext(source,ctx,{filename:'push.js'});
+const { _pushTest }=ctx.exports;
 
 test('new and reopened pending orders/calls trigger a notification',()=>{
   assert.equal(_pushTest.needsAlert(null,{status:'pending',timestamp:100}),true);

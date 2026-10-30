@@ -1,0 +1,35 @@
+name: Manager Push checks
+on:
+  pull_request:
+    paths:
+      - 'functions/**'
+      - 'android/manager/**'
+      - 'dolphin-push.js'
+      - 'push-config.js'
+      - 'service-worker.js'
+      - 'index.html'
+      - 'manager/dashboard.html'
+      - 'scripts/push-worker.test.cjs'
+      - '.github/workflows/build.yml'
+      - '.github/workflows/manager-push-checks.yml'
+  workflow_dispatch:
+jobs:
+  push-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check dolphin-push.js
+          node --check push-config.js
+          node --check service-worker.js
+          node --check functions/push.js
+      - name: Install Firebase Functions test dependencies
+        run: npm install --prefix functions --no-audit --ignore-scripts
+      - name: Test Cloud Functions and Service Worker
+        run: |
+          npm --prefix functions test
+          node --test scripts/push-worker.test.cjs

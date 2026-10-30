@@ -522,6 +522,8 @@
 
       var name = getStaffName();
       if (!name) return;
+      var verifiedProfile=window.DolphinStaffId&&window.DolphinStaffId.get();
+      if(verifiedProfile&&verifiedProfile.verified)name=verifiedProfile.name;
 
       var deviceId = getDeviceId();
       var ctx = detectContext();
@@ -544,7 +546,7 @@
         lastSeen: Date.now(),
         startedAt: existingStartedAt,
         platform: /Dolphin(?:Manager|Staff)/.test(navigator.userAgent) ? 'apk' : 'web',
-        staffId: (window.DolphinStaffId&&window.DolphinStaffId.get()&&window.DolphinStaffId.get().verified) ? window.DolphinStaffId.get().employeeId : null
+        staffId: verifiedProfile&&verifiedProfile.verified ? verifiedProfile.employeeId : null
       };
 
       try {
@@ -686,7 +688,7 @@
     window.addEventListener('dolphin-staff-id-changed',function(){
       if(dbRef&&fbSetDoc&&shouldPing()){
         var profile=window.DolphinStaffId&&window.DolphinStaffId.get();
-        fbSetDoc(dbRef,{staffId:profile&&profile.verified?profile.employeeId:null},{merge:true}).catch(function(e){console.warn('[StaffOnline] Staff ID sync:',e);});
+        fbSetDoc(dbRef,{staffId:profile&&profile.verified?profile.employeeId:null,...(profile&&profile.verified?{name:profile.name}:{})},{merge:true}).catch(function(e){console.warn('[StaffOnline] Staff ID sync:',e);});
       }
     });
 

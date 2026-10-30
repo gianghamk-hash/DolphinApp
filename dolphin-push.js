@@ -6,7 +6,7 @@
   const cfg = root.DOLPHIN_PUSH_CONFIG || {};
   const native = !!(root.AndroidPush && typeof root.AndroidPush.requestToken === 'function');
   const base = new URL('./', document.currentScript && document.currentScript.src || location.href);
-  let firebaseClient, registration, lastToken = '', busy = false;
+  let firebaseClient, registration, lastToken = '', busy = false, currentUid = '';
   let button, message;
   const oldKey = 'dolphinPushDevice';
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
@@ -39,6 +39,7 @@
           messagingSenderId:cfg.messagingSenderId || undefined, appId:cfg.appId || undefined}, 'dolphin-push');
       const auth = authSdk.getAuth(app);
       if (!auth.currentUser) await authSdk.signInAnonymously(auth);
+      currentUid = auth.currentUser.uid;
       return {app, uid:auth.currentUser.uid, functions:fnSdk.getFunctions(app,'asia-southeast1'), callable:fnSdk.httpsCallable};
     })().catch(e => {firebaseClient = null; throw e;});
     return firebaseClient;
@@ -124,19 +125,12 @@
     button.addEventListener('click',enable);
     message=document.createElement('div');message.hidden=true;
     message.style.cssText='background:#123634;color:#fff;border:1px solid #507c70;border-radius:10px;padding:8px 10px;max-width:310px;overflow-wrap:anywhere;font:500 11px/1.45 system-ui,sans-serif';
-    const close=document.createElement('button');close.type='button';close.textContent='×';
-    close.setAttribute('aria-label','Ẩn thông báo cấu hình Push');
-    close.style.cssText='float:right;color:#fff;background:none;border:0;font-size:16px;margin-left:5px;cursor:pointer';
-    close.onclick=function(){message.hidden=true;};
-    message.appendChild(close);
     container.appendChild(button);container.appendChild(message);
     document.body.appendChild(container);
     if (!native && (!cfg.vapidKey || !cfg.messagingSenderId || !cfg.appId))
       setStatus('🔔 Cấu hình Push', 'Cần bổ sung cấu hình FCM Web từ Firebase Console.');
   }
-  root.DolphinPush={enable,disable,resume,receiveNativeToken,get uid(){
-    return firebaseClient && typeof firebaseClient.then === 'function' ? 'Đang kết nối' : '';
-  }};
+  root.DolphinPush={enable,disable,resume,receiveNativeToken,get uid(){ return currentUid; }};
   function start(){
     makeControl();
     // Do not prompt for permission without a user gesture.

@@ -1,0 +1,138 @@
+'use strict';
+const test=require('node:test');
+const assert=require('node:assert/strict');
+const crypto=require('node:crypto');
+const vm=require('node:vm');
+const fs=require('node:fs');
+const path=require('node:path');
+
+function fixture(){
+  const maps=new Map(),sent=[];
+  const map=name=>{if(!maps.has(name))maps.set(name,new Map());return maps.get(name);};
+  function ref(name,id){
+    const m=map(name);
+    return {
+      id,
+      async get(){return{exists:m.has(id),data:()=>m.get(id)};},
+      async create(data){if(m.has(id)){const e=Error('Exists');e.code=6;throw e;}m.set(id,data);},
+      async set(data,opts){m.set(id,opts?.merge?{...m.get(id),...data}:data);},
+      async update(data){m.set(id,{...m.get(id),...data});},
+      async delete(){m.delete(id);}
+    };
+  }
+  function query(name,checks=[],last=null,max=Infinity){
+    return{
+      where(field,op,value){return query(name,[...checks,[field,op,value]],last,max);},
+      orderBy(){return query(name,checks,last,max);},
+      limit(n){return query(name,checks,last,n);},
+      startAfter(snapshot){return query(name,checks,snapshot.id,max);},
+      async get(){
+        const m=map(name);
+        const ids=[...m.keys()].sort().filter(id=>(!last||id>last)&&checks.every(([f,op,val])=>op==='=='&&m.get(id)?.[f]===val));
+        const docs=ids.slice(0,max).map(id=>({id,ref:ref(name,id),data:()=>m.get(id)}));
+        return{docs,size:docs.length,empty:docs.length===0};
+      }
+    };
+  }
+  const firestore={
+    collection(name){return{doc(id){return ref(name,id);},where(field,op,val){return query(name).where(field,op,val);}};},
+    batch(){const tasks=[];return{
+      create(doc,data){tasks.push(()=>doc.create(data));},
+      update(doc,data){tasks.push(()=>doc.update(data));},
+      async commit(){for(const job of tasks)await job();}
+    };},
+    async runTransaction(callback){
+      const tasks=[];
+      const tx={
+        get:doc=>doc.get(),
+        update(doc,data){tasks.push(()=>doc.update(data));},
+        set(doc,data,opts){tasks.push(()=>doc.set(data,opts));}
+      };
+      const result=await callback(tx);
+      for(const job of tasks)await job();
+      return result;
+    }
+  };
+  class HttpsError extends Error {
+    constructor(code,message){super(message);this.code=code;}
+  }
+  const modules={
+    'node:crypto':crypto,
+    'firebase-admin/firestore':{getFirestore:()=>firestore,FieldPath:{documentId:()=>null}},
+    'firebase-admin/messaging':{getMessaging:()=>({async sendEachForMulticast(payload){
+      sent.push(payload);
+      return{responses:payload.tokens.map(()=>({success:true}))};
+    }})},
+    'firebase-functions/v2/https':{onCall:(opts,fn)=>fn,HttpsError},
+    'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn}
+  };
+  const env={PUSH_ENABLED:'true',PUSH_MANAGER_UIDS:'manager-uid'};
+  const context={
+    require:name=>{if(!modules[name])throw Error('Unmocked module '+name);return modules[name];},
+    exports:{},process:{env},URLSearchParams,console,Date
+  };
+  vm.runInNewContext(fs.readFileSync(path.join(__dirname,'push.js'),'utf8'),context);
+  return{handlers:context.exports,sent,maps,map};
+}
+const request=(uid,data)=>({auth:{uid},data});
+const event=(id,timestamp)=>({params:{id},data:{
+  before:{exists:false},
+  after:{exists:true,data:()=>({status:'pending',timestamp,table:id})}
+}});
+
+test('both linked and unlinked Staff ID employees receive identical all-outlet push after device code',async()=>{
+  const f=fixture(),h=f.handlers;
+  const issued=await h.pushIssueDeviceCodes(request('manager-uid',{count:2}));
+  assert.equal(issued.codes.length,2);
+  assert.match(issued.codes[0],/^[0-9A-F]{32}$/);
+  await assert.rejects(h.pushRegisterDevice(request('employee-a',{
+    token:'A-12345678901234567890',platform:'web'
+  })),err=>err.code==='permission-denied');
+  await h.pushClaimDeviceCode(request('employee-a',{code:issued.codes[0]}));
+  await h.pushClaimDeviceCode(request('employee-b',{code:issued.codes[1]}));
+  await h.pushRegisterDevice(request('employee-a',{token:'A-12345678901234567890',platform:'web'}));
+  await h.pushRegisterDevice(request('employee-b',{token:'B-12345678901234567890',platform:'web'}));
+  await h.pushRegisterDevice(request('manager-uid',{token:'M-12345678901234567890',platform:'manager-android'}));
+  await h.push_bun_orders(event('BGL201',100));
+  await h.push_lounge_calls(event('LNG01',200));
+  assert.equal(f.sent.length,2);
+  for(const batch of f.sent){
+    assert.equal(batch.tokens.length,3);
+    assert(batch.tokens.includes('A-12345678901234567890'));
+    assert(batch.tokens.includes('B-12345678901234567890'));
+    assert(batch.tokens.includes('M-12345678901234567890'));
+  }
+  assert.equal(f.sent[0].data.outlet,'bungalow');
+  assert.equal(f.sent[1].data.outlet,'lounge');
+  assert.equal(f.map('dolphin_push_enrollments').size,2);
+  assert.equal(f.map('staffIdentity').size,0); // Staff ID is not accessed at all
+});
+
+test('one-time code cannot be reused to reactivate a revoked device',async()=>{
+  const f=fixture(),h=f.handlers;
+  const issued=await h.pushIssueDeviceCodes(request('manager-uid',{count:1}));
+  const code=issued.codes[0];
+  await h.pushClaimDeviceCode(request('worker-id',{code}));
+  await h.pushRegisterDevice(request('worker-id',{token:'W-12345678901234567890',platform:'web'}));
+  const result=await h.pushRevokeDeviceAccess(request('manager-uid',{uid:'worker-id'}));
+  assert.equal(result.devicesDisabled,1);
+  await assert.rejects(h.pushClaimDeviceCode(request('worker-id',{code})),
+    err=>err.code==='failed-precondition');
+  await h.push_res_orders(event('R101',300));
+  assert.equal(f.sent.length,0);
+});
+
+test('delivery reaches device 401 and beyond via pagination',async()=>{
+  const f=fixture(),h=f.handlers;
+  for(let i=0;i<425;i++){
+    const id='device-'+String(i).padStart(4,'0');
+    f.map('dolphin_push_devices').set(id,{
+      uid:'worker-'+i,token:'token-'+i,role:'staff',active:true
+    });
+  }
+  await h.push_bun_orders(event('BGL202',400));
+  assert.equal(f.sent.length,2);
+  assert.equal(f.sent.reduce((sum,x)=>sum+x.tokens.length,0),425);
+  assert.equal(f.sent[0].tokens.length,400);
+  assert.equal(f.sent[1].tokens.length,25);
+});

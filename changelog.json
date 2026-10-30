@@ -1,34 +1,26 @@
 {
-  "version": "1.1.3",
-  "previousVersion": "1.1.2",
-  "commit": "d7a934b",
-  "previousCommit": "41e6b4a",
-  "buildDate": "2026-10-30T03:44:33.609Z",
-  "summary": "fix(ranking): merge staff name case and spacing variants",
+  "version": "1.1.4",
+  "previousVersion": "1.1.3",
+  "commit": "0de88eb",
+  "previousCommit": "d7a934b",
+  "buildDate": "2026-10-30T04:39:11.730Z",
+  "summary": "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization",
   "changes": {
-    "totalCommits": 227,
-    "filesChanged": 4,
+    "totalCommits": 228,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ranking): merge staff name case and spacing variants"
+    "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization"
   ],
   "fileChanges": [
     {
-      "file": "rank-rewards.js",
+      "file": "giaitri/games/tactics-online/authority-adapter.js",
       "type": "update"
     },
     {
-      "file": "rank-rewards.test.js",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/work-points.test.js",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     }
   ]

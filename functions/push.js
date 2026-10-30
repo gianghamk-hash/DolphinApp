@@ -171,7 +171,7 @@ async function sendAlert(event,collection,label,kind,outlet) {
   const cutoff=Date.now()-30*24*60*60*1000;
   const candidates=snapshot.docs.filter(doc=>{
     const v=doc.data();
-    return v.updatedAt>=cutoff && typeof v.token==='string' && v.outlets?.includes(outlet);
+    return v.updatedAt>=cutoff && typeof v.token==='string';
   });
   if(!candidates.length)return;
   const accessCache=new Map();
@@ -180,6 +180,7 @@ async function sendAlert(event,collection,label,kind,outlet) {
     if(typeof uid!=='string')return false;
     if(!accessCache.has(uid)) accessCache.set(uid,accessForUid(uid).catch(e=>{console.error('[Push access]',e);return null;}));
     const access=await accessCache.get(uid);
+    // Use live server assignment, not the device's possibly stale outlet list.
     return !!access && access.role===entry.role && access.outlets.includes(outlet);
   }
   const validFlags=await Promise.all(candidates.map(valid));

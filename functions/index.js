@@ -271,3 +271,6 @@ exports.staffGetIdentity=onCall(opts,async req=>{
  if(!profile||!profile.active)return {verified:false};
  return {verified:true,employeeId:profile.employeeId,name:profile.name};
 });
+
+// Manager background push (isolated from the Tactics/Staff callable APIs).
+Object.assign(exports, require('./push'));

@@ -1,6 +1,6 @@
 # Manager APK + PWA + Web push notification rollout
 
-Status: implementation plan / audit baseline. **No production push is enabled by this document.**
+Status: initial architecture audit. Core implementation is now in this branch; see docs/MANAGER_PUSH_SETUP.md for precise deployment prerequisites and verification. **Production push is still disabled.**
 
 ## Current findings (2026-10-31)
 - `dolphin-alerts.js` provides foreground realtime notification and optional `showNotification`, but does not register a push subscription.

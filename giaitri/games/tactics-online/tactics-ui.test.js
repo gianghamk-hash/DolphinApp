@@ -2,7 +2,7 @@ const test=require('node:test'),assert=require('node:assert/strict'),fs=require(
 const html=fs.readFileSync(path.join(__dirname,'index.html'),'utf8');
 const css=fs.readFileSync(path.join(__dirname,'tactics-ui.css'),'utf8');
 test('redesign stylesheet loaded and all action targets remain intact',()=>{
- assert.match(html,/href="tactics-ui\.css\?v=2"/);
+ assert.match(html,/href="tactics-ui\.css\?v=3"/);
  for(const id of ['stage','shop','touchItemTray','touchItemSlots','traitRail','traitInfo','bench','rollShopBtn','lockShopBtn','buyXpBtn']){
  assert.match(html,new RegExp('id="'+id+'"'));
  }

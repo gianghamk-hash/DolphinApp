@@ -39,11 +39,21 @@ Existing Caro/Snake transports are unchanged.
   and selling remain locked until PREPARATION. The frozen combat snapshot is
   unchanged; a third copy bought during combat merges only on the next
   PREPARATION transition, including any cascaded upgrades.
+- A completed match opens the four-player result dialog with the local placement
+  highlighted. Casual online statistics use a separate `game_scores` namespace
+  (`game: dolphin-tactics-online`); one permanent `tft_match__{roomId}__{seed}`
+  receipt and all four player totals commit atomically. Any member can repair the
+  result without double-counting. No new backend or rule deployment is required.
+  Offline games show results locally without adding online points. Failed syncs
+  remain pending in local storage and retry on reconnect or the next hub visit.
+  Standings follow `finalPlacements`, never a sort of final HP.
 
 **Trust boundary:** This is still casual, browser-computed play, as before.
 Transactions prevent concurrent lost updates; they do not make browsers trusted
 simulation authorities. Client rooms set `rankingEligible:false`; verified TFT
 rankings remain exclusive to the separate Functions/RTDB backend described below.
+Casual statistics are explicitly labeled as such and never write the verified
+RTDB ranking. They retain the browser-computed trust model of casual matches.
 Do not grant broader Firestore permissions to make a failing deployment work.
 
 ## Verification
@@ -54,6 +64,7 @@ Run from the repository root:
 node --test giaitri/games/tactics-online/online-transport.test.js giaitri/games/tactics-online/simulation-client.test.js
 node --test functions/tactics/combat-controls.test.js giaitri/games/tactics-online/phase-banner.test.js
 node --test giaitri/games/tactics-online/tactics-ui.test.js
+node --test dolphin-tactics-results.test.js giaitri/games/tactics-online/match-results.test.js
 cd functions && npm test
 ```
 

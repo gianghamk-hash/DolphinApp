@@ -9,6 +9,22 @@
 #game>aside .panel{background:linear-gradient(145deg,rgba(20,60,75,.96),rgba(7,28,44,.96))!important;border:1px solid var(--tft-outline);border-radius:16px;box-shadow:inset 0 1px 0 #ffffff12,0 7px 24px #0003}
 #game>aside .panel h2,#game .foldPanel>summary{letter-spacing:.07em;color:var(--tft-gold);text-shadow:0 0 10px rgba(255,213,134,.14)}
 #game #shop{gap:6px;align-items:stretch}
+.matchResultsModal{position:fixed;inset:0;z-index:2147483010;display:grid;place-items:center;padding:16px;background:#020c16d9;backdrop-filter:blur(7px);overflow-y:auto}
+.matchResultsPanel{position:relative;width:min(100%,650px);max-height:calc(100dvh - 32px);overflow:auto;padding:28px 22px 22px;border:1px solid #dcba69;border-radius:22px;background:radial-gradient(ellipse at top,#28556b,#0b2232 70%);box-shadow:0 20px 80px #000b;text-align:center;color:#e8f7ff}
+.matchResultsPanel .matchResultsClose{position:absolute;right:10px;top:8px;padding:4px 9px;background:transparent;border:0}
+.matchResultsEyebrow{color:#c5d9e7;font-size:10px;letter-spacing:.12em;margin:5px 0 14px}
+.matchResultsPanel h2{font-size:clamp(22px,4vw,34px);color:#ffe0a0;margin:0 0 8px}
+#matchResultsSubtitle{font-size:13px;color:#c8e1e7;margin:0 0 20px}
+.matchResultsTableWrap{overflow-x:auto;border:1px solid #68818f;border-radius:12px}
+.matchResultsTableWrap table{width:100%;border-collapse:collapse;text-align:left;font-size:13px}
+.matchResultsTableWrap th{font-size:10px;text-transform:uppercase;color:#acc9d8;padding:11px;background:#081e2b}
+.matchResultsTableWrap td{padding:13px 11px;border-top:1px solid #365362;overflow-wrap:anywhere}
+.matchResultsTableWrap tr.isMe{background:#7a642b44;color:#ffebb8}
+.matchResultsTableWrap td:first-child{font-size:20px;width:54px}.matchResultsTableWrap td:last-child{color:#ffdc8f;font-weight:800}
+.matchResultsTableWrap td:nth-child(3),.matchResultsTableWrap td:nth-child(4){white-space:nowrap;overflow-wrap:normal;min-width:38px}
+#matchResultsStatus{font-size:12px;line-height:1.6;color:#97e8bd;margin:16px 0}#matchResultsStatus[data-error=true]{color:#ffcb9b}
+.matchResultsActions{display:flex;justify-content:center;flex-wrap:wrap;gap:8px}.matchResultsActions button{font-size:12px;padding:10px 14px}
+@media(max-height:500px){.matchResultsModal{padding:7px}.matchResultsPanel{max-height:calc(100dvh - 14px);padding:16px}.matchResultsEyebrow{margin:2px 0 8px}.matchResultsTableWrap td{padding:8px 10px}#matchResultsSubtitle{margin-bottom:10px}#matchResultsStatus{margin:9px 0}}
 #game #shop .shopOffer{display:flex;flex-direction:column;gap:3px;min-width:0}
 #game #shop .shopOffer>.shopHero{width:100%;flex:1}
 #game #shop .shopInspect{min-height:26px!important;padding:3px 1px!important;font-size:9px!important;line-height:1.2;border-color:#6799ad;background:#113747;color:#dff4ff}

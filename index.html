@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
+<script src="dolphin-alerts.js?v=1"></script>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
@@ -19,7 +20,6 @@
 </script>
 <style>
   /* ═══ ẨN WIDGET TRÊN MANAGER.APK ═══ */
-  html[data-app="manager"] #notifPermBtn,
   html[data-app="manager"] #dolphinMusicBtn,
   html[data-app="manager"] #dolphinMusicPopup {
     display: none !important;
@@ -630,7 +630,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 <script src="changelog-popup.js?v=1.1" defer></script>
 <script src="staff-id.js?v=1.1" defer></script>
 <script src="staff-online.js?v=1.1" defer></script>
-<script src="dolphin-soundscape.js?v=1.1" defer></script>
+<script src="dolphin-soundscape.js?v=2.5" defer></script>
 <link rel="manifest" href="/DolphinApp/manifest.json">
 <meta name="theme-color" content="#123634">
 <meta name="color-scheme" content="dark">
@@ -1388,8 +1388,8 @@ window.performUpdate = function(){
 <script>
 if ('serviceWorker' in navigator) {
   window.addEventListener('load', function(){
-    navigator.serviceWorker.register('/DolphinApp/service-worker.js', {
-      scope: '/DolphinApp/', updateViaCache: 'none'
+    navigator.serviceWorker.register('service-worker.js', {
+      scope: './', updateViaCache: 'none'
     }).then(function(reg){
       setInterval(function(){
         reg.update();
@@ -1501,10 +1501,10 @@ const firebaseConfig = {
   projectId: "dolphin-f6d67"
 };
 try {
-  const app = initializeApp(firebaseConfig, 'announcement-app');
+  const app = initializeApp(firebaseConfig, 'dolphin-shell');
   const auth = getAuth(app);
   const db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
+  DolphinAlerts.signIn(auth,signInAnonymously).then(() => {
     const ref = doc(db, 'master_config', 'announcement');
     onSnapshot(ref, (snap) => {
       updateAnnouncement(snap.exists() ? snap.data() : null);
@@ -1561,7 +1561,9 @@ const WATCH_CALLS = [
   { name: 'lounge_calls', label: 'Lounge', icon: '🍸' },
   { name: 'res_calls', label: 'Restaurant', icon: '🍽️' }
 ];
+const notificationStartedAt=Date.now();
 let audioCtx = null, hideTimer = null;
+window.dolphinUnlockOrderAudio=unlock;
 function unlock(){ try { if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)(); if (audioCtx.state === 'suspended') audioCtx.resume(); } catch(e){} }
 ['click','touchstart','keydown'].forEach(ev => document.addEventListener(ev, unlock, { passive: true }));
 
@@ -1603,8 +1605,9 @@ function showNotif(cfg, data, type){
   const s = document.getElementById('orderNotifSub');
   if (!n || !t || !s) return;
   const col = cfg.icon + ' ' + cfg.label;
-  const table = data.table || '--';
-  const customer = data.customerName || '';
+  const table = String(data.table || '--').replace(/[&<>"']/g,'');
+  const esc=v=>String(v).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  const customer = esc(data.customerName || '');
   if (type === 'call'){
     t.textContent = '🛎️ KHÁCH GỌI PHỤC VỤ!';
     s.innerHTML = col + ' · Bàn <span class="table-hl">' + table + '</span>' + (customer ? ' · ' + customer : '');
@@ -1613,6 +1616,7 @@ function showNotif(cfg, data, type){
     t.textContent = '🔔 CÓ ĐƠN MỚI!';
     s.innerHTML = col + ' · Bàn <span class="table-hl">' + table + '</span> · ' + (c > 0 ? c + ' món' : 'đơn mới') + (customer ? ' · ' + customer : '');
   }
+  if(document.hidden) DolphinAlerts.systemNotify(t.textContent,s.textContent,cfg.name+'-'+data.id);
   n.dataset.collection = cfg.name;
   n.classList.add('show');
   if (hideTimer) clearTimeout(hideTimer);
@@ -1633,54 +1637,44 @@ window.openOrderFromNotif = function(){
 };
 
 try {
-  const app = initializeApp(cfg, 'notif-app');
+  const app = initializeApp(cfg, 'dolphin-shell');
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const notificationFeeds=new Map();
+  function feedFor(name){if(!notificationFeeds.has(name))notificationFeeds.set(name,DolphinAlerts.createFeed(notificationStartedAt));return notificationFeeds.get(name);}
   let notificationStops = [];
   let notificationRunning = false;
   let notificationReady = false;
   function stopNotificationStreams(){
     notificationStops.splice(0).forEach(stop => { try { stop(); } catch(e) { console.warn('[Notif cleanup]', e); } });
-    notificationRunning = false;
+    notificationRunning = false;window.dolphinOrderNotificationsReady=false;
   }
   function startNotificationStreams(){
     if (!notificationReady || notificationRunning) return;
-    notificationRunning = true;
+    notificationRunning = true;window.dolphinOrderNotificationsReady=true;
     WATCH_ORDERS.forEach(c => {
-      const init = { f: true };
+      const detect=feedFor(c.name);
       const recent = query(
         collection(db, c.name),
         where('timestamp', '>=', Date.now() - NOTIFICATION_ORDER_DAYS * 86400000),
         orderBy('timestamp', 'desc'),
         limit(NOTIFICATION_ORDER_LIMIT)
       );
-      notificationStops.push(onSnapshot(recent, snap => {
-        if (init.f){ init.f = false; return; }
-        snap.docChanges().forEach(ch => {
-          if (ch.type === 'added'){
-            const d = ch.doc.data();
-            if (d.status === 'pending'){ bell(); showNotif(c, d, 'order'); }
-          }
-        });
-      }, err => console.warn('[Notif]', c.name, err));
+      notificationStops.push(onSnapshot(recent,{includeMetadataChanges:true}, snap => {
+        detect(snap).forEach(d => { bell(); showNotif(c,d,'order'); });
+      }, err => {window.dolphinOrderNotificationsReady=false;DolphinAlerts.connectionError(err);}));
     });
     WATCH_CALLS.forEach(c => {
-      const init = { f: true };
+      const detect=feedFor(c.name);
       const pending = query(collection(db, c.name), where('status', '==', 'pending'), limit(NOTIFICATION_CALL_LIMIT));
-      notificationStops.push(onSnapshot(pending, snap => {
-        if (init.f){ init.f = false; return; }
-        snap.docChanges().forEach(ch => {
-          if (ch.type === 'added'){
-            const d = ch.doc.data();
-            if (d.status === 'pending'){ bell(); showNotif(c, d, 'call'); }
-          }
-        });
-      }, err => console.warn('[Notif]', c.name, err));
+      notificationStops.push(onSnapshot(pending,{includeMetadataChanges:true}, snap => {
+        detect(snap).forEach(d => { bell(); showNotif(c,d,'call'); });
+      }, err => {window.dolphinOrderNotificationsReady=false;DolphinAlerts.connectionError(err);}));
     });
   }
   window.addEventListener('pagehide', stopNotificationStreams);
   window.addEventListener('pageshow', startNotificationStreams);
-  signInAnonymously(auth).then(() => {
+  DolphinAlerts.signIn(auth,signInAnonymously).then(() => {
     notificationReady = true;
     startNotificationStreams();
   }).catch(err => console.warn('[Notif]', err));
@@ -1712,10 +1706,10 @@ function setBadge(area, count){
 }
 
 try {
-  const app = initializeApp(cfg, 'badge-app');
+  const app = initializeApp(cfg, 'dolphin-shell');
   const auth = getAuth(app);
   const db = getFirestore(app);
-  signInAnonymously(auth).then(() => {
+  DolphinAlerts.signIn(auth,signInAnonymously).then(() => {
     Object.keys(MAP).forEach(col => {
       const q = query(collection(db, col), where('status', '==', 'pending'));
       onSnapshot(q, snap => setBadge(MAP[col], snap.size),
@@ -1762,15 +1756,7 @@ window.toggleNotifPerm = async function(){
     updateNotifBtn();
     if (perm === 'granted'){
       if (window.showToast) window.showToast('Đã bật thông báo!', '🔔');
-      setTimeout(function(){
-        try {
-          new Notification('Dolphin · Đã bật thông báo', {
-            body: 'Bạn sẽ nhận thông báo khi tab ẩn',
-            icon: '/DolphinApp/pwa-icons/icon-192.png',
-            tag: 'dolphin-test'
-          });
-        } catch(e){}
-      }, 500);
+      DolphinAlerts.systemNotify('Dolphin · Đã bật thông báo','Bạn sẽ nhận thông báo khi tab đang chạy ở nền','dolphin-test');
     }
   } catch(e){}
 };
@@ -1799,20 +1785,7 @@ function updateNotifBtn(){
   }
 }
 
-function showSystemNotif(title, body, tag){
-  if (!('Notification' in window) || Notification.permission !== 'granted') return false;
-  try {
-    const n = new Notification(title, {
-      body: body,
-      icon: '/DolphinApp/pwa-icons/icon-192.png',
-      badge: '/DolphinApp/pwa-icons/icon-96.png',
-      tag: tag,
-      requireInteraction: true
-    });
-    n.onclick = function(){ window.focus(); n.close(); };
-    return true;
-  } catch(e){ return false; }
-}
+function showSystemNotif(title,body,tag){return DolphinAlerts.systemNotify(title,body,tag);}
 
 /* ═══ SOUND (Web Audio Synth) ═══ */
 let alarmCtx = null;
@@ -1871,12 +1844,12 @@ function checkAndFire(){
   }
 }
 
-function fireAlarm(r){
+async function fireAlarm(r){
   currentAlarmId = r.id;
 
   // Nếu tab ẩn → system notification
   if (document.hidden){
-    const shown = showSystemNotif(
+    const shown = await showSystemNotif(
       '🔔 BÁO THỨC: ' + (r.author || 'Manager'),
       r.text || '',
       'alarm-' + r.id
@@ -1922,10 +1895,10 @@ window.closeReminderAlarm = function(){
 
 /* ═══ FIREBASE ═══ */
 try {
-  const app = initializeApp(cfg, 'landing-rem-app');
+  const app = initializeApp(cfg, 'dolphin-shell');
   const auth = getAuth(app);
   const db = getFirestore(app);
-  signInAnonymously(auth).then(function(){
+  DolphinAlerts.signIn(auth,signInAnonymously).then(function(){
     const q = query(collection(db, COL_REMINDERS), orderBy('fireAt', 'asc'));
     onSnapshot(q, function(snap){
       allReminders = [];

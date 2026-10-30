@@ -1,0 +1,20 @@
+name: Service alerts and music tests
+on:
+  pull_request:
+    paths: ['index.html','dolphin-*.html','dolphin-alerts.js','dolphin-soundscape.js','service-worker.js','giaitri/index.html','manager/dashboard.html','scripts/*','.github/workflows/service-alert-tests.yml']
+  push:
+    branches: [main]
+    paths: ['index.html','dolphin-*.html','dolphin-alerts.js','dolphin-soundscape.js','service-worker.js','giaitri/index.html','manager/dashboard.html','scripts/*','.github/workflows/service-alert-tests.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --check dolphin-alerts.js && node --check dolphin-soundscape.js && node --check service-worker.js
+      - run: node scripts/check-service-pages.cjs
+      - run: node --test scripts/order-alerts.test.cjs scripts/soundscape.test.cjs

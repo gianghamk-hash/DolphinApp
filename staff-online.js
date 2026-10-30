@@ -394,6 +394,8 @@
       '</div>'
     ].join('');
     document.body.appendChild(w);
+    var staffIdBtn=document.getElementById('staffIdOpenBtn');
+    if(staffIdBtn)staffIdBtn.addEventListener('click',function(e){e.stopPropagation();if(window.DolphinStaffId)window.DolphinStaffId.open();});
 
     /* Toggle panel */
     var badge = document.getElementById('sowBadge');
@@ -435,10 +437,23 @@
       return s.lastSeen && (now - s.lastSeen) < OFFLINE_MS;
     });
 
+    /* Verified Staff ID groups all devices for one real employee. Unverified
+       sessions remain separate (never dedupe by display name). */
+    var groups = Object.create(null);
+    online.forEach(function(item){
+      var key = item.staffId ? 'staff:'+item.staffId : 'device:'+item.id;
+      if(!groups[key])groups[key]={id:item.id,name:item.name,staffId:item.staffId||'',page:item.page,startedAt:item.startedAt,lastSeen:item.lastSeen,devices:[],containsMe:false};
+      var g=groups[key];g.devices.push(item);
+      if(item.id===deviceId)g.containsMe=true;
+      if(item.lastSeen>g.lastSeen){g.lastSeen=item.lastSeen;g.page=item.page;}
+      if((item.startedAt||0)<(g.startedAt||Infinity))g.startedAt=item.startedAt;
+    });
+    online=Object.keys(groups).map(function(k){return groups[k];});
+
     /* Sort: mình lên đầu, rồi theo startedAt */
     online.sort(function(a, b){
-      if (a.id === deviceId) return -1;
-      if (b.id === deviceId) return 1;
+      if (a.containsMe) return -1;
+      if (b.containsMe) return 1;
       return (b.startedAt || 0) - (a.startedAt || 0);
     });
 
@@ -460,8 +475,9 @@
 
     list.innerHTML = online.map(function(s){
       var ctxKey = s.page || 'other';
+      var detail = s.devices.length>1?' · '+s.devices.length+' thiết bị ('+s.devices.map(function(d){return d.platform==='apk'?'APK':'Web';}).join(', ')+')':'';
       var ctx = CONTEXT_MAP[ctxKey] || CONTEXT_MAP.other;
-      var isMe = s.id === deviceId;
+      var isMe = s.containsMe;
 
       /* Thời gian online */
       var started = s.startedAt || s.lastSeen || now;
@@ -479,8 +495,8 @@
         '<div class="sow-item ' + (isMe ? 'sow-me' : '') + '">',
         '  <div class="sow-avatar">' + ctx.icon + '</div>',
         '  <div class="sow-info">',
-        '    <div class="sow-name">' + escapeHtml(s.name) + (isMe ? ' <span class="sow-you">BẠN</span>' : '') + '</div>',
-        '    <div class="sow-meta">' + ctx.label + ' · ' + durText + '</div>',
+        '    <div class="sow-name">' + escapeHtml(s.name) + (s.staffId?' <small>'+escapeHtml(s.staffId)+'</small>':'') + (isMe ? ' <span class="sow-you">BẠN</span>' : '') + '</div>',
+        '    <div class="sow-meta">' + ctx.label + ' · ' + durText + escapeHtml(detail) + '</div>',
         '  </div>',
         '  <div class="sow-dot"></div>',
         '</div>'
@@ -527,7 +543,8 @@
         page: ctx,
         lastSeen: Date.now(),
         startedAt: existingStartedAt,
-        platform: navigator.userAgent.indexOf('DolphinManager') >= 0 ? 'apk' : 'web'
+        platform: /Dolphin(?:Manager|Staff)/.test(navigator.userAgent) ? 'apk' : 'web',
+        staffId: (window.DolphinStaffId&&window.DolphinStaffId.get()&&window.DolphinStaffId.get().verified) ? window.DolphinStaffId.get().employeeId : null
       };
 
       try {
@@ -618,7 +635,8 @@
                 page: data.page || 'other',
                 lastSeen: data.lastSeen,
                 startedAt: data.startedAt || data.lastSeen,
-                platform: data.platform || 'web'
+                platform: data.platform || 'web',
+                staffId: typeof data.staffId==='string'&&/^DOL-[0-9]{4,6}$/.test(data.staffId)?data.staffId:null
               });
             }
           });
@@ -663,6 +681,14 @@
       });
       observer.observe(document.body, { attributes: true, attributeFilter: ['class'] });
     }
+
+    /* Profile linking should be reflected immediately, without changing names/orders. */
+    window.addEventListener('dolphin-staff-id-changed',function(){
+      if(dbRef&&fbSetDoc&&shouldPing()){
+        var profile=window.DolphinStaffId&&window.DolphinStaffId.get();
+        fbSetDoc(dbRef,{staffId:profile&&profile.verified?profile.employeeId:null},{merge:true}).catch(function(e){console.warn('[StaffOnline] Staff ID sync:',e);});
+      }
+    });
 
     /* Lắng nghe tên staff thay đổi → restart heartbeat */
     window.addEventListener('storage', function(e){

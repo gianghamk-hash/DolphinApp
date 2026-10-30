@@ -55,3 +55,22 @@ test('notification clicks reject foreign origins',async () => {
   await e.work;
   assert.equal(f.opened[0],'https://dolphinfb.store/');
 });
+
+test('iOS requirement: every push remains visible even when Dolphin is foreground',async () => {
+  const active = {
+    url:'https://dolphinfb.store/index.html',
+    visibilityState:'visible',
+    async focus(){return this;}
+  };
+  const f=workerFixture([active]);
+  const e=fakeEvent({data:{
+    type:'dolphin-order',
+    title:'Dolphin Show',
+    body:'Bàn S01',
+    eventId:'ios-event-1',
+    url:'https://dolphinfb.store/index.html?pushOutlet=show'
+  }});
+  f.handlers.get('push')(e);
+  await e.work;
+  assert.equal(f.notifications.length,1);
+});

@@ -5,6 +5,8 @@ on:
       - 'functions/**'
       - 'android/manager/**'
       - 'dolphin-push.js'
+      - 'staff-id.js'
+      - 'manifest.json'
       - 'push-config.js'
       - 'service-worker.js'
       - 'index.html'
@@ -24,6 +26,8 @@ jobs:
       - name: Syntax checks
         run: |
           node --check dolphin-push.js
+          node --check staff-id.js
+          node -e "JSON.parse(require('node:fs').readFileSync('manifest.json','utf8'))"
           node --check push-config.js
           node --check service-worker.js
           node --check functions/push.js

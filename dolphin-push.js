@@ -130,7 +130,7 @@
     if (!native && (!cfg.vapidKey || !cfg.messagingSenderId || !cfg.appId))
       setStatus('🔔 Cấu hình Push', 'Cần bổ sung cấu hình FCM Web từ Firebase Console.');
   }
-  root.DolphinPush={enable,disable,resume,receiveNativeToken,get uid(){ return currentUid; }};
+  root.DolphinPush={enable,disable,resume,receiveNativeToken,get active(){return !!lastToken;},get uid(){ return currentUid; }};
   function start(){
     makeControl();
     // Do not prompt for permission without a user gesture.

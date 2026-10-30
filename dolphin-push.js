@@ -2,7 +2,7 @@
    Uses the same auth identity for Firebase callable registration; never trusts the UA as authorization. */
 (function(root){
   'use strict';
-  if (!root.document || root.top !== root) return; // avoid duplicate listeners in outlet/dashboard iframes
+  if (!root.document || root.top !== root || /DolphinStaff/.test(navigator.userAgent)) return; // avoid Staff APK and iframe duplication
   const cfg = root.DOLPHIN_PUSH_CONFIG || {};
   const native = !!(root.AndroidPush && typeof root.AndroidPush.requestToken === 'function');
   const base = new URL('./', document.currentScript && document.currentScript.src || location.href);
@@ -50,7 +50,7 @@
     await fb.callable(fb.functions,'pushRegisterDevice')({token, platform, deviceId:deviceId()});
     lastToken = token;
     try {localStorage.setItem('dolphinPushEnabled','1');}catch(e){}
-    setStatus('🔔 Push đang bật', 'Manager · thiết bị đã đăng ký nhận thông báo.');
+    setStatus('🔔 Push đang bật · nhấn để tắt', 'Manager · thiết bị đã đăng ký nhận thông báo.');
     return true;
   }
   async function webToken() {
@@ -122,7 +122,7 @@
     button=document.createElement('button');
     button.type='button';button.textContent='🔔 Bật Push';
     button.style.cssText='background:#123634;color:#FBD77A;border:1px solid #FBD77A;border-radius:99px;padding:8px 12px;box-shadow:0 4px 18px #0008;font:inherit;cursor:pointer';
-    button.addEventListener('click',enable);
+    button.addEventListener('click',function(){ if(lastToken) disable(); else enable(); });
     message=document.createElement('div');message.hidden=true;
     message.style.cssText='background:#123634;color:#fff;border:1px solid #507c70;border-radius:10px;padding:8px 10px;max-width:310px;overflow-wrap:anywhere;font:500 11px/1.45 system-ui,sans-serif';
     container.appendChild(button);container.appendChild(message);

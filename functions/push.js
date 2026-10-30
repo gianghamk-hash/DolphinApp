@@ -96,12 +96,18 @@ exports.pushClaimDeviceCode=onCall(callableOpts,async request=>{
   const now=Date.now();
   await firestore.runTransaction(async tx=>{
     const claim=await tx.get(ref);
+    const current=await tx.get(enrolment);
     const value=claim.exists?claim.data():null;
     if(!value||!(value.expiresAt>now))
       throw new HttpsError('failed-precondition','Mã đã hết hạn hoặc không tồn tại.');
-    if(value.usedAt && value.usedBy!==uid)
-      throw new HttpsError('failed-precondition','Mã đã được sử dụng trên thiết bị khác.');
-    if(!value.usedAt)tx.update(ref,{usedAt:now,usedBy:uid});
+    if(value.usedAt) {
+      // A consumed code may be retried only while access is still active.
+      // It MUST NOT allow a revoked employee to reactivate themselves.
+      if(value.usedBy!==uid || current.data()?.active!==true)
+        throw new HttpsError('failed-precondition','Mã đã sử dụng. Cần mã mới do Manager cấp.');
+      return;
+    }
+    tx.update(ref,{usedAt:now,usedBy:uid});
     tx.set(enrolment,{active:true,enrolledAt:now,deviceAuth:'push-code'},{merge:true});
   });
   return {authorized:true,role:isManager(uid)?'manager':'staff'};
@@ -177,6 +183,11 @@ function showService(booking) {
   return {status:booking.service.status||'pending',
     timestamp:booking.service.savedAt||0,table:booking.label||''};
 }
+function eligibleDevice(v,cutoff) {
+  return typeof v?.token==='string' && v.active===true &&
+    Number(v.updatedAt)>=cutoff && (v.role==='staff' ||
+      (v.role==='manager' && isManager(v.uid)));
+}
 async function sendAlert(event,collection,label,kind,outlet) {
   const rawBefore=event.data?.before.exists?event.data.before.data():null;
   const rawAfter=event.data?.after.exists?event.data.after.data():null;
@@ -203,11 +214,7 @@ async function sendAlert(event,collection,label,kind,outlet) {
     if(snapshot.empty)break;
     last=snapshot.docs[snapshot.docs.length-1];
     const cutoff=Date.now()-30*24*60*60*1000;
-    const approved=snapshot.docs.filter(doc=>{
-      const v=doc.data();
-      return typeof v.token==='string'&&v.updatedAt>=cutoff&&
-        (v.role==='staff'||(v.role==='manager'&&isManager(v.uid)));
-    });
+    const approved=snapshot.docs.filter(doc=>eligibleDevice(doc.data(),cutoff));
     if(approved.length){
       const result=await getMessaging().sendEachForMulticast({
         tokens:approved.map(doc=>doc.data().token),
@@ -232,4 +239,4 @@ for(const [collection,label,kind,outlet] of FEEDS)
   exports['push_'+collection]=onDocumentWritten(triggerOpts(collection),
     event=>sendAlert(event,collection,label,kind,outlet));
 
-exports._pushTest={needsAlert,stamp,safeTable,showService,notificationPayload};
+exports._pushTest={needsAlert,stamp,safeTable,showService,eligibleDevice,notificationPayload};

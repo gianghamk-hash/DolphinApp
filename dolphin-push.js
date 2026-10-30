@@ -14,7 +14,7 @@
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const optInKey = 'dolphinPushEnabled';
   let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
-  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton;
+  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton, issueCountInput;
   const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
   function setStatus(label,detail){
     if(button)button.textContent=label;
@@ -52,8 +52,9 @@
     return response.data;
   }
   function accessUI(){
-    if(enrollPanel)enrollPanel.hidden=Boolean(access?.authorized);
+    if(enrollPanel)enrollPanel.style.display=access?.authorized?'none':'flex';
     if(issueButton)issueButton.hidden=access?.role!=='manager';
+    if(issueCountInput)issueCountInput.hidden=access?.role!=='manager';
   }
   async function loadAccess(){
     const data=await callable('pushGetMyAccess',{});
@@ -89,11 +90,12 @@
     if(busy)return;
     busy=true;if(issueButton)issueButton.disabled=true;
     try{
-      const response=await callable('pushIssueDeviceCodes',{count:1});
-      const code=response?.codes?.[0]||'';
-      if(issuedCode)issuedCode.textContent=code;
-      if(copyButton)copyButton.hidden=!code;
-      setStatus('🔔 Quản lý Push','Mã dành cho 1 thiết bị, có hiệu lực 24 giờ. Gửi riêng mã này cho nhân viên.');
+      const count=Math.max(1,Math.min(20,Number(issueCountInput?.value)||1));
+      const response=await callable('pushIssueDeviceCodes',{count});
+      const codes=response?.codes||[];
+      if(issuedCode)issuedCode.textContent=codes.join('\n');
+      if(copyButton)copyButton.hidden=!codes.length;
+      setStatus('🔔 Quản lý Push',codes.length+' mã một lần, hiệu lực 24 giờ. Gửi riêng một mã cho từng thiết bị nhân viên.');
     }catch(e){showError(e);}
     finally{busy=false;if(issueButton)issueButton.disabled=false;}
   }
@@ -133,7 +135,7 @@
     if(ios&&!standalone()&&!native){setupGuide();return;}
     if(!access?.authorized){
       if(!access)loadAccess().catch(showError);
-      if(enrollPanel)enrollPanel.hidden=false;
+      if(enrollPanel)enrollPanel.style.display='flex';
       setStatus('🔑 Nhập mã Push trước','Manager có thể tạo mã Push độc lập Staff ID ngay trong ứng dụng Dolphin.');
       return;
     }
@@ -184,7 +186,7 @@
     message=document.createElement('div');message.hidden=true;
     message.style.cssText='background:#123634;color:#fff;border:1px solid #507c70;border-radius:10px;padding:10px;max-width:330px;overflow-wrap:anywhere;font:500 12px/1.5 system-ui,sans-serif;box-shadow:0 4px 18px #0008';
     enrollPanel=document.createElement('div');enrollPanel.hidden=true;
-    enrollPanel.style.cssText='background:#123634;color:#fff;padding:10px;border:1px solid #507c70;border-radius:10px;display:flex;gap:6px;flex-wrap:wrap;max-width:330px';
+    enrollPanel.style.cssText='background:#123634;color:#fff;padding:10px;border:1px solid #507c70;border-radius:10px;display:none;gap:6px;flex-wrap:wrap;max-width:330px';
     inviteInput=document.createElement('input');
     inviteInput.placeholder='Mã Push 32 ký tự (không phải Staff ID)';
     inviteInput.setAttribute('aria-label','Mã kích hoạt Push do Manager cấp');
@@ -198,11 +200,14 @@
     issueButton.textContent='🔑 Manager: Cấp mã Push cho nhân viên';
     issueButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
     issueButton.addEventListener('click',issueCode);
-    issuedCode=document.createElement('code');issuedCode.style.cssText='background:#123634;color:#FBD77A;overflow-wrap:anywhere;max-width:320px;font-size:12px';
+    issueCountInput=document.createElement('input');issueCountInput.type='number';issueCountInput.min='1';issueCountInput.max='20';issueCountInput.value='1';issueCountInput.hidden=true;
+    issueCountInput.title='Số mã Push cấp cho nhân viên (1-20)';issueCountInput.setAttribute('aria-label','Số mã Push cần cấp');
+    issueCountInput.style.cssText='width:72px;padding:5px;border-radius:6px;color:#123634';
+    issuedCode=document.createElement('code');issuedCode.style.cssText='background:#123634;color:#FBD77A;overflow-wrap:anywhere;white-space:pre-wrap;max-width:320px;font-size:12px';
     copyButton=document.createElement('button');copyButton.type='button';copyButton.hidden=true;
     copyButton.textContent='Sao chép mã';copyButton.style.cssText='padding:5px 9px;border-radius:6px';
     copyButton.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(issuedCode.textContent);setStatus('Đã sao chép mã Push','Mỗi mã chỉ dùng một lần trên một thiết bị.');}catch(e){showError(e);}});
-    panel.append(button,message,enrollPanel,issueButton,issuedCode,copyButton);
+    panel.append(button,message,enrollPanel,issueCountInput,issueButton,issuedCode,copyButton);
     document.body.appendChild(panel);
   }
   root.DolphinPush={enable,disable,resume,receiveNativeToken,

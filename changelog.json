@@ -1,102 +1,78 @@
 {
-  "version": "1.1.7",
-  "previousVersion": "1.1.6",
-  "commit": "98b591e",
-  "previousCommit": "2d0af4c",
-  "buildDate": "2026-10-30T06:59:55.666Z",
-  "summary": "Fix game leaderboards and sync TFT final standings automatically (#162)",
+  "version": "1.1.8",
+  "previousVersion": "1.1.7",
+  "commit": "b154da2",
+  "previousCommit": "98b591e",
+  "buildDate": "2026-10-30T07:44:01.872Z",
+  "summary": "Fix order and service notifications and restore music (#163)",
   "changes": {
-    "totalCommits": 231,
-    "filesChanged": 21,
+    "totalCommits": 232,
+    "filesChanged": 15,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix game leaderboards and sync TFT final standings automatically (#162)"
+    "Fix order and service notifications and restore music (#163)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/tactics-engine-tests.yml",
+      "file": ".github/workflows/service-alert-tests.yml",
       "type": "update"
     },
     {
-      "file": "dolphin-leaderboard.js",
+      "file": "FIRESTORE_ORDER_AUDIT.md",
       "type": "update"
     },
     {
-      "file": "dolphin-tactics-results.js",
+      "file": "dolphin-alerts.js",
       "type": "update"
     },
     {
-      "file": "dolphin-tactics-results.test.js",
+      "file": "dolphin-bungalow.html",
       "type": "update"
     },
     {
-      "file": "functions/tactics/README.md",
+      "file": "dolphin-lounge.html",
       "type": "update"
     },
     {
-      "file": "functions/tactics/ranking-security.md",
+      "file": "dolphin-restaurant.html",
       "type": "update"
     },
     {
-      "file": "giaitri/games/battleship.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/caro.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/game2048.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake-coop-online.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/match-results.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/match-results.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/online-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/online-transport.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.css",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/test-store.cjs",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/xiangqi.html",
+      "file": "dolphin-soundscape.js",
       "type": "update"
     },
     {
       "file": "giaitri/index.html",
+      "type": "update"
+    },
+    {
+      "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "manager/dashboard.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/check-service-pages.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/order-alerts-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/order-alerts.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/soundscape.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

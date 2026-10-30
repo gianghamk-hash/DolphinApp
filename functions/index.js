@@ -273,4 +273,6 @@ exports.staffGetIdentity=onCall(opts,async req=>{
 });
 
 // Manager background push (isolated from the Tactics/Staff callable APIs).
-Object.assign(exports, require('./push'));
+for (const [name, handler] of Object.entries(require('./push'))) {
+  if (!name.startsWith('_')) exports[name] = handler;
+}

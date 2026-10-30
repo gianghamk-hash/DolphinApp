@@ -33,16 +33,22 @@
         import(sdk+'firebase-auth.js'),
         import(sdk+'firebase-functions.js')
       ]);
-      // A standalone Firebase Auth profile is intentional: Staff ID is NOT required.
-      const app=appSdk.getApps().find(a=>a.name==='dolphin-push') ||
+      // Share Firebase Auth with the existing app identity without checking
+      // Staff ID or employee verification. Linked and unlinked staff are equal.
+      // Manager UIDs already in STAFF_ADMIN_UIDS remain valid.
+      const baseConfig={apiKey:cfg.apiKey,authDomain:cfg.authDomain,projectId:cfg.projectId};
+      const authApp=appSdk.getApps().find(a=>a.name==='staff-identity-app') ||
+        appSdk.initializeApp(baseConfig,'staff-identity-app');
+      // Messaging needs its own complete public Firebase configuration.
+      const messagingApp=appSdk.getApps().find(a=>a.name==='dolphin-push') ||
         appSdk.initializeApp({
-          apiKey:cfg.apiKey,authDomain:cfg.authDomain,projectId:cfg.projectId,
-          messagingSenderId:cfg.messagingSenderId||undefined,appId:cfg.appId||undefined
+          ...baseConfig,messagingSenderId:cfg.messagingSenderId||undefined,
+          appId:cfg.appId||undefined
         },'dolphin-push');
-      const auth=authSdk.getAuth(app);
+      const auth=authSdk.getAuth(authApp);
       if(!auth.currentUser)await authSdk.signInAnonymously(auth);
       currentUid=auth.currentUser.uid;
-      return {app,functions:fnSdk.getFunctions(app,'asia-southeast1'),callable:fnSdk.httpsCallable};
+      return {messagingApp,functions:fnSdk.getFunctions(authApp,'asia-southeast1'),callable:fnSdk.httpsCallable};
     })().catch(e=>{clientPromise=null;throw e;});
     return clientPromise;
   }
@@ -117,7 +123,7 @@
     if(!(await msg.isSupported()))throw new Error('Firebase Web Messaging không hỗ trợ môi trường này.');
     registration=await navigator.serviceWorker.register(new URL('service-worker.js',base).pathname,{scope:base.pathname});
     await navigator.serviceWorker.ready;
-    return msg.getToken(msg.getMessaging(fb.app),
+    return msg.getToken(msg.getMessaging(fb.messagingApp),
       {vapidKey:cfg.vapidKey,serviceWorkerRegistration:registration});
   }
   function showError(error){

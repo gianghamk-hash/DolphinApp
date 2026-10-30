@@ -183,10 +183,11 @@ function showService(booking) {
   return {status:booking.service.status||'pending',
     timestamp:booking.service.savedAt||0,table:booking.label||''};
 }
-function eligibleDevice(v,cutoff) {
+function eligibleDevice(v) {
+  // Do not silently stop push after 30 days without reopening a locked PWA.
+  // Invalid tokens are removed when FCM rejects them; Manager can revoke access.
   return typeof v?.token==='string' && v.active===true &&
-    Number(v.updatedAt)>=cutoff && (v.role==='staff' ||
-      (v.role==='manager' && isManager(v.uid)));
+    (v.role==='staff' || (v.role==='manager' && isManager(v.uid)));
 }
 async function sendAlert(event,collection,label,kind,outlet) {
   const rawBefore=event.data?.before.exists?event.data.before.data():null;
@@ -213,8 +214,7 @@ async function sendAlert(event,collection,label,kind,outlet) {
     const snapshot=await q.get();
     if(snapshot.empty)break;
     last=snapshot.docs[snapshot.docs.length-1];
-    const cutoff=Date.now()-30*24*60*60*1000;
-    const approved=snapshot.docs.filter(doc=>eligibleDevice(doc.data(),cutoff));
+    const approved=snapshot.docs.filter(doc=>eligibleDevice(doc.data()));
     if(approved.length){
       const result=await getMessaging().sendEachForMulticast({
         tokens:approved.map(doc=>doc.data().token),

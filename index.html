@@ -1746,6 +1746,7 @@ let currentAlarmId = null;
 
 /* ═══ NOTIF PERMISSION ═══ */
 window.toggleNotifPerm = async function(){
+  if (window.DolphinPush) return window.DolphinPush.enable();
   if (!('Notification' in window)){
     if (window.showToast) window.showToast('Thiết bị không hỗ trợ', '⚠️');
     return;
@@ -1933,6 +1934,20 @@ if (document.readyState === 'loading') document.addEventListener('DOMContentLoad
 else initNotifUI();
 
 console.log('%c🔔 LANDING REMINDER WATCHER LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
+</script>
+<script src="./push-config.js"></script>
+<script src="./dolphin-push.js" defer></script>
+<script>
+// Open the relevant outlet when a Manager/PWA/Web push is tapped.
+window.addEventListener("load",function(){
+  const q=new URLSearchParams(location.search);
+  const outlet=q.get("pushOutlet");
+  if(["bungalow","lounge","restaurant","show"].includes(outlet)&&typeof window.openApp==="function"){
+    try {sessionStorage.setItem("dolphinLastPushId",q.get("pushId")||"");}catch(e){}
+    window.openApp(outlet);
+    history.replaceState(null,"",location.pathname);
+  }
+});
 </script>
 </body>
 </html>

@@ -1171,7 +1171,7 @@ function setup3D(){
    qualityWindowStart=now;qualitySamples=0;qualityFrameTime=0;
   }
   if(now-last<33)return;
-  last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);syncHeroNames();renderer.render(stageScene,camera);
+  last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);if(!frame.labelsAt||now-frame.labelsAt>100){syncHeroNames();frame.labelsAt=now;}renderer.render(stageScene,camera);
  }
  requestAnimationFrame(frame);
 }

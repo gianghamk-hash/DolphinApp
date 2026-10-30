@@ -7,6 +7,9 @@ on:
       - "functions/package.json"
       - "giaitri/games/tactics-online/**"
       - "dolphin-multiplayer.js"
+      - "dolphin-leaderboard.js"
+      - "dolphin-tactics-results*"
+      - "giaitri/index.html"
   push:
     paths:
       - "functions/tactics/**"
@@ -14,6 +17,9 @@ on:
       - "functions/package.json"
       - "giaitri/games/tactics-online/**"
       - "dolphin-multiplayer.js"
+      - "dolphin-leaderboard.js"
+      - "dolphin-tactics-results*"
+      - "giaitri/index.html"
 jobs:
   engine-test:
     runs-on: ubuntu-latest
@@ -28,3 +34,5 @@ jobs:
           node --test ../giaitri/games/tactics-online/hero-identity.test.js ../giaitri/games/tactics-online/weapon-animation.test.js ../giaitri/games/tactics-online/combat-performance.test.js ../giaitri/games/tactics-online/combat-timeline.test.js ../giaitri/games/tactics-online/hero-quality.test.js ../giaitri/games/tactics-online/model-loader.test.js
       - name: Validate atomic online rooms and worker simulation
         run: node --test giaitri/games/tactics-online/online-transport.test.js giaitri/games/tactics-online/simulation-client.test.js giaitri/games/tactics-online/phase-banner.test.js giaitri/games/tactics-online/tactics-ui.test.js
+      - name: Validate completed match receipts and leaderboard recovery
+        run: node --test dolphin-tactics-results.test.js giaitri/games/tactics-online/match-results.test.js

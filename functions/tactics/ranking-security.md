@@ -2,6 +2,18 @@
 
 The browser-hosted Firestore multiplayer adapter is **not** a trusted match authority. It must never publish competitive points. Verified score submission is only for matches created, advanced and finalized by Firebase callable functions using the authoritative RTDB `rooms/{roomId}` state.
 
+## Separate casual online statistics
+
+The default atomic Firestore game now publishes **casual statistics**, explicitly
+labeled “TFT online: thống kê trận thường” in the hub. `dolphin-tactics-results.js`
+reads completed room placements and commits a permanent match receipt plus all
+four aggregate rows in `game_scores`. A caller cannot pass arbitrary scores or
+placements to this API. Duplicate calls, reloads and reconnects reuse the receipt.
+This remains browser-computed casual play, not verified competition. These writes
+never touch `tacticsRankVerified`, `staffIdentity` or the verified callable path.
+Per-player casual stats use the stable room/device UID, not the display name, so
+two employees with the same name do not overwrite one another.
+
 ## Required Firebase Realtime Database Security Rules
 
 Before activating verified rankings, merge these restrictions into your existing RTDB rules (do **not** replace unrelated app rules):

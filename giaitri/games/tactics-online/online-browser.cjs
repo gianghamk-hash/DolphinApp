@@ -25,6 +25,8 @@ async function main(){
     if(fs.existsSync(asset))return route.fulfill({path:asset,contentType:'application/javascript',headers:{'Access-Control-Allow-Origin':'*'}});
     return route.continue();
    });
+   if(process.env.TFT_ASSET_CACHE)await context.route('https://cdn.tailwindcss.com/**',route=>route.fulfill({path:path.join(process.env.TFT_ASSET_CACHE,'tailwind.js'),contentType:'application/javascript'}));
+   await context.route('https://fonts.googleapis.com/**',route=>route.abort());
    await context.addInitScript(({id,emulatorHost,emulatorPort})=>{
     localStorage.setItem('dolphinStaffName','Tester '+id);localStorage.setItem('dolphin_device_id',id);
     let firebase;
@@ -41,7 +43,7 @@ async function main(){
    const page=await context.newPage();pages.push(page);page.on('pageerror',error=>errors.push(error.message));
    page.on('console',message=>{if(message.type()==='error'&&message.text().includes('[MP]'))errors.push(message.text());});
   }
-  await Promise.all(pages.map(p=>p.goto(game,{waitUntil:'networkidle',timeout:60000})));
+  await Promise.all(pages.map(p=>p.goto(game,{waitUntil:'domcontentloaded',timeout:60000})));
   await Promise.all(pages.map(p=>p.waitForFunction(()=>typeof window.createRoom==='function')));
   await Promise.all(pages.map(p=>p.evaluate(()=>window.chooseOnline())));
   await pages[0].evaluate(()=>window.createRoom());
@@ -76,7 +78,7 @@ async function main(){
   await expire(pages[1]);await phase('CHUẨN BỊ');const next=await read(pages[1]);assert.equal(next.round,2);
   assert.equal(next.players[next.playerOrder[1]].xp,2);
   // Reconnect keeps ownership, economy and room membership.
-  await pages[1].reload({waitUntil:'networkidle'});await pages[1].evaluate(()=>window.reconnectRoom());
+  await pages[1].reload({waitUntil:'domcontentloaded'});await pages[1].waitForFunction(()=>typeof window.reconnectRoom==='function');await pages[1].evaluate(()=>window.reconnectRoom());
   await pages[1].locator('#game:not(.hidden)').waitFor();assert.equal((await read(pages[1])).round,2);
   await contexts[2].setOffline(true);const offline=await pages[2].evaluate(()=>window.send({type:'ROLL'}));assert.equal(offline,false);
   await contexts[2].setOffline(false);
@@ -92,7 +94,7 @@ async function main(){
    E.action(fixture,id,{type:'MOVE',unitId:Object.keys(p.units)[0],to:'board',index:'r0c3'},time);p.ready=true;
   }
   E.advance(fixture,time);fixture.phaseEndsAt=time+60000;fixture.revision=current.revision+1;
-  fixture.mode='casual';fixture.rankingEligible=false;
+  fixture.mode='casual';fixture.protocol='tactics-atomic-v2';fixture.rankingEligible=false;
   await pages[1].evaluate(async fixture=>{await db.collection('mp_rooms').doc(DolphinMP.getRoomId()).collection('data').doc('state').set(fixture);},fixture);
   const me=current.playerOrder[1],reserve=fixture.players[me].bench['1'],extra=fixture.players[me].bench['2'];
   await pages[1].waitForFunction(text=>document.getElementById('battleBanner').textContent===text,opponentText(fixture,me));
@@ -151,7 +153,29 @@ async function main(){
   await pages[1].setViewportSize({width:390,height:844});
   assert.ok(await pages[1].locator('#networkStatus').isVisible());
   if(process.env.TFT_SCREENSHOT)await pages[1].screenshot({path:process.env.TFT_SCREENSHOT,fullPage:true});
-  assert.deepEqual(errors,[]);console.log('PASS: four clients, timed named PvP/PvE banner, combat shop/info/XP/lock/reroll, physical bench drag/swap, unchanged combat snapshot, deferred fusion, host removal and reconnect');
+  // Finish via the real engine transition, rather than inserting a client score.
+  const end=await read(pages[1]),endAt=Date.now();end.round=6;end.roundPhase='COMBAT';
+  const rival=end.playerOrder[2];end.finalPlacements={[end.playerOrder[0]]:4,[end.playerOrder[3]]:3};
+  for(const id of end.playerOrder){end.players[id].eliminated=id!==me&&id!==rival;end.players[id].hp=id===me?80:id===rival?1:0;}
+  end.players[rival].board={};end.pairs=[{a:me,b:rival,pve:false,ghost:false}];end.combatSnapshot=E.clone(end.players);
+  end.phaseStartedAt=endAt-30000;end.phaseEndsAt=endAt-1;end.revision++;
+  await pages[1].evaluate(async end=>{await db.collection('mp_rooms').doc(DolphinMP.getRoomId()).collection('data').doc('state').set(end);},end);
+  await pages[1].locator('#matchResultsModal:not(.hidden)').waitFor();
+  await pages[1].waitForFunction(()=>document.getElementById('matchResultsStatus').textContent.includes('Đã đồng bộ'),null,{timeout:20000});
+  assert.match(await pages[1].locator('#matchResultsTitle').textContent(),/CHIẾN THẮNG/);assert.equal(await pages[1].locator('#matchResultsRows tr').count(),4);
+  const ranks=await pages[1].evaluate(()=>DolphinLeaderboard.getLeaderboard('dolphin-tactics'));
+  assert.equal(ranks.length,4);assert.equal(ranks[0].uid,me);assert.ok(ranks.every(r=>r.totalGames===1));
+  await pages[2].reload({waitUntil:'domcontentloaded'});await pages[2].waitForFunction(()=>typeof window.reconnectRoom==='function');await pages[2].evaluate(()=>window.reconnectRoom());
+  await pages[2].waitForFunction(()=>document.getElementById('matchResultsStatus').textContent.includes('Đã đồng bộ'),null,{timeout:20000});
+  assert.ok((await pages[2].evaluate(()=>DolphinLeaderboard.getLeaderboard('dolphin-tactics'))).every(r=>r.totalGames===1));
+  if(process.env.TFT_SCREENSHOT)await pages[1].screenshot({path:process.env.TFT_SCREENSHOT.replace('.png','-results.png'),fullPage:true});
+  await pages[1].getByRole('button',{name:'Xem bảng xếp hạng'}).click();
+  await pages[1].waitForURL('**/giaitri/index.html#tft-ranking');
+  await pages[1].waitForFunction(()=>document.querySelectorAll('#lbContent tbody tr').length===4,null,{timeout:30000});
+  assert.equal(await pages[1].locator('#lbContent').getByText('Chưa kết nối Firebase',{exact:false}).count(),0);
+  assert.ok((await pages[1].locator('#lbContent').textContent()).includes(end.players[me].displayName));
+  if(process.env.TFT_SCREENSHOT)await pages[1].screenshot({path:process.env.TFT_SCREENSHOT.replace('.png','-leaderboard.png'),fullPage:true});
+  assert.deepEqual(errors,[]);console.log('PASS: four clients, combat controls, end-of-game four-player results, automatic atomic leaderboard receipt, reload deduplication and real hub leaderboard navigation');
  }finally{await browser.close();}
 }
 main().catch(error=>{console.error(error);process.exitCode=1;});

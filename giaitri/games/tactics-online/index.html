@@ -1,7 +1,7 @@
 <!doctype html><html lang="vi"><head><meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,user-scalable=no">
 <title>Dolphin Tactics 3D — 4 player online</title>
-<link rel="stylesheet" href="tactics-ui.css?v=2">
+<link rel="stylesheet" href="tactics-ui.css?v=3">
 <style>
 /* Android APK — balanced board and shop sidebar. */
 /* Ensure five shop cards have readable names in landscape APK. */
@@ -359,7 +359,7 @@ html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!imp
 #appShell>header h1{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 </style></head><body>
 <div id="appShell"><header><div><h1>🐉 DOLPHIN TACTICS 3D ONLINE</h1><div class="small">4 người · 36 tướng · 6 Tộc · 6 Hệ · 3 sao</div></div>
-<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header><div id="networkStatus" role="status" aria-live="polite" hidden style="flex:0 0 auto;padding:2px 8px;font-size:10px;min-height:18px"></div>
+<div style="text-align:right"><button id="fullscreenBtn" onclick="toggleFullscreen()">⛶ Toàn màn hình</button><div id="timer">30s</div><div id="roomTag" class="small">CHƯA VÀO PHÒNG</div><button id="resultTop" class="hidden" type="button" onclick="showMatchResults()">🏆 Kết quả</button><button id="combatSoundBtn" type="button" onclick="toggleCombatSound()" aria-pressed="false" title="Bật hoặc tắt âm thanh chiến đấu">🔇 Âm thanh</button><button id="leaveTop" onclick="leaveRoom()" class="hidden" style="font-size:10px;padding:5px 8px;margin-top:3px">Rời phòng</button></div></header><div id="networkStatus" role="status" aria-live="polite" hidden style="flex:0 0 auto;padding:2px 8px;font-size:10px;min-height:18px"></div>
 <div id="overlay">
 <section class="arenaHero" aria-label="Dolphin Tactics Arena"><div class="arenaSigil" aria-hidden="true">⚔</div><p class="arenaEyebrow">DOLPHIN · TACTICAL ARENA</p><h2>DOLPHIN <span>TACTICS</span></h2><p class="arenaMotto">TRIỆU HỒI · BỐ TRẬN · CHINH PHỤC</p><p class="arenaSummary">36 TƯỚNG ✦ 12 TỘC/HỆ ✦ 21 CÔNG THỨC</p><div class="arenaBoard" aria-hidden="true"><span>♜</span><span>♞</span><span>✧</span><span>♛</span><span>♞</span></div><div class="arenaIdentity"><span>CHIẾN BINH DOLPHIN</span><strong id="arenaStaffName">Đang đồng bộ tên nhân viên…</strong><small id="arenaStaffHint">Danh tính dùng chung với app Giải Trí</small></div><div class="arenaActions"><button class="gold" onclick="chooseOnline()">⚔ ONLINE · 4 NGƯỜI</button><button onclick="startOffline()">✦ OFFLINE · 3 AI</button><button onclick="openTacticsGuide('gameplay')">📖 CẨM NANG</button><button onclick="openTacticsRanking()">🏆 BXH TFT</button></div><div class="arenaPillars"><span>♟ BỐ TRẬN</span><span>⚡ KỸ NĂNG</span><span>✧ KÍCH HỆ</span><span>🛡 TRANG BỊ</span></div></section>
 
@@ -404,10 +404,16 @@ html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!imp
  <div class="sellConfirmPanel"><h2 id="sellConfirmTitle">🪙 XÁC NHẬN BÁN TƯỚNG</h2><p id="sellConfirmText"></p>
  <div class="sellConfirmActions"><button id="sellCancelBtn" type="button">Hủy</button><button id="sellAcceptBtn" type="button" class="gold">Xác nhận bán</button></div></div>
 </div><div id="unitPopup" class="unitPopup hidden" role="menu"><button id="popupSell" onclick="requestSellSelected()">🪙 Bán tướng</button></div></div>
+<div id="matchResultsModal" class="matchResultsModal hidden" role="dialog" aria-modal="true" aria-labelledby="matchResultsTitle">
+ <section class="matchResultsPanel"><button id="matchResultsClose" class="matchResultsClose" type="button" aria-label="Đóng bảng kết quả">✕</button>
+ <p class="matchResultsEyebrow">DOLPHIN TACTICS · KẾT QUẢ TRẬN ĐẤU</p><h2 id="matchResultsTitle"></h2><p id="matchResultsSubtitle"></p>
+ <div class="matchResultsTableWrap"><table><thead><tr><th>Hạng</th><th>Người chơi</th><th>HP</th><th>Điểm</th></tr></thead><tbody id="matchResultsRows"></tbody></table></div>
+ <p id="matchResultsStatus" role="status" aria-live="polite"></p><div class="matchResultsActions"><button id="matchResultsRetry" type="button" class="hidden">↻ Đồng bộ lại</button><button class="gold" type="button" onclick="openTacticsRanking()">🏆 Xem bảng xếp hạng</button></div>
+ </section></div>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js?v=combat-controls-1"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
-<script src="phase-banner.js?v=1"></script><script src="online-transport.js?v=2"></script><script src="simulation-client.js?v=2"></script><script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=1.0"></script><script src="../../../dolphin-multiplayer.js?v=2.1"></script>
+<script src="../../../dolphin-tactics-results.js?v=1"></script><script src="match-results.js?v=1"></script><script src="phase-banner.js?v=1"></script><script src="online-transport.js?v=2"></script><script src="simulation-client.js?v=2"></script><script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=2"></script><script src="../../../dolphin-multiplayer.js?v=2.1"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script>
 (function(){
@@ -454,7 +460,7 @@ document.addEventListener('keydown',event=>{
 const E=window.DolphinTacticsCreateEngine(catalog),hero=E.HERO,MP=window.DolphinMP,AI=window.DolphinTacticsCreateAI(E),Visuals=window.DolphinTacticsVisuals(THREE,window.DolphinTacticsHeroProfiles),RigFactory=window.DolphinCreateRigFactory(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),RigAnimator=window.DolphinCreateRigAnimator(),Skinner=window.DolphinCreateSkinner(THREE,window.DolphinTacticsHeroIdentity(window.DolphinHeroVisualDefs,catalog)),CombatFX=window.DolphinCreateCombatFX(THREE),Animator=window.DolphinTacticsAnimator(THREE,window.DolphinTacticsHeroProfiles,RigAnimator,Skinner),ModelLibrary=window.DolphinTacticsCreateModelLibrary(THREE,GLTFLoader,'assets/models/',RigFactory,Skinner,cloneSkeleton);
 // Casual atomic rooms use existing Firestore; no browser host relays actions.
 const simulation=window.DolphinTacticsSimulation.create(E,catalog);
-let onlineTransport=null;
+let onlineTransport=null,resultService=null,resultScreen=null;
 const gameNow=()=>offline?Date.now():onlineTransport?.now()||Date.now();
 const roundBanner=window.DolphinTacticsPhaseBanner.create($('battleBanner'),{clock:gameNow});
 let selectedShopHero='',suppressBenchClickUntil=0;
@@ -472,7 +478,8 @@ function staffName(){return (window.getSyncedStaffName?.()||localStorage.getItem
 function syncArenaIdentity(){const name=staffName();$('nick').value=name;$('arenaStaffName').textContent=name||'CHƯA ĐỒNG BỘ NHÂN VIÊN';$('arenaStaffHint').textContent=name?'Tên được đồng bộ từ hệ thống Dolphin':'Hãy thiết lập tên trong ứng dụng Dolphin trước khi chơi';return name;}
 window.addEventListener('dolphinStaffNameChanged',syncArenaIdentity);
 function requireStaff(){const name=syncArenaIdentity();if(!name){info('⚠ Chưa có tên nhân viên. Hãy xác nhận tên trong DolphinApp trước.');return '';}return name;}
-window.openTacticsRanking=()=>{window.open('../../index.html#tft-ranking','_blank','noopener');};
+window.openTacticsRanking=()=>{if(parent!==window)parent.postMessage({type:'dolphin-tactics-open-ranking'},location.origin);else location.href='../../index.html#tft-ranking';};
+window.showMatchResults=()=>resultScreen?.open();
 function onlineMessage(message,problem=false){
  $("networkStatus").textContent=message;
  $("networkStatus").style.color=problem?'#ffc181':'#8eeacb';
@@ -672,7 +679,7 @@ window.joinRoom=async()=>{
  catch(e){showError(e);}
 };
 window.leaveRoom=async()=>{
- try{if(!offline)await MP.leaveRoom();roundBanner.clear();offline=false;roomId='';selectedShopHero='';replayGeneration++;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';lastBoardSignature='';replay=null;localStorage.removeItem(reconnectKey);
+ try{if(!offline)await MP.leaveRoom();resultScreen?.reset();$('resultTop').classList.add('hidden');roundBanner.clear();offline=false;roomId='';selectedShopHero='';replayGeneration++;state=null;hostState=null;host=false;roster=[];selected=null;seenPhaseKey='';lastBoardSignature='';replay=null;localStorage.removeItem(reconnectKey);
   $('roomTag').textContent='CHƯA VÀO PHÒNG';$('leave').classList.add('hidden');$('leaveTop').classList.add('hidden');
   $('start').classList.add('hidden');$('game').classList.add('hidden');$('overlay').classList.remove('hidden');$('lobbyStatus').textContent='';$('reconnectBtn').classList.add('hidden');onlineMessage('');
   info('Đã rời phòng');}catch(e){showError(e);}
@@ -693,6 +700,16 @@ function init(){
  try{
   if(!firebase.apps.length)firebase.initializeApp(firebaseConfig);
   window.db=firebase.firestore();
+  resultService=window.DolphinTacticsResults.createService(window.db);
+  resultScreen=window.DolphinTacticsMatchResults.create({
+   modal:$('matchResultsModal'),title:$('matchResultsTitle'),subtitle:$('matchResultsSubtitle'),table:$('matchResultsRows'),status:$('matchResultsStatus'),retryButton:$('matchResultsRetry'),closeButton:$('matchResultsClose'),
+   rowsFor:window.DolphinTacticsResults.rowsFor,parent:()=>document.fullscreenElement||$('appShell'),
+   sync:(id,player,seed)=>resultService.recordFinishedRoom(id,player,seed),
+   onSynced:(id,seed)=>{window.DolphinLeaderboard?.invalidate('dolphin-tactics');if(parent!==window)parent.postMessage({type:'dolphin-tactics-result-synced',roomId:id,seed},location.origin);}
+  });
+  void resultService.flush();
+  void resultService.repairLastRoom(MP.getDeviceId()).catch(error=>console.warn('[TFT] Pending result',error.message));
+  addEventListener('online',()=>{void resultService.flush();void resultScreen.retry();});
   onlineTransport=window.DolphinTacticsOnline.createTransport(E,window.db,{advance:(room,time)=>simulation.advance(room,time)});
   MP.registerAdapter('dolphin-tactics',onlineTransport);onlineTransport.mount();
   uid=MP.getDeviceId();setupMP();syncArenaIdentity();
@@ -973,6 +990,8 @@ function tickReplay(){
 function update(){
  if(!state)return;$("start").classList.toggle("hidden",state.hostId!==uid||state.playerOrder.length!==4||state.status!=="waiting");
  if(!offline)$("lobbyStatus").textContent=state.playerOrder.length+"/4: "+state.playerOrder.map(id=>state.players[id].displayName).join(" · ");
+ $('resultTop').classList.toggle('hidden',state.status!=='finished');
+ if(state.status==='finished')resultScreen?.update(state,{uid,roomId,offline});
  if(state.status==="waiting"){ $("overlay").classList.remove("hidden");$("game").classList.add("hidden");return;}
  $("overlay").classList.add("hidden");$("game").classList.remove("hidden");
  if(!renderer)setup3D();

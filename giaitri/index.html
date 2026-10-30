@@ -8,11 +8,15 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script>window.DOLPHIN_HIDE_SOUND_WIDGET = true; window.DOLPHIN_ALLOW_SOUND = true;</script>
-<script src="/DolphinApp/dolphin-soundscape.js?v=2.4" defer></script>
-<script src="/DolphinApp/staff-sync.js" defer></script>
-<script src="/DolphinApp/dolphin-leaderboard.js?v=1.0"></script>
-<script src="/DolphinApp/dolphin-multiplayer.js?v=1.0" defer></script>
+<script src="../dolphin-soundscape.js?v=2.4" defer></script>
+<script src="../staff-sync.js" defer></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
+<script src="../dolphin-tactics-results.js?v=1"></script>
+<script src="../dolphin-leaderboard.js?v=2"></script>
+<script src="../dolphin-multiplayer.js?v=2.1" defer></script>
 <style>
+.lb-table.tftRanks td:nth-child(2){white-space:normal!important;max-width:none!important;min-width:120px;overflow-wrap:anywhere}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
 body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:100vh;margin:0;overflow-x:hidden;padding-bottom:64px}
 .brand-title{font-family:'Fraunces',serif;font-weight:900;letter-spacing:.25em;background:linear-gradient(180deg,#FBD77A 0%,#F4B842 45%,#D99A2B 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 2px 10px rgba(244,184,66,.5))}
@@ -422,7 +426,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         <div class="text-center py-8 text-teal-500 text-[12px] font-bold">Đang tải...</div>
       </div>
       <div class="text-center text-[10px] text-teal-500 mt-3 italic">
-        <i class="ic ic-bulb"></i> TFT: chỉ hiển thị kết quả đã xác minh từ máy chủ; trận dùng Host trình duyệt chưa tính điểm · Làm mới định kỳ
+        <i class="ic ic-bulb"></i> TFT online: thống kê trận thường · Hạng 1/2/3/4: 25/18/12/6 điểm · Không tính trận Offline
       </div>
     </div>
   </div>
@@ -682,7 +686,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
 <script>
 (function(){
   'use strict';
-  var currentLBGame = 'snake';
+  var currentLBGame = 'snake', renderVersion = 0;
   var LB_META = {
     snake:              { icon: '<i class="ic ic-snake"></i>',   title: 'RẮN SĂN MỒI',      type: 'score' },
     'snake-coop-online':{ icon: '<i class="ic ic-snake2"></i>',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
@@ -691,7 +695,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     game2048:           { icon: '<i class="ic ic-hash"></i>',   title: '2048',              type: 'score' },
     xiangqi:            { icon: '<i class="ic ic-shield"></i>',   title: 'CỜ TƯỚNG',          type: 'win' },
     caro:               { icon: '<i class="ic ic-gamepad"></i>',   title: 'CỜ CARO',           type: 'win' },
-    'dolphin-tactics':{ icon: '⚔️', title: 'DOLPHIN TACTICS · KING OF TFT', type: 'tft' }
+    'dolphin-tactics':{ icon: '⚔️', title: 'DOLPHIN TACTICS · XẾP HẠNG ONLINE', type: 'tft' }
   };
 
   function $(id){ return document.getElementById(id); }
@@ -723,7 +727,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
   };
 
   async function renderLB(game){
-    var el = $('lbContent');
+    var el = $('lbContent'), requestVersion = ++renderVersion;
     if (!el) return;
     el.innerHTML = '<div class="text-center py-8 text-teal-400 text-[12px] font-bold">Đang tải...</div>';
     waitForLB(async function(){
@@ -733,6 +737,10 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         return;
       }
       var rows = await LB.getLeaderboard(game, 30);
+      if(requestVersion !== renderVersion || game !== currentLBGame)return;
+      if(LB.lastError && LB.lastError(game)){
+        el.innerHTML = '<div role="alert" class="text-center py-8 text-red-400 text-[12px]">Chưa tải được dữ liệu: '+esc(LB.lastError(game))+'<br>Nhấn Làm mới để thử lại.</div>';return;
+      }
       var meta = LB_META[game] || LB_META.snake;
       var myName = LB.getStaffName();
 
@@ -744,7 +752,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         return;
       }
 
-      var html = '<div style="overflow-x:auto"><table class="lb-table"><thead><tr>';
+      var html = '<div style="overflow-x:auto"><table class="lb-table'+(meta.type === 'tft'?' tftRanks':'')+'"><thead><tr>';
       html += '<th>#</th><th>Người chơi</th>';
       if (meta.type === 'tft'){
         html += '<th class="num">Điểm</th><th class="num">Top 1</th><th class="num">Trận</th><th class="num">Hạng TB</th>';
@@ -788,6 +796,14 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     });
   }
 
+  window.addEventListener('message',function(event){
+    if(event.origin !== location.origin || event.source !== document.getElementById('gameFrame').contentWindow)return;
+    if(event.data?.type === 'dolphin-tactics-open-ranking'){window.closeGame();window.showTab('leaderboard');window.showLB('dolphin-tactics');}
+    if(event.data?.type === 'dolphin-tactics-result-synced'){window.DolphinLeaderboard?.invalidate('dolphin-tactics');if(currentLBGame === 'dolphin-tactics')renderLB(currentLBGame);}
+  });
+  window.addEventListener('storage',function(event){if(event.key === 'dolphin_tft_result_synced' && currentLBGame === 'dolphin-tactics')window.refreshLB();});
+  window.addEventListener('online',function(){window.DolphinLeaderboard?.flushTacticsResults().then(function(){window.refreshLB();});});
+  window.DolphinLeaderboard?.flushTacticsResults().then(function(){if(currentLBGame === 'dolphin-tactics')window.refreshLB();});
   if(location.hash === '#tft-ranking'){
     window.addEventListener('load',function(){showTab('leaderboard');showLB('dolphin-tactics');},{once:true});
   }
@@ -798,7 +814,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
 })();
 </script>
 
-<script>window.goBack = function(){ window.location.href = '/DolphinApp/'; };</script>
+<script>window.goBack = function(){ window.location.href = '../'; };</script>
 
 </body>
 </html>

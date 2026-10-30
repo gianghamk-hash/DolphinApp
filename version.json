@@ -1,7 +1,7 @@
 {
-  "version": "1.0.218",
-  "buildDate": "2026-10-30T00:17:19.889Z",
-  "commit": "5712cb7",
-  "notes": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030",
+  "version": "1.0.219",
+  "buildDate": "2026-10-30T00:23:15.502Z",
+  "commit": "1257bea",
+  "notes": "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030",
   "forceUpdate": false
 }

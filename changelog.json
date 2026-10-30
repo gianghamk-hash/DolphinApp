@@ -1,18 +1,18 @@
 {
-  "version": "1.0.218",
-  "previousVersion": "1.0.217",
-  "commit": "5712cb7",
-  "previousCommit": "014a2a0",
-  "buildDate": "2026-10-30T00:17:19.889Z",
-  "summary": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030",
+  "version": "1.0.219",
+  "previousVersion": "1.0.218",
+  "commit": "1257bea",
+  "previousCommit": "5712cb7",
+  "buildDate": "2026-10-30T00:23:15.502Z",
+  "summary": "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030",
   "changes": {
-    "totalCommits": 222,
+    "totalCommits": 223,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030"
+    "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030"
   ],
   "fileChanges": [
     {

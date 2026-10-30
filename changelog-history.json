@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.218",
+      "releaseDate": "2026-10-30T00:17:19.889Z",
+      "summary": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030",
+      "details": [
+        "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030"
+      ]
+    },
+    {
       "version": "1.0.217",
       "releaseDate": "2026-10-29T16:44:05.632Z",
       "summary": "Create CNAME",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029",
       "details": [
         "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029"
-      ]
-    },
-    {
-      "version": "1.0.168",
-      "releaseDate": "2026-10-29T01:20:59.794Z",
-      "summary": "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029",
-      "details": [
-        "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029"
       ]
     }
   ]

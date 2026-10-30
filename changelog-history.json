@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.0",
+      "releaseDate": "2026-10-30T01:35:51.143Z",
+      "summary": "Merge pull request #158 from gianghamk-hash/feature/manager-issued-staff-id",
+      "details": [
+        "Merge pull request #158 from gianghamk-hash/feature/manager-issued-staff-id"
+      ]
+    },
+    {
       "version": "1.0.219",
       "releaseDate": "2026-10-30T00:23:15.502Z",
       "summary": "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #111 from gianghamk-hash/fix/tft-ai-render-stability-package-c-20261029",
       "details": [
         "Merge pull request #111 from gianghamk-hash/fix/tft-ai-render-stability-package-c-20261029"
-      ]
-    },
-    {
-      "version": "1.0.170",
-      "releaseDate": "2026-10-29T02:00:10.388Z",
-      "summary": "Merge pull request #110 from gianghamk-hash/fix/tft-replay-combat-accuracy-package-b-20261029",
-      "details": [
-        "Merge pull request #110 from gianghamk-hash/fix/tft-replay-combat-accuracy-package-b-20261029"
       ]
     }
   ]

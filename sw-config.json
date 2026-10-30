@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.1.1",
   "releaseDate": "2026-10-30",
-  "notes": "Merge pull request #158 from gianghamk-hash/feature/manager-issued-staff-id"
+  "notes": "fix(staff-id): show enrollment panel button in online widget"
 }

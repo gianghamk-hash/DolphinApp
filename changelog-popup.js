@@ -10,7 +10,8 @@
   'use strict';
 
   var LS_KEY = 'dolphin_seen_version';
-  var CHANGELOG_URL = '/DolphinApp/changelog.json';
+  var APP_ROOT = new URL('./',document.currentScript.src).href;
+  var CHANGELOG_URL = APP_ROOT + 'changelog.json';
 
   /* Delay trước khi hiện popup (cho landing ổn định) */
   var SHOW_DELAY = 1500;
@@ -348,10 +349,10 @@
 
     /* Fetch version.json + changelog.json */
     Promise.all([
-      fetch('/DolphinApp/version.json?t=' + Date.now(), { cache: 'no-store' })
+      fetch(APP_ROOT + 'version.json?t=' + Date.now(), { cache: 'no-store' })
         .then(function(r){ return r.ok ? r.json() : null; })
         .catch(function(){ return null; }),
-      fetch('/DolphinApp/changelog.json?t=' + Date.now(), { cache: 'no-store' })
+      fetch(APP_ROOT + 'changelog.json?t=' + Date.now(), { cache: 'no-store' })
         .then(function(r){ return r.ok ? r.json() : null; })
         .catch(function(){ return null; })
     ]).then(function(results){

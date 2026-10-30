@@ -3,6 +3,7 @@
 <head>
 <script src="dolphin-alerts.js?v=1.1"></script>
 <meta charset="UTF-8">
+<script src="./dolphin-navigation.js?v=1" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
 <title>Dolphin HaLong Cruise</title>
@@ -456,7 +457,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   padding:0;line-height:1;touch-action:manipulation;-webkit-tap-highlight-color:transparent;
 }
 #home-controls.minimized #btn-home{
-  width:18px;height:18px;opacity:.5;
+  width:44px;height:44px;opacity:.8;
   border-color:rgba(244,184,66,.5);box-shadow:0 3px 10px rgba(0,0,0,.4);
 }
 #home-controls.minimized #btn-home svg{display:none}
@@ -631,22 +632,22 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 <script src="staff-id.js?v=1.1" defer></script>
 <script src="staff-online.js?v=1.1" defer></script>
 <script src="dolphin-soundscape.js?v=1.1" defer></script>
-<link rel="manifest" href="/DolphinApp/manifest.json">
+<link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#123634">
 <meta name="color-scheme" content="dark">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Dolphin">
 <meta name="mobile-web-app-capable" content="yes">
-<link rel="apple-touch-icon" sizes="144x144" href="/DolphinApp/pwa-icons/icon-144.png">
-<link rel="apple-touch-icon" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
-<link rel="apple-touch-icon" href="/DolphinApp/pwa-icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="72x72" href="/DolphinApp/pwa-icons/icon-72.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/DolphinApp/pwa-icons/icon-96.png">
-<link rel="icon" type="image/png" sizes="144x144" href="/DolphinApp/pwa-icons/icon-144.png">
-<link rel="icon" type="image/png" sizes="192x192" href="/DolphinApp/pwa-icons/icon-192.png">
-<link rel="icon" type="image/png" sizes="384x384" href="/DolphinApp/pwa-icons/icon-384.png">
-<link rel="icon" type="image/png" sizes="512x512" href="/DolphinApp/pwa-icons/icon-512.png">
+<link rel="apple-touch-icon" sizes="144x144" href="./pwa-icons/icon-144.png.png">
+<link rel="apple-touch-icon" sizes="192x192" href="./pwa-icons/icon-192.png.png">
+<link rel="apple-touch-icon" href="./pwa-icons/icon-192.png.png">
+<link rel="icon" type="image/png" sizes="72x72" href="./pwa-icons/icon-72.png.png">
+<link rel="icon" type="image/png" sizes="96x96" href="./pwa-icons/icon-96.png.png">
+<link rel="icon" type="image/png" sizes="144x144" href="./pwa-icons/icon-144.png.png">
+<link rel="icon" type="image/png" sizes="192x192" href="./pwa-icons/icon-192.png.png">
+<link rel="icon" type="image/png" sizes="384x384" href="./pwa-icons/icon-384.png.png">
+<link rel="icon" type="image/png" sizes="512x512" href="./pwa-icons/icon-512.png.png">
 </head>
 <body>
 
@@ -817,7 +818,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 
 <div id="app-view" class="hidden">
   <div id="home-controls">
-    <button type="button" id="btn-home" onclick="goHome()" title="Quay lại trang chủ">
+    <button type="button" id="btn-home" onclick="activateHomeBtn()" title="Quay lại trang chủ">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
         <path d="M3 11l9-8 9 8"/><path d="M5 10v10h14V10"/>
       </svg>
@@ -1088,13 +1089,14 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   function applyHomeBtnState(){
     var ctrl = document.getElementById('home-controls');
     if (!ctrl) return;
-    ctrl.classList.toggle('minimized', localStorage.getItem(HOME_KEY) === '1');
+    var hidden=false;try{hidden=localStorage.getItem(HOME_KEY)==='1';}catch(e){}
+    ctrl.classList.toggle('minimized',hidden);
   }
   window.toggleHomeBtn = function(){
     var ctrl = document.getElementById('home-controls');
     if (!ctrl) return;
     var h = !ctrl.classList.contains('minimized');
-    localStorage.setItem(HOME_KEY, h ? '1' : '0');
+    try{localStorage.setItem(HOME_KEY,h?'1':'0');}catch(e){}
     ctrl.classList.toggle('minimized', h);
   };
 
@@ -1118,6 +1120,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   function clampHomePos(x, y){
     var vw = window.innerWidth, vh = window.innerHeight;
     var w = ctrl.offsetWidth || 60, h = ctrl.offsetHeight || 100;
+    if(!Number.isFinite(x))x=vw-w-15;
+    if(!Number.isFinite(y))y=vh-h-20;
     x = Math.max(4, Math.min(x, vw - w - 4));
     y = Math.max(4, Math.min(y, vh - h - 4));
     return { x: x, y: y };
@@ -1284,6 +1288,10 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     }, 420);
   }
 
+  window.activateHomeBtn=function(){
+    var controls=document.getElementById('home-controls');
+    if(controls&&controls.classList.contains('minimized'))window.toggleHomeBtn();else window.goHome();
+  };
   window.goHome = function(){
     if (transitionLock) return;
     transitionLock = true;

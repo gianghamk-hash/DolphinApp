@@ -251,9 +251,11 @@ jobs:
               private boolean trustedDolphinPage() {
                   if (webView == null || webView.getUrl() == null) return false;
                   Uri u = Uri.parse(webView.getUrl());
-                  return "https".equals(u.getScheme())
-                      && "gianghamk-hash.github.io".equals(u.getHost())
+                  boolean customDomain = "dolphinfb.store".equals(u.getHost());
+                  boolean legacyPages = "gianghamk-hash.github.io".equals(u.getHost())
                       && u.getPath() != null && u.getPath().startsWith("/DolphinApp/");
+                  return "https".equals(u.getScheme()) && (u.getPort() == -1 || u.getPort() == 443)
+                      && (customDomain || legacyPages);
               }
               private void setGameOrientation(boolean landscape) {
                   runOnUiThread(() -> {
@@ -371,8 +373,8 @@ jobs:
                       }
                   });
 
-                  // 🌐 Load từ GitHub Pages → OTA update tự động
-                  webView.loadUrl("https://gianghamk-hash.github.io/DolphinApp/index.html");
+                  // 🌐 Load từ custom domain → OTA update tự động
+                  webView.loadUrl("https://dolphinfb.store/index.html");
               }
 
               private static String guessMime(String path) {

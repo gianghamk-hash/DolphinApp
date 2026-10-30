@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<script src="../../dolphin-navigation.js?v=1" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
 <title>Dolphin · 2048</title>
@@ -771,7 +772,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     if (score > 0 && !gameOver){
       if (!confirm('Ván đang chơi. Thoát sẽ mất tiến trình?')) return;
     }
-    window.location.href = '/DolphinApp/giaitri/index.html';
+    window.DolphinNavigation.back();
   };
 
   window.openRules = function(){ $('rulesModal').classList.add('show'); };

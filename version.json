@@ -1,7 +1,7 @@
 {
-  "version": "1.0.217",
-  "buildDate": "2026-10-29T16:44:05.632Z",
-  "commit": "014a2a0",
-  "notes": "Create CNAME",
+  "version": "1.0.218",
+  "buildDate": "2026-10-30T00:17:19.889Z",
+  "commit": "5712cb7",
+  "notes": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030",
   "forceUpdate": false
 }

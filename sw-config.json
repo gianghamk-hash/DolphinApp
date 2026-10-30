@@ -1,5 +1,5 @@
 {
-  "version": "1.0.217",
-  "releaseDate": "2026-10-29",
-  "notes": "Create CNAME"
+  "version": "1.0.218",
+  "releaseDate": "2026-10-30",
+  "notes": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030"
 }

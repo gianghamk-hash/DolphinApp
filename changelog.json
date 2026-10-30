@@ -1,22 +1,22 @@
 {
-  "version": "1.0.217",
-  "previousVersion": "1.0.216",
-  "commit": "014a2a0",
-  "previousCommit": "bef8f49",
-  "buildDate": "2026-10-29T16:44:05.632Z",
-  "summary": "Create CNAME",
+  "version": "1.0.218",
+  "previousVersion": "1.0.217",
+  "commit": "5712cb7",
+  "previousCommit": "014a2a0",
+  "buildDate": "2026-10-30T00:17:19.889Z",
+  "summary": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030",
   "changes": {
-    "totalCommits": 221,
+    "totalCommits": 222,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Create CNAME"
+    "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030"
   ],
   "fileChanges": [
     {
-      "file": "CNAME",
+      "file": "index.html",
       "type": "update"
     }
   ]

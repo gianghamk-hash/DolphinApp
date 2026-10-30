@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.217",
+      "releaseDate": "2026-10-29T16:44:05.632Z",
+      "summary": "Create CNAME",
+      "details": [
+        "Create CNAME"
+      ]
+    },
+    {
       "version": "1.0.216",
       "releaseDate": "2026-10-29T16:43:44.639Z",
       "summary": "Delete CNAME",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029",
       "details": [
         "Merge pull request #108 from gianghamk-hash/feat/tft-phase4-ux-polish-20261029"
-      ]
-    },
-    {
-      "version": "1.0.167",
-      "releaseDate": "2026-10-29T01:12:26.478Z",
-      "summary": "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029",
-      "details": [
-        "Merge pull request #107 from gianghamk-hash/feat/tft-phase3-ai-balance-20261029"
       ]
     }
   ]

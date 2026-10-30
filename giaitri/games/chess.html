@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<script src="../../dolphin-navigation.js?v=1" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
 <title>Dolphin · Cờ Vua</title>
@@ -368,7 +369,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     if (!gameOver && game && game.history().length > 0 && $('gameView').style.display !== 'none'){
       if (!confirm('Ván đang chơi. Thoát sẽ mất tiến trình. Tiếp tục?')) return;
     }
-    window.location.href = '/DolphinApp/giaitri/index.html';
+    window.DolphinNavigation.back();
   };
 
   window.doRestart = function(){

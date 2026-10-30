@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<script src="../../dolphin-navigation.js?v=1" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
 <title>Dolphin · Cờ Tướng</title>
@@ -940,7 +941,7 @@ window.goBack = function(){
     if (!confirm('Ván đang chơi. Thoát?')) return;
   }
   if(MP.getRoomId())MP.leaveRoom().catch(console.warn);
-  window.location.href = '/DolphinApp/giaitri/index.html';
+  window.DolphinNavigation.back();
 };
 
 // ═══════════════════════════════════

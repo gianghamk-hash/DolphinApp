@@ -27,6 +27,7 @@ const CACHE_URLS = [
   BASE + '/caro/index.html',
   BASE + '/staff-sync.js',
   BASE + '/dolphin-alerts.js?v=1',
+  BASE + '/dolphin-navigation.js?v=1',
   BASE + '/theme-system.js',
   BASE + '/avatar-system.js',
   BASE + '/dolphin-ui.js',

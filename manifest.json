@@ -2,8 +2,8 @@
   "name": "Dolphin HaLong Cruise",
   "short_name": "Dolphin",
   "description": "Hệ thống quản lý du thuyền Dolphin Hạ Long",
-  "start_url": "/DolphinApp/",
-  "scope": "/DolphinApp/",
+  "start_url": "./",
+  "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
   "background_color": "#123634",
@@ -11,43 +11,43 @@
   "lang": "vi",
   "icons": [
     {
-      "src": "/DolphinApp/pwa-icons/icon-72.png.png",
+      "src": "./pwa-icons/icon-72.png.png",
       "sizes": "72x72",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/DolphinApp/pwa-icons/icon-96.png.png",
+      "src": "./pwa-icons/icon-96.png.png",
       "sizes": "96x96",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/DolphinApp/pwa-icons/icon-144.png.png",
+      "src": "./pwa-icons/icon-144.png.png",
       "sizes": "144x144",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/DolphinApp/pwa-icons/icon-192.png.png",
+      "src": "./pwa-icons/icon-192.png.png",
       "sizes": "192x192",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/DolphinApp/pwa-icons/icon-384.png.png",
+      "src": "./pwa-icons/icon-384.png.png",
       "sizes": "384x384",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/DolphinApp/pwa-icons/icon-512.png.png",
+      "src": "./pwa-icons/icon-512.png.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "any"
     },
     {
-      "src": "/DolphinApp/pwa-icons/icon-512.png.png",
+      "src": "./pwa-icons/icon-512.png.png",
       "sizes": "512x512",
       "type": "image/png",
       "purpose": "maskable"

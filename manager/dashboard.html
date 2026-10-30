@@ -3,6 +3,7 @@
 <head>
 <script src="../dolphin-alerts.js?v=1"></script>
 <meta charset="UTF-8">
+<script src="../dolphin-navigation.js?v=1" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
 <title>Dolphin Manager · Tổng Quan</title>
@@ -707,7 +708,7 @@ setInterval(() => { if (caroGamesAll.length) renderCaroMonitor(); }, 30000);
 
 /* ═══ VERSION INFO ═══ */
 function loadVersionInfo() {
-  fetch('/DolphinApp/version.json?t=' + Date.now(), { cache: 'no-store' })
+  fetch('../version.json?t=' + Date.now(), { cache: 'no-store' })
     .then(r => r.json())
     .then(data => {
       document.getElementById('ver-current').textContent = 'v' + (data.version || '?');
@@ -729,8 +730,8 @@ window.loadChangelog = function() {
   const container = document.getElementById('changelog-container');
   if (!container) return;
   Promise.all([
-    fetch('/DolphinApp/changelog.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null),
-    fetch('/DolphinApp/changelog-history.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null)
+    fetch('../changelog.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null),
+    fetch('../changelog-history.json?t=' + Date.now(), { cache: 'no-store' }).then(r => r.json()).catch(() => null)
   ]).then(([current, history]) => {
     let html = '';
     if (current) {
@@ -814,7 +815,7 @@ window.saveTheme = async function() {
 window.previewTheme = function() {
   const sel = document.getElementById('theme-select');
   if (!sel) return;
-  window.open('/DolphinApp/?theme=' + sel.value, '_blank');
+  window.open('../?theme=' + sel.value, '_blank');
 };
 function showThemeStatus(type, text) {
   const status = document.getElementById('theme-status');

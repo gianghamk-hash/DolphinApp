@@ -2,6 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8">
+<script src="../../dolphin-navigation.js?v=1" defer></script>
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no,viewport-fit=cover">
 <meta name="theme-color" content="#123634">
 <title>Dolphin · Rắn Đôi Online</title>
@@ -274,9 +275,9 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
-<script src="/DolphinApp/staff-sync.js" defer></script>
+<script src="../../staff-sync.js" defer></script>
 <script src="../../dolphin-leaderboard.js?v=2"></script>
-<script src="/DolphinApp/dolphin-multiplayer.js?v=1.0"></script>
+<script src="../../dolphin-multiplayer.js?v=1.0"></script>
 <script>
 'use strict';
 
@@ -1156,7 +1157,7 @@ window.copyCode = copyCode;
 
 async function leaveAndBack(){
   try { await window.DolphinMP.leaveRoom(); } catch(e){}
-  window.location.href = '/DolphinApp/giaitri/index.html';
+  window.DolphinNavigation.back();
 }
 window.leaveAndBack = leaveAndBack;
 

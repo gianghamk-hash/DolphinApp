@@ -1,5 +1,5 @@
 {
-  "version": "1.1.1",
+  "version": "1.1.2",
   "releaseDate": "2026-10-30",
-  "notes": "fix(staff-id): show enrollment panel button in online widget"
+  "notes": "fix(staff-id): retry uncached enrollment token transactions"
 }

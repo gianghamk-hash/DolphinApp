@@ -1,22 +1,30 @@
 {
-  "version": "1.1.1",
-  "previousVersion": "1.1.0",
-  "commit": "eda7ff2",
-  "previousCommit": "f33b2dc",
-  "buildDate": "2026-10-30T01:59:07.372Z",
-  "summary": "fix(staff-id): show enrollment panel button in online widget",
+  "version": "1.1.2",
+  "previousVersion": "1.1.1",
+  "commit": "41e6b4a",
+  "previousCommit": "eda7ff2",
+  "buildDate": "2026-10-30T02:26:46.428Z",
+  "summary": "fix(staff-id): retry uncached enrollment token transactions",
   "changes": {
-    "totalCommits": 225,
-    "filesChanged": 1,
+    "totalCommits": 226,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(staff-id): show enrollment panel button in online widget"
+    "fix(staff-id): retry uncached enrollment token transactions"
   ],
   "fileChanges": [
     {
-      "file": "staff-online.js",
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/package.json",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
       "type": "update"
     }
   ]

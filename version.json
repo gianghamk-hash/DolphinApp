@@ -1,7 +1,7 @@
 {
-  "version": "1.1.1",
-  "buildDate": "2026-10-30T01:59:07.372Z",
-  "commit": "eda7ff2",
-  "notes": "fix(staff-id): show enrollment panel button in online widget",
+  "version": "1.1.2",
+  "buildDate": "2026-10-30T02:26:46.428Z",
+  "commit": "41e6b4a",
+  "notes": "fix(staff-id): retry uncached enrollment token transactions",
   "forceUpdate": false
 }

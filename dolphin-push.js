@@ -89,7 +89,9 @@
     } catch(e) {showError(e);}
     finally {busy = false;}
   }
+  function optedIn() { try {return localStorage.getItem('dolphinPushEnabled') === '1';} catch(e) {return false;} }
   async function resume() {
+    if (!optedIn()) return;
     if (native) {try {root.AndroidPush.readToken();}catch(e){showError(e);}return;}
     if ('Notification' in root && Notification.permission === 'granted' &&
         cfg.messagingSenderId && cfg.appId && cfg.vapidKey) {
@@ -134,7 +136,7 @@
   function start(){
     makeControl();
     // Do not prompt for permission without a user gesture.
-    resume().catch(showError);
+    if(optedIn()) resume().catch(showError);
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',start,{once:true});
   else start();

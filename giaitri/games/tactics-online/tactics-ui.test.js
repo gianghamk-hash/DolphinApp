@@ -86,7 +86,8 @@ test('hero names appear as HTML overlays during preparation and combat',()=>{
  assert.match(html,/function syncHeroNames\(\)/);
  assert.match(html,/tag\.textContent=displayName\|\|h\.name/);
  assert.match(html,/node\.localToWorld\(loc\)/);
- assert.match(html,/syncHeroNames\(\);renderer\.render/);
+ assert.match(html,/syncHeroNames\(\);frame\.labelsAt=now/);
+ assert.match(html,/renderer\.render\(stageScene,camera\)/);
  assert.match(css,/#game #heroNameLayer/);
  assert.match(css,/#game \.battleHeroName/);
 });
@@ -98,19 +99,12 @@ test('creating heroes does not require CanvasTexture support',()=>{
 // Keep the handbook tests in the established UI CI workflow.
 require('./guide.test.js');
 
-test('online host persists both accepted and rejected action acknowledgements',()=>{
- assert.match(html,/hostState\.clientAcks\[playerId\]=\{sequence,actionId,accepted,reason\}/);
- assert.match(html,/catch\(error\)\{accepted=false/);
- assert.match(html,/hostState\.clientSequences\[playerId\]=sequence/);
- assert.match(html,/if\(sequence<=\(hostState\.clientSequences\[playerId\]\|\|0\)\)return/);
-});
-test('online guests wait for acknowledgement and do not overlap inputs',()=>{
- assert.match(html,/function sendOnlineAction\(action\)/);
- assert.match(html,/if\(onlinePending\)/);
- assert.match(html,/function settleOnlineAction\(snapshot\)/);
- assert.match(html,/if\(!ack\|\|ack\.sequence!==onlinePending\.sequence\|\|ack\.actionId!==uid\+':'\+onlinePending\.sequence\)return/);
- assert.match(html,/setTimeout\(\(\)=>\{if\(onlinePending!==pending\)return/);
- assert.match(html,/return await authority\.action\(action\)/);
+test('online game uses atomic commands and exposes sync status during play',()=>{
+ assert.match(html,/MP\.registerAdapter\('dolphin-tactics',onlineTransport\)/);
+ assert.match(html,/await onlineTransport\.action\(action\)/);
+ assert.match(html,/MP\.onNetwork\(connectionWatch\)/);
+ assert.match(html,/aria-live="polite"/);
+ assert.doesNotMatch(html,/MP\.sendInputStrict|MP\.sendStateStrict|onlinePending/);
 });
 
 test('phase 4 combat statistics are bounded and derived from replay events',()=>{
@@ -126,14 +120,13 @@ test('phase 4 status tags follow 3D units and equipment confirmations respect ho
  assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
 });
 
-test('critical online actions reject expired and invalid request identifiers',()=>{
- assert.match(html,/MP\.onInput\(\(\{playerId,action,sequence,actionId,expiresAt\}\)=>/);
- assert.match(html,/receivedAt>expiresAt/);
- assert.match(html,/actionId!==playerId\+':'\+sequence/);
- assert.match(html,/hostState\.clientSequences\[playerId\]=sequence/);
- assert.match(html,/hostState\.clientAcks\[playerId\]=\{sequence,actionId,accepted,reason\}/);
- assert.match(html,/MP\.sendInputStrict\(\{action,sequence,actionId,expiresAt\}\)/);
- assert.match(html,/ack\.actionId!==uid\+':'\+onlinePending\.sequence/);
+test('online phase advance does not depend on the lobby host',()=>{
+ assert.match(html,/onlineTransport\.advance\(\)/);
+ assert.match(html,/if\(!offline\)\{/);
+ assert.match(html,/const allReady=/);
+ assert.match(html,/simulation\.advance\(hostState/);
+ assert.match(html,/await simulation\.simulate\(pair/);
+ assert.match(html,/generation!==replayGeneration/);
 });
 
 test('combat replay uses engine initial stats and displays burn damage plus concurrent effects',()=>{
@@ -252,7 +245,7 @@ test('equipment details expose components, recipes, stats and effects without ch
  assert.match(html,/window\.openItemForEquip=/); assert.match(html,/window\.equipSelectedItem=/);
 });
 test('PvP matchup label uses live pair and opponent HP',()=>{
- assert.match(html,/id="pvpOpponent"/);
+ assert.match(html,/id="boardHelp"/);
  assert.match(html,/function paintOpponent\(/);
  assert.match(html,/state\.pairs\?\.find/);
  assert.match(html,/enemy\.displayName/);

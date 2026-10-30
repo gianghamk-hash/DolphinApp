@@ -1,16 +1,77 @@
-# Dolphin Tactics 3D — Multiplayer Architecture
+# Dolphin Tactics 3D — multiplayer
 
-> Implementation branch only; this does NOT deploy Firebase or merge main. Node.js 22 for Functions.
+## Default online game: atomic casual rooms
 
-## Shared Dolphin Multiplayer integration
+The web/APK entry point now registers `online-transport.js` with the shared
+`DolphinMP` API. It uses the existing Firestore `mp_rooms` collection and does
+not require deploying additional Cloud Functions or changing production rules.
+Existing Caro/Snake transports are unchanged.
 
-The game now reuses the **existing** root `dolphin-multiplayer.js` through a backward-compatible `registerAdapter('dolphin-tactics', ...)` adapter. The same UI-facing methods are used: `createRoom`, `joinRoom`, `onRoom`, `onPlayers`, `onState`, `leaveRoom`, `getRoomId` and `isHost`.
+- New rooms declare `protocol: tactics-atomic-v2`. Everyone must refresh and
+  create a new room after the update; old host-relay rooms are rejected explicitly.
+- The host organizes the lobby only. Every participant submits their own command
+  directly in a Firestore transaction. Any participant can advance a due phase.
+- Each transaction reads room membership plus the current state, validates the
+  command and commits one revision. Concurrent updates retry, with at most 10
+  attempts. Round/phase fences stop queued commands affecting a later round.
+- A bounded FIFO accepts rapid clicks without silently discarding the next input.
+  Each player's last 24 command IDs prevent duplicate purchases on uncertain
+  retries. Commands expire after 10 seconds, and transactions reject offline
+  input instead of queuing purchases for a later reconnect.
+- Phase changes take priority over the input queue. A phase key prevents duplicate
+  combat results, round XP and income when multiple clients advance together.
+- `reports` includes only pair, winner, loser and damage. Replay events and initial
+  combat stats are generated locally. A 4-player/9-unit round-12 fixture drops
+  from 154,899 to 3,917 JSON bytes (97.5% reduction); actual wire sizes vary.
+- A dedicated worker computes replay and combat resolution outside the rendering
+  thread. Browsers without worker support use the deterministic inline fallback.
+- Presence heartbeats run every 15 seconds while visible. Committed timestamps
+  estimate server clock offset. Idle combat is no longer reported as disconnected
+  solely because the room has not changed for 20 seconds.
+- Leaving an active match retains roster/ownership for reconnect and never closes
+  the match for everyone. Waiting-room host departure transfers the organizer role.
+  If all clients close, the casual match waits until someone reconnects.
 
-**One authoritative room only:** Existing Caro/Snake 2-player Firestore games keep using `mp_rooms` and the original `p1/p2` protocol. Tactics uses `/rooms/{roomId}` in RTDB via the adapter, with *no duplicate Firestore lobby*. The 4-player cap is enforced by `tacticsJoinRoom` Cloud Function, not by relaxing the legacy Firestore limit.
+**Trust boundary:** This is still casual, browser-computed play, as before.
+Transactions prevent concurrent lost updates; they do not make browsers trusted
+simulation authorities. Client rooms set `rankingEligible:false`; verified TFT
+rankings remain exclusive to the separate Functions/RTDB backend described below.
+Do not grant broader Firestore permissions to make a failing deployment work.
 
-Tactics adapter hooks RTDB presence `/roomPresence/{roomId}/{uid}` with `onDisconnect` and cleans up listeners on leave. `tacticsLeaveRoom` releases a waiting slot, reassigns the host if needed, and intentionally keeps in-game roster slots for reconnection. Automatic removal of stale waiting players is not implemented yet.
+## Verification
 
-To avoid trusting a browser host, the adapter deliberately **rejects** `sendState()`, `sendConfig()` and `updateRoomStatus()`. Game actions continue through authenticated callables. Engine changes remain in the existing PR #11.
+Run from the repository root:
+
+```sh
+node --test giaitri/games/tactics-online/online-transport.test.js giaitri/games/tactics-online/simulation-client.test.js
+node --test giaitri/games/tactics-online/tactics-ui.test.js
+cd functions && npm test
+```
+
+The transport suite covers concurrent purchases, uncertain retries, queued input,
+phase expiry, all-ready, host departure, reconnect, compact payloads and cleanup.
+
+For a browser integration run, install Playwright/Chromium, serve this repository
+locally, and start a **local demo-project Firestore emulator** with test-only rules.
+Never deploy emulator allow-all rules to production. Then run:
+
+```sh
+FIRESTORE_EMULATOR_HOST=127.0.0.1:8088 node giaitri/games/tactics-online/online-browser.cjs
+```
+
+`TFT_BASE_URL` defaults to `http://127.0.0.1:8765`. The browser check forces the
+`demo-dolphin-tft` project/emulator, and covers four separate browser contexts,
+purchases, moves, host removal, worker combat, round XP, reconnect and offline
+rejection. Actual boat Wi-Fi/4G latency and Android hardware FPS still need a
+physical-device session; emulator timings are not production latency claims.
+
+## Separate server-authoritative backend (not the default browser route)
+
+`functions/index.js` and `authority-adapter.js` remain a separate backend path.
+The adapter still polls callables and is not automatically enabled by this update.
+It needs a properly deployed Functions/RTDB environment and a complete realtime
+client integration before replacing casual rooms. Existing backend instructions
+and contracts follow; their server-authority guarantees apply only to that path.
 
 ## Client / server contract
 

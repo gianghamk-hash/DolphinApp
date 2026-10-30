@@ -381,6 +381,7 @@
       '      <div class="sow-panel-title">👥 Nhân sự online</div>',
       '      <div class="sow-panel-sub" id="sowPanelSub">Đang tải...</div>',
       '    </div>',
+      '    <button type="button" id="staffIdOpenBtn" style="margin-left:8px;padding:6px 10px;cursor:pointer">Staff ID / Cấp mã</button>',
       '  </div>',
       '  <div class="sow-list" id="sowList">',
       '    <div class="sow-empty-msg">Đang tải...</div>',

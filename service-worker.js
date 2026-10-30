@@ -27,6 +27,9 @@ const CACHE_URLS = [
   BASE + '/caro/index.html',
   BASE + '/staff-sync.js',
   BASE + '/dolphin-alerts.js?v=1',
+  BASE + '/push-config.js',
+  BASE + '/dolphin-push.js',
+  BASE + '/staff-id.js?v=1.1',
   BASE + '/dolphin-navigation.js?v=1',
   BASE + '/theme-system.js',
   BASE + '/avatar-system.js',
@@ -159,13 +162,8 @@ self.addEventListener('push', event => {
   const payload = envelope && (envelope.data || envelope);
   if (!payload || payload.type !== 'dolphin-order') return;
   event.waitUntil((async () => {
-    const windows = await self.clients.matchAll({type:'window', includeUncontrolled:true});
-    const visible = windows.filter(client => client.visibilityState === 'visible' &&
-      (/\/index\.html$/.test(new URL(client.url).pathname) || /\/manager\/dashboard\.html$/.test(new URL(client.url).pathname)));
-    if (visible.length) {
-      visible.forEach(client => client.postMessage({type:'DOLPHIN_PUSH_RECEIVED', eventId:payload.eventId}));
-      return; // foreground Firestore watcher already renders the order alert
-    }
+    // Apple iOS Home Screen web apps require every received push to be user-visible.
+    // Never swallow a push just because Dolphin is open in a foreground tab.
     const options = {
       body: String(payload.body || 'Mở Dolphin để xem yêu cầu mới.').slice(0,180),
       tag: String(payload.tag || payload.eventId || ''),

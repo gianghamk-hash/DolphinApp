@@ -248,12 +248,16 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
  if(!/^[0-9A-F]{36}$/.test(code))throw new HttpsError('invalid-argument','Mã liên kết không hợp lệ');
  await throttle(uid,2500);
  const tokenHash=crypto.createHash('sha256').update(code).digest('hex');
- const ref=staffTokenRoot().child(tokenHash);let issued=null;
+ const ref=staffTokenRoot().child(tokenHash);
  const result=await ref.transaction(v=>{
-  if(!v||v.usedAt||v.expiresAt<Date.now())return;
-  issued=v;return {...v,usedAt:Date.now(),claimedUid:uid};
+  // An uncached transaction starts with null even when the token exists.
+  // Submit the null proposal so RTDB can retry against the server value.
+  if(v===null)return null;
+  if(v.usedAt||!Number.isFinite(v.expiresAt)||v.expiresAt<=Date.now())return;
+  return {...v,usedAt:Date.now(),claimedUid:uid};
  },undefined,false);
- if(!result.committed||!issued)throw new HttpsError('failed-precondition','Mã hết hạn hoặc đã được sử dụng');
+ const issued=result.committed?result.snapshot.val():null;
+ if(!issued||issued.claimedUid!==uid)throw new HttpsError('failed-precondition','Mã hết hạn hoặc đã được sử dụng');
  const snap=await staffRoot().child(issued.employeeId).once('value'),profile=snap.val();
  if(!profile||!profile.active)throw new HttpsError('failed-precondition','Nhân viên không còn hoạt động');
  await getDatabase().ref('staffIdentity/'+uid).set({employeeId:profile.employeeId,name:profile.name,verified:true,updatedAt:Date.now()});

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.0.219",
+      "releaseDate": "2026-10-30T00:23:15.502Z",
+      "summary": "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030",
+      "details": [
+        "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030"
+      ]
+    },
+    {
       "version": "1.0.218",
       "releaseDate": "2026-10-30T00:17:19.889Z",
       "summary": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #110 from gianghamk-hash/fix/tft-replay-combat-accuracy-package-b-20261029",
       "details": [
         "Merge pull request #110 from gianghamk-hash/fix/tft-replay-combat-accuracy-package-b-20261029"
-      ]
-    },
-    {
-      "version": "1.0.169",
-      "releaseDate": "2026-10-29T01:55:29.925Z",
-      "summary": "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029",
-      "details": [
-        "Merge pull request #109 from gianghamk-hash/fix/tft-critical-shields-expired-inputs-20261029"
       ]
     }
   ]

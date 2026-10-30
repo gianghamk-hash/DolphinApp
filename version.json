@@ -1,7 +1,7 @@
 {
-  "version": "1.1.6",
-  "buildDate": "2026-10-30T06:28:28.819Z",
-  "commit": "2d0af4c",
-  "notes": "Show TFT round opponents and enable combat shop and bench controls (#161)",
+  "version": "1.1.7",
+  "buildDate": "2026-10-30T06:59:55.666Z",
+  "commit": "98b591e",
+  "notes": "Fix game leaderboards and sync TFT final standings automatically (#162)",
   "forceUpdate": false
 }

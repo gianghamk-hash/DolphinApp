@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.6",
+      "releaseDate": "2026-10-30T06:28:28.819Z",
+      "summary": "Show TFT round opponents and enable combat shop and bench controls (#161)",
+      "details": [
+        "Show TFT round opponents and enable combat shop and bench controls (#161)"
+      ]
+    },
+    {
       "version": "1.1.5",
       "releaseDate": "2026-10-30T06:04:17.100Z",
       "summary": "Fix TFT online lag with compact atomic rooms and background combat (#160)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #118 from gianghamk-hash/fix/tft-package-f-combat-accuracy-20261029",
       "details": [
         "Merge pull request #118 from gianghamk-hash/fix/tft-package-f-combat-accuracy-20261029"
-      ]
-    },
-    {
-      "version": "1.0.176",
-      "releaseDate": "2026-10-29T05:19:27.247Z",
-      "summary": "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029",
-      "details": [
-        "Merge pull request #116 from gianghamk-hash/security/tft-package-e-authoritative-ranking-20261029"
       ]
     }
   ]

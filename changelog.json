@@ -1,18 +1,18 @@
 {
-  "version": "1.1.6",
-  "previousVersion": "1.1.5",
-  "commit": "2d0af4c",
-  "previousCommit": "bed17c2",
-  "buildDate": "2026-10-30T06:28:28.819Z",
-  "summary": "Show TFT round opponents and enable combat shop and bench controls (#161)",
+  "version": "1.1.7",
+  "previousVersion": "1.1.6",
+  "commit": "98b591e",
+  "previousCommit": "2d0af4c",
+  "buildDate": "2026-10-30T06:59:55.666Z",
+  "summary": "Fix game leaderboards and sync TFT final standings automatically (#162)",
   "changes": {
-    "totalCommits": 230,
-    "filesChanged": 10,
+    "totalCommits": 231,
+    "filesChanged": 21,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Show TFT round opponents and enable combat shop and bench controls (#161)"
+    "Fix game leaderboards and sync TFT final standings automatically (#162)"
   ],
   "fileChanges": [
     {
@@ -20,15 +20,43 @@
       "type": "update"
     },
     {
+      "file": "dolphin-leaderboard.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-tactics-results.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-tactics-results.test.js",
+      "type": "update"
+    },
+    {
       "file": "functions/tactics/README.md",
       "type": "update"
     },
     {
-      "file": "functions/tactics/combat-controls.test.js",
+      "file": "functions/tactics/ranking-security.md",
       "type": "update"
     },
     {
-      "file": "functions/tactics/engine.js",
+      "file": "giaitri/games/battleship.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/caro.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/game2048.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/snake-coop-online.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/snake.html",
       "type": "update"
     },
     {
@@ -36,15 +64,19 @@
       "type": "update"
     },
     {
+      "file": "giaitri/games/tactics-online/match-results.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/match-results.test.js",
+      "type": "update"
+    },
+    {
       "file": "giaitri/games/tactics-online/online-browser.cjs",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/phase-banner.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/phase-banner.test.js",
+      "file": "giaitri/games/tactics-online/online-transport.test.js",
       "type": "update"
     },
     {
@@ -53,6 +85,18 @@
     },
     {
       "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/test-store.cjs",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/xiangqi.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

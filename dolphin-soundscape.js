@@ -74,7 +74,7 @@
   ];
 
   // ═══════════════════════ CONFIG ═══════════════════════
-  var SOUND_BASE     = '/DolphinApp/sounds/';
+  var SOUND_BASE = new URL('sounds/', document.currentScript.src).href;
   var MANIFEST_URL   = SOUND_BASE + 'manifest.json';
   var CACHE_KEY      = 'dolphin_sound_tracks_cache_v2';
   var CACHE_TTL      = 24 * 60 * 60 * 1000;
@@ -96,17 +96,19 @@
   var initialized = false;
 
   // ═══════════════════════ HELPERS ═══════════════════════
-  function getEnabled(){ return localStorage.getItem(STORAGE_ENABLED) === '1'; }
-  function setEnabledStored(v){ localStorage.setItem(STORAGE_ENABLED, v ? '1' : '0'); }
+  function readSetting(key){ try { return localStorage.getItem(key); } catch(e){ return null; } }
+  function writeSetting(key,value){ try { localStorage.setItem(key,value); } catch(e){} }
+  function getEnabled(){ return readSetting(STORAGE_ENABLED) === '1'; }
+  function setEnabledStored(v){ writeSetting(STORAGE_ENABLED, v ? '1' : '0'); }
   function getVol(){
-    var v = parseFloat(localStorage.getItem(STORAGE_VOL));
+    var v = parseFloat(readSetting(STORAGE_VOL));
     return isNaN(v) ? 0.3 : Math.max(0, Math.min(1, v));
   }
-  function setVolStored(v){ localStorage.setItem(STORAGE_VOL, String(v)); }
-  function getMode(){ return localStorage.getItem(STORAGE_MODE) === 'manual' ? 'manual' : 'auto'; }
-  function setModeStored(m){ localStorage.setItem(STORAGE_MODE, m === 'manual' ? 'manual' : 'auto'); }
-  function getPick(){ return localStorage.getItem(STORAGE_PICK) || 'default'; }
-  function setPickStored(k){ localStorage.setItem(STORAGE_PICK, k); }
+  function setVolStored(v){ writeSetting(STORAGE_VOL, String(v)); }
+  function getMode(){ return readSetting(STORAGE_MODE) === 'manual' ? 'manual' : 'auto'; }
+  function setModeStored(m){ writeSetting(STORAGE_MODE, m === 'manual' ? 'manual' : 'auto'); }
+  function getPick(){ return readSetting(STORAGE_PICK) || 'default'; }
+  function setPickStored(k){ writeSetting(STORAGE_PICK, k); }
 
   function findTrack(key){
     for (var i = 0; i < TRACKS.length; i++) if (TRACKS[i].key === key) return TRACKS[i];
@@ -139,6 +141,7 @@
   }
 
   // ═══════════════════════ ENRICH ═══════════════════════
+  function validTrack(t){ return t && typeof t.key === 'string' && /^[a-z0-9_-]+$/.test(t.key) && typeof t.file === 'string' && /^soundscape-[a-z0-9_-]+\.mp3$/.test(t.file); }
   function enrichTrack(t){
     var meta = TRACKS_META[t.key];
     if (meta){
@@ -177,9 +180,10 @@
       var raw = localStorage.getItem(CACHE_KEY);
       if (!raw) return null;
       var data = JSON.parse(raw);
-      if (!data || !data.tracks || !data.ts) return null;
+      if (!data || !Array.isArray(data.tracks) || !data.ts) return null;
       if (Date.now() - data.ts > CACHE_TTL) return null;
-      return data.tracks;
+      var tracks = data.tracks.filter(validTrack).map(enrichTrack);
+      return tracks.length ? sortTracks(tracks) : null;
     } catch(e){ return null; }
   }
 
@@ -210,8 +214,9 @@
         throw new Error('Manifest rỗng hoặc sai format');
       }
       var tracks = data.tracks
-        .filter(function(t){ return t && t.key && t.file; })
+        .filter(validTrack)
         .map(enrichTrack);
+      if (!tracks.length) throw new Error('Manifest không có bài hợp lệ');
       return sortTracks(tracks);
     }).catch(function(err){
       clearTimeout(timer);

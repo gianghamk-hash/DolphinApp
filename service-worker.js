@@ -7,7 +7,7 @@
    - Đọc version từ sw-config.json (single source of truth)
    ============================================================ */
 
-const BASE = '/DolphinApp';
+const BASE = new URL('./',self.location.href).pathname.replace(/\/$/,'');
 const CONFIG_URL = BASE + '/sw-config.json';
 const FALLBACK_CACHE = 'dolphin-fallback';
 
@@ -26,6 +26,7 @@ const CACHE_URLS = [
   BASE + '/ranking/index.html',
   BASE + '/caro/index.html',
   BASE + '/staff-sync.js',
+  BASE + '/dolphin-alerts.js?v=1',
   BASE + '/theme-system.js',
   BASE + '/avatar-system.js',
   BASE + '/dolphin-ui.js',
@@ -146,4 +147,14 @@ self.addEventListener('message', event => {
       clients.forEach(c => c.postMessage({ type: 'RELOAD_NOW' }));
     })());
   }
+});
+
+self.addEventListener('notificationclick',event=>{
+ event.notification.close();
+ event.waitUntil((async()=>{
+  const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  const client=windows.find(c=>new URL(c.url).origin===self.location.origin);
+  if(client)return client.focus();
+  return self.clients.openWindow(BASE+'/');
+ })());
 });

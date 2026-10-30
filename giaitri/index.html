@@ -8,7 +8,7 @@
 <script src="https://cdn.tailwindcss.com"></script>
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:wght@600;700;900&family=Nunito:wght@400;500;600;700;800;900&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
 <script>window.DOLPHIN_HIDE_SOUND_WIDGET = true; window.DOLPHIN_ALLOW_SOUND = true;</script>
-<script src="../dolphin-soundscape.js?v=2.4" defer></script>
+<script src="../dolphin-soundscape.js?v=2.5" defer></script>
 <script src="../staff-sync.js" defer></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
@@ -570,6 +570,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
   function renderMusicUI(){
     var ds = DS(); if (!ds) return;
     var tracks = ds.getTracks();
+    if (!tracks.length) return;
     var currentKey = ds.getTrack();
     var isPlaying = ds.isPlaying();
     var mode = ds.getMode();
@@ -611,6 +612,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     updateMiniPlayer();
   }
 
+  window.__giaitriSyncMusicUI = renderMusicUI;
   window.pickTrack = function(key){ var ds = DS(); if (!ds) return; ds.setTrack(key); renderMusicUI(); };
   window.setMode = function(m){ var ds = DS(); if (!ds) return; ds.setMode(m); renderMusicUI(); };
   window.toggleMusic = function(){

@@ -25,6 +25,7 @@ function fixture({transientFailures=0}={}){
     return{
       where(field,op,value){return query(name,[...checks,[field,op,value]],last,max);},
       orderBy(){return query(name,checks,last,max);},
+      count(){return {get:async()=>{const snap=await query(name,checks,last,max).get();return{data:()=>({count:snap.size})};}};},
       limit(n){return query(name,checks,last,n);},
       startAfter(snapshot){return query(name,checks,snapshot.id,max);},
       async get(){
@@ -172,4 +173,18 @@ test('expired processing lease is recovered when a Function dies mid-send',async
   await h.pushRetryDeliveries();
   assert.equal(f.sent.length,2);
   assert.equal([...f.map('dolphin_push_dispatches').values()][0].status,'sent');
+});
+
+test('Manager-only delivery health reports active devices and FCM acceptance',async()=>{
+  const f=fixture(),h=f.handlers;
+  f.map('dolphin_push_devices').set('abc',{uid:'staff',token:'token-1',role:'staff',active:true});
+  await h.push_bun_orders(event('BGL901',901));
+  await assert.rejects(h.pushGetDeliveryHealth(request('ordinary',{})),
+    err=>err.code==='permission-denied');
+  const result=await h.pushGetDeliveryHealth(request('manager-uid',{}));
+  assert.equal(result.enabled,true);
+  assert.equal(result.activeDevices,1);
+  assert.equal(result.recent.length,1);
+  assert.equal(result.recent[0].status,'sent');
+  assert.equal(result.recent[0].acceptedByFcm,1);
 });

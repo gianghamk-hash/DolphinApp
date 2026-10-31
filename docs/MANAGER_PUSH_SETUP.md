@@ -52,11 +52,11 @@ The system cannot guarantee 100% delivery at the OS/network layer. iOS 16.4+ req
 ## Known limitations and reliability
 - Apple Web Push works for iOS 16.4+ **Home Screen PWA**, not a normal Safari tab; OS may throttle or suppress alerts.
 - Every enrolled device follows the same broadcast logic, but no software can guarantee 100% delivery for an offline device, denied permission or iOS system bug.
-- Backend dispatch ledger is at-most-once per event: a transient FCM send failure after ledger reservation currently has no automatic resend; production reliability enhancements/monitoring are a recommended follow-up.
+- **Durable retry:** each order/call event is reserved once in `dolphin_push_dispatches` with a delivery lease and bounded retry state. `pushRetryDeliveries` (Cloud Scheduler every 5 minutes) automatically recovers transient FCM failures and expired leases, up to 5 attempts with exponential backoff. The same event tag is reused to reduce duplicate alerts. Persistent failures end in `status:failed` and need operations review. An FCM send success confirms provider acceptance, NOT guaranteed device presentation.
 - Notification tap opens the correct outlet, not yet proven to focus an individual order row.
 - No 30-day silent device cutoff: active subscriptions remain eligible until revoked or invalidated by FCM.
 - Staff ID remains intact; no Staff ID linking/verification is needed.
-- Firebase billing and Firestore operations increase with each push; monitor FCM sends, Function invocation counts and Firestore reads/writes in Blaze.
+- Firebase billing and Firestore operations increase with each push; monitor FCM sends, Function invocation counts and Firestore reads/writes in Blaze. The 5-minute retry scheduler and persistent dispatch ledger add a small regular read/write load; account for these in the existing Blaze budget.
 
 ## Tests
 ```bash

@@ -57,3 +57,29 @@ test('Core Firebase order, booking and completion functions remain present',()=>
   assert(html.includes("nextStatus==='preparing'"));
   assert(html.includes("nextStatus==='completed'"));
 });
+
+test('Daily Show lists explicit food choices and cannot save more than one dish',()=>{
+  for(const id of ['combo1','combo2','combo3']){
+    const c=combos[id];
+    assert.equal(c.maxFoods,1);
+    assert(c.allowedFoods.length>=2);
+  }
+  assert.match(html,/data-g="food_choice"/);
+  assert.match(html,/selected\.allowedFoods\.includes\(choice\)/);
+  assert.match(html,/service\.foods=\{\[choice\]:1\}/);
+  assert.match(html,/Object\.keys\(service\.foods\)\.length>selected\.maxFoods/);
+});
+test('Fixed singer food is not an editable input and amounts are copied exactly',()=>{
+  assert.match(html,/c\.fixedFoods\s*\?/);
+  assert.match(html,/KHÔNG TÙY CHỌN, KHÔNG THÊM ĐĨA/);
+  assert.match(html,/service\.foods=\{\.\.\.selected\.fixedFoods\}/);
+});
+test('Saving an existing older Daily Show SET preserves original dishes',()=>{
+  assert.match(html,/option\.value='__legacy_set__'/);
+  assert.match(html,/service\.foods=\{\.\.\.old\.foods\}/);
+  assert.match(html,/old\.combo!==currentCombo/);
+});
+test('Reject invalid decimal and negative drink amounts before writing to Firestore',()=>{
+  assert.match(html,/Number\.isSafeInteger\(Number\(i\.value\)\)/);
+  assert.match(html,/Số đồ uống phải là số nguyên không âm/);
+});

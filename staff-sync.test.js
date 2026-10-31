@@ -6,7 +6,7 @@ const code=fs.readFileSync(require('node:path').join(__dirname,'staff-sync.js'),
 function harness(seed={},allow=true){
  const map=new Map(Object.entries(seed)), events=[],toasts=[],els={};
  const ctx={
-   window:{confirm:()=>allow,alert:m=>toasts.push(m),showToast:m=>toasts.push(m),dispatchEvent:e=>events.push(e)},
+   window:{confirm:()=>allow,alert:m=>toasts.push(m),showToast:m=>toasts.push(m),dispatchEvent:e=>events.push(e),addEventListener(){}},
    localStorage:{getItem:k=>map.get(k)||null,setItem:(k,v)=>map.set(k,v)},
    document:{readyState:'loading',addEventListener(){},getElementById:id=>els[id]||null},
    setInterval:()=>0,clearInterval(){},setTimeout(){},
@@ -42,4 +42,12 @@ test('legacy Show seller is migrated to shared name',()=>{
  assert.equal(h.window.getSyncedStaffName(),'Show Staff');
  assert.equal(h.window.setSyncedStaffName('New Staff'),true);
  assert.equal(h.map.get('dolphinShowSeller'),'New Staff');
+});
+
+test('a saved linked profile synchronizes a renamed employee while ordinary edits stay locked',()=>{
+ const h=harness({dolphinStaffName:'Old name',dolphinShowSeller:'Old name',dolphinStaffNameLockedV1:'1'});
+ assert.equal(h.window.applySyncedStaffProfile({linked:true,employeeId:'DOL-1234',name:' New  name '}),true);
+ assert.equal(h.map.get('dolphinStaffName'),'New name');assert.equal(h.map.get('dolphinShowSeller'),'New name');
+ assert.equal(h.window.setSyncedStaffName('Other'),false);
+ assert.equal(h.window.applySyncedStaffProfile({name:'Unlinked'}),false);
 });

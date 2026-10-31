@@ -27,6 +27,8 @@ function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
   if(n==='firebase-functions/v2/scheduler')return {onSchedule:(_,fn)=>fn};
   if(n==='./tactics/engine')return {};
   if(n==='./push')return {}; // Ignore independent push exports while unit-testing legacy Staff ID.
+  if(n==='./staff-profile'){const sub={...context,exports:{}};vm.runInNewContext(fs.readFileSync(__dirname+'/staff-profile.js','utf8'),sub);return sub.exports;}
+  if(n==='./staff-avatar-catalog.json')return require('./staff-avatar-catalog.json');
   throw Error(n);
  }};
  vm.runInNewContext(source,context);
@@ -112,5 +114,67 @@ test('two cold claimants cannot both consume the same code',async()=>{
  assert.equal(results.filter(r=>r.status==='fulfilled').length,1);
  assert.equal(results.filter(r=>r.status==='rejected'&&r.reason.code==='failed-precondition').length,1);
  assert.equal([...state.keys()].filter(k=>k.startsWith('staffIdentity/')).length,1);
+});
+
+test('self-service endpoints require authentication and validate all editable fields',async()=>{
+ const {api}=harness();
+ for(const name of ['staffRegisterSelfProfile','staffUpdateMyProfile','staffIssueOwnLinkCode'])await rejects(()=>api[name](req(null)),'unauthenticated');
+ for(const data of [{name:'A'},{name:'<script>'},{name:'Alice',avatar:'<img>'},{name:'Alice',department:'Manager'}])
+  await rejects(()=>api.staffRegisterSelfProfile(req('user',data)),'invalid-argument');
+});
+
+test('self-registration assigns a stable ID and cannot grant verified employee or Manager privileges',async()=>{
+ const {api,state}=harness();
+ const result=await api.staffRegisterSelfProfile(req('user',{name:' Alice  Nguyen ',avatar:'🐬',department:'Show',verified:true,role:'manager',employeeId:'DOL-0001'}));
+ assert.match(result.employeeId,/^DOL-[A-F0-9]{10}$/);assert.equal(result.name,'Alice Nguyen');
+ assert.equal(result.linked,true);assert.equal(result.verified,false);
+ assert.equal(state.get('staffIdentity/user').verified,false);
+ assert.equal(state.get('staffRegistry/'+result.employeeId).role,undefined);
+ assert.equal((await api.staffGetIdentity(req('user'))).linked,true);
+ await rejects(()=>api.staffCreateProfile(req('user',{name:'Mallory',employeeId:'DOL-0001'})),'permission-denied');
+ state.delete('staffProfileRate/user');
+ const repeated=await api.staffRegisterSelfProfile(req('user',{name:'Different',avatar:'🐯'}));
+ assert.equal(repeated.employeeId,result.employeeId);assert.equal(repeated.name,'Alice Nguyen');
+ assert.equal([...state.keys()].filter(k=>k.startsWith('staffRegistry/')).length,1);
+});
+
+test('profile updates only affect the current employee and reject inactive/unlinked sessions',async()=>{
+ const {api,state}=harness();
+ const original=await api.staffRegisterSelfProfile(req('owner',{name:'Alice',avatar:'🐬'}));
+ state.delete('staffProfileRate/owner');
+ const saved=await api.staffUpdateMyProfile(req('owner',{name:'New name',avatar:'🐯',department:'Lounge',employeeId:'DOL-OTHER',verified:true}));
+ assert.equal(saved.employeeId,original.employeeId);assert.equal(saved.avatar,'🐯');assert.equal(saved.verified,false);
+ assert.equal((await api.staffGetIdentity(req('owner'))).name,'New name');
+ await rejects(()=>api.staffUpdateMyProfile(req('stranger',{name:'Hijack',avatar:'🐯',employeeId:original.employeeId})),'failed-precondition');
+ state.get('staffRegistry/'+original.employeeId).active=false;state.delete('staffProfileRate/owner');
+ await rejects(()=>api.staffUpdateMyProfile(req('owner',{name:'Retry'})),'permission-denied');
+});
+
+test('an employee can link a second device without a manager; both see the latest profile',async()=>{
+ const {api,state}=harness('manager',{cold:true});
+ const first=await api.staffRegisterSelfProfile(req('first',{name:'Alice',avatar:'🐬'}));
+ state.delete('staffProfileRate/first');
+ const code=await api.staffIssueOwnLinkCode(req('first'));
+ assert.equal(code.expiresInMinutes,10);
+ const linked=await api.staffClaimLinkCode(req('second',{code:code.code}));
+ assert.equal(linked.employeeId,first.employeeId);assert.equal(linked.verified,false);
+ assert.equal((await api.staffGetIdentity(req('second'))).avatar,'🐬');
+ state.delete('staffProfileRate/first');
+ await api.staffUpdateMyProfile(req('first',{name:'Updated',avatar:'🐠',department:'Show'}));
+ assert.equal((await api.staffGetIdentity(req('second'))).name,'Updated');
+ assert.equal((await api.staffGetIdentity(req('second'))).avatar,'🐠');
+ await rejects(()=>api.staffClaimLinkCode(req('third',{code:code.code})),'failed-precondition');
+});
+
+test('linked devices cannot switch identity and concurrent claims cannot overwrite a device identity',async()=>{
+ const {api,state}=harness();
+ const a=await api.staffRegisterSelfProfile(req('a',{name:'Alice'}));
+ const b=await api.staffRegisterSelfProfile(req('b',{name:'Bob'}));
+ state.delete('staffProfileRate/a');state.delete('staffProfileRate/b');
+ const ca=await api.staffIssueOwnLinkCode(req('a')),cb=await api.staffIssueOwnLinkCode(req('b'));
+ await rejects(()=>api.staffClaimLinkCode(req('a',{code:cb.code})),'failed-precondition');
+ const results=await Promise.allSettled([api.staffClaimLinkCode(req('new',{code:ca.code})),api.staffClaimLinkCode(req('new',{code:cb.code}))]);
+ assert.equal(results.filter(x=>x.status==='fulfilled').length,1);
+ assert.ok([a.employeeId,b.employeeId].includes(state.get('staffIdentity/new').employeeId));
 });
 

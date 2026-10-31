@@ -5,10 +5,16 @@
 (function(){
 'use strict';
 const config={apiKey:'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ',authDomain:'dolphin-f6d67.firebaseapp.com',projectId:'dolphin-f6d67'};
-let api=null, identity=null, uid='', initialized=false;
+let api=null, identity=null, uid='', initialized=false, connection=null;
 const manager=()=>navigator.userAgent.includes('DolphinManager')||window.DOLPHIN_APP_TYPE==='manager';
 const htmlEscape=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
-function emit(){window.dispatchEvent(new CustomEvent('dolphin-staff-id-changed',{detail:identity}));}
+function emit(){
+ if(identity){
+  if(window.applySyncedStaffProfile)window.applySyncedStaffProfile(identity);
+  try{const value=JSON.stringify(identity);if(localStorage.getItem('dolphinStaffProfile')!==value)localStorage.setItem('dolphinStaffProfile',value);}catch(e){}
+ }
+ window.dispatchEvent(new CustomEvent('dolphin-staff-id-changed',{detail:identity}));
+}
 async function init(){
  if(initialized)return;initialized=true;
  try{
@@ -17,18 +23,20 @@ async function init(){
    import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'),
    import('https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js')]);
   let app;try{app=fb.getApp('staff-identity-app');}catch(e){app=fb.initializeApp(config,'staff-identity-app');}
-  const a=auth.getAuth(app),user=a.currentUser|| (await auth.signInAnonymously(a)).user;
+  const a=auth.getAuth(app);if(a.authStateReady)await a.authStateReady();
+  const user=a.currentUser|| (await auth.signInAnonymously(a)).user;
   uid=user.uid;const functions=func.getFunctions(app,'asia-southeast1');
   api=name=>func.httpsCallable(functions,name);
   await refresh();
- }catch(e){console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);}
+ }catch(e){initialized=false;api=null;console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);}
 }
+function connect(){if(!connection||!initialized)connection=init();return connection;}
 async function refresh(){
  if(!api)return null;
  try{
   const r=await api('staffGetIdentity')({});
-  identity=r.data&&r.data.verified?r.data:null;emit();return identity;
- }catch(e){identity=null;emit();console.warn('[StaffID] Backend chưa sẵn sàng:',e);return null;}
+  identity=r.data&&(r.data.linked||r.data.verified)?{...r.data,linked:true}:null;emit();return identity;
+ }catch(e){console.warn('[StaffID] Backend chưa sẵn sàng:',e);return identity;}
 }
 function ui(){
  if(document.getElementById('dolphinStaffIdPanel'))return;
@@ -45,11 +53,25 @@ function ui(){
 }
 function render(){
  ui();const $=id=>document.getElementById(id);
- $('sidStatus').textContent=identity?'Đã xác minh: '+identity.employeeId+' — '+identity.name:'Thiết bị chưa liên kết Staff ID. Tên nhân viên cũ vẫn hoạt động như trước.';
+ $('sidStatus').textContent=identity?'Đã liên kết: '+identity.employeeId+' — '+identity.name:'Thiết bị chưa liên kết Staff ID. Tên nhân viên cũ vẫn hoạt động như trước.';
  $('sidClaim').style.display=identity?'none':'block';
  $('sidManager').style.display=manager()?'block':'none';
  $('sidUid').textContent=uid||'Chưa kết nối';
 }
-window.DolphinStaffId={get:()=>identity,refresh,open:()=>{render();document.getElementById('dolphinStaffIdPanel').style.display='flex';}};
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
+async function call(name,data){
+ await connect();if(!api)throw Error('Chưa kết nối máy chủ. Vui lòng thử lại.');
+ const result=await api(name)(data||{});
+ if(name!=='staffIssueOwnLinkCode'){
+  if(name==='staffClaimLinkCode')await refresh();
+  else{identity={...result.data,linked:true};emit();}
+ }
+ return result.data;
+}
+window.DolphinStaffId={get:()=>identity,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
+ update:data=>call('staffUpdateMyProfile',data),link:code=>call('staffClaimLinkCode',{code}),
+ issueLink:()=>call('staffIssueOwnLinkCode'),
+ open:()=>{render();document.getElementById('dolphinStaffIdPanel').style.display='flex';}};
+window.addEventListener('storage',e=>{if(e.key==='dolphinStaffProfile'&&api)refresh();});
+window.addEventListener('focus',()=>{if(api)refresh();});
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',connect);else connect();
 })();

@@ -218,7 +218,7 @@ function requireStaffAdmin(req){
  if(!staffAdminIds().has(uid))throw new HttpsError('permission-denied','UID chưa được cấp quyền quản trị nhân sự');
  return uid;
 }
-const staffCodePattern=/^DOL-[0-9]{4,6}$/;
+const staffCodePattern=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/;
 const staffRoot=()=>getDatabase().ref('staffRegistry');
 const staffTokenRoot=()=>getDatabase().ref('staffEnrollmentCodes');
 exports.staffCreateProfile=onCall(opts,async req=>{
@@ -244,6 +244,8 @@ exports.staffIssueLinkCode=onCall(opts,async req=>{
 });
 exports.staffClaimLinkCode=onCall(opts,async req=>{
  const uid=requireUid(req);
+ const current=(await getDatabase().ref('staffIdentity/'+uid).once('value')).val();
+ if(current&&current.employeeId)throw new HttpsError('failed-precondition','Thiết bị đã có hồ sơ. Hãy dùng hồ sơ hiện tại.');
  const code=String(req.data?.code||'').trim().toUpperCase();
  if(!/^[0-9A-F]{36}$/.test(code))throw new HttpsError('invalid-argument','Mã liên kết không hợp lệ');
  await throttle(uid,2500);
@@ -260,17 +262,23 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
  if(!issued||issued.claimedUid!==uid)throw new HttpsError('failed-precondition','Mã hết hạn hoặc đã được sử dụng');
  const snap=await staffRoot().child(issued.employeeId).once('value'),profile=snap.val();
  if(!profile||!profile.active)throw new HttpsError('failed-precondition','Nhân viên không còn hoạt động');
- await getDatabase().ref('staffIdentity/'+uid).set({employeeId:profile.employeeId,name:profile.name,verified:true,updatedAt:Date.now()});
- return {employeeId:profile.employeeId,name:profile.name,verified:true};
+ const verified=profile.registrationSource!=='self';
+ const linked=await getDatabase().ref('staffIdentity/'+uid).transaction(v=>v&&v.employeeId?undefined:{employeeId:profile.employeeId,name:profile.name,verified,updatedAt:Date.now()});
+ if(!linked.committed)throw new HttpsError('failed-precondition','Thiết bị vừa được liên kết với hồ sơ khác.');
+ return {employeeId:profile.employeeId,name:profile.name,verified,linked:true};
 });
 exports.staffGetIdentity=onCall(opts,async req=>{
  const uid=requireUid(req);
  const snap=await getDatabase().ref('staffIdentity/'+uid).once('value'),v=snap.val();
- if(!v||v.verified!==true)return {verified:false};
+ if(!v||!v.employeeId)return {verified:false};
  const profile=(await staffRoot().child(v.employeeId).once('value')).val();
  if(!profile||!profile.active)return {verified:false};
- return {verified:true,employeeId:profile.employeeId,name:profile.name};
+ return {verified:v.verified===true&&profile.registrationSource!=='self',linked:true,employeeId:profile.employeeId,name:profile.name,
+  avatar:profile.avatar||'🐬',department:profile.department||'',createdAt:profile.createdAt||null,
+  registrationSource:profile.registrationSource||'manager'};
 });
+
+for(const [name,handler] of Object.entries(require('./staff-profile')))exports[name]=handler;
 
 // Manager background push (isolated from the Tactics/Staff callable APIs).
 for (const [name, handler] of Object.entries(require('./push'))) {

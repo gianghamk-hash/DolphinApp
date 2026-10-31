@@ -786,6 +786,11 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <p class="area-title-vi">BÀN · BUNGALOW · LOUNGE</p>
         </button>
 
+        <button type="button" class="area-card" onclick="openApp('profile')" aria-label="Hồ sơ nhân viên">
+          <span class="area-badge">CÁ NHÂN</span><span class="area-icon">👤</span>
+          <h3 class="area-title-en">HỒ SƠ NHÂN VIÊN</h3>
+          <p class="area-title-vi">ĐĂNG KÝ · AVATAR · THIẾT BỊ</p>
+        </button>
         <!-- 💡 NÚT DASHBOARD ĐÃ ĐƯỢC ĐƯA LÊN CÙNG HÀNG -->
         <button type="button" class="area-card" id="card-dashboard" onclick="openApp('dashboard')" aria-label="Dashboard" style="display:none;">
           <span class="area-badge">CHỈ MANAGER</span>
@@ -1080,7 +1085,8 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
     giaitri:    'giaitri/index.html',
     dashboard:  'manager/dashboard.html',
     ranking:    'ranking/index.html',
-    guests:     'dolphin-guests.html'
+    guests:     'dolphin-guests.html',
+    profile:    'dolphin-profile.html'
   };
 
   var currentApp = null;

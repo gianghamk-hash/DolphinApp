@@ -443,10 +443,10 @@
     var groups = Object.create(null);
     online.forEach(function(item){
       var key = item.staffId ? 'staff:'+item.staffId : 'device:'+item.id;
-      if(!groups[key])groups[key]={id:item.id,name:item.name,staffId:item.staffId||'',page:item.page,startedAt:item.startedAt,lastSeen:item.lastSeen,devices:[],containsMe:false};
+      if(!groups[key])groups[key]={id:item.id,name:item.name,avatar:item.avatar||'',staffId:item.staffId||'',page:item.page,startedAt:item.startedAt,lastSeen:item.lastSeen,devices:[],containsMe:false};
       var g=groups[key];g.devices.push(item);
       if(item.id===deviceId)g.containsMe=true;
-      if(item.lastSeen>g.lastSeen){g.lastSeen=item.lastSeen;g.page=item.page;}
+      if(item.lastSeen>g.lastSeen){g.lastSeen=item.lastSeen;g.page=item.page;g.name=item.name;g.avatar=item.avatar||'';}
       if((item.startedAt||0)<(g.startedAt||Infinity))g.startedAt=item.startedAt;
     });
     online=Object.keys(groups).map(function(k){return groups[k];});
@@ -494,7 +494,7 @@
 
       return [
         '<div class="sow-item ' + (isMe ? 'sow-me' : '') + '">',
-        '  <div class="sow-avatar">' + ctx.icon + '</div>',
+        '  <div class="sow-avatar">' + escapeHtml(String(s.avatar||ctx.icon).slice(0,24)) + '</div>',
         '  <div class="sow-info">',
         '    <div class="sow-name">' + escapeHtml(s.name) + (s.staffId?' <small>'+escapeHtml(s.staffId)+'</small>':'') + (isMe ? ' <span class="sow-you">BẠN</span>' : '') + '</div>',
         '    <div class="sow-meta">' + ctx.label + ' · ' + durText + escapeHtml(detail) + '</div>',
@@ -524,7 +524,7 @@
       var name = getStaffName();
       if (!name) return;
       var verifiedProfile=window.DolphinStaffId&&window.DolphinStaffId.get();
-      if(verifiedProfile&&verifiedProfile.verified)name=verifiedProfile.name;
+      if(verifiedProfile&&(verifiedProfile.linked||verifiedProfile.verified))name=verifiedProfile.name;
 
       var deviceId = getDeviceId();
       var ctx = detectContext();
@@ -547,7 +547,8 @@
         lastSeen: Date.now(),
         startedAt: existingStartedAt,
         platform: /Dolphin(?:Manager|Staff)/.test(navigator.userAgent) ? 'apk' : 'web',
-        staffId: verifiedProfile&&verifiedProfile.verified ? verifiedProfile.employeeId : null
+        avatar:verifiedProfile&&verifiedProfile.avatar||'',
+        staffId: verifiedProfile&&(verifiedProfile.linked||verifiedProfile.verified) ? verifiedProfile.employeeId : null
       };
 
       try {
@@ -689,7 +690,7 @@
     window.addEventListener('dolphin-staff-id-changed',function(){
       if(dbRef&&fbSetDoc&&shouldPing()){
         var profile=window.DolphinStaffId&&window.DolphinStaffId.get();
-        fbSetDoc(dbRef,{staffId:profile&&profile.verified?profile.employeeId:null,...(profile&&profile.verified?{name:profile.name}:{})},{merge:true}).catch(function(e){console.warn('[StaffOnline] Staff ID sync:',e);});
+        fbSetDoc(dbRef,{staffId:profile&&(profile.linked||profile.verified)?profile.employeeId:null,avatar:profile&&profile.avatar||'',...(profile&&(profile.linked||profile.verified)?{name:profile.name}:{})},{merge:true}).catch(function(e){console.warn('[StaffOnline] Staff ID sync:',e);});
       }
     });
 

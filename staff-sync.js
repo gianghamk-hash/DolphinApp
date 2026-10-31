@@ -39,13 +39,13 @@
     if(!trimmed)return false;
     var old=readName();
     if(locked()){
-      if(old!==trimmed){notify('Tên nhân viên đã khóa: '+old+'. Liên hệ quản lý nếu cần chỉnh sửa.');return false;}
+      if(old!==trimmed){notify('Tên nhân viên đã khóa: '+old+'. Mở Hồ sơ nhân viên để đổi tên.');return false;}
       return true;
     }
     // Existing employees get one final confirmation/change. New staff enter once.
     var message=old
-      ?'Tên hiện tại: '+old+'\\nTên xác nhận: '+trimmed+'\\n\\nĐây là lần đổi/xác nhận cuối cùng. Sau khi lưu sẽ không thể tự sửa tên. Tiếp tục?'
-      :'Xác nhận tên nhân viên: '+trimmed+'?\\n\\nTên sẽ bị khóa sau khi lưu và không thể tự chỉnh sửa.';
+      ?'Tên hiện tại: '+old+'\\nTên xác nhận: '+trimmed+'\\n\\nTên được dùng chung toàn hệ thống. Sau khi lưu, hãy đổi tên tại Hồ sơ nhân viên. Tiếp tục?'
+      :'Xác nhận tên nhân viên: '+trimmed+'?\\n\\nTên được dùng chung toàn hệ thống. Sau khi lưu, hãy đổi tên tại Hồ sơ nhân viên.';
     if(typeof window.confirm==='function'&&!window.confirm(message))return false;
     try {
       localStorage.setItem(MAIN_KEY,trimmed);
@@ -69,6 +69,21 @@
   window.getSyncedStaffName = readName;
   window.setSyncedStaffName = writeName;
   window.isStaffNameLocked = locked;
+  // Profile saves are confirmed by the Staff ID API before this local sync runs.
+  window.applySyncedStaffProfile = function(profile){
+    var name=String(profile&&profile.name||'').trim().replace(/\s+/g,' ');
+    if(!profile||!profile.linked||!profile.employeeId||!name)return false;
+    var changed=readName()!==name;
+    try{
+      localStorage.setItem(MAIN_KEY,name);
+      LEGACY_KEYS.forEach(function(k){localStorage.setItem(k,name);});
+      localStorage.setItem(LOCK_KEY,'1');
+      syncLockedInputs();
+      if(changed)window.dispatchEvent(new CustomEvent('dolphinStaffNameChanged',{detail:{name:name,locked:true}}));
+      return true;
+    }catch(e){return false;}
+  };
+  window.addEventListener('storage',function(e){if(e.key===MAIN_KEY)syncLockedInputs();});
 
   // ════════ OVERRIDE HÀM CŨ ════════
   function hookCoreFunctions(){

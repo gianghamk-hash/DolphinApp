@@ -1,0 +1,25 @@
+name: Staff profile checks
+on:
+  pull_request:
+    paths: ['dolphin-profile.html','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
+  push:
+    branches: [main]
+    paths: ['dolphin-profile.html','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: |
+          node --check staff-profile.js
+          node --check staff-id.js
+          node --check staff-sync.js
+          node --check staff-online.js
+          node --check functions/staff-profile.js
+          node --test functions/staff-id.test.js staff-sync.test.js
+          node scripts/check-service-pages.cjs

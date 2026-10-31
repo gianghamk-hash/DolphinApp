@@ -13,7 +13,7 @@ const missing=['messagingSenderId','appId','vapidKey']
   .filter(key=>!config[key]||config[key]==='000000000000');
 if(missing.length){
   console.log('::warning::Web Push is NOT release-ready. Missing public Firebase settings: '+missing.join(', '));
-  process.exitCode=0; // informational; deployment gate remains disabled separately.
+  process.exitCode=process.argv.includes('--strict') ? 1 : 0; // strict release gate, informational test
 }else{
   assert.match(config.messagingSenderId,/^\d+$/);
   assert.match(config.appId,/^1:\d+:web:[A-Za-z0-9]+$/);

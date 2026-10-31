@@ -67,4 +67,4 @@ node --test scripts/push-worker.test.cjs
 npm install --prefix functions --ignore-scripts
 npm --prefix functions test
 ```
-CI lives at `.github/workflows/manager-push-checks.yml`. Physical iPhone test and live FCM send are **not** complete.
+CI lives at `.github/workflows/manager-push-checks.yml`. Its **push-test** job validates source/tests; its independent **release-readiness** job FAILS until public Web FCM fields and the private Manager Android GitHub Secret exist. After these checks pass, an administrator must still inspect live Firestore rules and manually test a locked iPhone and the real Manager APK. Physical iPhone test and live FCM send are **not** complete.

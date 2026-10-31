@@ -20,7 +20,7 @@
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const optInKey = 'dolphinPushEnabled';
   let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
-  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton, issueCountInput;
+  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton, issueCountInput, healthButton;
   const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
   function setStatus(label,detail){
     if(button)button.textContent=label;
@@ -70,6 +70,7 @@
     if(enrollPanel){enrollPanel.hidden=Boolean(access?.authorized);enrollPanel.style.display=access?.authorized?'none':'flex';}
     if(issueButton)issueButton.hidden=access?.role!=='manager';
     if(issueCountInput)issueCountInput.hidden=access?.role!=='manager';
+    if(healthButton)healthButton.hidden=access?.role!=='manager';
   }
   async function loadAccess(){
     const data=await callable('pushGetMyAccess',{});
@@ -113,6 +114,20 @@
       setStatus('🔔 Quản lý Push',codes.length+' mã một lần, hiệu lực 24 giờ. Gửi riêng một mã cho từng thiết bị nhân viên.');
     }catch(e){showError(e);}
     finally{busy=false;if(issueButton)issueButton.disabled=false;}
+  }
+  async function checkDeliveryHealth(){
+    if(!access || access.role!=='manager')return;
+    try{
+      const health=await callable('pushGetDeliveryHealth',{});
+      const recent=health.recent||[];
+      const failed=recent.filter(x=>x.status==='failed').length;
+      const retry=recent.filter(x=>x.status==='retry'||x.status==='processing').length;
+      const latest=recent[0];
+      setStatus('📡 Push · '+(health.enabled?'Đang hoạt động':'Chưa bật'),
+        'Thiết bị đã kích hoạt: '+health.activeDevices+
+        ' · Trong '+recent.length+' sự kiện gần nhất: '+failed+' lỗi, '+retry+' đang thử lại.'+
+        (latest?' · Gần nhất: '+latest.outlet+' ('+latest.status+', FCM nhận '+latest.acceptedByFcm+')':''));
+    }catch(e){showError(e);}
   }
   async function registerToken(token,platform){
     if(!token||token.length<20)throw new Error('FCM token chưa sẵn sàng.');
@@ -215,6 +230,10 @@
     issueButton.textContent='🔑 Manager: Cấp mã Push cho nhân viên';
     issueButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
     issueButton.addEventListener('click',issueCode);
+    healthButton=document.createElement('button');healthButton.type='button';healthButton.hidden=true;
+    healthButton.textContent='📡 Manager: Kiểm tra Push';
+    healthButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
+    healthButton.addEventListener('click',checkDeliveryHealth);
     issueCountInput=document.createElement('input');issueCountInput.type='number';issueCountInput.min='1';issueCountInput.max='20';issueCountInput.value='1';issueCountInput.hidden=true;
     issueCountInput.title='Số mã Push cấp cho nhân viên (1-20)';issueCountInput.setAttribute('aria-label','Số mã Push cần cấp');
     issueCountInput.style.cssText='width:72px;padding:5px;border-radius:6px;color:#123634';
@@ -222,7 +241,7 @@
     copyButton=document.createElement('button');copyButton.type='button';copyButton.hidden=true;
     copyButton.textContent='Sao chép mã';copyButton.style.cssText='padding:5px 9px;border-radius:6px';
     copyButton.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(issuedCode.textContent);setStatus('Đã sao chép mã Push','Mỗi mã chỉ dùng một lần trên một thiết bị.');}catch(e){showError(e);}});
-    panel.append(button,message,enrollPanel,issueCountInput,issueButton,issuedCode,copyButton);
+    panel.append(button,message,enrollPanel,issueCountInput,issueButton,healthButton,issuedCode,copyButton);
     document.body.appendChild(panel);
   }
   root.DolphinPush={enable,disable,resume,receiveNativeToken,

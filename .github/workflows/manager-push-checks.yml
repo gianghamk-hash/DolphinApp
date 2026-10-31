@@ -8,6 +8,9 @@ on:
       - 'staff-id.js'
       - 'manifest.json'
       - 'push-config.js'
+      - 'firestore.rules'
+      - 'firebase.json'
+      - 'scripts/push-rules-test.cjs'
       - 'service-worker.js'
       - 'index.html'
       - 'manager/dashboard.html'
@@ -33,6 +36,7 @@ jobs:
           node --check push-config.js
           node --check service-worker.js
           node --check functions/push.js
+          node --check scripts/push-rules-test.cjs
           node scripts/push-config-preflight.cjs
       - name: Manager APK Firebase credential readiness (no secret values logged)
         env:

@@ -24,6 +24,10 @@ desktop.ini
 node_modules/
 npm-debug.log*
 
+# Local Firebase deployment inputs
+functions/.env*
+**/google-services.json
+
 # Logs
 *.log
 

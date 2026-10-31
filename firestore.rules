@@ -1,0 +1,16 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Migration scope: keep the existing non-Push access policy unchanged.
+    // Internal Push documents contain FCM tokens, approved UIDs, hashed invites,
+    // and dispatch/retry state. Only the trusted Admin SDK may access them.
+    // No client (including the allowlisted Manager) can create/update these
+    // documents directly; schema/authorization checks live in Push callables.
+    function isLegacyClientPath(collection) {
+      return !collection.matches('dolphin_push_.*');
+    }
+    match /{collection}/{document=**} {
+      allow read, write: if isLegacyClientPath(collection);
+    }
+  }
+}

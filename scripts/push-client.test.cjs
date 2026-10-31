@@ -55,16 +55,17 @@ test('Manager can inspect push delivery health without reading sensitive tokens'
   assert.match(client,/Manager: Kiểm tra Push/);
 });
 
-function browserFixture({permission='granted',native=false,optIn=false,registered=false,notificationState='default',role='staff',registrationFailure=false}={}){
+function browserFixture({permission='granted',native=false,optIn=false,notificationState='default',role='staff',registrationFailure=false,dashboard=false,parentSession=null,userAgent=null,browserSupport=true}={}){
   const calls=[],events=[],nodes=[],store=new Map(),apps=[];
   if(optIn)store.set('dolphinPushEnabled','1');
-  if(registered)store.set('dolphinPushRegistered','1');
   const registration={};
   const document={readyState:'loading',currentScript:{src:'https://dolphinfb.store/dolphin-push.js'},
-    events:{},addEventListener(name,fn){this.events[name]=fn;},getElementById(){return null;},
+    events:{},addEventListener(name,fn){this.events[name]=fn;},
+    getElementById(id){return id==='dolphin-push-settings'?(dashboard?host:null):nodes.find(n=>n.id===id)||null;},
     createElement(tag){const node={tag,style:{},hidden:false,listeners:{},
       addEventListener(name,fn){this.listeners[name]=fn;},append(...items){this.children=items;}};nodes.push(node);return node;},
-    body:{appendChild(){}}};
+    body:{children:[],appendChild(node){this.children.push(node);}}};
+  const host={ownerDocument:document,children:[],appendChild(node){this.children.push(node);}};
   const mockSDK={
     'firebase-app.js':{getApps:()=>apps,initializeApp:(config,name)=>{const app={name};apps.push(app);return app;}},
     'firebase-auth.js':{getAuth:()=>({currentUser:{uid:'new-public-user'},authStateReady:async()=>{events.push('auth');}})},
@@ -78,16 +79,18 @@ function browserFixture({permission='granted',native=false,optIn=false,registere
   const window={document,matchMedia:()=>({matches:true}),PushManager:class {},
     DOLPHIN_PUSH_CONFIG:{apiKey:'public',projectId:'test',authDomain:'test',appId:'web',messagingSenderId:'123',vapidKey:'public-key'}};
   const Notification={permission:notificationState,requestPermission(){events.push('permission');this.permission=permission;return Promise.resolve(permission);}};
-  window.Notification=Notification;window.top=window;
+  if(browserSupport)window.Notification=Notification;
+  window.location={href:'https://dolphinfb.store/',origin:'https://dolphinfb.store'};
+  window.top=parentSession?parentSession.window:window;window.parent=window.top;
   if(native)window.AndroidPush={requestToken(){events.push('native-permission');},readToken(){events.push('native-resume');}};
   const context={window,document,Notification,URL,console:{...console,warn(){}},mockSDK,
-    navigator:{userAgent:native?'DolphinStaff/1.0':'iPhone',standalone:true,
+    navigator:{userAgent:userAgent||(native?'DolphinStaff/1.0':'iPhone'),standalone:true,
       serviceWorker:{register:async()=>registration,ready:Promise.resolve(registration)}},
-    location:{href:'https://dolphinfb.store/'},
+    location:window.location,
     localStorage:{getItem:key=>store.get(key),setItem:(k,v)=>store.set(k,v),removeItem:k=>store.delete(k)}};
   const source=client.replace(/import\(sdk\+'([^']+)'\)/g,(_,file)=>`Promise.resolve(mockSDK['${file}'])`);
   vm.runInNewContext(source,context);
-  return {api:window.DolphinPush,ready:()=>document.events.DOMContentLoaded(),calls,events,nodes,store,Notification,
+  return {api:window.DolphinPush||parentSession?.api,ready:()=>document.events.DOMContentLoaded(),calls,events,nodes,store,Notification,window,host,document,
     panel:()=>nodes.find(n=>n.id==='dolphin-push-control')};
 }
 
@@ -99,9 +102,9 @@ test('fresh iPhone opt-in asks OS permission in the tap and registers without a 
   const registered=f.calls.filter(c=>c.name==='pushRegisterDevice');
   assert.equal(registered.length,1);assert.equal(registered[0].data.consent,true);
   assert.equal(f.api.active,true);assert.equal(f.nodes.some(n=>n.tag==='input'),false);
-  assert.equal(f.panel().hidden,true);assert.equal(f.panel().style.display,'none');
+  assert.equal(f.panel(),undefined);assert.equal(f.document.body.children.length,0);
   await f.api.disable();assert.equal(f.api.active,false);
-  assert.equal(f.panel().hidden,false);assert.equal(f.panel().style.display,'flex');
+  assert.equal(f.panel(),undefined);
   assert.equal(f.calls.filter(c=>c.name==='pushUnregisterDevice').length,1);
 });
 
@@ -109,7 +112,7 @@ test('permission denial does not request a token or enroll the device',async()=>
   const f=browserFixture({permission:'denied'});await f.ready();await f.api.enable();
   assert.equal(f.calls.some(c=>c.name==='pushRegisterDevice'),false);
   assert.equal(f.events.includes('token'),false);assert.equal(f.api.active,false);
-  assert.equal(f.panel().hidden,false);
+  assert.equal(f.panel(),undefined);
 });
 
 test('Staff APK uses native permission and registers its returned token without Manager UID',async()=>{
@@ -118,40 +121,55 @@ test('Staff APK uses native permission and registers its returned token without 
   await f.api.receiveNativeToken('native-fcm-token-123456789012345');
   assert.equal(f.calls.find(c=>c.name==='pushRegisterDevice').data.platform,'staff-android');
   assert.equal(f.api.active,true);
-  assert.equal(f.panel().hidden,true);assert.equal(f.panel().style.display,'none');
+  assert.equal(f.panel(),undefined);
 });
 
-test('Manager native opt-in hides the whole cluster including health/status and stays hidden after health updates',async()=>{
-  const f=browserFixture({native:true,role:'manager'});await f.ready();
+test('Manager controls live inline in System Dashboard, never attached over the work screen',async()=>{
+  const f=browserFixture({native:true,role:'manager',dashboard:true});await f.ready();
   const health=f.nodes.find(n=>n.textContent==='📡 Manager: Kiểm tra Push');
   assert.equal(health.hidden,false);
   await f.api.enable();await f.api.receiveNativeToken('manager-fcm-token-123456789012345');
-  assert.equal(f.panel().hidden,true);assert.equal(f.panel().style.display,'none');
+  assert.equal(f.host.children[0],f.panel());assert.equal(f.document.body.children.length,0);
+  assert.doesNotMatch(f.panel().style.cssText,/position:fixed|z-index/);
   await health.listeners.click();
-  assert.equal(f.panel().hidden,true);assert.equal(f.panel().style.display,'none');
+  assert.equal(f.host.children[0],f.panel());assert.equal(f.api.active,true);
 });
 
-test('an opted-in Web reload hides the cluster before asynchronous setup and never asks permission again',async()=>{
+test('opted-in reload and permission revocation cannot create a landing-page overlay',async()=>{
   const f=browserFixture({optIn:true,notificationState:'granted',role:'manager'});
   const ready=f.ready();
-  assert.equal(f.panel().hidden,true);assert.equal(f.panel().style.display,'none');
-  await ready;assert.equal(f.api.active,true);assert.equal(f.panel().hidden,true);
+  assert.equal(f.panel(),undefined);
+  await ready;assert.equal(f.api.active,true);assert.equal(f.panel(),undefined);
   assert.equal(f.events.includes('permission'),false);
   f.Notification.permission='denied';await f.api.resume();
-  assert.equal(f.api.active,false);assert.equal(f.panel().hidden,false);
+  assert.equal(f.api.active,false);assert.equal(f.panel(),undefined);
 });
 
-test('native reload remains hidden while restoring its registration; failed setup remains actionable',async()=>{
+test('native resume and failed Web registration cannot create a landing-page overlay',async()=>{
   const native=browserFixture({native:true,optIn:true});await native.ready();
-  assert.equal(native.panel().hidden,true);assert.equal(native.events.includes('native-resume'),true);
+  assert.equal(native.panel(),undefined);assert.equal(native.events.includes('native-resume'),true);
   await native.api.receiveNativeToken('restored-native-token-123456789012345');
-  assert.equal(native.panel().hidden,true);assert.equal(native.api.active,true);
+  assert.equal(native.panel(),undefined);assert.equal(native.api.active,true);
   const web=browserFixture({optIn:true,notificationState:'granted',registrationFailure:true});
   await web.ready();assert.equal(web.api.active,false);
-  assert.equal(web.panel().hidden,false);assert.equal(web.panel().style.display,'flex');
+  assert.equal(web.panel(),undefined);assert.equal(web.document.body.children.length,0);
 });
 
-test('a previously registered session stays hidden across a temporary registration outage',async()=>{
-  const f=browserFixture({optIn:true,registered:true,notificationState:'granted',registrationFailure:true});
-  await f.ready();assert.equal(f.panel().hidden,true);assert.equal(f.panel().style.display,'none');
+test('iframe Dashboard reuses the parent native bridge and registration session',async()=>{
+  const parent=browserFixture({native:true,role:'manager'});await parent.ready();
+  const child=browserFixture({dashboard:true,parentSession:parent});await child.ready();
+  assert.equal(child.host.children[0],child.panel());assert.equal(parent.panel(),undefined);
+  const enable=child.nodes.find(n=>n.textContent==='🔔 Bật thông báo');
+  await enable.listeners.click();assert.equal(parent.events.includes('native-permission'),true);
+  await parent.api.receiveNativeToken('iframe-native-token-123456789012345');
+  assert.equal(parent.api.active,true);assert.equal(child.calls.length,0);
+});
+
+test('old Manager APK displays an Android update message only in Dashboard, never an iPhone instruction',async()=>{
+  const f=browserFixture({userAgent:'Android DolphinManager/1.0',browserSupport:false});
+  await f.ready();await f.api.enable();assert.equal(f.panel(),undefined);
+  f.api.mountControls(f.host);
+  const text=f.nodes.map(n=>n.textContent||'').join(' ');
+  assert.match(text,/APK mới nhất/);assert.doesNotMatch(text,/iPhone/);
+  assert.equal(f.document.body.children.length,0);
 });

@@ -1,38 +1,26 @@
 {
-  "version": "1.1.10",
-  "previousVersion": "1.1.9",
-  "commit": "38885f8",
-  "previousCommit": "395e451",
-  "buildDate": "2026-10-31T02:32:07.477Z",
-  "summary": "Merge pull request #165: add independent staff Push notifications",
+  "version": "1.1.11",
+  "previousVersion": "1.1.10",
+  "commit": "33f9c30",
+  "previousCommit": "38885f8",
+  "buildDate": "2026-10-31T02:51:09.933Z",
+  "summary": "Merge pull request #167: simplify notification opt-in for everyone",
   "changes": {
-    "totalCommits": 234,
-    "filesChanged": 30,
+    "totalCommits": 235,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #165: add independent staff Push notifications"
+    "Merge pull request #167: simplify notification opt-in for everyone"
   ],
   "fileChanges": [
-    {
-      "file": ".firebaserc",
-      "type": "update"
-    },
     {
       "file": ".github/workflows/build.yml",
       "type": "update"
     },
     {
       "file": ".github/workflows/manager-push-checks.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/tactics-engine-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": ".gitignore",
       "type": "update"
     },
     {
@@ -44,11 +32,11 @@
       "type": "update"
     },
     {
-      "file": "docs/MANAGER_PUSH_SETUP.md",
+      "file": "android/staff/firebase-app.json",
       "type": "update"
     },
     {
-      "file": "docs/MANAGER_WEB_PUSH_ROLLOUT.md",
+      "file": "docs/MANAGER_PUSH_SETUP.md",
       "type": "update"
     },
     {
@@ -56,27 +44,7 @@
       "type": "update"
     },
     {
-      "file": "dolphin-alerts.js",
-      "type": "update"
-    },
-    {
       "file": "dolphin-push.js",
-      "type": "update"
-    },
-    {
-      "file": "firebase.json",
-      "type": "update"
-    },
-    {
-      "file": "firestore.rules",
-      "type": "update"
-    },
-    {
-      "file": "functions/index.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/package.json",
       "type": "update"
     },
     {
@@ -88,51 +56,7 @@
       "type": "update"
     },
     {
-      "file": "functions/push.test.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-id.test.js",
-      "type": "update"
-    },
-    {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "manager/dashboard.html",
-      "type": "update"
-    },
-    {
-      "file": "manifest.json",
-      "type": "update"
-    },
-    {
-      "file": "push-config.js",
-      "type": "update"
-    },
-    {
-      "file": "scripts/order-alerts.test.cjs",
-      "type": "update"
-    },
-    {
       "file": "scripts/push-client.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/push-config-preflight.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/push-rules-test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/push-worker.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
       "type": "update"
     }
   ]

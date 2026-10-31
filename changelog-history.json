@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.10",
+      "releaseDate": "2026-10-31T02:32:07.477Z",
+      "summary": "Merge pull request #165: add independent staff Push notifications",
+      "details": [
+        "Merge pull request #165: add independent staff Push notifications"
+      ]
+    },
+    {
       "version": "1.1.9",
       "releaseDate": "2026-10-30T09:09:45.339Z",
       "summary": "Fix custom-domain URLs and restore floating Back controls (#164)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029",
       "details": [
         "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029"
-      ]
-    },
-    {
-      "version": "1.0.180",
-      "releaseDate": "2026-10-29T05:59:11.941Z",
-      "summary": "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029",
-      "details": [
-        "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029"
       ]
     }
   ]

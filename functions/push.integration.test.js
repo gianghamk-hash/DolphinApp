@@ -64,7 +64,8 @@ function fixture(){
       return{responses:payload.tokens.map(()=>({success:true}))};
     }})},
     'firebase-functions/v2/https':{onCall:(opts,fn)=>fn,HttpsError},
-    'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn}
+    'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn},
+    'firebase-functions/v2/scheduler':{onSchedule:(opts,fn)=>fn}
   };
   const env={PUSH_ENABLED:'true',PUSH_MANAGER_UIDS:'manager-uid'};
   const context={

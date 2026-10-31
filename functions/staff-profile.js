@@ -35,7 +35,7 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  // Stable per Firebase UID: retries/concurrent registrations cannot mint extra IDs.
  const employeeId='DOL-'+crypto.createHash('sha256').update(uid).digest('hex').slice(0,10).toUpperCase();
  const ref=db.ref('staffRegistry/'+employeeId);
- const result=await ref.transaction(v=>v?(v.ownerUid===uid?v:undefined):{employeeId,...data,active:true,profileVersion:1,registrationSource:'self',ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()});
+ const result=await ref.transaction(v=>v?(v.ownerUid===uid?v:undefined):{employeeId,...data,active:true,registrationSource:'self',ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()});
  if(!result.committed)throw new HttpsError('already-exists','Không cấp được ID. Vui lòng liên hệ quản lý.');
  const profile=result.snapshot.val();
  if(!profile.active)throw new HttpsError('permission-denied','Hồ sơ đã ngừng hoạt động.');

@@ -27,3 +27,22 @@ test('shared shell authentication is coalesced and can retry a failure',async()=
  const first=signIn(auth,authenticate);assert.equal(signIn(auth,authenticate),first);await assert.rejects(first,/offline/);
  assert.equal(await signIn(auth,authenticate),'ready');assert.equal(attempts,2);
 });
+
+test('FCM only de-duplicates order/call alerts; Manager reminder alarms still notify',async()=>{
+  const fs=require('node:fs'),vm=require('node:vm');
+  const source=fs.readFileSync(require('node:path').join(__dirname,'../dolphin-alerts.js'),'utf8');
+  const emitted=[];
+  class FakeNotification {
+    static permission='granted';
+    constructor(title,options){this.title=title;this.options=options;emitted.push(title);}
+    close(){}
+  }
+  const window={DolphinPush:{active:true},Notification:FakeNotification};
+  const context={window,Notification:FakeNotification,navigator:{},console,URL,Date,Map,WeakMap};
+  vm.runInNewContext(source,context);
+  const alerts=window.DolphinAlerts;
+  assert.equal(await alerts.systemNotify('Đơn mới','BGL 201','bun_orders-order1'),false);
+  assert.equal(await alerts.systemNotify('Khách gọi','BGL 201','bun_calls-call1'),false);
+  assert.equal(await alerts.systemNotify('Báo thức Manager','Họp giao ca','alarm-reminder1'),true);
+  assert.deepEqual(emitted,['Báo thức Manager']);
+});

@@ -1,0 +1,74 @@
+name: Manager Push checks
+on:
+  pull_request:
+    paths:
+      - 'functions/**'
+      - 'android/manager/**'
+      - 'dolphin-push.js'
+      - 'staff-id.js'
+      - 'manifest.json'
+      - 'push-config.js'
+      - 'firestore.rules'
+      - 'firebase.json'
+      - 'scripts/push-rules-test.cjs'
+      - 'service-worker.js'
+      - 'index.html'
+      - 'manager/dashboard.html'
+      - 'scripts/push-worker.test.cjs'
+      - 'scripts/push-client.test.cjs'
+      - 'scripts/push-config-preflight.cjs'
+      - '.github/workflows/build.yml'
+      - '.github/workflows/manager-push-checks.yml'
+  workflow_dispatch:
+jobs:
+  push-test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Syntax checks
+        run: |
+          node --check dolphin-push.js
+          node --check staff-id.js
+          node -e "JSON.parse(require('node:fs').readFileSync('manifest.json','utf8'))"
+          node --check push-config.js
+          node --check service-worker.js
+          node --check functions/push.js
+          node --check scripts/push-rules-test.cjs
+          node scripts/push-config-preflight.cjs
+      - name: Manager APK Firebase credential readiness (no secret values logged)
+        env:
+          MANAGER_FIREBASE_JSON_B64: ${{ secrets.FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 }}
+        run: |
+          if [ -n "$MANAGER_FIREBASE_JSON_B64" ]; then
+            echo "Manager APK Firebase Android credential exists in GitHub Actions secrets."
+          else
+            echo "::warning::Manager APK build is BLOCKED until FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 is configured."
+          fi
+      - name: Install Firebase Functions test dependencies
+        run: npm install --prefix functions --no-audit --ignore-scripts
+      - name: Test Cloud Functions and Service Worker
+        run: |
+          npm --prefix functions test
+          node --test scripts/push-worker.test.cjs scripts/push-client.test.cjs
+
+  release-readiness:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Require public Web Firebase Messaging configuration
+        run: node scripts/push-config-preflight.cjs --strict
+      - name: Require Manager APK Android Firebase configuration
+        env:
+          MANAGER_FIREBASE_JSON_B64: ${{ secrets.FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 }}
+        run: |
+          if [ -z "$MANAGER_FIREBASE_JSON_B64" ]; then
+            echo "::error::Manager Firebase Android secret FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 is missing."
+            exit 1
+          fi
+          echo "Manager Android Firebase secret is configured (not validated against physical APK)."

@@ -33,7 +33,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: main
+          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || 'main' }}
 
       - uses: actions/setup-java@v4
         with:
@@ -75,6 +75,8 @@ jobs:
           APP_NAME: ${{ matrix.app_name }}
           PKG_ID: ${{ matrix.package_id }}
           UA_EXTRA: ${{ matrix.ua_extra }}
+          VARIANT: ${{ matrix.variant }}
+          FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64: ${{ secrets.FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 }}
           APK_VERSION_CODE: ${{ steps.apk_version.outputs.code }}
           APK_VERSION_NAME: ${{ steps.apk_version.outputs.name }}
         run: |
@@ -110,6 +112,7 @@ jobs:
           cat > build.gradle << 'EOF_ROOT'
           plugins {
               id 'com.android.application' version '8.2.0' apply false
+              id 'com.google.gms.google-services' version '4.4.2' apply false
           }
           EOF_ROOT
 
@@ -418,6 +421,86 @@ jobs:
           mkdir -p app/src/main/assets/manager
           cp manager/dashboard.html app/src/main/assets/manager/
           cp avatar-system.js app/src/main/assets/
+
+          # Manager only: native FCM service/permissions/token bridge. Staff APK is unchanged.
+          if [ "$VARIANT" = "manager" ]; then
+            if [ -z "$FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64" ]; then
+              echo "::error::Missing repository secret FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 (base64 of Firebase Android manager google-services.json)"
+              exit 1
+            fi
+            printf '%s' "$FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64" | base64 --decode > app/google-services.json
+            python3 - <<'PY_MANAGER_PUSH'
+          import json
+          from pathlib import Path
+          config = json.loads(Path('app/google-services.json').read_text())
+          clients = config.get('client', [])
+          assert any(
+              c.get('client_info', {}).get('android_client_info', {}).get('package_name')
+              == 'com.dolphin.cruise.manager' for c in clients
+          ), 'google-services.json does not contain com.dolphin.cruise.manager'
+          gradle = Path('app/build.gradle')
+          content = gradle.read_text().replace(
+              "id 'com.android.application'",
+              "id 'com.android.application'\n    id 'com.google.gms.google-services'", 1
+          ).replace(
+              "implementation 'androidx.appcompat:appcompat:1.6.1'",
+              "implementation 'androidx.appcompat:appcompat:1.6.1'\n    implementation 'com.google.firebase:firebase-messaging:24.1.2'",
+              1
+          )
+          gradle.write_text(content)
+          manifest = Path('app/src/main/AndroidManifest.xml')
+          m = manifest.read_text().replace(
+              '<uses-permission android:name="android.permission.VIBRATE" />',
+              '<uses-permission android:name="android.permission.VIBRATE" />\n'
+              '<uses-permission android:name="android.permission.POST_NOTIFICATIONS" />',
+              1
+          ).replace(
+              '</application>',
+              '<service android:name=".DolphinMessagingService" '
+              'android:exported="false">\n'
+              '<intent-filter><action android:name="com.google.firebase.MESSAGING_EVENT" />'
+              '</intent-filter></service>\n</application>',
+              1
+          )
+          manifest.write_text(m)
+          source = Path('app/src/main/java/com/dolphin/cruise/MainActivity.java')
+          java = source.read_text().replace(
+              'webView.addJavascriptInterface(new AndroidGameBridge(), "AndroidGame");',
+              'webView.addJavascriptInterface(new AndroidGameBridge(), "AndroidGame");\n'
+              '        webView.addJavascriptInterface(new AndroidPushBridge(this, webView), "AndroidPush");',
+              1
+          ).replace(
+              'webView.loadUrl("https://dolphinfb.store/index.html");',
+              'webView.loadUrl(pushLandingUrl(getIntent()));',
+              1
+          )
+          helper = """
+              private String pushLandingUrl(android.content.Intent incoming) {
+                  final String home = "https://dolphinfb.store/index.html";
+                  if (incoming == null) return home;
+                  String raw = incoming.getStringExtra("dolphin_push_url");
+                  if (raw == null) return home;
+                  Uri uri = Uri.parse(raw);
+                  if ("https".equals(uri.getScheme()) && "dolphinfb.store".equals(uri.getHost())
+                      && (uri.getPort() == -1 || uri.getPort() == 443)
+                      && "/index.html".equals(uri.getPath())) return raw;
+                  return home;
+              }
+              @Override protected void onNewIntent(android.content.Intent intent) {
+                  super.onNewIntent(intent);
+                  setIntent(intent);
+                  if (webView != null) webView.loadUrl(pushLandingUrl(intent));
+              }
+
+          """
+          assert 'private static String guessMime(String path)' in java
+          java = java.replace('private static String guessMime(String path)', helper +
+                              'private static String guessMime(String path)', 1)
+          source.write_text(java)
+          PY_MANAGER_PUSH
+            cp android/manager/AndroidPushBridge.java app/src/main/java/com/dolphin/cruise/
+            cp android/manager/DolphinMessagingService.java app/src/main/java/com/dolphin/cruise/
+          fi
 
       - name: Generate icons
         run: |

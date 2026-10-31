@@ -27,6 +27,9 @@ const CACHE_URLS = [
   BASE + '/caro/index.html',
   BASE + '/staff-sync.js',
   BASE + '/dolphin-alerts.js?v=1',
+  BASE + '/push-config.js',
+  BASE + '/dolphin-push.js',
+  BASE + '/staff-id.js?v=1.1',
   BASE + '/dolphin-navigation.js?v=1',
   BASE + '/theme-system.js',
   BASE + '/avatar-system.js',
@@ -150,12 +153,46 @@ self.addEventListener('message', event => {
   }
 });
 
-self.addEventListener('notificationclick',event=>{
- event.notification.close();
- event.waitUntil((async()=>{
-  const windows=await self.clients.matchAll({type:'window',includeUncontrolled:true});
-  const client=windows.find(c=>new URL(c.url).origin===self.location.origin);
-  if(client)return client.focus();
-  return self.clients.openWindow(BASE+'/');
- })());
+// Data-only FCM Web Push is handled by the existing Dolphin service worker.
+// No external importScripts: an offline CDN must never prevent this SW from installing.
+self.addEventListener('push', event => {
+  if (!event.data) return;
+  let envelope;
+  try { envelope = event.data.json(); } catch (err) { return; }
+  const payload = envelope && (envelope.data || envelope);
+  if (!payload || payload.type !== 'dolphin-order') return;
+  event.waitUntil((async () => {
+    // Apple iOS Home Screen web apps require every received push to be user-visible.
+    // Never swallow a push just because Dolphin is open in a foreground tab.
+    const options = {
+      body: String(payload.body || 'Mở Dolphin để xem yêu cầu mới.').slice(0,180),
+      tag: String(payload.tag || payload.eventId || ''),
+      icon: BASE + '/pwa-icons/icon-192.png.png',
+      badge: BASE + '/pwa-icons/icon-96.png.png',
+      data: {url: payload.url || BASE + '/'},
+      renotify: false
+    };
+    await self.registration.showNotification(String(payload.title || 'Dolphin · Thông báo mới').slice(0,100),options);
+  })());
+});
+
+self.addEventListener('notificationclick', event => {
+  event.notification.close();
+  event.waitUntil((async () => {
+    const requested = event.notification.data && event.notification.data.url;
+    let target;
+    try {
+      target = new URL(requested || BASE + '/', self.location.origin);
+      if (target.origin !== self.location.origin || !target.pathname.startsWith(BASE + '/'))
+        target = new URL(BASE + '/', self.location.origin);
+    } catch(e) {target = new URL(BASE + '/',self.location.origin);}
+    const windows = await self.clients.matchAll({type:'window', includeUncontrolled:true});
+    const existing = windows.find(c => new URL(c.url).origin === target.origin);
+    if (existing) {
+      await existing.focus();
+      if (existing.navigate) await existing.navigate(target.href);
+      return;
+    }
+    return self.clients.openWindow(target.href);
+  })());
 });

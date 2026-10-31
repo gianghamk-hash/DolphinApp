@@ -26,6 +26,7 @@ function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
   if(n==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};
   if(n==='firebase-functions/v2/scheduler')return {onSchedule:(_,fn)=>fn};
   if(n==='./tactics/engine')return {};
+  if(n==='./push')return {}; // Ignore independent push exports while unit-testing legacy Staff ID.
   throw Error(n);
  }};
  vm.runInNewContext(source,context);

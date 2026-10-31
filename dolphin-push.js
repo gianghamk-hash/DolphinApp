@@ -127,6 +127,7 @@
       if(!('Notification' in root))throw new Error('iPhone cần iOS 16.4+ và cài Dolphin trên Màn hình chính.');
       const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
       if(permission!=='granted')throw new Error('Chưa cấp quyền thông báo. Vào Cài đặt iPhone → Thông báo → Dolphin.');
+      try{localStorage.setItem(optInKey,'1');}catch(e){}
       const token=await webToken();
       await registerToken(token,'web');
     }catch(e){showError(e);}
@@ -143,6 +144,7 @@
   }
   async function receiveNativeToken(token){
     busy=false;
+    if(token && String(token).length>=20){try{localStorage.setItem(optInKey,'1');}catch(e){}}
     try{await registerToken(String(token||''),/DolphinStaff/.test(navigator.userAgent)?'staff-android':'manager-android');}
     catch(e){showError(e);}
   }
@@ -176,6 +178,11 @@
   root.DolphinPush={enable,disable,resume,receiveNativeToken,
     get active(){return !!lastToken;},get uid(){return currentUid;},
     get isIOS(){return ios;},get isInstalled(){return standalone();}};
+  // Retry an opted-in setup after connectivity returns or the app reopens.
+  if(root.addEventListener)root.addEventListener('online',()=>resume().catch(showError));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')resume().catch(showError);
+  });
   async function start(){
     makeControl();
     if(ios&&!standalone()&&!native){setupGuide();return;}

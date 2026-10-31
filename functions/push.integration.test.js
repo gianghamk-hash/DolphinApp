@@ -6,7 +6,7 @@ const vm=require('node:vm');
 const fs=require('node:fs');
 const path=require('node:path');
 
-function fixture({transientFailures=0}={}){
+function fixture({transientFailures=0,enabled=true}={}){
   const maps=new Map(),sent=[];
   let failCalls=transientFailures;
   const map=name=>{if(!maps.has(name))maps.set(name,new Map());return maps.get(name);};
@@ -71,7 +71,7 @@ function fixture({transientFailures=0}={}){
     'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn},
     'firebase-functions/v2/scheduler':{onSchedule:(opts,fn)=>fn}
   };
-  const env={PUSH_ENABLED:'true',PUSH_MANAGER_UIDS:'manager-uid'};
+  const env={PUSH_ENABLED:enabled?'true':'false',PUSH_MANAGER_UIDS:'manager-uid'};
   const context={
     require:name=>{if(!modules[name])throw Error('Unmocked module '+name);return modules[name];},
     exports:{},process:{env},URLSearchParams,console,Date
@@ -215,4 +215,15 @@ test('Staff APK opt-in and unsubscribe work; admin-revoked users cannot opt them
   await h.pushRevokeDeviceAccess(request('manager-uid',{uid:'staff-user'}));
   await assert.rejects(h.pushRegisterDevice(request('staff-user',data)),e=>e.code==='permission-denied');
   assert.equal((await h.pushGetMyAccess(request('staff-user',{}))).authorized,false);
+});
+
+test('device setup is independent of the sending switch',async()=>{
+  const f=fixture({enabled:false}),h=f.handlers;
+  const result=await h.pushRegisterDevice(request('new-public-user',{
+    token:'new-public-device-token-123456789',platform:'web',consent:true
+  }));
+  assert.equal(result.registered,true);
+  await h.push_bun_orders(event('synthetic-order',100));
+  assert.equal(f.sent.length,0);
+  assert.equal(f.map('dolphin_push_dispatches').size,0);
 });

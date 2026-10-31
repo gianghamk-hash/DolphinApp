@@ -1017,16 +1017,21 @@ function nationalityName(value){
   var key=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().replace(/[\s._-]+/g,'');
   var aliases={vn:'VIỆT NAM',vnm:'VIỆT NAM',vietnam:'VIỆT NAM',vietnamese:'VIỆT NAM',
     cn:'TRUNG QUỐC',chn:'TRUNG QUỐC',china:'TRUNG QUỐC',chinese:'TRUNG QUỐC',trungquoc:'TRUNG QUỐC',
-    tw:'ĐÀI LOAN',twn:'ĐÀI LOAN',taiwan:'ĐÀI LOAN',taiwanese:'ĐÀI LOAN',dailoan:'ĐÀI LOAN'};
+    tw:'ĐÀI LOAN',twn:'ĐÀI LOAN',taiwan:'ĐÀI LOAN',taiwanese:'ĐÀI LOAN',dailoan:'ĐÀI LOAN',
+    us:'MỸ',usa:'MỸ',unitedstates:'MỸ',unitedstatesofamerica:'MỸ',american:'MỸ',my:'MỸ',hoaky:'MỸ',
+    jp:'NHẬT BẢN',jpn:'NHẬT BẢN',japan:'NHẬT BẢN',japanese:'NHẬT BẢN',nhatban:'NHẬT BẢN'};
   return Object.prototype.hasOwnProperty.call(aliases,key)?aliases[key]:name.toLocaleUpperCase('vi-VN');
+}
+function bookingNationalities(value){
+  var names=String(value||'').split(/[,;\/&+\n\r、，]+|\s+(?:và|and)\s+/i).map(function(name){return name.trim()}).filter(Boolean).map(nationalityName);
+  return names.length?Array.from(new Set(names)):['CHƯA CÓ QUỐC TỊCH'];
 }
 function nationalitySummary(A){
   var names=Object.keys(A.nationalities).sort(function(a,b){return a.localeCompare(b,'vi')});
   var rows=names.map(function(name){
-    return '<div><dt>'+esc(name)+'</dt><dd>'+A.nationalities[name].toLocaleString('vi-VN',{maximumFractionDigits:2})+'</dd></div>';
+    return '<div><dt>'+esc(name)+'</dt><dd>'+String(A.nationalities[name]).padStart(2,'0')+'</dd></div>';
   }).join('');
-  return '<section class="nationality-summary" aria-label="Tổng hợp quốc tịch"><h4>Quốc tịch · Số khách</h4><dl>'+rows+'</dl>'+
-    (A.nationalitiesEstimated?'<p>Số khách của booking có bàn ở nhiều khu được chia đều theo bàn.</p>':'')+'</section>';
+  return '<section class="nationality-summary" aria-label="Tổng hợp quốc tịch theo bàn"><h4>Quốc tịch · Số bàn / nhóm bàn</h4><dl>'+rows+'</dl><p>Mỗi bàn hoặc nhóm bàn trong một booking được tính 01 cho từng quốc tịch có mặt.</p></section>';
 }
 
 function viewOverview(L){
@@ -1034,17 +1039,18 @@ function viewOverview(L){
   LAYOUT.forEach(function(f){f.a.forEach(function(a){known[a]=1})});
   L.forEach(function(b){
     var t=b.tb.length?b.tb:['?'],per=b.pax/t.length;
-    var nationality=nationalityName(b.nat),multiArea=new Set(t.map(function(x){return areaName(x[0])})).size>1;
+    var nationalities=bookingNationalities(b.nat);
     t.forEach(function(x){
       var an=areaName(x[0]);
-      var A=areas[an]||(areas[an]={pax:0,tbl:{},bks:[],nationalities:Object.create(null),nationalitiesEstimated:false});
+      var A=areas[an]||(areas[an]={pax:0,tbl:{},bks:[],nationalities:Object.create(null)});
       A.pax+=per;A.tbl[x]=1;tset[x]=1;
-      A.nationalities[nationality]=(A.nationalities[nationality]||0)+per;
-      if(multiArea)A.nationalitiesEstimated=true;
     });
     (b.areas.length?b.areas:['?']).forEach(function(a){
-      var A=areas[a]||(areas[a]={pax:0,tbl:{},bks:[],nationalities:Object.create(null),nationalitiesEstimated:false});
-      if(A.bks.indexOf(b)<0) A.bks.push(b);
+      var A=areas[a]||(areas[a]={pax:0,tbl:{},bks:[],nationalities:Object.create(null)});
+      if(A.bks.indexOf(b)<0){
+        A.bks.push(b);
+        nationalities.forEach(function(name){A.nationalities[name]=(A.nationalities[name]||0)+1});
+      }
     });
     tot+=b.pax;
   });

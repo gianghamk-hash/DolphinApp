@@ -20,11 +20,26 @@
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const optInKey = 'dolphinPushEnabled';
   let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
-  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton, issueCountInput, healthButton;
+  // UI is mounted only inside user-opened settings: NEVER as a floating control.
+  let staffRoot=null,managerRoot=null,managerMessage=null,managerControls=null;
+  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton, issueCountInput, healthButton, revokeInput, revokeButton;
+  let statusLabel='🔔 Bật thông báo',statusDetail='';
+  const controlStyle='background:#123634;color:#FBD77A;border:1px solid #507c70;border-radius:9px;padding:10px;font:600 13px system-ui,sans-serif;cursor:pointer';
+  const fieldStyle='width:100%;box-sizing:border-box;background:#fff;color:#123634;border:1px solid #507c70;border-radius:7px;padding:9px;font:13px system-ui,sans-serif';
+  function el(tag,text,style){
+    const node=document.createElement(tag);
+    if(text!==null&&text!==undefined)node.textContent=text;
+    if(style)node.style.cssText=style;
+    return node;
+  }
   const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
   function setStatus(label,detail){
+    statusLabel=label;statusDetail=detail||'';
     if(button)button.textContent=label;
-    if(message){message.textContent=detail||'';message.hidden=!detail;}
+    if(message){message.textContent=statusDetail;message.hidden=!statusDetail;}
+  }
+  function setManagerStatus(text){
+    if(managerMessage)managerMessage.textContent=text||'';
   }
   function setupGuide(){
     setStatus('📲 Cài Dolphin PWA trên iPhone',
@@ -70,7 +85,14 @@
     if(enrollPanel){enrollPanel.hidden=Boolean(access?.authorized);enrollPanel.style.display=access?.authorized?'none':'flex';}
     if(issueButton)issueButton.hidden=access?.role!=='manager';
     if(issueCountInput)issueCountInput.hidden=access?.role!=='manager';
-    if(healthButton)healthButton.hidden=access?.role!=='manager';
+    const manager=access?.role==='manager';
+    if(issueButton)issueButton.hidden=!manager;
+    if(issueCountInput)issueCountInput.hidden=!manager;
+    if(healthButton)healthButton.hidden=!manager;
+    if(managerControls)managerControls.hidden=!manager;
+    if(managerRoot)setManagerStatus(manager?
+      'Đã xác thực quyền Manager bằng Firebase. Công cụ bên dưới chỉ dùng cho Manager.':
+      'Chưa có quyền Manager được xác thực trong Firebase. Không thể cấp/thu hồi mã Push.');
   }
   async function loadAccess(){
     const data=await callable('pushGetMyAccess',{});
@@ -103,7 +125,7 @@
     finally{busy=false;if(inviteButton)inviteButton.disabled=false;}
   }
   async function issueCode(){
-    if(busy)return;
+    if(busy||access?.role!=='manager')return;
     busy=true;if(issueButton)issueButton.disabled=true;
     try{
       const count=Math.max(1,Math.min(20,Number(issueCountInput?.value)||1));
@@ -111,7 +133,7 @@
       const codes=response?.codes||[];
       if(issuedCode)issuedCode.textContent=codes.join('\n');
       if(copyButton)copyButton.hidden=!codes.length;
-      setStatus('🔔 Quản lý Push',codes.length+' mã một lần, hiệu lực 24 giờ. Gửi riêng một mã cho từng thiết bị nhân viên.');
+      setManagerStatus(codes.length+' mã một lần, hiệu lực 24 giờ. Gửi riêng một mã cho từng thiết bị nhân viên.');
     }catch(e){showError(e);}
     finally{busy=false;if(issueButton)issueButton.disabled=false;}
   }
@@ -123,11 +145,27 @@
       const failed=recent.filter(x=>x.status==='failed').length;
       const retry=recent.filter(x=>x.status==='retry'||x.status==='processing').length;
       const latest=recent[0];
-      setStatus('📡 Push · '+(health.enabled?'Đang hoạt động':'Chưa bật'),
-        'Thiết bị đã kích hoạt: '+health.activeDevices+
+      setManagerStatus('📡 Push · '+(health.enabled?'Đang hoạt động':'Chưa bật')+
+        ' · Thiết bị đã kích hoạt: '+health.activeDevices+
         ' · Trong '+recent.length+' sự kiện gần nhất: '+failed+' lỗi, '+retry+' đang thử lại.'+
         (latest?' · Gần nhất: '+latest.outlet+' ('+latest.status+', FCM nhận '+latest.acceptedByFcm+')':''));
-    }catch(e){showError(e);}
+    }catch(e){setManagerStatus('Không thể kiểm tra Push: '+String(e?.message||e).slice(0,180));}
+  }
+  async function revokeAccess(){
+    if(busy||access?.role!=='manager')return;
+    const uid=String(revokeInput?.value||'').trim();
+    if(!/^[A-Za-z0-9_-]{8,128}$/.test(uid)){
+      setManagerStatus('UID thiết bị không hợp lệ. Yêu cầu nhân viên sao chép UID trong Cài đặt thông báo.');
+      return;
+    }
+    if(!root.confirm || !root.confirm('Thu hồi Push của UID '+uid+'? Thiết bị này sẽ cần mã mới để đăng ký lại.'))return;
+    busy=true;if(revokeButton)revokeButton.disabled=true;
+    try{
+      const data=await callable('pushRevokeDeviceAccess',{uid});
+      if(revokeInput)revokeInput.value='';
+      setManagerStatus('Đã thu hồi quyền Push của UID '+uid+'; vô hiệu hóa '+(data?.devicesDisabled||0)+' token.');
+    }catch(e){setManagerStatus('Thu hồi thất bại: '+String(e?.message||e).slice(0,200));}
+    finally{busy=false;if(revokeButton)revokeButton.disabled=false;}
   }
   async function registerToken(token,platform){
     if(!token||token.length<20)throw new Error('FCM token chưa sẵn sàng.');
@@ -206,50 +244,96 @@
     }catch(e){showError(e);}
     finally{busy=false;}
   }
-  function makeControl(){
-    if(document.getElementById('dolphin-push-control'))return;
-    const panel=document.createElement('div');panel.id='dolphin-push-control';
-    panel.style.cssText='position:fixed;top:68px;right:12px;z-index:2147480000;display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-width:min(340px,94vw);font:600 12px system-ui,sans-serif';
-    button=document.createElement('button');button.type='button';button.textContent='🔔 Bật thông báo';
-    button.style.cssText='background:#123634;color:#FBD77A;border:1px solid #FBD77A;border-radius:99px;padding:8px 12px;box-shadow:0 4px 18px #0008;font:inherit;cursor:pointer';
+  function unmountSettings(){
+    if(staffRoot)staffRoot.replaceChildren();
+    staffRoot=null;button=null;message=null;enrollPanel=null;inviteInput=null;inviteButton=null;
+    // Unmounting UI NEVER unregisters an active FCM token.
+  }
+  function mountSettings(container){
+    if(!container||typeof container.replaceChildren!=='function')return;
+    unmountSettings();
+    staffRoot=container;
+    const intro=el('p','🔔 Cài đặt thông báo cho thiết bị này (không yêu cầu Staff ID).',
+      'font:600 13px/1.5 system-ui,sans-serif;color:#bee9de;margin:0 0 12px');
+    button=el('button',statusLabel,controlStyle+';width:100%');
+    button.type='button';
     button.addEventListener('click',()=>lastToken?disable():enable());
-    message=document.createElement('div');message.hidden=true;
-    message.style.cssText='background:#123634;color:#fff;border:1px solid #507c70;border-radius:10px;padding:10px;max-width:330px;overflow-wrap:anywhere;font:500 12px/1.5 system-ui,sans-serif;box-shadow:0 4px 18px #0008';
-    enrollPanel=document.createElement('div');enrollPanel.hidden=true;
-    enrollPanel.style.cssText='background:#123634;color:#fff;padding:10px;border:1px solid #507c70;border-radius:10px;display:none;gap:6px;flex-wrap:wrap;max-width:330px';
-    inviteInput=document.createElement('input');
+    message=el('p',statusDetail,'font:500 12px/1.5 system-ui,sans-serif;color:#c5e7dc;margin:9px 0;overflow-wrap:anywhere');
+    message.hidden=!statusDetail;
+    enrollPanel=el('div',null,'background:#123634;color:#fff;padding:10px;border:1px solid #507c70;border-radius:10px;display:none;gap:8px;flex-wrap:wrap;max-width:100%;box-sizing:border-box;margin:8px 0');
+    enrollPanel.hidden=true;
+    inviteInput=el('input',null,fieldStyle);
     inviteInput.placeholder='Mã Push 32 ký tự (không phải Staff ID)';
     inviteInput.setAttribute('aria-label','Mã kích hoạt Push do Manager cấp');
     inviteInput.autocapitalize='characters';inviteInput.autocomplete='off';
-    inviteInput.style.cssText='width:100%;box-sizing:border-box;padding:8px;color:#123634;background:white;border:0;border-radius:6px;font-size:12px';
-    inviteButton=document.createElement('button');inviteButton.type='button';inviteButton.textContent='Xác nhận mã Push';
-    inviteButton.style.cssText='background:#FBD77A;color:#123634;border:0;border-radius:6px;padding:8px 10px;font-weight:bold';
+    inviteButton=el('button','Xác nhận mã Push',controlStyle);
+    inviteButton.type='button';
     inviteButton.addEventListener('click',claimCode);
     enrollPanel.append(inviteInput,inviteButton);
-    issueButton=document.createElement('button');issueButton.type='button';issueButton.hidden=true;
-    issueButton.textContent='🔑 Manager: Cấp mã Push cho nhân viên';
-    issueButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
-    issueButton.addEventListener('click',issueCode);
-    healthButton=document.createElement('button');healthButton.type='button';healthButton.hidden=true;
-    healthButton.textContent='📡 Manager: Kiểm tra Push';
-    healthButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
-    healthButton.addEventListener('click',checkDeliveryHealth);
-    issueCountInput=document.createElement('input');issueCountInput.type='number';issueCountInput.min='1';issueCountInput.max='20';issueCountInput.value='1';issueCountInput.hidden=true;
-    issueCountInput.title='Số mã Push cấp cho nhân viên (1-20)';issueCountInput.setAttribute('aria-label','Số mã Push cần cấp');
-    issueCountInput.style.cssText='width:72px;padding:5px;border-radius:6px;color:#123634';
-    issuedCode=document.createElement('code');issuedCode.style.cssText='background:#123634;color:#FBD77A;overflow-wrap:anywhere;white-space:pre-wrap;max-width:320px;font-size:12px';
-    copyButton=document.createElement('button');copyButton.type='button';copyButton.hidden=true;
-    copyButton.textContent='Sao chép mã';copyButton.style.cssText='padding:5px 9px;border-radius:6px';
-    copyButton.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(issuedCode.textContent);setStatus('Đã sao chép mã Push','Mỗi mã chỉ dùng một lần trên một thiết bị.');}catch(e){showError(e);}});
-    panel.append(button,message,enrollPanel,issueCountInput,issueButton,healthButton,issuedCode,copyButton);
-    document.body.appendChild(panel);
+    const uid=el('p',null,'font:500 11px/1.5 system-ui,sans-serif;color:#bee9de;overflow-wrap:anywhere');
+    const revealUid=()=>{uid.textContent=currentUid?'UID thiết bị (để Manager thu hồi quyền khi cần): '+currentUid:'';};
+    revealUid();
+    const help=el('p','iPhone: Safari → Chia sẻ → Thêm vào Màn hình chính, sau đó mở Dolphin từ biểu tượng. Cần iOS 16.4+.',
+      'font:500 12px/1.5 system-ui,sans-serif;color:#bee9de;margin:10px 0 0');
+    container.append(intro,button,message,enrollPanel,uid,help);
+    accessUI();
+    if(ios&&!standalone()&&!native)setupGuide();
+    else if(!access)loadAccess().then(revealUid).catch(showError);
+    else revealUid();
+  }
+  function unmountManager(){
+    if(managerRoot)managerRoot.replaceChildren();
+    managerRoot=null;managerMessage=null;managerControls=null;
+    issueButton=null;healthButton=null;issuedCode=null;issueCountInput=null;copyButton=null;revokeInput=null;revokeButton=null;
+  }
+  function mountManager(container){
+    if(!container||typeof container.replaceChildren!=='function')return;
+    unmountManager();
+    managerRoot=container;
+    const intro=el('p','🔐 Quản trị Firebase Push. Quyền Manager được xác thực tại Cloud Functions.',
+      'font:600 12px/1.5 system-ui,sans-serif;color:#bee9de;margin:0 0 10px');
+    managerMessage=el('p','Đang xác minh quyền Manager...',
+      'font:500 12px/1.5 system-ui,sans-serif;color:#fbd77a;margin:8px 0;overflow-wrap:anywhere');
+    managerControls=el('div');
+    managerControls.hidden=true;
+    managerControls.style.cssText='gap:10px;flex-direction:column';
+    const issueTitle=el('p','Cấp mã Push một lần (1–20 mã; mỗi mã cho một thiết bị):','font:600 12px system-ui,sans-serif;color:#bee9de;margin:10px 0 5px');
+    issueCountInput=el('input',null,fieldStyle+';max-width:85px');
+    issueCountInput.type='number';issueCountInput.min='1';issueCountInput.max='20';issueCountInput.value='1';
+    issueCountInput.setAttribute('aria-label','Số mã Push cần cấp');
+    issueButton=el('button','🔑 Cấp mã kích hoạt',controlStyle);
+    issueButton.type='button';issueButton.addEventListener('click',issueCode);
+    issuedCode=el('code',null,'display:block;color:#fbd77a;white-space:pre-wrap;overflow-wrap:anywhere;font:12px ui-monospace,monospace');
+    copyButton=el('button','Sao chép mã Push',controlStyle);
+    copyButton.type='button';copyButton.hidden=true;
+    copyButton.addEventListener('click',async()=>{
+      try{await navigator.clipboard.writeText(issuedCode.textContent);
+        setManagerStatus('Đã sao chép mã. Mỗi mã chỉ dùng một lần trên một thiết bị.');
+      }catch(e){setManagerStatus('Không sao chép được: '+String(e?.message||e));}
+    });
+    const revokeTitle=el('p','Thu hồi Push của thiết bị nhân viên theo Firebase Auth UID:','font:600 12px system-ui,sans-serif;color:#bee9de;margin:12px 0 5px');
+    revokeInput=el('input',null,fieldStyle);revokeInput.placeholder='UID thiết bị do nhân viên cung cấp';
+    revokeInput.setAttribute('aria-label','UID thiết bị cần thu hồi Push');
+    revokeButton=el('button','🚫 Thu hồi quyền Push',controlStyle);
+    revokeButton.type='button';revokeButton.addEventListener('click',revokeAccess);
+    healthButton=el('button','📡 Kiểm tra tình trạng Push',controlStyle);
+    healthButton.type='button';healthButton.addEventListener('click',checkDeliveryHealth);
+    managerControls.append(issueTitle,issueCountInput,issueButton,issuedCode,copyButton,
+      revokeTitle,revokeInput,revokeButton,healthButton);
+    container.append(intro,managerMessage,managerControls);
+    accessUI();
+    // Recheck every time the Manager deliberately opens this settings tab.
+    loadAccess().catch(e=>{setManagerStatus('Không thể xác minh Manager: '+String(e?.message||e).slice(0,180));
+      if(managerControls)managerControls.hidden=true;});
   }
   root.DolphinPush={enable,disable,resume,receiveNativeToken,
+    mountSettings,unmountSettings,mountManager,unmountManager,
     get active(){return !!lastToken;},get uid(){return currentUid;},
     get isIOS(){return ios;},get isInstalled(){return standalone();}};
   async function start(){
-    makeControl();
-    if(ios&&!standalone()&&!native){setupGuide();return;}
+    // Background FCM registration is independent of the optional, closed UI.
+    // Never append a fixed button, backdrop or touch-intercepting overlay.
+    if(ios&&!standalone()&&!native)return;
     try{await loadAccess();if(optedIn())await resume();}
     catch(e){showError(e);}
   }

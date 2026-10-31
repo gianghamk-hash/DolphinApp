@@ -334,6 +334,7 @@ input[type="datetime-local"].mgr-input{color-scheme:dark;font-weight:800}
       <button class="settings-tab" data-stab="announcement" onclick="switchSettingsTab('announcement')">📢 TB</button>
       <button class="settings-tab" data-stab="note" onclick="switchSettingsTab('note')">📝 Ghi chú</button>
       <button class="settings-tab" data-stab="reminder" onclick="switchSettingsTab('reminder')">⏰ Báo thức <span class="tab-badge" id="reminderTabBadge" style="display:none">0</span></button>
+      <button class="settings-tab" data-stab="push" onclick="switchSettingsTab('push')">🔔 Push</button>
       <button class="settings-tab" data-stab="version" onclick="switchSettingsTab('version')">🔄 Ver</button>
       <button class="settings-tab" data-stab="changelog" onclick="switchSettingsTab('changelog')">📋 LS</button>
     </div>
@@ -492,6 +493,17 @@ input[type="datetime-local"].mgr-input{color-scheme:dark;font-weight:800}
         <button onclick="checkVersionNow()" class="w-full bg-teal-800/60 border border-teal-600/60 text-teal-200 font-bold rounded-xl px-4 py-2.5 text-[11.5px] uppercase tracking-wider">🔄 Kiểm tra bản cập nhật</button>
       </div>
 
+      <!-- Manager-only administrative controls are mounted here ONLY after
+           the Manager opens Settings -> Push, never over the landing cards. -->
+      <div id="stab-push" class="hidden">
+        <p class="text-[11px] text-teal-300 mb-3 leading-relaxed">
+          Quản lý mã kích hoạt, thu hồi quyền và kiểm tra phân phối Firebase Push.
+          Nhân viên bật/tắt thông báo tại mục Cài đặt thông báo trên màn hình chính.
+          Chức năng này không yêu cầu hoặc sửa Staff ID.
+        </p>
+        <div id="manager-push-admin" style="overflow-wrap:anywhere"></div>
+      </div>
+
       <!-- Tab: Changelog -->
       <div id="stab-changelog" class="hidden">
         <div class="flex justify-end mb-3">
@@ -594,20 +606,44 @@ try {
 } catch(e) { console.warn(e); }
 
 /* ═══ SETTINGS MODAL ═══ */
+function getManagerPushController(){
+  try{
+    if(window.parent!==window && window.parent.location.origin===window.location.origin)
+      return window.parent.DolphinPush||null;
+  }catch(e){}
+  return window.DolphinPush||null;
+}
+function mountManagerPushSettings(){
+  const target=document.getElementById('manager-push-admin');
+  if(!target)return;
+  const push=getManagerPushController();
+  if(push&&typeof push.mountManager==='function')push.mountManager(target);
+  else target.textContent='Firebase Web Push chưa được cấu hình hoặc tải xong. Không thể truy cập công cụ Manager trong phiên này.';
+}
+function unmountManagerPushSettings(){
+  const push=getManagerPushController();
+  if(push&&typeof push.unmountManager==='function')push.unmountManager();
+  const target=document.getElementById('manager-push-admin');
+  if(target)target.replaceChildren();
+}
 window.openSettings = function(){
   document.getElementById('settings-modal').classList.add('show');
   document.body.style.overflow = 'hidden';
+  if(document.querySelector('.settings-tab.active')?.dataset.stab==='push')mountManagerPushSettings();
 };
 window.closeSettings = function(){
+  unmountManagerPushSettings();
   document.getElementById('settings-modal').classList.remove('show');
   document.body.style.overflow = '';
 };
 window.switchSettingsTab = function(tab){
+  if(tab!=='push')unmountManagerPushSettings();
   document.querySelectorAll('.settings-tab').forEach(b => b.classList.toggle('active', b.dataset.stab === tab));
-  ['theme','announcement','note','reminder','version','changelog'].forEach(t => {
+  ['theme','announcement','note','reminder','push','version','changelog'].forEach(t => {
     const el = document.getElementById('stab-' + t);
     if (el) el.classList.toggle('hidden', t !== tab);
   });
+  if (tab === 'push') mountManagerPushSettings();
   if (tab === 'changelog') loadChangelog();
 };
 
@@ -1682,6 +1718,6 @@ $('h-search-btn').onclick = async () => {
 setInterval(renderOrders, 30000);
 </script>
 <script src="../push-config.js"></script>
-<script src="../dolphin-push.js?rev=hide-enabled-20261031" defer></script>
+<script src="../dolphin-push.js" defer></script>
 </body>
 </html>

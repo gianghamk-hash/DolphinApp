@@ -1,10 +1,10 @@
 name: Staff profile checks
 on:
   pull_request:
-    paths: ['dolphin-profile.html','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','.github/workflows/staff-profile-tests.yml']
   push:
     branches: [main]
-    paths: ['dolphin-profile.html','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','.github/workflows/staff-profile-tests.yml']
 permissions:
   contents: read
 jobs:
@@ -24,3 +24,8 @@ jobs:
           node --check dolphin-avatars.js
           node --test functions/staff-id.test.js staff-sync.test.js dolphin-avatars.test.cjs
           node scripts/check-service-pages.cjs
+      - run: npm install --no-save --package-lock=false playwright
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/avatar-sync-browser.cjs
+        env:
+          AVATAR_QA_OUTPUT: ${{ runner.temp }}/dolphin-avatar-qa

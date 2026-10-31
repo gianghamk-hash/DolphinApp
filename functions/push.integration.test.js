@@ -188,3 +188,14 @@ test('Manager-only delivery health reports active devices and FCM acceptance',as
   assert.equal(result.recent[0].status,'sent');
   assert.equal(result.recent[0].acceptedByFcm,1);
 });
+
+test('FCM device tokens with iOS opaque base64 characters are accepted',async()=>{
+  const f=fixture(),h=f.handlers;
+  const {codes}=await h.pushIssueDeviceCodes(request('manager-uid',{count:1}));
+  await h.pushClaimDeviceCode(request('worker-id',{code:codes[0]}));
+  const result=await h.pushRegisterDevice(request('worker-id',{
+    token:'token+/abc/def=1234567890',platform:'web'
+  }));
+  assert.equal(result.registered,true);
+  assert.equal(f.map('dolphin_push_devices').size,1);
+});

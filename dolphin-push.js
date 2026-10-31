@@ -58,7 +58,7 @@
     return response.data;
   }
   function accessUI(){
-    if(enrollPanel)enrollPanel.style.display=access?.authorized?'none':'flex';
+    if(enrollPanel){enrollPanel.hidden=Boolean(access?.authorized);enrollPanel.style.display=access?.authorized?'none':'flex';}
     if(issueButton)issueButton.hidden=access?.role!=='manager';
     if(issueCountInput)issueCountInput.hidden=access?.role!=='manager';
   }
@@ -141,7 +141,7 @@
     if(ios&&!standalone()&&!native){setupGuide();return;}
     if(!access?.authorized){
       if(!access)loadAccess().catch(showError);
-      if(enrollPanel)enrollPanel.style.display='flex';
+      if(enrollPanel){enrollPanel.hidden=false;enrollPanel.style.display='flex';}
       setStatus('🔑 Nhập mã Push trước','Manager có thể tạo mã Push độc lập Staff ID ngay trong ứng dụng Dolphin.');
       return;
     }

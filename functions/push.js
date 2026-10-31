@@ -7,6 +7,7 @@ const {getFirestore, FieldPath} = require('firebase-admin/firestore');
 const {getMessaging} = require('firebase-admin/messaging');
 const {onCall, HttpsError} = require('firebase-functions/v2/https');
 const {onDocumentWritten} = require('firebase-functions/v2/firestore');
+const {onSchedule} = require('firebase-functions/v2/scheduler');
 
 const REGION = 'asia-southeast1';
 const DEVICES = 'dolphin_push_devices';
@@ -189,6 +190,86 @@ function eligibleDevice(v) {
   return typeof v?.token==='string' && v.active===true &&
     (v.role==='staff' || (v.role==='manager' && isManager(v.uid)));
 }
+const MAX_DELIVERY_ATTEMPTS = 5;
+const DELIVERY_LEASE_MS = 2*60*1000;
+async function acquireDispatch(ref) {
+  const db=getFirestore(),now=Date.now();
+  return db.runTransaction(async tx=>{
+    const snap=await tx.get(ref);
+    if(!snap.exists)return null;
+    const record=snap.data();
+    if(record.status==='sent'||record.status==='failed')return null;
+    if(record.status==='processing' && Number(record.leaseUntil)>now)return null;
+    if(record.status==='retry' && Number(record.nextAttemptAt)>now)return null;
+    const attempts=Number(record.attempts)||0;
+    if(attempts>=MAX_DELIVERY_ATTEMPTS){
+      tx.update(ref,{status:'failed',leaseUntil:0,finishedAt:now});
+      return null;
+    }
+    tx.update(ref,{status:'processing',attempts:attempts+1,leaseUntil:now+DELIVERY_LEASE_MS});
+    return {payload:record.payload,attempts:attempts+1};
+  });
+}
+function retryDelay(attempts) {
+  return Math.min(30*60*1000,Math.pow(2,Math.min(5,attempts))*60*1000);
+}
+async function deliverDispatch(ref) {
+  const claim=await acquireDispatch(ref);
+  if(!claim)return;
+  const info=claim.payload;
+  const firestore=getFirestore(),errors=[];
+  let deliveredCount=0,recipientCount=0;
+  try {
+    // Paginate all approved devices; Staff ID and outlet are NOT consulted.
+    let last=null;
+    for(;;) {
+      let q=firestore.collection(DEVICES).where('active','==',true)
+        .orderBy(FieldPath.documentId()).limit(400);
+      if(last)q=q.startAfter(last);
+      const snapshot=await q.get();
+      if(snapshot.empty)break;
+      last=snapshot.docs[snapshot.docs.length-1];
+      const approved=snapshot.docs.filter(doc=>eligibleDevice(doc.data()));
+      if(approved.length){
+        recipientCount+=approved.length;
+        const result=await getMessaging().sendEachForMulticast({
+          tokens:approved.map(doc=>doc.data().token),
+          data:Object.fromEntries(Object.entries(info).map(([k,v])=>[k,String(v)])),
+          android:{priority:'high'},
+          webpush:{headers:{Urgency:'high',TTL:'3600'}}
+        });
+        const stale=[];
+        result.responses.forEach((reply,i)=>{
+          if(reply.success){deliveredCount++;return;}
+          const code=reply.error?.code||'unknown';
+          if(code==='messaging/registration-token-not-registered'||
+             code==='messaging/invalid-registration-token'){
+            stale.push(approved[i].ref.delete());
+          }else{
+            errors.push(code);
+            console.error('[Dolphin Push delivery]',code);
+          }
+        });
+        await Promise.allSettled(stale);
+      }
+      if(snapshot.size<400)break;
+    }
+  }catch(err){
+    errors.push(err?.code||err?.message||'send-error');
+    console.error('[Dolphin Push retryable failure]',err);
+  }
+  const now=Date.now();
+  await ref.update({
+    status:errors.length===0?'sent':(claim.attempts>=MAX_DELIVERY_ATTEMPTS?'failed':'retry'),
+    nextAttemptAt:errors.length ? now+retryDelay(claim.attempts) : null,
+    leaseUntil:0,finishedAt:errors.length===0?now:null,
+    deliveredCount,recipientCount,
+    lastError:errors.length?String(errors[0]).slice(0,180):null,
+    updatedAt:now
+  });
+  // The same notification tag/eventId deduplicates a transient repeat in
+  // Safari and Android. Successful tokens may be resent on a partial retry.
+}
 async function sendAlert(event,collection,label,kind,outlet) {
   const rawBefore=event.data?.before.exists?event.data.before.data():null;
   const rawAfter=event.data?.after.exists?event.data.after.data():null;
@@ -196,47 +277,36 @@ async function sendAlert(event,collection,label,kind,outlet) {
   const after=collection==='show_tables'?showService(rawAfter):rawAfter;
   if(!needsAlert(before,after)||!enabled())return;
   const info=notificationPayload(collection,label,kind,event.params.id,after,outlet);
-  const firestore=getFirestore();
-  const dispatch=firestore.collection(DISPATCHES).doc(info.eventId);
-  try{
-    await dispatch.create({collection,orderId:event.params.id,createdAt:Date.now()});
+  const dispatch=getFirestore().collection(DISPATCHES).doc(info.eventId);
+  try {
+    await dispatch.create({
+      collection,orderId:event.params.id,payload:info,createdAt:Date.now(),
+      status:'retry',attempts:0,nextAttemptAt:Date.now(),leaseUntil:0
+    });
   }catch(err){
-    if(err.code===6||err.code==='already-exists')return;
-    throw err;
+    if(err.code!==6&&err.code!=='already-exists')throw err;
   }
-  // Paginate: every approved device receives the SAME payload regardless of
-  // Staff ID status or assigned outlet; never silently drop device #501+.
-  let last=null;
-  for(;;){
-    let q=firestore.collection(DEVICES).where('active','==',true)
-      .orderBy(FieldPath.documentId()).limit(400);
-    if(last)q=q.startAfter(last);
-    const snapshot=await q.get();
-    if(snapshot.empty)break;
-    last=snapshot.docs[snapshot.docs.length-1];
-    const approved=snapshot.docs.filter(doc=>eligibleDevice(doc.data()));
-    if(approved.length){
-      const result=await getMessaging().sendEachForMulticast({
-        tokens:approved.map(doc=>doc.data().token),
-        data:Object.fromEntries(Object.entries(info).map(([k,v])=>[k,String(v)])),
-        android:{priority:'high'},
-        webpush:{headers:{Urgency:'high',TTL:'3600'}}
-      });
-      const stale=[];
-      result.responses.forEach((reply,i)=>{
-        if(reply.success)return;
-        const code=reply.error?.code;
-        if(code==='messaging/registration-token-not-registered'||code==='messaging/invalid-registration-token')
-          stale.push(approved[i].ref.delete());
-        else console.error('[Dolphin Push delivery]',code||reply.error);
-      });
-      await Promise.allSettled(stale);
-    }
-    if(snapshot.size<400)break;
-  }
+  // Never fail the guest order transaction because an FCM device is offline.
+  // Durable retry is performed by pushRetryDeliveries below.
+  await deliverDispatch(dispatch);
 }
+exports.pushRetryDeliveries=onSchedule({
+  schedule:'every 5 minutes',timeZone:'Asia/Ho_Chi_Minh',
+  region:REGION,maxInstances:1,timeoutSeconds:300
+},async()=>{
+  if(!enabled())return;
+  // Both retryable FCM failures and expired leases (crashed Functions) recover.
+  const collection=getFirestore().collection(DISPATCHES);
+  for(const status of ['retry','processing']){
+    const snap=await collection.where('status','==',status).limit(100).get();
+    for(const entry of snap.docs){
+      try{await deliverDispatch(entry.ref);}
+      catch(err){console.error('[Dolphin Push retry job]',entry.id,err);}
+    }
+  }
+});
 for(const [collection,label,kind,outlet] of FEEDS)
   exports['push_'+collection]=onDocumentWritten(triggerOpts(collection),
     event=>sendAlert(event,collection,label,kind,outlet));
 
-exports._pushTest={needsAlert,stamp,safeTable,showService,eligibleDevice,notificationPayload};
+exports._pushTest={needsAlert,stamp,safeTable,showService,eligibleDevice,notificationPayload,retryDelay};

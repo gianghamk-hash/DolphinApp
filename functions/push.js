@@ -130,6 +130,26 @@ exports.pushRevokeDeviceAccess=onCall(callableOpts,async request=>{
   }
   return {revoked:true,devicesDisabled:devices.size};
 });
+exports.pushGetDeliveryHealth=onCall(callableOpts,async request=>{
+  requireManager(request);
+  const db=getFirestore();
+  const [deviceTotal,recent]=await Promise.all([
+    db.collection(DEVICES).where('active','==',true).count().get(),
+    db.collection(DISPATCHES).orderBy('createdAt','desc').limit(20).get()
+  ]);
+  return {
+    enabled:enabled(),activeDevices:deviceTotal.data().count,
+    recent:recent.docs.map(doc=>{
+      const item=doc.data();
+      return {
+        eventId:doc.id,createdAt:item.createdAt||0,
+        outlet:item.payload?.outlet||'',status:item.status||'unknown',
+        attempts:item.attempts||0,lastError:item.lastError||null,
+        acceptedByFcm:item.deliveredCount||0
+      };
+    })
+  };
+});
 exports.pushRegisterDevice=onCall(callableOpts,async request=>{
   const uid=requireUid(request),token=tokenOf(request.data?.token);
   const platform=request.data?.platform;

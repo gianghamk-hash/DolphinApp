@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.14",
+      "releaseDate": "2026-10-31T05:50:14.066Z",
+      "summary": "feat(show): Daily Show and singer combos with one complete food set per package",
+      "details": [
+        "feat(show): Daily Show and singer combos with one complete food set per package"
+      ]
+    },
+    {
       "version": "1.1.13",
       "releaseDate": "2026-10-31T05:02:57.683Z",
       "summary": "Merge pull request #170: confine Push controls to System Dashboard",
@@ -390,14 +398,6 @@
       "summary": "fix(tft): show actionable Firebase create-room errors (#126)",
       "details": [
         "fix(tft): show actionable Firebase create-room errors (#126)"
-      ]
-    },
-    {
-      "version": "1.0.184",
-      "releaseDate": "2026-10-29T08:39:55.734Z",
-      "summary": "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029",
-      "details": [
-        "Merge pull request #125 from gianghamk-hash/fix/tft-online-room-unverified-casual-20261029"
       ]
     }
   ]

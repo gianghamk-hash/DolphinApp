@@ -1,5 +1,5 @@
 {
-  "version": "1.1.14",
+  "version": "1.1.15",
   "releaseDate": "2026-10-31",
-  "notes": "feat(show): Daily Show and singer combos with one complete food set per package"
+  "notes": "Guest list: focused dietary filters and nationality counts by area (#172)"
 }

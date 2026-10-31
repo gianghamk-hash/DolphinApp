@@ -1,7 +1,7 @@
 {
-  "version": "1.1.14",
-  "buildDate": "2026-10-31T05:50:14.066Z",
-  "commit": "90a5487",
-  "notes": "feat(show): Daily Show and singer combos with one complete food set per package",
+  "version": "1.1.15",
+  "buildDate": "2026-10-31T13:18:45.978Z",
+  "commit": "169e81f",
+  "notes": "Guest list: focused dietary filters and nationality counts by area (#172)",
   "forceUpdate": false
 }

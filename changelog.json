@@ -1,30 +1,22 @@
 {
-  "version": "1.1.14",
-  "previousVersion": "1.1.13",
-  "commit": "90a5487",
-  "previousCommit": "1bae234",
-  "buildDate": "2026-10-31T05:50:14.066Z",
-  "summary": "feat(show): Daily Show and singer combos with one complete food set per package",
+  "version": "1.1.15",
+  "previousVersion": "1.1.14",
+  "commit": "169e81f",
+  "previousCommit": "90a5487",
+  "buildDate": "2026-10-31T13:18:45.978Z",
+  "summary": "Guest list: focused dietary filters and nationality counts by area (#172)",
   "changes": {
-    "totalCommits": 238,
-    "filesChanged": 3,
+    "totalCommits": 239,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(show): Daily Show and singer combos with one complete food set per package"
+    "Guest list: focused dietary filters and nationality counts by area (#172)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/show-package-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-show.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/show-package.test.cjs",
+      "file": "dolphin-guests.html",
       "type": "update"
     }
   ]

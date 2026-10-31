@@ -422,22 +422,38 @@ jobs:
           cp manager/dashboard.html app/src/main/assets/manager/
           cp avatar-system.js app/src/main/assets/
 
-          # Manager only: native FCM service/permissions/token bridge. Staff APK is unchanged.
-          if [ "$VARIANT" = "manager" ]; then
+          # Both APKs use native FCM; their registered app IDs are distinct.
+          if [ "$VARIANT" = "manager" ] || [ "$VARIANT" = "staff" ]; then
             if [ -z "$FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64" ]; then
               echo "::error::Missing repository secret FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 (base64 of Firebase Android manager google-services.json)"
               exit 1
             fi
             printf '%s' "$FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64" | base64 --decode > app/google-services.json
             python3 - <<'PY_MANAGER_PUSH'
-          import json
+          import json, os
           from pathlib import Path
           config = json.loads(Path('app/google-services.json').read_text())
+          assert config['project_info']['project_id'] == 'dolphin-f6d67'
+          assert str(config['project_info']['project_number']) == '547227270636'
           clients = config.get('client', [])
           assert any(
               c.get('client_info', {}).get('android_client_info', {}).get('package_name')
               == 'com.dolphin.cruise.manager' for c in clients
           ), 'google-services.json does not contain com.dolphin.cruise.manager'
+          if os.environ['VARIANT'] == 'staff':
+              staff = json.loads(Path('android/staff/firebase-app.json').read_text())
+              assert staff['projectId'] == config['project_info']['project_id']
+              assert staff['messagingSenderId'] == str(config['project_info']['project_number'])
+              assert staff['packageName'] == os.environ['PKG_ID']
+              manager = next(c for c in clients if
+                  c['client_info']['android_client_info']['package_name'] == 'com.dolphin.cruise.manager')
+              # Official SDK configs use the same project Android API key.
+              config['client'] = [{
+                  'client_info': {'mobilesdk_app_id': staff['appId'],
+                      'android_client_info': {'package_name': staff['packageName']}},
+                  'api_key': manager['api_key'], 'oauth_client': [], 'services': {}
+              }]
+              Path('app/google-services.json').write_text(json.dumps(config))
           gradle = Path('app/build.gradle')
           content = gradle.read_text().replace(
               "id 'com.android.application'",

@@ -109,6 +109,13 @@ body::after{content:'';position:fixed;inset:0;z-index:-1;pointer-events:none;bac
 .area h3{margin:0;font-size:.85rem;color:#fff;font-weight:800;letter-spacing:.02em}
 .area::before{content:'';width:4px;height:16px;background:linear-gradient(180deg,var(--gold),var(--gold2));border-radius:3px;flex-shrink:0;box-shadow:0 0 10px rgba(244,184,66,.5)}
 .area small{color:var(--mint2);font-weight:700;font-size:.73rem}
+.nationality-summary{margin:0 0 12px;padding:12px 14px;border:1px solid var(--line2);border-radius:14px;background:rgba(18,50,47,.45)}
+.nationality-summary h4{margin:0 0 8px;color:var(--gold);font-size:.76rem;font-weight:900}
+.nationality-summary dl{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:6px 18px;margin:0}
+.nationality-summary dl div{display:flex;justify-content:space-between;gap:12px;font-size:.78rem;color:var(--mint)}
+.nationality-summary dt{overflow-wrap:anywhere}
+.nationality-summary dd{margin:0;color:#fff;font-weight:900;font-variant-numeric:tabular-nums}
+.nationality-summary p{margin:8px 0 0;font-size:.7rem;color:var(--mint2);line-height:1.5}
 .section-header{display:flex;align-items:center;gap:10px;margin: 22px 0 12px;padding: 13px 18px;border-radius: 15px;font-weight: 900;text-transform: uppercase;letter-spacing: .06em;font-size: .84rem;position: relative}
 .section-header:first-child{margin-top:8px}
 .section-header.gift{background: linear-gradient(135deg, rgba(244,184,66,.20), rgba(244,184,66,.05));border: 1.5px solid rgba(244,184,66,.5);color: var(--gold);box-shadow: 0 6px 20px -8px rgba(244,184,66,.4), inset 0 1px 0 rgba(255,255,255,.06)}
@@ -731,12 +738,14 @@ function tables(s){
 function areaName(letter){if(letter==='L')return 'Lounge';return letter}
 function seg(s){return (s||'').split(/\n+|\s{3,}|\s\+\s(?=-)/).map(function(x){return x.replace(/^[\s\-–=>+]+/,'').trim()}).filter(Boolean)}
 var BUNG=/bungalow/i,LOB=/tôm hùm|lobster/i;
-var DIET=/chay|veg|không ăn|ko ăn|kiêng|no (beef|pork|cabbage|seafood|spicy|meat)|halal|dị ứng|allerg|không dùng/i;
+var DIET=/\b(?:chay|veg(?:an|etarian)?|non[\s-]*veg|halal|jain)\b/i;
 function dietType(s){
-  if(/non[\s-]?veg/i.test(s))return 'Non-veg';
+  if(/\bnon[\s-]*veg\b/i.test(s))return 'Non-veg';
   if(/chay/i.test(s))return 'Chay Việt';
+  if(/\bhalal\b/i.test(s))return 'Halal';
+  if(/\bjain\b/i.test(s))return 'Jain';
   if(/veg/i.test(s))return 'Veg';
-  return 'Kiêng ăn';
+  return '';
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -919,7 +928,7 @@ function parse(rows){
     b.noteRaw = allNotes.trim();
     b.loungeTicket = detectLoungeTicket(b.noteRaw);
 
-    var segs=seg(c[7]).concat(seg(c[8]).filter(function(x){return BUNG.test(x)}));
+    var segs=seg(c[7]).concat(seg(c[8]).filter(function(x){return BUNG.test(x)||LOB.test(x)||DIET.test(x)}));
     segs.forEach(function(s){
       if(BUNG.test(s)){
         var n=s.match(/(\d+)\s*bungalow/i),num=s.match(/bungalow\s*(deck\s*\d+|\d+)/i),cnt=n?+n[1]:1,room=num?num[1]:'';
@@ -1002,18 +1011,39 @@ function card(b){
 function statBox(icon,num,lbl,warn){return '<div class="st'+(warn?' warn':'')+'"><div class="st-ic">'+icon+'</div><div class="st-body"><span class="st-num">'+num+'</span><span class="st-lbl">'+lbl+'</span></div></div>'}
 function nBung(L){return L.reduce(function(n,b){return n+b.bung.reduce(function(m,x){return m+x.n},0)},0)}
 
+function nationalityName(value){
+  var name=String(value||'').trim().replace(/\s+/g,' ');
+  if(!name)return 'CHƯA CÓ QUỐC TỊCH';
+  var key=name.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().replace(/[\s._-]+/g,'');
+  var aliases={vn:'VIỆT NAM',vnm:'VIỆT NAM',vietnam:'VIỆT NAM',vietnamese:'VIỆT NAM',
+    cn:'TRUNG QUỐC',chn:'TRUNG QUỐC',china:'TRUNG QUỐC',chinese:'TRUNG QUỐC',trungquoc:'TRUNG QUỐC',
+    tw:'ĐÀI LOAN',twn:'ĐÀI LOAN',taiwan:'ĐÀI LOAN',taiwanese:'ĐÀI LOAN',dailoan:'ĐÀI LOAN'};
+  return Object.prototype.hasOwnProperty.call(aliases,key)?aliases[key]:name.toLocaleUpperCase('vi-VN');
+}
+function nationalitySummary(A){
+  var names=Object.keys(A.nationalities).sort(function(a,b){return a.localeCompare(b,'vi')});
+  var rows=names.map(function(name){
+    return '<div><dt>'+esc(name)+'</dt><dd>'+A.nationalities[name].toLocaleString('vi-VN',{maximumFractionDigits:2})+'</dd></div>';
+  }).join('');
+  return '<section class="nationality-summary" aria-label="Tổng hợp quốc tịch"><h4>Quốc tịch · Số khách</h4><dl>'+rows+'</dl>'+
+    (A.nationalitiesEstimated?'<p>Số khách của booking có bàn ở nhiều khu được chia đều theo bàn.</p>':'')+'</section>';
+}
+
 function viewOverview(L){
   var areas={},tot=0,tset={},known={};
   LAYOUT.forEach(function(f){f.a.forEach(function(a){known[a]=1})});
   L.forEach(function(b){
     var t=b.tb.length?b.tb:['?'],per=b.pax/t.length;
+    var nationality=nationalityName(b.nat),multiArea=new Set(t.map(function(x){return areaName(x[0])})).size>1;
     t.forEach(function(x){
       var an=areaName(x[0]);
-      var A=areas[an]||(areas[an]={pax:0,tbl:{},bks:[]});
+      var A=areas[an]||(areas[an]={pax:0,tbl:{},bks:[],nationalities:Object.create(null),nationalitiesEstimated:false});
       A.pax+=per;A.tbl[x]=1;tset[x]=1;
+      A.nationalities[nationality]=(A.nationalities[nationality]||0)+per;
+      if(multiArea)A.nationalitiesEstimated=true;
     });
     (b.areas.length?b.areas:['?']).forEach(function(a){
-      var A=areas[a]||(areas[a]={pax:0,tbl:{},bks:[]});
+      var A=areas[a]||(areas[a]={pax:0,tbl:{},bks:[],nationalities:Object.create(null),nationalitiesEstimated:false});
       if(A.bks.indexOf(b)<0) A.bks.push(b);
     });
     tot+=b.pax;
@@ -1029,6 +1059,7 @@ function viewOverview(L){
     var A=areas[a];
     if(!A||!A.bks.length) return '';
     var r='<div class="area"><h3>'+esc(areaLabel(a))+'</h3><small>'+Math.round(A.pax)+' khách · '+Object.keys(A.tbl).length+' bàn</small></div>';
+    r+=nationalitySummary(A);
     r+='<div class="grid">';
     A.bks.slice().sort(function(x,y){return x.tbl.localeCompare(y.tbl,'vi',{numeric:true})}).forEach(function(b){r+=card(b)});
     return r+'</div>';
@@ -1055,13 +1086,14 @@ function viewOverview(L){
 }
 function viewSpecial(L){
   var S=L.filter(function(b){return b.diet.length||b.lob.length});
-  var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Kiêng ăn':0},lob=0;
+  var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Halal':0,'Jain':0},lob=0;
   S.forEach(function(b){b.diet.forEach(function(d){cnt[d.t]++});lob+=b.lob.length});
   var h='<div class="stats">'+
     statBox('<i class="ic ic-leaf"></i>',cnt['Chay Việt'],'Chay Việt')+
     statBox('<i class="ic ic-sprout"></i>',cnt['Veg'],'Veg')+
     statBox('<i class="ic ic-drumstick"></i>',cnt['Non-veg'],'Non-veg')+
-    statBox('<i class="ic ic-ban"></i>',cnt['Kiêng ăn'],'Kiêng khác')+
+    statBox('<i class="ic ic-utensils"></i>',cnt['Halal'],'Halal')+
+    statBox('<i class="ic ic-leaf"></i>',cnt['Jain'],'Jain')+
     statBox('<i class="ic ic-fish"></i>',lob,'Tôm hùm')+'</div>';
   if(!S.length)return h+'<div class="empty">Không có khách nào có yêu cầu ăn đặc biệt hoặc tôm hùm.</div>';
   h+='<div class="grid">';

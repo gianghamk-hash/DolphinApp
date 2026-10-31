@@ -55,9 +55,10 @@ test('Manager can inspect push delivery health without reading sensitive tokens'
   assert.match(client,/Manager: Kiểm tra Push/);
 });
 
-function browserFixture({permission='granted',native=false,optIn=false,notificationState='default',role='staff',registrationFailure=false}={}){
+function browserFixture({permission='granted',native=false,optIn=false,registered=false,notificationState='default',role='staff',registrationFailure=false}={}){
   const calls=[],events=[],nodes=[],store=new Map(),apps=[];
   if(optIn)store.set('dolphinPushEnabled','1');
+  if(registered)store.set('dolphinPushRegistered','1');
   const registration={};
   const document={readyState:'loading',currentScript:{src:'https://dolphinfb.store/dolphin-push.js'},
     events:{},addEventListener(name,fn){this.events[name]=fn;},getElementById(){return null;},
@@ -148,4 +149,9 @@ test('native reload remains hidden while restoring its registration; failed setu
   const web=browserFixture({optIn:true,notificationState:'granted',registrationFailure:true});
   await web.ready();assert.equal(web.api.active,false);
   assert.equal(web.panel().hidden,false);assert.equal(web.panel().style.display,'flex');
+});
+
+test('a previously registered session stays hidden across a temporary registration outage',async()=>{
+  const f=browserFixture({optIn:true,registered:true,notificationState:'granted',registrationFailure:true});
+  await f.ready();assert.equal(f.panel().hidden,true);assert.equal(f.panel().style.display,'none');
 });

@@ -19,9 +19,11 @@
   const base = new URL('./',document.currentScript?.src || location.href);
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const optInKey = 'dolphinPushEnabled';
+  const registeredKey = 'dolphinPushRegistered';
   let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
   let panel, button, message, healthButton;
   const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
+  const registeredBefore = () => {try{return optedIn()&&localStorage.getItem(registeredKey)==='1';}catch(e){return false;}};
   function setControlHidden(hidden){
     if(!panel)return;
     panel.hidden=hidden;
@@ -100,7 +102,7 @@
     if(!token||token.length<20)throw new Error('FCM token chưa sẵn sàng.');
     const data=await callable('pushRegisterDevice',{token,platform,consent:true});
     lastToken=token;
-    try{localStorage.setItem(optInKey,'1');}catch(e){}
+    try{localStorage.setItem(optInKey,'1');localStorage.setItem(registeredKey,'1');}catch(e){}
     setStatus('🔔 Push đang bật · nhấn để tắt',
       (data?.role==='manager'?'Manager':'Nhân viên')+' · nhận tất cả outlet: Bungalow, Lounge, Restaurant, Show.');
     setControlHidden(true);
@@ -120,7 +122,8 @@
   }
   function showError(error){
     console.warn('[DolphinPush]',error);
-    if(!lastToken)setControlHidden(false);
+    const permissionStillGranted=native||('Notification' in root&&Notification.permission==='granted');
+    if(!lastToken&&!(registeredBefore()&&permissionStillGranted))setControlHidden(false);
     const detail=String(error?.message||error||'');
     setStatus('🔕 Chưa bật được thông báo',detail.slice(0,220));
   }
@@ -150,6 +153,7 @@
       catch(e){showError(e);}
     }else{
       lastToken='';
+      try{localStorage.removeItem(registeredKey);}catch(e){}
       setControlHidden(false);
       setStatus('🔔 Bật thông báo','Cho phép thông báo trên thiết bị để nhận order mới.');
     }
@@ -166,7 +170,7 @@
     try{
       if(lastToken)await callable('pushUnregisterDevice',{token:lastToken});
       lastToken='';
-      try{localStorage.removeItem(optInKey);}catch(e){}
+      try{localStorage.removeItem(optInKey);localStorage.removeItem(registeredKey);}catch(e){}
       setControlHidden(false);
       setStatus('🔕 Đã tắt Push','Đã hủy thiết bị khỏi danh sách nhận Push.');
     }catch(e){showError(e);}

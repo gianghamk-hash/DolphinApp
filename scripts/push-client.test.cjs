@@ -43,3 +43,13 @@ test('legacy browser alerts stay active if Firebase Web Push configuration is in
   assert.match(client,/if \(!native && \(!cfg\.messagingSenderId \|\| !cfg\.appId \|\| !cfg\.vapidKey\)\)/);
   assert.match(client,/legacy notifications remain active/);
 });
+
+test('Firebase anonymous identity is restored before sign-in on iPhone reopen',()=>{
+  assert.match(client,/auth\.authStateReady\(\)/);
+  assert.match(client,/if\(!auth\.currentUser\)await authSdk\.signInAnonymously/);
+});
+
+test('Manager can inspect push delivery health without reading sensitive tokens',()=>{
+  assert.match(client,/pushGetDeliveryHealth/);
+  assert.match(client,/Manager: Kiểm tra Push/);
+});

@@ -46,8 +46,12 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
 exports.staffUpdateMyProfile=onCall(opts,async req=>{
  const uid=uidOf(req),data=validate(req.data);await throttle(uid);
  const profile=await ownProfile(uid);
- const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>v?.active?{...v,...data,updatedAt:Date.now(),updatedBy:uid}:undefined);
- if(!result.committed)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
+ const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
+  // RTDB may begin with an empty local cache even for an existing profile.
+  if(v===null)return null;
+  return v.active?{...v,...data,updatedAt:Date.now(),updatedBy:uid}:undefined;
+ });
+ if(!result.committed||!result.snapshot.val()?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
  return response(result.snapshot.val());
 });
 exports.staffIssueOwnLinkCode=onCall(opts,async req=>{

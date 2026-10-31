@@ -8,7 +8,7 @@ const source=fs.readFileSync(__dirname+'/index.js','utf8');
 function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
  const state=new Map();
  const ref=p=>({child:k=>ref(p+'/'+k),once:async()=>({val:()=>state.get(p)??null}),set:async v=>{state.set(p,v);},transaction:async fn=>{
-  const cached=cold&&p.startsWith('staffEnrollmentCodes/')?null:state.get(p)??null;
+  const cached=cold&&(p.startsWith('staffEnrollmentCodes/')||p.startsWith('staffRegistry/'))?null:state.get(p)??null;
   let v=fn(cached);
   if(v===undefined)return {committed:false};
   if(JSON.stringify(cached)!==JSON.stringify(state.get(p)??null))v=fn(state.get(p)??null);
@@ -164,6 +164,14 @@ test('an employee can link a second device without a manager; both see the lates
  assert.equal((await api.staffGetIdentity(req('second'))).name,'Updated');
  assert.equal((await api.staffGetIdentity(req('second'))).avatar,'🐠');
  await rejects(()=>api.staffClaimLinkCode(req('third',{code:code.code})),'failed-precondition');
+});
+
+test('profile edits retry an empty RTDB cache instead of falsely reporting an inactive employee',async()=>{
+ const {api,state}=harness('manager',{cold:true});
+ await api.staffRegisterSelfProfile(req('cold-editor',{name:'Original'}));state.delete('staffProfileRate/cold-editor');
+ const result=await api.staffUpdateMyProfile(req('cold-editor',{name:'Updated',avatar:'🐯',department:'Show'}));
+ assert.equal(result.name,'Updated');assert.equal(result.avatar,'🐯');
+ assert.equal((await api.staffGetIdentity(req('cold-editor'))).name,'Updated');
 });
 
 test('linked devices cannot switch identity and concurrent claims cannot overwrite a device identity',async()=>{

@@ -1,0 +1,21 @@
+name: Dolphin Show package regression
+on:
+  pull_request:
+    paths:
+      - 'dolphin-show.html'
+      - 'scripts/show-package.test.cjs'
+      - '.github/workflows/show-package-tests.yml'
+  push:
+    paths:
+      - 'dolphin-show.html'
+      - 'scripts/show-package.test.cjs'
+jobs:
+  show-package:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate Daily Show and Show Ca Sĩ combo entitlements
+        run: node --test scripts/show-package.test.cjs

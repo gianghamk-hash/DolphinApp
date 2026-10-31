@@ -12,6 +12,7 @@ on:
       - 'index.html'
       - 'manager/dashboard.html'
       - 'scripts/push-worker.test.cjs'
+      - 'scripts/push-client.test.cjs'
       - '.github/workflows/build.yml'
       - '.github/workflows/manager-push-checks.yml'
   workflow_dispatch:
@@ -36,4 +37,4 @@ jobs:
       - name: Test Cloud Functions and Service Worker
         run: |
           npm --prefix functions test
-          node --test scripts/push-worker.test.cjs
+          node --test scripts/push-worker.test.cjs scripts/push-client.test.cjs

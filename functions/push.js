@@ -26,7 +26,7 @@ const FEEDS = [
 const digest = value => crypto.createHash('sha256').update(value).digest('hex');
 const enabled = () => process.env.PUSH_ENABLED === 'true';
 const callableOpts = {region:REGION,maxInstances:5};
-const triggerOpts = (collection) => ({region:REGION,maxInstances:5,document:collection+'/{id}'});
+const triggerOpts = (collection) => ({region:REGION,maxInstances:5,timeoutSeconds:300,document:collection+'/{id}'});
 function managerIds() {
   return new Set(String(process.env.PUSH_MANAGER_UIDS || process.env.STAFF_ADMIN_UIDS || '')
     .split(',').map(s=>s.trim()).filter(Boolean));

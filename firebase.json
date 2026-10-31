@@ -1,0 +1,8 @@
+{
+  "functions": {
+    "source": "functions",
+    "runtime": "nodejs22",
+    "predeploy": ["npm --prefix \"$RESOURCE_DIR\" run test:staff"],
+    "ignore": ["node_modules", ".git", "firebase-debug.log", "firebase-debug.*.log", "*.local", "**/*.test.js", "tactics/README.md", "tactics/ranking-security.md"]
+  }
+}

@@ -1,0 +1,26 @@
+name: Firebase Staff Checks
+on:
+  pull_request:
+    paths: ['functions/**', 'firebase.json', '.github/workflows/firebase-staff-checks.yml']
+  push:
+    branches: [main]
+    paths: ['functions/**', 'firebase.json', '.github/workflows/firebase-staff-checks.yml']
+permissions:
+  contents: read
+jobs:
+  staff:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: npm
+          cache-dependency-path: functions/package-lock.json
+      - run: npm ci
+        working-directory: functions
+      - run: npm run test:staff
+        working-directory: functions
+      - run: npm audit --omit=dev --audit-level=moderate
+        working-directory: functions

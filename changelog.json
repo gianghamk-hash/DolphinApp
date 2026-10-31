@@ -1,18 +1,18 @@
 {
-  "version": "1.1.17",
-  "previousVersion": "1.1.16",
-  "commit": "1a2bd1c",
-  "previousCommit": "63992ed",
-  "buildDate": "2026-10-31T14:55:38.707Z",
-  "summary": "Add self-service employee profiles, avatars and device linking (#174)",
+  "version": "1.1.18",
+  "previousVersion": "1.1.17",
+  "commit": "4c0c9f5",
+  "previousCommit": "1a2bd1c",
+  "buildDate": "2026-10-31T15:31:23.117Z",
+  "summary": "Synchronize staff avatars across all apps and expose device linking (#175)",
   "changes": {
-    "totalCommits": 241,
-    "filesChanged": 15,
+    "totalCommits": 242,
+    "filesChanged": 23,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Add self-service employee profiles, avatars and device linking (#174)"
+    "Synchronize staff avatars across all apps and expose device linking (#175)"
   ],
   "fileChanges": [
     {
@@ -24,7 +24,23 @@
       "type": "update"
     },
     {
-      "file": ".github/workflows/tactics-engine-tests.yml",
+      "file": "avatar-system.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-avatars.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-avatars.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-lounge.html",
       "type": "update"
     },
     {
@@ -32,11 +48,15 @@
       "type": "update"
     },
     {
-      "file": "functions/index.js",
+      "file": "dolphin-restaurant.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-avatar-catalog.json",
+      "file": "dolphin-show.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
       "type": "update"
     },
     {
@@ -48,7 +68,27 @@
       "type": "update"
     },
     {
+      "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/match-results.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
+      "type": "update"
+    },
+    {
       "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/avatar-sync-browser.cjs",
       "type": "update"
     },
     {
@@ -65,14 +105,6 @@
     },
     {
       "file": "staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-sync.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-sync.test.js",
       "type": "update"
     }
   ]

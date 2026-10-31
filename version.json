@@ -1,7 +1,7 @@
 {
-  "version": "1.1.17",
-  "buildDate": "2026-10-31T14:55:38.707Z",
-  "commit": "1a2bd1c",
-  "notes": "Add self-service employee profiles, avatars and device linking (#174)",
+  "version": "1.1.18",
+  "buildDate": "2026-10-31T15:31:23.117Z",
+  "commit": "4c0c9f5",
+  "notes": "Synchronize staff avatars across all apps and expose device linking (#175)",
   "forceUpdate": false
 }

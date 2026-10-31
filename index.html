@@ -589,36 +589,40 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
 }
 #reminderAlarm .ralarm-ok:active{transform:scale(.96)}
 
-/* ═══ NOTIF PERMISSION BTN ═══ */
-#notifPermBtn{
-  position:fixed;
-  top:14px;left:14px;
-  z-index:9997;
-  width:44px;height:44px;border-radius:50%;
-  background:rgba(18,54,52,.92);
-  border:2px solid rgba(244,184,66,.7);
-  color:#FBD77A;font-size:18px;
-  display:flex;align-items:center;justify-content:center;
-  cursor:pointer;font-family:inherit;
-  backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);
-  box-shadow:0 6px 20px rgba(0,0,0,.5);
-  transition:transform .15s,background .2s,box-shadow .2s;
-  padding:0;
-  -webkit-tap-highlight-color:transparent;
+/* Push settings lives in normal document flow; modal is inserted into
+   the browser top layer ONLY after a deliberate user click. */
+.notification-settings-entry{text-align:center;padding:clamp(14px,3vw,24px) 0 8px}
+.notification-settings-entry button{
+  display:inline-flex;align-items:center;gap:8px;justify-content:center;
+  background:rgba(18,54,52,.72);border:1px solid rgba(251,215,122,.55);
+  border-radius:12px;padding:11px 18px;color:#FBD77A;
+  font:700 13px system-ui,sans-serif;cursor:pointer
 }
-#notifPermBtn[hidden]{display:none!important}
-#notifPermBtn:active{transform:scale(.92)}
-#notifPermBtn.granted{
-  background:linear-gradient(135deg,rgba(16,185,129,.9),rgba(5,150,105,.9));
-  color:#fff;
-  border-color:rgba(16,185,129,.9);
-  box-shadow:0 0 20px rgba(16,185,129,.7);
+.notification-settings-entry button:focus-visible,#notification-settings-dialog button:focus-visible{
+  outline:3px solid #FBD77A;outline-offset:3px
 }
-#notifPermBtn.denied{
-  background:rgba(239,83,80,.9);
-  color:#fff;
-  border-color:rgba(239,83,80,.9);
+#notification-settings-dialog{
+  box-sizing:border-box;
+  border:1px solid rgba(251,215,122,.65);border-radius:18px;
+  background:linear-gradient(150deg,#103c37,#091f20);
+  color:#fff;width:min(92vw,440px);max-height:min(85vh,85dvh);
+  padding:0;overflow:auto;margin:auto;
+  box-shadow:0 18px 55px rgba(0,0,0,.65);
+  font-family:system-ui,sans-serif
 }
+#notification-settings-dialog:not([open]){display:none!important;pointer-events:none!important}
+#notification-settings-dialog::backdrop{background:rgba(0,0,0,.70)}
+.notification-settings-head{
+  display:flex;justify-content:space-between;align-items:center;
+  padding:14px 16px;border-bottom:1px solid rgba(251,215,122,.2);
+  font-size:15px;font-weight:800
+}
+.notification-settings-head button{
+  border:1px solid rgba(251,215,122,.45);border-radius:9px;
+  background:rgba(255,255,255,.06);color:#fff;padding:7px 11px;cursor:pointer
+}
+#notification-settings-body{padding:16px;box-sizing:border-box}
+#notification-settings-body [hidden]{display:none!important}
 </style>
 <script src="staff-sync.js" defer></script>
 <script src="theme-system.js?v=1.1" defer></script>
@@ -679,8 +683,7 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
   </div>
 </div>
 
-  <!-- ═══════ NÚT BẬT THÔNG BÁO ═══════ -->
-<button type="button" id="notifPermBtn" onclick="toggleNotifPerm()" title="Bật thông báo">🔕</button>
+  <!-- Push has NO floating permission button; settings are opened in normal flow. -->
 
 <!-- ═══════ POPUP BÁO THỨC ĐỎ ═══════ -->
 <div id="reminderAlarm">
@@ -793,9 +796,23 @@ body{background:#123634;color:#fff;font-family:'Nunito',sans-serif}
           <p class="area-title-vi">TỔNG QUAN 4 KHU VỰC</p>
         </button>
       </div>
+      <div class="notification-settings-entry fade-up">
+        <button type="button" id="open-notification-settings" onclick="openNotificationSettings()" aria-haspopup="dialog">
+          ⚙️ Cài đặt thông báo
+        </button>
+      </div>
     </div>
   </div>
 </div>
+
+<!-- Only shown by showModal() after user taps the in-flow settings link. -->
+<dialog id="notification-settings-dialog" aria-labelledby="notification-settings-heading">
+  <div class="notification-settings-head">
+    <span id="notification-settings-heading">🔔 Cài đặt thông báo</span>
+    <button type="button" onclick="closeNotificationSettings()" aria-label="Đóng cài đặt thông báo">✕ Đóng</button>
+  </div>
+  <div id="notification-settings-body"></div>
+</dialog>
 
 <!-- ═══════ NÚT NHẠC FLOATING (kéo thả tự do) ═══════ -->
 <button type="button" id="dolphinMusicBtn" title="Nhạc nền">🔇</button>
@@ -1771,7 +1788,7 @@ window.toggleNotifPerm = async function(){
 };
 
 function updateNotifBtn(){
-  const btn = document.getElementById('notifPermBtn');
+  const btn = document.getElementById('legacyNotifBtn');
   if (!btn) return;
   if (!('Notification' in window)){
     btn.textContent = '🚫';
@@ -1779,17 +1796,17 @@ function updateNotifBtn(){
     return;
   }
   const p = Notification.permission;
-  btn.hidden = (p === 'granted');
+  btn.hidden = false;
   if (p === 'granted'){
-    btn.textContent = '🔔';
+    btn.textContent = '🔔 Đã cấp quyền thông báo';
     btn.classList.add('granted');
     btn.classList.remove('denied');
   } else if (p === 'denied'){
-    btn.textContent = '🔕';
+    btn.textContent = '🚫 Thông báo bị chặn';
     btn.classList.add('denied');
     btn.classList.remove('granted');
   } else {
-    btn.textContent = '🔕';
+    btn.textContent = '🔔 Bật thông báo trong lúc ứng dụng đang chạy';
     btn.classList.remove('granted','denied');
   }
 }
@@ -1935,8 +1952,52 @@ else initNotifUI();
 
 console.log('%c🔔 LANDING REMINDER WATCHER LOADED', 'background:#FBD77A;color:#123634;font-size:12px;padding:3px 8px;border-radius:4px;font-weight:900');
 </script>
+<script>
+(function(){
+  'use strict';
+  function dialog(){return document.getElementById('notification-settings-dialog');}
+  function push(){return window.DolphinPush;}
+  window.closeNotificationSettings=function(){
+    const d=dialog();if(d&&d.open)d.close();
+  };
+  window.openNotificationSettings=function(){
+    const d=dialog(),container=document.getElementById('notification-settings-body');
+    if(!d||!container||d.open)return;
+    if(push()&&typeof push().mountSettings==='function'){
+      push().mountSettings(container);
+    }else{
+      // Web FCM may not yet be configured. Legacy in-page alerts still work.
+      container.replaceChildren();
+      const desc=document.createElement('p');
+      desc.textContent='Firebase Push chưa được kích hoạt trên website. Bạn có thể cho phép thông báo khi ứng dụng đang mở; nhận Push khi khóa iPhone cần cấu hình Firebase Web Push và cài PWA trên Màn hình chính.';
+      desc.style.cssText='font:500 13px/1.6 system-ui,sans-serif;color:#c5e7dc;margin:0 0 12px';
+      const btn=document.createElement('button');btn.type='button';btn.id='legacyNotifBtn';
+      btn.textContent='🔔 Bật thông báo khi ứng dụng đang mở';
+      btn.style.cssText='width:100%;padding:11px;border-radius:9px;background:#123634;color:#FBD77A;border:1px solid #FBD77A;cursor:pointer;font-weight:700';
+      btn.addEventListener('click',()=>window.toggleNotifPerm&&window.toggleNotifPerm());
+      container.append(desc,btn);
+      if(typeof window.updateNotifBtn==='function')window.updateNotifBtn();
+    }
+    // An actual dialog is removed from the top layer on close or Escape.
+    d.showModal();
+  };
+  function init(){
+    const d=dialog();if(!d)return;
+    d.addEventListener('close',()=>{
+      if(push()&&typeof push().unmountSettings==='function')push().unmountSettings();
+      const body=document.getElementById('notification-settings-body');
+      if(body)body.replaceChildren();
+    });
+    // Returning from the background must never restore an obstructing dialog.
+    addEventListener('pagehide',()=>{if(d.open)d.close();});
+    addEventListener('pageshow',e=>{if(e.persisted&&d.open)d.close();});
+  }
+  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
+  else init();
+})();
+</script>
 <script src="./push-config.js"></script>
-<script src="./dolphin-push.js?rev=hide-enabled-20261031" defer></script>
+<script src="./dolphin-push.js" defer></script>
 <script>
 // Open the relevant outlet when a Manager/PWA/Web push is tapped.
 window.addEventListener("load",function(){

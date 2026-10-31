@@ -6,7 +6,7 @@ const vm=require('node:vm');
 const fs=require('node:fs');
 const path=require('node:path');
 
-function fixture({transientFailures=0}={}){
+function fixture({transientFailures=0,enabled=true}={}){
   const maps=new Map(),sent=[];
   let failCalls=transientFailures;
   const map=name=>{if(!maps.has(name))maps.set(name,new Map());return maps.get(name);};
@@ -71,7 +71,7 @@ function fixture({transientFailures=0}={}){
     'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn},
     'firebase-functions/v2/scheduler':{onSchedule:(opts,fn)=>fn}
   };
-  const env={PUSH_ENABLED:'true',PUSH_MANAGER_UIDS:'manager-uid'};
+  const env={PUSH_ENABLED:enabled?'true':'false',PUSH_MANAGER_UIDS:'manager-uid'};
   const context={
     require:name=>{if(!modules[name])throw Error('Unmocked module '+name);return modules[name];},
     exports:{},process:{env},URLSearchParams,console,Date
@@ -85,19 +85,12 @@ const event=(id,timestamp)=>({params:{id},data:{
   after:{exists:true,data:()=>({status:'pending',timestamp,table:id})}
 }});
 
-test('both linked and unlinked Staff ID employees receive identical all-outlet push after device code',async()=>{
+test('public opt-in registers linked/unlinked staff and Manager without a device code',async()=>{
   const f=fixture(),h=f.handlers;
-  const issued=await h.pushIssueDeviceCodes(request('manager-uid',{count:2}));
-  assert.equal(issued.codes.length,2);
-  assert.match(issued.codes[0],/^[0-9A-F]{32}$/);
-  await assert.rejects(h.pushRegisterDevice(request('employee-a',{
-    token:'A-12345678901234567890',platform:'web'
-  })),err=>err.code==='permission-denied');
-  await h.pushClaimDeviceCode(request('employee-a',{code:issued.codes[0]}));
-  await h.pushClaimDeviceCode(request('employee-b',{code:issued.codes[1]}));
-  await h.pushRegisterDevice(request('employee-a',{token:'A-12345678901234567890',platform:'web'}));
-  await h.pushRegisterDevice(request('employee-b',{token:'B-12345678901234567890',platform:'web'}));
-  await h.pushRegisterDevice(request('manager-uid',{token:'M-12345678901234567890',platform:'manager-android'}));
+  assert.equal((await h.pushGetMyAccess(request('employee-a',{}))).authorized,true);
+  await h.pushRegisterDevice(request('employee-a',{token:'A-12345678901234567890',platform:'web',consent:true}));
+  await h.pushRegisterDevice(request('employee-b',{token:'B-12345678901234567890',platform:'web',consent:true}));
+  await h.pushRegisterDevice(request('manager-uid',{token:'M-12345678901234567890',platform:'manager-android',consent:true}));
   await h.push_bun_orders(event('BGL201',100));
   await h.push_lounge_calls(event('LNG01',200));
   assert.equal(f.sent.length,2);
@@ -109,7 +102,8 @@ test('both linked and unlinked Staff ID employees receive identical all-outlet p
   }
   assert.equal(f.sent[0].data.outlet,'bungalow');
   assert.equal(f.sent[1].data.outlet,'lounge');
-  assert.equal(f.map('dolphin_push_enrollments').size,2);
+  assert.equal(f.map('dolphin_push_enrollments').size,3);
+  assert.equal(f.map('dolphin_push_invites').size,0);
   assert.equal(f.map('staffIdentity').size,0); // Staff ID is not accessed at all
 });
 
@@ -118,7 +112,7 @@ test('one-time code cannot be reused to reactivate a revoked device',async()=>{
   const issued=await h.pushIssueDeviceCodes(request('manager-uid',{count:1}));
   const code=issued.codes[0];
   await h.pushClaimDeviceCode(request('worker-id',{code}));
-  await h.pushRegisterDevice(request('worker-id',{token:'W-12345678901234567890',platform:'web'}));
+  await h.pushRegisterDevice(request('worker-id',{token:'W-12345678901234567890',platform:'web',consent:true}));
   const result=await h.pushRevokeDeviceAccess(request('manager-uid',{uid:'worker-id'}));
   assert.equal(result.devicesDisabled,1);
   await assert.rejects(h.pushClaimDeviceCode(request('worker-id',{code})),
@@ -191,11 +185,45 @@ test('Manager-only delivery health reports active devices and FCM acceptance',as
 
 test('FCM device tokens with iOS opaque base64 characters are accepted',async()=>{
   const f=fixture(),h=f.handlers;
-  const {codes}=await h.pushIssueDeviceCodes(request('manager-uid',{count:1}));
-  await h.pushClaimDeviceCode(request('worker-id',{code:codes[0]}));
   const result=await h.pushRegisterDevice(request('worker-id',{
-    token:'token+/abc/def=1234567890',platform:'web'
+    token:'token+/abc/def=1234567890',platform:'web',consent:true
   }));
   assert.equal(result.registered,true);
   assert.equal(f.map('dolphin_push_devices').size,1);
+});
+
+test('opt-in requires Auth and consent, but cannot grant Manager rights through platform or role',async()=>{
+  const f=fixture(),h=f.handlers;
+  const data={token:'public-device-token-1234567890',platform:'manager-android',role:'manager',consent:true};
+  await assert.rejects(h.pushRegisterDevice({data}),e=>e.code==='unauthenticated');
+  await assert.rejects(h.pushRegisterDevice(request('public-user',{...data,consent:false})),e=>e.code==='invalid-argument');
+  const registered=await h.pushRegisterDevice(request('public-user',data));
+  assert.equal(registered.role,'staff');
+  await assert.rejects(h.pushIssueDeviceCodes(request('public-user',{})),e=>e.code==='permission-denied');
+  await assert.rejects(h.pushGetDeliveryHealth(request('public-user',{})),e=>e.code==='permission-denied');
+});
+
+test('Staff APK opt-in and unsubscribe work; admin-revoked users cannot opt themselves back in',async()=>{
+  const f=fixture(),h=f.handlers;
+  const data={token:'staff-apk-device-token-1234567890',platform:'staff-android',consent:true};
+  await h.pushRegisterDevice(request('staff-user',data));
+  await h.push_bun_orders(event('test-order',400));
+  assert.equal(f.sent.length,1);
+  await h.pushUnregisterDevice(request('staff-user',data));
+  assert.equal(f.map('dolphin_push_devices').size,0);
+  await h.pushRegisterDevice(request('staff-user',data));
+  await h.pushRevokeDeviceAccess(request('manager-uid',{uid:'staff-user'}));
+  await assert.rejects(h.pushRegisterDevice(request('staff-user',data)),e=>e.code==='permission-denied');
+  assert.equal((await h.pushGetMyAccess(request('staff-user',{}))).authorized,false);
+});
+
+test('device setup is independent of the sending switch',async()=>{
+  const f=fixture({enabled:false}),h=f.handlers;
+  const result=await h.pushRegisterDevice(request('new-public-user',{
+    token:'new-public-device-token-123456789',platform:'web',consent:true
+  }));
+  assert.equal(result.registered,true);
+  await h.push_bun_orders(event('synthetic-order',100));
+  assert.equal(f.sent.length,0);
+  assert.equal(f.map('dolphin_push_dispatches').size,0);
 });

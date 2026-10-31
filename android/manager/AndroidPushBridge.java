@@ -14,7 +14,7 @@ import androidx.appcompat.app.AppCompatActivity;
 
 import com.google.firebase.messaging.FirebaseMessaging;
 
-/** Only injected into the Manager variant and only callable from trusted Dolphin pages. */
+/** Shared Staff/Manager notification bridge, callable only from trusted Dolphin pages. */
 public final class AndroidPushBridge {
     private final AppCompatActivity activity;
     private final WebView webView;

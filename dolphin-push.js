@@ -1,9 +1,9 @@
-/* Dolphin background push — same alerts for ALL enrolled team devices.
+/* Dolphin background push — same alerts for ALL opted-in devices.
    Neither Staff ID nor Staff online status is consulted for Push authorization.
-   A Manager-issued one-time device code keeps customers from subscribing. */
+   The user explicitly allows public opt-in through the notification button. */
 (function(root){
   'use strict';
-  if (!root.document || root.top !== root || /DolphinStaff/.test(navigator.userAgent)) return;
+  if (!root.document || root.top !== root) return;
   const cfg = root.DOLPHIN_PUSH_CONFIG || {};
   const native = !!(root.AndroidPush && typeof root.AndroidPush.requestToken === 'function');
   // Preserve the existing in-page Dolphin alerts until real Web Push settings
@@ -20,7 +20,7 @@
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const optInKey = 'dolphinPushEnabled';
   let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
-  let button, message, enrollPanel, inviteInput, inviteButton, issueButton, issuedCode, copyButton, issueCountInput, healthButton;
+  let button, message, healthButton;
   const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
   function setStatus(label,detail){
     if(button)button.textContent=label;
@@ -67,9 +67,6 @@
     return response.data;
   }
   function accessUI(){
-    if(enrollPanel){enrollPanel.hidden=Boolean(access?.authorized);enrollPanel.style.display=access?.authorized?'none':'flex';}
-    if(issueButton)issueButton.hidden=access?.role!=='manager';
-    if(issueCountInput)issueCountInput.hidden=access?.role!=='manager';
     if(healthButton)healthButton.hidden=access?.role!=='manager';
   }
   async function loadAccess(){
@@ -77,43 +74,7 @@
     access=data||null;
     if(data?.uid)currentUid=data.uid;
     accessUI();
-    if(access?.authorized){
-      if(!lastToken)setStatus('🔔 Bật thông báo',
-        'Thiết bị đã được cấp quyền Push. Nhận tất cả order và yêu cầu phục vụ, không phân biệt Staff ID.');
-    }else{
-      setStatus('🔑 Kích hoạt Push cho thiết bị',
-        'Không cần Staff ID. Nhập mã Push sử dụng một lần do Manager cấp để ngăn khách đăng ký nhận thông tin nội bộ.');
-    }
     return access;
-  }
-  async function claimCode(){
-    if(busy)return;
-    const code=String(inviteInput?.value||'').trim().toUpperCase().replace(/[\s-]/g,'');
-    if(!/^[0-9A-F]{32}$/.test(code)){
-      setStatus('🔑 Mã chưa hợp lệ','Nhập mã Push gồm 32 ký tự do Manager cấp; đây KHÔNG phải Staff ID.');
-      return;
-    }
-    busy=true; if(inviteButton)inviteButton.disabled=true;
-    try{
-      await callable('pushClaimDeviceCode',{code});
-      inviteInput.value='';
-      await loadAccess();
-      setStatus('🔔 Bật thông báo','Đã kích hoạt thiết bị. Nhấn Bật thông báo để cho phép iPhone/Safari nhận Push.');
-    }catch(e){showError(e);}
-    finally{busy=false;if(inviteButton)inviteButton.disabled=false;}
-  }
-  async function issueCode(){
-    if(busy)return;
-    busy=true;if(issueButton)issueButton.disabled=true;
-    try{
-      const count=Math.max(1,Math.min(20,Number(issueCountInput?.value)||1));
-      const response=await callable('pushIssueDeviceCodes',{count});
-      const codes=response?.codes||[];
-      if(issuedCode)issuedCode.textContent=codes.join('\n');
-      if(copyButton)copyButton.hidden=!codes.length;
-      setStatus('🔔 Quản lý Push',codes.length+' mã một lần, hiệu lực 24 giờ. Gửi riêng một mã cho từng thiết bị nhân viên.');
-    }catch(e){showError(e);}
-    finally{busy=false;if(issueButton)issueButton.disabled=false;}
   }
   async function checkDeliveryHealth(){
     if(!access || access.role!=='manager')return;
@@ -131,7 +92,7 @@
   }
   async function registerToken(token,platform){
     if(!token||token.length<20)throw new Error('FCM token chưa sẵn sàng.');
-    const data=await callable('pushRegisterDevice',{token,platform});
+    const data=await callable('pushRegisterDevice',{token,platform,consent:true});
     lastToken=token;
     try{localStorage.setItem(optInKey,'1');}catch(e){}
     setStatus('🔔 Push đang bật · nhấn để tắt',
@@ -152,29 +113,21 @@
   }
   function showError(error){
     console.warn('[DolphinPush]',error);
-    const code=String(error?.code||'');
     const detail=String(error?.message||error||'');
-    const authErr=code.includes('permission-denied')||code.includes('failed-precondition');
-    setStatus(authErr?'🔒 Chưa được cấp Push':'🔕 Push chưa hoạt động',
-      detail.slice(0,220)+(authErr&&currentUid?' · UID thiết bị: '+currentUid:''));
+    setStatus('🔕 Chưa bật được thông báo',detail.slice(0,220));
   }
   // IMPORTANT: iOS Notification.requestPermission MUST happen synchronously in the
   // original tap handler. Do not await Firebase/Auth or network first.
   async function enable(){
     if(busy)return;
     if(ios&&!standalone()&&!native){setupGuide();return;}
-    if(!access?.authorized){
-      if(!access)loadAccess().catch(showError);
-      if(enrollPanel){enrollPanel.hidden=false;enrollPanel.style.display='flex';}
-      setStatus('🔑 Nhập mã Push trước','Manager có thể tạo mã Push độc lập Staff ID ngay trong ứng dụng Dolphin.');
-      return;
-    }
     busy=true;
     try{
       if(native){root.AndroidPush.requestToken();return;}
       if(!('Notification' in root))throw new Error('iPhone cần iOS 16.4+ và cài Dolphin trên Màn hình chính.');
       const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
       if(permission!=='granted')throw new Error('Chưa cấp quyền thông báo. Vào Cài đặt iPhone → Thông báo → Dolphin.');
+      try{localStorage.setItem(optInKey,'1');}catch(e){}
       const token=await webToken();
       await registerToken(token,'web');
     }catch(e){showError(e);}
@@ -183,7 +136,6 @@
   async function resume(){
     if(!optedIn())return;
     if(ios&&!standalone()&&!native){setupGuide();return;}
-    if(!access?.authorized)return;
     if(native){root.AndroidPush.readToken();return;}
     if('Notification' in root && Notification.permission==='granted'){
       try{const token=await webToken();await registerToken(token,'web');}
@@ -192,7 +144,8 @@
   }
   async function receiveNativeToken(token){
     busy=false;
-    try{await registerToken(String(token||''),'manager-android');}
+    if(token && String(token).length>=20){try{localStorage.setItem(optInKey,'1');}catch(e){}}
+    try{await registerToken(String(token||''),/DolphinStaff/.test(navigator.userAgent)?'staff-android':'manager-android');}
     catch(e){showError(e);}
   }
   async function disable(){
@@ -215,38 +168,21 @@
     button.addEventListener('click',()=>lastToken?disable():enable());
     message=document.createElement('div');message.hidden=true;
     message.style.cssText='background:#123634;color:#fff;border:1px solid #507c70;border-radius:10px;padding:10px;max-width:330px;overflow-wrap:anywhere;font:500 12px/1.5 system-ui,sans-serif;box-shadow:0 4px 18px #0008';
-    enrollPanel=document.createElement('div');enrollPanel.hidden=true;
-    enrollPanel.style.cssText='background:#123634;color:#fff;padding:10px;border:1px solid #507c70;border-radius:10px;display:none;gap:6px;flex-wrap:wrap;max-width:330px';
-    inviteInput=document.createElement('input');
-    inviteInput.placeholder='Mã Push 32 ký tự (không phải Staff ID)';
-    inviteInput.setAttribute('aria-label','Mã kích hoạt Push do Manager cấp');
-    inviteInput.autocapitalize='characters';inviteInput.autocomplete='off';
-    inviteInput.style.cssText='width:100%;box-sizing:border-box;padding:8px;color:#123634;background:white;border:0;border-radius:6px;font-size:12px';
-    inviteButton=document.createElement('button');inviteButton.type='button';inviteButton.textContent='Xác nhận mã Push';
-    inviteButton.style.cssText='background:#FBD77A;color:#123634;border:0;border-radius:6px;padding:8px 10px;font-weight:bold';
-    inviteButton.addEventListener('click',claimCode);
-    enrollPanel.append(inviteInput,inviteButton);
-    issueButton=document.createElement('button');issueButton.type='button';issueButton.hidden=true;
-    issueButton.textContent='🔑 Manager: Cấp mã Push cho nhân viên';
-    issueButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
-    issueButton.addEventListener('click',issueCode);
     healthButton=document.createElement('button');healthButton.type='button';healthButton.hidden=true;
     healthButton.textContent='📡 Manager: Kiểm tra Push';
     healthButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
     healthButton.addEventListener('click',checkDeliveryHealth);
-    issueCountInput=document.createElement('input');issueCountInput.type='number';issueCountInput.min='1';issueCountInput.max='20';issueCountInput.value='1';issueCountInput.hidden=true;
-    issueCountInput.title='Số mã Push cấp cho nhân viên (1-20)';issueCountInput.setAttribute('aria-label','Số mã Push cần cấp');
-    issueCountInput.style.cssText='width:72px;padding:5px;border-radius:6px;color:#123634';
-    issuedCode=document.createElement('code');issuedCode.style.cssText='background:#123634;color:#FBD77A;overflow-wrap:anywhere;white-space:pre-wrap;max-width:320px;font-size:12px';
-    copyButton=document.createElement('button');copyButton.type='button';copyButton.hidden=true;
-    copyButton.textContent='Sao chép mã';copyButton.style.cssText='padding:5px 9px;border-radius:6px';
-    copyButton.addEventListener('click',async()=>{try{await navigator.clipboard.writeText(issuedCode.textContent);setStatus('Đã sao chép mã Push','Mỗi mã chỉ dùng một lần trên một thiết bị.');}catch(e){showError(e);}});
-    panel.append(button,message,enrollPanel,issueCountInput,issueButton,healthButton,issuedCode,copyButton);
+    panel.append(button,message,healthButton);
     document.body.appendChild(panel);
   }
   root.DolphinPush={enable,disable,resume,receiveNativeToken,
     get active(){return !!lastToken;},get uid(){return currentUid;},
     get isIOS(){return ios;},get isInstalled(){return standalone();}};
+  // Retry an opted-in setup after connectivity returns or the app reopens.
+  if(root.addEventListener)root.addEventListener('online',()=>resume().catch(showError));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')resume().catch(showError);
+  });
   async function start(){
     makeControl();
     if(ios&&!standalone()&&!native){setupGuide();return;}

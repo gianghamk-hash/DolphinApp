@@ -39,7 +39,7 @@ public class DolphinMessagingService extends FirebaseMessagingService {
         if (mgr == null) return;
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             NotificationChannel channel = new NotificationChannel(CHANNEL,
-                    "Dolphin Manager · Order và yêu cầu", NotificationManager.IMPORTANCE_HIGH);
+                    "Dolphin · Order và yêu cầu", NotificationManager.IMPORTANCE_HIGH);
             channel.setDescription("Order mới và yêu cầu phục vụ từ các outlet.");
             mgr.createNotificationChannel(channel);
         }
@@ -51,7 +51,7 @@ public class DolphinMessagingService extends FirebaseMessagingService {
                 PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_IMMUTABLE);
         NotificationCompat.Builder n = new NotificationCompat.Builder(this, CHANNEL)
                 .setSmallIcon(R.mipmap.ic_launcher)
-                .setContentTitle(data.get("title") == null ? "Dolphin Manager" : data.get("title"))
+                .setContentTitle(data.get("title") == null ? "Dolphin" : data.get("title"))
                 .setContentText(data.get("body") == null ? "Có yêu cầu mới." : data.get("body"))
                 .setAutoCancel(true)
                 .setPriority(NotificationCompat.PRIORITY_HIGH)

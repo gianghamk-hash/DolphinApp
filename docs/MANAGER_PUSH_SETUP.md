@@ -1,5 +1,36 @@
 # Dolphin Push — Manager APK, iPhone Safari PWA and browser Web
 
+## Current setup: public notification opt-in (2026-10-31)
+
+The user explicitly changed enrollment to **anyone opening the app may opt in**.
+This supersedes the historical code-enrollment instructions below.
+
+1. Open Dolphin; on iPhone install it to the Home Screen using Safari first.
+2. Tap **Bật thông báo**, then allow the operating-system notification prompt.
+3. Firebase anonymous authentication, token registration and enrollment run automatically.
+   No activation code, Staff ID verification or Manager UID is required to subscribe.
+4. Tap the active notification button to unsubscribe. Denying permission does not
+   create a subscription. A Manager's server-side device revocation is still respected.
+
+Both Staff and Manager Android APKs use native FCM. The registered Staff app's
+public identifiers are in `android/staff/firebase-app.json`; the build reuses the
+same verified project Android API key from the existing Manager config secret.
+The APK platform label never grants Manager privileges. Manager health/revocation
+and legacy code administration remain restricted to trusted server UID allowlists.
+Old code callables remain for cached-client compatibility but are absent from the UI.
+
+`PUSH_ENABLED` controls event sending and retries, not device enrollment. It must
+be enabled on the deployed Push functions for new order/call events to be sent.
+Private Firestore Push collections remain inaccessible to all client SDKs.
+
+Delivery uses the existing event triggers and service worker/native messaging
+service, rather than relying on an open page. iPhone requires iOS 16.4+ and a
+Home Screen web app. OS restrictions, denied permission, offline state or Android
+force-stop can prevent delivery; normal background/locked-screen operation is the
+target. Real-device presentation must be verified separately from FCM acceptance.
+
+## Historical implementation notes (superseded where enrollment differs)
+
 **State:** Implemented on a DRAFT branch. Neither Firebase production nor live iPhone notifications have been enabled or confirmed. `PUSH_ENABLED` defaults to OFF.
 
 ## Requirement (2026-10-31)

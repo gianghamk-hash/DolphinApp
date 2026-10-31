@@ -1,7 +1,7 @@
 'use strict';
-/* Dolphin FCM: identical background notifications for all approved devices.
+/* Dolphin FCM: identical background notifications for all opted-in devices.
    Push enrollment is INDEPENDENT of Staff ID, local employee names and outlet roles.
-   A one-time Manager-issued DEVICE code prevents public guest pages from subscribing. */
+   Any Firebase-authenticated app session may opt in; Manager tools remain allowlisted. */
 const crypto = require('node:crypto');
 const {getFirestore, FieldPath} = require('firebase-admin/firestore');
 const {getMessaging} = require('firebase-admin/messaging');
@@ -58,7 +58,9 @@ function cleanUid(uid) {
 async function accessForUid(uid) {
   if(isManager(uid)) return {role:'manager'};
   const snap=await getFirestore().collection(ENROLLMENTS).doc(uid).get();
-  return snap.exists && snap.data().active===true ? {role:'staff'} : null;
+  // Public opt-in is intentional: no Staff ID, activation code or approval.
+  // A server-side revocation still prevents this UID from re-enrolling itself.
+  return snap.exists && snap.data().active===false ? null : {role:'staff'};
 }
 
 // Public to a signed-in device, but only returns its OWN authorization state.
@@ -155,17 +157,22 @@ exports.pushGetDeliveryHealth=onCall(callableOpts,async request=>{
 exports.pushRegisterDevice=onCall(callableOpts,async request=>{
   const uid=requireUid(request),token=tokenOf(request.data?.token);
   const platform=request.data?.platform;
-  if(!['web','manager-android'].includes(platform))
+  if(!['web','manager-android','staff-android'].includes(platform))
     throw new HttpsError('invalid-argument','Nền tảng không hợp lệ.');
-  if(!enabled())throw new HttpsError('failed-precondition','Firebase Push chưa được bật phía máy chủ.');
-  const access=await accessForUid(uid);
-  if(!access)throw new HttpsError('permission-denied','Cần nhập mã kích hoạt Push một lần do Manager cấp. Không cần Staff ID.');
-  if(platform==='manager-android' && access.role!=='manager')
-    throw new HttpsError('permission-denied','Chỉ Manager mới được đăng ký Android Manager APK.');
-  await getFirestore().collection(DEVICES).doc(digest(token)).set({
-    uid,token,platform,role:access.role,active:true,updatedAt:Date.now()
-  },{merge:true});
-  return {registered:true,role:access.role,broadcast:'all-outlets'};
+  if(request.data?.consent!==true)
+    throw new HttpsError('invalid-argument','Cần đồng ý nhận thông báo trên thiết bị.');
+  const db=getFirestore(),enrollment=db.collection(ENROLLMENTS).doc(uid);
+  const role=isManager(uid)?'manager':'staff';
+  await db.runTransaction(async tx=>{
+    const current=await tx.get(enrollment);
+    if(current.exists && current.data().active===false && role!=='manager')
+      throw new HttpsError('permission-denied','Thiết bị đã bị quản trị viên tắt nhận thông báo.');
+    tx.set(enrollment,{active:true,deviceAuth:'notification-consent',enrolledAt:Date.now()},{merge:true});
+    tx.set(db.collection(DEVICES).doc(digest(token)),{
+      uid,token,platform,role,active:true,updatedAt:Date.now()
+    },{merge:true});
+  });
+  return {registered:true,role,broadcast:'all-outlets'};
 });
 exports.pushUnregisterDevice=onCall(callableOpts,async request=>{
   const uid=requireUid(request),token=tokenOf(request.data?.token);

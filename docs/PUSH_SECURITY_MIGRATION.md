@@ -17,9 +17,11 @@ Staff ID. The existing non-Push public access remains a security concern and
 requires a separate authorization/schema migration with application changes.
 
 Push schemas and validation are enforced in `functions/push.js`: Manager UIDs
-come from trusted server environment variables, activation codes are random and
-stored as hashes, enrollment changes use transactions, and token registration
-requires authenticated approved access. Staff ID verification is not required.
+come from trusted server environment variables. At the user's explicit request,
+subscription is public opt-in after OS notification consent: authenticated anonymous
+sessions register without a device code. Transactions preserve server revocations;
+the submitted platform or role never grants Manager privileges. Staff ID verification
+is not required. The deprecated code callables remain available to cached clients.
 
 ## Verification
 
@@ -51,9 +53,8 @@ node --test scripts/push-client.test.cjs scripts/push-worker.test.cjs scripts/or
 Deploy only Firestore rules first; retrieve the effective source and rerun the
 simulations against that source. Keep a copy of the previous release for recovery.
 Do not restore the old globally open rule while any internal Push data exists.
-Keep `PUSH_ENABLED=false` until a controlled rollout is ready. `PUSH_MANAGER_UIDS`
-is local deployment configuration, not committed source. Device registration is
-also blocked while sending is disabled in the current backend implementation.
+`PUSH_ENABLED` controls sending/retries, independently of enrollment.
+`PUSH_MANAGER_UIDS` is local deployment configuration, not committed source.
 
 Deploy only the explicitly selected Push exports. Do not blanket-deploy all
 Functions, which would update unrelated Staff ID/Tactics handlers. After deployment,

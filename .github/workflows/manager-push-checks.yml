@@ -4,6 +4,7 @@ on:
     paths:
       - 'functions/**'
       - 'android/manager/**'
+      - 'android/staff/**'
       - 'dolphin-push.js'
       - 'staff-id.js'
       - 'manifest.json'

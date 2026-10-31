@@ -84,7 +84,7 @@ test('Singer items are all included as one fixed set with quantities one',()=>{
   assert.match(html,/service\.foods=\{\.\.\.selected\.fixedFoods\}/);
 });
 test('Historical Daily combo IDs and order schema remain backward-compatible',()=>{
-  assert.match(html,/const foodsObj=b\.service\.foods\|\|\{\}/);
+  assert.match(html,/const qty=Object\.values\(b\.service\.foods\)\.map\(v=>Number\(v\)\)/);
   assert.match(html,/setInput\.value=qty\.some\(n=>n>0\)\?'1':'0'/);
   assert.match(html,/combo: currentCombo, package: comboGroup\(currentCombo\)/);
 });

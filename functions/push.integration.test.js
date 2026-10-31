@@ -37,7 +37,7 @@ function fixture({transientFailures=0}={}){
     };
   }
   const firestore={
-    collection(name){return{doc(id){return ref(name,id);},where(field,op,val){return query(name).where(field,op,val);}};},
+    collection(name){return{doc(id){return ref(name,id);},where(field,op,val){return query(name).where(field,op,val);},orderBy(...args){return query(name).orderBy(...args);}};},
     batch(){const tasks=[];return{
       create(doc,data){tasks.push(()=>doc.create(data));},
       update(doc,data){tasks.push(()=>doc.update(data));},

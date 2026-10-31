@@ -1,10 +1,14 @@
 # Staff ID — cấp mã cố định bởi quản lý
 
 ## Trạng thái triển khai
+- Đã kiểm tra ngày 31/10/2026: cả bốn callable Staff ID đang `ACTIVE` trên `dolphin-f6d67`, Node.js 22, vùng `asia-southeast1`; quyền Manager đã được cấu hình. Không cần tạo dự án Firebase mới.
+- Repo có `firebase.json`, dependency lockfile và workflow `Firebase Staff Checks` để chạy kiểm thử bảo mật, nạp SDK thật trên Node.js 22, và kiểm tra cảnh báo thư viện.
+- Cài đặt tái lập: `npm --prefix functions ci`. Kiểm thử Staff: `npm --prefix functions run test:staff`. Triển khai đúng bốn API Staff: `npm --prefix functions run deploy:staff`.
+- Giữ `functions/.env.dolphin-f6d67` riêng trên máy triển khai; `.gitignore` loại trừ các tệp `.env`. Không chạy deploy nếu chưa có allowlist Manager chính xác. Lệnh triển khai Staff không triển khai các API Tactics.
 - Frontend: `staff-id.js`, `staff-online.js`, `index.html`.
 - Firebase Cloud Functions: `staffCreateProfile`, `staffIssueLinkCode`, `staffClaimLinkCode`, `staffGetIdentity`.
 - **Các callable phải được deploy riêng lên Firebase**. Merge GitHub Pages **không tự triển khai** Cloud Functions.
-- Mặc định không có UID quản trị, do đó **không ai có quyền tạo mã** cho tới khi cấu hình `STAFF_ADMIN_UIDS` phía máy chủ. Đây là trạng thái an toàn khi chưa kích hoạt.
+- Với môi trường mới chưa cấu hình `STAFF_ADMIN_UIDS`, không ai có quyền tạo mã. Dự án hiện tại đã được cấu hình; giữ nguyên allowlist khi cập nhật.
 
 ## Kích hoạt
 1. Xác định UID Firebase Authentication của tài khoản Manager APK được ủy quyền. Tại widget **Nhân sự online > Staff ID / Cấp mã**, UID sẽ hiển thị sau khi Firebase đăng nhập.

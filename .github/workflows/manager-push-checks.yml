@@ -4,7 +4,6 @@ on:
     paths:
       - 'functions/**'
       - 'android/manager/**'
-      - 'android/staff/**'
       - 'dolphin-push.js'
       - 'staff-id.js'
       - 'manifest.json'
@@ -17,6 +16,7 @@ on:
       - 'manager/dashboard.html'
       - 'scripts/push-worker.test.cjs'
       - 'scripts/push-client.test.cjs'
+      - 'scripts/push-ui.test.cjs'
       - 'scripts/push-config-preflight.cjs'
       - '.github/workflows/build.yml'
       - '.github/workflows/manager-push-checks.yml'
@@ -53,7 +53,7 @@ jobs:
       - name: Test Cloud Functions and Service Worker
         run: |
           npm --prefix functions test
-          node --test scripts/push-worker.test.cjs scripts/push-client.test.cjs
+          node --test scripts/push-worker.test.cjs scripts/push-client.test.cjs scripts/push-ui.test.cjs
 
   release-readiness:
     runs-on: ubuntu-latest

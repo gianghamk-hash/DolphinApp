@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.12",
+      "releaseDate": "2026-10-31T03:07:40.791Z",
+      "summary": "Merge pull request #168: hide Push controls after setup",
+      "details": [
+        "Merge pull request #168: hide Push controls after setup"
+      ]
+    },
+    {
       "version": "1.1.11",
       "releaseDate": "2026-10-31T02:51:09.933Z",
       "summary": "Merge pull request #167: simplify notification opt-in for everyone",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029",
       "details": [
         "Merge pull request #124 from gianghamk-hash/fix/tft-gear-selection-round-xp-range-traits-20261029"
-      ]
-    },
-    {
-      "version": "1.0.182",
-      "releaseDate": "2026-10-29T06:22:37.704Z",
-      "summary": "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029",
-      "details": [
-        "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029"
       ]
     }
   ]

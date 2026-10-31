@@ -44,7 +44,9 @@ function requireManager(request) {
 }
 function tokenOf(value) {
   const token=typeof value==='string' ? value.trim() : '';
-  if(!/^[A-Za-z0-9_:.-]{20,4096}$/.test(token))
+  // FCM registration tokens are opaque; different platforms may use
+  // characters such as + / =. Restrict length/control characters, not alphabet.
+  if(token.length<20 || token.length>4096 || /[^\x21-\x7e]/.test(token))
     throw new HttpsError('invalid-argument','FCM token không hợp lệ.');
   return token;
 }

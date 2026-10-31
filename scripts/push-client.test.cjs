@@ -38,3 +38,8 @@ test('legacy Staff ID manager enrollment remains a separate optional workflow',(
   assert.match(originalStaff,/staffClaimLinkCode/);
   assert.match(originalStaff,/staffGetIdentity/);
 });
+
+test('legacy browser alerts stay active if Firebase Web Push configuration is incomplete',()=>{
+  assert.match(client,/if \(!native && \(!cfg\.messagingSenderId \|\| !cfg\.appId \|\| !cfg\.vapidKey\)\)/);
+  assert.match(client,/legacy notifications remain active/);
+});

@@ -1,6 +1,12 @@
 name: Build Dolphin APKs (Staff + Manager)
 
 on:
+  pull_request:
+    paths:
+      - 'android/**'
+      - 'dolphin-push.js'
+      - 'push-config.js'
+      - '.github/workflows/build.yml'
   workflow_run:
     workflows: ["Auto Bump Version"]
     types: [completed]
@@ -12,7 +18,10 @@ permissions:
 
 jobs:
   build:
-    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
+    if: >-
+      github.event_name == 'workflow_dispatch' ||
+      (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository) ||
+      github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     timeout-minutes: 45
     strategy:
@@ -33,7 +42,7 @@ jobs:
     steps:
       - uses: actions/checkout@v4
         with:
-          ref: ${{ github.event_name == 'workflow_dispatch' && github.ref_name || 'main' }}
+          ref: ${{ github.event_name == 'pull_request' && github.event.pull_request.head.sha || github.event_name == 'workflow_dispatch' && github.ref_name || 'main' }}
 
       - uses: actions/setup-java@v4
         with:

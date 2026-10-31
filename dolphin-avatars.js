@@ -60,7 +60,16 @@ async function refresh(){
  const service=root.DolphinStaffId;
  if(!service?.avatarDirectory)return;
  inflight=(async()=>{
-  try{const result=await service.avatarDirectory();resolver.replace(result.profiles);if(own)resolver.upsert(own);changed();}
+  try{
+   const result=await service.avatarDirectory();
+   const canonical=own&&(result.profiles||[]).find(p=>p.employeeId===own.employeeId);
+   if(canonical&&(canonical.profileVersion||0)>=(own.profileVersion||0)){
+    const newer=(canonical.profileVersion||0)>(own.profileVersion||0);
+    own={...own,...canonical};
+    if(newer)service.refresh();
+   }
+   resolver.replace(result.profiles);if(own)resolver.upsert(own);changed();
+  }
   catch(e){console.warn('[Avatars] Giữ avatar đã tải khi mất kết nối:',e.code||e.message);}
   finally{inflight=null;}
  })();return inflight;

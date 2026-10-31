@@ -27,7 +27,7 @@ async function ownProfile(uid){
  return profile;
 }
 function response(profile){return {linked:true,verified:profile.registrationSource!=='self',employeeId:profile.employeeId,name:profile.name,
- avatar:profile.avatar||'🐬',department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
+ avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
 exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  const uid=uidOf(req),data=validate(req.data);await throttle(uid);
  const db=getDatabase(),current=(await db.ref('staffIdentity/'+uid).once('value')).val();
@@ -35,7 +35,7 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  // Stable per Firebase UID: retries/concurrent registrations cannot mint extra IDs.
  const employeeId='DOL-'+crypto.createHash('sha256').update(uid).digest('hex').slice(0,10).toUpperCase();
  const ref=db.ref('staffRegistry/'+employeeId);
- const result=await ref.transaction(v=>v?(v.ownerUid===uid?v:undefined):{employeeId,...data,active:true,registrationSource:'self',ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()});
+ const result=await ref.transaction(v=>v?(v.ownerUid===uid?v:undefined):{employeeId,...data,active:true,profileVersion:1,registrationSource:'self',ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()});
  if(!result.committed)throw new HttpsError('already-exists','Không cấp được ID. Vui lòng liên hệ quản lý.');
  const profile=result.snapshot.val();
  if(!profile.active)throw new HttpsError('permission-denied','Hồ sơ đã ngừng hoạt động.');
@@ -51,7 +51,7 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
   if(v===null)return null;
   if(!v.active)return;
   const nameAliases=Array.from(new Set([...(v.nameAliases||[]),...(v.name!==data.name?[v.name]:[])])).filter(n=>n&&n!==data.name).slice(-10);
-  return {...v,...data,nameAliases,updatedAt:Date.now(),updatedBy:uid};
+  return {...v,...data,nameAliases,profileVersion:(v.profileVersion||0)+1,updatedAt:Date.now(),updatedBy:uid};
  });
  if(!result.committed||!result.snapshot.val()?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
  return response(result.snapshot.val());
@@ -66,7 +66,7 @@ exports.staffGetAvatarDirectory=onCall(opts,async req=>{
  uidOf(req);
  const profiles=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
  return {profiles:Object.values(profiles).filter(p=>p?.active&&p.employeeId&&p.name).map(p=>({
-  employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',
+  employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
   nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(-10):[]
  }))};
 });

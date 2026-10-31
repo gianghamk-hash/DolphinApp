@@ -280,7 +280,7 @@ exports.staffGetIdentity=onCall(opts,async req=>{
  const profile=(await staffRoot().child(v.employeeId).once('value')).val();
  if(!profile||!profile.active)return {verified:false};
  return {verified:v.verified===true&&profile.registrationSource!=='self',linked:true,employeeId:profile.employeeId,name:profile.name,
-  avatar:profile.avatar||'🐬',department:profile.department||'',createdAt:profile.createdAt||null,
+  avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,
   registrationSource:profile.registrationSource||'manager'};
 });
 

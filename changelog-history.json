@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.11",
+      "releaseDate": "2026-10-31T02:51:09.933Z",
+      "summary": "Merge pull request #167: simplify notification opt-in for everyone",
+      "details": [
+        "Merge pull request #167: simplify notification opt-in for everyone"
+      ]
+    },
+    {
       "version": "1.1.10",
       "releaseDate": "2026-10-31T02:32:07.477Z",
       "summary": "Merge pull request #165: add independent staff Push notifications",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029",
       "details": [
         "Merge pull request #123 from gianghamk-hash/feat/tft-item-details-pvp-opponent-hp-layout-20261029"
-      ]
-    },
-    {
-      "version": "1.0.181",
-      "releaseDate": "2026-10-29T06:08:02.968Z",
-      "summary": "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029",
-      "details": [
-        "Merge pull request #122 from gianghamk-hash/fix/tft-role-icons-guide-current-20261029"
       ]
     }
   ]

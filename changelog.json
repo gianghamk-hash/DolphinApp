@@ -1,58 +1,30 @@
 {
-  "version": "1.1.11",
-  "previousVersion": "1.1.10",
-  "commit": "33f9c30",
-  "previousCommit": "38885f8",
-  "buildDate": "2026-10-31T02:51:09.933Z",
-  "summary": "Merge pull request #167: simplify notification opt-in for everyone",
+  "version": "1.1.12",
+  "previousVersion": "1.1.11",
+  "commit": "e45d89c",
+  "previousCommit": "33f9c30",
+  "buildDate": "2026-10-31T03:07:40.791Z",
+  "summary": "Merge pull request #168: hide Push controls after setup",
   "changes": {
-    "totalCommits": 235,
-    "filesChanged": 11,
+    "totalCommits": 236,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #167: simplify notification opt-in for everyone"
+    "Merge pull request #168: hide Push controls after setup"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/build.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/manager-push-checks.yml",
-      "type": "update"
-    },
-    {
-      "file": "android/manager/AndroidPushBridge.java",
-      "type": "update"
-    },
-    {
-      "file": "android/manager/DolphinMessagingService.java",
-      "type": "update"
-    },
-    {
-      "file": "android/staff/firebase-app.json",
-      "type": "update"
-    },
-    {
-      "file": "docs/MANAGER_PUSH_SETUP.md",
-      "type": "update"
-    },
-    {
-      "file": "docs/PUSH_SECURITY_MIGRATION.md",
-      "type": "update"
-    },
     {
       "file": "dolphin-push.js",
       "type": "update"
     },
     {
-      "file": "functions/push.integration.test.js",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "functions/push.js",
+      "file": "manager/dashboard.html",
       "type": "update"
     },
     {

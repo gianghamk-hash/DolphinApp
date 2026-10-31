@@ -1972,6 +1972,7 @@ console.log('%c🔔 LANDING REMINDER WATCHER LOADED', 'background:#FBD77A;color:
       desc.textContent='Firebase Push chưa được kích hoạt trên website. Bạn có thể cho phép thông báo khi ứng dụng đang mở; nhận Push khi khóa iPhone cần cấu hình Firebase Web Push và cài PWA trên Màn hình chính.';
       desc.style.cssText='font:500 13px/1.6 system-ui,sans-serif;color:#c5e7dc;margin:0 0 12px';
       const btn=document.createElement('button');btn.type='button';btn.id='legacyNotifBtn';
+      btn.textContent='🔔 Bật thông báo khi ứng dụng đang mở';
       btn.style.cssText='width:100%;padding:11px;border-radius:9px;background:#123634;color:#FBD77A;border:1px solid #FBD77A;cursor:pointer;font-weight:700';
       btn.addEventListener('click',()=>window.toggleNotifPerm&&window.toggleNotifPerm());
       container.append(desc,btn);

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.15",
+  "version": "1.1.16",
   "releaseDate": "2026-10-31",
-  "notes": "Guest list: focused dietary filters and nationality counts by area (#172)"
+  "notes": "Fix nationality summary to count table groups (#173)"
 }

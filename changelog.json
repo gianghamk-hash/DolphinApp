@@ -1,18 +1,18 @@
 {
-  "version": "1.1.15",
-  "previousVersion": "1.1.14",
-  "commit": "169e81f",
-  "previousCommit": "90a5487",
-  "buildDate": "2026-10-31T13:18:45.978Z",
-  "summary": "Guest list: focused dietary filters and nationality counts by area (#172)",
+  "version": "1.1.16",
+  "previousVersion": "1.1.15",
+  "commit": "63992ed",
+  "previousCommit": "169e81f",
+  "buildDate": "2026-10-31T13:26:12.581Z",
+  "summary": "Fix nationality summary to count table groups (#173)",
   "changes": {
-    "totalCommits": 239,
+    "totalCommits": 240,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Guest list: focused dietary filters and nationality counts by area (#172)"
+    "Fix nationality summary to count table groups (#173)"
   ],
   "fileChanges": [
     {

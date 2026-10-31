@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.15",
+      "releaseDate": "2026-10-31T13:18:45.978Z",
+      "summary": "Guest list: focused dietary filters and nationality counts by area (#172)",
+      "details": [
+        "Guest list: focused dietary filters and nationality counts by area (#172)"
+      ]
+    },
+    {
       "version": "1.1.14",
       "releaseDate": "2026-10-31T05:50:14.066Z",
       "summary": "feat(show): Daily Show and singer combos with one complete food set per package",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029",
       "details": [
         "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029"
-      ]
-    },
-    {
-      "version": "1.0.185",
-      "releaseDate": "2026-10-29T08:41:38.756Z",
-      "summary": "fix(tft): show actionable Firebase create-room errors (#126)",
-      "details": [
-        "fix(tft): show actionable Firebase create-room errors (#126)"
       ]
     }
   ]

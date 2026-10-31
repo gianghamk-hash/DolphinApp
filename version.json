@@ -1,7 +1,7 @@
 {
-  "version": "1.1.15",
-  "buildDate": "2026-10-31T13:18:45.978Z",
-  "commit": "169e81f",
-  "notes": "Guest list: focused dietary filters and nationality counts by area (#172)",
+  "version": "1.1.16",
+  "buildDate": "2026-10-31T13:26:12.581Z",
+  "commit": "63992ed",
+  "notes": "Fix nationality summary to count table groups (#173)",
   "forceUpdate": false
 }

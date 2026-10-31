@@ -13,6 +13,7 @@ on:
       - 'manager/dashboard.html'
       - 'scripts/push-worker.test.cjs'
       - 'scripts/push-client.test.cjs'
+      - 'scripts/push-config-preflight.cjs'
       - '.github/workflows/build.yml'
       - '.github/workflows/manager-push-checks.yml'
   workflow_dispatch:
@@ -32,6 +33,7 @@ jobs:
           node --check push-config.js
           node --check service-worker.js
           node --check functions/push.js
+          node scripts/push-config-preflight.cjs
       - name: Manager APK Firebase credential readiness (no secret values logged)
         env:
           MANAGER_FIREBASE_JSON_B64: ${{ secrets.FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 }}

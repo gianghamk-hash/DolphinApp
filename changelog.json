@@ -1,22 +1,78 @@
 {
-  "version": "1.1.16",
-  "previousVersion": "1.1.15",
-  "commit": "63992ed",
-  "previousCommit": "169e81f",
-  "buildDate": "2026-10-31T13:26:12.581Z",
-  "summary": "Fix nationality summary to count table groups (#173)",
+  "version": "1.1.17",
+  "previousVersion": "1.1.16",
+  "commit": "1a2bd1c",
+  "previousCommit": "63992ed",
+  "buildDate": "2026-10-31T14:55:38.707Z",
+  "summary": "Add self-service employee profiles, avatars and device linking (#174)",
   "changes": {
-    "totalCommits": 240,
-    "filesChanged": 1,
+    "totalCommits": 241,
+    "filesChanged": 15,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix nationality summary to count table groups (#173)"
+    "Add self-service employee profiles, avatars and device linking (#174)"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": ".github/workflows/build.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-profile-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/tactics-engine-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-avatar-catalog.json",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-online.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-sync.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-sync.test.js",
       "type": "update"
     }
   ]

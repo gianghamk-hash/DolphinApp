@@ -1,7 +1,7 @@
 {
-  "version": "1.1.16",
-  "buildDate": "2026-10-31T13:26:12.581Z",
-  "commit": "63992ed",
-  "notes": "Fix nationality summary to count table groups (#173)",
+  "version": "1.1.17",
+  "buildDate": "2026-10-31T14:55:38.707Z",
+  "commit": "1a2bd1c",
+  "notes": "Add self-service employee profiles, avatars and device linking (#174)",
   "forceUpdate": false
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.16",
+      "releaseDate": "2026-10-31T13:26:12.581Z",
+      "summary": "Fix nationality summary to count table groups (#173)",
+      "details": [
+        "Fix nationality summary to count table groups (#173)"
+      ]
+    },
+    {
       "version": "1.1.15",
       "releaseDate": "2026-10-31T13:18:45.978Z",
       "summary": "Guest list: focused dietary filters and nationality counts by area (#172)",
@@ -390,14 +398,6 @@
       "summary": "feat(games): unify arcade landing screens with TFT-inspired styling (#128)",
       "details": [
         "feat(games): unify arcade landing screens with TFT-inspired styling (#128)"
-      ]
-    },
-    {
-      "version": "1.0.186",
-      "releaseDate": "2026-10-29T09:19:54.143Z",
-      "summary": "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029",
-      "details": [
-        "Merge pull request #127 from gianghamk-hash/fix/tft-reuse-firestore-multiplayer-20261029"
       ]
     }
   ]

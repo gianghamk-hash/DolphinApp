@@ -1,5 +1,5 @@
 {
-  "version": "1.1.16",
+  "version": "1.1.17",
   "releaseDate": "2026-10-31",
-  "notes": "Fix nationality summary to count table groups (#173)"
+  "notes": "Add self-service employee profiles, avatars and device linking (#174)"
 }

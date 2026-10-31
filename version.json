@@ -1,7 +1,7 @@
 {
-  "version": "1.1.13",
-  "buildDate": "2026-10-31T05:02:57.683Z",
-  "commit": "1bae234",
-  "notes": "Merge pull request #170: confine Push controls to System Dashboard",
+  "version": "1.1.14",
+  "buildDate": "2026-10-31T05:50:14.066Z",
+  "commit": "90a5487",
+  "notes": "feat(show): Daily Show and singer combos with one complete food set per package",
   "forceUpdate": false
 }

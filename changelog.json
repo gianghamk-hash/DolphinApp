@@ -1,34 +1,30 @@
 {
-  "version": "1.1.13",
-  "previousVersion": "1.1.12",
-  "commit": "1bae234",
-  "previousCommit": "e45d89c",
-  "buildDate": "2026-10-31T05:02:57.683Z",
-  "summary": "Merge pull request #170: confine Push controls to System Dashboard",
+  "version": "1.1.14",
+  "previousVersion": "1.1.13",
+  "commit": "90a5487",
+  "previousCommit": "1bae234",
+  "buildDate": "2026-10-31T05:50:14.066Z",
+  "summary": "feat(show): Daily Show and singer combos with one complete food set per package",
   "changes": {
-    "totalCommits": 237,
-    "filesChanged": 4,
+    "totalCommits": 238,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #170: confine Push controls to System Dashboard"
+    "feat(show): Daily Show and singer combos with one complete food set per package"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-push.js",
+      "file": ".github/workflows/show-package-tests.yml",
       "type": "update"
     },
     {
-      "file": "index.html",
+      "file": "dolphin-show.html",
       "type": "update"
     },
     {
-      "file": "manager/dashboard.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/push-client.test.cjs",
+      "file": "scripts/show-package.test.cjs",
       "type": "update"
     }
   ]

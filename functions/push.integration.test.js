@@ -6,8 +6,9 @@ const vm=require('node:vm');
 const fs=require('node:fs');
 const path=require('node:path');
 
-function fixture(){
+function fixture({transientFailures=0}={}){
   const maps=new Map(),sent=[];
+  let failCalls=transientFailures;
   const map=name=>{if(!maps.has(name))maps.set(name,new Map());return maps.get(name);};
   function ref(name,id){
     const m=map(name);
@@ -61,6 +62,8 @@ function fixture(){
     'firebase-admin/firestore':{getFirestore:()=>firestore,FieldPath:{documentId:()=>null}},
     'firebase-admin/messaging':{getMessaging:()=>({async sendEachForMulticast(payload){
       sent.push(payload);
+      if(failCalls-- > 0)
+        return{responses:payload.tokens.map(()=>({success:false,error:{code:'messaging/internal-error'}}))};
       return{responses:payload.tokens.map(()=>({success:true}))};
     }})},
     'firebase-functions/v2/https':{onCall:(opts,fn)=>fn,HttpsError},
@@ -136,4 +139,36 @@ test('delivery reaches device 401 and beyond via pagination',async()=>{
   assert.equal(f.sent.reduce((sum,x)=>sum+x.tokens.length,0),425);
   assert.equal(f.sent[0].tokens.length,400);
   assert.equal(f.sent[1].tokens.length,25);
+});
+
+test('a transient FCM failure is retried by scheduler without recreating the guest order',async()=>{
+  const f=fixture({transientFailures:1}),h=f.handlers;
+  const token='PWA-FCM-123456789012345';
+  f.map('dolphin_push_devices').set('device', {uid:'worker',token,role:'staff',active:true});
+  await h.push_bun_orders(event('BGL300',123));
+  assert.equal(f.sent.length,1);
+  const dispatch=[...f.map('dolphin_push_dispatches').values()][0];
+  assert.equal(dispatch.status,'retry');
+  assert.equal(dispatch.attempts,1);
+  assert(dispatch.nextAttemptAt>Date.now());
+  // Simulate next eligible scheduler tick without actually waiting.
+  dispatch.nextAttemptAt=0;
+  await h.pushRetryDeliveries();
+  assert.equal(f.sent.length,2);
+  assert.equal(dispatch.status,'sent');
+  assert.equal(dispatch.attempts,2);
+  assert.equal(f.sent[0].data.eventId,f.sent[1].data.eventId);
+});
+
+test('expired processing lease is recovered when a Function dies mid-send',async()=>{
+  const f=fixture(),h=f.handlers;
+  const token='PWA-FCM-234567890123456';
+  f.map('dolphin_push_devices').set('device',{uid:'worker',token,role:'staff',active:true});
+  await h.push_res_orders(event('R301',130));
+  const dispatch=[...f.map('dolphin_push_dispatches').values()][0];
+  dispatch.status='processing';
+  dispatch.leaseUntil=Date.now()-1000;
+  await h.pushRetryDeliveries();
+  assert.equal(f.sent.length,2);
+  assert.equal(dispatch.status,'sent');
 });

@@ -39,7 +39,7 @@ test('Singer Combo 2 includes exactly one De Bortoli wine bottle',()=>{
 test('Singer Combo 3 includes eight drinks, cashews, squid and cheese',()=>{
   const c=combos.singer3;
   assert.equal(c.maxDrinks,8);
-  assert.deepEqual(c.allowedDrinks,['COKE','I-ON WATER 300ML','BIA TIGER']);
+  assert.deepEqual(Array.from(c.allowedDrinks),['COKE','I-ON WATER 300ML','BIA TIGER']);
   assert.deepEqual(Object.keys(c.fixedFoods),['HẠT ĐIỀU TẨM VỊ','MỰC KHÔ','PHÔ MAI SỢI']);
   assert.equal(c.guests,'6–8 người');
 });

@@ -41,6 +41,8 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 <link rel="icon" type="image/png" sizes="192x192" href="./pwa-icons/icon-192.png.png">
 <link rel="icon" type="image/png" sizes="512x512" href="./pwa-icons/icon-512.png.png">
 <script src="staff-sync.js" defer></script>
+<script src="./staff-id.js?v=1.1" defer></script>
+<script src="./dolphin-avatars.js" defer></script>
 </head>
 <body class="min-h-screen flex flex-col">
 <canvas id="fw" class="fixed inset-0 w-full h-full pointer-events-none" style="z-index:0"></canvas>
@@ -49,6 +51,7 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 <!-- THANH ĐIỀU HƯỚNG -->
 <div class="bg-black/70 relative z-20 backdrop-blur-md border-b border-teal-800/50 px-4 py-2 text-xs flex flex-wrap justify-between items-center gap-3 sticky top-0 z-50">
   <div class="flex items-center gap-2">
+    <span class="dolphin-staff-avatar" data-staff-avatar="mine">👤</span><span data-staff-profile-name>Nhân viên</span>
     <span id="dot" class="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" role="status" aria-label="Chưa kết nối" title="Offline"></span>
     <span id="dot-text" class="font-bold text-teal-200 text-[10px] uppercase tracking-wider" style="display:none!important" aria-hidden="true">Đang kết nối đám mây...</span>
   </div>
@@ -80,7 +83,7 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
     </div>
     <div id="seller-card" class="glass-card p-4 rounded-2xl border border-gold-500/40 flex flex-col sm:flex-row gap-3 sm:items-center justify-between">
       <div>
-        <p class="text-[11px] font-black text-gold-400 uppercase tracking-wider">👤 Người bán đang thao tác <span class="text-red-400">*</span></p>
+        <p class="text-[11px] font-black text-gold-400 uppercase tracking-wider"><span class="dolphin-staff-avatar" data-staff-avatar="mine">👤</span> Người bán đang thao tác <span class="text-red-400">*</span></p>
         <p class="text-[10px] text-teal-300 mt-1">Bắt buộc nhập tên trước khi nhập thông tin khách. Bàn đã có khách chỉ người bán đó mới được sửa/xóa, người khác không thể chèn thông tin.</p>
       </div>
       <div class="flex gap-2">

@@ -5,6 +5,7 @@
 (function(){
 'use strict';
 const config={apiKey:'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ',authDomain:'dolphin-f6d67.firebaseapp.com',projectId:'dolphin-f6d67'};
+const profilePage=new URL('./dolphin-profile.html',document.currentScript?.src||location.href).href;
 let api=null, identity=null, uid='', initialized=false, connection=null;
 const manager=()=>navigator.userAgent.includes('DolphinManager')||window.DOLPHIN_APP_TYPE==='manager';
 const htmlEscape=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
@@ -61,16 +62,18 @@ function render(){
 async function call(name,data){
  await connect();if(!api)throw Error('Chưa kết nối máy chủ. Vui lòng thử lại.');
  const result=await api(name)(data||{});
- if(name!=='staffIssueOwnLinkCode'){
+ if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory'].includes(name)){
   if(name==='staffClaimLinkCode')await refresh();
   else{identity={...result.data,linked:true};emit();}
  }
  return result.data;
 }
 window.DolphinStaffId={get:()=>identity,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
- update:data=>call('staffUpdateMyProfile',data),link:code=>call('staffClaimLinkCode',{code}),
+ update:data=>call('staffUpdateMyProfile',data),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
+ avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
- open:()=>{render();document.getElementById('dolphinStaffIdPanel').style.display='flex';}};
+ open:()=>{if(typeof window.openApp==='function'){window.openApp('profile');return;}window.location.assign(profilePage);},
+ openManager:()=>{render();document.getElementById('dolphinStaffIdPanel').style.display='flex';}};
 window.addEventListener('storage',e=>{if(e.key==='dolphinStaffProfile'&&api)refresh();});
 window.addEventListener('focus',()=>{if(api)refresh();});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',connect);else connect();

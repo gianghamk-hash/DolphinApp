@@ -381,7 +381,7 @@
       '      <div class="sow-panel-title">👥 Nhân sự online</div>',
       '      <div class="sow-panel-sub" id="sowPanelSub">Đang tải...</div>',
       '    </div>',
-      '    <button type="button" id="staffIdOpenBtn" style="margin-left:8px;padding:6px 10px;cursor:pointer">Staff ID / Cấp mã</button>',
+      '    <button type="button" id="staffIdOpenBtn" style="margin-left:8px;padding:6px 10px;cursor:pointer">Hồ sơ / Liên kết</button>',
       '  </div>',
       '  <div class="sow-list" id="sowList">',
       '    <div class="sow-empty-msg">Đang tải...</div>',
@@ -494,7 +494,7 @@
 
       return [
         '<div class="sow-item ' + (isMe ? 'sow-me' : '') + '">',
-        '  <div class="sow-avatar">' + escapeHtml(String(s.avatar||ctx.icon).slice(0,24)) + '</div>',
+        '  <div class="sow-avatar" data-staff-avatar data-staff-name="'+escapeHtml(s.name)+'" data-staff-id="'+escapeHtml(s.staffId||'')+'">' + escapeHtml(String(window.DolphinAvatars?.get(s.name,s.staffId)||s.avatar||ctx.icon).slice(0,24)) + '</div>',
         '  <div class="sow-info">',
         '    <div class="sow-name">' + escapeHtml(s.name) + (s.staffId?' <small>'+escapeHtml(s.staffId)+'</small>':'') + (isMe ? ' <span class="sow-you">BẠN</span>' : '') + '</div>',
         '    <div class="sow-meta">' + ctx.label + ' · ' + durText + escapeHtml(detail) + '</div>',

@@ -49,7 +49,9 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
  const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
   // RTDB may begin with an empty local cache even for an existing profile.
   if(v===null)return null;
-  return v.active?{...v,...data,updatedAt:Date.now(),updatedBy:uid}:undefined;
+  if(!v.active)return;
+  const nameAliases=Array.from(new Set([...(v.nameAliases||[]),...(v.name!==data.name?[v.name]:[])])).filter(n=>n&&n!==data.name).slice(-10);
+  return {...v,...data,nameAliases,updatedAt:Date.now(),updatedBy:uid};
  });
  if(!result.committed||!result.snapshot.val()?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
  return response(result.snapshot.val());
@@ -59,4 +61,12 @@ exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
  const code=crypto.randomBytes(18).toString('hex').toUpperCase(),hash=crypto.createHash('sha256').update(code).digest('hex');
  await getDatabase().ref('staffEnrollmentCodes/'+hash).set({employeeId:profile.employeeId,issuedAt:Date.now(),expiresAt:Date.now()+600000,issuedBy:uid});
  return {code,expiresInMinutes:10,employeeId:profile.employeeId};
+});
+exports.staffGetAvatarDirectory=onCall(opts,async req=>{
+ uidOf(req);
+ const profiles=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
+ return {profiles:Object.values(profiles).filter(p=>p?.active&&p.employeeId&&p.name).map(p=>({
+  employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',
+  nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(-10):[]
+ }))};
 });

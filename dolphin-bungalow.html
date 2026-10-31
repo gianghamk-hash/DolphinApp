@@ -125,6 +125,8 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <link rel="icon" type="image/png" sizes="192x192" href="./pwa-icons/icon-192.png.png">
 <link rel="icon" type="image/png" sizes="384x384" href="./pwa-icons/icon-384.png.png">
 <link rel="icon" type="image/png" sizes="512x512" href="./pwa-icons/icon-512.png.png">
+<script src="./staff-id.js?v=1.1" defer></script>
+<script src="./dolphin-avatars.js" defer></script>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-gold-500 selection:text-black relative z-0">
 
@@ -222,7 +224,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <div id="view-bungalow" class="flex-1 max-w-7xl mx-auto w-full p-3 md:p-6 space-y-4 hidden relative z-10">
 <div class="text-center py-1.5 border-b border-teal-800/50 mb-3"><h1 class="brand-title text-xl md:text-3xl">DOLPHIN</h1><p class="text-[9.5px] md:text-xs text-teal-400 uppercase font-bold tracking-widest mt-0.5">Quản Lý Bungalow</p></div>
 <div class="flex justify-between items-center glass-card premium p-3.5 md:p-5 rounded-2xl border border-teal-700/50 gap-2">
-<div class="flex items-center gap-2.5"><span class="icon-badge emerald">🌴</span><div><h2 class="font-black text-white text-[11.5px] md:text-base uppercase">TIẾP NHẬN ORDER</h2><p class="text-teal-400 text-[9.5px] md:text-xs">NV: <strong id="current-bungalow-staff-name-display" class="text-gold-400 font-black">Chưa đặt</strong></p></div></div>
+<div class="flex items-center gap-2.5"><span class="icon-badge emerald" data-staff-avatar="mine">👤</span><div><h2 class="font-black text-white text-[11.5px] md:text-base uppercase">TIẾP NHẬN ORDER</h2><p class="text-teal-400 text-[9.5px] md:text-xs">NV: <strong id="current-bungalow-staff-name-display" class="text-gold-400 font-black">Chưa đặt</strong></p></div></div>
 <button onclick="promptStaffName()" class="bg-teal-800 text-white px-3.5 py-2.5 rounded-xl text-[10.5px] md:text-sm font-bold border border-teal-600">Đổi tên</button>
 </div>
 <div id="bungalow-calls-section" class="bg-red-950/60 border border-red-500/50 p-3.5 md:p-5 rounded-2xl hidden">
@@ -249,7 +251,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <div id="view-reception" class="flex-1 max-w-7xl mx-auto w-full p-3 md:p-6 space-y-4 hidden relative z-10">
 <div class="text-center py-1.5 border-b border-teal-800/50 mb-3"><h1 class="brand-title text-xl md:text-3xl">DOLPHIN</h1><p class="text-[9.5px] md:text-xs text-teal-400 uppercase font-bold tracking-widest mt-0.5">Lễ Tân Bungalow</p></div>
 <div class="glass-card premium p-3.5 md:p-5 rounded-2xl border border-gold-500/40 flex justify-between items-center gap-2">
-<div class="flex items-center gap-2.5"><span class="icon-badge">👤</span><div><span class="text-[9.5px] text-teal-400 block">Nhân viên trực</span><strong id="current-reception-staff-name-display" class="text-gold-400 font-black text-[12px] md:text-base">Chưa đặt</strong></div></div>
+<div class="flex items-center gap-2.5"><span class="icon-badge" data-staff-avatar="mine">👤</span><div><span class="text-[9.5px] text-teal-400 block">Nhân viên trực</span><strong id="current-reception-staff-name-display" class="text-gold-400 font-black text-[12px] md:text-base">Chưa đặt</strong></div></div>
 <button onclick="promptStaffName()" class="bg-teal-800 text-white px-3.5 py-2.5 rounded-xl text-[10.5px] md:text-sm font-bold border border-teal-600">Đổi tên</button>
 </div>
 <div class="glass-card premium p-3.5 md:p-6 rounded-2xl border border-teal-700/50">

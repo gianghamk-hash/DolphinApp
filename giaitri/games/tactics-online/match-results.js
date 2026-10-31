@@ -33,7 +33,7 @@ function create(options){
   const me=rows.find(row=>row.uid===input.uid);
   title.textContent=room.winnerId===input.uid?'🏆 CHIẾN THẮNG!':'🏁 TRẬN ĐẤU KẾT THÚC';
   subtitle.textContent=(me?.placement?'Bạn đạt hạng '+me.placement+'/4':'Kết quả trận đấu')+' · Vòng '+room.round+(input.offline?' · Offline':' · Online 4 người');
-  table.innerHTML=rows.map(row=>'<tr class="'+(row.uid===input.uid?'isMe':'')+'"><td>'+(row.placement===1?'🥇':row.placement===2?'🥈':row.placement===3?'🥉':row.placement?'#'+row.placement:'—')+'</td><td>'+esc(row.player)+(row.uid===input.uid?' <strong>(BẠN)</strong>':'')+'</td><td>'+row.hp+'</td><td>'+(input.offline||row.score===null?'—':'+'+row.score)+'</td></tr>').join('');
+  table.innerHTML=rows.map(row=>'<tr class="'+(row.uid===input.uid?'isMe':'')+'"><td>'+(row.placement===1?'🥇':row.placement===2?'🥈':row.placement===3?'🥉':row.placement?'#'+row.placement:'—')+'</td><td><span class="dolphin-staff-avatar" data-staff-avatar data-staff-name="'+esc(row.player)+'">👤</span>'+esc(row.player)+(row.uid===input.uid?' <strong>(BẠN)</strong>':'')+'</td><td>'+row.hp+'</td><td>'+(input.offline||row.score===null?'—':'+'+row.score)+'</td></tr>').join('');
   open();
   if(input.offline){message('Trận Offline — không cộng vào bảng xếp hạng online');return;}
   if(rows.some(row=>!row.placement))return;

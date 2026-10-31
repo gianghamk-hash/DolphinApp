@@ -1,10 +1,10 @@
 name: Staff profile checks
 on:
   pull_request:
-    paths: ['dolphin-profile.html','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
   push:
     branches: [main]
-    paths: ['dolphin-profile.html','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','.github/workflows/staff-profile-tests.yml']
 permissions:
   contents: read
 jobs:
@@ -21,5 +21,6 @@ jobs:
           node --check staff-sync.js
           node --check staff-online.js
           node --check functions/staff-profile.js
-          node --test functions/staff-id.test.js staff-sync.test.js
+          node --check dolphin-avatars.js
+          node --test functions/staff-id.test.js staff-sync.test.js dolphin-avatars.test.cjs
           node scripts/check-service-pages.cjs

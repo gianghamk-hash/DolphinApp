@@ -19,14 +19,22 @@
   const base = new URL('./',document.currentScript?.src || location.href);
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const optInKey = 'dolphinPushEnabled';
+  const registeredKey = 'dolphinPushRegistered';
   let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
-  let button, message, healthButton;
+  let panel, button, message, healthButton;
   const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
+  const registeredBefore = () => {try{return optedIn()&&localStorage.getItem(registeredKey)==='1';}catch(e){return false;}};
+  function setControlHidden(hidden){
+    if(!panel)return;
+    panel.hidden=hidden;
+    panel.style.display=hidden?'none':'flex';
+  }
   function setStatus(label,detail){
     if(button)button.textContent=label;
     if(message){message.textContent=detail||'';message.hidden=!detail;}
   }
   function setupGuide(){
+    setControlHidden(false);
     setStatus('📲 Cài Dolphin PWA trên iPhone',
       'Mở dolphinfb.store bằng Safari → Chia sẻ → Thêm vào Màn hình chính → mở Dolphin từ biểu tượng mới. iOS 16.4+ mới hỗ trợ nhận Push khi khóa màn hình.');
   }
@@ -94,9 +102,10 @@
     if(!token||token.length<20)throw new Error('FCM token chưa sẵn sàng.');
     const data=await callable('pushRegisterDevice',{token,platform,consent:true});
     lastToken=token;
-    try{localStorage.setItem(optInKey,'1');}catch(e){}
+    try{localStorage.setItem(optInKey,'1');localStorage.setItem(registeredKey,'1');}catch(e){}
     setStatus('🔔 Push đang bật · nhấn để tắt',
       (data?.role==='manager'?'Manager':'Nhân viên')+' · nhận tất cả outlet: Bungalow, Lounge, Restaurant, Show.');
+    setControlHidden(true);
   }
   async function webToken(){
     if(!cfg.messagingSenderId || !cfg.appId || !cfg.vapidKey)
@@ -113,6 +122,8 @@
   }
   function showError(error){
     console.warn('[DolphinPush]',error);
+    const permissionStillGranted=native||('Notification' in root&&Notification.permission==='granted');
+    if(!lastToken&&!(registeredBefore()&&permissionStillGranted))setControlHidden(false);
     const detail=String(error?.message||error||'');
     setStatus('🔕 Chưa bật được thông báo',detail.slice(0,220));
   }
@@ -140,6 +151,11 @@
     if('Notification' in root && Notification.permission==='granted'){
       try{const token=await webToken();await registerToken(token,'web');}
       catch(e){showError(e);}
+    }else{
+      lastToken='';
+      try{localStorage.removeItem(registeredKey);}catch(e){}
+      setControlHidden(false);
+      setStatus('🔔 Bật thông báo','Cho phép thông báo trên thiết bị để nhận order mới.');
     }
   }
   async function receiveNativeToken(token){
@@ -154,14 +170,15 @@
     try{
       if(lastToken)await callable('pushUnregisterDevice',{token:lastToken});
       lastToken='';
-      try{localStorage.removeItem(optInKey);}catch(e){}
+      try{localStorage.removeItem(optInKey);localStorage.removeItem(registeredKey);}catch(e){}
+      setControlHidden(false);
       setStatus('🔕 Đã tắt Push','Đã hủy thiết bị khỏi danh sách nhận Push.');
     }catch(e){showError(e);}
     finally{busy=false;}
   }
   function makeControl(){
     if(document.getElementById('dolphin-push-control'))return;
-    const panel=document.createElement('div');panel.id='dolphin-push-control';
+    panel=document.createElement('div');panel.id='dolphin-push-control';
     panel.style.cssText='position:fixed;top:68px;right:12px;z-index:2147480000;display:flex;flex-direction:column;align-items:flex-end;gap:5px;max-width:min(340px,94vw);font:600 12px system-ui,sans-serif';
     button=document.createElement('button');button.type='button';button.textContent='🔔 Bật thông báo';
     button.style.cssText='background:#123634;color:#FBD77A;border:1px solid #FBD77A;border-radius:99px;padding:8px 12px;box-shadow:0 4px 18px #0008;font:inherit;cursor:pointer';
@@ -173,6 +190,8 @@
     healthButton.style.cssText='background:#123634;color:white;border:1px solid #507c70;border-radius:9px;padding:7px 10px;font:inherit';
     healthButton.addEventListener('click',checkDeliveryHealth);
     panel.append(button,message,healthButton);
+    // Avoid flashing the setup/Manager overlay while an opted-in session resumes.
+    setControlHidden(optedIn() && (native || ('Notification' in root && Notification.permission==='granted')));
     document.body.appendChild(panel);
   }
   root.DolphinPush={enable,disable,resume,receiveNativeToken,

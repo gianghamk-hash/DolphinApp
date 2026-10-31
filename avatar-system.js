@@ -226,9 +226,15 @@
     }
   }
 
-  function selectAvatar(emoji){
+  async function selectAvatar(emoji){
     var name = state.editingName;
     if (!name) return;
+    var profile=window.DolphinStaffId&&window.DolphinStaffId.get();
+    if(!profile||String(profile.name).trim().toLocaleLowerCase('vi-VN')!==String(name).trim().toLocaleLowerCase('vi-VN')){
+      alert('Mở Hồ sơ nhân viên để đổi avatar của chính bạn.');return;
+    }
+    try{await window.DolphinStaffId.update({name:profile.name,avatar:emoji});}
+    catch(e){alert('Không lưu được avatar. '+(e.message||''));return;}
 
     // Nếu là avatar của chính mình → lưu localStorage
     if (name === getStaffName()){
@@ -250,7 +256,7 @@
     });
 
     // Lưu Firebase
-    saveToFirebase(name, emoji);
+    window.DolphinAvatars&&window.DolphinAvatars.refresh();
 
     // Thông báo
     if (window.ChatSystem && window.ChatSystem.pushSystemMessage && name === getStaffName()){
@@ -308,6 +314,8 @@
 
   function getAvatarFor(name){
     if (!name) return null;
+    var synced=window.DolphinAvatars&&window.DolphinAvatars.get(name);
+    if(synced)return synced;
     if (state.cache[name]) return state.cache[name];
     if (name === getStaffName()){
       var local = getLocalAvatar();
@@ -380,7 +388,7 @@
     openFor: openPickerFor,
     close: close,
     getAvatar: getAvatarFor,
-    getMine: function(){ return state.currentAvatar || getLocalAvatar(); },
+    getMine: function(){ return getAvatarFor(getStaffName()) || state.currentAvatar || getLocalAvatar(); },
     renderAvatarHtml: function(name, size){
       size = size || 'md';
       var emoji = getAvatarFor(name);

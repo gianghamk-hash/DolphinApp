@@ -245,7 +245,9 @@ exports.staffIssueLinkCode=onCall(opts,async req=>{
 exports.staffClaimLinkCode=onCall(opts,async req=>{
  const uid=requireUid(req);
  const current=(await getDatabase().ref('staffIdentity/'+uid).once('value')).val();
- if(current&&current.employeeId)throw new HttpsError('failed-precondition','Thiết bị đã có hồ sơ. Hãy dùng hồ sơ hiện tại.');
+ if(current&&current.employeeId&&req.data?.replaceCurrent!==true)throw new HttpsError('failed-precondition','Thiết bị đã có hồ sơ. Hãy xác nhận chuyển hồ sơ trước khi nhập mã.');
+ if(req.data?.replaceCurrent===true&&String(req.data.expectedEmployeeId||'')!==(current?.employeeId||''))
+  throw new HttpsError('failed-precondition','Hồ sơ trên thiết bị vừa thay đổi. Hãy tải lại và xác nhận.');
  const code=String(req.data?.code||'').trim().toUpperCase();
  if(!/^[0-9A-F]{36}$/.test(code))throw new HttpsError('invalid-argument','Mã liên kết không hợp lệ');
  await throttle(uid,2500);
@@ -263,8 +265,12 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
  const snap=await staffRoot().child(issued.employeeId).once('value'),profile=snap.val();
  if(!profile||!profile.active)throw new HttpsError('failed-precondition','Nhân viên không còn hoạt động');
  const verified=profile.registrationSource!=='self';
- const linked=await getDatabase().ref('staffIdentity/'+uid).transaction(v=>v&&v.employeeId?undefined:{employeeId:profile.employeeId,name:profile.name,verified,updatedAt:Date.now()});
- if(!linked.committed)throw new HttpsError('failed-precondition','Thiết bị vừa được liên kết với hồ sơ khác.');
+ const linked=await getDatabase().ref('staffIdentity/'+uid).transaction(v=>{
+  if(v===null&&current?.employeeId)return null;
+  if((v?.employeeId||'')!==(current?.employeeId||''))return;
+  return {employeeId:profile.employeeId,name:profile.name,verified,updatedAt:Date.now()};
+ });
+ if(!linked.committed||linked.snapshot.val()?.employeeId!==profile.employeeId)throw new HttpsError('failed-precondition','Thiết bị vừa được liên kết với hồ sơ khác.');
  return {employeeId:profile.employeeId,name:profile.name,verified,linked:true};
 });
 exports.staffGetIdentity=onCall(opts,async req=>{
@@ -274,7 +280,7 @@ exports.staffGetIdentity=onCall(opts,async req=>{
  const profile=(await staffRoot().child(v.employeeId).once('value')).val();
  if(!profile||!profile.active)return {verified:false};
  return {verified:v.verified===true&&profile.registrationSource!=='self',linked:true,employeeId:profile.employeeId,name:profile.name,
-  avatar:profile.avatar||'🐬',department:profile.department||'',createdAt:profile.createdAt||null,
+  avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,
   registrationSource:profile.registrationSource||'manager'};
 });
 

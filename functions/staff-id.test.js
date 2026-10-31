@@ -7,8 +7,12 @@ const crypto=require('node:crypto');
 const source=fs.readFileSync(__dirname+'/index.js','utf8');
 function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
  const state=new Map();
- const ref=p=>({child:k=>ref(p+'/'+k),once:async()=>({val:()=>state.get(p)??null}),set:async v=>{state.set(p,v);},transaction:async fn=>{
-  const cached=cold&&(p.startsWith('staffEnrollmentCodes/')||p.startsWith('staffRegistry/'))?null:state.get(p)??null;
+ const ref=p=>({child:k=>ref(p+'/'+k),once:async()=>({val:()=>{
+  if(state.has(p))return state.get(p);
+  const children=[...state].filter(([key])=>key.startsWith(p+'/')&&!key.slice(p.length+1).includes('/')).map(([key,value])=>[key.slice(p.length+1),value]);
+  return children.length?Object.fromEntries(children):null;
+ }}),set:async v=>{state.set(p,v);},transaction:async fn=>{
+  const cached=cold&&(p.startsWith('staffEnrollmentCodes/')||p.startsWith('staffRegistry/')||p.startsWith('staffIdentity/'))?null:state.get(p)??null;
   let v=fn(cached);
   if(v===undefined)return {committed:false};
   if(JSON.stringify(cached)!==JSON.stringify(state.get(p)??null))v=fn(state.get(p)??null);
@@ -184,5 +188,32 @@ test('linked devices cannot switch identity and concurrent claims cannot overwri
  const results=await Promise.allSettled([api.staffClaimLinkCode(req('new',{code:ca.code})),api.staffClaimLinkCode(req('new',{code:cb.code}))]);
  assert.equal(results.filter(x=>x.status==='fulfilled').length,1);
  assert.ok([a.employeeId,b.employeeId].includes(state.get('staffIdentity/new').employeeId));
+});
+
+test('switching a registered device requires explicit consent and the expected old ID; preserves both profiles',async()=>{
+ const {api,state}=harness('manager',{cold:true});
+ const a=await api.staffRegisterSelfProfile(req('a',{name:'Alice',avatar:'🐯'}));
+ const b=await api.staffRegisterSelfProfile(req('b',{name:'Bob'}));state.delete('staffProfileRate/a');
+ const link=await api.staffIssueOwnLinkCode(req('a'));
+ await rejects(()=>api.staffClaimLinkCode(req('b',{code:link.code,replaceCurrent:true,expectedEmployeeId:a.employeeId})),'failed-precondition');
+ const switched=await api.staffClaimLinkCode(req('b',{code:link.code,replaceCurrent:true,expectedEmployeeId:b.employeeId}));
+ assert.equal(switched.employeeId,a.employeeId);
+ assert.equal((await api.staffGetIdentity(req('b'))).avatar,'🐯');
+ assert.equal(state.get('staffRegistry/'+b.employeeId).active,true);
+ assert.equal([...state.keys()].filter(k=>k.startsWith('staffRegistry/')).length,2);
+});
+
+test('avatar directory returns public display fields only, omits inactive staff and retains old-name aliases',async()=>{
+ const {api,state}=harness('manager',{cold:true});
+ await rejects(()=>api.staffGetAvatarDirectory(req(null)),'unauthenticated');
+ const a=await api.staffRegisterSelfProfile(req('a',{name:'Old name',avatar:'🐬'}));state.delete('staffProfileRate/a');
+ await api.staffUpdateMyProfile(req('a',{name:'New name',avatar:'🐯'}));
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Inactive',active:false});
+ const directory=await api.staffGetAvatarDirectory(req('reader'));assert.equal(directory.profiles.length,1);
+ assert.equal(directory.profiles[0].employeeId,a.employeeId);assert.equal(directory.profiles[0].avatar,'🐯');
+ assert.equal(directory.profiles[0].nameAliases[0],'Old name');
+ assert.equal(directory.profiles[0].profileVersion,1);
+ assert.deepEqual(Object.keys(directory.profiles[0]).sort(),['avatar','employeeId','name','nameAliases','profileVersion']);
+ assert.ok(!JSON.stringify(directory).includes('ownerUid'));
 });
 

@@ -301,6 +301,8 @@ body>.sticky button:first-child:active{transform:scale(.86)}
 #gameIframeView.tactics-apk-open .game-frame-wrap{flex:1 1 0!important;min-height:0!important;height:auto!important;overflow:hidden!important}
 #gameIframeView.tactics-apk-open iframe{width:100%!important;height:100%!important;touch-action:auto!important}
 </style>
+<script src="../staff-id.js?v=1.1" defer></script>
+<script src="../dolphin-avatars.js" defer></script>
 </head>
 <body>
 
@@ -775,7 +777,7 @@ body>.sticky button:first-child:active{transform:scale(.86)}
         var medal = i < 3 ? '<span class="medal m' + (i + 1) + '">' + (i + 1) + '</span>' : String(i + 1);
         html += '<tr class="' + (isMe ? 'me' : '') + '">';
         html += '<td class="rank ' + (i < 3 ? 'top' : '') + '">' + medal + '</td>';
-        html += '<td class="' + (isMe ? 'me' : '') + '">' + esc(r.player) + (isMe ? ' <span style="font-size:9px;opacity:.7">(BẠN)</span>' : '') + '</td>';
+        html += '<td class="' + (isMe ? 'me' : '') + '"><span class="dolphin-staff-avatar" data-staff-avatar data-staff-name="' + esc(r.player) + '" data-staff-id="' + esc(r.employeeId||'') + '">👤</span>' + esc(r.player) + (isMe ? ' <span style="font-size:9px;opacity:.7">(BẠN)</span>' : '') + '</td>';
         if (meta.type === 'tft'){
           html += '<td class="num gold">' + (r.totalScore || 0) + '</td>';
           html += '<td class="num good">' + (r.wins || 0) + '</td>';

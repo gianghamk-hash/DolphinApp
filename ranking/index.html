@@ -38,6 +38,9 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .week-bar .value{font-size:13px;color:#FBD77A;font-weight:900;margin-top:2px}
 .week-bar .stat{font-size:10px;color:#bfe9dc;margin-top:4px;opacity:.75;font-weight:700}
 </style>
+<script src="../staff-sync.js" defer></script>
+<script src="../staff-id.js?v=1.1" defer></script>
+<script src="../dolphin-avatars.js" defer></script>
 </head>
 <body class="dolphin-ranking-page">
 
@@ -393,7 +396,7 @@ function renderRevenue(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" style="width:34px;height:34px">${r===1?'👑':r<=3?'💎':r<=6?'🔮':'🐬'}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}</div></span></div>
+        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" data-staff-avatar data-staff-name="${esc(e.name)}" style="width:34px;height:34px">👤</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}</div></span></div>
         <div class="sub-count" style="text-align:left;opacity:.7">${lbl}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -479,7 +482,7 @@ function renderPoints(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        ${esc(e.name)}<div>${rewards?rewards.badge(e.name,"work"):""}</div>
+        <div style="display:flex;align-items:center;gap:7px"><span class="dolphin-staff-avatar" data-staff-avatar data-staff-name="${esc(e.name)}">👤</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name,"work"):""}</div></span></div>
         <div class="sub-count" style="text-align:left;opacity:.7">${totalOrders} đơn · ${e.both}✓ ${e.onlyComplete}🆘 ${e.onlyPrepare}⏳</div>
       </div>
       <div style="text-align:right;flex-shrink:0">

@@ -11,7 +11,8 @@ const fakeModules={
   'firebase-admin/firestore':{getFirestore:()=>null,FieldPath:{documentId:()=>null}},
   'firebase-admin/messaging':{getMessaging:()=>null},
   'firebase-functions/v2/https':{onCall:(opts,fn)=>fn,HttpsError:class HttpsError extends Error{}},
-  'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn}
+  'firebase-functions/v2/firestore':{onDocumentWritten:(opts,fn)=>fn},
+  'firebase-functions/v2/scheduler':{onSchedule:(opts,fn)=>fn}
 };
 const ctx={exports:{},process,URLSearchParams,Date,console,
   require:name=>{if(!(name in fakeModules))throw Error('Unknown mock: '+name);return fakeModules[name];}};
@@ -76,4 +77,10 @@ test('push code must be wholly independent of Staff ID workflows',()=>{
   assert.doesNotMatch(source,/staffIdentity|staffRegistry|pushOutlets/);
   assert.match(source,/pushIssueDeviceCodes/);
   assert.match(source,/pushClaimDeviceCode/);
+});
+
+test('retry delays are bounded and never grow indefinitely',()=>{
+  assert.equal(_pushTest.retryDelay(1),120000);
+  assert.equal(_pushTest.retryDelay(2),240000);
+  assert.equal(_pushTest.retryDelay(5),1800000);
 });

@@ -52,6 +52,9 @@
           appId:cfg.appId||undefined
         },'dolphin-push');
       const auth=authSdk.getAuth(authApp);
+      // Wait until Firebase restores an existing anonymous session. Without
+      // this, an iPhone reload can create a different UID and lose Push access.
+      if(typeof auth.authStateReady==='function')await auth.authStateReady();
       if(!auth.currentUser)await authSdk.signInAnonymously(auth);
       currentUid=auth.currentUser.uid;
       return {messagingApp,functions:fnSdk.getFunctions(authApp,'asia-southeast1'),callable:fnSdk.httpsCallable};

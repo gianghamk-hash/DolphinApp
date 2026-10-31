@@ -155,8 +155,9 @@ test('a transient FCM failure is retried by scheduler without recreating the gue
   dispatch.nextAttemptAt=0;
   await h.pushRetryDeliveries();
   assert.equal(f.sent.length,2);
-  assert.equal(dispatch.status,'sent');
-  assert.equal(dispatch.attempts,2);
+  const afterRetry=[...f.map('dolphin_push_dispatches').values()][0];
+  assert.equal(afterRetry.status,'sent');
+  assert.equal(afterRetry.attempts,2);
   assert.equal(f.sent[0].data.eventId,f.sent[1].data.eventId);
 });
 
@@ -170,5 +171,5 @@ test('expired processing lease is recovered when a Function dies mid-send',async
   dispatch.leaseUntil=Date.now()-1000;
   await h.pushRetryDeliveries();
   assert.equal(f.sent.length,2);
-  assert.equal(dispatch.status,'sent');
+  assert.equal([...f.map('dolphin_push_dispatches').values()][0].status,'sent');
 });

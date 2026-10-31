@@ -53,8 +53,10 @@
     };
   }
   async function systemNotify(title,body,tag){
-    // Background delivery is handled by FCM once this device is registered.
-    if(root.DolphinPush && root.DolphinPush.active)return false;
+    // Only suppress *duplicate order/call* system alerts. Manager reminders,
+    // alarms and any other local notifications must continue working unchanged.
+    var isOrderOrCall=/^(bun|lounge|res)_(orders|calls)-/.test(String(tag||''));
+    if(isOrderOrCall && root.DolphinPush && root.DolphinPush.active)return false;
     if(!('Notification' in root)||Notification.permission!=='granted')return false;
     var options={body:body,tag:tag,icon:base+'pwa-icons/icon-192.png.png',badge:base+'pwa-icons/icon-96.png.png'};
     try{

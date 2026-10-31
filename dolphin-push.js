@@ -134,7 +134,7 @@
       if(issuedCode)issuedCode.textContent=codes.join('\n');
       if(copyButton)copyButton.hidden=!codes.length;
       setManagerStatus(codes.length+' mã một lần, hiệu lực 24 giờ. Gửi riêng một mã cho từng thiết bị nhân viên.');
-    }catch(e){showError(e);}
+    }catch(e){setManagerStatus('Không thể cấp mã Push: '+String(e?.message||e).slice(0,180));}
     finally{busy=false;if(issueButton)issueButton.disabled=false;}
   }
   async function checkDeliveryHealth(){
@@ -278,8 +278,7 @@
     container.append(intro,button,message,enrollPanel,uid,help);
     accessUI();
     if(ios&&!standalone()&&!native)setupGuide();
-    else if(!access)loadAccess().then(revealUid).catch(showError);
-    else revealUid();
+    else loadAccess().then(revealUid).catch(showError);
   }
   function unmountManager(){
     if(managerRoot)managerRoot.replaceChildren();

@@ -51,5 +51,7 @@ test('Firebase anonymous identity is restored before sign-in on iPhone reopen',(
 
 test('Manager can inspect push delivery health without reading sensitive tokens',()=>{
   assert.match(client,/pushGetDeliveryHealth/);
-  assert.match(client,/Manager: Kiểm tra Push/);
+  assert.match(client,/Kiểm tra tình trạng Push/);
+  assert.match(client,/function mountManager\(container\)/);
+  assert.match(client,/pushRevokeDeviceAccess/);
 });

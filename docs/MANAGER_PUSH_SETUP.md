@@ -33,16 +33,16 @@ The system cannot guarantee 100% delivery at the OS/network layer. iOS 16.4+ req
   - Triggers for new pending Bungalow, Lounge, Restaurant orders and customer service calls, plus Show's nested `show_tables/{id}.service` pending orders.
   - Broadcast to **every active enrolled device**, no outlet/Staff ID filters. Paginate Firestore in groups of 400 and send FCM in groups of at most 400; invalid tokens are cleaned.
   - Keep notification previews generic (outlet, table number, event type), not customer details.
-- `dolphin-push.js`: independent Firebase Auth app `dolphin-push` — it does not share or require Staff ID auth — installation guidance, code entry, iOS permission, token enrollment and opt-out, Manager code generation.
+- `dolphin-push.js`: uses the existing `staff-identity-app` **Firebase Auth session only** to preserve the current trusted Manager UID; a separate `dolphin-push` Firebase app is used for FCM Messaging. **No Staff ID enrollment or verification is checked.** Includes installation guidance, code entry, iOS permission, token enrollment/opt-out, and Manager code generation.
 - `service-worker.js`: existing cache/version/updater preserved; handles data-only FCM push and click routing; always shows user-visible notification, including foreground, to satisfy Apple Push requirements.
 - `android/manager` and GitHub Actions build workflow: native FCM for Manager APK only.
 - `staff-id.js` is identical to `main`, intentionally not modified.
 
 ## Required one-time Firebase configuration / secure rollout
-1. **Connect/authorize Firebase:** project `dolphin-f6d67`. The ChatGPT Firebase app must be connected by the account owner; an assistant cannot accept OAuth permissions on the user's behalf.
+1. **Firebase project access:** project `dolphin-f6d67`. The Firebase integration is reported installed in ChatGPT; verify a workspace with Firebase project operations before changing live Firebase state. The current GitHub-only session cannot read live Firebase rules or deploy Cloud Functions.
 2. Register Android app `com.dolphin.cruise.manager` and store base64 of its `google-services.json` in repository secret `FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64`. Never commit it.
 3. Fill **public** `messagingSenderId`, `appId`, `vapidKey` in `push-config.js`. No private server/VAPID secret on the web.
-4. Configure allowlisted **PUSH_MANAGER_UIDS** for at least one Manager identity; note Push uses its own Firebase Auth app and UID may differ from legacy Staff ID.
+4. Configure allowlisted **PUSH_MANAGER_UIDS** for at least one Manager UID. The client reuses the anonymous Firebase Auth session of `staff-identity-app` (not its Staff ID verification), so existing `STAFF_ADMIN_UIDS` can work without re-enrolling a separate Manager UID. Do not depend on user-agent or Staff ID profile for permission.
 5. **Review effective security rules before any Cloud Functions or web deployment:** client SDKs MUST NOT read/write Firestore `dolphin_push_devices`, `dolphin_push_enrollments`, `dolphin_push_invites` or `dolphin_push_dispatches`. They contain private tokens, enrollment status and invite metadata. Broad/wildcard `allow` grants override narrow denials (rules are OR-ed). Only Admin SDK and authenticated callable functions may access them. Existing order/Staff ID rules must remain unchanged.
 6. Deploy Firebase Functions from repository root with an authorized Firebase principal: `firebase deploy --only functions --project dolphin-f6d67`.
 7. Deploy web files to `https://dolphinfb.store`, rebuild **Manager** APK with the Android secret. Staff APK's native implementation is unchanged.

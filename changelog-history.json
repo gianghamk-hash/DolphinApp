@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.9",
+      "releaseDate": "2026-10-30T09:09:45.339Z",
+      "summary": "Fix custom-domain URLs and restore floating Back controls (#164)",
+      "details": [
+        "Fix custom-domain URLs and restore floating Back controls (#164)"
+      ]
+    },
+    {
       "version": "1.1.8",
       "releaseDate": "2026-10-30T07:44:01.872Z",
       "summary": "Fix order and service notifications and restore music (#163)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029",
       "details": [
         "Merge pull request #121 from gianghamk-hash/fix/tft-six-support-glb-and-android-hp-20261029"
-      ]
-    },
-    {
-      "version": "1.0.179",
-      "releaseDate": "2026-10-29T05:45:45.045Z",
-      "summary": "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029",
-      "details": [
-        "Merge pull request #120 from gianghamk-hash/perf/tft-package-g-model-vfx-20261029"
       ]
     }
   ]

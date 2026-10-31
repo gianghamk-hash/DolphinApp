@@ -1,7 +1,7 @@
 {
-  "version": "1.1.9",
-  "buildDate": "2026-10-30T09:09:45.339Z",
-  "commit": "395e451",
-  "notes": "Fix custom-domain URLs and restore floating Back controls (#164)",
+  "version": "1.1.10",
+  "buildDate": "2026-10-31T02:32:07.477Z",
+  "commit": "38885f8",
+  "notes": "Merge pull request #165: add independent staff Push notifications",
   "forceUpdate": false
 }

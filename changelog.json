@@ -1,94 +1,98 @@
 {
-  "version": "1.1.9",
-  "previousVersion": "1.1.8",
-  "commit": "395e451",
-  "previousCommit": "b154da2",
-  "buildDate": "2026-10-30T09:09:45.339Z",
-  "summary": "Fix custom-domain URLs and restore floating Back controls (#164)",
+  "version": "1.1.10",
+  "previousVersion": "1.1.9",
+  "commit": "38885f8",
+  "previousCommit": "395e451",
+  "buildDate": "2026-10-31T02:32:07.477Z",
+  "summary": "Merge pull request #165: add independent staff Push notifications",
   "changes": {
-    "totalCommits": 233,
-    "filesChanged": 27,
+    "totalCommits": 234,
+    "filesChanged": 30,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix custom-domain URLs and restore floating Back controls (#164)"
+    "Merge pull request #165: add independent staff Push notifications"
   ],
   "fileChanges": [
+    {
+      "file": ".firebaserc",
+      "type": "update"
+    },
     {
       "file": ".github/workflows/build.yml",
       "type": "update"
     },
     {
-      "file": ".github/workflows/service-alert-tests.yml",
+      "file": ".github/workflows/manager-push-checks.yml",
       "type": "update"
     },
     {
-      "file": "caro/index.html",
+      "file": ".github/workflows/tactics-engine-tests.yml",
       "type": "update"
     },
     {
-      "file": "changelog-popup.js",
+      "file": ".gitignore",
       "type": "update"
     },
     {
-      "file": "dolphin-bungalow.html",
+      "file": "android/manager/AndroidPushBridge.java",
       "type": "update"
     },
     {
-      "file": "dolphin-guests.html",
+      "file": "android/manager/DolphinMessagingService.java",
       "type": "update"
     },
     {
-      "file": "dolphin-lounge.html",
+      "file": "docs/MANAGER_PUSH_SETUP.md",
       "type": "update"
     },
     {
-      "file": "dolphin-navigation.js",
+      "file": "docs/MANAGER_WEB_PUSH_ROLLOUT.md",
       "type": "update"
     },
     {
-      "file": "dolphin-restaurant.html",
+      "file": "docs/PUSH_SECURITY_MIGRATION.md",
       "type": "update"
     },
     {
-      "file": "dolphin-show.html",
+      "file": "dolphin-alerts.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/battleship.html",
+      "file": "dolphin-push.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/caro.html",
+      "file": "firebase.json",
       "type": "update"
     },
     {
-      "file": "giaitri/games/chess.html",
+      "file": "firestore.rules",
       "type": "update"
     },
     {
-      "file": "giaitri/games/game2048.html",
+      "file": "functions/index.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/snake-coop-online.html",
+      "file": "functions/package.json",
       "type": "update"
     },
     {
-      "file": "giaitri/games/snake.html",
+      "file": "functions/push.integration.test.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "functions/push.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/xiangqi.html",
+      "file": "functions/push.test.js",
       "type": "update"
     },
     {
-      "file": "giaitri/index.html",
+      "file": "functions/staff-id.test.js",
       "type": "update"
     },
     {
@@ -104,19 +108,27 @@
       "type": "update"
     },
     {
-      "file": "ranking/index.html",
+      "file": "push-config.js",
       "type": "update"
     },
     {
-      "file": "scripts/check-service-pages.cjs",
+      "file": "scripts/order-alerts.test.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/domain-navigation-browser.cjs",
+      "file": "scripts/push-client.test.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/domain-navigation.test.cjs",
+      "file": "scripts/push-config-preflight.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/push-rules-test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/push-worker.test.cjs",
       "type": "update"
     },
     {

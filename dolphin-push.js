@@ -6,6 +6,12 @@
   if (!root.document || root.top !== root || /DolphinStaff/.test(navigator.userAgent)) return;
   const cfg = root.DOLPHIN_PUSH_CONFIG || {};
   const native = !!(root.AndroidPush && typeof root.AndroidPush.requestToken === 'function');
+  // Preserve the existing in-page Dolphin alerts until real Web Push settings
+  // are deployed. Never show a broken Push enrollment control on Safari/Web.
+  if (!native && (!cfg.messagingSenderId || !cfg.appId || !cfg.vapidKey)) {
+    console.info('[DolphinPush] Web Push not configured; legacy notifications remain active.');
+    return;
+  }
   const ios = /iPad|iPhone|iPod/.test(navigator.userAgent) ||
     (navigator.platform === 'MacIntel' && navigator.maxTouchPoints > 1);
   const standalone = () => navigator.standalone === true ||

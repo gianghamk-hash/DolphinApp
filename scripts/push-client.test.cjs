@@ -132,7 +132,7 @@ test('Staff APK native permission registers token with staff-android without req
 test('Manager health and activation/revoke controls appear only when Manager deliberately mounts its settings',async()=>{
   const f=browserFixture({native:true,role:'manager'});await f.ready();
   assert.equal(f.nodes.length,0,'nothing generated over outlet buttons on landing');
-  const manager={children:[],replaceChildren(...items){this.children=[...items];}};
+  const manager={children:[],replaceChildren(...items){this.children=[...items];},append(...items){this.children.push(...items);}};
   f.api.mountManager(manager);
   const health=f.nodes.find(n=>n.textContent==='📡 Kiểm tra tình trạng Push');
   assert.ok(health,'health tool created inside Manager settings');
@@ -179,7 +179,7 @@ test('a previously registered session preserves consent during temporary network
 
 test('staff settings can be closed without unregistering Push, including on reopen',async()=>{
   const f=browserFixture({optIn:true,notificationState:'granted'});await f.ready();
-  const container={children:[],replaceChildren(...nodes){this.children=[...nodes];}};
+  const container={children:[],replaceChildren(...nodes){this.children=[...nodes];},append(...nodes){this.children.push(...nodes);}};
   assert.equal(f.api.active,true);
   f.api.mountSettings(container);
   assert.ok(container.children.length>0);

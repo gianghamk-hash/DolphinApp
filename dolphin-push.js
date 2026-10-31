@@ -1,9 +1,9 @@
-/* Dolphin background push — same alerts for ALL enrolled team devices.
+/* Dolphin background push — same alerts for ALL opted-in devices.
    Neither Staff ID nor Staff online status is consulted for Push authorization.
-   A Manager-issued one-time device code keeps customers from subscribing. */
+   The user explicitly allows public opt-in through the notification button. */
 (function(root){
   'use strict';
-  if (!root.document || root.top !== root || /DolphinStaff/.test(navigator.userAgent)) return;
+  if (!root.document || root.top !== root) return;
   const cfg = root.DOLPHIN_PUSH_CONFIG || {};
   const native = !!(root.AndroidPush && typeof root.AndroidPush.requestToken === 'function');
   // Preserve the existing in-page Dolphin alerts until real Web Push settings
@@ -19,6 +19,7 @@
   const base = new URL('./',document.currentScript?.src || location.href);
   const sdk = 'https://www.gstatic.com/firebasejs/10.12.2/';
   const optInKey = 'dolphinPushEnabled';
+  const registeredKey = 'dolphinPushRegistered';
   let clientPromise, registration, lastToken='', busy=false, currentUid='', access=null;
   // UI is mounted only inside user-opened settings: NEVER as a floating control.
   let staffRoot=null,managerRoot=null,managerMessage=null,managerControls=null;
@@ -32,7 +33,9 @@
     if(style)node.style.cssText=style;
     return node;
   }
+
   const optedIn = () => {try{return localStorage.getItem(optInKey)==='1';}catch(e){return false;}};
+  const registeredBefore = () => {try{return optedIn()&&localStorage.getItem(registeredKey)==='1';}catch(e){return false;}};
   function setStatus(label,detail){
     statusLabel=label;statusDetail=detail||'';
     if(button)button.textContent=label;
@@ -169,9 +172,9 @@
   }
   async function registerToken(token,platform){
     if(!token||token.length<20)throw new Error('FCM token chưa sẵn sàng.');
-    const data=await callable('pushRegisterDevice',{token,platform});
+    const data=await callable('pushRegisterDevice',{token,platform,consent:true});
     lastToken=token;
-    try{localStorage.setItem(optInKey,'1');}catch(e){}
+    try{localStorage.setItem(optInKey,'1');localStorage.setItem(registeredKey,'1');}catch(e){}
     setStatus('🔔 Push đang bật · nhấn để tắt',
       (data?.role==='manager'?'Manager':'Nhân viên')+' · nhận tất cả outlet: Bungalow, Lounge, Restaurant, Show.');
   }
@@ -190,29 +193,25 @@
   }
   function showError(error){
     console.warn('[DolphinPush]',error);
-    const code=String(error?.code||'');
-    const detail=String(error?.message||error||'');
-    const authErr=code.includes('permission-denied')||code.includes('failed-precondition');
-    setStatus(authErr?'🔒 Chưa được cấp Push':'🔕 Push chưa hoạt động',
-      detail.slice(0,220)+(authErr&&currentUid?' · UID thiết bị: '+currentUid:''));
+    const detail=String(error?.message||error||'').slice(0,220);
+    if(!lastToken&&registeredBefore()&&(native||('Notification' in root&&Notification.permission==='granted'))){
+      setStatus('🔔 Push đang chờ khôi phục',detail);
+    }else{
+      setStatus('🔕 Chưa bật được thông báo',detail);
+    }
   }
   // IMPORTANT: iOS Notification.requestPermission MUST happen synchronously in the
   // original tap handler. Do not await Firebase/Auth or network first.
   async function enable(){
     if(busy)return;
     if(ios&&!standalone()&&!native){setupGuide();return;}
-    if(!access?.authorized){
-      if(!access)loadAccess().catch(showError);
-      if(enrollPanel){enrollPanel.hidden=false;enrollPanel.style.display='flex';}
-      setStatus('🔑 Nhập mã Push trước','Manager có thể tạo mã Push độc lập Staff ID ngay trong ứng dụng Dolphin.');
-      return;
-    }
     busy=true;
     try{
       if(native){root.AndroidPush.requestToken();return;}
       if(!('Notification' in root))throw new Error('iPhone cần iOS 16.4+ và cài Dolphin trên Màn hình chính.');
       const permission=Notification.permission==='granted'?'granted':await Notification.requestPermission();
       if(permission!=='granted')throw new Error('Chưa cấp quyền thông báo. Vào Cài đặt iPhone → Thông báo → Dolphin.');
+      try{localStorage.setItem(optInKey,'1');}catch(e){}
       const token=await webToken();
       await registerToken(token,'web');
     }catch(e){showError(e);}
@@ -221,16 +220,20 @@
   async function resume(){
     if(!optedIn())return;
     if(ios&&!standalone()&&!native){setupGuide();return;}
-    if(!access?.authorized)return;
     if(native){root.AndroidPush.readToken();return;}
     if('Notification' in root && Notification.permission==='granted'){
       try{const token=await webToken();await registerToken(token,'web');}
       catch(e){showError(e);}
+    }else{
+      lastToken='';
+      try{localStorage.removeItem(registeredKey);}catch(e){}
+      setStatus('🔔 Bật thông báo','Cho phép thông báo trên thiết bị để nhận order mới.');
     }
   }
   async function receiveNativeToken(token){
     busy=false;
-    try{await registerToken(String(token||''),'manager-android');}
+    if(token && String(token).length>=20){try{localStorage.setItem(optInKey,'1');}catch(e){}}
+    try{await registerToken(String(token||''),/DolphinStaff/.test(navigator.userAgent)?'staff-android':'manager-android');}
     catch(e){showError(e);}
   }
   async function disable(){
@@ -239,7 +242,7 @@
     try{
       if(lastToken)await callable('pushUnregisterDevice',{token:lastToken});
       lastToken='';
-      try{localStorage.removeItem(optInKey);}catch(e){}
+      try{localStorage.removeItem(optInKey);localStorage.removeItem(registeredKey);}catch(e){}
       setStatus('🔕 Đã tắt Push','Đã hủy thiết bị khỏi danh sách nhận Push.');
     }catch(e){showError(e);}
     finally{busy=false;}
@@ -329,9 +332,14 @@
     mountSettings,unmountSettings,mountManager,unmountManager,
     get active(){return !!lastToken;},get uid(){return currentUid;},
     get isIOS(){return ios;},get isInstalled(){return standalone();}};
+  // Retry an opted-in setup after connectivity returns or the app reopens.
+  if(root.addEventListener)root.addEventListener('online',()=>resume().catch(showError));
+  document.addEventListener('visibilitychange',()=>{
+    if(document.visibilityState==='visible')resume().catch(showError);
+  });
   async function start(){
-    // Background FCM registration is independent of the optional, closed UI.
-    // Never append a fixed button, backdrop or touch-intercepting overlay.
+    // Push registration/resume remains active when the settings UI is closed.
+    // Never append floating buttons, fixed overlays or invisible click blockers.
     if(ios&&!standalone()&&!native)return;
     try{await loadAccess();if(optedIn())await resume();}
     catch(e){showError(e);}

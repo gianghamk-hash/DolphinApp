@@ -32,6 +32,15 @@ jobs:
           node --check push-config.js
           node --check service-worker.js
           node --check functions/push.js
+      - name: Manager APK Firebase credential readiness (no secret values logged)
+        env:
+          MANAGER_FIREBASE_JSON_B64: ${{ secrets.FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 }}
+        run: |
+          if [ -n "$MANAGER_FIREBASE_JSON_B64" ]; then
+            echo "Manager APK Firebase Android credential exists in GitHub Actions secrets."
+          else
+            echo "::warning::Manager APK build is BLOCKED until FIREBASE_MANAGER_GOOGLE_SERVICES_JSON_B64 is configured."
+          fi
       - name: Install Firebase Functions test dependencies
         run: npm install --prefix functions --no-audit --ignore-scripts
       - name: Test Cloud Functions and Service Worker

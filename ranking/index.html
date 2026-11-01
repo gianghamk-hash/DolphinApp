@@ -373,9 +373,9 @@ function calcRevenue(){
     add(staff, PRICE_BUNGALOW, 'BGL');
   });
 
-  // 3. Dolphin Show: cả bàn hiện tại và lịch sử đóng ca, giá theo combo đã bán.
+  // 3. Dolphin Show: trừ FOC; các phương thức khác vẫn được tính theo combo bán.
   collectShowTables().forEach(t => {
-    if (isExcludedFromRevenue(t)) return;
+    if (String(t?.payment||t?.paymentMethod||'').trim().toUpperCase()==='FOC') return;
     const staff = (t.seller || '').trim();
     if (!staff) return;
     const label = t.label || '';

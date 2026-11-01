@@ -37,7 +37,10 @@ jobs:
       - name: 🔧 Setup Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: '20'
+          node-version: '22'
+
+      - name: Verify release version and asset cache updates
+        run: node --test scripts/bump-version.test.cjs
 
       - name: 🐬 Detect bump type
         env:
@@ -76,8 +79,10 @@ jobs:
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
 
       - name: 🚀 Run bump-version.js
+        env:
+          RELEASE_NOTE: ${{ steps.note.outputs.note }}
         run: |
-          node bump-version.js ${{ steps.detect.outputs.type }} "${{ steps.note.outputs.note }}"
+          node bump-version.js ${{ steps.detect.outputs.type }} "$RELEASE_NOTE"
 
       - name: 📊 Show changes
         run: |
@@ -86,7 +91,7 @@ jobs:
 
       - name: 💾 Commit changes
         run: |
-          git add version.json sw-config.json changelog.json changelog-history.json service-worker.js index.html dolphin-bungalow.html dolphin-lounge.html dolphin-restaurant.html dolphin-show.html ranking/index.html caro/index.html
+          git add version.json sw-config.json changelog.json changelog-history.json service-worker.js index.html dolphin-bungalow.html dolphin-lounge.html dolphin-restaurant.html dolphin-show.html dolphin-profile.html ranking/index.html caro/index.html
           if git diff --staged --quiet; then
             echo "No changes to commit"
             exit 0

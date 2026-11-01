@@ -30,6 +30,7 @@ const HTML_FILES = [
   'dolphin-lounge.html',
   'dolphin-restaurant.html',
   'dolphin-show.html',
+  'dolphin-profile.html',
   'ranking/index.html',
   'caro/index.html',
 ];
@@ -89,12 +90,6 @@ function bumpSemver(current, type){
   return major + '.' + minor + '.' + patch;
 }
 
-/* Bump version ngắn cho HTML (chỉ major.minor) */
-function shortVersion(v){
-  const m = String(v).match(/^(\d+)\.(\d+)/);
-  return m ? (m[1] + '.' + m[2]) : v;
-}
-
 function getGitInfo(){
   try {
     const commit = execSync('git rev-parse --short HEAD', { encoding: 'utf8' }).trim();
@@ -140,7 +135,6 @@ function main(){
 
   const oldVersion = swCfg.version || '0.0.0';
   const newVersion = bumpSemver(oldVersion, type);
-  const newShort   = shortVersion(newVersion);
 
   info('Version:  ' + C.bright + oldVersion + C.reset + ' → ' + C.green + newVersion + C.reset);
   console.log('');
@@ -239,11 +233,11 @@ function main(){
       return;
     }
 
-    /* Replace tất cả ?v=X.Y → ?v=newShort */
-    content = content.replace(VERSION_REGEX, '$1' + newShort);
+    /* Include the patch number so every release invalidates cached assets. */
+    content = content.replace(VERSION_REGEX, '$1' + newVersion);
 
     if (!isDryRun) fs.writeFileSync(fullPath, content, 'utf8');
-    success('  ' + file + ' → ?v=' + newShort + ' (' + matches.length + ' chỗ)');
+    success('  ' + file + ' → ?v=' + newVersion + ' (' + matches.length + ' chỗ)');
     htmlCount++;
   });
 

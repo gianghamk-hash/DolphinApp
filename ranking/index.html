@@ -70,6 +70,16 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .rank-tabs .tab-btn.active{box-shadow:0 2px 11px rgba(244,184,66,.30)}
 .leader-tile-icon[data-staff-avatar]{display:grid;place-items:center;min-width:32px;height:32px;line-height:1;font-size:26px}
 @media(max-width:400px){.rank-tabs{gap:5px}.rank-tabs .tab-btn{font-size:10px;padding:9px 3px;letter-spacing:0}}
+
+/* Equipped Staff ID cosmetic frames in each Top 1 card */
+.leader-tile-icon[data-frame="bronze"]{border:3px solid #c99055;box-shadow:0 0 10px #c9905588;border-radius:12px;padding:2px}
+.leader-tile-icon[data-frame="silver"]{border:3px solid #bde1f2;box-shadow:0 0 11px #a0d8efaa;border-radius:12px;padding:2px}
+.leader-tile-icon[data-frame="gold"]{border:3px solid #ffce55;box-shadow:0 0 12px #ffd65baa;border-radius:12px;padding:2px}
+.leader-tile-icon[data-frame="mythic"]{border:3px solid #f3a8ff;box-shadow:0 0 12px #e69bffdd;border-radius:12px;padding:2px}
+.crew-name-flame{color:#ffd36b!important;text-shadow:0 0 6px #fabe44,0 0 11px #ff9f1c}
+.crew-name-gradient{background:linear-gradient(90deg,#ffe28b,#7fe9ed,#e6a8ff,#ffe28b);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent!important;animation:crew-name-hue 4s linear infinite}
+@keyframes crew-name-hue{to{background-position:250% 0}}
+@media(prefers-reduced-motion:reduce){.crew-name-gradient{animation:none}}
 </style>
 <script src="../staff-sync.js" defer></script>
 <script src="../staff-id.js?v=1.1.35" defer></script>

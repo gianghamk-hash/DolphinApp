@@ -37,6 +37,11 @@ function resolve(map,name){
  const ids=map.get(norm(name));
  return ids?.size===1?[...ids][0]:null;
 }
+function resolvedForActor(map,name,stamped,who){
+ const aliases=[who.profile.name,...(Array.isArray(who.profile.nameAliases)?who.profile.nameAliases:[])];
+ if(stamped===who.id&&aliases.some(n=>norm(n)===norm(name)))return who.id;
+ return resolve(map,name);
+}
 async function actor(req,db){
  const uid=req.auth?.uid;
  if(!uid)bad('unauthenticated','Cần đăng nhập Staff ID');
@@ -61,11 +66,13 @@ async function sync(kind,id,req){
  if(!doc.exists)bad('not-found','Bản ghi đã bị xóa hoặc chưa được lưu');
  const v=doc.data()||{},isTable=kind.endsWith('_tables');
  const names=isTable?[kind==='show_tables'?v.seller:v.openedByStaff]:[...rules.names(v.preparedBy),...rules.names(v.completedBy)];
- const participants=new Set(names.map(n=>resolve(byName,n)).filter(Boolean));
- if(!participants.has(who.id)&&!who.manager)bad('permission-denied','Staff ID không khớp với nhân viên ghi trên bàn/đơn');
+ const participants=new Set(names.map(n=>resolvedForActor(byName,n,
+ isTable?(kind==='show_tables'?v.sellerStaffId:v.openedByStaffId):
+  (norm(n)===norm(v.completedBy)?v.completedByStaffId:v.preparedByStaffId),who)).filter(Boolean));
+ if(!participants.has(who.id)&&!who.manager)bad('permission-denied','Không nhận diện được Staff ID từ tên nhân viên trên bàn/đơn. Hãy kiểm tra tên đã đăng ký trong Hồ sơ nhân viên và lưu lại.');
  let added=0,awardCount=0;
  if(isTable){
-  const employeeId=resolve(byName,names[0]);
+  const employeeId=resolvedForActor(byName,names[0],kind==='show_tables'?v.sellerStaffId:v.openedByStaffId,who);
   const revenue=rules.tableValue(kind,v);
   const amount=engine.revenueXP(revenue);
   if(employeeId&&amount>0){
@@ -82,7 +89,7 @@ async function sync(kind,id,req){
   const done=new Set(rules.names(v.completedBy).map(norm));
   const keys=new Map([...rules.names(v.preparedBy),...rules.names(v.completedBy)].map(n=>[norm(n),n]));
   for(const [nameKey,name] of keys){
-   const employeeId=resolve(byName,name);
+   const employeeId=resolvedForActor(byName,name,done.has(nameKey)?v.completedByStaffId:v.preparedByStaffId,who);
    if(!employeeId)continue;
    const isLounge=kind==='lounge_orders';
    const base=done.has(nameKey)?(isLounge?0.25:1):prep.has(nameKey)?(isLounge?0.1:0.5):0;
@@ -107,3 +114,5 @@ exports.staffSyncSavedActivityXP=onCall(opts,async req=>{
 module.exports._directory=directory;
 module.exports._resolve=resolve;
 
+
+module.exports._resolvedForActor=resolvedForActor;

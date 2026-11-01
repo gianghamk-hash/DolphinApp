@@ -1088,6 +1088,8 @@ window.saveCustomerName = async function(){
     updatedAt: Date.now()
   };
   if(payment==='FOC'||payment==='TA_UNPAID') data.focReason = focReason;
+  const linked=window.DolphinStaffId?.get?.();
+  if(linked?.employeeId&&String(linked.name||'').trim().toLocaleLowerCase('vi-VN')===String(finalOpener).trim().toLocaleLowerCase('vi-VN'))data.openedByStaffId=linked.employeeId;
 
   if(origPax>0 && pax!==origPax){ window.promptManagerAuth('save',{table,dataToSave:data}); return; }
   await window.executeSaveCustomerName({table, dataToSave:data});
@@ -1100,7 +1102,7 @@ window.executeSaveCustomerName = async function({table,dataToSave}){
     window.showToast(`Đã lưu bàn ${table}`,'✅');
     if(window.DolphinStaffId?.syncSavedActivity)void window.DolphinStaffId.syncSavedActivity({kind:'lounge_tables',id:table})
       .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP từ bàn '+table,'⭐');})
-      .catch(e=>console.warn('[Lounge XP] Đồng bộ sau lưu thất bại:',e?.code||e?.message||e)); 
+      .catch(e=>{console.warn('[Lounge XP] Đồng bộ sau lưu thất bại:',e?.code||e?.message||e);window.showToast('Bàn đã lưu nhưng XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');}); 
     window.closeCustomerNameModal(); 
     Confetti.spawn(innerWidth/2, innerHeight/2, 40); 
   }
@@ -1241,6 +1243,8 @@ window.executeStaffAction = async function(name){
             state.lastTransactionWarning = `CẢNH BÁO TRÙNG: ${cur.preparedBy} cũng nhận đơn này!`;
           } else { upd.preparedBy = name; state.lastTransactionWarning=null; }
         } else if(nextStatus==='completed'){
+          const linked=window.DolphinStaffId?.get?.();
+          if(linked?.employeeId&&String(linked.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN'))upd.completedByStaffId=linked.employeeId;
           upd.completedBy = name;
           upd.completedAt = Date.now();
           upd.completedTime = window.getVNTime().timeString;
@@ -1253,7 +1257,7 @@ window.executeStaffAction = async function(name){
       if(nextStatus==='completed'&&window.DolphinStaffId?.syncSavedActivity)
         void window.DolphinStaffId.syncSavedActivity({kind:'lounge_orders',id:orderId})
           .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP hoàn thành đơn','⭐');})
-          .catch(e=>console.warn('[Lounge XP] Đơn đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e));
+          .catch(e=>{console.warn('[Lounge XP] Đơn đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e);window.showToast('Order đã lưu nhưng XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');});
     } catch(e){ console.error('[Lounge order status]',orderId,nextStatus,e); window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra quyền Firestore'),"❌"); }
   } else { window.showToast(`Đã lưu tên: ${name}`,'📝'); renderAll(); }
   state.pendingAction=null;

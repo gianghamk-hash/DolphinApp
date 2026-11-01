@@ -11,7 +11,7 @@ async function connect(){
   import('https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js'),
   import('https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js')]);
  const cfg={apiKey:'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ',authDomain:'dolphin-f6d67.firebaseapp.com',projectId:'dolphin-f6d67'};
- let app;try{app=fb.getApp('staff-prestige-ui');}catch(e){app=fb.initializeApp(cfg,'staff-prestige-ui');}
+ let app;try{app=fb.getApp('staff-identity-app');}catch(e){app=fb.initializeApp(cfg,'staff-identity-app');}
  const auth=au.getAuth(app);if(!auth.currentUser)await au.signInAnonymously(auth);
  const functions=fn.getFunctions(app,'asia-southeast1');api=(name,payload)=>fn.httpsCallable(functions,name)(payload||{}).then(r=>r.data);return api;
 }

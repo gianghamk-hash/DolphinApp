@@ -84,25 +84,3 @@ const c=await device('unlinked');await c.page.goto(origin+'/dolphin-profile.html
 console.log('PASS: compact dashboard, independently opened settings, level-gated perks, rewards and hidden manager controls.');
 const relevant=errors.filter(e=>!e.includes('firebase-')&&!e.includes('firebase')&&!e.includes('getFirestore'));assert.deepEqual(relevant,[]);console.log('PASS: mobile/desktop layout; no profile/renderer runtime errors.');
 }finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});
-,'state','renderAll',source)(
-  id=>document.getElementById(id),{mainTab:'revenue'},()=>{}
-),switchFn);
-await rankFrame.locator('[data-rank-target="level"]').click();
-assert.equal(await rankFrame.locator('#section-level').isVisible(),true,'Level tab is interactive');
-assert.equal(await rankFrame.locator('#level-board-list .level-entry').count(),2);
-assert.equal(await rankFrame.locator('#level-legendary-list .legendary-entry').count(),1);
-assert.equal(await rankFrame.locator('.dolphin-prestige').count(),0,'Global floating Emperor banner removed');
-assert.equal(await rankFrame.locator('#section-revenue').isVisible(),false);
-assert.equal(await b.page.locator('.dolphin-prestige').count(),0,'Profile no longer shows floating Emperor banner');
-
-assert.equal(await b.page.locator('dialog[open]').count(),0);
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();assert.equal(await b.page.locator('#style-dialog').isVisible(),true);assert.equal(await b.page.locator('input[name=staff-theme][value=halloween]').isDisabled(),true);assert.equal(await b.page.locator('#staff-flame-check').isDisabled(),true);assert.equal(await b.page.locator('#staff-save-style').isEnabled(),true);
-await b.page.screenshot({path:path.join(output,'profile-style-mobile.png'),fullPage:true});await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.check('input[name=staff-theme][value=light]');await b.page.click('#staff-save-style');await b.page.locator('#staff-style-info').filter({hasText:'Đã lưu'}).waitFor();assert.equal(await b.page.locator('body').getAttribute('data-theme'),'light');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-light-mobile.png'),fullPage:true});
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.check('input[name=staff-theme][value=gray]');await b.page.click('#staff-save-style');await b.page.waitForFunction(()=>document.body.dataset.theme==='gray');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-gray-mobile.png'),fullPage:true});
-await b.page.getByRole('button',{name:'Phần thưởng',exact:true}).click();assert.equal(await b.page.locator('.reward-row').count(),16);await b.page.keyboard.press('Escape');assert.equal(await b.page.locator('dialog[open]').count(),0);
-assert.equal(await b.page.locator('#prestige-admin-launch').isVisible(),false);
-const c=await device('unlinked');await c.page.goto(origin+'/dolphin-profile.html');await c.page.locator('#staff-xp-summary').filter({hasText:'Đăng ký hoặc liên kết'}).waitFor();assert.equal(await c.page.locator('#staff-save-style').isEnabled(),false);await c.context.close();
-console.log('PASS: compact dashboard, independently opened settings, level-gated perks, rewards and hidden manager controls.');
-const relevant=errors.filter(e=>!e.includes('firebase-')&&!e.includes('firebase')&&!e.includes('getFirestore'));assert.deepEqual(relevant,[]);console.log('PASS: mobile/desktop layout; no profile/renderer runtime errors.');
-}finally{await browser.close();}})().catch(e=>{console.error(e);process.exitCode=1});

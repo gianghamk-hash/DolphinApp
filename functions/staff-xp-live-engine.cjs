@@ -6,7 +6,7 @@ const xp=require('./staff-xp-engine.cjs');
 const SHOW_PRICES=Object.freeze({combo1:1390000,combo2:790000,combo3:2000000,singer1:2290000,singer2:2290000,singer3:3290000});
 const EXCLUDED=new Set(['FOC','TA_UNPAID','KTOUR']);
 function clean(v){return String(v||'').normalize('NFC').trim().replace(/\s+/g,' ');}
-function names(v){return [...new Map(clean(v).split('&').filter(Boolean).map(n=>[n.toLocaleLowerCase('vi-VN'),n])).values()];}
+function names(v){return [...new Map(clean(v).split('&').map(clean).filter(Boolean).map(n=>[n.toLocaleLowerCase('vi-VN'),n])).values()];}
 function tableValue(kind,t){
  if(!t)return 0;
  const method=clean(t.paymentMethod||t.payment).toUpperCase();

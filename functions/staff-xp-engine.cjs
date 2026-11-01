@@ -48,7 +48,7 @@ const PERKS=Object.freeze([
   "name": "Theme winter"
  },
  {
-  "level": 15,
+  "level": 10,
   "id": "avatar-adventure",
   "name": "Avatar Phiêu lưu"
  },
@@ -93,7 +93,7 @@ const PERKS=Object.freeze([
   "name": "Theme midautumn"
  },
  {
-  "level": 25,
+  "level": 20,
   "id": "avatar-festival",
   "name": "Avatar Lễ hội"
  },
@@ -118,7 +118,7 @@ const PERKS=Object.freeze([
   "name": "Theme newyear"
  },
  {
-  "level": 40,
+  "level": 30,
   "id": "avatar-speed",
   "name": "Avatar Thần tốc"
  },

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.29",
+  "version": "1.1.30",
   "releaseDate": "2026-11-01",
-  "notes": "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors"
+  "notes": "fix(ci): handle quotation marks in release bump messages"
 }

@@ -1,50 +1,22 @@
 {
-  "version": "1.1.29",
-  "previousVersion": "1.1.28",
-  "commit": "5e0990b",
-  "previousCommit": "d84f0df",
-  "buildDate": "2026-11-01T13:29:28.303Z",
-  "summary": "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors",
+  "version": "1.1.30",
+  "previousVersion": "1.1.29",
+  "commit": "5ca14ae",
+  "previousCommit": "5e0990b",
+  "buildDate": "2026-11-01T13:47:14.331Z",
+  "summary": "fix(ci): handle quotation marks in release bump messages",
   "changes": {
-    "totalCommits": 253,
-    "filesChanged": 8,
+    "totalCommits": 254,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors"
+    "fix(ci): handle quotation marks in release bump messages"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-bungalow.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-lounge.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-restaurant.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-show.html",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-rank-sync.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-rank-sync.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
+      "file": ".github/workflows/auto-bump.yml",
       "type": "update"
     }
   ]

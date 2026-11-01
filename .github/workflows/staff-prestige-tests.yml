@@ -1,0 +1,33 @@
+name: Staff Prestige and Reconciliation
+on:
+  pull_request:
+    paths:
+      - 'functions/staff-prestige.js'
+      - 'functions/staff-xp-reconcile.js'
+      - 'functions/staff-xp-reconcile.test.cjs'
+      - 'functions/staff-xp-engine.cjs'
+      - 'functions/staff-xp-engine.test.cjs'
+      - 'staff-prestige-client.js'
+      - 'staff-prestige-profile.js'
+      - 'staff-xp-manager.js'
+      - 'theme-system.js'
+      - '.github/workflows/staff-prestige-tests.yml'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: JS syntax checks
+        run: |
+          node --check functions/staff-prestige.js
+          node --check functions/staff-xp-reconcile.js
+          node --check functions/staff-xp-engine.cjs
+          node --check staff-prestige-client.js
+          node --check staff-prestige-profile.js
+          node --check staff-xp-manager.js
+          node --check theme-system.js
+      - name: Staff XP and archival reconciliation tests
+        run: node --test functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs

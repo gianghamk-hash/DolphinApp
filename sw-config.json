@@ -1,5 +1,5 @@
 {
-  "version": "1.1.34",
+  "version": "1.1.35",
   "releaseDate": "2026-11-01",
-  "notes": "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions"
+  "notes": "feat(profile): add DOL-0001 personal XP testing controls"
 }

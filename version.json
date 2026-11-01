@@ -1,7 +1,7 @@
 {
-  "version": "1.1.30",
-  "buildDate": "2026-11-01T13:47:14.331Z",
-  "commit": "5ca14ae",
-  "notes": "fix(ci): handle quotation marks in release bump messages",
+  "version": "1.1.31",
+  "buildDate": "2026-11-01T13:58:27.855Z",
+  "commit": "a467c25",
+  "notes": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions",
   "forceUpdate": false
 }

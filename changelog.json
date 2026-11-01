@@ -1,22 +1,26 @@
 {
-  "version": "1.1.30",
-  "previousVersion": "1.1.29",
-  "commit": "5ca14ae",
-  "previousCommit": "5e0990b",
-  "buildDate": "2026-11-01T13:47:14.331Z",
-  "summary": "fix(ci): handle quotation marks in release bump messages",
+  "version": "1.1.31",
+  "previousVersion": "1.1.30",
+  "commit": "a467c25",
+  "previousCommit": "5ca14ae",
+  "buildDate": "2026-11-01T13:58:27.855Z",
+  "summary": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions",
   "changes": {
-    "totalCommits": 254,
-    "filesChanged": 1,
+    "totalCommits": 255,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ci): handle quotation marks in release bump messages"
+    "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/auto-bump.yml",
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
       "type": "update"
     }
   ]

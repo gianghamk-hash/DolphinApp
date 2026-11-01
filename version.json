@@ -1,7 +1,7 @@
 {
-  "version": "1.1.21",
-  "buildDate": "2026-11-01T08:38:26.874Z",
-  "commit": "4fd9e7f",
-  "notes": "Fix Firebase production preflight JSON parsing (#177)",
+  "version": "1.1.22",
+  "buildDate": "2026-11-01T10:01:09.068Z",
+  "commit": "d407e51",
+  "notes": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)",
   "forceUpdate": false
 }

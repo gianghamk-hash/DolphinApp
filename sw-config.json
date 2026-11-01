@@ -1,5 +1,5 @@
 {
-  "version": "1.1.21",
+  "version": "1.1.22",
   "releaseDate": "2026-11-01",
-  "notes": "Fix Firebase production preflight JSON parsing (#177)"
+  "notes": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)"
 }

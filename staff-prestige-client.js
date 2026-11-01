@@ -113,8 +113,39 @@ async function subscribeProfileSignal(){
   },e=>console.warn('[Prestige] Live signal unavailable; periodic refresh remains active.',e.code||e.message));
  }catch(e){console.warn('[Prestige] Live subscription unavailable:',e.message);}
 }
+
+async function recoverMyXP(manual=false){
+ const btn=document.getElementById('staff-xp-reconcile'),label=document.getElementById('staff-xp-status');
+ if(!window.DolphinStaffId?.get?.()?.employeeId)return;
+ if(btn?.disabled)return;
+ if(btn){btn.disabled=true;btn.textContent='Đang kiểm tra XP…';}
+ if(label&&manual)label.textContent='Đang đối chiếu bàn và đơn hoàn thành hôm nay…';
+ try{
+  const result=await window.DolphinStaffId.recoverTodayXP();
+  if(label)label.textContent=result.addedXP>0
+    ?'Đã cộng thêm '+result.addedXP.toLocaleString('vi-VN')+' XP từ '+result.awards+' hoạt động.'
+    :result.unmatched>0?'Có '+result.unmatched+' hoạt động chưa đối chiếu được nhân viên. Kiểm tra tên hoặc Staff ID trên bàn/đơn.'
+    :result.checked===0?'Chưa tìm thấy bàn/đơn hoàn thành hôm nay ghi theo tên hồ sơ này.':'XP hôm nay đã được ghi nhận hoặc chưa đủ điều kiện.';
+  if(result.addedXP>0)await refresh();
+ }catch(e){
+  if(label)label.textContent=e?.code==='functions/resource-exhausted'?'Vừa kiểm tra XP. Thử lại sau 2 phút.':'Không đối chiếu được XP: '+String(e?.message||e?.code||'Lỗi kết nối').slice(0,110);
+  console.warn('[Prestige] Recovery check failed:',e?.code||e?.message||e);
+ }finally{if(btn){btn.disabled=false;btn.textContent='Kiểm tra XP hôm nay ↻';}}
+}
+let recoveredZeroToday=false;
+
 function start(){
  injectStyle();refresh();subscribeProfileSignal();
+ document.getElementById('staff-xp-reconcile')?.addEventListener('click',()=>recoverMyXP(true));
+ window.addEventListener('dolphin-my-progress-updated',e=>{
+  if(recoveredZeroToday||Number(e.detail?.xp)!==0||!e.detail?.employeeId)return;
+  const key='dolphin-xp-zero-reconcile-'+e.detail.employeeId+'-'+new Date().toLocaleDateString('en-CA');
+  const last=Number(localStorage.getItem(key)||0);
+  if(last&&Date.now()-last<4*3600000)return;
+  recoveredZeroToday=true;
+  try{localStorage.setItem(key,String(Date.now()));}catch(_){}
+  void recoverMyXP(false);
+ });
  // A realtime notification updates visible profiles; two-minute polling is the fallback.
  setInterval(refresh,120000);
  window.addEventListener('dolphin-staff-id-changed',refresh);

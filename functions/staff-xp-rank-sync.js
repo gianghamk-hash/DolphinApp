@@ -111,6 +111,62 @@ exports.staffSyncSavedActivityXP=onCall(opts,async req=>{
  if(!TYPES.has(kind)||!id||id.length>128||id.includes('/'))bad('invalid-argument','Bàn hoặc order không hợp lệ');
  return sync(kind,id,req);
 });
+
+function todayTimestamp(value){
+ const t=Number(value);
+ return Number.isFinite(t)&&t>0&&new Date(t).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'})===day();
+}
+function profileNames(profile){
+ return [...new Set([profile.name,...(Array.isArray(profile.nameAliases)?profile.nameAliases:[])].map(norm).filter(Boolean))];
+}
+function employeeOnCompletedOrder(value,aliases){
+ if(value?.status!=='completed'||!todayTimestamp(value.completedAt))return false;
+ return [...rules.names(value.preparedBy),...rules.names(value.completedBy)].some(n=>aliases.includes(norm(n)));
+}
+async function recentSelfRecovery(req){
+ const db=getDatabase(),who=await actor(req,db),now=Date.now();
+ const throttle=db.ref('staffXpSelfRecoveryRate/'+who.uid);
+ const allowed=await throttle.transaction(prev=>Number(prev?.at||0)>now-120000?undefined:{at:now},undefined,false);
+ if(!allowed.committed)bad('resource-exhausted','Vừa kiểm tra XP. Hãy thử lại sau 2 phút.');
+ const aliases=profileNames(who.profile).slice(0,4);
+ const fs=getFirestore(),candidates=new Map();
+ // A few indexed lookups for the employee's own tables, plus recent completed orders.
+ // No full history reads and no client-supplied staff names or XP amounts.
+ for(const [kind,field] of [['lounge_tables','openedByStaff'],['bun_tables','openedByStaff'],['show_tables','seller']]){
+  for(const name of [who.profile.name,...(who.profile.nameAliases||[])].filter(Boolean).slice(0,4)){
+   const snap=await fs.collection(kind).where(field,'==',name).limit(30).get();
+   for(const doc of snap.docs){
+    const value=doc.data()||{};
+    if(todayTimestamp(value.updatedAt)&&aliases.includes(norm(value[field]))){
+     candidates.set(kind+'/'+doc.id,{kind,id:doc.id});
+    }
+   }
+  }
+ }
+ for(const kind of ['lounge_orders','bun_orders','res_orders']){
+  const snap=await fs.collection(kind).orderBy('completedAt','desc').limit(80).get();
+  for(const doc of snap.docs){
+   if(employeeOnCompletedOrder(doc.data(),aliases))
+    candidates.set(kind+'/'+doc.id,{kind,id:doc.id});
+  }
+ }
+ let addedXP=0,awards=0,processed=0,unmatched=0;
+ for(const {kind,id} of [...candidates.values()].slice(0,35)){
+  try{
+   const result=await sync(kind,id,req);
+   processed++;addedXP+=Number(result.addedXP)||0;awards+=Number(result.awards)||0;
+  }catch(e){
+   unmatched++;
+   console.warn('[XP recovery] Skip ineligible saved record:',kind,e?.code||e?.message||e);
+  }
+ }
+ return {employeeId:who.id,addedXP:Number(addedXP.toFixed(2)),awards,processed,unmatched,
+  checked:candidates.size,status:awards?'credited':candidates.size?'already-current-or-unmatched':'no-today-activity'};
+}
+exports.staffSyncMyRecentXP=onCall(opts,async req=>recentSelfRecovery(req));
+module.exports._todayTimestamp=todayTimestamp;
+module.exports._employeeOnCompletedOrder=employeeOnCompletedOrder;
+
 module.exports._directory=directory;
 module.exports._resolve=resolve;
 

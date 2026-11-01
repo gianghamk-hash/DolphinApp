@@ -54,7 +54,7 @@ jobs:
       - name: Deploy only saved-activity callable
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffSyncSavedActivityXP
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffSyncSavedActivityXP,functions:staffSyncMyRecentXP
       - name: Remove temporary env
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

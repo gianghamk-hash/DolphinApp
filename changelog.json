@@ -1,30 +1,22 @@
 {
-  "version": "1.1.22",
-  "previousVersion": "1.1.21",
-  "commit": "d407e51",
-  "previousCommit": "4fd9e7f",
-  "buildDate": "2026-11-01T10:01:09.068Z",
-  "summary": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)",
+  "version": "1.1.23",
+  "previousVersion": "1.1.22",
+  "commit": "e68a7ce",
+  "previousCommit": "d407e51",
+  "buildDate": "2026-11-01T11:55:54.894Z",
+  "summary": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP",
   "changes": {
-    "totalCommits": 246,
-    "filesChanged": 17,
+    "totalCommits": 247,
+    "filesChanged": 23,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)"
+    "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/auto-bump.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/build.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/release-version-tests.yml",
+      "file": ".github/workflows/firebase-staff-prestige-production.yml",
       "type": "update"
     },
     {
@@ -32,19 +24,7 @@
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-profile-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": "bump-version.js",
-      "type": "update"
-    },
-    {
       "file": "docs/STAFF_XP_GUIDE_VI.md",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-avatars.test.cjs",
       "type": "update"
     },
     {
@@ -52,15 +32,63 @@
       "type": "update"
     },
     {
+      "file": "firestore.rules",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-avatar-catalog.json",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-engine.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-live-engine.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-live-engine.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-live.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-reconcile.js",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
       "file": "scripts/avatar-sync-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/bump-version.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-prestige-client.test.cjs",
+      "file": "staff-online.js",
       "type": "update"
     },
     {
@@ -69,10 +97,6 @@
     },
     {
       "file": "staff-prestige-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.css",
       "type": "update"
     },
     {

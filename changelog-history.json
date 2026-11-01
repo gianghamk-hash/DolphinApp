@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.22",
+      "releaseDate": "2026-11-01T10:01:09.068Z",
+      "summary": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)",
+      "details": [
+        "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)"
+      ]
+    },
+    {
       "version": "1.1.21",
       "releaseDate": "2026-11-01T08:38:26.874Z",
       "summary": "Fix Firebase production preflight JSON parsing (#177)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029",
       "details": [
         "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029"
-      ]
-    },
-    {
-      "version": "1.0.192",
-      "releaseDate": "2026-10-29T12:36:08.110Z",
-      "summary": "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029",
-      "details": [
-        "Merge pull request #133 from gianghamk-hash/feat/mobile-arcade-grid-20261029"
       ]
     }
   ]

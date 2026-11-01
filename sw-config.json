@@ -1,5 +1,5 @@
 {
-  "version": "1.1.22",
+  "version": "1.1.23",
   "releaseDate": "2026-11-01",
-  "notes": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)"
+  "notes": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP"
 }

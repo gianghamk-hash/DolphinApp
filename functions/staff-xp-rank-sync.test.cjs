@@ -11,14 +11,18 @@ function fixture(){
   if(n==='node:crypto')return crypto;
   if(n==='firebase-functions/v2/https')return {onCall:(_,f)=>f,HttpsError};
   if(n==='firebase-admin/database')return {getDatabase:()=>({ref})};
-  if(n==='firebase-admin/firestore')return {getFirestore:()=>({collection:k=>({doc:id=>({get:async()=>({exists:docs.has(k+'/'+id),data:()=>docs.get(k+'/'+id)})})})})};
+  if(n==='firebase-admin/firestore')return {getFirestore:()=>({collection:k=>({
+    doc:id=>({get:async()=>({exists:docs.has(k+'/'+id),data:()=>docs.get(k+'/'+id)})}),
+    where:(field,operator,value)=>({limit:count=>({get:async()=>({docs:[...docs.entries()].filter(([key,v])=>key.startsWith(k+'/')&&v?.[field]===value).slice(0,count).map(([key,v])=>({id:key.slice(k.length+1),data:()=>v}))})})}),
+    orderBy:(field,dir)=>({limit:count=>({get:async()=>({docs:[...docs.entries()].filter(([key,v])=>key.startsWith(k+'/')&&v?.[field]!=null).sort((a,b)=>Number(b[1][field])-Number(a[1][field])).slice(0,count).map(([key,v])=>({id:key.slice(k.length+1),data:()=>v}))})})})
+  })})};
   if(n==='./staff-xp-live-engine.cjs')return require('./staff-xp-live-engine.cjs');
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
   if(n==='./staff-prestige')return {_awardTrustedLiveXP:async v=>{const k='staffXpLedger/'+v.employeeId+'/'+v.eventId;if(data.has(k))return {duplicate:true};data.set(k,v);awards.push(v);return {duplicate:false}},_rebuildPrestige:async()=>{}};
   throw Error(n);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-xp-rank-sync.js','utf8'),mod);
- return {docs,data,awards,call:(uid,kind,id)=>mod.exports.staffSyncSavedActivityXP({auth:uid?{uid}:null,data:{kind,id}})};
+ return {docs,data,awards,call:(uid,kind,id)=>mod.exports.staffSyncSavedActivityXP({auth:uid?{uid}:null,data:{kind,id}}),recover:uid=>mod.exports.staffSyncMyRecentXP({auth:uid?{uid}:null,data:{}})};
 }
 test('Lounge sale matches ranking once, ignores FOC',async()=>{
  const h=fixture();h.docs.set('lounge_tables/L20',{openedByStaff:'Lan',pax:1,paymentMethod:'TM'});
@@ -68,5 +72,26 @@ test('stamped Staff ID of another employee cannot override the authenticated act
  const h=fixture();
  h.docs.set('lounge_tables/L21',{openedByStaff:'Lan',openedByStaffId:'DOL-0001',pax:4,paymentMethod:'TM'});
  await assert.rejects(()=>h.call('u2','lounge_tables','L21'),e=>e.code==='permission-denied');
+ assert.equal(h.awards.length,0);
+});
+
+test('Self recovery credits Lounge20 with four pax and its completed order once',async()=>{
+ const h=fixture(),now=Date.now();
+ h.docs.set('lounge_tables/LOUNGE 20',{openedByStaff:'Lan',pax:4,paymentMethod:'TM',updatedAt:now});
+ h.docs.set('lounge_orders/o20',{table:'LOUNGE 20',status:'completed',preparedBy:'Lan',completedBy:'Lan',completedAt:now});
+ const first=await h.recover('u1');
+ assert.equal(first.addedXP,1002.5);
+ assert.equal(first.awards,2);
+ assert.equal(h.awards.length,2);
+ // Reconciliation is throttled to avoid unnecessary Firestore reads.
+ await assert.rejects(()=>h.recover('u1'),e=>e.code==='resource-exhausted');
+});
+test('Self recovery excludes yesterday records and other staff members',async()=>{
+ const h=fixture(),yesterday=Date.now()-86400000,now=Date.now();
+ h.docs.set('lounge_tables/L20',{openedByStaff:'Lan',pax:4,paymentMethod:'TM',updatedAt:yesterday});
+ h.docs.set('lounge_tables/L21',{openedByStaff:'Binh',pax:2,paymentMethod:'TM',updatedAt:now});
+ const result=await h.recover('u1');
+ assert.equal(result.addedXP,0);
+ assert.equal(result.checked,0);
  assert.equal(h.awards.length,0);
 });

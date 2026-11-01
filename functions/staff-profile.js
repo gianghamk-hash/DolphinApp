@@ -4,6 +4,8 @@ const {getDatabase}=require('firebase-admin/database');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const catalog=require('./staff-avatar-catalog.json');
 const avatars=new Set(Object.values(catalog).flat());
+const avatarThreshold=new Map();
+for(const [group,items] of Object.entries(catalog))for(const item of items){const required=Number((group.match(/Lv\\.(\\d+)/)||[])[1])||1;avatarThreshold.set(item,Math.max(required,avatarThreshold.get(item)||1));}
 const departments=new Set(['','Lễ tân','Restaurant','Lounge','Bungalow','Show','Khác']);
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
 function uidOf(req){if(!req.auth?.uid)throw new HttpsError('unauthenticated','Vui lòng kết nối trước.');return req.auth.uid;}
@@ -47,6 +49,7 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
  const uid=uidOf(req),data=validate(req.data);await throttle(uid);
  const profile=await ownProfile(uid);
  const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
+   if((avatarThreshold.get(data.avatar)||1)>require('./staff-xp-engine.cjs').levelForXP(Number(v?.xp)||0))return;
   // RTDB may begin with an empty local cache even for an existing profile.
   if(v===null)return null;
   if(!v.active)return;

@@ -7,13 +7,14 @@ test('1,000 VND = 1 XP; 0.1 work point = 1 XP',()=>{
  assert.equal(e.revenueXP(3290000),3290);
  assert.equal(e.revenueXP(999),0);
  assert.equal(e.workXP(0.1),1);
- assert.equal(e.workXP(1.25),13);
+ assert.equal(e.workXP(1.25),12.5);
  assert.equal(e.workXP(2.5),25);
  assert.equal(e.totalXP(2000000,1.5),2015);
+ assert.equal(e.workXP(0.25),2.5);
 });
 test('reject negative and invalid revenue/points',()=>{
  for(const value of [-1,NaN,Infinity,1.5])assert.throws(()=>e.revenueXP(value));
- for(const value of [-0.1,0.15,Infinity,NaN])assert.throws(()=>e.workXP(value));
+ for(const value of [-0.1,0.155,Infinity,NaN])assert.throws(()=>e.workXP(value));
 });
 test('level progression is monotonically increasing and unlock thresholds are ordered',()=>{
  let prev=0;

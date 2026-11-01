@@ -5,6 +5,7 @@ on:
       - 'functions/staff-prestige.js'
       - 'functions/staff-xp-reconcile.js'
       - 'functions/staff-xp-reconcile.test.cjs'
+      - 'functions/staff-prestige.test.cjs'
       - 'functions/staff-xp-engine.cjs'
       - 'functions/staff-xp-engine.test.cjs'
       - 'staff-prestige-client.js'
@@ -30,4 +31,4 @@ jobs:
           node --check staff-xp-manager.js
           node --check theme-system.js
       - name: Staff XP and archival reconciliation tests
-        run: node --test functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs
+        run: node --test functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs

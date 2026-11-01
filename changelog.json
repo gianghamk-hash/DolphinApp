@@ -1,58 +1,22 @@
 {
-  "version": "1.1.24",
-  "previousVersion": "1.1.23",
-  "commit": "5f7414e",
-  "previousCommit": "e68a7ce",
-  "buildDate": "2026-11-01T12:19:20.839Z",
-  "summary": "feat(staff-xp): authenticated automatic awards on live staff actions",
+  "version": "1.1.25",
+  "previousVersion": "1.1.24",
+  "commit": "5795a43",
+  "previousCommit": "5f7414e",
+  "buildDate": "2026-11-01T12:23:03.470Z",
+  "summary": "fix(staff-xp): preserve manager overrides without reallocating XP",
   "changes": {
-    "totalCommits": 248,
-    "filesChanged": 13,
+    "totalCommits": 249,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(staff-xp): authenticated automatic awards on live staff actions"
+    "fix(staff-xp): preserve manager overrides without reallocating XP"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-prestige-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/staff-profile-tests.yml",
-      "type": "update"
-    },
-    {
       "file": ".github/workflows/staff-xp-secure-production.yml",
-      "type": "update"
-    },
-    {
-      "file": "docs/STAFF_XP_GUIDE_VI.md",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-bungalow.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-lounge.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-restaurant.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-show.html",
-      "type": "update"
-    },
-    {
-      "file": "functions/index.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-id.test.js",
       "type": "update"
     },
     {
@@ -61,10 +25,6 @@
     },
     {
       "file": "functions/staff-xp-actions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
       "type": "update"
     }
   ]

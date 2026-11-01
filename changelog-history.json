@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.24",
+      "releaseDate": "2026-11-01T12:19:20.839Z",
+      "summary": "feat(staff-xp): authenticated automatic awards on live staff actions",
+      "details": [
+        "feat(staff-xp): authenticated automatic awards on live staff actions"
+      ]
+    },
+    {
       "version": "1.1.23",
       "releaseDate": "2026-11-01T11:55:54.894Z",
       "summary": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #136 from gianghamk-hash/fix/tft-one-gold-resale-20261029",
       "details": [
         "Merge pull request #136 from gianghamk-hash/fix/tft-one-gold-resale-20261029"
-      ]
-    },
-    {
-      "version": "1.0.194",
-      "releaseDate": "2026-10-29T12:54:51.629Z",
-      "summary": "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029",
-      "details": [
-        "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029"
       ]
     }
   ]

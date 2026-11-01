@@ -1,7 +1,7 @@
 {
-  "version": "1.1.24",
-  "buildDate": "2026-11-01T12:19:20.839Z",
-  "commit": "5f7414e",
-  "notes": "feat(staff-xp): authenticated automatic awards on live staff actions",
+  "version": "1.1.25",
+  "buildDate": "2026-11-01T12:23:03.470Z",
+  "commit": "5795a43",
+  "notes": "fix(staff-xp): preserve manager overrides without reallocating XP",
   "forceUpdate": false
 }

@@ -1,28 +1,20 @@
 {
-  "version": "1.1.28",
-  "previousVersion": "1.1.27",
-  "commit": "d84f0df",
-  "previousCommit": "ba1946e",
-  "buildDate": "2026-11-01T13:08:09.259Z",
-  "summary": "fix(xp): derive realtime staff XP from saved revenue and completed order records",
+  "version": "1.1.29",
+  "previousVersion": "1.1.28",
+  "commit": "5e0990b",
+  "previousCommit": "d84f0df",
+  "buildDate": "2026-11-01T13:29:28.303Z",
+  "summary": "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors",
   "changes": {
-    "totalCommits": 252,
-    "filesChanged": 12,
+    "totalCommits": 253,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(xp): derive realtime staff XP from saved revenue and completed order records"
+    "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/staff-prestige-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/staff-xp-rank-sync-production.yml",
-      "type": "update"
-    },
     {
       "file": "dolphin-bungalow.html",
       "type": "update"
@@ -40,18 +32,6 @@
       "type": "update"
     },
     {
-      "file": "functions/index.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-id.test.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
       "file": "functions/staff-xp-rank-sync.js",
       "type": "update"
     },
@@ -61,6 +41,10 @@
     },
     {
       "file": "staff-id.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

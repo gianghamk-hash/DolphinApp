@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/staff-xp-secure-production.yml'
       - 'functions/staff-xp-actions.js'
+      - 'functions/staff-xp-reconcile.js'
       - 'functions/index.js'
       - 'functions/staff-xp-actions.test.cjs'
 permissions:
@@ -50,12 +51,12 @@ jobs:
           const fs=require('fs');
           const admins=process.env.STAFF_ADMIN_UIDS||'';
           if(!/^[a-zA-Z0-9,_-]+$/.test(admins))throw Error('Invalid admin allowlist');
-          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+admins+'\nSTAFF_AUTO_XP_ENABLED=false\n',{mode:0o600});
+          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+admins+'\nSTAFF_AUTO_XP_ENABLED=false\nSTAFF_SECURE_AUTO_XP_ENABLED=true\n',{mode:0o600});
           NODE
       - name: Deploy verified staff callable only (do not create untrusted triggers)
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRecordLiveAction
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRecordLiveAction,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
       - name: Remove temporary environment
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

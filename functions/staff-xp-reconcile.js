@@ -116,10 +116,11 @@ async function proposals(){
  }
  return all.sort((a,b)=>b.date.localeCompare(a.date));
 }
-exports.staffIsPrestigeAdmin=onCall(opts,async req=>({admin:(()=>{try{return !!assertManager(req);}catch(_){return false;}})(),autoXP:process.env.STAFF_AUTO_XP_ENABLED==='true'}));
+function autoXP(){return process.env.STAFF_AUTO_XP_ENABLED==='true'||process.env.STAFF_SECURE_AUTO_XP_ENABLED==='true';}
+exports.staffIsPrestigeAdmin=onCall(opts,async req=>({admin:(()=>{try{return !!assertManager(req);}catch(_){return false;}})(),autoXP:autoXP()}));
 exports.staffPreviewArchiveXP=onCall(opts,async req=>{
  assertManager(req);
- if(process.env.STAFF_AUTO_XP_ENABLED==='true')return {pending:[],pendingCount:0,scanned:0,totals:{revenueXP:0,workXP:0},autoXP:true};
+ if(autoXP())return {pending:[],pendingCount:0,scanned:0,totals:{revenueXP:0,workXP:0},autoXP:true};
  const events=await proposals(),ledger=getDatabase();
  const pending=[];
  // Parallel bounded reads; do not load historical ledgers of unrelated staff.
@@ -132,7 +133,7 @@ exports.staffPreviewArchiveXP=onCall(opts,async req=>{
 });
 exports.staffApproveArchiveXP=onCall(opts,async req=>{
  assertManager(req);
- if(process.env.STAFF_AUTO_XP_ENABLED==='true')throw new HttpsError('failed-precondition','XP tự động đã bật. Không duyệt lại lịch sử để tránh cấp trùng.');
+ if(autoXP())throw new HttpsError('failed-precondition','XP tự động đã bật. Không duyệt lại lịch sử để tránh cấp trùng.');
  const ids=req.data?.eventIds;
  if(!Array.isArray(ids)||ids.length<1||ids.length>50||ids.some(x=>typeof x!=='string'||!/^[a-zA-Z0-9_.:-]{8,120}$/.test(x))||new Set(ids).size!==ids.length)
   throw new HttpsError('invalid-argument','Chọn từ 1 đến 50 sự kiện hợp lệ');

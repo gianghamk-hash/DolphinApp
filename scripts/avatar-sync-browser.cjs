@@ -121,7 +121,7 @@ await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();
 assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze');
 assert.equal(await b.page.locator('#staff-title-select').inputValue(),'rookie');
 assert.equal(await b.page.locator('#staff-banner-select').inputValue(),'wave');
-assert.equal(await b.page.locator('#staff-frame-select option[value=silver]').isDisabled(),true);
+assert.equal(await b.page.locator('#staff-frame-select option[value=silver]').evaluate(option=>option.disabled),true,'Silver cannot be equipped before Level 22');
 assert.equal(await b.page.locator('#staff-gradient-check').isDisabled(),true);
 await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
 

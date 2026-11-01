@@ -20,19 +20,19 @@ function asNonnegativeInteger(x,label){
  if(typeof x!=='number'||!Number.isFinite(x)||x<0||!Number.isSafeInteger(x))throw Error(label+' phải là số nguyên không âm');
  return x;
 }
-function asNonnegativeTenths(x){
- if(typeof x!=='number'||!Number.isFinite(x)||x<0||Math.abs(x*10-Math.round(x*10))>1e-7)throw Error('Điểm công việc phải là bội số 0.1');
- return Math.round(x*10);
+function asWorkPoints(x){
+ if(typeof x!=='number'||!Number.isFinite(x)||x<0||Math.abs(x*100-Math.round(x*100))>1e-7)throw Error('Điểm công việc phải có tối đa 2 chữ số thập phân');
+ return x;
 }
 function revenueXP(vnd){return Math.floor(asNonnegativeInteger(vnd,'Doanh thu')/1000)*XP_PER_1000_VND;}
-function workXP(points){return asNonnegativeTenths(points)*XP_PER_POINT_TENTH;}
-function totalXP(revenueVnd,workPoints){return revenueXP(revenueVnd)+workXP(workPoints);}
+function workXP(points){return Number((asWorkPoints(points)*10*XP_PER_POINT_TENTH).toFixed(2));}
+function totalXP(revenueVnd,workPoints){return Number((revenueXP(revenueVnd)+workXP(workPoints)).toFixed(2));}
 function xpForLevel(level){
  if(!Number.isInteger(level)||level<1||level>MAX_LEVEL)throw Error('Cấp độ không hợp lệ');
  return 1000*(level-1)*(level-1);
 }
 function levelForXP(xp){
- xp=asNonnegativeInteger(xp,'XP');
+ if(typeof xp!=='number'||!Number.isFinite(xp)||xp<0)throw Error('XP không hợp lệ');
  return Math.min(MAX_LEVEL,Math.floor(Math.sqrt(xp/1000))+1);
 }
 function rankForLevel(level){

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.18",
-  "releaseDate": "2026-10-31",
-  "notes": "Synchronize staff avatars across all apps and expose device linking (#175)"
+  "version": "1.1.19",
+  "releaseDate": "2026-11-01",
+  "notes": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)"
 }

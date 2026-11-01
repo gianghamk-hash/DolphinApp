@@ -1,42 +1,38 @@
 {
-  "version": "1.1.18",
-  "previousVersion": "1.1.17",
-  "commit": "4c0c9f5",
-  "previousCommit": "1a2bd1c",
-  "buildDate": "2026-10-31T15:31:23.117Z",
-  "summary": "Synchronize staff avatars across all apps and expose device linking (#175)",
+  "version": "1.1.19",
+  "previousVersion": "1.1.18",
+  "commit": "db87980",
+  "previousCommit": "4c0c9f5",
+  "buildDate": "2026-11-01T04:27:27.890Z",
+  "summary": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
   "changes": {
-    "totalCommits": 242,
-    "filesChanged": 23,
+    "totalCommits": 243,
+    "filesChanged": 28,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Synchronize staff avatars across all apps and expose device linking (#175)"
+    "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/build.yml",
+      "file": ".github/workflows/show-revenue-staff-xp.yml",
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-profile-tests.yml",
+      "file": ".github/workflows/staff-prestige-tests.yml",
       "type": "update"
     },
     {
-      "file": "avatar-system.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-avatars.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-avatars.test.cjs",
+      "file": "STAFF_PRESTIGE_ROLLOUT.md",
       "type": "update"
     },
     {
       "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-guests.html",
       "type": "update"
     },
     {
@@ -60,7 +56,19 @@
       "type": "update"
     },
     {
+      "file": "functions/staff-avatar-catalog.json",
+      "type": "update"
+    },
+    {
       "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
       "type": "update"
     },
     {
@@ -68,15 +76,19 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "functions/staff-xp-engine.cjs",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/match-results.js",
+      "file": "functions/staff-xp-engine.test.cjs",
       "type": "update"
     },
     {
-      "file": "giaitri/index.html",
+      "file": "functions/staff-xp-reconcile.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-reconcile.test.cjs",
       "type": "update"
     },
     {
@@ -88,23 +100,31 @@
       "type": "update"
     },
     {
-      "file": "scripts/avatar-sync-browser.cjs",
+      "file": "ranking/work-points.test.js",
       "type": "update"
     },
     {
-      "file": "service-worker.js",
+      "file": "staff-prestige-client.js",
       "type": "update"
     },
     {
-      "file": "staff-id.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-online.js",
+      "file": "staff-prestige-profile.js",
       "type": "update"
     },
     {
       "file": "staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-xp-manager.js",
+      "type": "update"
+    },
+    {
+      "file": "theme-seasonal-scenes.test.js",
+      "type": "update"
+    },
+    {
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

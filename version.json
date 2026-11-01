@@ -1,7 +1,7 @@
 {
-  "version": "1.1.18",
-  "buildDate": "2026-10-31T15:31:23.117Z",
-  "commit": "4c0c9f5",
-  "notes": "Synchronize staff avatars across all apps and expose device linking (#175)",
+  "version": "1.1.19",
+  "buildDate": "2026-11-01T04:27:27.890Z",
+  "commit": "db87980",
+  "notes": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
   "forceUpdate": false
 }

@@ -12,7 +12,7 @@ if(u.hostname==='www.gstatic.com'){let body='';if(u.pathname.endsWith('firebase-
 if(u.origin!==origin)return route.abort();
 if(u.pathname.startsWith('/mock/')){const {uid,data}=JSON.parse(route.request().postData()),name=u.pathname.split('/').pop();try{
 let x;
-if(name==='staffGetPrestige')x={champion:null,leaderboard:[],legends:[]};
+if(name==='staffGetPrestige'){const lead={employeeId:'DOL-0001',name:'Avatar Demo',avatar:'🌊',rank:'Bronze',level:1,xp:2500};x={champion:lead,leaderboard:[lead,{employeeId:'DOL-0002',name:'Colleague',avatar:'🐬',rank:'Bronze',level:1,xp:500}],legends:[{...lead,firstAt:Date.now()}]};}
 else if(name==='staffIsPrestigeAdmin')x={admin:false};
 else if(name==='staffGetMyProgress')x={employeeId:backend.state.get('staffIdentity/'+uid)?.employeeId,level:1,rank:'Bronze',xp:0,personalTheme:'dark',nameFlame:false};
 else if(name==='staffSetPersonalStyle'){
@@ -68,7 +68,6 @@ await rankFrame.evaluate(()=>{
 });
 await rankFrame.locator('[data-rank-target="level"]').click();
 assert.equal(await rankFrame.locator('#section-level').isVisible(),true,'Level tab is interactive');
-console.log('QA LEVEL',JSON.stringify(await rankFrame.evaluate(()=>({html:document.getElementById('level-board-list')?.innerHTML,more:!!document.getElementById('level-board-more'),legends:!!document.getElementById('level-legendary-list')}))),JSON.stringify(errors));
 assert.equal(await rankFrame.locator('#level-board-list .level-entry').count(),2);
 assert.equal(await rankFrame.locator('#level-legendary-list .legendary-entry').count(),1);
 assert.equal(await rankFrame.locator('.dolphin-prestige').count(),0,'Global floating Emperor banner removed');

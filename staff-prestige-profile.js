@@ -45,7 +45,33 @@ function renderMine(){
  $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||mine.level<3;
  $('profile-name').classList.toggle('onflame',!!mine?.nameFlame&&mine.level>=3);
  $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&mine.level>=25);
- renderThemes();renderRewards();
+ renderThemes();renderRewards();renderAdminSandbox();
+}
+function renderAdminSandbox(){
+ const panel=$('crew-admin-sandbox');
+ if(panel)panel.hidden=!(mine?.testAdmin===true&&mine.employeeId==='DOL-0001');
+}
+async function adminTestXP(action,amount){
+ if(mine?.testAdmin!==true||mine.employeeId!=='DOL-0001')return;
+ if(action==='reset'&&!window.confirm('Đặt XP về 0, Level về 1 và khóa lại các hiệu ứng đã mở? Chỉ áp dụng cho DOL-0001.'))return;
+ if(action==='add'&&(!Number.isSafeInteger(amount)||amount<1||amount>1000000)){
+  $('admin-test-xp-result').textContent='Nhập số XP nguyên từ 1 đến 1.000.000.';return;
+ }
+ const panel=$('crew-admin-sandbox');
+ const buttons=[...panel.querySelectorAll('button')];
+ buttons.forEach(b=>b.disabled=true);
+ $('admin-test-xp-result').textContent='Đang lưu XP thử nghiệm…';
+ try{
+  const payload=action==='reset'?{action}:{action,amount};
+  mine=await window.DolphinPrestige.call('staffAdjustOwnTestXP',payload);
+  $('admin-test-xp-result').textContent=action==='reset'
+   ?'Đã đặt lại XP về 0, Level 1. Bạn có thể bắt đầu thử lại.'
+   :'Đã cộng '+fmt(amount)+' XP. Hiện tại: '+fmt(mine.xp)+' XP · Lv.'+mine.level;
+  renderMine();renderAdminSandbox();
+  await window.DolphinPrestige.refresh();
+ }catch(e){
+  $('admin-test-xp-result').textContent='Không lưu được XP thử nghiệm: '+String(e.message||e.code||e);
+ }finally{buttons.forEach(b=>b.disabled=false);}
 }
 function showStatus(){
  const states=window.DolphinPrestige?.getStatus?.()||{},errors=Object.values(states).filter(x=>x.state==='error');
@@ -61,7 +87,9 @@ async function save(){
  const theme=document.querySelector('input[name="staff-theme"]:checked')?.value||mine.personalTheme||'dark';
  const btn=$('staff-save-style');btn.disabled=true;
  try{
+  const wasTester=mine?.testAdmin===true;
   mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{theme,nameFlame:$('staff-flame-check').checked});
+  mine.testAdmin=wasTester;
   try{localStorage.setItem('dolphin_personal_theme',mine.personalTheme);}catch(_){}
   window.ThemeSystem?.setTheme(mine.personalTheme);$('staff-style-info').textContent='Đã lưu giao diện theo Staff ID.';renderMine();
  }catch(e){$('staff-style-info').textContent='Không lưu được: '+e.message;}finally{btn.disabled=false;}
@@ -69,6 +97,11 @@ async function save(){
 function init(){
  mine=window.DolphinPrestige?.getMine()||null;
  $('staff-save-style').onclick=save;$('staff-xp-retry').onclick=()=>window.DolphinPrestige?.refresh();
+ document.querySelectorAll('[data-admin-test-add]').forEach(button=>{
+  button.addEventListener('click',()=>void adminTestXP('add',Number(button.dataset.adminTestAdd)));
+ });
+ $('admin-test-xp-add')?.addEventListener('click',()=>void adminTestXP('add',Number($('admin-test-xp-amount').value)));
+ $('admin-test-xp-reset')?.addEventListener('click',()=>void adminTestXP('reset'));
  renderMine();showStatus();
 }
 window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;renderMine();showStatus();});

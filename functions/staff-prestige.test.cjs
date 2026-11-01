@@ -57,7 +57,7 @@ test('manager-only grants reject client spoofing and persist idempotent XP',asyn
  assert.equal(again.duplicate,true);
  assert.equal(data.get('staffRegistry/DOL-0001').xp,2290);
  const board=await api.staffGetPrestige(req('lanDevice'));
- assert.equal(board.champion.employeeId,'DOL-0001');
+ assert.equal(board.champion,null,'Sandbox admin cannot become Dolphin Emperor');
 });
 test('level peak and unlocked rewards survive a correction',async()=>{
  const {api,data}=harness();
@@ -121,4 +121,57 @@ test('server still rejects name flame below Level 3',async()=>{
  await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true})),
   e=>e.code==='permission-denied');
  assert.equal(data.get('staffRegistry/DOL-0001').nameFlame,undefined);
+});
+
+test('DOL-0001 is Admin sandbox only when verified, with self XP add/reset',async()=>{
+ const {api,data}=harness();
+ const me=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(me.testAdmin,true);
+ assert.equal(me.employeeId,'DOL-0001');
+ const increased=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:80000}));
+ assert.equal(increased.xp,80000);
+ assert.equal(increased.level,5);
+ assert.equal(increased.testAdmin,true);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,80000);
+ const style=await api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true}));
+ assert.equal(style.nameFlame,true);
+ const reset=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'reset'}));
+ assert.equal(reset.xp,0);
+ assert.equal(reset.level,1);
+ assert.equal(reset.nameFlame,false);
+ assert.equal(reset.personalTheme,'dark');
+ assert.equal(data.get('staffRegistry/DOL-0001').levelPeak,1);
+});
+test('sandbox admin never participates in public XP leaderboard or Emperor',async()=>{
+ const {api,data}=harness();
+ data.set('staffRegistry/DOL-0001',{...data.get('staffRegistry/DOL-0001'),xp:900000,levelPeak:14});
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,avatar:'🐬',xp:500,levelPeak:1});
+ assert.deepEqual(Array.from(api._leaderboard({a:data.get('staffRegistry/DOL-0001'),b:data.get('staffRegistry/DOL-0002')}).map(p=>p.employeeId)),['DOL-0002']);
+ await api._rebuildPrestige();
+ const board=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(board.champion.employeeId,'DOL-0002');
+ assert.equal(board.leaderboard.length,1);
+ assert.equal(board.leaderboard[0].employeeId,'DOL-0002');
+});
+test('no self-admin privilege for unverified identity, other Staff ID or anonymous caller',async()=>{
+ const {api,data}=harness();
+ data.set('staffIdentity/lanDevice',{employeeId:'DOL-0001',name:'Lan',verified:false});
+ assert.equal((await api.staffGetMyProgress(req('lanDevice'))).testAdmin,false);
+ await assert.rejects(()=>api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:5000})),e=>e.code==='permission-denied');
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,xp:0,registrationSource:'manager'});
+ data.set('staffIdentity/otherDevice',{employeeId:'DOL-0002',verified:true});
+ assert.equal((await api.staffGetMyProgress(req('otherDevice'))).testAdmin,false);
+ await assert.rejects(()=>api.staffAdjustOwnTestXP(req('otherDevice',{action:'reset'})),e=>e.code==='permission-denied');
+ await assert.rejects(()=>api.staffAdjustOwnTestXP(req(null,{action:'reset'})),e=>e.code==='unauthenticated');
+ assert.equal(data.get('staffRegistry/DOL-0002').xp,0);
+});
+test('admin sandbox validates XP amounts and never changes staff event ledger',async()=>{
+ const {api,data}=harness();
+ await assert.rejects(()=>api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:-50})),e=>e.code==='invalid-argument');
+ await assert.rejects(()=>api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:1000001})),e=>e.code==='invalid-argument');
+ await assert.rejects(()=>api.staffAdjustOwnTestXP(req('lanDevice',{action:'reset',amount:1})),e=>e.code==='invalid-argument');
+ data.set('staffXpLedger/DOL-0001/live:old',{amount:250});
+ await api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:20000}));
+ await api.staffAdjustOwnTestXP(req('lanDevice',{action:'reset'}));
+ assert.equal(data.get('staffXpLedger/DOL-0001/live:old').amount,250);
 });

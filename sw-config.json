@@ -1,5 +1,5 @@
 {
-  "version": "1.1.26",
+  "version": "1.1.27",
   "releaseDate": "2026-11-01",
-  "notes": "fix(staff-xp): disable legacy archive approvals with verified automatic awards"
+  "notes": "hotfix(orders): do not block saving when Staff XP service fails"
 }

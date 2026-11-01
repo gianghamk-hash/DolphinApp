@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.26",
+      "releaseDate": "2026-11-01T12:27:18.204Z",
+      "summary": "fix(staff-xp): disable legacy archive approvals with verified automatic awards",
+      "details": [
+        "fix(staff-xp): disable legacy archive approvals with verified automatic awards"
+      ]
+    },
+    {
       "version": "1.1.25",
       "releaseDate": "2026-11-01T12:23:03.470Z",
       "summary": "fix(staff-xp): preserve manager overrides without reallocating XP",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029",
       "details": [
         "Merge pull request #138 from gianghamk-hash/fix/tft-apk-sell-web-stage-20261029"
-      ]
-    },
-    {
-      "version": "1.0.196",
-      "releaseDate": "2026-10-29T13:03:30.070Z",
-      "summary": "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029",
-      "details": [
-        "Merge pull request #137 from gianghamk-hash/fix/tft-sell-confirm-in-app-20261029"
       ]
     }
   ]

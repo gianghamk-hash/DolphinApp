@@ -1,30 +1,34 @@
 {
-  "version": "1.1.26",
-  "previousVersion": "1.1.25",
-  "commit": "1880a1c",
-  "previousCommit": "5795a43",
-  "buildDate": "2026-11-01T12:27:18.204Z",
-  "summary": "fix(staff-xp): disable legacy archive approvals with verified automatic awards",
+  "version": "1.1.27",
+  "previousVersion": "1.1.26",
+  "commit": "ba1946e",
+  "previousCommit": "1880a1c",
+  "buildDate": "2026-11-01T12:36:19.190Z",
+  "summary": "hotfix(orders): do not block saving when Staff XP service fails",
   "changes": {
-    "totalCommits": 250,
-    "filesChanged": 3,
+    "totalCommits": 251,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(staff-xp): disable legacy archive approvals with verified automatic awards"
+    "hotfix(orders): do not block saving when Staff XP service fails"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-xp-secure-production.yml",
+      "file": "dolphin-bungalow.html",
       "type": "update"
     },
     {
-      "file": "docs/STAFF_XP_GUIDE_VI.md",
+      "file": "dolphin-lounge.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-reconcile.js",
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-show.html",
       "type": "update"
     }
   ]

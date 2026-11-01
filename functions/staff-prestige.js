@@ -81,12 +81,12 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
 });
 
 /* Admin-only reconciliation: sources must be verified externally, never trust client order payloads. */
-exports.staffGrantVerifiedXP=onCall(opts,async req=>{
+async function awardVerifiedXP(req,data){
  if(!isAdmin(req))throw new HttpsError('permission-denied','Chỉ quản lý được cấp điểm');
- const employeeId=String(req.data?.employeeId||'').toUpperCase();
- const eventId=String(req.data?.eventId||'');
- const source=String(req.data?.source||'');
- const amount=Number(req.data?.amount);
+ const employeeId=String(data?.employeeId||'').toUpperCase();
+ const eventId=String(data?.eventId||'');
+ const source=String(data?.source||'');
+ const amount=Number(data?.amount);
  if(!staffPattern.test(employeeId)||!/^[a-zA-Z0-9_.:-]{8,120}$/.test(eventId)||
   !['revenue','work','correction'].includes(source)||!Number.isFinite(amount)||
   Math.abs(amount)>1000000||Math.round(amount*100)!==amount*100)
@@ -109,9 +109,11 @@ exports.staffGrantVerifiedXP=onCall(opts,async req=>{
  // Do not undo an already committed XP award if the public board refresh fails.
  try{await rebuild();}catch(e){console.error('[StaffPrestige] leaderboard refresh failed',e);}
  return {duplicate:false,...progress};
-});
+}
+exports.staffGrantVerifiedXP=onCall(opts,req=>awardVerifiedXP(req,req.data));
 exports.staffRebuildPrestige=onCall(opts,async req=>{
  if(!isAdmin(req))throw new HttpsError('permission-denied','Chỉ quản lý');
  return rebuild();
 });
 module.exports._leaderboard=leaderboard;
+module.exports._awardVerifiedXP=awardVerifiedXP;

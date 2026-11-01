@@ -43,6 +43,7 @@ function renderAvatars(){
  for(const emoji of catalog[$('avatar-category').value]||[]){
   const button=document.createElement('button');button.type='button';button.className='avatar-choice';button.textContent=emoji;
   button.setAttribute('aria-label','Chọn '+emoji);button.setAttribute('aria-pressed',String(emoji===avatar));
+  if(need>level){button.disabled=true;button.title='Mở khóa tại Level '+need;button.style.opacity='.35';}
   button.onclick=()=>{dirty=true;avatar=emoji;$('choose-avatar').textContent=emoji;$('avatar-dialog').close();};grid.appendChild(button);
  }
 }

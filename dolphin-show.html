@@ -495,6 +495,8 @@ window.saveBooking = async () => {
     return toast('Vui lòng nhập đủ thông tin khách!', '⚠️');
   if (data.payment === 'FOC' && !data.focNote) return toast('Thanh toán FOC cần ghi chú lý do!', '⚠️');
   if (!me()) return toast('Hãy nhập tên người bán ở thanh phía trên trước!', '⚠️');
+  const linked=window.DolphinStaffId?.get?.();
+  if(linked?.employeeId&&norm(linked.name)===norm(data.seller))data.sellerStaffId=linked.employeeId;
   const ref = doc(db, COL_LIVE, key(label));
   try {
     await runTransaction(db, async tx => {
@@ -740,7 +742,7 @@ window.saveService = async () => {
     if(window.DolphinStaffId?.syncSavedActivity)
       void window.DolphinStaffId.syncSavedActivity({kind:COL_LIVE,id:key(label)})
         .then(r=>{if(r.addedXP>0)toast('+'+r.addedXP+' XP doanh thu Show','⭐');})
-        .catch(e=>console.warn('[Show XP] Combo đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e));
+        .catch(e=>{console.warn('[Show XP] Combo đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e);(window.showToast||window.toast)?.('Đã lưu dữ liệu · XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');});
   } catch (e) { 
     toast(e.message === 'LOCKED' ? 'Bạn không có quyền sửa bàn này!' : 'Lỗi hệ thống khi lưu!', '❌'); 
   }

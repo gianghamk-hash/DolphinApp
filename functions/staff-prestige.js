@@ -28,7 +28,12 @@ async function rebuild(){
  const db=getDatabase(),registry=(await db.ref('staffRegistry').once('value')).val()||{};
  const board=leaderboard(registry),top=board[0]||null;
  const ties=top?board.filter(x=>x.xp===top.xp).map(x=>x.employeeId):[];
- const current={champion:top?{...top,title:'Dolphin Emperor',tiedWith:ties}:null,
+ const previous=(await db.ref('staffPrestige/public/champion').once('value')).val();
+ const newChampion=top?{...top,title:'Dolphin Emperor',tiedWith:ties}:null;
+ const changed=!!top&&previous?.employeeId!==top.employeeId;
+ const announcement=changed?{id:'champion-'+top.employeeId+'-'+Date.now(),type:'champion',name:top.name,level:top.level,text:'👑 '+top.name+' đã trở thành Dolphin Emperor!',at:Date.now()}:null;
+ const current={champion:newChampion,
+  announcement:announcement||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
   leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
@@ -36,8 +41,12 @@ async function rebuild(){
 }
 exports.staffGetPrestige=onCall(opts,async req=>{
  uid(req);
- const pub=(await getDatabase().ref('staffPrestige/public').once('value')).val();
- return pub||{champion:null,leaderboard:[],updatedAt:0};
+ const [snap,legends]=await Promise.all([
+  getDatabase().ref('staffPrestige/public').once('value'),
+  getDatabase().ref('staffPrestige/legends').orderByChild('firstAt').limitToLast(25).once('value')
+ ]);
+ const pub=snap.val()||{champion:null,leaderboard:[],updatedAt:0};
+ return {...pub,legends:Object.values(legends.val()||{}).sort((a,b)=>b.firstAt-a.firstAt)};
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
  const {id,profile}=await currentStaff(req);

@@ -1,0 +1,65 @@
+name: Deploy Dolphin Staff Prestige to Firebase Production
+run-name: Deploy Staff Prestige · ${{ github.sha }}
+on:
+  workflow_dispatch:
+    inputs:
+      rtdb_rules_verified:
+        description: "I verified live RTDB rules deny client writes to staffRegistry, staffIdentity, staffXpLedger, staffPrestige"
+        type: boolean
+        required: true
+        default: false
+      confirm_project:
+        description: "Type dolphin-f6d67 to confirm the production project"
+        type: string
+        required: true
+permissions:
+  contents: read
+concurrency:
+  group: firebase-staff-prestige-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.ref == 'refs/heads/main' && inputs.rtdb_rules_verified == true && inputs.confirm_project == 'dolphin-f6d67'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check Firebase configuration and required secrets
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          test -n "$FIREBASE_CREDENTIALS" || { echo "::error::Missing FIREBASE_SERVICE_ACCOUNT_DOLPHIN"; exit 1; }
+          test -n "$STAFF_ADMIN_UIDS" || { echo "::error::Missing STAFF_ADMIN_UIDS"; exit 1; }
+          node -e "const f=require('./.firebaserc'); if(f.projects.default!=='dolphin-f6d67')process.exit(1)"
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - name: Install and test Cloud Functions
+        run: |
+          npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
+          node --test functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs
+          node --test functions/staff-id.test.js
+      - name: Configure Manager UIDs for Cloud Functions runtime
+        env:
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const val=process.env.STAFF_ADMIN_UIDS||'';
+          if(!/^[a-zA-Z0-9,_-]+$/.test(val))throw Error('Invalid STAFF_ADMIN_UIDS');
+          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+val+'\n',{mode:0o600});
+          NODE
+      - name: Deploy Staff Profile and Prestige Cloud Functions only
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffGetAvatarDirectory,functions:staffGetPrestige,functions:staffGetMyProgress,functions:staffSetShowcase,functions:staffSetPersonalStyle,functions:staffGrantVerifiedXP,functions:staffRebuildPrestige,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
+      - name: Remove temporary env file
+        if: always()
+        run: rm -f functions/.env.dolphin-f6d67

@@ -87,7 +87,9 @@ async function save(){
  const theme=document.querySelector('input[name="staff-theme"]:checked')?.value||mine.personalTheme||'dark';
  const btn=$('staff-save-style');btn.disabled=true;
  try{
+  const wasTester=mine?.testAdmin===true;
   mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{theme,nameFlame:$('staff-flame-check').checked});
+  mine.testAdmin=wasTester;
   try{localStorage.setItem('dolphin_personal_theme',mine.personalTheme);}catch(_){}
   window.ThemeSystem?.setTheme(mine.personalTheme);$('staff-style-info').textContent='Đã lưu giao diện theo Staff ID.';renderMine();
  }catch(e){$('staff-style-info').textContent='Không lưu được: '+e.message;}finally{btn.disabled=false;}

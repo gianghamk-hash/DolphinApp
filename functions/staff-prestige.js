@@ -16,13 +16,14 @@ async function currentStaff(req){
 }
 function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
+ const level=Math.min(60,Math.max(progress.level,Number(p?.levelPeak)||1));
  return {employeeId:p.employeeId,name:p.name,avatar:p.avatar||'🐬',
-  level:progress.level,rank:progress.rank,xp, nextLevelAt:progress.nextLevelAt,
-  unlocked:progress.unlocked,showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
+  level,rank:engine.rankForLevel(level),xp,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
+  unlocked:engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
 }
 function leaderboard(registry){
  return Object.values(registry||{}).filter(p=>p?.active&&staffPattern.test(p.employeeId)&&p.name)
- .map(expose).sort((a,b)=>b.xp-a.xp||a.employeeId.localeCompare(b.employeeId)).slice(0,25);
+ .map(expose).sort((a,b)=>b.level-a.level||b.xp-a.xp||a.employeeId.localeCompare(b.employeeId)).slice(0,25);
 }
 async function rebuild(){
  const db=getDatabase(),registry=(await db.ref('staffRegistry').once('value')).val()||{};
@@ -73,7 +74,7 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
  const ref=getDatabase().ref('staffRegistry/'+id);
  const result=await ref.transaction(v=>{
   if(!v?.active)return;
-  const level=engine.progress(Math.max(0,Number(v.xp)||0)).level;
+  const level=Math.max(engine.progress(Math.max(0,Number(v.xp)||0)).level,Number(v.levelPeak)||1);
   if((themeLevels[theme]||1)>level||(flame&&level<3))return;
   return {...v,personalTheme:theme,nameFlame:flame,updatedAt:Date.now()};
  });
@@ -102,7 +103,8 @@ async function awardVerifiedXP(req,data,options={}){
  try{
   const tx=await profileRef.transaction(v=>{
    if(!v?.active)return;
-   return {...v,xp:Math.max(0,Number(((Number(v.xp)||0)+amount).toFixed(2))),updatedAt:Date.now()};
+   const xp=Math.max(0,Number(((Number(v.xp)||0)+amount).toFixed(2)));
+   return {...v,xp,levelPeak:Math.max(Number(v.levelPeak)||1,engine.levelForXP(xp)),updatedAt:Date.now()};
   });
   if(!tx.committed)throw Error('Hồ sơ không còn hoạt động');
   credited=true;progress=expose(tx.snapshot.val());

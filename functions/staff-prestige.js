@@ -81,7 +81,7 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
 });
 
 /* Admin-only reconciliation: sources must be verified externally, never trust client order payloads. */
-async function awardVerifiedXP(req,data){
+async function awardVerifiedXP(req,data,options={}){
  if(!isAdmin(req))throw new HttpsError('permission-denied','Chỉ quản lý được cấp điểm');
  const employeeId=String(data?.employeeId||'').toUpperCase();
  const eventId=String(data?.eventId||'');
@@ -107,7 +107,7 @@ async function awardVerifiedXP(req,data){
   credited=true;progress=expose(tx.snapshot.val());
  }catch(e){if(!credited)await ref.remove();throw new HttpsError('internal','Không thể cấp XP: '+e.message);}
  // Do not undo an already committed XP award if the public board refresh fails.
- try{await rebuild();}catch(e){console.error('[StaffPrestige] leaderboard refresh failed',e);}
+ if(!options.skipRebuild)try{await rebuild();}catch(e){console.error('[StaffPrestige] leaderboard refresh failed',e);}
  return {duplicate:false,...progress};
 }
 exports.staffGrantVerifiedXP=onCall(opts,req=>awardVerifiedXP(req,req.data));
@@ -117,3 +117,4 @@ exports.staffRebuildPrestige=onCall(opts,async req=>{
 });
 module.exports._leaderboard=leaderboard;
 module.exports._awardVerifiedXP=awardVerifiedXP;
+module.exports._rebuildPrestige=rebuild;

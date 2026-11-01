@@ -76,13 +76,25 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
  if(!['dark','light','gray',...Object.keys(themeLevels)].includes(theme))
   throw new HttpsError('invalid-argument','Chủ đề không hợp lệ');
  const ref=getDatabase().ref('staffRegistry/'+id);
+ const profile=(await ref.once('value')).val();
+ if(!profile?.active)throw new HttpsError('failed-precondition','Hồ sơ không còn hoạt động');
+ // Firebase RTDB may invoke its first speculative transaction with null.
+ let firstUpdate=true;
  const result=await ref.transaction(v=>{
-  if(!v?.active)return;
-  const level=Math.max(engine.progress(Math.max(0,Number(v.xp)||0)).level,Number(v.levelPeak)||1);
+  const initial=firstUpdate;firstUpdate=false;
+  const current=v===null&&initial?profile:v;
+  if(!current?.active)return;
+  const level=Math.max(engine.progress(Math.max(0,Number(current.xp)||0)).level,Number(current.levelPeak)||1);
   if((themeLevels[theme]||1)>level||(flame&&level<3))return;
-  return {...v,personalTheme:theme,nameFlame:flame,updatedAt:Date.now()};
- });
- if(!result.committed)throw new HttpsError('permission-denied','Chưa mở khóa chủ đề hoặc hiệu ứng');
+  return {...current,personalTheme:theme,nameFlame:flame,updatedAt:Date.now()};
+ },undefined,false);
+ if(!result.committed){
+  const latest=(await ref.once('value')).val();
+  if(!latest?.active)throw new HttpsError('failed-precondition','Hồ sơ không còn hoạt động');
+  const level=Math.max(engine.progress(Math.max(0,Number(latest.xp)||0)).level,Number(latest.levelPeak)||1);
+  if((themeLevels[theme]||1)>level||(flame&&level<3))throw new HttpsError('permission-denied','Chưa mở khóa ở Level '+level);
+  throw new HttpsError('aborted','Giao dịch lưu giao diện bị gián đoạn. Hãy thử lại.');
+ }
  return {...expose(result.snapshot.val()),personalTheme:result.snapshot.val().personalTheme||'dark'};
 });
 

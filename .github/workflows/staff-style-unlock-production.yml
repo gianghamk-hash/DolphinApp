@@ -1,0 +1,56 @@
+name: Deploy Staff Style Unlock Fix
+on:
+  push:
+    branches: [main, hotfix/staff-style-level-unlock-20261101]
+    paths:
+      - '.github/workflows/staff-style-unlock-production.yml'
+      - 'functions/staff-prestige.js'
+      - 'functions/staff-prestige.test.cjs'
+permissions:
+  contents: read
+concurrency:
+  group: firebase-staff-style-production
+  cancel-in-progress: false
+jobs:
+  production:
+    if: github.repository == 'gianghamk-hash/DolphinApp'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check Firebase credentials and project
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          test -n "$FIREBASE_CREDENTIALS" && test -n "$STAFF_ADMIN_UIDS"
+          node -e "const fs=require('fs');if(JSON.parse(fs.readFileSync('.firebaserc','utf8')).projects.default!=='dolphin-f6d67')process.exit(1)"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - name: Test Style and Level rules
+        run: |
+          npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
+          node --check functions/staff-prestige.js
+          node --test functions/staff-prestige.test.cjs functions/staff-xp-engine.test.cjs
+      - name: Keep legacy XP triggers disabled
+        env:
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),admins=process.env.STAFF_ADMIN_UIDS||'';
+          if(!/^[a-zA-Z0-9,_-]+$/.test(admins))throw Error('Invalid admin list');
+          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+admins+'\nSTAFF_AUTO_XP_ENABLED=false\nSTAFF_SECURE_AUTO_XP_ENABLED=true\n',{mode:0o600});
+          NODE
+      - name: Deploy only staff personal style callable
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffSetPersonalStyle
+      - name: Remove temporary environment
+        if: always()
+        run: rm -f functions/.env.dolphin-f6d67

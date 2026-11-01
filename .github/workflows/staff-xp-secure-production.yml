@@ -1,0 +1,62 @@
+name: Deploy secure verified Staff XP actions
+on:
+  push:
+    branches: [feat/staff-xp-secure-production-20261101]
+    paths:
+      - '.github/workflows/staff-xp-secure-production.yml'
+      - 'functions/staff-xp-actions.js'
+      - 'functions/index.js'
+      - 'functions/staff-xp-actions.test.cjs'
+permissions:
+  contents: read
+concurrency:
+  group: firebase-staff-xp-secure-production
+  cancel-in-progress: false
+jobs:
+  production:
+    if: github.repository == 'gianghamk-hash/DolphinApp'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Confirm production credentials and project
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          test -n "$FIREBASE_CREDENTIALS" || { echo "::error::Missing Firebase credentials"; exit 1; }
+          test -n "$STAFF_ADMIN_UIDS" || { echo "::error::Missing staff admin allowlist"; exit 1; }
+          node -e "const fs=require('node:fs');if(JSON.parse(fs.readFileSync('.firebaserc','utf8')).projects.default!=='dolphin-f6d67')process.exit(1)"
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - name: Test verified staff API
+        run: |
+          npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
+          node --check functions/staff-xp-actions.js
+          node --check functions/index.js
+          node --test functions/staff-id.test.js functions/staff-xp-actions.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-live-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs
+      - name: Deactivate insecure legacy triggers
+        env:
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs');
+          const admins=process.env.STAFF_ADMIN_UIDS||'';
+          if(!/^[a-zA-Z0-9,_-]+$/.test(admins))throw Error('Invalid admin allowlist');
+          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+admins+'\nSTAFF_AUTO_XP_ENABLED=false\n',{mode:0o600});
+          NODE
+      - name: Deploy verified staff callable only (do not create untrusted triggers)
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRecordLiveAction
+      - name: Remove temporary environment
+        if: always()
+        run: rm -f functions/.env.dolphin-f6d67
+

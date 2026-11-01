@@ -1094,7 +1094,12 @@ window.saveCustomerName = async function(){
 };
 
 window.executeSaveCustomerName = async function({table,dataToSave}){
-  try{ 
+  try{
+    if(window.DolphinStaffId?.get()?.verified){
+      const result=await window.DolphinStaffId.performLiveAction({kind:'lounge_tables',id:table,action:'booking',data:dataToSave});
+      window.showToast('Đã lưu bàn '+table+' · +'+Number(result.xpAwarded||0)+' XP','✅');
+      window.closeCustomerNameModal();return;
+    }
     if(db) await setDoc(doc(db,'lounge_tables',table), dataToSave, { merge: true }); 
     window.showToast(`Đã lưu bàn ${table}`,'✅'); 
     window.closeCustomerNameModal(); 
@@ -1226,6 +1231,11 @@ window.executeStaffAction = async function(name){
     const {orderId,nextStatus} = pa;
     const ref = doc(db,'lounge_orders',orderId);
     try{
+      if(window.DolphinStaffId?.get()?.verified){
+        const result=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
+        window.showToast('Đã cập nhật đơn · +'+Number(result.xpAwarded||0)+' XP','✅');
+        state.pendingAction=null;return;
+      }
       await runTransaction(db, async tx=>{
         const d = await tx.get(ref);
         if(!d.exists()) throw "Đơn không tồn tại!";

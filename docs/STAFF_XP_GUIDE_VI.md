@@ -99,8 +99,16 @@ Mốc OnFlame cao cấp đã có trong danh sách thưởng trước đây nhưn
 
 Màn hình chính: hồ sơ + tiến độ → bốn nút cài đặt → bảng xếp hạng → nút quản lý nếu tài khoản có quyền. Chỉnh tên/avatar, bộ chủ đề, mốc thưởng, thiết bị và Legendary Wall mở riêng trong hộp thoại. Không tạo hồ sơ mới, đổi liên kết hoặc cấp XP trong quá trình xem/đóng hộp thoại. Bản APK đã cài cần bản cập nhật chứa các tài nguyên giao diện mới; triển khai Cloud Functions không tự thay thế tài nguyên nhúng trong APK.
 
-## Đề xuất tự cộng XP từ bảng/đơn đang hoạt động (chưa bật)
+## Cấp XP tự động qua thao tác nhân viên xác minh (phiên bản thay thế trigger client-writable)
 
 Mã nguồn có 6 Firestore triggers để tự cộng XP khi Lounge/Bungalow tạo bàn đủ thông tin, Show chọn combo hợp lệ, hoặc Lounge/Bungalow/Restaurant chuyển đơn sang `completed`. Triggers dùng bảng giá và định mức cũ, chỉ gán theo tên duy nhất trong hồ sơ do quản lý xác minh, ghi ledger một lần theo ID của vòng đời tài liệu. Không cần duyệt thủ công khi bật chế độ này. Trang hồ sơ nhận tín hiệu Firestore `staff_xp_updates/public` để làm mới gần tức thì, và tự kiểm tra lại sau mỗi hai phút nếu mất tín hiệu. Triển khai `firestore.rules` mới riêng biệt sau khi đánh giá rules production thực tế; không tự ghi đè các rules đang chạy.
 
 **Không tự kích hoạt trên production**: `firestore.rules` vẫn cho phép ghi dữ liệu bảng và đơn từ client ngoài Push. Vì vậy kẻ khác có thể tạo giao dịch giả để tăng XP nếu mở chế độ tự động trước khi sửa rules/luồng xác thực ghi. `STAFF_AUTO_XP_ENABLED=false` là mặc định. Workflow sản xuất yêu cầu xác nhận Firestore staff-writes đã được bảo vệ trước khi chọn bật auto XP; việc chỉ tick ô không tự bảo vệ dữ liệu. Khi bật auto XP, phần duyệt lịch sử được vô hiệu hóa để tránh tính trùng. Trường hợp đổi chủ bàn/số khách/FOC sau lần cấp đầu hoặc tái sử dụng tài liệu mà không xóa cần xây thêm bút toán điều chỉnh; trong giai đoạn này chỉ cấp một lần cho mỗi incarnation của tài liệu.
+
+
+### Luồng an toàn thay thế (2026-11-01)
+Các app Lounge, Bungalow, Restaurant, Show gọi trực tiếp `staffRecordLiveAction` với Firebase Auth của Staff ID **đã được quản lý xác minh**. Máy chủ tự ghi thay đổi bàn/đơn lên Firestore và tự cộng XP qua sổ `staffXpLedger`. Bất kỳ thao tác ghi thẳng từ trình duyệt (gồm cả Guest hoặc nhân viên chưa xác minh) vẫn phục vụ nghiệp vụ cũ nhưng **không cấp XP**. Không yêu cầu Manager duyệt từng sự kiện. Sáu Firestore triggers thô phải luôn để `STAFF_AUTO_XP_ENABLED=false` để không cấp XP từ dữ liệu có thể sửa bởi client.
+
+Các nguồn: Lounge/Bungalow bàn lần đầu trong ngày, Show đặt bàn đã xác minh + lưu combo, và thao tác nhận/hoàn thành đơn của Lounge/Bungalow/Restaurant do nhân viên xác minh thực hiện. Người nhận đơn được cộng XP mức chuẩn bị; khi hoàn thành, người làm được cộng mức còn lại hoặc mức hoàn thành đầy đủ. Số XP được quyết định ở backend, không từ tham số client. Sổ ledger và khóa yêu cầu doanh thu giới hạn một lần mỗi bàn mỗi ngày, kể cả đổi nhân viên hoặc gửi lại request.
+
+**Giới hạn còn lại:** chế độ truy cập Firestore vận hành hiện tại vẫn rộng, nên dữ liệu nghiệp vụ thường có thể bị thay đổi; không lấy các thay đổi đó làm căn cứ trực tiếp cấp XP. Một nhân viên thật vẫn có thể tạo thao tác nghiệp vụ không đúng thực tế; cần kiểm toán thay vì xem XP như số liệu kế toán. Hồ sơ tự đăng ký chưa có bước xác minh sẽ không nhận XP tự động. Khi cập nhật APK cần kiểm tra từng outlet thực tế. Không bật sáu trigger cũ.

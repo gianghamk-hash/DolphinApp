@@ -288,6 +288,7 @@ for(const [name,handler] of Object.entries(require('./staff-profile')))exports[n
 for(const [name,handler] of Object.entries(require('./staff-prestige')))if(!name.startsWith('_'))exports[name]=handler;
 for(const [name,handler] of Object.entries(require('./staff-xp-reconcile')))if(!name.startsWith('_'))exports[name]=handler;
 for(const [name,handler] of Object.entries(require('./staff-xp-live')))if(!name.startsWith('_'))exports[name]=handler;
+for(const [name,handler] of Object.entries(require('./staff-xp-actions')))if(!name.startsWith('_'))exports[name]=handler;
 
 // Manager background push (isolated from the Tactics/Staff callable APIs).
 for (const [name, handler] of Object.entries(require('./push'))) {

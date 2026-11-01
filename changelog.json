@@ -1,18 +1,18 @@
 {
-  "version": "1.1.35",
-  "previousVersion": "1.1.34",
-  "commit": "244d7b0",
-  "previousCommit": "a5f23fd",
-  "buildDate": "2026-11-01T15:25:09.557Z",
-  "summary": "feat(profile): add DOL-0001 personal XP testing controls",
+  "version": "1.1.36",
+  "previousVersion": "1.1.35",
+  "commit": "1b3a1b1",
+  "previousCommit": "244d7b0",
+  "buildDate": "2026-11-01T16:05:57.408Z",
+  "summary": "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone",
   "changes": {
-    "totalCommits": 259,
-    "filesChanged": 8,
+    "totalCommits": 260,
+    "filesChanged": 20,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(profile): add DOL-0001 personal XP testing controls"
+    "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone"
   ],
   "fileChanges": [
     {
@@ -24,7 +24,31 @@
       "type": "update"
     },
     {
+      "file": "dolphin-avatars.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-lounge.html",
+      "type": "update"
+    },
+    {
       "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-show.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
       "type": "update"
     },
     {
@@ -36,7 +60,31 @@
       "type": "update"
     },
     {
-      "file": "staff-prestige-client.js",
+      "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-engine.cjs",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
+      "type": "update"
+    },
+    {
+      "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "ranking/staff-prestige-ranking.js",
+      "type": "update"
+    },
+    {
+      "file": "scripts/avatar-sync-browser.cjs",
       "type": "update"
     },
     {

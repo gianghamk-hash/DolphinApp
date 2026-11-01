@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.35",
+      "releaseDate": "2026-11-01T15:25:09.557Z",
+      "summary": "feat(profile): add DOL-0001 personal XP testing controls",
+      "details": [
+        "feat(profile): add DOL-0001 personal XP testing controls"
+      ]
+    },
+    {
       "version": "1.1.34",
       "releaseDate": "2026-11-01T15:00:08.434Z",
       "summary": "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029",
       "details": [
         "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029"
-      ]
-    },
-    {
-      "version": "1.0.205",
-      "releaseDate": "2026-10-29T14:19:31.822Z",
-      "summary": "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029",
-      "details": [
-        "Merge pull request #146 from gianghamk-hash/fix/tft-apk-shop-more-width-20261029"
       ]
     }
   ]

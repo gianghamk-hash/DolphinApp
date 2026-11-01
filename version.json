@@ -1,7 +1,7 @@
 {
-  "version": "1.1.35",
-  "buildDate": "2026-11-01T15:25:09.557Z",
-  "commit": "244d7b0",
-  "notes": "feat(profile): add DOL-0001 personal XP testing controls",
+  "version": "1.1.36",
+  "buildDate": "2026-11-01T16:05:57.408Z",
+  "commit": "1b3a1b1",
+  "notes": "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone",
   "forceUpdate": false
 }

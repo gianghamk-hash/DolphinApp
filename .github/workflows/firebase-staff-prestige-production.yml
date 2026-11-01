@@ -63,4 +63,3 @@ jobs:
       - name: Remove temporary env file
         if: always()
         run: rm -f functions/.env.dolphin-f6d67
-

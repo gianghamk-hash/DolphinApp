@@ -496,6 +496,12 @@ window.saveBooking = async () => {
   if (data.payment === 'FOC' && !data.focNote) return toast('Thanh toán FOC cần ghi chú lý do!', '⚠️');
   if (!me()) return toast('Hãy nhập tên người bán ở thanh phía trên trước!', '⚠️');
   const ref = doc(db, COL_LIVE, key(label));
+  if(window.DolphinStaffId?.get()?.verified){
+    try{
+      await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'booking',data});
+      toast('Đã lưu bàn '+label,'✅');closeM('m-book');fireworkBurst();return;
+    }catch(err){toast('Không lưu được bàn: '+(err.message||err),'❌');return;}
+  }
   try {
     await runTransaction(db, async tx => {
       const snap = await tx.get(ref);
@@ -729,6 +735,12 @@ window.saveService = async () => {
   }
   
   const ref = doc(db, COL_LIVE, key(label));
+  if(window.DolphinStaffId?.get()?.verified){
+    try{
+      const result=await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'combo',data:service});
+      toast('Đã lưu Combo '+label+' · +'+Number(result.xpAwarded||0)+' XP','✅');closeM('m-service');return;
+    }catch(err){toast('Không lưu được Combo: '+(err.message||err),'❌');return;}
+  }
   try {
     await runTransaction(db, async tx => {
       const snap = await tx.get(ref);

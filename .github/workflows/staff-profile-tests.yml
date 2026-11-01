@@ -18,6 +18,7 @@ jobs:
       - run: |
           node --check staff-profile.js
           node --check staff-id.js
+          node --check functions/staff-xp-actions.js
           node --check staff-sync.js
           node --check staff-online.js
           node --check functions/staff-profile.js

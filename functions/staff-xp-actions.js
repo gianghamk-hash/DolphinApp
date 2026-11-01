@@ -116,10 +116,10 @@ async function work(kind,id,action,who){
   const snap=await tx.get(ref);
   if(!snap.exists)throw new HttpsError('not-found','Không tìm thấy đơn');
   const old=snap.data()||{};
-  if(old.status==='completed'||old.status==='cancelled')throw new HttpsError('failed-precondition','Đơn đã hoàn thành hoặc bị hủy');
+  if(old.status==='cancelled'||old.status==='completed'&&(action!=='completed'||old.completedBy!==who.name))throw new HttpsError('failed-precondition','Đơn đã hoàn thành hoặc bị hủy');
   if(action==='completed'){
-   if(!['preparing','pending'].includes(old.status))throw new HttpsError('failed-precondition','Trạng thái đơn không hợp lệ');
-   tx.update(ref,{status:'completed',completedBy:who.name,completedAt:now,completedTime:dateTime()});
+   if(!['preparing','pending','completed'].includes(old.status))throw new HttpsError('failed-precondition','Trạng thái đơn không hợp lệ');
+   if(old.status!=='completed')tx.update(ref,{status:'completed',completedBy:who.name,completedAt:now,completedTime:dateTime()});
   }else{
    const names=live.names(old.preparedBy);
    if(!names.some(n=>n===who.name))names.push(who.name);

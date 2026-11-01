@@ -52,7 +52,7 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
  const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
   // RTDB may begin with an empty local cache even for an existing profile.
   if(v===null)return null;
-  if((avatarThreshold.get(data.avatar)||1)>require('./staff-xp-engine.cjs').levelForXP(Number(v.xp)||0))return;
+  if((avatarThreshold.get(data.avatar)||1)>Math.max(Number(v.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(Number(v.xp)||0)))return;
   if(!v.active)return;
   const nameAliases=Array.from(new Set([...(v.nameAliases||[]),...(v.name!==data.name?[v.name]:[])])).filter(n=>n&&n!==data.name).slice(-10);
   return {...v,...data,nameAliases,profileVersion:(v.profileVersion||0)+1,updatedAt:Date.now(),updatedBy:uid};

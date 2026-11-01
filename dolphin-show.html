@@ -496,11 +496,12 @@ window.saveBooking = async () => {
   if (data.payment === 'FOC' && !data.focNote) return toast('Thanh toán FOC cần ghi chú lý do!', '⚠️');
   if (!me()) return toast('Hãy nhập tên người bán ở thanh phía trên trước!', '⚠️');
   const ref = doc(db, COL_LIVE, key(label));
+  let xpDeferred=false;
   if(window.DolphinStaffId?.get()?.verified){
     try{
       await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'booking',data});
       toast('Đã lưu bàn '+label,'✅');closeM('m-book');fireworkBurst();return;
-    }catch(err){toast('Không lưu được bàn: '+(err.message||err),'❌');return;}
+    }catch(err){xpDeferred=true;console.warn('[Show] XP service failed; restoring normal booking save:',err?.code||err?.message||err);}
   }
   try {
     await runTransaction(db, async tx => {
@@ -509,7 +510,7 @@ window.saveBooking = async () => {
       if (snap.exists() && !mgr) data.seller = snap.data().seller;
       tx.set(ref, data, { merge: true });
     });
-    toast('Đã lưu bàn ' + label, '✅'); closeM('m-book'); fireworkBurst();
+    toast('Đã lưu bàn ' + label + (xpDeferred?' · XP chưa đồng bộ':''),xpDeferred?'⚠️':'✅'); closeM('m-book'); fireworkBurst();
   } catch (e) {
     if (String(e.message).startsWith('LOCKED')) { toast('Bàn đã có khách đặt trước bởi ' + e.message.split(':')[1] + '!', '🔒'); closeM('m-book'); }
     else toast('Lỗi hệ thống khi lưu!', '❌');
@@ -735,11 +736,12 @@ window.saveService = async () => {
   }
   
   const ref = doc(db, COL_LIVE, key(label));
+  let xpDeferred=false;
   if(window.DolphinStaffId?.get()?.verified){
     try{
       const result=await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'combo',data:service});
       toast('Đã lưu Combo '+label+' · +'+Number(result.xpAwarded||0)+' XP','✅');closeM('m-service');return;
-    }catch(err){toast('Không lưu được Combo: '+(err.message||err),'❌');return;}
+    }catch(err){xpDeferred=true;console.warn('[Show] XP service failed; restoring normal combo save:',err?.code||err?.message||err);}
   }
   try {
     await runTransaction(db, async tx => {
@@ -748,7 +750,7 @@ window.saveService = async () => {
       if (snap.data().service && norm(snap.data().seller) !== norm(me()) && !isManager()) throw new Error('LOCKED');
       tx.update(ref, { service });
     });
-    toast('Đã lưu Combo bàn ' + label, '✅'); closeM('m-service');
+    toast('Đã lưu Combo bàn ' + label + (xpDeferred?' · XP chưa đồng bộ':''),xpDeferred?'⚠️':'✅'); closeM('m-service');
   } catch (e) { 
     toast(e.message === 'LOCKED' ? 'Bạn không có quyền sửa bàn này!' : 'Lỗi hệ thống khi lưu!', '❌'); 
   }

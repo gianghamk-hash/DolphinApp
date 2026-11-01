@@ -66,7 +66,7 @@ jobs:
         run: |
           MSG="$COMMIT_MSG"
           # Lấy dòng đầu của commit message
-          NOTE=$(echo "$MSG" | head -n 1 | sed 's/\[bump\]//g' | sed 's/\[release\]//g' | sed 's/\[bump-minor\]//g' | xargs)
+          NOTE=$(printf '%s\n' "$MSG" | head -n 1 | sed 's/\[bump\]//g; s/\[release\]//g; s/\[bump-minor\]//g; s/^[[:space:]]*//; s/[[:space:]]*$//')
           if [ -z "$NOTE" ]; then
             NOTE="Auto update from GitHub Actions"
           fi

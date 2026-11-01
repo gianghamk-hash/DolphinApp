@@ -1,7 +1,7 @@
 {
-  "version": "1.1.19",
-  "buildDate": "2026-11-01T04:27:27.890Z",
-  "commit": "db87980",
-  "notes": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
+  "version": "1.1.20",
+  "buildDate": "2026-11-01T04:38:33.185Z",
+  "commit": "db9bcb4",
+  "notes": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel",
   "forceUpdate": false
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.19",
+      "releaseDate": "2026-11-01T04:27:27.890Z",
+      "summary": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
+      "details": [
+        "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)"
+      ]
+    },
+    {
       "version": "1.1.18",
       "releaseDate": "2026-10-31T15:31:23.117Z",
       "summary": "Synchronize staff avatars across all apps and expose device linking (#175)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b",
       "details": [
         "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b"
-      ]
-    },
-    {
-      "version": "1.0.189",
-      "releaseDate": "2026-10-29T10:06:35.468Z",
-      "summary": "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029",
-      "details": [
-        "Merge pull request #130 from gianghamk-hash/feat/caro-dolphinmp-migration-20261029"
       ]
     }
   ]

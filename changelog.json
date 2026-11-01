@@ -1,130 +1,22 @@
 {
-  "version": "1.1.19",
-  "previousVersion": "1.1.18",
-  "commit": "db87980",
-  "previousCommit": "4c0c9f5",
-  "buildDate": "2026-11-01T04:27:27.890Z",
-  "summary": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
+  "version": "1.1.20",
+  "previousVersion": "1.1.19",
+  "commit": "db9bcb4",
+  "previousCommit": "db87980",
+  "buildDate": "2026-11-01T04:38:33.185Z",
+  "summary": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel",
   "changes": {
-    "totalCommits": 243,
-    "filesChanged": 28,
+    "totalCommits": 244,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)"
+    "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/show-revenue-staff-xp.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/staff-prestige-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": "STAFF_PRESTIGE_ROLLOUT.md",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-bungalow.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-guests.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-lounge.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-restaurant.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-show.html",
-      "type": "update"
-    },
-    {
-      "file": "functions/index.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-avatar-catalog.json",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-id.test.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-reconcile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-reconcile.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/work-points.test.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-client.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-xp-manager.js",
-      "type": "update"
-    },
-    {
-      "file": "theme-seasonal-scenes.test.js",
-      "type": "update"
-    },
-    {
-      "file": "theme-system.js",
+      "file": ".github/workflows/firebase-staff-prestige-production.yml",
       "type": "update"
     }
   ]

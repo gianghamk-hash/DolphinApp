@@ -1,5 +1,5 @@
 {
-  "version": "1.1.19",
+  "version": "1.1.20",
   "releaseDate": "2026-11-01",
-  "notes": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)"
+  "notes": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel"
 }

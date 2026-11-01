@@ -52,6 +52,20 @@ assert.equal(await b.page.locator('#hall-of-fame').count(),0,'Level ranking move
 assert.equal(await b.page.locator('.ranking-shortcut').count(),1,'Profile links to the Ranking app');
 assert.equal(await rankFrame.locator('#leader-emperor-name').count(),1,'Emperor has a fixed tile next to revenue/work leaders');
 assert.equal(await rankFrame.locator('#section-level').count(),1,'Level XP ranking is in the Ranking app');
+await rankFrame.evaluate(()=>{
+ const p={employeeId:'DOL-0001',name:'Avatar Demo',avatar:'🌊',rank:'Bronze',level:1,xp:2500};
+ window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:{champion:p,leaderboard:[p,{employeeId:'DOL-0002',name:'Colleague',avatar:'🐬',rank:'Bronze',level:1,xp:500}],legends:[{...p,firstAt:Date.now()}]}}));
+});
+assert.equal(await rankFrame.locator('#leader-emperor-name').textContent(),'Avatar Demo','Emperor card uses backend leaderboard');
+assert.equal(await rankFrame.locator('#leader-emperor-value').textContent(),'Lv.1 · 2.500 XP');
+await rankFrame.locator('[data-rank-target="level"]').click();
+assert.equal(await rankFrame.locator('#section-level').isVisible(),true,'Level tab is interactive');
+assert.equal(await rankFrame.locator('#level-board-list .level-entry').count(),2);
+assert.equal(await rankFrame.locator('#level-legendary-list .legendary-entry').count(),1);
+assert.equal(await rankFrame.locator('.dolphin-prestige').count(),0,'Global floating Emperor banner removed');
+assert.equal(await rankFrame.locator('#section-revenue').isVisible(),false);
+assert.equal(await b.page.locator('.dolphin-prestige').count(),0,'Profile no longer shows floating Emperor banner');
+
 assert.equal(await b.page.locator('dialog[open]').count(),0);
 await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();assert.equal(await b.page.locator('#style-dialog').isVisible(),true);assert.equal(await b.page.locator('input[name=staff-theme][value=halloween]').isDisabled(),true);assert.equal(await b.page.locator('#staff-flame-check').isDisabled(),true);assert.equal(await b.page.locator('#staff-save-style').isEnabled(),true);
 await b.page.screenshot({path:path.join(output,'profile-style-mobile.png'),fullPage:true});await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.32",
+  "version": "1.1.33",
   "releaseDate": "2026-11-01",
-  "notes": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile"
+  "notes": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars"
 }

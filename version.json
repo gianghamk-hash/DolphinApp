@@ -1,7 +1,7 @@
 {
-  "version": "1.1.32",
-  "buildDate": "2026-11-01T14:21:42.363Z",
-  "commit": "04db497",
-  "notes": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile",
+  "version": "1.1.33",
+  "buildDate": "2026-11-01T14:36:03.146Z",
+  "commit": "3c1121b",
+  "notes": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars",
   "forceUpdate": false
 }

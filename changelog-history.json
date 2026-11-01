@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.32",
+      "releaseDate": "2026-11-01T14:21:42.363Z",
+      "summary": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile",
+      "details": [
+        "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile"
+      ]
+    },
+    {
       "version": "1.1.31",
       "releaseDate": "2026-11-01T13:58:27.855Z",
       "summary": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #144 from gianghamk-hash/fix/tft-phase-banner-nonblocking-20261029",
       "details": [
         "Merge pull request #144 from gianghamk-hash/fix/tft-phase-banner-nonblocking-20261029"
-      ]
-    },
-    {
-      "version": "1.0.202",
-      "releaseDate": "2026-10-29T13:59:27.086Z",
-      "summary": "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029",
-      "details": [
-        "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029"
       ]
     }
   ]

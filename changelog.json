@@ -1,24 +1,20 @@
 {
-  "version": "1.1.32",
-  "previousVersion": "1.1.31",
-  "commit": "04db497",
-  "previousCommit": "a467c25",
-  "buildDate": "2026-11-01T14:21:42.363Z",
-  "summary": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile",
+  "version": "1.1.33",
+  "previousVersion": "1.1.32",
+  "commit": "3c1121b",
+  "previousCommit": "04db497",
+  "buildDate": "2026-11-01T14:36:03.146Z",
+  "summary": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars",
   "changes": {
-    "totalCommits": 256,
-    "filesChanged": 6,
+    "totalCommits": 257,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile"
+    "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars"
   ],
   "fileChanges": [
-    {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
     {
       "file": "ranking/index.html",
       "type": "update"
@@ -29,14 +25,6 @@
     },
     {
       "file": "scripts/avatar-sync-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-client.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

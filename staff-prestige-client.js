@@ -2,6 +2,7 @@
 (function(){
 'use strict';
 let api=null,me=null,publicBoard=null,refreshing=false;
+const profileUrl=new URL('dolphin-profile.html',document.currentScript?.src||location.href).href;
 const escape=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
 async function connect(){
  if(api)return api;
@@ -30,7 +31,7 @@ function injectStyle(){
 function banner(){
  if(document.querySelector('.dolphin-prestige'))return;
  const node=document.createElement('button');node.className='dolphin-prestige';node.type='button';node.title='Xem Đại sảnh danh vọng';
- node.onclick=()=>{const url=new URL('./dolphin-profile.html#hall-of-fame',document.currentScript?.src||location.href);location.assign(url.href);};
+ node.onclick=()=>{location.assign(profileUrl+'#hall-of-fame');};
  document.body.appendChild(node);
 }
 function updateBanner(){
@@ -47,6 +48,10 @@ async function refresh(){
   updateBanner();window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:publicBoard}));
   if(window.DolphinStaffId?.get()?.employeeId){
    me=await call('staffGetMyProgress');
+   if(me.personalTheme&&localStorage.getItem('dolphin_personal_theme')!==me.personalTheme){
+    localStorage.setItem('dolphin_personal_theme',me.personalTheme);
+    window.ThemeSystem?.setTheme(me.personalTheme);
+   }
    window.dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:me}));
   }
  }catch(e){console.warn('[Prestige] chưa lấy được dữ liệu',e.message);}

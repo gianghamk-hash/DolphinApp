@@ -17,6 +17,21 @@ function rewardCatalog(){
  return Array.isArray(mine?.rewardCatalog)&&mine.rewardCatalog.length?
   mine.rewardCatalog:rewards.map(([level,label],i)=>({id:'legacy-'+i,level,label,icon:'🎁'}));
 }
+function renderRewardHighlights(){
+ const box=$('staff-reward-highlights');if(!box)return;
+ box.replaceChildren();
+ if(!mine){box.append(element('p','Đang tải phần thưởng…','hint'));return;}
+ const all=rewardCatalog(),unlocked=all.filter(x=>mine.level>=x.level);
+ const next=all.filter(x=>x.level>mine.level).slice(0,3);
+ const last=unlocked.slice(-1),items=[...last,...next].slice(0,4);
+ for(const r of items){
+  const got=mine.level>=r.level;
+  const cell=element('div',undefined,'reward-highlight'+(got?' is-open':''));
+  cell.append(element('span',r.icon||'🎁','reward-highlight-icon'),
+   element('strong',r.label),element('small','Lv.'+r.level+' · '+(got?'Đã mở':'Còn '+fmt(Math.max(0,5000*(r.level-1)**2-mine.xp))+' XP')));
+  box.append(cell);
+ }
+}
 function renderRewards(){
  const list=$('staff-reward-list');list.replaceChildren();
  const all=rewardCatalog(),next=all.find(x=>mine&&x.level>mine.level);
@@ -30,6 +45,7 @@ function renderRewards(){
    element('span',open?'✓ Đã mở':mine?'🔒':'—','reward-state'));
   list.appendChild(row);
  }
+ renderRewardHighlights();
 }
 function renderCosmetics(){
  const dialog=$('style-dialog'),editing=dialog.open;

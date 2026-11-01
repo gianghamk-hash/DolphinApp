@@ -13,12 +13,34 @@ function markup(){
  '<div id="staff-xp-track" style="background:#ffffff23;border-radius:10px;height:12px;margin:12px 0;overflow:hidden"><div id="staff-xp-fill" style="height:100%;width:0;background:linear-gradient(90deg,#f4b842,#fff1a4)"></div></div>'+
  '<h2 style="margin-top:24px">🔥 Tên phát sáng</h2><label style="display:flex;gap:10px;align-items:center"><input id="staff-flame-check" type="checkbox"> Kích hoạt OnFlame (mở ở Lv.3)</label>'+
  '<h2 style="margin-top:24px">🎨 Kho chủ đề</h2><p>Dark, Light, Gray luôn miễn phí. Các chủ đề gốc mở khóa theo Level và lưu riêng theo Staff ID.</p><div id="staff-theme-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:9px"></div>'+
- '<button type="button" class="primary" id="staff-save-style" style="margin-top:12px">Lưu đặc quyền</button><p id="staff-style-info" aria-live="polite"></p>'+
+ '<button type="button" class="primary" id="staff-save-style" style="margin-top:12px" disabled>Lưu đặc quyền</button><p id="staff-style-info" aria-live="polite"></p>'+
+ '<p id="staff-xp-status" role="status"></p><button type="button" class="secondary" id="staff-xp-retry" hidden>Thử tải lại XP và bảng vinh danh</button>'+
  '<h2 id="hall-of-fame" style="margin-top:24px">👑 Dolphin Hall of Fame</h2><div id="staff-champion-info">Đang tải...</div>'+
  '<h2 style="margin-top:20px">🏆 Bảng Level cao nhất</h2><div id="staff-rank-board"></div>'+ 
  '<h2 style="margin-top:20px">🏅 Legendary Wall</h2><p>Những nhân viên từng đứng đầu Dolphin.</p><div id="staff-legend-board"></div>';
  document.querySelector('main')?.appendChild(el);
  $('staff-save-style').onclick=save;
+ $('staff-flame-check').disabled=true;
+ $('staff-xp-retry').onclick=()=>window.DolphinPrestige?.refresh();
+ for(const value of Object.values(window.DolphinPrestige?.getStatus?.()||{}))showStatus(value);
+}
+function showStatus(value){
+ if(!$('staff-progress-card'))return;
+ const states=window.DolphinPrestige?.getStatus?.()||{};
+ const errors=Object.values(states).filter(x=>x.state==='error');
+ $('staff-xp-retry').hidden=!errors.length;
+ $('staff-xp-retry').disabled=Object.values(states).some(x=>x.state==='loading');
+ $('staff-xp-status').textContent=errors.length?'Chưa cập nhật được dữ liệu. Bạn có thể thử tải lại.':'';
+ if(value.scope==='mine'){
+  $('staff-save-style').disabled=value.state!=='ready';
+  $('staff-flame-check').disabled=value.state!=='ready'||!mine||mine.level<3;
+  if(value.state==='error'||value.state==='unlinked')$('staff-xp-summary').textContent=value.message;
+  else if(value.state==='loading'&&!mine)$('staff-xp-summary').textContent='Đang tải cấp độ...';
+ }
+ if(value.scope==='board'){
+  if(value.state==='error')$('staff-champion-info').textContent=value.message;
+  else if(value.state==='loading'&&!board)$('staff-champion-info').textContent='Đang tải...';
+ }
 }
 function render(){
  markup();
@@ -39,6 +61,7 @@ function render(){
   }
   const p=$('profile-name');if(p)p.classList.toggle('onflame',mine.nameFlame&&mine.level>=3);
  }
+ if(!board)return;
  const ch=board?.champion;
  $('staff-champion-info').textContent=ch?'👑 '+ch.name+' · Lv. '+ch.level+' · '+fmt(ch.xp)+' XP':'Chưa có nhân viên được vinh danh.';
  $('staff-rank-board').replaceChildren();
@@ -68,5 +91,6 @@ async function save(){
 }
 window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;render();});
 window.addEventListener('dolphin-prestige-updated',e=>{board=e.detail;render();});
+window.addEventListener('dolphin-prestige-status',e=>{markup();showStatus(e.detail);});
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',markup);else markup();
 })();

@@ -2,6 +2,19 @@
 (function(){
 'use strict';
 let api=null,me=null,publicBoard=null,refreshing=false;
+const statuses={};
+function status(scope,state,message=''){
+ statuses[scope]={scope,state,message};
+ window.dispatchEvent(new CustomEvent('dolphin-prestige-status',{detail:statuses[scope]}));
+}
+function bounded(task){
+ let timer;
+ return Promise.race([task,new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('Hết thời gian kết nối. Vui lòng thử lại.')),15000);})]).finally(()=>clearTimeout(timer));
+}
+function failed(scope,error){
+ console.warn('[Prestige] chưa lấy được dữ liệu',error.message);
+ status(scope,'error','Chưa tải được dữ liệu từ máy chủ. Vui lòng thử lại sau.');
+}
 const profileUrl=new URL('dolphin-profile.html',document.currentScript?.src||location.href).href;
 const escape=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;','"':'&quot;',"'":'&#39;'}[c]));
 async function connect(){
@@ -57,21 +70,33 @@ function notifyChampion(){
 }
 async function refresh(){
  if(refreshing||document.hidden)return;refreshing=true;
+ status('board','loading');status('mine','loading');
  try{
-  const call=await connect();publicBoard=await call('staffGetPrestige');
-  updateBanner();notifyChampion();window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:publicBoard}));
-  if(window.DolphinStaffId?.get()?.employeeId){
-   me=await call('staffGetMyProgress');
+  const call=await bounded(connect());
+  await Promise.all([
+   (async()=>{try{
+    publicBoard=await bounded(call('staffGetPrestige'));
+    updateBanner();notifyChampion();window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:publicBoard}));
+    status('board','ready');
+   }catch(e){failed('board',e);}})(),
+   (async()=>{try{
+   if(!window.DolphinStaffId?.get()?.employeeId){
+    me=null;window.dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:null}));
+    status('mine','unlinked','Đăng ký hoặc liên kết hồ sơ nhân viên để xem XP.');return;
+   }
+   me=await bounded(call('staffGetMyProgress'));
    if(me.personalTheme&&localStorage.getItem('dolphin_personal_theme')!==me.personalTheme){
     localStorage.setItem('dolphin_personal_theme',me.personalTheme);
     window.ThemeSystem?.setTheme(me.personalTheme);
    }
    window.dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:me}));
-  }
- }catch(e){console.warn('[Prestige] chưa lấy được dữ liệu',e.message);}
+   status('mine','ready');
+   }catch(e){failed('mine',e);}})()
+  ]);
+ }catch(e){failed('board',e);failed('mine',e);}
  finally{refreshing=false;}
 }
-window.DolphinPrestige={refresh,getBoard:()=>publicBoard,getMine:()=>me,call:async(name,data)=>(await connect())(name,data)};
+window.DolphinPrestige={refresh,getBoard:()=>publicBoard,getMine:()=>me,getStatus:()=>statuses,call:async(name,data)=>(await connect())(name,data)};
 function start(){refresh();setInterval(refresh,120000);window.addEventListener('dolphin-staff-id-changed',refresh);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();

@@ -29,6 +29,7 @@ async function init(){
   uid=user.uid;const functions=func.getFunctions(app,'asia-southeast1');
   api=name=>func.httpsCallable(functions,name);
   await refresh();
+  void retryXP();
  }catch(e){initialized=false;api=null;console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);}
 }
 function connect(){if(!connection||!initialized)connection=init();return connection;}
@@ -68,15 +69,58 @@ async function call(name,data){
  }
  return result.data;
 }
+
+const pendingXPKey='dolphinStaffXpPendingV1';
+function pendingXP(){
+ try{return (JSON.parse(localStorage.getItem(pendingXPKey)||'[]')||[])
+  .filter(x=>x&&typeof x.id==='string'&&typeof x.kind==='string'&&Date.now()-Number(x.at||0)<3*86400000).slice(-20);}
+ catch(_){return [];}
+}
+function savePendingXP(list){try{localStorage.setItem(pendingXPKey,JSON.stringify(list.slice(-20)));}catch(_){}}
+function rememberXP(payload){
+ if(!payload||typeof payload.kind!=='string'||typeof payload.id!=='string')return;
+ const current=pendingXP().filter(x=>x.kind!==payload.kind||x.id!==payload.id);
+ current.push({kind:payload.kind,id:payload.id,employeeId:identity?.employeeId||'',at:Date.now(),attemptAt:0});
+ savePendingXP(current);
+}
+function forgetXP(payload){savePendingXP(pendingXP().filter(x=>x.kind!==payload.kind||x.id!==payload.id));}
+async function syncXP(payload){
+ rememberXP(payload);
+ await connect();
+ if(!api)throw Error('Chưa kết nối Firebase XP');
+ const response=await api('staffSyncSavedActivityXP')(payload);
+ forgetXP(payload);
+ return response.data;
+}
+let retryingXP=false;
+async function retryXP(){
+ if(retryingXP||!api||!identity?.employeeId||document.hidden)return;
+ retryingXP=true;
+ try{
+  for(const task of pendingXP()){
+   if(task.employeeId&&task.employeeId!==identity.employeeId)continue;
+   if(Date.now()-Number(task.attemptAt||0)<60000)continue;
+   const next=pendingXP();const item=next.find(x=>x.id===task.id&&x.kind===task.kind);
+   if(item){item.attemptAt=Date.now();savePendingXP(next);}
+   try{
+    const r=await api('staffSyncSavedActivityXP')({kind:task.kind,id:task.id});
+    forgetXP(task);
+    if(Number(r.data?.addedXP)>0)window.dispatchEvent(new CustomEvent('dolphin-xp-synced',{detail:{addedXP:r.data.addedXP}}));
+   }catch(e){console.warn('[Staff ID] Pending XP will retry later:',e?.code||e?.message||e);break;}
+  }
+ }finally{retryingXP=false;}
+}
+
 window.DolphinStaffId={get:()=>identity,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
  update:data=>call('staffUpdateMyProfile',data),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},
- syncSavedActivity:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase XP');const response=await api('staffSyncSavedActivityXP')(payload);return response.data;},
+ syncSavedActivity:syncXP,retrySavedXP:retryXP,
  open:()=>{if(typeof window.openApp==='function'){window.openApp('profile');return;}window.location.assign(profilePage);},
  openManager:()=>{render();document.getElementById('dolphinStaffIdPanel').style.display='flex';}};
 window.addEventListener('storage',e=>{if(e.key==='dolphinStaffProfile'&&api)refresh();});
-window.addEventListener('focus',()=>{if(api)refresh();});
+window.addEventListener('focus',()=>{if(api)refresh().then(retryXP);});
+setInterval(()=>{if(document.visibilityState==='visible'&&api)void retryXP();},120000);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',connect);else connect();
 })();

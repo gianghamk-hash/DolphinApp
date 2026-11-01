@@ -57,7 +57,7 @@ test('manager-only grants reject client spoofing and persist idempotent XP',asyn
  assert.equal(again.duplicate,true);
  assert.equal(data.get('staffRegistry/DOL-0001').xp,2290);
  const board=await api.staffGetPrestige(req('lanDevice'));
- assert.equal(board.champion.employeeId,'DOL-0001');
+ assert.equal(board.champion,null,'Sandbox admin cannot become Dolphin Emperor');
 });
 test('level peak and unlocked rewards survive a correction',async()=>{
  const {api,data}=harness();
@@ -146,7 +146,7 @@ test('sandbox admin never participates in public XP leaderboard or Emperor',asyn
  const {api,data}=harness();
  data.set('staffRegistry/DOL-0001',{...data.get('staffRegistry/DOL-0001'),xp:900000,levelPeak:14});
  data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,avatar:'🐬',xp:500,levelPeak:1});
- assert.deepEqual(api._leaderboard({a:data.get('staffRegistry/DOL-0001'),b:data.get('staffRegistry/DOL-0002')}).map(p=>p.employeeId),['DOL-0002']);
+ assert.deepEqual(Array.from(api._leaderboard({a:data.get('staffRegistry/DOL-0001'),b:data.get('staffRegistry/DOL-0002')}).map(p=>p.employeeId)),['DOL-0002']);
  await api._rebuildPrestige();
  const board=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(board.champion.employeeId,'DOL-0002');

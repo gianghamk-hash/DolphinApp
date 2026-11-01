@@ -1,7 +1,7 @@
 name: Deploy secure verified Staff XP actions
 on:
   push:
-    branches: [feat/staff-xp-secure-production-20261101]
+    branches: [main, feat/staff-xp-secure-production-20261101]
     paths:
       - '.github/workflows/staff-xp-secure-production.yml'
       - 'functions/staff-xp-actions.js'

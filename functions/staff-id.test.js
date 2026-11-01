@@ -30,7 +30,10 @@ function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
   if(n==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};
   if(n==='firebase-functions/v2/scheduler')return {onSchedule:(_,fn)=>fn};
   if(n==='./tactics/engine')return {};
-  if(n==='./push')return {}; // Ignore independent push exports while unit-testing legacy Staff ID.
+  if(n==='./push')return {};
+  if(n==='./staff-prestige')return {};
+  if(n==='./staff-xp-reconcile')return {};
+  if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs'); // Independently tested staff progression callables. // Ignore independent push exports while unit-testing legacy Staff ID.
   if(n==='./staff-profile'){const sub={...context,exports:{}};vm.runInNewContext(fs.readFileSync(__dirname+'/staff-profile.js','utf8'),sub);return sub.exports;}
   if(n==='./staff-avatar-catalog.json')return require('./staff-avatar-catalog.json');
   throw Error(n);

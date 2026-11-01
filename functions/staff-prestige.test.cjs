@@ -1,0 +1,72 @@
+'use strict';
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm');
+const engine=require('./staff-xp-engine.cjs');
+function harness(){
+ const data=new Map([
+  ['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',avatar:'🐬',active:true,xp:0}],
+  ['staffIdentity/lanDevice',{employeeId:'DOL-0001',name:'Lan',verified:true}]
+ ]);
+ const read=path=>{
+  if(data.has(path))return data.get(path);
+  const children=[...data].filter(([k])=>k.startsWith(path+'/')&&!k.slice(path.length+1).includes('/'));
+  return children.length?Object.fromEntries(children.map(([k,v])=>[k.slice(path.length+1),v])):null;
+ };
+ const ref=path=>({
+  once:async()=>({val:()=>read(path),exists:()=>read(path)!=null}),
+  set:async value=>{data.set(path,value);},
+  remove:async()=>{data.delete(path);},
+  transaction:async fn=>{
+   const old=read(path),next=fn(old);
+   if(next===undefined)return {committed:false,snapshot:{val:()=>old}};
+   if(next===null)data.delete(path);else data.set(path,next);
+   return {committed:true,snapshot:{val:()=>next}};
+  },
+  orderByChild:()=>({limitToLast:()=>({once:async()=>({val:()=>read(path)})})})
+ });
+ class HttpsError extends Error{constructor(code,message){super(message);this.code=code;}}
+ const api={};const ctx={module:{exports:api},exports:api,process:{env:{STAFF_ADMIN_UIDS:'manager'}},console,Date,Math,Number,String,Set,Map,Object,Array};
+ ctx.require=n=>{
+  if(n==='firebase-admin/database')return {getDatabase:()=>({ref})};
+  if(n==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};
+  if(n==='./staff-xp-engine.cjs')return engine;
+  throw Error(n);
+ };
+ vm.runInNewContext(fs.readFileSync(__dirname+'/staff-prestige.js','utf8'),ctx);
+ return {api,data};
+}
+const req=(user,data={})=>({auth:user?{uid:user}:null,data});
+test('manager-only grants reject client spoofing and persist idempotent XP',async()=>{
+ const {api,data}=harness();
+ const payload={employeeId:'DOL-0001',eventId:'show:archive:001',source:'revenue',amount:2290};
+ await assert.rejects(()=>api.staffGrantVerifiedXP(req('lanDevice',payload)),x=>x.code==='permission-denied');
+ await assert.rejects(()=>api.staffGrantVerifiedXP(req(null,payload)),x=>x.code==='unauthenticated');
+ const first=await api.staffGrantVerifiedXP(req('manager',payload));
+ assert.equal(first.duplicate,false);
+ assert.equal(first.xp,2290);
+ assert.equal(first.level,1);
+ const again=await api.staffGrantVerifiedXP(req('manager',payload));
+ assert.equal(again.duplicate,true);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,2290);
+ const board=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(board.champion.employeeId,'DOL-0001');
+});
+test('level peak and unlocked rewards survive a correction',async()=>{
+ const {api,data}=harness();
+ await api.staffGrantVerifiedXP(req('manager',{employeeId:'DOL-0001',eventId:'revenue:verified:high',source:'revenue',amount:20000}));
+ assert.equal((await api.staffGetMyProgress(req('lanDevice'))).level,3);
+ await api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',nameFlame:true}));
+ await api.staffGrantVerifiedXP(req('manager',{employeeId:'DOL-0001',eventId:'correction:verified:001',source:'correction',amount:-19500}));
+ const mine=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(mine.xp,500);
+ assert.equal(mine.level,3);
+ assert(mine.unlocked.includes('name-onflame'));
+ assert.equal(data.get('staffRegistry/DOL-0001').levelPeak,3);
+});
+test('personal premium theme requires server-side level and cannot be forged',async()=>{
+ const {api}=harness();
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'halloween',nameFlame:true})),x=>x.code==='permission-denied');
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'does-not-exist'})),x=>x.code==='invalid-argument');
+ const out=await api.staffSetPersonalStyle(req('lanDevice',{theme:'gray',nameFlame:false}));
+ assert.equal(out.personalTheme,'gray');
+});

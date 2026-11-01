@@ -4,6 +4,8 @@ const {getDatabase}=require('firebase-admin/database');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const catalog=require('./staff-avatar-catalog.json');
 const avatars=new Set(Object.values(catalog).flat());
+const avatarThreshold=new Map();
+for(const [group,items] of Object.entries(catalog))for(const item of items){const required=Number((group.match(/Lv\.(\d+)/)||[])[1])||1;avatarThreshold.set(item,Math.min(required,avatarThreshold.get(item)??Infinity));}
 const departments=new Set(['','Lễ tân','Restaurant','Lounge','Bungalow','Show','Khác']);
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
 function uidOf(req){if(!req.auth?.uid)throw new HttpsError('unauthenticated','Vui lòng kết nối trước.');return req.auth.uid;}
@@ -30,6 +32,7 @@ function response(profile){return {linked:true,verified:profile.registrationSour
  avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
 exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  const uid=uidOf(req),data=validate(req.data);await throttle(uid);
+  if((avatarThreshold.get(data.avatar)||1)>1)throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');
  const db=getDatabase(),current=(await db.ref('staffIdentity/'+uid).once('value')).val();
  if(current?.employeeId)return response(await ownProfile(uid));
  // Stable per Firebase UID: retries/concurrent registrations cannot mint extra IDs.
@@ -49,6 +52,7 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
  const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
   // RTDB may begin with an empty local cache even for an existing profile.
   if(v===null)return null;
+  if((avatarThreshold.get(data.avatar)||1)>Math.max(Number(v.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(Number(v.xp)||0)))return;
   if(!v.active)return;
   const nameAliases=Array.from(new Set([...(v.nameAliases||[]),...(v.name!==data.name?[v.name]:[])])).filter(n=>n&&n!==data.name).slice(-10);
   return {...v,...data,nameAliases,profileVersion:(v.profileVersion||0)+1,updatedAt:Date.now(),updatedBy:uid};

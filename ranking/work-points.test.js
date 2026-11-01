@@ -4,7 +4,7 @@ const start=src.indexOf('function vnDateToTimestamp('),end=src.indexOf('/* ═�
 const funcs=src.slice(start,end)
  +src.slice(src.indexOf('function isExcludedFromRevenue('),src.indexOf('function renderRevenue(){'))
  +src.slice(src.indexOf('function parseStaffNames('),src.indexOf('function renderPoints(){'));
-const state={weekStart:Date.UTC(2026,9,25,17),weekEnd:Date.UTC(2026,10,1,17),loungeTables:{},bunTables:{},showTables:{},loungeOrders:[],bunOrders:[],resOrders:[],loungeHistory:[],bunHistory:[],resHistory:[]};
+const state={weekStart:Date.UTC(2026,9,25,17),weekEnd:Date.UTC(2026,10,1,17),loungeTables:{},bunTables:{},showTables:{},loungeOrders:[],bunOrders:[],resOrders:[],loungeHistory:[],bunHistory:[],resHistory:[],showHistory:[]};
 const context={state,TOP_N:10,PRICE_LOUNGE_PAX:250000,PRICE_BUNGALOW:2000000,PRICE_SHOW_BGL:2000000,PRICE_SHOW_VPS:1390000,PRICE_SHOW_BARVIEW:790000,EXCLUDE_PAYMENTS:['FOC','TA_UNPAID','KTOUR'],Date,Intl,Set,Object,Math,Number,String,console};vm.createContext(context);vm.runInContext(funcs,context);
 test('new and old archived Lounge work orders count using existing formula',()=>{
  state.loungeOrders=[{status:'completed',completedAt:Date.UTC(2026,9,27),preparedBy:'A',completedBy:'A'}];
@@ -49,7 +49,7 @@ test('sales merge case, spaces and equivalent Unicode names across outlets and a
   excluded:{openedByStaff:'GIANG ĐẬP CHAI',pax:100,payment:'FOC'}
  };
  state.bunTables={a:{openedByStaff:'GIANG ĐẬP CHAI'.normalize('NFD')}};
- state.showTables={a:{seller:'giang đập chai',label:'VPS'}};
+ state.showTables={a:{seller:'giang đập chai',label:'VPS 1',service:{combo:'combo1'}}};
  state.loungeHistory=[{date:'2026-10-27',tables:{a:{openedByStaff:'Giang Đập Chai',pax:2}}}];
  state.bunHistory=[];
  const original=JSON.stringify(state);
@@ -77,3 +77,38 @@ test('work merges casing across roles without counting one employee twice in an 
  assert.equal(rows[0].onlyPrepare,0);
 });
 
+
+test('Show revenue uses paid combo rather than BGL/VPS/Bar View seat type',()=>{
+ state.loungeTables={};state.bunTables={};state.loungeHistory=[];state.bunHistory=[];
+ state.showTables={
+  paid:{seller:'Lan',payment:'Tiền mặt',label:'BGL 201',service:{combo:'singer1'}},
+  wine:{seller:'Lan',payment:'Chuyển khoản',label:'VPS 1',service:{combo:'singer2'}},
+  large:{seller:'Minh',payment:'Visa',label:'BAR VIEW 2',service:{combo:'singer3'}},
+  foc:{seller:'Lan',payment:'FOC',label:'VPS 2',service:{combo:'combo1'}},
+  unpaid:{seller:'Lan',payment:'TA_UNPAID',label:'VPS 3',service:{combo:'combo2'}},
+  missing:{seller:'Nam',payment:'Tiền mặt',label:'BGL 202'},
+  bogus:{seller:'Nam',payment:'Tiền mặt',label:'BGL 203',service:{combo:'unknown'}}
+ };
+ state.showHistory=[];
+ const out=Object.fromEntries(context.calcRevenue().map(x=>[x.name,x]));
+ assert.equal(out.Lan.rev,5370000);
+ assert.equal(out.Lan.cnt,3);
+ assert.equal(out.Minh.rev,3290000);
+ assert.equal(out.Nam,undefined);
+});
+test('Show archive revenue counts only sessions within week and excludes FOC',()=>{
+ state.loungeTables={};state.bunTables={};state.loungeHistory=[];state.bunHistory=[];state.showTables={};
+ state.showHistory=[
+  {date:'2026-10-27',shift:'Ca Tối',bookings:[
+   {seller:'Lan',payment:'Visa',label:'BGL 201',service:{combo:'combo3'}},
+   {seller:'Lan',payment:'FOC',label:'BGL 202',service:{combo:'combo2'}},
+   {seller:'Minh',payment:'Chuyển khoản',label:'BAR VIEW 1',service:{combo:'singer3'}}
+  ]},
+  {date:'2026-10-20',shift:'Ca Tối',bookings:[
+   {seller:'Lan',payment:'Visa',label:'BGL 201',service:{combo:'singer1'}}
+  ]}
+ ];
+ const out=Object.fromEntries(context.calcRevenue().map(x=>[x.name,x]));
+ assert.equal(out.Lan.rev,2000000);
+ assert.equal(out.Minh.rev,3290000);
+});

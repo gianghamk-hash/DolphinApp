@@ -40,9 +40,11 @@ $('profile-form').addEventListener('submit',async e=>{
 });
 function renderAvatars(){
  const grid=$('avatar-grid');grid.replaceChildren();
- for(const emoji of catalog[$('avatar-category').value]||[]){
+ const group=$('avatar-category').value,need=Number((group.match(/Lv\.(\d+)/)||[])[1])||1,level=window.DolphinPrestige?.getMine()?.level||1;
+ for(const emoji of catalog[group]||[]){
   const button=document.createElement('button');button.type='button';button.className='avatar-choice';button.textContent=emoji;
   button.setAttribute('aria-label','Chọn '+emoji);button.setAttribute('aria-pressed',String(emoji===avatar));
+  if(need>level){button.disabled=true;button.title='Mở khóa tại Level '+need;button.style.opacity='.35';}
   button.onclick=()=>{dirty=true;avatar=emoji;$('choose-avatar').textContent=emoji;$('avatar-dialog').close();};grid.appendChild(button);
  }
 }

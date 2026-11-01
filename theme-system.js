@@ -7,11 +7,13 @@ const THEMES={
  light:{name:'Light Mode',accent:'#006f74',accent2:'#006f74',bg1:'#f3f9f8',bg2:'#eff6f4',surface:'#ffffff',text:'#103b3c',muted:'#446966',border:'rgba(0,111,116,.4)',borderSoft:'rgba(0,100,104,.18)',glow:'rgba(0,119,118,.14)'},
  gray:{name:'Gray Mode',accent:'#d1d5db',accent2:'#d1d5db',bg1:'#3a3e43',bg2:'#23272b',surface:'#343a40',text:'#f0f1f3',muted:'#b6c0c8',border:'rgba(180,189,198,.46)',borderSoft:'rgba(173,184,193,.24)',glow:'rgba(170,179,189,.12)'}
 };
+const HERITAGE_THEMES={"default":{"name":"Dolphin","accent":"#FBD77A","accent2":"#bfe9dc","bg1":"#0f3d38","bg2":"#0a2b28","border":"rgba(244,184,66,.55)","borderSoft":"rgba(244,184,66,.25)","glow":"rgba(244,184,66,.30)","icon":"🕐"},"tet":{"name":"Tết","accent":"#FFD166","accent2":"#FFC1B0","bg1":"#3a0e0e","bg2":"#1a0505","border":"rgba(255,107,53,.80)","borderSoft":"rgba(255,107,53,.28)","glow":"rgba(255,107,53,.32)","icon":"🧧"},"valentine":{"name":"Valentine","accent":"#FFB3C6","accent2":"#FFD1DC","bg1":"#3a0a1a","bg2":"#1a0508","border":"rgba(255,77,109,.80)","borderSoft":"rgba(255,77,109,.28)","glow":"rgba(255,77,109,.32)","icon":"💝"},"womenday":{"name":"Quốc Tế Phụ Nữ","accent":"#FFC1E3","accent2":"#FFE0F0","bg1":"#3a1030","bg2":"#1a0515","border":"rgba(217,70,166,.80)","borderSoft":"rgba(217,70,166,.28)","glow":"rgba(217,70,166,.32)","icon":"🌷"},"reunification":{"name":"30/4","accent":"#FFD700","accent2":"#FFECB3","bg1":"#2a0505","bg2":"#0a0202","border":"rgba(218,37,29,.85)","borderSoft":"rgba(218,37,29,.30)","glow":"rgba(218,37,29,.35)","icon":"⭐"},"children":{"name":"Tết Thiếu Nhi","accent":"#FFD1DC","accent2":"#B5EAD7","bg1":"#0e1e3a","bg2":"#050a1a","border":"rgba(78,205,196,.80)","borderSoft":"rgba(78,205,196,.28)","glow":"rgba(78,205,196,.32)","icon":"🎈"},"nationalday":{"name":"Quốc Khánh","accent":"#FFD700","accent2":"#FFF4B0","bg1":"#2a0505","bg2":"#0a0202","border":"rgba(218,37,29,.85)","borderSoft":"rgba(218,37,29,.30)","glow":"rgba(255,215,0,.32)","icon":"⭐"},"midautumn":{"name":"Trung Thu","accent":"#FFE8A0","accent2":"#FFD1DC","bg1":"#2a0e2a","bg2":"#0a0310","border":"rgba(240,192,96,.80)","borderSoft":"rgba(240,192,96,.28)","glow":"rgba(240,192,96,.32)","icon":"🏮"},"halloween":{"name":"Halloween","accent":"#FFB84D","accent2":"#B388FF","bg1":"#1a0a2a","bg2":"#050108","border":"rgba(255,149,0,.80)","borderSoft":"rgba(255,149,0,.28)","glow":"rgba(255,149,0,.32)","icon":"🎃"},"christmas":{"name":"Giáng Sinh","accent":"#FFE8A0","accent2":"#B8E8C8","bg1":"#0a1a2e","bg2":"#050a14","border":"rgba(196,30,58,.85)","borderSoft":"rgba(196,30,58,.30)","glow":"rgba(10,125,61,.35)","icon":"🎄"},"newyear":{"name":"Tết Dương","accent":"#FFD700","accent2":"#E0B0FF","bg1":"#1a0a3a","bg2":"#050110","border":"rgba(255,215,0,.85)","borderSoft":"rgba(255,215,0,.30)","glow":"rgba(139,0,255,.35)","icon":"🎊"},"spring":{"name":"Mùa Xuân","accent":"#FFD1DC","accent2":"#B5EAD7","bg1":"#1a2a1a","bg2":"#0a140a","border":"rgba(255,182,193,.80)","borderSoft":"rgba(255,182,193,.28)","glow":"rgba(255,182,193,.32)","icon":"🌸"},"summer":{"name":"Mùa Hè","accent":"#FFE58F","accent2":"#A0E8E0","bg1":"#0a1a3a","bg2":"#030814","border":"rgba(255,176,0,.80)","borderSoft":"rgba(255,176,0,.28)","glow":"rgba(255,176,0,.32)","icon":"☀️"},"autumn":{"name":"Mùa Thu","accent":"#FFD1A0","accent2":"#FFB87A","bg1":"#2a1505","bg2":"#0a0502","border":"rgba(210,105,30,.80)","borderSoft":"rgba(210,105,30,.28)","glow":"rgba(210,105,30,.32)","icon":"🍁"},"winter":{"name":"Mùa Đông","accent":"#E0F0FF","accent2":"#B8D8F0","bg1":"#0a1428","bg2":"#03060f","border":"rgba(184,216,240,.80)","borderSoft":"rgba(184,216,240,.28)","glow":"rgba(184,216,240,.32)","icon":"❄️"}};
+const ALL_THEMES={...THEMES,...Object.fromEntries(Object.entries(HERITAGE_THEMES).map(([id,t])=>[id,{...THEMES.dark,...t,surface:t.bg1,text:'#f7faf9',muted:'#d2e0dc'}]))};
 let current='dark',unsubscribe=null,preview=false;
-function normalize(key){return Object.prototype.hasOwnProperty.call(THEMES,key)?key:'dark';}
+function normalize(key){return Object.prototype.hasOwnProperty.call(ALL_THEMES,key)?key:'dark';}
 function render(key,broadcast){
  key=normalize(key);
- const t=THEMES[key];current=key;
+ const t=ALL_THEMES[key];current=key;
  const root=document.documentElement;
  for(const [prop,value] of Object.entries({
  '--theme-border':t.border,'--theme-border-soft':t.borderSoft,'--theme-glow':t.glow,
@@ -71,20 +73,20 @@ function initFirebase(){
   const db=store.getFirestore(app);
   unsubscribe=store.onSnapshot(store.doc(db,'master_config','theme'),snap=>{
    const v=snap.exists()?(snap.data().themeKey||snap.data().theme):'dark';
-   render(normalize(v),false);
+   const preferred=localStorage.getItem('dolphin_personal_theme');render(normalize(preferred||v),false);
   },err=>console.warn('[DisplayMode] Firestore unavailable; using saved mode',err));
  }).catch(err=>console.warn('[DisplayMode] Firebase unavailable; using saved mode',err));
 }
 function init(){
  inject();
  const params=new URLSearchParams(location.search);
- preview=THEMES[params.get('theme')]!==undefined;
+ preview=ALL_THEMES[params.get('theme')]!==undefined;
  let stored;try{stored=localStorage.getItem(KEY);}catch(e){}
- render(preview?params.get('theme'):normalize(stored),false);
+ render(preview?params.get('theme'):normalize(localStorage.getItem('dolphin_personal_theme')||stored),false);
  window.addEventListener('storage',e=>{if(e.key===KEY&&!preview)render(normalize(e.newValue),false);});
  try{const bc=window.__dolphinThemeBC||(window.__dolphinThemeBC=new BroadcastChannel('dolphin-theme'));bc.addEventListener('message',e=>{if(!preview&&e.data&&e.data.type==='theme')render(normalize(e.data.key),false);});}catch(e){}
  initFirebase();
 }
-window.ThemeSystem={version:'8.0',setTheme:key=>render(normalize(key),true),getCurrent:()=>current,listThemes:()=>Object.keys(THEMES),detect:()=> 'dark',getThemes:()=>THEMES};
+window.ThemeSystem={version:'8.0',setTheme:key=>render(normalize(key),true),getCurrent:()=>current,listThemes:()=>Object.keys(ALL_THEMES),detect:()=> 'dark',getThemes:()=>ALL_THEMES};
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

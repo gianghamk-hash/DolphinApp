@@ -41,6 +41,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 <script src="../staff-sync.js" defer></script>
 <script src="../staff-id.js?v=1.1" defer></script>
 <script src="../dolphin-avatars.js" defer></script>
+<script src="../staff-prestige-client.js?v=1" defer></script>
 </head>
 <body class="dolphin-ranking-page">
 
@@ -131,6 +132,7 @@ const state = {
   loungeHistory: [],
   bunHistory: [],
   resHistory: [],
+  showHistory: [],
   mainTab: 'revenue',
   weekStart: 0,
   weekEnd: 0
@@ -236,6 +238,12 @@ try {
       state.showTables = obj;
       renderAll();
     });
+    onSnapshot(collection(db, 'show_history'), snap => {
+      const arr=[];
+      snap.forEach(d=>arr.push({id:d.id,...d.data()}));
+      state.showHistory=arr;
+      renderAll();
+    });
     onSnapshot(collection(db, 'lounge_orders'), snap => {
       const arr = [];
       snap.forEach(d => arr.push({ id: d.id, ...d.data() }));
@@ -285,13 +293,14 @@ function isExcludedFromRevenue(t){
   return EXCLUDE_PAYMENTS.indexOf(pay) >= 0;
 }
 
-function getShowPrice(label){
-  if (!label) return 0;
-  const s = String(label).toUpperCase().trim();
-  if (s.indexOf('BGL') === 0) return PRICE_SHOW_BGL;
-  if (s.indexOf('VPS') === 0) return PRICE_SHOW_VPS;
-  if (s.indexOf('BAR VIEW') === 0 || s.indexOf('BARVIEW') === 0) return PRICE_SHOW_BARVIEW;
-  return 0;
+/* Giá combo là nguồn doanh thu Show duy nhất. Bàn trống/bàn chưa bán combo = 0. */
+const SHOW_COMBO_PRICES=Object.freeze({
+ combo1:1390000,combo2:790000,combo3:2000000,
+ singer1:2290000,singer2:2290000,singer3:3290000
+});
+function getShowPrice(table){
+ const combo=table?.service?.combo;
+ return Object.prototype.hasOwnProperty.call(SHOW_COMBO_PRICES,combo)?SHOW_COMBO_PRICES[combo]:0;
 }
 
 /* ════════ GOM TABLES TỪ CURRENT + HISTORY ════════ */
@@ -322,8 +331,13 @@ function collectBunTables(){
 }
 
 function collectShowTables(){
-  const out = [];
-  Object.values(state.showTables).forEach(t => out.push(t));
+  const out=[];
+  Object.values(state.showTables).forEach(t=>out.push(t));
+  (state.showHistory||[]).forEach(sess=>{
+    const ts=vnDateToTimestamp(sess.date);
+    if(!isInWeek(ts))return;
+    (sess.bookings||[]).forEach(t=>out.push(t));
+  });
   return out;
 }
 
@@ -360,15 +374,15 @@ function calcRevenue(){
     add(staff, PRICE_BUNGALOW, 'BGL');
   });
 
-  // 3. Show (không có history riêng — chỉ current)
+  // 3. Dolphin Show: trừ FOC; các phương thức khác vẫn được tính theo combo bán.
   collectShowTables().forEach(t => {
-    if (isExcludedFromRevenue(t)) return;
+    if (String(t?.payment||t?.paymentMethod||'').trim().toUpperCase()==='FOC') return;
     const staff = (t.seller || '').trim();
     if (!staff) return;
     const label = t.label || '';
-    const price = getShowPrice(label);
+    const price = getShowPrice(t);
     if (price <= 0) return;
-    add(staff, price, label);
+    add(staff, price, (t.service?.combo||'')+' · '+label);
   });
 
   return Array.from(emp.values())

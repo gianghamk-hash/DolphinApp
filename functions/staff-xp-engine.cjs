@@ -16,6 +16,7 @@ const PERKS=Object.freeze([
   "id": "name-onflame",
   "name": "Tên phát sáng"
  },
+ {"level":3,"id":"avatar-explorer","name":"Avatar Khám phá"},
  {
   "level": 5,
   "id": "avatar-ocean",
@@ -45,6 +46,11 @@ const PERKS=Object.freeze([
   "level": 10,
   "id": "theme-winter",
   "name": "Theme winter"
+ },
+ {
+  "level": 10,
+  "id": "avatar-adventure",
+  "name": "Avatar Phiêu lưu"
  },
  {
   "level": 15,
@@ -87,6 +93,11 @@ const PERKS=Object.freeze([
   "name": "Theme midautumn"
  },
  {
+  "level": 20,
+  "id": "avatar-festival",
+  "name": "Avatar Lễ hội"
+ },
+ {
   "level": 25,
   "id": "onflame-advanced",
   "name": "Tên phát sáng cao cấp"
@@ -105,6 +116,11 @@ const PERKS=Object.freeze([
   "level": 30,
   "id": "theme-newyear",
   "name": "Theme newyear"
+ },
+ {
+  "level": 30,
+  "id": "avatar-speed",
+  "name": "Avatar Thần tốc"
  },
  {
   "level": 40,

@@ -1,5 +1,6 @@
 'use strict';
 const {getDatabase}=require('firebase-admin/database');
+const {getFirestore}=require('firebase-admin/firestore');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const engine=require('./staff-xp-engine.cjs');
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
@@ -39,6 +40,9 @@ async function rebuild(){
   leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
+ // Small Firestore signal for instant profile refresh, not an XP authority.
+ try{await getFirestore().doc('staff_xp_updates/public').set({updatedAt:current.updatedAt});}
+ catch(e){console.warn('[StaffPrestige] realtime signal unavailable:',e.message);}
  return current;
 }
 exports.staffGetPrestige=onCall(opts,async req=>{
@@ -84,7 +88,8 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
 
 /* Admin-only reconciliation: sources must be verified externally, never trust client order payloads. */
 async function awardVerifiedXP(req,data,options={}){
- if(!isAdmin(req))throw new HttpsError('permission-denied','Chỉ quản lý được cấp điểm');
+ // Trusted Firestore triggers may award XP without Manager approval; the browser cannot use this path.
+ if(!options.trusted&&!isAdmin(req))throw new HttpsError('permission-denied','Chỉ quản lý được cấp điểm');
  const employeeId=String(data?.employeeId||'').toUpperCase();
  const eventId=String(data?.eventId||'');
  const source=String(data?.source||'');
@@ -95,7 +100,7 @@ async function awardVerifiedXP(req,data,options={}){
   throw new HttpsError('invalid-argument','Sự kiện XP không hợp lệ');
  if(source!=='correction'&&amount<0)throw new HttpsError('invalid-argument','XP âm cần sự kiện điều chỉnh');
  const db=getDatabase(),ref=db.ref('staffXpLedger/'+employeeId+'/'+eventId);
- const record={employeeId,eventId,source,amount,approvedBy:uid(req),at:Date.now()};
+ const record={employeeId,eventId,source,amount,approvedBy:options.trusted?'automatic-firestore-trigger':uid(req),at:Date.now()};
  const written=await ref.transaction(v=>v?undefined:record);
  if(!written.committed)return {duplicate:true,employeeId,eventId};
  const profileRef=db.ref('staffRegistry/'+employeeId);
@@ -129,3 +134,6 @@ exports.staffRebuildPrestige=onCall(opts,async req=>{
 module.exports._leaderboard=leaderboard;
 module.exports._awardVerifiedXP=awardVerifiedXP;
 module.exports._rebuildPrestige=rebuild;
+
+// Internal only: functions/index.js deliberately skips underscore-prefixed exports.
+module.exports._awardTrustedLiveXP=data=>awardVerifiedXP(null,data,{trusted:true});

@@ -24,14 +24,14 @@ function render(fill=true){
  if($('profile-avatar'))$('profile-avatar').textContent=avatar;
  $('profile-name').textContent=profile?.name||'Hồ sơ của bạn';
  $('employee-id').textContent=profile?.employeeId||'ID sẽ được tự cấp';
- $('profile-state').textContent=profile?'Đã đăng ký':'Sẵn sàng đăng ký';
+ $('profile-state').textContent=profile?(profile.verified?'Đã xác minh':'Chưa xác minh'):'Sẵn sàng đăng ký';
  $('device-status').textContent=profile?'Đã liên kết':'Chưa liên kết';
  $('created-at').textContent=profile?.createdAt?new Date(profile.createdAt).toLocaleDateString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'—';
  $('save-profile').textContent=profile?'Lưu thay đổi':'Đăng ký hồ sơ & thiết bị';
  $('registration-note').hidden=!!profile;
  $('switch-confirm').hidden=!profile;
  $('confirm-switch').checked=false;
- $('claim-current').textContent=profile?'Thiết bị đang dùng '+profile.employeeId+'. Nhập mã nếu muốn chuyển thiết bị sang hồ sơ khác.':'Nhập mã được tạo trên thiết bị đã có hồ sơ để dùng chung ID.';
+ $('claim-current').textContent=profile?'Thiết bị này đang dùng '+profile.employeeId+'. Dán mã từ thiết bị khác để chuyển sang hồ sơ đó (cần xác nhận bên dưới).':'Dán mã từ thiết bị đã đăng ký để kích hoạt Staff ID trên thiết bị này.';
  setBusy(false);
 }
 function errorText(e){

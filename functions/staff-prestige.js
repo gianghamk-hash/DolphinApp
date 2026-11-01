@@ -5,15 +5,17 @@ const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const engine=require('./staff-xp-engine.cjs');
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
 const staffPattern=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/;
+const TEST_ADMIN_ID='DOL-0001'; // Dolphin Crew Club game sandbox; excluded from XP competitions.
 function uid(req){if(!req.auth?.uid)throw new HttpsError('unauthenticated','Hãy đăng nhập');return req.auth.uid;}
 function admins(){return new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()).filter(Boolean));}
 function isAdmin(req){return admins().has(uid(req));}
 async function currentStaff(req){
- const id=(await getDatabase().ref('staffIdentity/'+uid(req)).once('value')).val()?.employeeId;
+ const identity=(await getDatabase().ref('staffIdentity/'+uid(req)).once('value')).val();
+ const id=identity?.employeeId;
  if(!id||!staffPattern.test(id))throw new HttpsError('permission-denied','Cần liên kết Staff ID');
  const p=(await getDatabase().ref('staffRegistry/'+id).once('value')).val();
  if(!p?.active)throw new HttpsError('permission-denied','Nhân viên không còn hoạt động');
- return {id,profile:p};
+ return {id,profile:p,testAdmin:id===TEST_ADMIN_ID&&identity?.verified===true&&p.registrationSource!=='self'};
 }
 function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
@@ -23,7 +25,7 @@ function expose(p){
   unlocked:engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
 }
 function leaderboard(registry){
- return Object.values(registry||{}).filter(p=>p?.active&&staffPattern.test(p.employeeId)&&p.name)
+ return Object.values(registry||{}).filter(p=>p?.active&&p.employeeId!==TEST_ADMIN_ID&&staffPattern.test(p.employeeId)&&p.name)
  .map(expose).sort((a,b)=>b.level-a.level||b.xp-a.xp||a.employeeId.localeCompare(b.employeeId)).slice(0,25);
 }
 async function rebuild(){
@@ -52,11 +54,17 @@ exports.staffGetPrestige=onCall(opts,async req=>{
   getDatabase().ref('staffPrestige/legends').orderByChild('firstAt').limitToLast(25).once('value')
  ]);
  const pub=snap.val()||{champion:null,leaderboard:[],updatedAt:0};
- return {...pub,legends:Object.values(legends.val()||{}).sort((a,b)=>b.firstAt-a.firstAt)};
+ // Also filter old public snapshots until the next board rebuild occurs.
+ const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>p.employeeId!==TEST_ADMIN_ID);
+ const champion=pub.champion?.employeeId===TEST_ADMIN_ID
+  ?(employees[0]?{...employees[0],title:'Dolphin Emperor'}:null):pub.champion||null;
+ return {...pub,champion,leaderboard:employees,
+  legends:Object.entries(legends.val()||{}).filter(([id])=>id!==TEST_ADMIN_ID)
+   .map(([,p])=>p).sort((a,b)=>b.firstAt-a.firstAt)};
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
- const {id,profile}=await currentStaff(req);
- return expose(profile);
+ const {profile,testAdmin}=await currentStaff(req);
+ return {...expose(profile),testAdmin};
 });
 exports.staffSetShowcase=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
@@ -96,6 +104,45 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
   throw new HttpsError('aborted','Giao dịch lưu giao diện bị gián đoạn. Hãy thử lại.');
  }
  return {...expose(result.snapshot.val()),personalTheme:result.snapshot.val().personalTheme||'dark'};
+});
+
+
+/* Dolphin Crew Club is for fun only. DOL-0001 is a verified sandbox admin,
+ * never a participant in the public XP league. No effect on orders or payroll.
+ * This endpoint deliberately adjusts only the caller's own Staff ID.
+ */
+exports.staffAdjustOwnTestXP=onCall(opts,async req=>{
+ const {id,profile,testAdmin}=await currentStaff(req);
+ if(!testAdmin)throw new HttpsError('permission-denied','Chỉ Admin DOL-0001 được thử XP của chính mình.');
+ const action=String(req.data?.action||'');
+ const amount=req.data?.amount;
+ if(!['add','reset'].includes(action)||
+    (action==='add'&&(!Number.isSafeInteger(amount)||amount<1||amount>1000000))||
+    (action==='reset'&&amount!==undefined))
+  throw new HttpsError('invalid-argument','Chọn cộng 1–1.000.000 XP hoặc đặt lại XP.');
+ const ref=getDatabase().ref('staffRegistry/'+id),now=Date.now();
+ let firstUpdate=true;
+ const result=await ref.transaction(value=>{
+  const initial=firstUpdate;firstUpdate=false;
+  const current=value===null&&initial?profile:value;
+  if(!current?.active||current.employeeId!==TEST_ADMIN_ID||current.registrationSource==='self')return;
+  const before=Math.max(0,Number(current.xp)||0);
+  const xp=action==='reset'?0:before+amount;
+  if(!Number.isSafeInteger(xp)||xp>engine.xpForLevel(60))return;
+  const peak=action==='reset'?1:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp));
+  return {...current,xp,levelPeak:peak,
+    ...(action==='reset'?{nameFlame:false,personalTheme:'dark',showcase:[]}:{}),
+    testXPUpdatedAt:now,updatedAt:now};
+ },undefined,false);
+ if(!result.committed){
+  const latest=(await ref.once('value')).val();
+  if(!latest?.active)throw new HttpsError('failed-precondition','Hồ sơ Admin không còn hoạt động.');
+  throw new HttpsError('failed-precondition','Không ghi được XP thử nghiệm hoặc đã đạt XP tối đa.');
+ }
+ // The real-work ledger remains untouched. Resetting XP resets level/rewards,
+ // but the same historical activity cannot be credited twice.
+ try{await rebuild();}catch(e){console.warn('[Crew Club] board refresh unavailable',e.message);}
+ return {...expose(result.snapshot.val()),testAdmin:true,mode:'sandbox'};
 });
 
 /* Admin-only reconciliation: sources must be verified externally, never trust client order payloads. */

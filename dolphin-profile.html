@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
-<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=1.1.35">
-<script src="./dolphin-navigation.js?v=1.1.35" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=1.1.35" defer></script><script src="./staff-profile.js?v=1.1.35" defer></script><script src="./dolphin-avatars.js" defer></script><script src="./staff-prestige-client.js?v=1.1.35" defer></script><script src="./theme-system.js?v=1.1.35" defer></script><script src="./staff-prestige-profile.js?v=1.1.35" defer></script><script src="./staff-xp-manager.js?v=1.1.35" defer></script>
+<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-rewards-1">
+<script src="./dolphin-navigation.js?v=1.1.35" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=1.1.35" defer></script><script src="./staff-profile.js?v=1.1.35" defer></script><script src="./dolphin-avatars.js?v=crew-rewards-1" defer></script><script src="./staff-prestige-client.js?v=1.1.35" defer></script><script src="./theme-system.js?v=1.1.35" defer></script><script src="./staff-prestige-profile.js?v=crew-rewards-1" defer></script><script src="./staff-xp-manager.js?v=1.1.35" defer></script>
 </head>
 <body>
 <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -26,6 +26,12 @@
  <button type="button" data-open-dialog="rewards-dialog"><span class="action-icon"><svg class="icon"><use href="#i-gift"/></svg></span><span>Phần thưởng</span></button>
  <button type="button" data-open-dialog="devices-dialog"><span class="action-icon"><svg class="icon"><use href="#i-device"/></svg></span><span>Thiết bị</span></button>
 </nav>
+<section class="card reward-preview" aria-labelledby="crew-reward-preview-title">
+ <div class="section-line"><div><p class="eyebrow">Mở khóa tự động</p><h2 id="crew-reward-preview-title">🎁 Mốc phần thưởng</h2></div>
+ <button type="button" class="text-button" data-open-dialog="rewards-dialog">Xem tất cả ↗</button></div>
+ <p class="hint">Mỗi Level mở thêm đồ trang trí nhân vật để sưu tầm và khoe.</p>
+ <div id="staff-reward-highlights" class="reward-highlights" aria-live="polite"></div>
+</section>
 <div class="status-strip"><p id="profile-message" role="status" aria-live="polite">Đang kết nối hồ sơ nhân viên…</p><p id="staff-xp-status" role="status"></p><button type="button" class="text-button" id="staff-xp-reconcile">Kiểm tra XP hôm nay ↻</button><button type="button" class="text-button" id="staff-xp-retry" hidden>Thử tải lại</button></div>
 <section id="crew-admin-sandbox" class="card crew-admin-sandbox" hidden aria-labelledby="crew-admin-title">
  <div class="section-line"><span class="eyebrow">🧪 Admin · DOL-0001</span><span class="level-tag">CHẾ ĐỘ TEST</span></div>

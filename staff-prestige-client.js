@@ -109,7 +109,8 @@ function start(){
  injectStyle();refresh();subscribeProfileSignal();
  document.getElementById('staff-xp-reconcile')?.addEventListener('click',()=>recoverMyXP(true));
  window.addEventListener('dolphin-my-progress-updated',e=>{
-  if(!/dolphin-profile\.html$/.test(location.pathname)||recoveredZeroToday||Number(e.detail?.xp)!==0||!e.detail?.employeeId)return;
+  // Admin reset to 0 XP is intentional, not a missed-work reconciliation.
+  if(!/dolphin-profile\.html$/.test(location.pathname)||e.detail?.testAdmin===true||recoveredZeroToday||Number(e.detail?.xp)!==0||!e.detail?.employeeId)return;
   const key='dolphin-xp-zero-reconcile-'+e.detail.employeeId+'-'+new Date().toLocaleDateString('en-CA');
   const last=Number(localStorage.getItem(key)||0);
   if(last&&Date.now()-last<4*3600000)return;

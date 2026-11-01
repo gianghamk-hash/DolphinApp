@@ -39,13 +39,23 @@ function updateBanner(){
  if(!ch)return;
  injectStyle();banner();
  const node=document.querySelector('.dolphin-prestige');
- node.innerHTML='<small>👑 DOLPHIN EMPEROR</small><span class="prestige-champion onflame">'+escape(ch.name)+'</span><span class="prestige-stats"> · Lv. '+Number(ch.level||1)+' · '+Number(ch.xp||0).toLocaleString('vi-VN')+' XP</span>';
+ node.innerHTML='<small>👑 DOLPHIN EMPEROR · 🐬✨</small><span class="prestige-champion onflame">'+escape(ch.avatar||'🐬')+' '+escape(ch.name)+'</span><span class="prestige-stats"> · Lv. '+Number(ch.level||1)+' · '+Number(ch.xp||0).toLocaleString('vi-VN')+' XP</span>';
+}
+function notifyChampion(){
+ const a=publicBoard?.announcement;
+ if(!a?.id||Date.now()-Number(a.at||0)>24*3600000)return;
+ const key='dolphin-prestige-announcement';
+ try{if(localStorage.getItem(key)===a.id)return;localStorage.setItem(key,a.id);}catch(e){}
+ const node=document.createElement('div');
+ node.style.cssText='position:fixed;top:18px;left:50%;transform:translateX(-50%);z-index:10000;background:#132e2d;color:#ffe1a1;border:1px solid #ffd780;border-radius:12px;padding:14px 18px;max-width:92vw;text-align:center;font:700 14px system-ui;box-shadow:0 8px 30px #000a';
+ node.textContent=a.text||'Dolphin Emperor mới';document.body.appendChild(node);
+ setTimeout(()=>node.remove(),6500);
 }
 async function refresh(){
  if(refreshing||document.hidden)return;refreshing=true;
  try{
   const call=await connect();publicBoard=await call('staffGetPrestige');
-  updateBanner();window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:publicBoard}));
+  updateBanner();notifyChampion();window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:publicBoard}));
   if(window.DolphinStaffId?.get()?.employeeId){
    me=await call('staffGetMyProgress');
    if(me.personalTheme&&localStorage.getItem('dolphin_personal_theme')!==me.personalTheme){

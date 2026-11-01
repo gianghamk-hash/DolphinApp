@@ -61,7 +61,7 @@ function renderBoard(){
   row.append(element('span',i===0?'♛':String(i+1),'rank-position'),element('span',p.avatar||'🐬','rank-avatar'),name,score);
   $('staff-rank-board').appendChild(row);
  }
- if(!rows.length)$('staff-rank-board').appendChild(element('p','Bảng xếp hạng sẽ cập nhật sau khi quản lý duyệt XP.','empty-state'));
+ if(!rows.length)$('staff-rank-board').appendChild(element('p','Bảng xếp hạng sẽ cập nhật khi nhân viên nhận XP từ doanh thu và order hoàn thành.','empty-state'));
  $('staff-board-more').hidden=rows.length<=5;$('staff-board-more').textContent=expanded?'Thu gọn':'Xem thêm '+(Math.min(25,rows.length)-5)+' nhân viên';
  $('staff-legend-board').replaceChildren();
  for(const p of board.legends||[]){

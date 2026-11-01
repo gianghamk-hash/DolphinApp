@@ -97,16 +97,17 @@ exports.staffGrantVerifiedXP=onCall(opts,async req=>{
  const written=await ref.transaction(v=>v?undefined:record);
  if(!written.committed)return {duplicate:true,employeeId,eventId};
  const profileRef=db.ref('staffRegistry/'+employeeId);
- let progress;
+ let progress,credited=false;
  try{
   const tx=await profileRef.transaction(v=>{
    if(!v?.active)return;
    return {...v,xp:Math.max(0,Number(((Number(v.xp)||0)+amount).toFixed(2))),updatedAt:Date.now()};
   });
   if(!tx.committed)throw Error('Hồ sơ không còn hoạt động');
-  progress=expose(tx.snapshot.val());
-  await rebuild();
- }catch(e){await ref.remove();throw new HttpsError('internal','Không thể cấp XP: '+e.message);}
+  credited=true;progress=expose(tx.snapshot.val());
+ }catch(e){if(!credited)await ref.remove();throw new HttpsError('internal','Không thể cấp XP: '+e.message);}
+ // Do not undo an already committed XP award if the public board refresh fails.
+ try{await rebuild();}catch(e){console.error('[StaffPrestige] leaderboard refresh failed',e);}
  return {duplicate:false,...progress};
 });
 exports.staffRebuildPrestige=onCall(opts,async req=>{

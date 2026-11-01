@@ -50,5 +50,6 @@ jobs:
               ledgerEventCount:Object.keys(ledger).length,
               lounge20OrdersCount:orders.docs.length,lounge20CompletedOrders:finished
             },null,2));
+            process.exit(0);
           })().catch(e=>{console.error('DIAGNOSTIC_ERROR',e.code||e.message);process.exit(1)});
           NODE

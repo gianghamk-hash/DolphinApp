@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.31",
+      "releaseDate": "2026-11-01T13:58:27.855Z",
+      "summary": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions",
+      "details": [
+        "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions"
+      ]
+    },
+    {
       "version": "1.1.30",
       "releaseDate": "2026-11-01T13:47:14.331Z",
       "summary": "fix(ci): handle quotation marks in release bump messages",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029",
       "details": [
         "Merge pull request #143 from gianghamk-hash/fix/tft-apk-battlefield-space-20261029"
-      ]
-    },
-    {
-      "version": "1.0.201",
-      "releaseDate": "2026-10-29T13:51:05.725Z",
-      "summary": "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029",
-      "details": [
-        "Merge pull request #142 from gianghamk-hash/fix/master-crown-apk-visibility-20261029"
       ]
     }
   ]

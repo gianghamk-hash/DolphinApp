@@ -1,5 +1,5 @@
 {
-  "version": "1.1.31",
+  "version": "1.1.32",
   "releaseDate": "2026-11-01",
-  "notes": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions"
+  "notes": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile"
 }

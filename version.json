@@ -1,7 +1,7 @@
 {
-  "version": "1.1.31",
-  "buildDate": "2026-11-01T13:58:27.855Z",
-  "commit": "a467c25",
-  "notes": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions",
+  "version": "1.1.32",
+  "buildDate": "2026-11-01T14:21:42.363Z",
+  "commit": "04db497",
+  "notes": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile",
   "forceUpdate": false
 }

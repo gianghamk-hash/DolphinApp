@@ -1,7 +1,7 @@
 {
-  "version": "1.1.27",
-  "buildDate": "2026-11-01T12:36:19.190Z",
-  "commit": "ba1946e",
-  "notes": "hotfix(orders): do not block saving when Staff XP service fails",
+  "version": "1.1.28",
+  "buildDate": "2026-11-01T13:08:09.259Z",
+  "commit": "d84f0df",
+  "notes": "fix(xp): derive realtime staff XP from saved revenue and completed order records",
   "forceUpdate": false
 }

@@ -1,20 +1,28 @@
 {
-  "version": "1.1.27",
-  "previousVersion": "1.1.26",
-  "commit": "ba1946e",
-  "previousCommit": "1880a1c",
-  "buildDate": "2026-11-01T12:36:19.190Z",
-  "summary": "hotfix(orders): do not block saving when Staff XP service fails",
+  "version": "1.1.28",
+  "previousVersion": "1.1.27",
+  "commit": "d84f0df",
+  "previousCommit": "ba1946e",
+  "buildDate": "2026-11-01T13:08:09.259Z",
+  "summary": "fix(xp): derive realtime staff XP from saved revenue and completed order records",
   "changes": {
-    "totalCommits": 251,
-    "filesChanged": 4,
+    "totalCommits": 252,
+    "filesChanged": 12,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "hotfix(orders): do not block saving when Staff XP service fails"
+    "fix(xp): derive realtime staff XP from saved revenue and completed order records"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/staff-prestige-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-xp-rank-sync-production.yml",
+      "type": "update"
+    },
     {
       "file": "dolphin-bungalow.html",
       "type": "update"
@@ -29,6 +37,30 @@
     },
     {
       "file": "dolphin-show.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-rank-sync.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-rank-sync.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

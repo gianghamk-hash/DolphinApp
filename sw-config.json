@@ -1,5 +1,5 @@
 {
-  "version": "1.1.27",
+  "version": "1.1.28",
   "releaseDate": "2026-11-01",
-  "notes": "hotfix(orders): do not block saving when Staff XP service fails"
+  "notes": "fix(xp): derive realtime staff XP from saved revenue and completed order records"
 }

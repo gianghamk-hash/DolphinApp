@@ -85,13 +85,14 @@ test('Show revenue uses paid combo rather than BGL/VPS/Bar View seat type',()=>{
   wine:{seller:'Lan',payment:'Chuyển khoản',label:'VPS 1',service:{combo:'singer2'}},
   large:{seller:'Minh',payment:'Visa',label:'BAR VIEW 2',service:{combo:'singer3'}},
   foc:{seller:'Lan',payment:'FOC',label:'VPS 2',service:{combo:'combo1'}},
+  unpaid:{seller:'Lan',payment:'TA_UNPAID',label:'VPS 3',service:{combo:'combo2'}},
   missing:{seller:'Nam',payment:'Tiền mặt',label:'BGL 202'},
   bogus:{seller:'Nam',payment:'Tiền mặt',label:'BGL 203',service:{combo:'unknown'}}
  };
  state.showHistory=[];
  const out=Object.fromEntries(context.calcRevenue().map(x=>[x.name,x]));
- assert.equal(out.Lan.rev,4580000);
- assert.equal(out.Lan.cnt,2);
+ assert.equal(out.Lan.rev,5370000);
+ assert.equal(out.Lan.cnt,3);
  assert.equal(out.Minh.rev,3290000);
  assert.equal(out.Nam,undefined);
 });

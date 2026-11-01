@@ -52,3 +52,21 @@ test('unrelated or anonymous caller cannot award someone else XP',async()=>{
  assert.equal(h.awards.length,0);
 });
 
+
+
+test('stamped authenticated Staff ID disambiguates duplicate employee display names',async()=>{
+ const h=fixture(),all=h.data.get('staffRegistry');
+ all['DOL-0003']={employeeId:'DOL-0003',name:'Lan',active:true};
+ h.docs.set('lounge_tables/L20',{openedByStaff:'Lan',openedByStaffId:'DOL-0001',pax:4,paymentMethod:'TM'});
+ const got=await h.call('u1','lounge_tables','L20');
+ assert.equal(got.addedXP,1000);
+ assert.equal(h.awards.length,1);
+ assert.equal(h.awards[0].employeeId,'DOL-0001');
+ assert.equal((await h.call('u1','lounge_tables','L20')).addedXP,0);
+});
+test('stamped Staff ID of another employee cannot override the authenticated actor',async()=>{
+ const h=fixture();
+ h.docs.set('lounge_tables/L21',{openedByStaff:'Lan',openedByStaffId:'DOL-0001',pax:4,paymentMethod:'TM'});
+ await assert.rejects(()=>h.call('u2','lounge_tables','L21'),e=>e.code==='permission-denied');
+ assert.equal(h.awards.length,0);
+});

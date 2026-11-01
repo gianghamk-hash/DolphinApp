@@ -7,12 +7,12 @@ const {getFirestore}=firebaseRequire('firebase-admin/firestore');
 const projectId='dolphin-f6d67';
 const variants=['https://dolphin-f6d67-default-rtdb.asia-southeast1.firebasedatabase.app','https://dolphin-f6d67-default-rtdb.firebaseio.com'];
 const norm=s=>String(s||'').normalize('NFC').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi-VN');
-const app=initializeApp({credential:applicationDefault(),projectId});
+const app=initializeApp({credential:applicationDefault(),projectId,databaseURL:variants[0]});
 async function main(){
- let registry,board,location='';
+ let registry,board,location='',rtdb;
  for(const url of variants){
   try{
-   const db=getDatabase(app,url);
+   const db=getDatabase(initializeApp({credential:applicationDefault(),projectId,databaseURL:url},'diag-'+(url===variants[0]?'regional':'default')));rtdb=db;
    registry=(await db.ref('staffRegistry').once('value')).val()||{};
    board=(await db.ref('staffPrestige/public').once('value')).val()||{};
    location=url.includes('asia-southeast1')?'regional':'default';
@@ -32,7 +32,7 @@ async function main(){
    ownerPresent:!!norm(d.openedByStaff),ownerMatchesDOL0001:names.includes(norm(d.openedByStaff)),ownerUnique:who.length===1,matchedStaffCount:who.length,
    updatedAtType:typeof d.updatedAt}));
  }
- const led=(await getDatabase(app,variants[location==='regional'?0:1]).ref('staffXpLedger/DOL-0001').once('value')).val()||{};
+ const led=(await rtdb.ref('staffXpLedger/DOL-0001').once('value')).val()||{};
  console.log('Profile/board:',JSON.stringify({databaseLocation:location,profileExists:!!p,profileActive:!!p?.active,profileHasName:!!norm(p?.name),xp:Number(p?.xp)||0,levelPeak:p?.levelPeak||1,
    ledgerEvents:Object.keys(led).length,publicBoardUpdated:!!board.updatedAt,publicLeaderboardCount:(board.leaderboard||[]).length,
    onBoard:(board.leaderboard||[]).some(v=>v.employeeId==='DOL-0001')}));

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.25",
+  "version": "1.1.26",
   "releaseDate": "2026-11-01",
-  "notes": "fix(staff-xp): preserve manager overrides without reallocating XP"
+  "notes": "fix(staff-xp): disable legacy archive approvals with verified automatic awards"
 }

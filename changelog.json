@@ -1,18 +1,18 @@
 {
-  "version": "1.1.25",
-  "previousVersion": "1.1.24",
-  "commit": "5795a43",
-  "previousCommit": "5f7414e",
-  "buildDate": "2026-11-01T12:23:03.470Z",
-  "summary": "fix(staff-xp): preserve manager overrides without reallocating XP",
+  "version": "1.1.26",
+  "previousVersion": "1.1.25",
+  "commit": "1880a1c",
+  "previousCommit": "5795a43",
+  "buildDate": "2026-11-01T12:27:18.204Z",
+  "summary": "fix(staff-xp): disable legacy archive approvals with verified automatic awards",
   "changes": {
-    "totalCommits": 249,
+    "totalCommits": 250,
     "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(staff-xp): preserve manager overrides without reallocating XP"
+    "fix(staff-xp): disable legacy archive approvals with verified automatic awards"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,11 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.js",
+      "file": "docs/STAFF_XP_GUIDE_VI.md",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.test.cjs",
+      "file": "functions/staff-xp-reconcile.js",
       "type": "update"
     }
   ]

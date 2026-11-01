@@ -1,18 +1,18 @@
 {
-  "version": "1.1.20",
-  "previousVersion": "1.1.19",
-  "commit": "db9bcb4",
-  "previousCommit": "db87980",
-  "buildDate": "2026-11-01T04:38:33.185Z",
-  "summary": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel",
+  "version": "1.1.21",
+  "previousVersion": "1.1.20",
+  "commit": "4fd9e7f",
+  "previousCommit": "db9bcb4",
+  "buildDate": "2026-11-01T08:38:26.874Z",
+  "summary": "Fix Firebase production preflight JSON parsing (#177)",
   "changes": {
-    "totalCommits": 244,
+    "totalCommits": 245,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel"
+    "Fix Firebase production preflight JSON parsing (#177)"
   ],
   "fileChanges": [
     {

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.20",
+  "version": "1.1.21",
   "releaseDate": "2026-11-01",
-  "notes": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel"
+  "notes": "Fix Firebase production preflight JSON parsing (#177)"
 }

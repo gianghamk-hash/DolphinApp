@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.20",
+      "releaseDate": "2026-11-01T04:38:33.185Z",
+      "summary": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel",
+      "details": [
+        "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel"
+      ]
+    },
+    {
       "version": "1.1.19",
       "releaseDate": "2026-11-01T04:27:27.890Z",
       "summary": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029",
       "details": [
         "Merge pull request #132 from gianghamk-hash/feat/battleship-shared-mp-20261029"
-      ]
-    },
-    {
-      "version": "1.0.190",
-      "releaseDate": "2026-10-29T10:25:31.337Z",
-      "summary": "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b",
-      "details": [
-        "Merge pull request #131 from gianghamk-hash/feat/xiangqi-mp-20261029b"
       ]
     }
   ]

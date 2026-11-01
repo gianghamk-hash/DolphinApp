@@ -128,6 +128,14 @@ const PERKS=Object.freeze([
   "name": "Avatar Mythic"
  }
 ]);
+
+/* One authoritative catalog for automatic Crew Club rewards. Just for fun. */
+const COSMETIC_REWARDS=Object.freeze([{"id":"name_flame","level":3,"type":"effect","label":"🔥 Tên phát sáng","icon":"🔥"},{"id":"frame_bronze","level":5,"type":"frame","label":"Khung avatar Bronze","icon":"🥉"},{"id":"theme_dolphin","level":8,"type":"theme","label":"Chủ đề Dolphin","icon":"🐬"},{"id":"theme_seasons","level":10,"type":"theme","label":"Bộ chủ đề 4 mùa","icon":"🌸"},{"id":"title_rookie","level":12,"type":"title","label":"Danh hiệu Rookie Star","icon":"⭐"},{"id":"banner_wave","level":15,"type":"banner","label":"Banner Sóng Biển","icon":"🌊"},{"id":"theme_festival","level":20,"type":"theme","label":"Bộ chủ đề lễ hội","icon":"🎊"},{"id":"frame_silver","level":22,"type":"frame","label":"Khung avatar Silver","icon":"🥈"},{"id":"title_wave","level":25,"type":"title","label":"Danh hiệu Wave Rider","icon":"🏄"},{"id":"theme_special","level":30,"type":"theme","label":"Bộ chủ đề đặc biệt","icon":"✨"},{"id":"banner_gold","level":35,"type":"banner","label":"Banner Ánh Kim","icon":"🌟"},{"id":"frame_gold","level":40,"type":"frame","label":"Khung avatar Gold","icon":"🥇"},{"id":"name_gradient","level":45,"type":"effect","label":"Tên gradient","icon":"🌈"},{"id":"title_legend","level":50,"type":"title","label":"Danh hiệu Dolphin Legend","icon":"👑"},{"id":"frame_mythic","level":60,"type":"frame","label":"Khung avatar Mythic","icon":"💎"},{"id":"banner_mythic","level":60,"type":"banner","label":"Banner Mythic","icon":"⚡"}]);
+const COSMETIC_CHOICES=Object.freeze({
+ frame:Object.freeze({none:1,bronze:5,silver:22,gold:40,mythic:60}),
+ title:Object.freeze({none:1,rookie:12,wave:25,legend:50}),
+ banner:Object.freeze({default:1,wave:15,gold:35,mythic:60})
+});
 function asNonnegativeInteger(x,label){
  if(typeof x!=='number'||!Number.isFinite(x)||x<0||!Number.isSafeInteger(x))throw Error(label+' phải là số nguyên không âm');
  return x;
@@ -161,4 +169,4 @@ function progress(xp){
  return {xp,level,rank:rankForLevel(level),xpIntoLevel:xp-floor,xpNeeded:ceil===null?0:ceil-floor,
   nextLevelAt:ceil,unlocked:PERKS.filter(p=>level>=p.level).map(p=>p.id)};
 }
-module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,PERKS,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};
+module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,PERKS,COSMETIC_REWARDS,COSMETIC_CHOICES,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};

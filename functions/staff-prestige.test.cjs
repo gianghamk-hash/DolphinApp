@@ -175,3 +175,59 @@ test('admin sandbox validates XP amounts and never changes staff event ledger',a
  await api.staffAdjustOwnTestXP(req('lanDevice',{action:'reset'}));
  assert.equal(data.get('staffXpLedger/DOL-0001/live:old').amount,250);
 });
+
+
+test('Level 5 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
+ const {api,data}=harness({coldCacheProfile:true});
+ const old=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...old,xp:80000,levelPeak:5});
+ const result=await api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true,selectedFrame:'bronze',selectedTitle:'none',selectedBanner:'default',nameGradient:false}));
+ assert.equal(result.level,5);
+ assert.equal(result.selectedFrame,'bronze');
+ assert.equal(result.nameFlame,true);
+ assert.equal(result.nextReward.level,8);
+ assert(result.unlocked.includes('frame_bronze'));
+ assert.equal(result.rewardCatalog.find(r=>r.id==='frame_mythic').level,60);
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'light',selectedFrame:'silver'})),e=>e.code==='permission-denied');
+});
+test('Level 15 can equip Rookie Star and Wave banner, preserving choices on theme-only saves',async()=>{
+ const {api,data}=harness();
+ const old=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...old,xp:980000,levelPeak:15});
+ const first=await api.staffSetPersonalStyle(req('lanDevice',{theme:'spring',nameFlame:true,selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave'}));
+ assert.equal(first.selectedTitle,'rookie');assert.equal(first.selectedBanner,'wave');
+ const second=await api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',nameFlame:true}));
+ assert.equal(second.selectedTitle,'rookie');assert.equal(second.selectedBanner,'wave');
+ assert.equal(second.xp,980000);
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',selectedTitle:'legend'})),e=>e.code==='permission-denied');
+});
+test('Level 45 enables gradient, Level 60 unlocks Mythic, and Admin reset relocks all',async()=>{
+ const {api,data}=harness();
+ const old=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...old,xp:engine.xpForLevel(45),levelPeak:45});
+ const gradient=await api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',nameFlame:true,nameGradient:true,selectedFrame:'gold'}));
+ assert.equal(gradient.nameGradient,true);assert.equal(gradient.selectedFrame,'gold');
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',nameFlame:true,selectedFrame:'mythic'})),e=>e.code==='permission-denied');
+ data.set('staffRegistry/DOL-0001',{...data.get('staffRegistry/DOL-0001'),xp:engine.xpForLevel(60),levelPeak:60});
+ const mythic=await api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',nameFlame:true,nameGradient:true,selectedFrame:'mythic',selectedTitle:'legend',selectedBanner:'mythic'}));
+ assert.equal(mythic.selectedFrame,'mythic');assert.equal(mythic.selectedTitle,'legend');assert.equal(mythic.selectedBanner,'mythic');
+ const reset=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'reset'}));
+ assert.equal(reset.level,1);assert.equal(reset.selectedFrame,'none');assert.equal(reset.selectedTitle,'none');
+ assert.equal(reset.selectedBanner,'default');assert.equal(reset.nameGradient,false);
+ assert.equal(reset.xp,0);
+});
+test('Server rejects forged gradient and unknown cosmetic values at Level 1',async()=>{
+ const {api}=harness();
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',nameFlame:false,nameGradient:true})),e=>e.code==='permission-denied');
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',selectedFrame:'godmode'})),e=>e.code==='invalid-argument');
+});
+test('Public board publishes equipped titles and frames, excluding DOL-0001 tester',async()=>{
+ const {api,data}=harness();
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Colleague',active:true,avatar:'🐯',xp:980000,levelPeak:15,selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave'});
+ await api._rebuildPrestige();
+ const board=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(board.leaderboard.length,1);assert.equal(board.leaderboard[0].employeeId,'DOL-0002');
+ assert.equal(board.leaderboard[0].selectedFrame,'bronze');
+ assert.equal(board.leaderboard[0].selectedTitle,'rookie');
+ assert.equal(board.leaderboard[0].selectedBanner,'wave');
+});

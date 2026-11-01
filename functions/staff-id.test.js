@@ -219,7 +219,7 @@ test('avatar directory returns public display fields only, omits inactive staff 
  assert.equal(directory.profiles[0].employeeId,a.employeeId);assert.equal(directory.profiles[0].avatar,'🐯');
  assert.equal(directory.profiles[0].nameAliases[0],'Old name');
  assert.equal(directory.profiles[0].profileVersion,1);
- assert.deepEqual(Object.keys(directory.profiles[0]).sort(),['avatar','employeeId','name','nameAliases','profileVersion']);
+ assert.deepEqual(Object.keys(directory.profiles[0]).sort(),['avatar','employeeId','name','nameAliases','profileVersion','selectedFrame','selectedTitle']);
  assert.ok(!JSON.stringify(directory).includes('ownerUid'));
 });
 

@@ -17,12 +17,22 @@ async function currentStaff(req){
  if(!p?.active)throw new HttpsError('permission-denied','Nhân viên không còn hoạt động');
  return {id,profile:p,testAdmin:id===TEST_ADMIN_ID&&identity?.verified===true&&p.registrationSource!=='self'};
 }
+function cosmeticChoice(type,selected,level){
+ const choices=engine.COSMETIC_CHOICES[type],fallback=type==='banner'?'default':'none';
+ return typeof selected==='string'&&Object.hasOwn(choices,selected)&&level>=choices[selected]?selected:fallback;
+}
 function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
  const level=Math.min(60,Math.max(progress.level,Number(p?.levelPeak)||1));
  return {employeeId:p.employeeId,name:p.name,avatar:p.avatar||'🐬',
   level,rank:engine.rankForLevel(level),xp,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
-  unlocked:engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
+  unlocked:[...engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>level>=x.level).map(x=>x.id)],
+  rewardCatalog:engine.COSMETIC_REWARDS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
+  selectedFrame:cosmeticChoice('frame',p.selectedFrame,level),
+  selectedTitle:cosmeticChoice('title',p.selectedTitle,level),
+  selectedBanner:cosmeticChoice('banner',p.selectedBanner,level),
+  nameGradient:!!p.nameGradient&&level>=45,
+  showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
 }
 function leaderboard(registry){
  return Object.values(registry||{}).filter(p=>p?.active&&p.employeeId!==TEST_ADMIN_ID&&staffPattern.test(p.employeeId)&&p.name)
@@ -39,7 +49,7 @@ async function rebuild(){
  const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
  const current={champion:newChampion,
   announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
-  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp})),updatedAt:Date.now()};
+  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
  // Small Firestore signal for instant profile refresh, not an XP authority.
@@ -81,6 +91,13 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
  const theme=String(req.data?.theme||'dark');
  const flame=req.data?.nameFlame===true;
+ const selected={frame:req.data?.selectedFrame,title:req.data?.selectedTitle,banner:req.data?.selectedBanner,gradient:req.data?.nameGradient};
+ for(const type of ['frame','title','banner']){
+  if(selected[type]!==undefined&&!Object.hasOwn(engine.COSMETIC_CHOICES[type],selected[type]))
+   throw new HttpsError('invalid-argument','Phần thưởng không hợp lệ: '+type);
+ }
+ if(selected.gradient!==undefined&&typeof selected.gradient!=='boolean')
+  throw new HttpsError('invalid-argument','Hiệu ứng tên không hợp lệ');
  if(!['dark','light','gray',...Object.keys(themeLevels)].includes(theme))
   throw new HttpsError('invalid-argument','Chủ đề không hợp lệ');
  const ref=getDatabase().ref('staffRegistry/'+id);
@@ -93,16 +110,26 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
   const current=v===null&&initial?profile:v;
   if(!current?.active)return;
   const level=Math.max(engine.progress(Math.max(0,Number(current.xp)||0)).level,Number(current.levelPeak)||1);
-  if((themeLevels[theme]||1)>level||(flame&&level<3))return;
-  return {...current,personalTheme:theme,nameFlame:flame,updatedAt:Date.now()};
+  if((themeLevels[theme]||1)>level||(flame&&level<3)||
+    (selected.gradient===true&&level<45)||
+    ['frame','title','banner'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))return;
+  return {...current,personalTheme:theme,nameFlame:flame,
+    selectedFrame:selected.frame===undefined?cosmeticChoice('frame',current.selectedFrame,level):selected.frame,
+    selectedTitle:selected.title===undefined?cosmeticChoice('title',current.selectedTitle,level):selected.title,
+    selectedBanner:selected.banner===undefined?cosmeticChoice('banner',current.selectedBanner,level):selected.banner,
+    nameGradient:selected.gradient===undefined?!!current.nameGradient&&level>=45:selected.gradient,updatedAt:Date.now()};
  },undefined,false);
  if(!result.committed){
   const latest=(await ref.once('value')).val();
   if(!latest?.active)throw new HttpsError('failed-precondition','Hồ sơ không còn hoạt động');
   const level=Math.max(engine.progress(Math.max(0,Number(latest.xp)||0)).level,Number(latest.levelPeak)||1);
-  if((themeLevels[theme]||1)>level||(flame&&level<3))throw new HttpsError('permission-denied','Chưa mở khóa ở Level '+level);
+  if((themeLevels[theme]||1)>level||(flame&&level<3)||(selected.gradient===true&&level<45)||
+    ['frame','title','banner'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))
+   throw new HttpsError('permission-denied','Phần thưởng chưa mở khóa ở Level '+level);
   throw new HttpsError('aborted','Giao dịch lưu giao diện bị gián đoạn. Hãy thử lại.');
  }
+ // Cosmetic choices appear in the public Level board without a separate manual refresh.
+ try{await rebuild();}catch(e){console.warn('[Crew Club] cosmetic board refresh unavailable:',e?.message||e);}
  return {...expose(result.snapshot.val()),personalTheme:result.snapshot.val().personalTheme||'dark'};
 });
 
@@ -131,7 +158,7 @@ exports.staffAdjustOwnTestXP=onCall(opts,async req=>{
   if(!Number.isSafeInteger(xp)||xp>engine.xpForLevel(60))return;
   const peak=action==='reset'?1:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp));
   return {...current,xp,levelPeak:peak,
-    ...(action==='reset'?{nameFlame:false,personalTheme:'dark',showcase:[]}:{}),
+    ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedTitle:'none',selectedBanner:'default',personalTheme:'dark',showcase:[]}:{}),
     testXPUpdatedAt:now,updatedAt:now};
  },undefined,false);
  if(!result.committed){

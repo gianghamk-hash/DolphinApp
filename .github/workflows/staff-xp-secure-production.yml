@@ -52,10 +52,10 @@ jobs:
           if(!/^[a-zA-Z0-9,_-]+$/.test(admins))throw Error('Invalid admin allowlist');
           fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+admins+'\nSTAFF_AUTO_XP_ENABLED=false\n',{mode:0o600});
           NODE
-      - name: Deploy verified staff callable and disable legacy Firestore triggers
+      - name: Deploy verified staff callable only (do not create untrusted triggers)
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRecordLiveAction,functions:staffAutoXpLoungeTable,functions:staffAutoXpBungalowTable,functions:staffAutoXpShowTable,functions:staffAutoXpLoungeOrder,functions:staffAutoXpBungalowOrder,functions:staffAutoXpRestaurantOrder
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRecordLiveAction
       - name: Remove temporary environment
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

@@ -8,6 +8,9 @@ on:
       - 'functions/staff-prestige.test.cjs'
       - 'functions/staff-xp-engine.cjs'
       - 'functions/staff-xp-engine.test.cjs'
+      - 'functions/staff-xp-live.js'
+      - 'functions/staff-xp-live-engine.cjs'
+      - 'functions/staff-xp-live-engine.test.cjs'
       - 'staff-prestige-client.js'
       - 'staff-prestige-profile.js'
       - 'scripts/staff-prestige-client.test.cjs'
@@ -27,9 +30,11 @@ jobs:
           node --check functions/staff-prestige.js
           node --check functions/staff-xp-reconcile.js
           node --check functions/staff-xp-engine.cjs
+          node --check functions/staff-xp-live.js
+          node --check functions/staff-xp-live-engine.cjs
           node --check staff-prestige-client.js
           node --check staff-prestige-profile.js
           node --check staff-xp-manager.js
           node --check theme-system.js
       - name: Staff XP and archival reconciliation tests
-        run: node --test scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs
+        run: node --test scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs

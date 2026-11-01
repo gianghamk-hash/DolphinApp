@@ -21,7 +21,7 @@ async function init(){
  mount();
  try{
   const role=await window.DolphinPrestige.call('staffIsPrestigeAdmin');
-  if($('prestige-admin-launch'))$('prestige-admin-launch').hidden=!role?.admin;
+  if($('prestige-admin-launch'))$('prestige-admin-launch').hidden=!role?.admin||!!role?.autoXP;
  }catch(e){console.warn('[Prestige admin] unavailable',e);}
 }
 function selections(){return [...document.querySelectorAll('#prestige-admin-events input[type=checkbox]:checked')].map(x=>x.value).slice(0,50);}

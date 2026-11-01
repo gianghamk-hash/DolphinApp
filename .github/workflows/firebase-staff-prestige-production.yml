@@ -8,6 +8,16 @@ on:
         type: boolean
         required: true
         default: false
+      firestore_staff_writes_verified:
+        description: 'I verified Firestore order/table writes cannot be forged by unauthenticated or guest clients before enabling automatic XP'
+        type: boolean
+        required: true
+        default: false
+      enable_automatic_xp:
+        description: 'Enable trusted live XP (requires the Firestore write-policy verification above)'
+        type: boolean
+        required: true
+        default: false
       confirm_project:
         description: "Type dolphin-f6d67 to confirm the production project"
         type: string
@@ -19,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' && inputs.rtdb_rules_verified == true && inputs.confirm_project == 'dolphin-f6d67'
+    if: github.ref == 'refs/heads/main' && inputs.rtdb_rules_verified == true && inputs.confirm_project == 'dolphin-f6d67' && (!inputs.enable_automatic_xp || inputs.firestore_staff_writes_verified)
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -44,22 +54,23 @@ jobs:
       - name: Install and test Cloud Functions
         run: |
           npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
-          node --test functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs
+          node --test functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs
           node --test functions/staff-id.test.js
       - name: Configure Manager UIDs for Cloud Functions runtime
         env:
           STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+          AUTO_XP_ENABLED: ${{ inputs.enable_automatic_xp }}
         run: |
           node - <<'NODE'
           const fs=require('fs');
           const val=process.env.STAFF_ADMIN_UIDS||'';
           if(!/^[a-zA-Z0-9,_-]+$/.test(val))throw Error('Invalid STAFF_ADMIN_UIDS');
-          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+val+'\n',{mode:0o600});
+          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+val+'\nSTAFF_AUTO_XP_ENABLED='+(process.env.AUTO_XP_ENABLED==='true'?'true':'false')+'\n',{mode:0o600});
           NODE
       - name: Deploy Staff Profile and Prestige Cloud Functions only
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffGetAvatarDirectory,functions:staffGetPrestige,functions:staffGetMyProgress,functions:staffSetShowcase,functions:staffSetPersonalStyle,functions:staffGrantVerifiedXP,functions:staffRebuildPrestige,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffGetAvatarDirectory,functions:staffGetPrestige,functions:staffGetMyProgress,functions:staffSetShowcase,functions:staffSetPersonalStyle,functions:staffGrantVerifiedXP,functions:staffRebuildPrestige,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP,functions:staffAutoXpLoungeTable,functions:staffAutoXpBungalowTable,functions:staffAutoXpShowTable,functions:staffAutoXpLoungeOrder,functions:staffAutoXpBungalowOrder,functions:staffAutoXpRestaurantOrder
       - name: Remove temporary env file
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

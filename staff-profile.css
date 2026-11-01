@@ -21,3 +21,22 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 .test-xp-custom button{flex-shrink:0}
 .test-xp-reset{margin-top:12px;width:100%;color:#f5b6b0;border-color:#e88a8970}
 #admin-test-xp-result:not(:empty){margin-top:12px;color:var(--gold)}
+
+/* Crew Club unlocked cosmetics: fixed decorations, no obstructive popups. */
+.next-reward{margin-top:11px;padding:9px 11px;border:1px dashed color-mix(in srgb,var(--gold) 45%,transparent);border-radius:12px;font-size:11px;color:var(--gold);line-height:1.45}
+.profile-title{font-size:11px;font-weight:800;letter-spacing:.04em;color:var(--gold);margin-top:3px}.profile-title[hidden]{display:none}
+.profile-hero[data-banner="wave"]{background:radial-gradient(circle at 85% 15%,#32bce544,transparent 60%),linear-gradient(135deg,#0d4258,#081f29 75%)}
+.profile-hero[data-banner="gold"]{background:radial-gradient(circle at 85% 10%,#f9d7704a,transparent 55%),linear-gradient(140deg,#342914,#0b241f 80%)}
+.profile-hero[data-banner="mythic"]{background:radial-gradient(circle at 85% 10%,#d399ff55,transparent 55%),linear-gradient(140deg,#241747,#083e47 75%);border-color:#cba3ef}
+#profile-name.name-gradient{background:linear-gradient(100deg,#f8d66b,#7fe6f3,#d2a8ff,#f8d66b);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent!important;animation:crew-gradient 4s linear infinite}
+@keyframes crew-gradient{to{background-position:250% 0}}
+.hero-avatar[data-frame="bronze"],.level-avatar[data-frame="bronze"],[data-staff-avatar][data-frame="bronze"]{border:3px solid #c99055!important;box-shadow:0 0 0 2px #71431c,0 0 11px #c99055aa}
+.hero-avatar[data-frame="silver"],.level-avatar[data-frame="silver"],[data-staff-avatar][data-frame="silver"]{border:3px solid #bde1f2!important;box-shadow:0 0 0 2px #6d8b9c,0 0 13px #a0d8efaa}
+.hero-avatar[data-frame="gold"],.level-avatar[data-frame="gold"],[data-staff-avatar][data-frame="gold"]{border:3px solid #ffce55!important;box-shadow:0 0 0 2px #ab7925,0 0 15px #ffd65baa}
+.hero-avatar[data-frame="mythic"],.level-avatar[data-frame="mythic"],[data-staff-avatar][data-frame="mythic"]{border:3px solid #f3a8ff!important;box-shadow:0 0 0 2px #7ee5fd,0 0 16px #e69bffdd;animation:crew-mythic 2.5s ease-in-out infinite alternate}
+@keyframes crew-mythic{to{box-shadow:0 0 0 2px #bc8afa,0 0 22px #6df5ff}}
+.cosmetic-selects{display:grid;gap:4px}.cosmetic-selects label{font-size:11px}.cosmetic-selects select{margin-top:6px}
+.reward-next-callout{padding:12px;border:1px solid var(--gold);border-radius:12px;color:var(--gold);font-size:12px;line-height:1.5}
+.reward-row.is-next{background:color-mix(in srgb,var(--gold) 7%,transparent);border-radius:11px;padding-left:7px;padding-right:7px}
+.reward-row strong{display:block}.reward-row .reward-icon{font-size:21px;flex-shrink:0}
+@media(prefers-reduced-motion:reduce){#profile-name.name-gradient,.hero-avatar[data-frame="mythic"],.level-avatar[data-frame="mythic"],[data-staff-avatar][data-frame="mythic"]{animation:none}}

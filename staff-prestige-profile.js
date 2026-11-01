@@ -5,16 +5,53 @@ const themes={dark:'Dark',light:'Light',gray:'Gray',default:'🐬 Dolphin',sprin
 const themeLevels={default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30};
 const rewards=[[1,'Avatar cơ bản · Bronze'],[3,'Tên phát sáng OnFlame · Avatar Khám phá'],[5,'Bộ avatar Ocean'],[6,'Thăng hạng Silver'],[8,'Chủ đề Dolphin'],[10,'Bốn chủ đề mùa · Avatar Phiêu lưu'],[11,'Thăng hạng Gold'],[15,'Bộ avatar Legends'],[20,'Bảy chủ đề ngày lễ · Avatar Lễ hội'],[21,'Thăng hạng Platinum'],[25,'OnFlame cao cấp'],[30,'Halloween · Giáng Sinh · Tết Dương · Avatar Thần tốc'],[31,'Thăng hạng Diamond'],[40,'Bộ avatar Mythic'],[41,'Thăng hạng Legend'],[60,'Cấp độ tối đa']];
 const fmt=n=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2});
+const cosmeticOptions={
+ frame:[['none','Không dùng',1],['bronze','🥉 Bronze',5],['silver','🥈 Silver',22],['gold','🥇 Gold',40],['mythic','💎 Mythic',60]],
+ title:[['none','Không dùng',1],['rookie','⭐ Rookie Star',12],['wave','🏄 Wave Rider',25],['legend','👑 Dolphin Legend',50]],
+ banner:[['default','Mặc định',1],['wave','🌊 Sóng Biển',15],['gold','🌟 Ánh Kim',35],['mythic','⚡ Mythic',60]]
+};
+const titleNames={rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'};
 let mine=null;
 function element(tag,text,className){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;}
+function rewardCatalog(){
+ return Array.isArray(mine?.rewardCatalog)&&mine.rewardCatalog.length?
+  mine.rewardCatalog:rewards.map(([level,label],i)=>({id:'legacy-'+i,level,label,icon:'🎁'}));
+}
 function renderRewards(){
- $('staff-reward-list').replaceChildren();
- for(const [level,label] of rewards){
-  const open=!!mine&&mine.level>=level,row=element('div',undefined,'reward-row'+(open?' unlocked':''));
-  const body=element('div');body.append(element('strong',label),element('small',fmt(5000*(level-1)**2)+' XP tích lũy'));
-  row.append(element('span','Lv.'+level,'reward-level'),body,element('span',open?'Đã mở':mine?'Chưa mở':'—','reward-state'));
-  $('staff-reward-list').appendChild(row);
+ const list=$('staff-reward-list');list.replaceChildren();
+ const all=rewardCatalog(),next=all.find(x=>mine&&x.level>mine.level);
+ $('reward-next-callout').textContent=next?
+   '🎁 Tiếp theo Lv.'+next.level+': '+next.label+' · còn '+fmt(Math.max(0,5000*(next.level-1)**2-mine.xp))+' XP'
+   :mine?'🏆 Đã mở toàn bộ mốc phần thưởng!':'Đang kết nối XP…';
+ for(const reward of all){
+  const open=!!mine&&mine.level>=reward.level,row=element('div',undefined,'reward-row'+(open?' unlocked':'')+(next?.id===reward.id?' is-next':''));
+  const body=element('div');body.append(element('strong',reward.label),element('small',fmt(5000*(reward.level-1)**2)+' XP để mở khóa'));
+  row.append(element('span','Lv.'+reward.level,'reward-level'),element('span',reward.icon||'🎁','reward-icon'),body,
+   element('span',open?'✓ Đã mở':mine?'🔒':'—','reward-state'));
+  list.appendChild(row);
  }
+}
+function renderCosmetics(){
+ const dialog=$('style-dialog'),editing=dialog.open;
+ for(const [kind,choices] of Object.entries(cosmeticOptions)){
+  const select=$('staff-'+kind+'-select'),old=editing?select.value:null,current=mine?.['selected'+kind[0].toUpperCase()+kind.slice(1)];
+  select.replaceChildren();
+  for(const [id,label,level] of choices){
+   const option=document.createElement('option');option.value=id;option.textContent=label+(level>1?' · Lv.'+level:'');
+   option.disabled=!mine||mine.level<level;select.append(option);
+  }
+  select.value=old&&[...select.options].some(o=>o.value===old&&!o.disabled)?old:current||choices[0][0];
+  select.disabled=!mine;
+ }
+ if(!editing)$('staff-gradient-check').checked=!!mine?.nameGradient&&mine.level>=45;
+ $('staff-gradient-check').disabled=!mine||mine.level<45;
+}
+function previewCosmetics(){
+ $('profile-avatar').dataset.frame=mine?.selectedFrame||'none';
+ $('crew-profile-banner').dataset.banner=mine?.selectedBanner||'default';
+ const label=$('profile-title'),title=mine?.selectedTitle||'none';
+ label.textContent=titleNames[title]||'';label.hidden=!titleNames[title];
+ $('profile-name').classList.toggle('name-gradient',!!mine?.nameGradient&&mine.level>=45);
 }
 function renderThemes(){
  const chosen=document.querySelector('input[name="staff-theme"]:checked')?.value;
@@ -33,6 +70,7 @@ function renderMine(){
  if(!mine){
   $('staff-level-tag').textContent='LEVEL —';$('staff-next-level').textContent='XP được lưu theo Staff ID';
   $('staff-xp-fill').style.width='0%';$('staff-xp-track').setAttribute('aria-valuenow','0');
+  $('staff-next-reward').textContent='🎁 Đang tải các mốc thưởng…';
  }else{
   $('staff-level-tag').textContent='LEVEL '+mine.level;
   $('staff-xp-summary').textContent=mine.rank+' · '+fmt(mine.xp)+' XP tích lũy';
@@ -40,12 +78,14 @@ function renderMine(){
   const percent=mine.level>=60?100:Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)));
   $('staff-xp-fill').style.width=percent+'%';$('staff-xp-track').setAttribute('aria-valuenow',String(Math.round(percent)));
   $('staff-next-level').textContent=mine.level>=60?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1);
+  const next=rewardCatalog().find(x=>x.level>mine.level);
+  $('staff-next-reward').textContent=next?'🎁 Lv.'+next.level+' · '+next.label+' — còn '+fmt(Math.max(0,5000*(next.level-1)**2-mine.xp))+' XP':'🏆 Đã mở toàn bộ phần thưởng!';
  }
  if(!$('style-dialog').open)$('staff-flame-check').checked=!!mine?.nameFlame&&mine.level>=3;
  $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||mine.level<3;
  $('profile-name').classList.toggle('onflame',!!mine?.nameFlame&&mine.level>=3);
  $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&mine.level>=25);
- renderThemes();renderRewards();renderAdminSandbox();
+ renderThemes();renderCosmetics();renderRewards();previewCosmetics();renderAdminSandbox();
 }
 function renderAdminSandbox(){
  const panel=$('crew-admin-sandbox');
@@ -88,7 +128,11 @@ async function save(){
  const btn=$('staff-save-style');btn.disabled=true;
  try{
   const wasTester=mine?.testAdmin===true;
-  mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{theme,nameFlame:$('staff-flame-check').checked});
+  mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{
+   theme,nameFlame:$('staff-flame-check').checked,nameGradient:$('staff-gradient-check').checked,
+   selectedFrame:$('staff-frame-select').value,selectedTitle:$('staff-title-select').value,
+   selectedBanner:$('staff-banner-select').value
+  });
   mine.testAdmin=wasTester;
   try{localStorage.setItem('dolphin_personal_theme',mine.personalTheme);}catch(_){}
   window.ThemeSystem?.setTheme(mine.personalTheme);$('staff-style-info').textContent='Đã lưu giao diện theo Staff ID.';renderMine();

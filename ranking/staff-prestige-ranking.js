@@ -42,9 +42,9 @@ function renderLevel(){
   const own=p.employeeId===window.DolphinStaffId?.get?.()?.employeeId;
   const item=el('div','level-entry'+(own?' is-me':''));
   const rank=el('span','level-position',i===0?'♛':i+1);
-  const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';
+  const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=p.selectedFrame||'none';
   const person=el('span','level-person');
-  person.append(el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':'')),el('small','level-person-rank',p.rank||'Dolphin Crew'));
+  person.append(el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':'')),el('small','level-person-rank',({rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'})[p.selectedTitle]||p.rank||'Dolphin Crew'));
   const score=el('span','level-score','Lv.'+Number(p.level||1));
   score.append(el('small','level-score-xp',fmt(p.xp)+' XP'));
   item.append(rank,avatar,person,score);list.append(item);

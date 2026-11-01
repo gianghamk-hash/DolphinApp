@@ -29,7 +29,8 @@ async function staff(req){
  const p=(await db.ref('staffRegistry/'+identity.employeeId).once('value')).val();
  if(!p?.active||p.registrationSource==='self')throw new HttpsError('permission-denied','Hồ sơ chưa được xác minh');
  if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))throw new HttpsError('permission-denied','Staff ID không hợp lệ');
- return {id:p.employeeId,name:p.name,uid:u};
+ const managers=new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()));
+ return {id:p.employeeId,name:p.name,uid:u,admin:managers.has(u)};
 }
 async function credit(employeeId,eventId,source,amount){
  if(amount<=0)return {duplicate:true};
@@ -63,30 +64,33 @@ async function booking(kind,id,data,who){
  const existing=await db.runTransaction(async tx=>{
   const old=await tx.get(ref),v=old.exists?old.data():null;
   const owner=str(kind==='show_tables'?v?.seller:v?.openedByStaff);
-  if(owner&&owner!==who.name)throw new HttpsError('permission-denied','Bàn đang được mở bởi nhân viên khác');
+  if(owner&&owner!==who.name&&!who.admin)throw new HttpsError('permission-denied','Bàn đang được mở bởi nhân viên khác');
+  const preserveOwner=!!(owner&&owner!==who.name&&who.admin);
   let update;
   if(kind==='lounge_tables'){
    const pax=Number(data.pax);
    if(!Number.isSafeInteger(pax)||pax<1||pax>200)fail('Pax phải trong khoảng 1–200');
    if(!str(data.customerName))fail('Thiếu tên khách');
-   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:who.name,updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else if(kind==='bun_tables'){
    if(!str(data.customerName)||!str(data.restaurantTable))fail('Thiếu tên khách hoặc bàn nhà hàng');
-   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:who.name,updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else{
    const guests=Number(data.guests);
    if(!Number.isSafeInteger(guests)||guests<1||guests>300)fail('Số khách không hợp lệ');
    if(!str(data.leader)||!str(data.dining))fail('Thiếu trưởng đoàn hoặc bàn nhà hàng');
-   update={label:str(data.label||id,70),leader:str(data.leader),dining:str(data.dining,50),guests,payment:pay,focNote:str(data.focNote||'',200),seller:who.name,updatedAt:Date.now()};
+   update={label:str(data.label||id,70),leader:str(data.leader),dining:str(data.dining,50),guests,payment:pay,focNote:str(data.focNote||'',200),seller:preserveOwner?owner:who.name,updatedAt:Date.now()};
   }
   tx.set(ref,update,{merge:true});
-  return {before:v,after:{...v,...update},payment:pay};
+  return {before:v,after:{...v,...update},payment:pay,preserveOwner};
  });
  if(kind==='show_tables'){
+  if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
   // Proof of an actual verified booking, independent of client-writable show_tables.
   await getDatabase().ref('staffXpShowProofs/'+hash(id)).set({employeeId:who.id,payment:pay,day:vnDay(),updatedAt:Date.now()});
   return {saved:true,xpAwarded:0};
  }
+ if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
  const amount=live.tableValue(kind,existing.after);
  const grant=await onceSale(kind,id,who,xp.revenueXP(amount));
  return {saved:true,xpAwarded:grant.amount,duplicate:grant.duplicate};
@@ -96,15 +100,16 @@ async function combo(id,data,who){
  if(!SHOW.has(code))fail('Combo không được hỗ trợ');
  const db=getFirestore(),ref=db.collection('show_tables').doc(id);
  const proof=(await getDatabase().ref('staffXpShowProofs/'+hash(id)).once('value')).val();
- if(!proof||proof.employeeId!==who.id||proof.day!==vnDay())throw new HttpsError('failed-precondition','Cần lưu đặt bàn bằng Staff ID đã xác minh trước khi tính doanh thu Show.');
+ if((!proof||proof.employeeId!==who.id||proof.day!==vnDay())&&!who.admin)throw new HttpsError('failed-precondition','Cần lưu đặt bàn bằng Staff ID đã xác minh trước khi tính doanh thu Show.');
  const service={combo:code,package:str(data.package||'',50),drinks:stringMap(data.drinks),foods:stringMap(data.foods),status:'pending',savedAt:Date.now()};
  if(!Object.keys(service.drinks).length&&!Object.keys(service.foods).length)fail('Combo phải có món');
  await db.runTransaction(async tx=>{
   const snap=await tx.get(ref);
   if(!snap.exists)throw new HttpsError('not-found','Không tìm thấy bàn Show');
-  if(str(snap.data()?.seller)!==who.name)throw new HttpsError('permission-denied','Bàn thuộc nhân viên khác');
+  if(str(snap.data()?.seller)!==who.name&&!who.admin)throw new HttpsError('permission-denied','Bàn thuộc nhân viên khác');
   tx.update(ref,{service});
  });
+ if(who.admin&&(!proof||proof.employeeId!==who.id))return {saved:true,xpAwarded:0,managerOverride:true};
  const amount=proof.payment.toUpperCase()==='FOC'?0:xp.revenueXP(live.tableValue('show_tables',{seller:who.name,payment:proof.payment,service}));
  const grant=await onceSale('show_tables',id,who,amount);
  return {saved:true,xpAwarded:grant.amount,duplicate:grant.duplicate};

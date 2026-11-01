@@ -1,7 +1,9 @@
 'use strict';
-const {initializeApp,applicationDefault}=require('../functions/node_modules/firebase-admin/app');
-const {getDatabase}=require('../functions/node_modules/firebase-admin/database');
-const {getFirestore}=require('../functions/node_modules/firebase-admin/firestore');
+const {createRequire}=require('node:module');
+const firebaseRequire=createRequire(require('node:path').resolve(__dirname,'../functions/package.json'));
+const {initializeApp,applicationDefault}=firebaseRequire('firebase-admin/app');
+const {getDatabase}=firebaseRequire('firebase-admin/database');
+const {getFirestore}=firebaseRequire('firebase-admin/firestore');
 const projectId='dolphin-f6d67';
 const variants=['https://dolphin-f6d67-default-rtdb.asia-southeast1.firebasedatabase.app','https://dolphin-f6d67-default-rtdb.firebaseio.com'];
 const norm=s=>String(s||'').normalize('NFC').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi-VN');

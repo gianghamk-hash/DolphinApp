@@ -96,6 +96,35 @@ await b.page.screenshot({path:path.join(output,'profile-style-mobile.png'),fullP
 await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.check('input[name=staff-theme][value=light]');await b.page.click('#staff-save-style');await b.page.locator('#staff-style-info').filter({hasText:'Đã lưu'}).waitFor();assert.equal(await b.page.locator('body').getAttribute('data-theme'),'light');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-light-mobile.png'),fullPage:true});
 await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.check('input[name=staff-theme][value=gray]');await b.page.click('#staff-save-style');await b.page.waitForFunction(()=>document.body.dataset.theme==='gray');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-gray-mobile.png'),fullPage:true});
 await b.page.getByRole('button',{name:'Phần thưởng',exact:true}).click();assert.equal(await b.page.locator('.reward-row').count(),16);await b.page.keyboard.press('Escape');assert.equal(await b.page.locator('dialog[open]').count(),0);
+
+await b.page.evaluate(()=>{
+ const catalog=[
+  {id:'name_flame',level:3,label:'🔥 Tên phát sáng',icon:'🔥'},
+  {id:'frame_bronze',level:5,label:'Khung avatar Bronze',icon:'🥉'},
+  {id:'title_rookie',level:12,label:'Danh hiệu Rookie Star',icon:'⭐'},
+  {id:'banner_wave',level:15,label:'Banner Sóng Biển',icon:'🌊'},
+  {id:'frame_silver',level:22,label:'Khung avatar Silver',icon:'🥈'}
+ ];
+ window.dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:{
+  employeeId:document.getElementById('employee-id').textContent,name:'Avatar Demo',level:15,rank:'Gold',
+  xp:980000,personalTheme:'gray',nameFlame:true,nameGradient:false,
+  selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave',
+  rewardCatalog:catalog,nextReward:catalog[4],unlocked:catalog.slice(0,4).map(r=>r.id)
+ }}));
+});
+assert.equal(await b.page.locator('#profile-avatar').getAttribute('data-frame'),'bronze','selected Bronze avatar frame is applied');
+assert.equal(await b.page.locator('#crew-profile-banner').getAttribute('data-banner'),'wave','Wave profile banner is equipped');
+assert.equal(await b.page.locator('#profile-title').textContent(),'⭐ Rookie Star','unlocked title shows under name');
+assert.equal(await b.page.locator('#staff-reward-highlights .reward-highlight').count(),2,'inline reward milestones show unlocked and next reward');
+assert.ok((await b.page.locator('#staff-next-reward').textContent()).includes('Silver'),'next reward is visible without opening a dialog');
+await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();
+assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze');
+assert.equal(await b.page.locator('#staff-title-select').inputValue(),'rookie');
+assert.equal(await b.page.locator('#staff-banner-select').inputValue(),'wave');
+assert.equal(await b.page.locator('#staff-frame-select option[value=silver]').isDisabled(),true);
+assert.equal(await b.page.locator('#staff-gradient-check').isDisabled(),true);
+await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
+
 assert.equal(await b.page.locator('#prestige-admin-launch').isVisible(),false);
 const c=await device('unlinked');await c.page.goto(origin+'/dolphin-profile.html');await c.page.locator('#staff-xp-summary').filter({hasText:'Đăng ký hoặc liên kết'}).waitFor();assert.equal(await c.page.locator('#staff-save-style').isEnabled(),false);await c.context.close();
 console.log('PASS: compact dashboard, independently opened settings, level-gated perks, rewards and hidden manager controls.');

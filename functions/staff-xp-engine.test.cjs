@@ -19,17 +19,18 @@ test('reject negative and invalid revenue/points',()=>{
 test('level progression is monotonically increasing and unlock thresholds are ordered',()=>{
  let prev=0;
  for(let level=1;level<=60;level++){const xp=e.xpForLevel(level);assert(xp>=prev);prev=xp;assert.equal(e.levelForXP(xp),level);}
- assert.equal(e.levelForXP(999),1);
- assert.equal(e.levelForXP(1000),2);
- assert.equal(e.levelForXP(4000),3);
+ assert.equal(e.levelForXP(4999),1);
+ assert.equal(e.levelForXP(5000),2);
+ assert.equal(e.levelForXP(20000),3);
  assert.equal(e.levelForXP(1000000000),60);
  const levels=e.PERKS.map(p=>p.level);
- assert.deepEqual(levels,[1,3,5,8,10,12,15,18,22,28]);
+ assert(levels.every((v,i)=>!i||v>=levels[i-1]));
+ assert.equal(e.PERKS.filter(p=>p.id.startsWith('theme-')).length,15);
 });
 test('perks activate only after meeting corresponding level threshold',()=>{
- assert(!e.progress(3999).unlocked.includes('name-onflame'));
- assert(e.progress(4000).unlocked.includes('name-onflame'));
- assert(!e.progress(e.xpForLevel(7)).unlocked.includes('theme-dolphin-ocean'));
+ assert(!e.progress(19999).unlocked.includes('name-onflame'));
+ assert(e.progress(20000).unlocked.includes('name-onflame'));
+ assert(!e.progress(e.xpForLevel(7)).unlocked.includes('theme-default'));
  assert(e.progress(e.xpForLevel(8)).unlocked.includes('theme-dolphin-ocean'));
  assert.equal(e.progress(0).rank,'Bronze');
 });

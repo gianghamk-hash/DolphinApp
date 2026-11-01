@@ -34,7 +34,7 @@ await a.page.waitForFunction(()=>window.DolphinAvatars?.get('AVATAR DEMO')==='�
 const rankFrame=frames.find(x=>x.file==='ranking/index.html').frame;
 const rankSource=fs.readFileSync(path.join(root,'ranking/index.html'),'utf8');const revenueFn=rankSource.match(/function renderRevenue\(\)\{[\s\S]*?\n\}/)[0],pointsFn=rankSource.match(/function renderPoints\(\)\{[\s\S]*?\n\}/)[0];
 const switchFn=rankSource.match(/window\.switchMain = function\(tab\)\{[\s\S]*?\n\};/)[0];
-await rankFrame.evaluate(({revenueFn,pointsFn})=>{const escape=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));new Function('$','calcRevenue','calcPoints','formatMoney','formatPoints','sendLeaders','state','esc','rankingAvatar',revenueFn+'\n'+pointsFn+'\nrenderRevenue();renderPoints();')(id=>document.getElementById(id),()=>[{name:'AVATAR DEMO',rev:1000,cnt:1,details:['Lounge']}],()=>[{name:'Avatar Demo',both:1,onlyComplete:0,onlyPrepare:0,points:1}],String,String,()=>{},{weekStart:Date.now()},escape,n=>escape(window.DolphinAvatars?.get(n)||'👤'));},{revenueFn,pointsFn});
+await rankFrame.evaluate(({revenueFn,pointsFn})=>{const escape=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));new Function('$','calcRevenue','calcPoints','formatMoney','formatPoints','sendLeaders','state','esc','rankingAvatar','rankingAvatarId',revenueFn+'\n'+pointsFn+'\nrenderRevenue();renderPoints();')(id=>document.getElementById(id),()=>[{name:'AVATAR DEMO',rev:1000,cnt:1,details:['Lounge']}],()=>[{name:'Avatar Demo',both:1,onlyComplete:0,onlyPrepare:0,points:1}],String,String,()=>{},{weekStart:Date.now()},escape,n=>escape(window.DolphinAvatars?.get(n)||'👤'),n=>window.DolphinAvatars?.profile(n)?.employeeId||'');},{revenueFn,pointsFn});
 const gameFrame=frames.find(x=>x.file==='giaitri/index.html').frame;await gameFrame.evaluate(()=>{window.DolphinLeaderboard={getLeaderboard:async()=>[{player:'Avatar Demo',bestScore:99,totalScore:99,totalGames:1}],getStaffName:()=> 'Avatar Demo',lastError:()=>'',invalidate(){}};window.showLB('snake');});await gameFrame.waitForSelector('#lbContent [data-staff-avatar]',{state:'attached'});
 await profile.getByRole('button',{name:'Chỉnh sửa hồ sơ',exact:true}).click();await profile.locator('#choose-avatar').click();await profile.locator('#avatar-category').selectOption('Khởi đầu Lv.1');await profile.getByRole('button',{name:'Chọn 🐯',exact:true}).click();await a.page.waitForTimeout(1700);await profile.locator('#save-profile').click();await profile.locator('#profile-message').filter({hasText:'Đã lưu hồ sơ'}).waitFor();
 for(const {file,frame} of frames)await frame.waitForFunction(()=>[...document.querySelectorAll('[data-staff-avatar]')].some(el=>el.textContent==='🐯'));
@@ -61,6 +61,14 @@ await rankFrame.evaluate(()=>{
 assert.equal(await rankFrame.locator('#leader-emperor-name').textContent(),'Avatar Demo','Emperor card uses backend leaderboard');
 assert.equal(await rankFrame.locator('#leader-emperor-value').textContent(),'Lv.1 · 2.500 XP');
 await rankFrame.evaluate(()=>{
+ const r=window.DolphinRankRewards;
+ r?.publishCategory('revenue',[{name:'Avatar Demo',rev:900000}],Date.now());
+ r?.publishCategory('work',[{name:'Avatar Demo',points:3}],Date.now());
+});
+await rankFrame.waitForFunction(()=>document.querySelector('#leader-revenue-avatar')?.textContent==='🌊'&&document.querySelector('#leader-work-avatar')?.textContent==='🌊');
+assert.equal(await rankFrame.locator('#leader-revenue-avatar').textContent(),'🌊','revenue Top 1 follows current profile avatar');
+assert.equal(await rankFrame.locator('#leader-work-avatar').textContent(),'🌊','work Top 1 follows current profile avatar');
+await rankFrame.evaluate(()=>{
  window.switchMain=tab=>{
   for(const button of document.querySelectorAll('.tab-btn'))button.classList.toggle('active',button.dataset.main===tab);
   for(const name of ['revenue','points','level'])document.getElementById('section-'+name).style.display=name===tab?'block':'none';
@@ -69,6 +77,14 @@ await rankFrame.evaluate(()=>{
 await rankFrame.locator('[data-rank-target="level"]').click();
 assert.equal(await rankFrame.locator('#section-level').isVisible(),true,'Level tab is interactive');
 assert.equal(await rankFrame.locator('#level-board-list .level-entry').count(),2);
+assert.equal((await rankFrame.locator('#level-board-list .level-person-name').first().textContent()).trim(),'Avatar Demo','employee name is visible in Level row');
+assert.equal((await rankFrame.locator('#level-board-list .level-person-rank').first().textContent()).trim(),'Bronze','Level rank label is visible');
+assert.equal((await rankFrame.locator('#level-board-list .level-score-xp').first().textContent()).trim(),'2.500 XP','XP amount is visible');
+const tabsFit=await rankFrame.evaluate(()=>{
+ const tabs=[...document.querySelectorAll('.rank-tabs .tab-btn')],root=document.querySelector('.rank-tabs').getBoundingClientRect();
+ return tabs.length===3&&tabs.every(t=>{const box=t.getBoundingClientRect();return box.left>=root.left-1&&box.right<=root.right+1&&box.width>40});
+});
+assert.equal(tabsFit,true,'all three leaderboard tabs fit within the phone-width viewport');
 assert.equal(await rankFrame.locator('#level-legendary-list .legendary-entry').count(),1);
 assert.equal(await rankFrame.locator('.dolphin-prestige').count(),0,'Global floating Emperor banner removed');
 assert.equal(await rankFrame.locator('#section-revenue').isVisible(),false);

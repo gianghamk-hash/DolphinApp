@@ -1,26 +1,30 @@
 {
-  "version": "1.1.23",
-  "previousVersion": "1.1.22",
-  "commit": "e68a7ce",
-  "previousCommit": "d407e51",
-  "buildDate": "2026-11-01T11:55:54.894Z",
-  "summary": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP",
+  "version": "1.1.24",
+  "previousVersion": "1.1.23",
+  "commit": "5f7414e",
+  "previousCommit": "e68a7ce",
+  "buildDate": "2026-11-01T12:19:20.839Z",
+  "summary": "feat(staff-xp): authenticated automatic awards on live staff actions",
   "changes": {
-    "totalCommits": 247,
-    "filesChanged": 23,
+    "totalCommits": 248,
+    "filesChanged": 13,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP"
+    "feat(staff-xp): authenticated automatic awards on live staff actions"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/firebase-staff-prestige-production.yml",
+      "file": ".github/workflows/staff-prestige-tests.yml",
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-prestige-tests.yml",
+      "file": ".github/workflows/staff-profile-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-xp-secure-production.yml",
       "type": "update"
     },
     {
@@ -28,11 +32,19 @@
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "dolphin-bungalow.html",
       "type": "update"
     },
     {
-      "file": "firestore.rules",
+      "file": "dolphin-lounge.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-show.html",
       "type": "update"
     },
     {
@@ -40,71 +52,19 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-avatar-catalog.json",
-      "type": "update"
-    },
-    {
       "file": "functions/staff-id.test.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.js",
+      "file": "functions/staff-xp-actions.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.test.cjs",
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-live-engine.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-live-engine.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-live.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-reconcile.js",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/avatar-sync-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-online.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-client.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-xp-manager.js",
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

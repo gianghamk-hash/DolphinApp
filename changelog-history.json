@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.23",
+      "releaseDate": "2026-11-01T11:55:54.894Z",
+      "summary": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP",
+      "details": [
+        "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP"
+      ]
+    },
+    {
       "version": "1.1.22",
       "releaseDate": "2026-11-01T10:01:09.068Z",
       "summary": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029",
       "details": [
         "Merge pull request #135 from gianghamk-hash/fix/tft-sell-discount-20261029"
-      ]
-    },
-    {
-      "version": "1.0.193",
-      "releaseDate": "2026-10-29T12:49:31.292Z",
-      "summary": "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029",
-      "details": [
-        "Merge pull request #134 from gianghamk-hash/fix/tft-sell-board-bench-20261029"
       ]
     }
   ]

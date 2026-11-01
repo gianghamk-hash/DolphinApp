@@ -18,7 +18,7 @@ function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
  return {employeeId:p.employeeId,name:p.name,avatar:p.avatar||'🐬',
   level:progress.level,rank:progress.rank,xp, nextLevelAt:progress.nextLevelAt,
-  unlocked:progress.unlocked,showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame};
+  unlocked:progress.unlocked,showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
 }
 function leaderboard(registry){
  return Object.values(registry||{}).filter(p=>p?.active&&staffPattern.test(p.employeeId)&&p.name)
@@ -53,6 +53,24 @@ exports.staffSetShowcase=onCall(opts,async req=>{
  if(!result.committed)throw new HttpsError('failed-precondition','Hồ sơ không hợp lệ');
  return expose(result.snapshot.val());
 });
+const themeLevels=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30});
+exports.staffSetPersonalStyle=onCall(opts,async req=>{
+ const {id}=await currentStaff(req);
+ const theme=String(req.data?.theme||'dark');
+ const flame=req.data?.nameFlame===true;
+ if(!['dark','light','gray',...Object.keys(themeLevels)].includes(theme))
+  throw new HttpsError('invalid-argument','Chủ đề không hợp lệ');
+ const ref=getDatabase().ref('staffRegistry/'+id);
+ const result=await ref.transaction(v=>{
+  if(!v?.active)return;
+  const level=engine.progress(Math.max(0,Number(v.xp)||0)).level;
+  if((themeLevels[theme]||1)>level||(flame&&level<3))return;
+  return {...v,personalTheme:theme,nameFlame:flame,updatedAt:Date.now()};
+ });
+ if(!result.committed)throw new HttpsError('permission-denied','Chưa mở khóa chủ đề hoặc hiệu ứng');
+ return {...expose(result.snapshot.val()),personalTheme:result.snapshot.val().personalTheme||'dark'};
+});
+
 /* Admin-only reconciliation: sources must be verified externally, never trust client order payloads. */
 exports.staffGrantVerifiedXP=onCall(opts,async req=>{
  if(!isAdmin(req))throw new HttpsError('permission-denied','Chỉ quản lý được cấp điểm');

@@ -128,6 +128,8 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
    throw new HttpsError('permission-denied','Phần thưởng chưa mở khóa ở Level '+level);
   throw new HttpsError('aborted','Giao dịch lưu giao diện bị gián đoạn. Hãy thử lại.');
  }
+ // Cosmetic choices appear in the public Level board without a separate manual refresh.
+ try{await rebuild();}catch(e){console.warn('[Crew Club] cosmetic board refresh unavailable:',e?.message||e);}
  return {...expose(result.snapshot.val()),personalTheme:result.snapshot.val().personalTheme||'dark'};
 });
 

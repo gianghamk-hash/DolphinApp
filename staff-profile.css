@@ -8,3 +8,16 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 @media(max-width:420px){main{padding:20px 16px calc(80px + env(safe-area-inset-bottom))}.card{padding:18px;border-radius:20px}.page-heading{margin-bottom:16px}h1{font-size:21px}.hero-avatar{width:55px;height:55px;border-radius:17px;font-size:30px}.identity{gap:11px}.name{font-size:17px}.quick-actions{gap:7px}.quick-actions>button{font-size:10px;min-height:78px}.board-footer{flex-wrap:wrap;gap:6px}dialog{padding:21px;max-height:88dvh}.dialog-head{margin-bottom:17px}}
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important;animation:none!important}}
 .dolphin-prestige{display:none!important}#dolphinBackAction{bottom:calc(18px + env(safe-area-inset-bottom,0px))!important;width:42px!important;height:42px!important;font-size:22px!important}
+
+
+/* Dolphin Crew Club sandbox is visible exclusively to Staff ID DOL-0001. */
+.crew-admin-sandbox{margin:16px 0;border-color:color-mix(in srgb,var(--gold) 45%,var(--line))}
+.crew-admin-sandbox[hidden]{display:none!important}
+.crew-admin-sandbox h2{margin:12px 0 8px;font-size:18px;color:var(--gold)}
+.test-xp-presets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.test-xp-presets .secondary{padding:12px 5px;font-size:12px}
+.test-xp-custom{display:flex;gap:8px;align-items:stretch}
+.test-xp-custom input{min-width:0;flex:1}
+.test-xp-custom button{flex-shrink:0}
+.test-xp-reset{margin-top:12px;width:100%;color:#f5b6b0;border-color:#e88a8970}
+#admin-test-xp-result:not(:empty){margin-top:12px;color:var(--gold)}

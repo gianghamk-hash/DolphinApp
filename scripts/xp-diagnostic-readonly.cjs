@@ -17,7 +17,7 @@ async function main(){
    board=(await db.ref('staffPrestige/public').once('value')).val()||{};
    location=url.includes('asia-southeast1')?'regional':'default';
    break;
-  }catch(e){console.log('RTDB candidate',url.includes('asia-southeast1')?'regional':'default','unavailable:',e.code||e.message);}
+  }catch(e){console.log('RTDB candidate',url.includes('asia-southeast1')?'regional':'default','unavailable:',(e.code||'')+' '+e.message);}
  }
  if(!registry)throw Error('No accessible Realtime Database; diagnostic did not modify data');
  const p=registry['DOL-0001'];

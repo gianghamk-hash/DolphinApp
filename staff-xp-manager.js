@@ -5,24 +5,23 @@ const f=n=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2});
 let pending=[];
 function mount(){
  if($('prestige-admin-panel'))return;
- const parent=$('staff-progress-card')||document.querySelector('main');
+ const parent=$('prestige-admin-mount')||document.querySelector('main');
  if(!parent)return;
  const section=document.createElement('section');section.id='prestige-admin-panel';section.className='card';
- section.style.cssText='margin-top:18px;display:none';
  section.innerHTML='<h2>🛡️ Duyệt XP từ lịch sử đóng ca</h2>'+
  '<p>Lấy doanh thu Lounge, Bungalow, Dolphin Show và điểm công việc từ lịch sử. Chỉ quản lý có quyền máy chủ mới được duyệt, mỗi sự kiện chỉ cấp XP một lần.</p>'+
  '<button type="button" class="secondary" id="prestige-preview">Kiểm tra XP chưa duyệt</button>'+
  '<p id="prestige-admin-status" role="status">Chưa kiểm tra.</p>'+
  '<div id="prestige-admin-events" style="max-height:350px;overflow:auto;margin:12px 0"></div>'+
  '<button type="button" class="primary" id="prestige-approve" disabled>Duyệt các sự kiện đã chọn (tối đa 50)</button>';
- parent.after(section);
+ parent.appendChild(section);
  $('prestige-preview').onclick=preview;$('prestige-approve').onclick=approve;
 }
 async function init(){
  mount();
  try{
   const role=await window.DolphinPrestige.call('staffIsPrestigeAdmin');
-  if(role?.admin)$('prestige-admin-panel').style.display='block';
+  if($('prestige-admin-launch'))$('prestige-admin-launch').hidden=!role?.admin;
  }catch(e){console.warn('[Prestige admin] unavailable',e);}
 }
 function selections(){return [...document.querySelectorAll('#prestige-admin-events input[type=checkbox]:checked')].map(x=>x.value).slice(0,50);}

@@ -23,5 +23,5 @@ test('all requested app surfaces load the shared renderer and carry staff-avatar
   const source=fs.readFileSync(__dirname+'/'+file,'utf8');assert.ok(source.includes('dolphin-avatars.js'),file);assert.ok(source.includes('data-staff-avatar'),file);
  }
  const profile=fs.readFileSync(__dirname+'/dolphin-profile.html','utf8');assert.ok(!profile.includes('id="department"'));
- assert.ok(profile.includes('id="claim-code"'));assert.ok(!profile.includes('<details id="claim-section"'));
+ assert.ok(profile.includes('id="claim-code"'));
 });

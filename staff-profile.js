@@ -3,7 +3,15 @@
 'use strict';
 const $=id=>document.getElementById(id),api=window.DolphinStaffId;
 let profile=null,avatar='🐬',catalog={},busy=false,dirty=false,expiresAt=0;
-function message(text,error=false){$('profile-message').textContent=text;$('profile-message').dataset.error=String(error);}
+function message(text,error=false){
+ for(const id of ['profile-message','profile-edit-message','device-message']){
+  const node=$(id);if(node){node.textContent=text;node.dataset.error=String(error);}
+ }
+}
+for(const button of document.querySelectorAll('[data-open-dialog]'))button.addEventListener('click',()=>{
+ const dialog=$(button.dataset.openDialog);if(dialog&&!dialog.open)dialog.showModal();
+});
+for(const button of document.querySelectorAll('[data-close-dialog]'))button.addEventListener('click',()=>button.closest('dialog').close());
 function setBusy(value){busy=value;for(const id of ['save-profile','choose-avatar','profile-name-input','claim-link','issue-link'])$(id).disabled=value||(id==='issue-link'&&!profile);}
 function render(fill=true){
  profile=api.get();
@@ -13,6 +21,7 @@ function render(fill=true){
   avatar=profile?.avatar||'🐬';
  }
  $('choose-avatar').textContent=avatar;
+ if($('profile-avatar'))$('profile-avatar').textContent=avatar;
  $('profile-name').textContent=profile?.name||'Hồ sơ của bạn';
  $('employee-id').textContent=profile?.employeeId||'ID sẽ được tự cấp';
  $('profile-state').textContent=profile?'Đã đăng ký':'Sẵn sàng đăng ký';
@@ -35,7 +44,7 @@ $('profile-form').addEventListener('submit',async e=>{
  e.preventDefault();if(busy)return;
  const data={name:$('profile-name-input').value.trim(),avatar};
  setBusy(true);message(profile?'Đang lưu thay đổi…':'Đang đăng ký hồ sơ và thiết bị…');
- try{await (profile?api.update(data):api.register(data));render();message('Đã lưu hồ sơ. Tên và avatar của bạn đã được cập nhật.');}
+ try{await (profile?api.update(data):api.register(data));render();message('Đã lưu hồ sơ. Tên và avatar của bạn đã được cập nhật.');$('profile-edit-dialog')?.close();}
  catch(err){message(errorText(err),true);setBusy(false);}
 });
 function renderAvatars(){

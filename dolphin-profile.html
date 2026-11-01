@@ -1,65 +1,52 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="vi">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
-<meta name="theme-color" content="#071f20">
-<title>Hồ sơ nhân viên · Dolphin</title>
-<link rel="manifest" href="./manifest.json">
-<script src="./dolphin-navigation.js?v=1" defer></script>
-<script src="./staff-sync.js" defer></script>
-<script src="./staff-id.js?v=1.1" defer></script>
-<script src="./staff-profile.js" defer></script>
-<style>
-:root{color-scheme:dark;--gold:#fbd77a;--muted:#a6c9c2;--line:#ffffff1c}*{box-sizing:border-box}body{margin:0;background:radial-gradient(ellipse at top left,#19534a,transparent 60%),#071719;color:#eef8f5;font:15px/1.6 system-ui,sans-serif;min-height:100vh}main{max-width:980px;margin:auto;padding:36px 20px calc(110px + env(safe-area-inset-bottom))}.eyebrow{color:var(--gold);font-size:11px;font-weight:800;letter-spacing:.18em;text-transform:uppercase}h1{font-size:clamp(29px,5vw,42px);line-height:1.2;margin:10px 0}h2{font-size:18px;margin:0 0 12px}p{margin:8px 0;color:var(--muted)}.intro{max-width:660px;margin-bottom:26px}.layout{align-items:start;display:grid;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr);gap:18px}.card{background:linear-gradient(135deg,#ffffff0e,#ffffff04);border:1px solid var(--line);border-radius:24px;padding:24px;box-shadow:0 18px 50px #0002;min-width:0}.identity{display:flex;gap:18px;align-items:center;margin-bottom:22px}.avatar-button{border:2px solid #fbd77a66;background:#183c36;width:86px;height:86px;border-radius:26px;font-size:44px;flex-shrink:0;cursor:pointer}.id{font:700 13px ui-monospace,monospace;color:var(--gold);overflow-wrap:anywhere}.pill{display:inline-block;font-size:11px;padding:3px 9px;border-radius:99px;background:#9de4d71a;color:#b4e6d5;margin-top:6px}.name{font-size:20px;font-weight:800;line-height:1.3}.hint{font-size:12px;color:var(--muted)}label{display:block;font-size:12px;font-weight:700;margin:17px 0 7px}input,select{width:100%;border:1px solid #ffffff29;background:#061d1d;color:#fff;border-radius:12px;padding:12px 13px;font:inherit}input:focus,select:focus,button:focus-visible{outline:2px solid var(--gold);outline-offset:3px}button{font:inherit;touch-action:manipulation}.primary,.secondary{border:0;border-radius:12px;padding:12px 16px;font-size:13px;font-weight:800;cursor:pointer}.primary{background:var(--gold);color:#18342e}.secondary{border:1px solid #ffffff30;background:#ffffff08;color:#e5f5ef}button:disabled{opacity:.5;cursor:wait}.full{width:100%;margin-top:20px}.actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.stack{display:grid;gap:18px;align-content:start}.device{padding:12px 0;border-top:1px solid var(--line);display:flex;justify-content:space-between;gap:16px;font-size:13px}.device span{color:var(--muted)}.device strong{text-align:right}.link-code{background:#051c1b;border:1px dashed #fbd77a70;border-radius:12px;padding:14px;overflow-wrap:anywhere;color:var(--gold);font:700 15px/1.7 ui-monospace,monospace;user-select:all;margin-top:12px}.notice{margin-top:20px;padding:14px 18px;border-radius:14px;border:1px solid #ffffff20;color:var(--muted);font-size:13px}.notice[data-error=true]{color:#ffd5d5;border-color:#fa787866;background:#601e2533}[hidden]{display:none!important}details{margin-top:18px;border-top:1px solid var(--line);padding-top:14px}summary{cursor:pointer;font-weight:700;font-size:13px}.steps{padding-left:19px;color:var(--muted);font-size:13px}.steps li{margin:8px 0}dialog{color:#eef8f5;background:#0c2928;border:1px solid #fbd77a66;border-radius:24px;padding:24px;width:min(94vw,560px);max-height:85vh;overflow:auto}dialog::backdrop{background:#001011bb;backdrop-filter:blur(6px)}.dialog-head{display:flex;justify-content:space-between;align-items:center;gap:12px}.avatar-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(56px,1fr));gap:8px;margin-top:16px}.avatar-choice{background:#ffffff08;border:2px solid transparent;border-radius:14px;padding:8px;font-size:30px;cursor:pointer}.avatar-choice[aria-pressed=true]{border-color:var(--gold);background:#fbd77a22}.category{margin-top:8px}@media(max-width:700px){main{padding-top:24px}.layout{grid-template-columns:1fr}.card{padding:20px}.identity{gap:13px}.avatar-button{width:76px;height:76px;font-size:38px}}
-</style>
-<script src="./dolphin-avatars.js" defer></script>
-<script src="./staff-prestige-client.js?v=1" defer></script>
-<script src="./theme-system.js?v=9" defer></script>\n<script src="./staff-prestige-profile.js?v=1" defer></script>\n<script src="./staff-xp-manager.js?v=1" defer></script>\n</head>
+<meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
+<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=2">
+<script src="./dolphin-navigation.js?v=1" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=1.1" defer></script><script src="./staff-profile.js?v=2" defer></script><script src="./dolphin-avatars.js" defer></script><script src="./staff-prestige-client.js?v=2" defer></script><script src="./theme-system.js?v=9" defer></script><script src="./staff-prestige-profile.js?v=2" defer></script><script src="./staff-xp-manager.js?v=2" defer></script>
+</head>
 <body>
+<svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
+<symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
+<symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></symbol>
+<symbol id="i-gift" viewBox="0 0 24 24"><path d="M3 8h18v4H3zM5 12v9h14v-9M12 8v13"/><path d="M12 8H8a3 3 0 1 1 3-3zm0 0h4a3 3 0 1 0-3-3z"/></symbol>
+<symbol id="i-device" viewBox="0 0 24 24"><rect x="3" y="3" width="12" height="15" rx="2"/><rect x="14" y="8" width="7" height="13" rx="2"/><path d="M7 21h5M7 15h4M17 18h1"/></symbol>
+<symbol id="i-crown" viewBox="0 0 24 24"><path d="m3 6 4 4 5-7 5 7 4-4-2 13H5ZM6 22h12"/></symbol>
+<symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
+</defs></svg>
 <main>
-  <div class="eyebrow">Dolphin · Đội ngũ của chúng ta</div>
-  <h1>Hồ sơ nhân viên</h1>
-  <p class="intro">Một ID riêng cho bạn, dùng chung trên các thiết bị. Tự đăng ký, chọn avatar và cập nhật thông tin ngay tại đây.</p>
-  <div class="layout">
-    <section class="card" aria-label="Thông tin cá nhân">
-      <div class="identity">
-        <button id="choose-avatar" class="avatar-button" type="button" aria-label="Đổi avatar" disabled>🐬</button>
-        <div><div id="profile-name" class="name">Hồ sơ của bạn</div><div id="employee-id" class="id">Chưa đăng ký</div><span id="profile-state" class="pill">Đang kết nối…</span></div>
-      </div>
-      <form id="profile-form">
-        <label for="profile-name-input">Họ và tên</label>
-        <input id="profile-name-input" name="name" autocomplete="name" minlength="2" maxlength="64" required disabled>
-        <p class="hint">Lấy từ tên Staff Sync đang dùng. Tên mới sẽ được đồng bộ sau khi lưu; đơn đã ghi nhận vẫn giữ tên cũ.</p>
-        <button id="save-profile" class="primary full" type="submit" disabled>Đang kết nối…</button>
-      </form>
-      <p id="registration-note" class="hint">ID do hệ thống tự cấp sau khi đăng ký. Nếu đã có hồ sơ trên máy khác, hãy dùng mã liên kết bên dưới để giữ cùng ID.</p>
-    </section>
-    <div class="stack">
-      <section class="card" aria-label="Thiết bị hiện tại">
-        <h2>Thiết bị của bạn</h2>
-        <div class="device"><span>Nền tảng</span><strong id="device-platform">—</strong></div>
-        <div class="device"><span>Trạng thái</span><strong id="device-status">Chưa liên kết</strong></div>
-        <div class="device"><span>Ngày tạo hồ sơ</span><strong id="created-at">—</strong></div>
-        <p class="hint">Đăng ký sẽ gắn thiết bị hiện tại với hồ sơ. Nếu xóa dữ liệu trình duyệt hoặc cài lại app, bạn cần liên kết lại.</p>
-      </section>
-      <section class="card" aria-label="Liên kết thiết bị">
-        <h2>Dùng trên thiết bị khác</h2>
-        <p class="hint">Tạo mã từ thiết bị đã có hồ sơ, rồi nhập mã đó trên thiết bị mới. Mã dùng một lần, có hiệu lực 10 phút.</p>
-        <button id="issue-link" type="button" class="secondary full" disabled>Tạo mã liên kết</button>
-        <div id="code-panel" hidden><div id="link-code" class="link-code"></div><p id="code-expiry" class="hint"></p><button id="copy-code" class="secondary" type="button">Sao chép mã</button><p class="hint">Chỉ nhập mã trên thiết bị của bạn; không chia sẻ công khai.</p></div>
-        <section id="claim-section" style="margin-top:22px;border-top:1px solid var(--line);padding-top:18px">
-          <h2>Nhập mã liên kết</h2><p id="claim-current" class="hint"></p>
-          <form id="link-form"><label for="claim-code">Mã từ thiết bị đã có hồ sơ</label><input id="claim-code" autocomplete="off" spellcheck="false" maxlength="36" pattern="[A-Fa-f0-9]{36}" placeholder="Dán mã liên kết 36 ký tự" required>
-            <label id="switch-confirm" hidden style="display:flex;gap:9px;align-items:flex-start;font-weight:400"><input id="confirm-switch" type="checkbox" style="width:auto;margin-top:4px"><span>Tôi đồng ý chuyển thiết bị này sang hồ sơ trong mã. Hồ sơ cũ được giữ nguyên.</span></label>
-            <button id="claim-link" class="primary full" type="submit" disabled>Liên kết hồ sơ có sẵn</button>
-          </form>
-        </section>
-      </section>
-    </div>
-  </div>
-  <div id="profile-message" class="notice" role="status" aria-live="polite">Đang kết nối hồ sơ nhân viên…</div>
+<header class="page-heading"><div><p class="eyebrow">Dolphin · Crew club</p><h1>Hồ sơ nhân viên</h1></div><span class="page-monogram" aria-hidden="true">D.</span></header>
+<section class="profile-hero card" aria-label="Hồ sơ và cấp độ">
+ <div class="identity"><span id="profile-avatar" class="hero-avatar" aria-hidden="true">🐬</span><div class="identity-copy"><h2 id="profile-name" class="name">Hồ sơ của bạn</h2><div class="identity-meta"><span id="employee-id" class="id">Chưa đăng ký</span><span id="profile-state" class="pill">Đang kết nối…</span></div></div><button type="button" class="icon-button" data-open-dialog="profile-edit-dialog" aria-label="Chỉnh sửa hồ sơ"><svg class="icon"><use href="#i-user"/></svg></button></div>
+ <div id="staff-progress-card" class="progress-summary"><div class="section-line"><span class="eyebrow">Hành trình của bạn</span><span id="staff-level-tag" class="level-tag">LEVEL —</span></div><div id="staff-xp-summary" aria-live="polite">Đang tải cấp độ…</div><div id="staff-xp-track" role="progressbar" aria-label="Tiến độ cấp độ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="staff-xp-fill"></div></div><div class="progress-foot"><span id="staff-next-level">XP được lưu theo Staff ID</span><button type="button" class="text-button" data-open-dialog="rewards-dialog">Mốc thưởng ↗</button></div></div>
+</section>
+<nav class="quick-actions" aria-label="Cài đặt hồ sơ">
+ <button type="button" data-open-dialog="profile-edit-dialog"><span class="action-icon"><svg class="icon"><use href="#i-user"/></svg></span><span>Hồ sơ</span></button>
+ <button type="button" data-open-dialog="style-dialog"><span class="action-icon"><svg class="icon"><use href="#i-spark"/></svg></span><span>Giao diện</span></button>
+ <button type="button" data-open-dialog="rewards-dialog"><span class="action-icon"><svg class="icon"><use href="#i-gift"/></svg></span><span>Phần thưởng</span></button>
+ <button type="button" data-open-dialog="devices-dialog"><span class="action-icon"><svg class="icon"><use href="#i-device"/></svg></span><span>Thiết bị</span></button>
+</nav>
+<div class="status-strip"><p id="profile-message" role="status" aria-live="polite">Đang kết nối hồ sơ nhân viên…</p><p id="staff-xp-status" role="status"></p><button type="button" class="text-button" id="staff-xp-retry" hidden>Thử tải lại</button></div>
+<section class="card leaderboard-card" id="hall-of-fame" aria-labelledby="board-title">
+ <div class="section-line"><div><p class="eyebrow">Cùng nhau tiến xa</p><h2 id="board-title">Bảng xếp hạng</h2></div><svg class="icon board-icon" aria-hidden="true"><use href="#i-crown"/></svg></div>
+ <div class="champion-card"><span class="champion-emblem" aria-hidden="true">♛</span><div><span class="eyebrow">Dolphin Emperor</span><div id="staff-champion-info" aria-live="polite">Đang tải bảng vinh danh…</div></div></div>
+ <div class="board-caption"><span>NHÂN VIÊN</span><span>CẤP ĐỘ · XP</span></div><div id="staff-rank-board"><p class="empty-state">Đang tải xếp hạng…</p></div>
+ <button type="button" class="text-button" id="staff-board-more" hidden>Xem thêm xếp hạng</button><div class="board-footer"><span>XP tích lũy · Không đặt lại mỗi tuần</span><button type="button" class="text-button" data-open-dialog="legends-dialog">Legendary Wall ↗</button></div>
+</section>
+<button id="prestige-admin-launch" type="button" class="settings-row" data-open-dialog="admin-dialog" hidden><span class="action-icon"><svg class="icon"><use href="#i-shield"/></svg></span><span><strong>Duyệt XP nhân viên</strong><small>Dành cho quản lý được cấp quyền</small></span><span aria-hidden="true">↗</span></button>
+<p class="page-note">Mỗi đóng góp, một bước tiến.</p>
 </main>
-<dialog id="avatar-dialog" aria-labelledby="avatar-title"><div class="dialog-head"><h2 id="avatar-title">Chọn avatar của bạn</h2><button id="close-avatars" class="secondary" type="button" aria-label="Đóng bộ chọn avatar">✕</button></div><label for="avatar-category">Bộ sưu tập</label><select id="avatar-category" class="category"></select><div id="avatar-grid" class="avatar-grid"></div><p class="hint">Chọn một avatar, sau đó lưu hồ sơ để áp dụng.</p></dialog>
-</body>
-</html>
+<dialog id="profile-edit-dialog" aria-labelledby="edit-title"><div class="dialog-head"><div><p class="eyebrow">Cá nhân</p><h2 id="edit-title">Chỉnh sửa hồ sơ</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng chỉnh sửa hồ sơ">✕</button></div>
+ <form id="profile-form"><div class="avatar-edit"><button id="choose-avatar" class="avatar-button" type="button" aria-label="Đổi avatar" disabled>🐬</button><div><strong>Avatar của bạn</strong><p class="hint">Chạm để chọn từ bộ sưu tập.</p></div></div><label for="profile-name-input">Họ và tên</label><input id="profile-name-input" name="name" autocomplete="name" minlength="2" maxlength="64" required disabled><p class="hint">Tên và avatar dùng chung trên các thiết bị. Đơn đã ghi nhận vẫn giữ tên cũ.</p><button id="save-profile" class="primary full" type="submit" disabled>Đang kết nối…</button></form><p id="registration-note" class="hint">Nếu đã có Staff ID trên máy khác, hãy liên kết để giữ cùng hồ sơ.</p><p id="profile-edit-message" class="hint" role="status"></p>
+</dialog>
+<dialog id="devices-dialog" aria-labelledby="devices-title"><div class="dialog-head"><div><p class="eyebrow">Kết nối</p><h2 id="devices-title">Thiết bị của bạn</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng thiết bị">✕</button></div>
+ <div class="device"><span>Nền tảng</span><strong id="device-platform">—</strong></div><div class="device"><span>Trạng thái</span><strong id="device-status">Chưa liên kết</strong></div><div class="device"><span>Ngày tạo hồ sơ</span><strong id="created-at">—</strong></div>
+ <div class="panel-section"><h3>Dùng trên thiết bị khác</h3><p class="hint">Mã dùng một lần, hiệu lực 10 phút. Chỉ nhập trên thiết bị của bạn.</p><button id="issue-link" type="button" class="secondary full" disabled>Tạo mã liên kết</button><div id="code-panel" hidden><div id="link-code" class="link-code"></div><p id="code-expiry" class="hint"></p><button id="copy-code" class="secondary" type="button">Sao chép mã</button></div></div>
+ <details id="claim-section" class="panel-section"><summary>Liên kết hồ sơ có sẵn</summary><p id="claim-current" class="hint"></p><form id="link-form"><label for="claim-code">Mã từ thiết bị đã có hồ sơ</label><input id="claim-code" autocomplete="off" spellcheck="false" maxlength="36" pattern="[A-Fa-f0-9]{36}" placeholder="Dán mã liên kết 36 ký tự" required><label id="switch-confirm" class="check-row" hidden><input id="confirm-switch" type="checkbox"><span>Tôi đồng ý chuyển thiết bị này sang hồ sơ trong mã. Hồ sơ cũ được giữ nguyên.</span></label><button id="claim-link" class="primary full" type="submit" disabled>Liên kết hồ sơ có sẵn</button></form></details><p id="device-message" class="hint" role="status"></p>
+</dialog>
+<dialog id="style-dialog" aria-labelledby="style-title"><div class="dialog-head"><div><p class="eyebrow">Dấu ấn riêng</p><h2 id="style-title">Giao diện & hiệu ứng</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng giao diện">✕</button></div><label class="effect-setting" for="staff-flame-check"><span><strong>🔥 Tên phát sáng</strong><small>Mở khóa từ Level 3</small></span><input id="staff-flame-check" type="checkbox" disabled></label><div class="panel-section"><h3>Bộ sưu tập chủ đề</h3><p class="hint">Dark, Light, Gray luôn miễn phí. Chủ đề khác mở theo cấp độ.</p><div id="staff-theme-grid" class="theme-grid"></div></div><button type="button" class="primary full" id="staff-save-style" disabled>Lưu giao diện</button><p id="staff-style-info" class="hint" role="status"></p></dialog>
+<dialog id="rewards-dialog" aria-labelledby="rewards-title"><div class="dialog-head"><div><p class="eyebrow">Hành trình thăng hạng</p><h2 id="rewards-title">Các mốc phần thưởng</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng phần thưởng">✕</button></div><p class="hint">XP tích lũy theo Staff ID. Cấp độ cao nhất và phần thưởng đã mở được giữ khi có điều chỉnh XP.</p><div id="staff-reward-list" class="reward-list"></div><details class="panel-section"><summary>XP được tính như thế nào?</summary><p class="hint">1.000đ doanh thu hợp lệ = 1 XP. 0,1 điểm công việc = 1 XP. Dữ liệu lấy từ lịch sử đóng ca, chỉ cộng khi quản lý có quyền duyệt. Hồ sơ tự đăng ký chưa tham gia đối chiếu lịch sử.</p><p class="hint">Ngưỡng Level L = 5.000 × (L − 1)² XP. Cấp tối đa: 60. Doanh thu tính cho người mở bàn/người bán; công việc chỉ tính trên đơn hoàn tất.</p></details></dialog>
+<dialog id="legends-dialog" aria-labelledby="legends-title"><div class="dialog-head"><div><p class="eyebrow">Dolphin Hall of Fame</p><h2 id="legends-title">Legendary Wall</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng Legendary Wall">✕</button></div><p class="hint">Ghi dấu những nhân viên từng dẫn đầu Dolphin.</p><div id="staff-legend-board"><p class="empty-state">Chưa tải dữ liệu.</p></div></dialog>
+<dialog id="admin-dialog" aria-labelledby="admin-title"><div class="dialog-head"><div><p class="eyebrow">Quản lý</p><h2 id="admin-title">Duyệt XP nhân viên</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng duyệt XP">✕</button></div><div id="prestige-admin-mount"></div></dialog>
+<dialog id="avatar-dialog" aria-labelledby="avatar-title"><div class="dialog-head"><h2 id="avatar-title">Chọn avatar</h2><button id="close-avatars" class="icon-button" type="button" aria-label="Đóng bộ chọn avatar">✕</button></div><label for="avatar-category">Bộ sưu tập</label><select id="avatar-category"></select><div id="avatar-grid" class="avatar-grid"></div><p class="hint">Chọn avatar, rồi lưu hồ sơ để áp dụng.</p></dialog>
+</body></html>

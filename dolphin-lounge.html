@@ -1095,17 +1095,12 @@ window.saveCustomerName = async function(){
 
 window.executeSaveCustomerName = async function({table,dataToSave}){
   try{
-    let xpDeferred=false;
-    if(window.DolphinStaffId?.get()?.verified){
-      try{
-        const result=await window.DolphinStaffId.performLiveAction({kind:'lounge_tables',id:table,action:'booking',data:dataToSave});
-        window.showToast('Đã lưu bàn '+table+' · +'+Number(result.xpAwarded||0)+' XP','✅');
-        window.closeCustomerNameModal();return;
-      }catch(e){xpDeferred=true;console.warn('[Lounge] XP service failed; restoring normal table save:',e?.code||e?.message||e);}
-    }
     if(!db)throw Error('Chưa kết nối Firestore');
     await setDoc(doc(db,'lounge_tables',table), dataToSave, { merge: true }); 
-    window.showToast(xpDeferred?'Đã lưu bàn '+table+' · XP chưa đồng bộ':`Đã lưu bàn ${table}`,xpDeferred?'⚠️':'✅'); 
+    window.showToast(`Đã lưu bàn ${table}`,'✅');
+    if(window.DolphinStaffId?.syncSavedActivity)void window.DolphinStaffId.syncSavedActivity({kind:'lounge_tables',id:table})
+      .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP từ bàn '+table,'⭐');})
+      .catch(e=>console.warn('[Lounge XP] Đồng bộ sau lưu thất bại:',e?.code||e?.message||e)); 
     window.closeCustomerNameModal(); 
     Confetti.spawn(innerWidth/2, innerHeight/2, 40); 
   }
@@ -1235,14 +1230,6 @@ window.executeStaffAction = async function(name){
     const {orderId,nextStatus} = pa;
     const ref = doc(db,'lounge_orders',orderId);
     try{
-      let xpDeferred=false;
-      if(window.DolphinStaffId?.get()?.verified){
-        try{
-          const result=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
-          window.showToast('Đã cập nhật đơn · +'+Number(result.xpAwarded||0)+' XP','✅');
-          state.pendingAction=null;return;
-        }catch(e){xpDeferred=true;console.warn('[Lounge] XP service failed; restoring normal order update:',e?.code||e?.message||e);}
-      }
       await runTransaction(db, async tx=>{
         const d = await tx.get(ref);
         if(!d.exists()) throw "Đơn không tồn tại!";
@@ -1262,7 +1249,11 @@ window.executeStaffAction = async function(name){
         tx.update(ref, upd);
       });
       if(state.lastTransactionWarning){ window.showToast(state.lastTransactionWarning,"⚠️"); playNotificationAlert(); }
-      else { window.showToast(`Đã ghi nhận: ${name}`+(xpDeferred?' · XP chưa đồng bộ':''),xpDeferred?'⚠️':'📝'); if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100); }
+      else { window.showToast(`Đã ghi nhận: ${name}`,'📝'); if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100); }
+      if(nextStatus==='completed'&&window.DolphinStaffId?.syncSavedActivity)
+        void window.DolphinStaffId.syncSavedActivity({kind:'lounge_orders',id:orderId})
+          .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP hoàn thành đơn','⭐');})
+          .catch(e=>console.warn('[Lounge XP] Đơn đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e));
     } catch(e){ console.error('[Lounge order status]',orderId,nextStatus,e); window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra quyền Firestore'),"❌"); }
   } else { window.showToast(`Đã lưu tên: ${name}`,'📝'); renderAll(); }
   state.pendingAction=null;

@@ -1,0 +1,54 @@
+name: Read-only XP diagnosis for Lounge 20
+on:
+  push:
+    branches: [diagnostic/lounge20-xp-20261101]
+    paths: ['.github/workflows/diagnose-lounge20-xp.yml']
+permissions:
+  contents: read
+jobs:
+  inspect:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Authenticate Firebase service account
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - name: Read-only, redacted document and XP checks
+        run: |
+          npm install --prefix functions --no-audit --no-fund >/dev/null
+          cd functions
+          node - <<'NODE'
+          const {initializeApp}=require('firebase-admin/app');
+          const {getFirestore}=require('firebase-admin/firestore');
+          const {getDatabase}=require('firebase-admin/database');
+          initializeApp({projectId:'dolphin-f6d67',databaseURL:'https://dolphin-f6d67-default-rtdb.asia-southeast1.firebasedatabase.app'});
+          (async()=>{
+            const fs=getFirestore(),db=getDatabase();
+            const p=(await db.ref('staffRegistry/DOL-0001').once('value')).val();
+            const snap=await fs.collection('lounge_tables').doc('LOUNGE 20').get();
+            const t=snap.exists?snap.data():null;
+            const names=[p?.name,...(Array.isArray(p?.nameAliases)?p.nameAliases:[])].map(s=>String(s||'').normalize('NFC').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi-VN'));
+            const recorded=String(t?.openedByStaff||'').normalize('NFC').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi-VN');
+            const ledger=(await db.ref('staffXpLedger/DOL-0001').once('value')).val()||{};
+            const claims=(await db.ref('staffXpSaleClaims/loungue_tables').once('value')).val();
+            const orders=await fs.collection('lounge_orders').where('table','==','LOUNGE 20').limit(30).get();
+            const finished=orders.docs.filter(d=>d.data().status==='completed').length;
+            const userPax=Number(t?.pax)||0;
+            console.log(JSON.stringify({
+              profileExists:!!p,profileActive:!!p?.active,profileXp:Number(p?.xp)||0,
+              profileNameMatchesRecordedOpener:!!recorded&&names.includes(recorded),
+              openerHasStaffId:t?.openedByStaffId==='DOL-0001',
+              tableExists:!!t,tableHasOpener:!!recorded,pax:userPax,
+              paymentExcluded:['FOC','TA_UNPAID','KTOUR'].includes(String(t?.paymentMethod||'').trim().toUpperCase()),
+              ledgerEventCount:Object.keys(ledger).length,
+              lounge20OrdersCount:orders.docs.length,lounge20CompletedOrders:finished
+            },null,2));
+          })().catch(e=>{console.error('DIAGNOSTIC_ERROR',e.code||e.message);process.exit(1)});
+          NODE

@@ -72,6 +72,7 @@ window.DolphinStaffId={get:()=>identity,refresh,ready:connect,register:data=>cal
  update:data=>call('staffUpdateMyProfile',data),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
+ performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},
  open:()=>{if(typeof window.openApp==='function'){window.openApp('profile');return;}window.location.assign(profilePage);},
  openManager:()=>{render();document.getElementById('dolphinStaffIdPanel').style.display='flex';}};
 window.addEventListener('storage',e=>{if(e.key==='dolphinStaffProfile'&&api)refresh();});

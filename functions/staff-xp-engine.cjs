@@ -3,18 +3,114 @@
 const XP_PER_1000_VND=1;
 const XP_PER_POINT_TENTH=1;
 const MIN_LEVEL=1;
+const LEVEL_COEFFICIENT=5000;
 const MAX_LEVEL=60;
 const PERKS=Object.freeze([
- {level:1,id:'base-avatars',name:'Avatar cơ bản'},
- {level:3,id:'name-onflame',name:'Tên phát sáng (CSS onflame)'},
- {level:5,id:'avatar-ocean',name:'Avatar Ocean Collection'},
- {level:8,id:'theme-dolphin-ocean',name:'Dolphin Ocean Theme'},
- {level:10,id:'avatar-legends',name:'Avatar Legends Collection'},
- {level:12,id:'theme-dolphin-gold',name:'Dolphin Gold Theme'},
- {level:15,id:'onflame-advanced',name:'Hiệu ứng tên cao cấp'},
- {level:18,id:'theme-dolphin-neon',name:'Dolphin Neon Theme'},
- {level:22,id:'avatar-mythic',name:'Avatar Mythic Collection'},
- {level:28,id:'theme-dolphin-royal',name:'Dolphin Royal Theme'}
+ {
+  "level": 1,
+  "id": "base-avatars",
+  "name": "Avatar cơ bản"
+ },
+ {
+  "level": 3,
+  "id": "name-onflame",
+  "name": "Tên phát sáng"
+ },
+ {
+  "level": 5,
+  "id": "avatar-ocean",
+  "name": "Avatar Ocean"
+ },
+ {
+  "level": 8,
+  "id": "theme-default",
+  "name": "Theme default"
+ },
+ {
+  "level": 10,
+  "id": "theme-spring",
+  "name": "Theme spring"
+ },
+ {
+  "level": 10,
+  "id": "theme-summer",
+  "name": "Theme summer"
+ },
+ {
+  "level": 10,
+  "id": "theme-autumn",
+  "name": "Theme autumn"
+ },
+ {
+  "level": 10,
+  "id": "theme-winter",
+  "name": "Theme winter"
+ },
+ {
+  "level": 15,
+  "id": "avatar-legends",
+  "name": "Avatar Legends"
+ },
+ {
+  "level": 20,
+  "id": "theme-tet",
+  "name": "Theme tet"
+ },
+ {
+  "level": 20,
+  "id": "theme-valentine",
+  "name": "Theme valentine"
+ },
+ {
+  "level": 20,
+  "id": "theme-womenday",
+  "name": "Theme womenday"
+ },
+ {
+  "level": 20,
+  "id": "theme-reunification",
+  "name": "Theme reunification"
+ },
+ {
+  "level": 20,
+  "id": "theme-children",
+  "name": "Theme children"
+ },
+ {
+  "level": 20,
+  "id": "theme-nationalday",
+  "name": "Theme nationalday"
+ },
+ {
+  "level": 20,
+  "id": "theme-midautumn",
+  "name": "Theme midautumn"
+ },
+ {
+  "level": 25,
+  "id": "onflame-advanced",
+  "name": "Tên phát sáng cao cấp"
+ },
+ {
+  "level": 30,
+  "id": "theme-halloween",
+  "name": "Theme halloween"
+ },
+ {
+  "level": 30,
+  "id": "theme-christmas",
+  "name": "Theme christmas"
+ },
+ {
+  "level": 30,
+  "id": "theme-newyear",
+  "name": "Theme newyear"
+ },
+ {
+  "level": 40,
+  "id": "avatar-mythic",
+  "name": "Avatar Mythic"
+ }
 ]);
 function asNonnegativeInteger(x,label){
  if(typeof x!=='number'||!Number.isFinite(x)||x<0||!Number.isSafeInteger(x))throw Error(label+' phải là số nguyên không âm');
@@ -29,11 +125,11 @@ function workXP(points){return Number((asWorkPoints(points)*10*XP_PER_POINT_TENT
 function totalXP(revenueVnd,workPoints){return Number((revenueXP(revenueVnd)+workXP(workPoints)).toFixed(2));}
 function xpForLevel(level){
  if(!Number.isInteger(level)||level<1||level>MAX_LEVEL)throw Error('Cấp độ không hợp lệ');
- return 1000*(level-1)*(level-1);
+ return LEVEL_COEFFICIENT*(level-1)*(level-1);
 }
 function levelForXP(xp){
  if(typeof xp!=='number'||!Number.isFinite(xp)||xp<0)throw Error('XP không hợp lệ');
- return Math.min(MAX_LEVEL,Math.floor(Math.sqrt(xp/1000))+1);
+ return Math.min(MAX_LEVEL,Math.floor(Math.sqrt(xp/LEVEL_COEFFICIENT))+1);
 }
 function rankForLevel(level){
  if(level>=41)return 'Legend';

@@ -2,7 +2,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const fs=require('node:fs'),vm=require('node:vm');
 const engine=require('./staff-xp-engine.cjs');
-function harness(){
+function harness(options={}){
  const data=new Map([
   ['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',avatar:'🐬',active:true,xp:0}],
   ['staffIdentity/lanDevice',{employeeId:'DOL-0001',name:'Lan',verified:true}]
@@ -17,6 +17,13 @@ function harness(){
   set:async value=>{data.set(path,value);},
   remove:async()=>{data.delete(path);},
   transaction:async fn=>{
+   const isProfile=path==='staffRegistry/DOL-0001';
+   // Emulate RTDB's first local transaction callback receiving null before
+   // the server sends the existing active profile.
+   if(isProfile&&options.coldCacheProfile)fn(null);
+   if(isProfile&&options.removeBeforeServerRetry){
+    data.delete(path);
+   }
    const old=read(path),next=fn(old);
    if(next===undefined)return {committed:false,snapshot:{val:()=>old}};
    if(next===null)data.delete(path);else data.set(path,next);
@@ -70,4 +77,22 @@ test('personal premium theme requires server-side level and cannot be forged',as
  await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'does-not-exist'})),x=>x.code==='invalid-argument');
  const out=await api.staffSetPersonalStyle(req('lanDevice',{theme:'gray',nameFlame:false}));
  assert.equal(out.personalTheme,'gray');
+});
+
+test('cold-cache RTDB transaction still credits active profile exactly once',async()=>{
+ const {api,data}=harness({coldCacheProfile:true});
+ const payload={employeeId:'DOL-0001',eventId:'live:revenue:coldcache01',source:'revenue',amount:2500};
+ const result=await api._awardTrustedLiveXP(payload);
+ assert.equal(result.duplicate,false);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,2500);
+ const again=await api._awardTrustedLiveXP(payload);
+ assert.equal(again.duplicate,true);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,2500);
+});
+test('if active profile is deleted during transaction do not recreate it or leave XP ledger',async()=>{
+ const {api,data}=harness({coldCacheProfile:true,removeBeforeServerRetry:true});
+ const payload={employeeId:'DOL-0001',eventId:'live:revenue:removed01',source:'revenue',amount:1000};
+ await assert.rejects(()=>api._awardTrustedLiveXP(payload),e=>e.code==='internal');
+ assert.equal(data.has('staffRegistry/DOL-0001'),false);
+ assert.equal(data.has('staffXpLedger/DOL-0001/'+payload.eventId),false);
 });

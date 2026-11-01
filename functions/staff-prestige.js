@@ -106,12 +106,26 @@ async function awardVerifiedXP(req,data,options={}){
  const profileRef=db.ref('staffRegistry/'+employeeId);
  let progress,credited=false;
  try{
+  // RTDB transaction updater can receive an initial null even when this
+  // profile exists in the server. Aborting on that transient cold-cache null
+  // incorrectly reports an active profile as inactive and drops the XP award.
+  const prefetched=(await profileRef.once('value')).val();
+  if(!prefetched?.active)throw Error('Hồ sơ không còn hoạt động');
+  let firstUpdate=true;
   const tx=await profileRef.transaction(v=>{
-   if(!v?.active)return;
-   const xp=Math.max(0,Number(((Number(v.xp)||0)+amount).toFixed(2)));
-   return {...v,xp,levelPeak:Math.max(Number(v.levelPeak)||1,engine.levelForXP(xp)),updatedAt:Date.now()};
-  });
-  if(!tx.committed)throw Error('Hồ sơ không còn hoạt động');
+   const initial=firstUpdate;
+   firstUpdate=false;
+   // Only the first speculative callback may use the just-read server state.
+   // If a subsequent server update sees null (real deletion), abort safely.
+   const current=v===null&&initial?prefetched:v;
+   if(!current?.active)return;
+   const xp=Math.max(0,Number(((Number(current.xp)||0)+amount).toFixed(2)));
+   return {...current,xp,levelPeak:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp)),updatedAt:Date.now()};
+  },undefined,false);
+  if(!tx.committed){
+   const latest=(await profileRef.once('value')).val();
+   throw Error(latest?.active?'Không thể ghi XP do giao dịch dữ liệu bị gián đoạn':'Hồ sơ không còn hoạt động');
+  }
   credited=true;progress=expose(tx.snapshot.val());
   if(amount>0){
    const prev=engine.levelForXP(Math.max(0,Number((progress.xp-amount).toFixed(2))));

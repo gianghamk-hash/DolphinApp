@@ -32,8 +32,9 @@ async function rebuild(){
  const newChampion=top?{...top,title:'Dolphin Emperor',tiedWith:ties}:null;
  const changed=!!top&&previous?.employeeId!==top.employeeId;
  const announcement=changed?{id:'champion-'+top.employeeId+'-'+Date.now(),type:'champion',name:top.name,level:top.level,text:'👑 '+top.name+' đã trở thành Dolphin Emperor!',at:Date.now()}:null;
+ const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
  const current={champion:newChampion,
-  announcement:announcement||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
+  announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
   leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
@@ -105,6 +106,14 @@ async function awardVerifiedXP(req,data,options={}){
   });
   if(!tx.committed)throw Error('Hồ sơ không còn hoạt động');
   credited=true;progress=expose(tx.snapshot.val());
+  if(amount>0){
+   const prev=engine.levelForXP(Math.max(0,Number((progress.xp-amount).toFixed(2))));
+   if(Math.floor(progress.level/10)>Math.floor(prev/10)&&progress.level>=10){
+    const milestone=Math.floor(progress.level/10)*10;
+    await db.ref('staffPrestige/events/last').set({id:'milestone-'+employeeId+'-'+milestone,
+      type:'level',name:progress.name,level:milestone,text:'🌟 '+progress.name+' đã đạt Level '+milestone+'!',at:Date.now()});
+   }
+  }
  }catch(e){if(!credited)await ref.remove();throw new HttpsError('internal','Không thể cấp XP: '+e.message);}
  // Do not undo an already committed XP award if the public board refresh fails.
  if(!options.skipRebuild)try{await rebuild();}catch(e){console.error('[StaffPrestige] leaderboard refresh failed',e);}

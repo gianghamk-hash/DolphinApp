@@ -5,7 +5,7 @@ const themes={dark:'Dark',light:'Light',gray:'Gray',default:'🐬 Dolphin',sprin
 const themeLevels={default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30};
 const rewards=[[1,'Avatar cơ bản · Bronze'],[3,'Tên phát sáng OnFlame · Avatar Khám phá'],[5,'Bộ avatar Ocean'],[6,'Thăng hạng Silver'],[8,'Chủ đề Dolphin'],[10,'Bốn chủ đề mùa · Avatar Phiêu lưu'],[11,'Thăng hạng Gold'],[15,'Bộ avatar Legends'],[20,'Bảy chủ đề ngày lễ · Avatar Lễ hội'],[21,'Thăng hạng Platinum'],[25,'OnFlame cao cấp'],[30,'Halloween · Giáng Sinh · Tết Dương · Avatar Thần tốc'],[31,'Thăng hạng Diamond'],[40,'Bộ avatar Mythic'],[41,'Thăng hạng Legend'],[60,'Cấp độ tối đa']];
 const fmt=n=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2});
-let mine=null,board=null,expanded=false;
+let mine=null;
 function element(tag,text,className){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;}
 function renderRewards(){
  $('staff-reward-list').replaceChildren();
@@ -47,39 +47,14 @@ function renderMine(){
  $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&mine.level>=25);
  renderThemes();renderRewards();
 }
-function renderBoard(){
- if(!board)return;
- const ch=board.champion;
- $('staff-champion-info').textContent=ch?ch.name+' · Lv.'+ch.level+' · '+fmt(ch.xp)+' XP':'Chưa có nhân viên được vinh danh.';
- const rows=Array.isArray(board.leaderboard)?board.leaderboard:[];
- $('staff-rank-board').replaceChildren();
- for(const [i,p] of rows.slice(0,expanded?25:5).entries()){
-  const own=p.employeeId===window.DolphinStaffId?.get()?.employeeId;
-  const row=element('div',undefined,'rank-row'+(own?' is-me':''));
-  const name=element('span',p.name+(own?' · Bạn':''),'rank-name');name.appendChild(element('small',p.rank||'Dolphin Crew'));
-  const score=element('span','Lv.'+p.level,'rank-score');score.appendChild(element('small',fmt(p.xp)+' XP'));
-  row.append(element('span',i===0?'♛':String(i+1),'rank-position'),element('span',p.avatar||'🐬','rank-avatar'),name,score);
-  $('staff-rank-board').appendChild(row);
- }
- if(!rows.length)$('staff-rank-board').appendChild(element('p','Bảng xếp hạng sẽ cập nhật khi nhân viên nhận XP từ doanh thu và order hoàn thành.','empty-state'));
- $('staff-board-more').hidden=rows.length<=5;$('staff-board-more').textContent=expanded?'Thu gọn':'Xem thêm '+(Math.min(25,rows.length)-5)+' nhân viên';
- $('staff-legend-board').replaceChildren();
- for(const p of board.legends||[]){
-  const row=element('div',undefined,'rank-row'),name=element('span',p.name,'rank-name');
-  name.appendChild(element('small','Lần đầu dẫn đầu · '+new Date(p.firstAt).toLocaleDateString('vi-VN')));
-  row.append(element('span',p.avatar||'🏅','rank-avatar'),name,element('span','Lv.'+p.level,'rank-score'));$('staff-legend-board').appendChild(row);
- }
- if(!$('staff-legend-board').children.length)$('staff-legend-board').appendChild(element('p','Chưa có nhân viên được ghi danh.','empty-state'));
-}
 function showStatus(){
  const states=window.DolphinPrestige?.getStatus?.()||{},errors=Object.values(states).filter(x=>x.state==='error');
  $('staff-xp-retry').hidden=!errors.length;$('staff-xp-retry').disabled=Object.values(states).some(x=>x.state==='loading');
  $('staff-xp-status').textContent=errors.length?'Chưa cập nhật được dữ liệu. Vui lòng thử lại.':'';
- const personal=states.mine,publicStatus=states.board;
+ const personal=states.mine;
  if(personal?.state==='error'||personal?.state==='unlinked')$('staff-xp-summary').textContent=personal.message;
  $('staff-save-style').disabled=!mine||personal?.state!=='ready';
  $('staff-flame-check').disabled=!mine||mine.level<3||personal?.state!=='ready';
- if(publicStatus?.state==='error')$('staff-champion-info').textContent=publicStatus.message;
 }
 async function save(){
  if(!mine)return;
@@ -92,13 +67,11 @@ async function save(){
  }catch(e){$('staff-style-info').textContent='Không lưu được: '+e.message;}finally{btn.disabled=false;}
 }
 function init(){
- mine=window.DolphinPrestige?.getMine()||null;board=window.DolphinPrestige?.getBoard()||null;
+ mine=window.DolphinPrestige?.getMine()||null;
  $('staff-save-style').onclick=save;$('staff-xp-retry').onclick=()=>window.DolphinPrestige?.refresh();
- $('staff-board-more').onclick=()=>{expanded=!expanded;renderBoard();};
- renderMine();renderBoard();showStatus();
+ renderMine();showStatus();
 }
-window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;renderMine();renderBoard();showStatus();});
-window.addEventListener('dolphin-prestige-updated',e=>{board=e.detail;renderBoard();showStatus();});
+window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;renderMine();showStatus();});
 window.addEventListener('dolphin-prestige-status',showStatus);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

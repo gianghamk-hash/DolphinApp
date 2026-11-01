@@ -37,6 +37,32 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .week-bar .label{font-size:9.5px;color:#98dccb;font-weight:800;text-transform:uppercase;letter-spacing:.1em}
 .week-bar .value{font-size:13px;color:#FBD77A;font-weight:900;margin-top:2px}
 .week-bar .stat{font-size:10px;color:#bfe9dc;margin-top:4px;opacity:.75;font-weight:700}
+
+/* Fixed, non-overlay champion tiles: revenue / completed work / cumulative XP */
+.leaders-strip{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 16px}
+.leader-tile{display:flex;flex-direction:column;align-items:center;gap:5px;min-width:0;min-height:112px;padding:12px 7px;background:linear-gradient(155deg,#123c37,#09231f);border:1px solid #4b867656;border-radius:15px;color:#e9fff6;text-align:center;cursor:pointer;font:inherit}
+.leader-tile:focus-visible,.leader-tile:hover{outline:2px solid #fbd77a;outline-offset:2px}
+.leader-tile.emperor{background:linear-gradient(145deg,#392f18,#1a241d);border-color:#fbd77a88}
+.leader-tile-icon{font-size:24px;line-height:1}
+.leader-tile-heading{font-size:9px;font-weight:900;letter-spacing:.04em;color:#fbd77a;line-height:1.35}
+.leader-tile-name{width:100%;font-size:12px;font-weight:900;line-height:1.25;overflow-wrap:anywhere;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.leader-tile-value{font-size:10px;color:#a8e6da;font-weight:800}
+.level-card{margin-top:0}
+.level-intro{color:#a4ded0;font-size:11px;margin:3px 0 12px}
+.level-entry{display:flex;align-items:center;gap:9px;padding:12px 4px;border-bottom:1px solid #ffffff15;min-width:0}
+.level-entry:first-child{border-radius:11px;background:#fbd77a19}
+.level-entry.is-me{border-left:3px solid #fbd77a;padding-left:7px}
+.level-position{color:#fbd77a;min-width:23px;font-size:12px;text-align:center;font-weight:900}
+.level-avatar{width:38px;height:38px;background:#14332d;border-radius:12px;display:grid;place-items:center;font-size:24px;flex-shrink:0}
+.level-person{flex:1;min-width:0}.level-person strong{display:block;overflow-wrap:anywhere;font-size:12px}.level-person small{display:block;color:#97c8bc;font-size:10px}
+.level-score{text-align:right;min-width:66px;font-size:12px;color:#fbd77a;font-weight:900}.level-score small{display:block;color:#acd9cb;font-size:10px}
+.level-more{display:block;margin:12px auto 0;padding:9px 16px;border:1px solid #fbd77a66;background:#173631;color:#fbd77a;border-radius:10px;font:700 12px Nunito,sans-serif}
+.legendary-box{margin-top:16px;border-top:1px solid #ffffff1f;padding-top:15px}
+.legendary-box summary{cursor:pointer;color:#fbd77a;font-size:13px;font-weight:900;list-style-position:inside}
+.legendary-entry{padding:9px 2px;border-bottom:1px solid #ffffff15;font-size:12px}
+.legendary-entry small{color:#97c8bc;display:block}
+@media(max-width:400px){.leaders-strip{gap:6px}.leader-tile{min-height:113px;padding:10px 5px}.leader-tile-heading{font-size:8px}.leader-tile-name{font-size:11px}.leader-tile-value{font-size:9px}}
+@media(prefers-reduced-motion:reduce){.leader-tile{transition:none}}
 </style>
 <script src="../staff-sync.js" defer></script>
 <script src="../staff-id.js?v=1.1.31" defer></script>
@@ -64,9 +90,28 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     <div class="stat" id="week-stat"></div>
   </div>
 
+  <div class="leaders-strip" aria-label="Ba danh hiệu dẫn đầu">
+    <button class="leader-tile" type="button" data-rank-target="revenue" aria-label="Xem Top 1 doanh thu tuần">
+      <span class="leader-tile-icon" aria-hidden="true">💰</span><span class="leader-tile-heading">TOP 1 DOANH THU</span>
+      <span class="leader-tile-name" id="leader-revenue-name">Đang cập nhật</span>
+      <span class="leader-tile-value" id="leader-revenue-value">Tuần này</span>
+    </button>
+    <button class="leader-tile" type="button" data-rank-target="points" aria-label="Xem Top 1 điểm công việc tuần">
+      <span class="leader-tile-icon" aria-hidden="true">🏆</span><span class="leader-tile-heading">TOP 1 CÔNG VIỆC</span>
+      <span class="leader-tile-name" id="leader-work-name">Đang cập nhật</span>
+      <span class="leader-tile-value" id="leader-work-value">Tuần này</span>
+    </button>
+    <button class="leader-tile emperor" type="button" data-rank-target="level" aria-label="Xem Dolphin Emperor và bảng Level XP">
+      <span class="leader-tile-icon" id="leader-emperor-avatar" aria-hidden="true">👑</span><span class="leader-tile-heading">DOLPHIN EMPEROR</span>
+      <span class="leader-tile-name" id="leader-emperor-name">Chưa có danh hiệu</span>
+      <span class="leader-tile-value" id="leader-emperor-value">XP tích lũy</span>
+    </button>
+  </div>
+
   <div class="flex gap-2 mb-4">
     <button class="tab-btn active" data-main="revenue" onclick="switchMain('revenue')">💰 Doanh Thu</button>
     <button class="tab-btn" data-main="points" onclick="switchMain('points')">🏆 Điểm Công Việc</button>
+    <button class="tab-btn" data-main="level" onclick="switchMain('level')">👑 Level · XP</button>
   </div>
 
   <div id="section-revenue" class="glass rounded-2xl p-4">
@@ -97,10 +142,25 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
   </div>
 
+  <section id="section-level" class="glass rounded-2xl p-4 level-card" style="display:none" aria-labelledby="level-heading">
+    <div class="flex items-center justify-between mb-2 pb-3 border-b border-white/10">
+      <h2 id="level-heading" class="text-[13px] font-black text-yellow-300 uppercase tracking-widest">👑 Bảng xếp hạng Level · XP</h2>
+      <span class="text-[10px] text-teal-300 font-bold">Tích lũy</span>
+    </div>
+    <p class="level-intro">XP tích lũy theo Staff ID, không đặt lại mỗi tuần.</p>
+    <div id="level-board-list" aria-live="polite"><div class="loading">Đang tải nhân viên…</div></div>
+    <button type="button" id="level-board-more" class="level-more" hidden>Xem thêm</button>
+    <details class="legendary-box">
+      <summary>🏅 Legendary Wall — Vinh danh qua các mùa</summary>
+      <div id="level-legendary-list"><p class="empty">Chưa có nhân viên được ghi danh.</p></div>
+    </details>
+  </section>
+
 </main>
 
 <script src="../theme-system.js?v=1.1.31" defer></script>
 <script src="../rank-rewards.js?v=1.1.31"></script>
+<script src="./staff-prestige-ranking.js" defer></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -541,10 +601,13 @@ function renderAll(){
 }
 
 window.switchMain = function(tab){
+  if(!['revenue','points','level'].includes(tab))tab='revenue';
   state.mainTab = tab;
   document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.main === tab));
   $('section-revenue').style.display = tab === 'revenue' ? 'block' : 'none';
   $('section-points').style.display = tab === 'points' ? 'block' : 'none';
+  $('section-level').style.display = tab === 'level' ? 'block' : 'none';
+  if(location.hash.slice(1)!==tab)history.replaceState(null,'','#'+tab);
   renderAll();
 };
 
@@ -561,7 +624,8 @@ window.DolphinAvatars?.subscribe?.(()=>{renderRevenue();renderPoints();});
   state.weekEnd = range.end;
   const el = $('week-range');
   if (el) el.textContent = formatWeekRange(range.startDate, range.endDate);
-  renderAll();
+  window.switchMain(location.hash.slice(1));
+  window.addEventListener('hashchange',()=>window.switchMain(location.hash.slice(1)));
 })();
 </script>
 </body>

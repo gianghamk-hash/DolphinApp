@@ -107,7 +107,7 @@ function fromSession(source,docId,session,map){
 async function proposals(){
  const [registry, ...snapshots]=await Promise.all([
   getDatabase().ref('staffRegistry').once('value'),
-  ...Object.keys(sources).map(c=>getFirestore().collection(c).limit(120).get())
+  ...Object.keys(sources).map(c=>getFirestore().collection(c).orderBy('date','desc').limit(120).get())
  ]);
  const directory=nameDirectory(registry.val());
  const all=[];
@@ -121,11 +121,10 @@ exports.staffPreviewArchiveXP=onCall(opts,async req=>{
  assertManager(req);
  const events=await proposals(),ledger=getDatabase();
  const pending=[];
- // Avoid unbounded per-event reads: 120 candidate previews per click.
- for(const event of events.slice(0,120)){
-  const snap=await ledger.ref('staffXpLedger/'+event.employeeId+'/'+event.eventId).once('value');
-  if(!snap.exists())pending.push(event);
- }
+ // Parallel bounded reads; do not load historical ledgers of unrelated staff.
+ const candidates=events.slice(0,120);
+ const states=await Promise.all(candidates.map(e=>ledger.ref('staffXpLedger/'+e.employeeId+'/'+e.eventId).once('value')));
+ for(let i=0;i<candidates.length;i++)if(!states[i].exists())pending.push(candidates[i]);
  const totals={revenueXP:0,workXP:0};
  for(const e of pending)totals[e.source==='revenue'?'revenueXP':'workXP']+=e.amount;
  return {pending,pendingCount:pending.length,scanned:events.length,totals};

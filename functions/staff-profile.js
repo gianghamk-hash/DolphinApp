@@ -72,6 +72,8 @@ exports.staffGetAvatarDirectory=onCall(opts,async req=>{
  const profiles=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
  return {profiles:Object.values(profiles).filter(p=>p?.active&&p.employeeId&&p.name).map(p=>({
   employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
+  selectedFrame:['bronze','silver','gold','mythic'].includes(p.selectedFrame)?p.selectedFrame:'none',
+  selectedTitle:['rookie','wave','legend'].includes(p.selectedTitle)?p.selectedTitle:'none',
   nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(-10):[]
  }))};
 });

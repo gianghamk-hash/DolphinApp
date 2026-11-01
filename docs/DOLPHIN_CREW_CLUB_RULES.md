@@ -11,3 +11,24 @@ Hồ Sơ Nhân Viên, Level, XP, avatar, chủ đề, danh hiệu và bảng Lev
 - Giữ trải nghiệm đơn giản và vui vẻ; chỉ kiểm soát quyền ghi sao cho nhân viên khác không thể vô tình sửa XP hay hồ sơ của nhau.
 
 Quy ước này áp dụng khi phát triển, chỉnh sửa, kiểm thử và thiết kế UI cho Dolphin Crew Club.
+
+## Mốc phần thưởng thẩm mỹ
+
+- Level 3: 🔥 Tên phát sáng (`name_flame`)
+- Level 5: Khung avatar Bronze (`frame_bronze`)
+- Level 8: Chủ đề Dolphin (`theme_dolphin`)
+- Level 10: Bộ chủ đề 4 mùa (`theme_seasons`)
+- Level 12: Danh hiệu Rookie Star (`title_rookie`)
+- Level 15: Banner Sóng Biển (`banner_wave`)
+- Level 20: Bộ chủ đề lễ hội (`theme_festival`)
+- Level 22: Khung avatar Silver (`frame_silver`)
+- Level 25: Danh hiệu Wave Rider (`title_wave`)
+- Level 30: Bộ chủ đề đặc biệt (`theme_special`)
+- Level 35: Banner Ánh Kim (`banner_gold`)
+- Level 40: Khung avatar Gold (`frame_gold`)
+- Level 45: Tên gradient (`name_gradient`)
+- Level 50: Danh hiệu Dolphin Legend (`title_legend`)
+- Level 60: Khung avatar Mythic (`frame_mythic`)
+- Level 60: Banner Mythic (`banner_mythic`)
+
+Mở khóa tự động theo levelPeak; trang Hồ Sơ cho chọn khung, danh hiệu, banner và hiệu ứng đã đạt. Bộ quy tắc trung tâm nằm trong `functions/staff-xp-engine.cjs`, xác thực bởi `staffSetPersonalStyle`.

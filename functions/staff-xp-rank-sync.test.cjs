@@ -6,7 +6,7 @@ function fixture(){
  const data=new Map([['staffRegistry',reg],...Object.entries(reg).map(([id,p])=>['staffRegistry/'+id,p]),['staffIdentity/u1',{employeeId:'DOL-0001',verified:true}],['staffIdentity/u2',{employeeId:'DOL-0002',verified:false}]]),docs=new Map(),awards=[];
  class HttpsError extends Error{constructor(code,message){super(message);this.code=code}}
  const ref=key=>({once:async()=>({val:()=>data.get(key)||null}),transaction:async fn=>{const current=data.get(key)||null,next=fn(current);if(next===undefined)return {committed:false};data.set(key,next);return {committed:true}}});
- const mod={exports:{},Date,Map,Set,Object,Number,String,Math,console,process:{env:{}}};
+ const mod={exports:{},Date,Map,Set,Object,Number,String,Math,console,process:{env:{}}};mod.module={exports:mod.exports};
  mod.require=n=>{
   if(n==='node:crypto')return crypto;
   if(n==='firebase-functions/v2/https')return {onCall:(_,f)=>f,HttpsError};

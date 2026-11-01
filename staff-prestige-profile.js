@@ -15,7 +15,8 @@ function markup(){
  '<h2 style="margin-top:24px">🎨 Kho chủ đề</h2><p>Dark, Light, Gray luôn miễn phí. Các chủ đề gốc mở khóa theo Level và lưu riêng theo Staff ID.</p><div id="staff-theme-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:9px"></div>'+
  '<button type="button" class="primary" id="staff-save-style" style="margin-top:12px">Lưu đặc quyền</button><p id="staff-style-info" aria-live="polite"></p>'+
  '<h2 id="hall-of-fame" style="margin-top:24px">👑 Dolphin Hall of Fame</h2><div id="staff-champion-info">Đang tải...</div>'+
- '<h2 style="margin-top:20px">🏆 Bảng Level cao nhất</h2><div id="staff-rank-board"></div>';
+ '<h2 style="margin-top:20px">🏆 Bảng Level cao nhất</h2><div id="staff-rank-board"></div>'+ 
+ '<h2 style="margin-top:20px">🏅 Legendary Wall</h2><p>Những nhân viên từng đứng đầu Dolphin.</p><div id="staff-legend-board"></div>';
  document.querySelector('main')?.appendChild(el);
  $('staff-save-style').onclick=save;
 }
@@ -45,6 +46,12 @@ function render(){
   const row=document.createElement('div');row.style.cssText='padding:9px 2px;border-bottom:1px solid #ffffff25;font-size:13px';
   row.textContent=(i===0?'👑':(i+1)+'.')+' '+p.avatar+' '+p.name+' · Lv.'+p.level+' · '+fmt(p.xp)+' XP';
   $('staff-rank-board').appendChild(row);
+ }
+ $('staff-legend-board').replaceChildren();
+ for(const legend of (board?.legends||[])){
+  const el=document.createElement('div');el.style.cssText='border-bottom:1px solid #ffffff20;padding:8px 0;font-size:12px';
+  el.textContent='🏅 '+legend.avatar+' '+legend.name+' · Lv.'+legend.level+' · '+new Date(legend.firstAt).toLocaleDateString('vi-VN');
+  $('staff-legend-board').appendChild(el);
  }
 }
 async function save(){

@@ -1,7 +1,7 @@
 name: Deploy Dolphin XP from saved ranking records
 on:
   push:
-    branches: [main, fix/simple-xp-from-ranking-activity-20261101]
+    branches: [main, fix/staff-xp-self-reconcile-20261101]
     paths:
       - '.github/workflows/staff-xp-rank-sync-production.yml'
       - 'functions/staff-xp-rank-sync.js'

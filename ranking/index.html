@@ -63,6 +63,13 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 .legendary-entry small{color:#97c8bc;display:block}
 @media(max-width:400px){.leaders-strip{gap:6px}.leader-tile{min-height:113px;padding:10px 5px}.leader-tile-heading{font-size:8px}.leader-tile-name{font-size:11px}.leader-tile-value{font-size:9px}}
 @media(prefers-reduced-motion:reduce){.leader-tile{transition:none}}
+
+/* Three tabs must remain directly accessible on narrow Android screens. */
+.rank-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:16px}
+.rank-tabs .tab-btn{min-width:0;width:100%;padding:10px 5px;font-size:11px;line-height:1.25;white-space:normal;overflow-wrap:break-word}
+.rank-tabs .tab-btn.active{box-shadow:0 2px 11px rgba(244,184,66,.30)}
+.leader-tile-icon[data-staff-avatar]{display:grid;place-items:center;min-width:32px;height:32px;line-height:1;font-size:26px}
+@media(max-width:400px){.rank-tabs{gap:5px}.rank-tabs .tab-btn{font-size:10px;padding:9px 3px;letter-spacing:0}}
 </style>
 <script src="../staff-sync.js" defer></script>
 <script src="../staff-id.js?v=1.1.32" defer></script>
@@ -92,23 +99,23 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
   <div class="leaders-strip" aria-label="Ba danh hiệu dẫn đầu">
     <button class="leader-tile" type="button" data-rank-target="revenue" aria-label="Xem Top 1 doanh thu tuần">
-      <span class="leader-tile-icon" aria-hidden="true">💰</span><span class="leader-tile-heading">TOP 1 DOANH THU</span>
+      <span class="leader-tile-icon" id="leader-revenue-avatar" data-staff-avatar data-staff-name="" aria-hidden="true">💰</span><span class="leader-tile-heading">TOP 1 DOANH THU</span>
       <span class="leader-tile-name" id="leader-revenue-name">Đang cập nhật</span>
       <span class="leader-tile-value" id="leader-revenue-value">Tuần này</span>
     </button>
     <button class="leader-tile" type="button" data-rank-target="points" aria-label="Xem Top 1 điểm công việc tuần">
-      <span class="leader-tile-icon" aria-hidden="true">🏆</span><span class="leader-tile-heading">TOP 1 CÔNG VIỆC</span>
+      <span class="leader-tile-icon" id="leader-work-avatar" data-staff-avatar data-staff-name="" aria-hidden="true">🏆</span><span class="leader-tile-heading">TOP 1 CÔNG VIỆC</span>
       <span class="leader-tile-name" id="leader-work-name">Đang cập nhật</span>
       <span class="leader-tile-value" id="leader-work-value">Tuần này</span>
     </button>
     <button class="leader-tile emperor" type="button" data-rank-target="level" aria-label="Xem Dolphin Emperor và bảng Level XP">
-      <span class="leader-tile-icon" id="leader-emperor-avatar" aria-hidden="true">👑</span><span class="leader-tile-heading">DOLPHIN EMPEROR</span>
+      <span class="leader-tile-icon" id="leader-emperor-avatar" data-staff-avatar data-staff-name="" aria-hidden="true">👑</span><span class="leader-tile-heading">DOLPHIN EMPEROR</span>
       <span class="leader-tile-name" id="leader-emperor-name">Chưa có danh hiệu</span>
       <span class="leader-tile-value" id="leader-emperor-value">XP tích lũy</span>
     </button>
   </div>
 
-  <div class="flex gap-2 mb-4">
+  <div class="rank-tabs" role="group" aria-label="Chọn bảng xếp hạng">
     <button class="tab-btn active" data-main="revenue" onclick="switchMain('revenue')">💰 Doanh Thu</button>
     <button class="tab-btn" data-main="points" onclick="switchMain('points')">🏆 Điểm Công Việc</button>
     <button class="tab-btn" data-main="level" onclick="switchMain('level')">👑 Level · XP</button>
@@ -273,9 +280,12 @@ function staffNameKey(value){
   return cleanStaffName(value).toLocaleLowerCase('vi-VN');
 }
 // Resolve by verified Staff ID directory (and unique previous-name aliases), not by emoji fallback alone.
+function rankingStaffProfile(name){return window.DolphinAvatars?.profile?.(name)||null;}
 function rankingAvatar(name){
-  return esc(window.DolphinAvatars?.get(name)||'👤');
+  const profile=rankingStaffProfile(name);
+  return esc(window.DolphinAvatars?.get(name,profile?.employeeId)||'👤');
 }
+function rankingAvatarId(name){return esc(rankingStaffProfile(name)?.employeeId||'');}
 
 /* ════════ FIREBASE ════════ */
 try {
@@ -474,7 +484,7 @@ function renderRevenue(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" data-staff-avatar data-staff-name="${esc(e.name)}" style="width:34px;height:34px">${rankingAvatar(e.name)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}</div></span></div>
+        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" data-staff-avatar data-staff-name="${esc(e.name)}" data-staff-id="${rankingAvatarId(e.name)}" style="width:34px;height:34px">${rankingAvatar(e.name)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}</div></span></div>
         <div class="sub-count" style="text-align:left;opacity:.7">${lbl}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -560,7 +570,7 @@ function renderPoints(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        <div style="display:flex;align-items:center;gap:7px"><span class="dolphin-staff-avatar" data-staff-avatar data-staff-name="${esc(e.name)}">${rankingAvatar(e.name)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name,"work"):""}</div></span></div>
+        <div style="display:flex;align-items:center;gap:7px"><span class="dolphin-staff-avatar" data-staff-avatar data-staff-name="${esc(e.name)}" data-staff-id="${rankingAvatarId(e.name)}">${rankingAvatar(e.name)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name,"work"):""}</div></span></div>
         <div class="sub-count" style="text-align:left;opacity:.7">${totalOrders} đơn · ${e.both}✓ ${e.onlyComplete}🆘 ${e.onlyPrepare}⏳</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -617,6 +627,7 @@ window.goBack = function(){
 
 // A directory refresh repaints both leaderboard tabs without waiting for new orders.
 window.DolphinAvatars?.subscribe?.(()=>{renderRevenue();renderPoints();});
+window.DolphinAvatars?.refresh?.();
 /* ════════ INIT ════════ */
 (function init(){
   const range = getWeekRangeVN();

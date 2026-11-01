@@ -59,7 +59,13 @@ await rankFrame.evaluate(()=>{
 });
 assert.equal(await rankFrame.locator('#leader-emperor-name').textContent(),'Avatar Demo','Emperor card uses backend leaderboard');
 assert.equal(await rankFrame.locator('#leader-emperor-value').textContent(),'Lv.1 · 2.500 XP');
-await rankFrame.evaluate(source=>new Function('
+await rankFrame.evaluate(()=>{
+ window.switchMain=tab=>{
+  for(const button of document.querySelectorAll('.tab-btn'))button.classList.toggle('active',button.dataset.main===tab);
+  for(const name of ['revenue','points','level'])document.getElementById('section-'+name).style.display=name===tab?'block':'none';
+ };
+});
+await rankFrame.locator('[data-rank-target="level"]').click();
 assert.equal(await rankFrame.locator('#section-level').isVisible(),true,'Level tab is interactive');
 assert.equal(await rankFrame.locator('#level-board-list .level-entry').count(),2);
 assert.equal(await rankFrame.locator('#level-legendary-list .legendary-entry').count(),1);

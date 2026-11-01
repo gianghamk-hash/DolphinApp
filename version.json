@@ -1,7 +1,7 @@
 {
-  "version": "1.1.33",
-  "buildDate": "2026-11-01T14:36:03.146Z",
-  "commit": "3c1121b",
-  "notes": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars",
+  "version": "1.1.34",
+  "buildDate": "2026-11-01T15:00:08.434Z",
+  "commit": "a5f23fd",
+  "notes": "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions",
   "forceUpdate": false
 }

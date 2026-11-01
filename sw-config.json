@@ -1,5 +1,5 @@
 {
-  "version": "1.1.33",
+  "version": "1.1.34",
   "releaseDate": "2026-11-01",
-  "notes": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars"
+  "notes": "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions"
 }

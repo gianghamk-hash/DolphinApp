@@ -1,30 +1,30 @@
 {
-  "version": "1.1.33",
-  "previousVersion": "1.1.32",
-  "commit": "3c1121b",
-  "previousCommit": "04db497",
-  "buildDate": "2026-11-01T14:36:03.146Z",
-  "summary": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars",
+  "version": "1.1.34",
+  "previousVersion": "1.1.33",
+  "commit": "a5f23fd",
+  "previousCommit": "3c1121b",
+  "buildDate": "2026-11-01T15:00:08.434Z",
+  "summary": "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions",
   "changes": {
-    "totalCommits": 257,
+    "totalCommits": 258,
     "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars"
+    "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions"
   ],
   "fileChanges": [
     {
-      "file": "ranking/index.html",
+      "file": ".github/workflows/staff-style-unlock-production.yml",
       "type": "update"
     },
     {
-      "file": "ranking/staff-prestige-ranking.js",
+      "file": "functions/staff-prestige.js",
       "type": "update"
     },
     {
-      "file": "scripts/avatar-sync-browser.cjs",
+      "file": "functions/staff-prestige.test.cjs",
       "type": "update"
     }
   ]

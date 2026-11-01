@@ -34,7 +34,7 @@ jobs:
         run: |
           test -n "$FIREBASE_CREDENTIALS" || { echo "::error::Missing FIREBASE_SERVICE_ACCOUNT_DOLPHIN"; exit 1; }
           test -n "$STAFF_ADMIN_UIDS" || { echo "::error::Missing STAFF_ADMIN_UIDS"; exit 1; }
-          node -e "const f=require('./.firebaserc'); if(f.projects.default!=='dolphin-f6d67')process.exit(1)"
+          node -e "const fs=require('node:fs'); const f=JSON.parse(fs.readFileSync('.firebaserc','utf8')); if(f.projects?.default!=='dolphin-f6d67'){console.error('::error::Expected Firebase project dolphin-f6d67'); process.exit(1)}"
       - name: Authenticate to Google Cloud
         uses: google-github-actions/auth@v2
         with:

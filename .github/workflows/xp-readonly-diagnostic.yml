@@ -1,0 +1,26 @@
+name: Read-only diagnosis of Lounge XP
+on:
+  push:
+    branches: [diagnostics/xp-lounge20-readonly-20261101]
+    paths:
+      - 'scripts/xp-diagnostic-readonly.cjs'
+      - '.github/workflows/xp-readonly-diagnostic.yml'
+permissions:
+  contents: read
+jobs:
+  diagnose:
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - run: npm install --prefix functions --no-audit --no-fund
+      - name: Inspect only operational record and XP summaries (no data mutations)
+        run: node scripts/xp-diagnostic-readonly.cjs

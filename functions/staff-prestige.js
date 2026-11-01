@@ -1,5 +1,6 @@
 'use strict';
 const {getDatabase}=require('firebase-admin/database');
+const {getFirestore}=require('firebase-admin/firestore');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const engine=require('./staff-xp-engine.cjs');
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
@@ -39,6 +40,9 @@ async function rebuild(){
   leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
+ // Small Firestore signal for instant profile refresh, not an XP authority.
+ try{await getFirestore().doc('staff_xp_updates/public').set({updatedAt:current.updatedAt});}
+ catch(e){console.warn('[StaffPrestige] realtime signal unavailable:',e.message);}
  return current;
 }
 exports.staffGetPrestige=onCall(opts,async req=>{

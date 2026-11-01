@@ -1,7 +1,7 @@
 /* Dolphin Staff Prestige: public champion card, private progress and profile perks. */
 (function(){
 'use strict';
-let api=null,me=null,publicBoard=null,refreshing=false;
+let api=null,me=null,publicBoard=null,refreshing=false,signalUnsubscribe=null;
 const statuses={};
 function status(scope,state,message=''){
  statuses[scope]={scope,state,message};
@@ -97,13 +97,30 @@ async function refresh(){
  finally{refreshing=false;}
 }
 window.DolphinPrestige={refresh,getBoard:()=>publicBoard,getMine:()=>me,getStatus:()=>statuses,call:async(name,data)=>(await connect())(name,data)};
+async function subscribeProfileSignal(){
+ if(!/dolphin-profile\.html$/.test(location.pathname))return;
+ try{
+  await connect();
+  const [fb,fs]=await Promise.all([
+   import('https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js'),
+   import('https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js')]);
+  const app=fb.getApp('staff-identity-app');
+  let last=null;
+  signalUnsubscribe=fs.onSnapshot(fs.doc(fs.getFirestore(app),'staff_xp_updates','public'),snap=>{
+   const next=Number(snap.data()?.updatedAt||0);
+   if(last===null){last=next;return;}
+   if(next&&next!==last){last=next;refresh();}
+  },e=>console.warn('[Prestige] Live signal unavailable; periodic refresh remains active.',e.code||e.message));
+ }catch(e){console.warn('[Prestige] Live subscription unavailable:',e.message);}
+}
 function start(){
- injectStyle();refresh();
- // Keep fleet-wide polling light; profile view refreshes in ~15 s for automatic server XP.
- setInterval(refresh,/dolphin-profile\.html$/.test(location.pathname)?15000:120000);
+ injectStyle();refresh();subscribeProfileSignal();
+ // A realtime notification updates visible profiles; two-minute polling is the fallback.
+ setInterval(refresh,120000);
  window.addEventListener('dolphin-staff-id-changed',refresh);
  window.addEventListener('focus',refresh);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)refresh();});
+ window.addEventListener('pagehide',()=>{signalUnsubscribe?.();signalUnsubscribe=null;});
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();

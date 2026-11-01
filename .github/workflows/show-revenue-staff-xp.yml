@@ -1,0 +1,27 @@
+name: Dolphin Show Revenue and Staff XP
+on:
+  pull_request:
+    paths:
+      - 'ranking/index.html'
+      - 'ranking/work-points.test.js'
+      - 'functions/staff-xp-engine.cjs'
+      - 'functions/staff-xp-engine.test.cjs'
+      - '.github/workflows/show-revenue-staff-xp.yml'
+  push:
+    paths:
+      - 'ranking/index.html'
+      - 'ranking/work-points.test.js'
+      - 'functions/staff-xp-engine.cjs'
+      - 'functions/staff-xp-engine.test.cjs'
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Revenue ranking regression
+        run: node --test ranking/work-points.test.js
+      - name: Staff XP calculation and perk thresholds
+        run: node --test functions/staff-xp-engine.test.cjs

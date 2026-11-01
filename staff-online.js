@@ -640,7 +640,7 @@
                 lastSeen: data.lastSeen,
                 startedAt: data.startedAt || data.lastSeen,
                 platform: data.platform || 'web',
-                staffId: typeof data.staffId==='string'&&/^DOL-[0-9]{4,6}$/.test(data.staffId)?data.staffId:null
+                staffId: typeof data.staffId==='string'&&/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(data.staffId)?data.staffId:null
               });
             }
           });

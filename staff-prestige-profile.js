@@ -1,96 +1,104 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id);
-const themeNames={default:'🐬 Dolphin',spring:'🌸 Mùa Xuân',summer:'☀️ Mùa Hè',autumn:'🍁 Mùa Thu',winter:'❄️ Mùa Đông',tet:'🧧 Tết',valentine:'💝 Valentine',womenday:'🌷 Phụ Nữ',reunification:'⭐ 30/4',children:'🎈 Thiếu Nhi',nationalday:'⭐ Quốc Khánh',midautumn:'🏮 Trung Thu',halloween:'🎃 Halloween',christmas:'🎄 Giáng Sinh',newyear:'🎊 Tết Dương Lịch'};
+const themes={dark:'Dark',light:'Light',gray:'Gray',default:'🐬 Dolphin',spring:'🌸 Mùa Xuân',summer:'☀️ Mùa Hè',autumn:'🍁 Mùa Thu',winter:'❄️ Mùa Đông',tet:'🧧 Tết',valentine:'💝 Valentine',womenday:'🌷 Phụ Nữ',reunification:'⭐ 30/4',children:'🎈 Thiếu Nhi',nationalday:'⭐ Quốc Khánh',midautumn:'🏮 Trung Thu',halloween:'🎃 Halloween',christmas:'🎄 Giáng Sinh',newyear:'🎊 Tết Dương Lịch'};
 const themeLevels={default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30};
-let mine=null,board=null;
+const rewards=[[1,'Avatar cơ bản · Bronze'],[3,'Tên phát sáng OnFlame'],[5,'Bộ avatar Ocean'],[6,'Thăng hạng Silver'],[8,'Chủ đề Dolphin'],[10,'Bốn chủ đề mùa'],[11,'Thăng hạng Gold'],[15,'Bộ avatar Legends'],[20,'Bảy chủ đề ngày lễ'],[21,'Thăng hạng Platinum'],[25,'OnFlame cao cấp'],[30,'Halloween · Giáng Sinh · Tết Dương'],[31,'Thăng hạng Diamond'],[40,'Bộ avatar Mythic'],[41,'Thăng hạng Legend'],[60,'Cấp độ tối đa']];
 const fmt=n=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2});
-function markup(){
- if($('staff-progress-card'))return;
- const el=document.createElement('section');el.className='card';el.id='staff-progress-card';
- el.style.cssText='margin-top:20px';
- el.innerHTML='<h2>⭐ Dolphin Level & Rewards</h2><div id="staff-xp-summary">Đang tải cấp độ...</div>'+
- '<div id="staff-xp-track" style="background:#ffffff23;border-radius:10px;height:12px;margin:12px 0;overflow:hidden"><div id="staff-xp-fill" style="height:100%;width:0;background:linear-gradient(90deg,#f4b842,#fff1a4)"></div></div>'+
- '<h2 style="margin-top:24px">🔥 Tên phát sáng</h2><label style="display:flex;gap:10px;align-items:center"><input id="staff-flame-check" type="checkbox"> Kích hoạt OnFlame (mở ở Lv.3)</label>'+
- '<h2 style="margin-top:24px">🎨 Kho chủ đề</h2><p>Dark, Light, Gray luôn miễn phí. Các chủ đề gốc mở khóa theo Level và lưu riêng theo Staff ID.</p><div id="staff-theme-grid" style="display:grid;grid-template-columns:repeat(auto-fill,minmax(136px,1fr));gap:9px"></div>'+
- '<button type="button" class="primary" id="staff-save-style" style="margin-top:12px" disabled>Lưu đặc quyền</button><p id="staff-style-info" aria-live="polite"></p>'+
- '<p id="staff-xp-status" role="status"></p><button type="button" class="secondary" id="staff-xp-retry" hidden>Thử tải lại XP và bảng vinh danh</button>'+
- '<h2 id="hall-of-fame" style="margin-top:24px">👑 Dolphin Hall of Fame</h2><div id="staff-champion-info">Đang tải...</div>'+
- '<h2 style="margin-top:20px">🏆 Bảng Level cao nhất</h2><div id="staff-rank-board"></div>'+ 
- '<h2 style="margin-top:20px">🏅 Legendary Wall</h2><p>Những nhân viên từng đứng đầu Dolphin.</p><div id="staff-legend-board"></div>';
- document.querySelector('main')?.appendChild(el);
- $('staff-save-style').onclick=save;
- $('staff-flame-check').disabled=true;
- $('staff-xp-retry').onclick=()=>window.DolphinPrestige?.refresh();
- for(const value of Object.values(window.DolphinPrestige?.getStatus?.()||{}))showStatus(value);
-}
-function showStatus(value){
- if(!$('staff-progress-card'))return;
- const states=window.DolphinPrestige?.getStatus?.()||{};
- const errors=Object.values(states).filter(x=>x.state==='error');
- $('staff-xp-retry').hidden=!errors.length;
- $('staff-xp-retry').disabled=Object.values(states).some(x=>x.state==='loading');
- $('staff-xp-status').textContent=errors.length?'Chưa cập nhật được dữ liệu. Bạn có thể thử tải lại.':'';
- if(value.scope==='mine'){
-  $('staff-save-style').disabled=value.state!=='ready';
-  $('staff-flame-check').disabled=value.state!=='ready'||!mine||mine.level<3;
-  if(value.state==='error'||value.state==='unlinked')$('staff-xp-summary').textContent=value.message;
-  else if(value.state==='loading'&&!mine)$('staff-xp-summary').textContent='Đang tải cấp độ...';
- }
- if(value.scope==='board'){
-  if(value.state==='error')$('staff-champion-info').textContent=value.message;
-  else if(value.state==='loading'&&!board)$('staff-champion-info').textContent='Đang tải...';
+let mine=null,board=null,expanded=false;
+function element(tag,text,className){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;}
+function renderRewards(){
+ $('staff-reward-list').replaceChildren();
+ for(const [level,label] of rewards){
+  const open=!!mine&&mine.level>=level,row=element('div',undefined,'reward-row'+(open?' unlocked':''));
+  const body=element('div');body.append(element('strong',label),element('small',fmt(5000*(level-1)**2)+' XP tích lũy'));
+  row.append(element('span','Lv.'+level,'reward-level'),body,element('span',open?'Đã mở':mine?'Chưa mở':'—','reward-state'));
+  $('staff-reward-list').appendChild(row);
  }
 }
-function render(){
- markup();
- if(mine){
-  $('staff-xp-summary').textContent='Lv. '+mine.level+' · '+mine.rank+' · '+fmt(mine.xp)+' XP tích lũy vĩnh viễn';
+function renderThemes(){
+ const chosen=document.querySelector('input[name="staff-theme"]:checked')?.value;
+ const preserve=$('style-dialog').open&&chosen;
+ $('staff-theme-grid').replaceChildren();
+ for(const [id,label] of Object.entries(themes)){
+  const level=themeLevels[id]||1,open=!!mine&&mine.level>=level;
+  const item=element('label',undefined,'theme-option'+(open?'':' is-locked'));
+  const input=document.createElement('input');input.type='radio';input.name='staff-theme';input.value=id;input.disabled=!open;
+  input.checked=(preserve?chosen:mine?.personalTheme||'dark')===id;
+  const copy=element('span',label);copy.appendChild(element('small',open?'Đã mở':level===1?'Cần liên kết hồ sơ':'Mở tại Lv.'+level));
+  item.append(input,copy);$('staff-theme-grid').appendChild(item);
+ }
+}
+function renderMine(){
+ if(!mine){
+  $('staff-level-tag').textContent='LEVEL —';$('staff-next-level').textContent='XP được lưu theo Staff ID';
+  $('staff-xp-fill').style.width='0%';$('staff-xp-track').setAttribute('aria-valuenow','0');
+ }else{
+  $('staff-level-tag').textContent='LEVEL '+mine.level;
+  $('staff-xp-summary').textContent=mine.rank+' · '+fmt(mine.xp)+' XP tích lũy';
   const floor=5000*(mine.level-1)**2,ceil=5000*mine.level**2;
-  $('staff-xp-fill').style.width=mine.level>=60?'100%':Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)))+'%';
-  $('staff-flame-check').disabled=mine.level<3;
-  $('staff-flame-check').checked=mine.nameFlame&&mine.level>=3;
-  const themes={dark:'Dark',light:'Light',gray:'Gray',...themeNames};
-  $('staff-theme-grid').replaceChildren();
-  const selected=mine.personalTheme||'dark';
-  for(const [id,label] of Object.entries(themes)){
-   const level=themeLevels[id]||1,open=mine.level>=level;
-   const input=document.createElement('input');input.type='radio';input.name='staff-theme';input.value=id;input.disabled=!open;input.checked=selected===id;
-   const item=document.createElement('label');item.style.cssText='border:1px solid #ffffff39;border-radius:12px;padding:10px;display:flex;gap:7px;align-items:center;font-size:12px;cursor:pointer';
-   const span=document.createElement('span');span.textContent=label+(open?'':' 🔒 Lv.'+level);item.append(input,span);$('staff-theme-grid').append(item);
-  }
-  const p=$('profile-name');if(p)p.classList.toggle('onflame',mine.nameFlame&&mine.level>=3);
+  const percent=mine.level>=60?100:Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)));
+  $('staff-xp-fill').style.width=percent+'%';$('staff-xp-track').setAttribute('aria-valuenow',String(Math.round(percent)));
+  $('staff-next-level').textContent=mine.level>=60?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1);
  }
+ if(!$('style-dialog').open)$('staff-flame-check').checked=!!mine?.nameFlame&&mine.level>=3;
+ $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||mine.level<3;
+ $('profile-name').classList.toggle('onflame',!!mine?.nameFlame&&mine.level>=3);
+ $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&mine.level>=25);
+ renderThemes();renderRewards();
+}
+function renderBoard(){
  if(!board)return;
- const ch=board?.champion;
- $('staff-champion-info').textContent=ch?'👑 '+ch.name+' · Lv. '+ch.level+' · '+fmt(ch.xp)+' XP':'Chưa có nhân viên được vinh danh.';
+ const ch=board.champion;
+ $('staff-champion-info').textContent=ch?ch.name+' · Lv.'+ch.level+' · '+fmt(ch.xp)+' XP':'Chưa có nhân viên được vinh danh.';
+ const rows=Array.isArray(board.leaderboard)?board.leaderboard:[];
  $('staff-rank-board').replaceChildren();
- for(const [i,p] of (board?.leaderboard||[]).slice(0,10).entries()){
-  const row=document.createElement('div');row.style.cssText='padding:9px 2px;border-bottom:1px solid #ffffff25;font-size:13px';
-  row.textContent=(i===0?'👑':(i+1)+'.')+' '+p.avatar+' '+p.name+' · Lv.'+p.level+' · '+fmt(p.xp)+' XP';
+ for(const [i,p] of rows.slice(0,expanded?25:5).entries()){
+  const own=p.employeeId===window.DolphinStaffId?.get()?.employeeId;
+  const row=element('div',undefined,'rank-row'+(own?' is-me':''));
+  const name=element('span',p.name+(own?' · Bạn':''),'rank-name');name.appendChild(element('small',p.rank||'Dolphin Crew'));
+  const score=element('span','Lv.'+p.level,'rank-score');score.appendChild(element('small',fmt(p.xp)+' XP'));
+  row.append(element('span',i===0?'♛':String(i+1),'rank-position'),element('span',p.avatar||'🐬','rank-avatar'),name,score);
   $('staff-rank-board').appendChild(row);
  }
+ if(!rows.length)$('staff-rank-board').appendChild(element('p','Bảng xếp hạng sẽ cập nhật sau khi quản lý duyệt XP.','empty-state'));
+ $('staff-board-more').hidden=rows.length<=5;$('staff-board-more').textContent=expanded?'Thu gọn':'Xem thêm '+(Math.min(25,rows.length)-5)+' nhân viên';
  $('staff-legend-board').replaceChildren();
- for(const legend of (board?.legends||[])){
-  const el=document.createElement('div');el.style.cssText='border-bottom:1px solid #ffffff20;padding:8px 0;font-size:12px';
-  el.textContent='🏅 '+legend.avatar+' '+legend.name+' · Lv.'+legend.level+' · '+new Date(legend.firstAt).toLocaleDateString('vi-VN');
-  $('staff-legend-board').appendChild(el);
+ for(const p of board.legends||[]){
+  const row=element('div',undefined,'rank-row'),name=element('span',p.name,'rank-name');
+  name.appendChild(element('small','Lần đầu dẫn đầu · '+new Date(p.firstAt).toLocaleDateString('vi-VN')));
+  row.append(element('span',p.avatar||'🏅','rank-avatar'),name,element('span','Lv.'+p.level,'rank-score'));$('staff-legend-board').appendChild(row);
  }
+ if(!$('staff-legend-board').children.length)$('staff-legend-board').appendChild(element('p','Chưa có nhân viên được ghi danh.','empty-state'));
+}
+function showStatus(){
+ const states=window.DolphinPrestige?.getStatus?.()||{},errors=Object.values(states).filter(x=>x.state==='error');
+ $('staff-xp-retry').hidden=!errors.length;$('staff-xp-retry').disabled=Object.values(states).some(x=>x.state==='loading');
+ $('staff-xp-status').textContent=errors.length?'Chưa cập nhật được dữ liệu. Vui lòng thử lại.':'';
+ const personal=states.mine,publicStatus=states.board;
+ if(personal?.state==='error'||personal?.state==='unlinked')$('staff-xp-summary').textContent=personal.message;
+ $('staff-save-style').disabled=!mine||personal?.state!=='ready';
+ $('staff-flame-check').disabled=!mine||mine.level<3||personal?.state!=='ready';
+ if(publicStatus?.state==='error')$('staff-champion-info').textContent=publicStatus.message;
 }
 async function save(){
  if(!mine)return;
- const theme=document.querySelector('input[name="staff-theme"]:checked')?.value||'dark';
+ const theme=document.querySelector('input[name="staff-theme"]:checked')?.value||mine.personalTheme||'dark';
  const btn=$('staff-save-style');btn.disabled=true;
  try{
-  const data=await window.DolphinPrestige.call('staffSetPersonalStyle',{theme,nameFlame:$('staff-flame-check').checked});
-  mine=data;localStorage.setItem('dolphin_personal_theme',data.personalTheme);
-  if(window.ThemeSystem?.setTheme)window.ThemeSystem.setTheme(data.personalTheme);
-  $('staff-style-info').textContent='✓ Đã lưu đặc quyền theo Staff ID.';
-  render();
+  mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{theme,nameFlame:$('staff-flame-check').checked});
+  try{localStorage.setItem('dolphin_personal_theme',mine.personalTheme);}catch(_){}
+  window.ThemeSystem?.setTheme(mine.personalTheme);$('staff-style-info').textContent='Đã lưu giao diện theo Staff ID.';renderMine();
  }catch(e){$('staff-style-info').textContent='Không lưu được: '+e.message;}finally{btn.disabled=false;}
 }
-window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;render();});
-window.addEventListener('dolphin-prestige-updated',e=>{board=e.detail;render();});
-window.addEventListener('dolphin-prestige-status',e=>{markup();showStatus(e.detail);});
-if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',markup);else markup();
+function init(){
+ mine=window.DolphinPrestige?.getMine()||null;board=window.DolphinPrestige?.getBoard()||null;
+ $('staff-save-style').onclick=save;$('staff-xp-retry').onclick=()=>window.DolphinPrestige?.refresh();
+ $('staff-board-more').onclick=()=>{expanded=!expanded;renderBoard();};
+ renderMine();renderBoard();showStatus();
+}
+window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;renderMine();renderBoard();showStatus();});
+window.addEventListener('dolphin-prestige-updated',e=>{board=e.detail;renderBoard();showStatus();});
+window.addEventListener('dolphin-prestige-status',showStatus);
+if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

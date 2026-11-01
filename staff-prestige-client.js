@@ -97,6 +97,6 @@ async function refresh(){
  finally{refreshing=false;}
 }
 window.DolphinPrestige={refresh,getBoard:()=>publicBoard,getMine:()=>me,getStatus:()=>statuses,call:async(name,data)=>(await connect())(name,data)};
-function start(){refresh();setInterval(refresh,120000);window.addEventListener('dolphin-staff-id-changed',refresh);}
+function start(){injectStyle();refresh();setInterval(refresh,120000);window.addEventListener('dolphin-staff-id-changed',refresh);}
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',start);else start();
 })();

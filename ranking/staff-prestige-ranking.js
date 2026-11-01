@@ -19,6 +19,7 @@ function topTile(kind,nameId,valueId){
   icon.dataset.staffName=leader?.name||'';
   icon.dataset.staffId=profile?.employeeId||'';
   icon.textContent=leader?.name?displayAvatar(leader.name,profile?.employeeId,kind==='revenue'?'💰':'🏆'):kind==='revenue'?'💰':'🏆';
+  icon.dataset.frame=profile?.selectedFrame||'none';
  }
 }
 function renderTiles(){
@@ -26,6 +27,7 @@ function renderTiles(){
  topTile('work','leader-work-name','leader-work-value');
  const champion=board?.champion;
  text('leader-emperor-avatar',champion?displayAvatar(champion.name,champion.employeeId,champion.avatar):'👑');
+ $('leader-emperor-avatar').dataset.frame=champion?.selectedFrame||'none';
  text('leader-emperor-name',champion?.name||'Chưa có danh hiệu');
  text('leader-emperor-value',champion?'Lv.'+Number(champion.level||1)+' · '+fmt(champion.xp)+' XP':'XP tích lũy');
 }
@@ -44,7 +46,10 @@ function renderLevel(){
   const rank=el('span','level-position',i===0?'♛':i+1);
   const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=p.selectedFrame||'none';
   const person=el('span','level-person');
-  person.append(el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':'')),el('small','level-person-rank',({rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'})[p.selectedTitle]||p.rank||'Dolphin Crew'));
+  const nameLabel=el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':''));
+  nameLabel.classList.toggle('crew-name-flame',!!p.nameFlame);
+  nameLabel.classList.toggle('crew-name-gradient',!!p.nameGradient);
+  person.append(nameLabel,el('small','level-person-rank',({rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'})[p.selectedTitle]||p.rank||'Dolphin Crew'));
   const score=el('span','level-score','Lv.'+Number(p.level||1));
   score.append(el('small','level-score-xp',fmt(p.xp)+' XP'));
   item.append(rank,avatar,person,score);list.append(item);

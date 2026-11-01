@@ -31,6 +31,6 @@ test('perks activate only after meeting corresponding level threshold',()=>{
  assert(!e.progress(19999).unlocked.includes('name-onflame'));
  assert(e.progress(20000).unlocked.includes('name-onflame'));
  assert(!e.progress(e.xpForLevel(7)).unlocked.includes('theme-default'));
- assert(e.progress(e.xpForLevel(8)).unlocked.includes('theme-dolphin-ocean'));
+ assert(e.progress(e.xpForLevel(8)).unlocked.includes('theme-default'));
  assert.equal(e.progress(0).rank,'Bronze');
 });

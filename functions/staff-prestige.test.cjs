@@ -96,3 +96,29 @@ test('if active profile is deleted during transaction do not recreate it or leav
  assert.equal(data.has('staffRegistry/DOL-0001'),false);
  assert.equal(data.has('staffXpLedger/DOL-0001/'+payload.eventId),false);
 });
+
+test('Level 5 may save name flame and Light theme after RTDB cold-cache null',async()=>{
+ const {api,data}=harness({coldCacheProfile:true});
+ const existing=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...existing,xp:80000,levelPeak:5});
+ const result=await api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true}));
+ assert.equal(result.level,5);
+ assert.equal(result.nameFlame,true);
+ assert.equal(result.personalTheme,'light');
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,80000);
+ assert.equal(data.get('staffRegistry/DOL-0001').nameFlame,true);
+});
+test('style transaction cannot restore a profile deleted during server retry',async()=>{
+ const {api,data}=harness({coldCacheProfile:true,removeBeforeServerRetry:true});
+ const existing=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...existing,xp:80000,levelPeak:5});
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true})),
+  e=>e.code==='failed-precondition');
+ assert.equal(data.has('staffRegistry/DOL-0001'),false);
+});
+test('server still rejects name flame below Level 3',async()=>{
+ const {api,data}=harness({coldCacheProfile:true});
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true})),
+  e=>e.code==='permission-denied');
+ assert.equal(data.get('staffRegistry/DOL-0001').nameFlame,undefined);
+});

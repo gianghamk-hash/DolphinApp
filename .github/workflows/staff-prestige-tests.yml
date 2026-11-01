@@ -8,6 +8,8 @@ on:
       - 'functions/staff-prestige.test.cjs'
       - 'functions/staff-xp-engine.cjs'
       - 'functions/staff-xp-engine.test.cjs'
+      - 'functions/staff-xp-rank-sync.js'
+      - 'functions/staff-xp-rank-sync.test.cjs'
       - 'functions/staff-xp-actions.js'
       - 'functions/staff-xp-actions.test.cjs'
       - 'functions/staff-xp-live.js'
@@ -32,6 +34,7 @@ jobs:
           node --check functions/staff-prestige.js
           node --check functions/staff-xp-reconcile.js
           node --check functions/staff-xp-engine.cjs
+          node --check functions/staff-xp-rank-sync.js
           node --check functions/staff-xp-actions.js
           node --check functions/staff-xp-live.js
           node --check functions/staff-xp-live-engine.cjs
@@ -40,4 +43,4 @@ jobs:
           node --check staff-xp-manager.js
           node --check theme-system.js
       - name: Staff XP and archival reconciliation tests
-        run: node --test scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs
+        run: node --test functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs

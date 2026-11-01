@@ -136,4 +136,4 @@ module.exports._awardVerifiedXP=awardVerifiedXP;
 module.exports._rebuildPrestige=rebuild;
 
 // Internal only: functions/index.js deliberately skips underscore-prefixed exports.
-module.exports._awardTrustedLiveXP=data=>awardVerifiedXP(null,data,{trusted:true});
+module.exports._awardTrustedLiveXP=(data,options={})=>awardVerifiedXP(null,data,{trusted:true,...options});

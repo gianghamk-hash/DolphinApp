@@ -17,7 +17,8 @@ test('all four name effects have distinct styles and correctly staged unlock pre
  }
  assert.match(profile,/function activeNameTier\(/);
  assert.match(profile,/dataset\.nameFx=activeNameTier\(\)/);
- assert.match(ranking,/nameLabel\.dataset\.nameFx=nameTier/);
+ assert.match(ranking,/nameLabel\.dataset\.nameFx=nameFxTier\(p\)/);
+ assert.match(ranking,/leader-emperor-name'\)\.dataset\.nameFx=nameFxTier\(champion\)/);
 });
 test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
  for(const [id,level] of [['bronze',5],['silver',22],['gold',40],['mythic',60]]){

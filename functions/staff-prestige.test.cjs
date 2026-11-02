@@ -178,12 +178,12 @@ test('admin sandbox validates XP amounts and never changes staff event ledger',a
 });
 
 
-test('Level 5 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
+test('Level 6 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
  const {api,data}=harness({coldCacheProfile:true});
  const old=data.get('staffRegistry/DOL-0001');
  data.set('staffRegistry/DOL-0001',{...old,xp:80000,levelPeak:5});
  const result=await api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true,selectedFrame:'bronze',selectedTitle:'none',selectedBanner:'default',nameGradient:false}));
- assert.equal(result.level,5);
+ assert.equal(result.level,6);
  assert.equal(result.selectedFrame,'bronze');
  assert.equal(result.nameFlame,true);
  assert.equal(result.nextReward.level,8);

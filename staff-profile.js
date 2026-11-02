@@ -44,7 +44,7 @@ $('profile-form').addEventListener('submit',async e=>{
  e.preventDefault();if(busy)return;
  const data={name:$('profile-name-input').value.trim(),avatar};
  setBusy(true);message(profile?'Đang lưu thay đổi…':'Đang đăng ký hồ sơ và thiết bị…');
- try{await (profile?api.update({avatar}):api.register(data));render();message(profile?'Đã lưu avatar. Họ tên đã được khóa.':'Đã đăng ký hồ sơ. Vui lòng chờ DOL-0001 xác minh.');$('profile-edit-dialog')?.close();}
+ try{const wasRegistered=!!profile;await (profile?api.update({avatar}):api.register(data));render();message(wasRegistered?'Đã lưu hồ sơ và avatar. Họ tên đã được khóa.':'Đã lưu hồ sơ. Vui lòng chờ DOL-0001 xác minh.');$('profile-edit-dialog')?.close();}
  catch(err){message(errorText(err),true);setBusy(false);}
 });
 function renderAvatars(){

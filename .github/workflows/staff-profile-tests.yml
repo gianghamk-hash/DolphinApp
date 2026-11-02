@@ -1,10 +1,10 @@
 name: Staff profile checks
 on:
   pull_request:
-    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','scripts/staff-access-browser.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-admin-profile.js','functions/staff-approval-push.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','scripts/staff-access-browser.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
   push:
     branches: [main]
-    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','scripts/staff-access-browser.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-admin-profile.js','functions/staff-approval-push.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','scripts/staff-access-browser.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
 permissions:
   contents: read
 jobs:
@@ -19,6 +19,8 @@ jobs:
           node --check staff-profile.js
           node --check staff-id.js
           node --check staff-access.js
+          node --check staff-admin-profile.js
+          node --check functions/staff-approval-push.js
           node --check scripts/staff-access-browser.cjs
           node --check dolphin-navigation.js
           node --check functions/staff-xp-actions.js

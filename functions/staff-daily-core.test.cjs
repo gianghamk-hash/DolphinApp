@@ -5,9 +5,9 @@ const person=()=>({employeeId:'DOL-0123',name:'Crew',active:true,xp:0,registrati
 const vn=(day,hour=1)=>Date.parse(day+'T00:00:00Z')-7*3600000+hour*3600000;
 test('six fixed tasks and bounded rewards are never client configurable',()=>{
  assert.deepEqual(rules.TASKS.map(v=>v.id),['checkin','order_completed','bungalow_opened','lounge_opened','order_received','avatar_changed']);
- assert.equal(rules.checkinXP(1),20);
- assert.equal(rules.checkinXP(7),50);
- assert.equal(rules.checkinXP(1000),50);
+ assert.equal(rules.checkinXP(1),200);
+ assert.equal(rules.checkinXP(7),500);
+ assert.equal(rules.checkinXP(1000),500);
  assert.throws(()=>rules.apply(person(),'grant_any_xp',vn('2026-11-02')));
 });
 test('00:00 Asia/Ho_Chi_Minh resets daily missions but not the streak',()=>{
@@ -41,7 +41,7 @@ test('check-in streak increases every consecutive VN day, caps XP at day 7',()=>
  assert.equal(skipped.streak,0);
  const reset=rules.apply(p,'checkin',vn('2026-11-11'),'new');
  assert.equal(reset.changed,true);
- assert.equal(reset.addedXP,20);
+ assert.equal(reset.addedXP,200);
  assert.equal(rules.view(reset.profile,vn('2026-11-11')).streak,1);
  assert.equal(rules.view(reset.profile,vn('2026-11-11')).bestStreak,8);
 });
@@ -50,7 +50,7 @@ test('same-day replay does not add XP, other tasks independently add XP once',()
  const first=rules.apply(person(),'checkin',day,'1');
  const replay=rules.apply(first.profile,'checkin',day+500,'2');
  assert.equal(replay.changed,false);
- assert.equal(replay.profile.xp,20);
+ assert.equal(replay.profile.xp,200);
  let p=first.profile;
  const amounts={order_completed:40,bungalow_opened:30,lounge_opened:25,order_received:15,avatar_changed:10};
  for(const [mission,bonus] of Object.entries(amounts)){
@@ -59,10 +59,10 @@ test('same-day replay does not add XP, other tasks independently add XP once',()
   p=win.profile;
   assert.equal(rules.apply(p,mission,day+2000,'duplicate').changed,false);
  }
- assert.equal(p.xp,140);
+ assert.equal(p.xp,320);
  const state=rules.view(p,day);
  assert.equal(state.completedCount,6);
- assert.equal(state.todayXP,140);
+ assert.equal(state.todayXP,320);
  assert.equal(state.tasks.every(x=>x.done),true);
 });
 test('unapproved/inactive accounts earn nothing and stale actions cannot roll back newer-day state',()=>{
@@ -76,6 +76,17 @@ test('daily XP updates the same permanent level/peak field as sales XP',()=>{
  const start={...person(),xp:3495};
  const updated=rules.apply(start,'checkin',vn('2026-11-02')).profile;
  assert.equal(updated.levelPeak,2);
- assert.equal(updated.xp,3515);
- assert.equal(updated.dailyMissions.completed.checkin.xp,20);
+ assert.equal(updated.xp,3695);
+ assert.equal(updated.dailyMissions.completed.checkin.xp,200);
+});
+
+test('check-in XP is exactly 10x old rates, capped at day 7, other task rewards unchanged',()=>{
+ for(let day=1;day<=10;day++)assert.equal(rules.checkinXP(day),(15+Math.min(7,day)*5)*10);
+ assert.deepEqual(rules.TASKS.filter(task=>task.id!=='checkin').map(task=>task.xp),[40,30,25,15,10]);
+ const date=vn('2026-11-12');
+ const p=rules.apply(person(),'checkin',date,'new').profile;
+ assert.equal(rules.view(p,date).tasks.find(task=>task.id==='checkin').xp,200);
+ const legacy={...p,dailyMissions:{...p.dailyMissions,completed:{checkin:{xp:20,at:date,receipt:'legacy'}}}};
+ assert.equal(rules.view(legacy,date).tasks.find(task=>task.id==='checkin').xp,20,'previously claimed rewards remain unchanged');
+ assert.equal(rules.apply(legacy,'checkin',date+1000).changed,false,'no same-day retroactive credit');
 });

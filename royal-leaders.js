@@ -69,6 +69,11 @@ css.textContent=`
 #drl-level .drl-name[data-name-fx="inferno"]{background:linear-gradient(180deg,#fff9da 0%,#ffe36d 37%,#ff762c 76%,#fb3344 100%);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:0 0 13px #ff761b90,0 0 28px #d8321790;filter:drop-shadow(0 0 5px #ffb24c);animation:none}
 #drl-level .drl-name[data-name-fx="prism"]{background:linear-gradient(100deg,#eaffff,#77eaff,#b9a1ff,#ffacdd,#eaffff);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:0 0 12px #8bdbff80,0 0 22px #b791ff70;animation:crew-prism-shift 4.5s linear infinite}
 #drl-level .drl-name[data-name-fx="celestial"]{background:linear-gradient(95deg,#fffadc,#89f4ff,#ffd36b,#f0a7ff,#fffadc);background-size:280% 100%;background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:0 0 11px #fff0b880,0 0 26px #73eaffad;filter:drop-shadow(0 0 7px #f1b5ff);animation:crew-prism-shift 3.5s linear infinite}
+
+/* Keep the same glowing sigil used by the equipped Inferno/Celestial name tiers. */
+#drl-level .drl-name[data-name-fx="inferno"]::after,#drl-level .drl-name[data-name-fx="celestial"]::after{position:absolute;right:-.7em;top:-.4em;left:auto;bottom:auto;z-index:2;width:auto;height:auto;display:block!important;pointer-events:none;filter:none;opacity:1;animation:crew-sigil-float 2.6s ease-in-out infinite alternate}
+#drl-level .drl-name[data-name-fx="inferno"]::after{content:'✦'!important;color:#ffab3d;-webkit-text-fill-color:#ffab3d;text-shadow:0 0 11px #ffab3d}
+#drl-level .drl-name[data-name-fx="celestial"]::after{content:'✧'!important;color:#c5f5ff;-webkit-text-fill-color:#c5f5ff;text-shadow:0 0 11px #c5f5ff}
 `;document.head.appendChild(css);
 const e=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function draw(type,data){

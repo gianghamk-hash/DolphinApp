@@ -423,6 +423,23 @@
      RENDER LIST
      ============================================================ */
   var lastList = [];
+  // Cosmetics come from the verified Staff ID avatar directory.
+  // Presence records are intentionally NOT trusted to set a rarity frame/title.
+  function onlineCosmetics(staff){
+    var identity=staff.staffId
+      ? window.DolphinAvatars?.profile?.(staff.name,staff.staffId)
+      : null;
+    var allowed=['bronze','silver','gold','mythic'];
+    var titles={
+      rookie:'⭐ Rookie Star',
+      wave:'🌊 Wave Rider',
+      legend:'👑 Dolphin Legend'
+    };
+    return {
+      frame:allowed.includes(identity?.selectedFrame)?identity.selectedFrame:'none',
+      title:titles[identity?.selectedTitle]||''
+    };
+  }
 
   function renderList(){
     var badge = document.getElementById('sowCount');
@@ -475,6 +492,7 @@
     }
 
     list.innerHTML = online.map(function(s){
+      var effect = onlineCosmetics(s);
       var ctxKey = s.page || 'other';
       var detail = s.devices.length>1?' · '+s.devices.length+' thiết bị ('+s.devices.map(function(d){return d.platform==='apk'?'APK':'Web';}).join(', ')+')':'';
       var ctx = CONTEXT_MAP[ctxKey] || CONTEXT_MAP.other;
@@ -494,10 +512,11 @@
 
       return [
         '<div class="sow-item ' + (isMe ? 'sow-me' : '') + '">',
-        '  <div class="sow-avatar" data-staff-avatar data-staff-name="'+escapeHtml(s.name)+'" data-staff-id="'+escapeHtml(s.staffId||'')+'">' + escapeHtml(String(window.DolphinAvatars?.get(s.name,s.staffId)||s.avatar||ctx.icon).slice(0,24)) + '</div>',
+        '  <div class="sow-avatar" data-frame="'+effect.frame+'" data-staff-avatar data-staff-name="'+escapeHtml(s.name)+'" data-staff-id="'+escapeHtml(s.staffId||'')+'">' + escapeHtml(String(window.DolphinAvatars?.get(s.name,s.staffId)||s.avatar||ctx.icon).slice(0,24)) + '</div>',
         '  <div class="sow-info">',
         '    <div class="sow-name">' + escapeHtml(s.name) + (s.staffId?' <small>'+escapeHtml(s.staffId)+'</small>':'') + (isMe ? ' <span class="sow-you">BẠN</span>' : '') + '</div>',
         '    <div class="sow-meta">' + ctx.label + ' · ' + durText + escapeHtml(detail) + '</div>',
+        effect.title?'    <div class="sow-title">'+escapeHtml(effect.title)+'</div>':'',
         '  </div>',
         '  <div class="sow-dot"></div>',
         '</div>'
@@ -596,6 +615,8 @@
   function init(){
     /* Luôn inject CSS để sẵn sàng */
     injectStyles();
+    // Repaint with the latest Staff ID cosmetics without opening any new Firebase listener.
+    window.DolphinAvatars?.subscribe?.(renderList);
 
     /* Nếu chưa có tên → chỉ hiện widget với số 0, chờ có tên rồi ping */
     /* Nhưng vẫn cần widget để nhân viên biết có ai online */

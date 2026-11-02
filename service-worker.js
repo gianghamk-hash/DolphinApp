@@ -30,6 +30,8 @@ const CACHE_URLS = [
   BASE + '/manifest.json',
   BASE + '/ranking/index.html',
   BASE + '/caro/index.html',
+  BASE + '/staff-access.js?v=approval-20261102',
+  BASE + '/staff-access.css?v=approval-20261102',
   BASE + '/staff-sync.js',
   BASE + '/dolphin-alerts.js?v=1',
   BASE + '/push-config.js',

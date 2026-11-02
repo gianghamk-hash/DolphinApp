@@ -41,6 +41,6 @@ test('daily quest cards are keyboard/phone accessible and have no overlay',()=>{
 
 test('profile displays backfilled reward and the updated 2450 XP level coefficient',()=>{
  assert.match(js,/const XP_RATE=2450/);
- assert.match(js,/daily\?\.checkinTopUpXP>0/);
+ assert.match(js,/daily\?\.dailyTopUpXP>0/);
  assert.match(html,/2\.450 × \(L − 1\)² XP/);
 });

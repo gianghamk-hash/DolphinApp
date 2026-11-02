@@ -3,9 +3,9 @@ const {test}=require('node:test'),assert=require('node:assert/strict'),fs=requir
 const read=file=>fs.readFileSync(path.resolve(__dirname,'..',file),'utf8');
 const engine=require('../functions/staff-xp-engine.cjs');
 test('XP curve is exactly 70% of old curve, all ranks remain deterministic',()=>{
- for(const level of [2,3,5,15,40,60])assert.equal(engine.xpForLevel(level),3500*(level-1)**2);
- assert.equal(engine.xpForLevel(60),12183500);
- assert.equal(engine.levelForXP(3500),2);
+ for(const level of [2,3,5,15,40,60])assert.equal(engine.xpForLevel(level),2450*(level-1)**2);
+ assert.equal(engine.xpForLevel(60),12182450);
+ assert.equal(engine.levelForXP(2450),2);
 });
 test('all three V5 cosmetics expose 3 cumulative unlock stages',()=>{
  for(const kind of ['aura','trail','cardFx']){

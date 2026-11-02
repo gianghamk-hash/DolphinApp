@@ -56,7 +56,7 @@ async function rebuild(){
  const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
  const current={champion:newChampion,
   announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
-  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
+  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,personalTheme:x.personalTheme,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
  // Small Firestore signal for instant profile refresh, not an XP authority.

@@ -83,6 +83,8 @@ function renderFxGallery(){
 }
 function previewCosmetics(){
  $('profile-avatar').dataset.frame=mine?.selectedFrame||'none';
+ // Refresh V4 orbital layers immediately after the equipped frame changes.
+ window.DolphinFrameFX?.refresh?.();
  $('profile-name').dataset.nameFx=activeNameTier();
  $('crew-profile-banner').dataset.banner=mine?.selectedBanner||'default';
  const label=$('profile-title'),title=mine?.selectedTitle||'none';

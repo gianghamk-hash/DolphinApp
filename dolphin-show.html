@@ -490,7 +490,8 @@ window.saveBooking = async () => {
   if (!db) return toast('Chưa kết nối đám mây!', '❌');
   const label = $('b-id').value, mgr = isManager();
   const data = { label, leader: $('b-leader').value.trim(), dining: $('b-dining').value.trim(),
-    guests: parseInt($('b-guests').value), payment: $('b-pay').value, focNote: $('b-pay').value === 'FOC' ? $('b-foc').value.trim() : '', seller: me(), updatedAt: Date.now() };
+    guests: parseInt($('b-guests').value), payment: $('b-pay').value,
+    focNote: $('b-pay').value === 'FOC' ? $('b-foc').value.trim() : '', seller: me(), updatedAt: Date.now() };
   if (!data.leader || !data.dining || !data.guests || data.guests < 1 || !data.payment)
     return toast('Vui lòng nhập đủ thông tin khách!', '⚠️');
   if (data.payment === 'FOC' && !data.focNote) return toast('Thanh toán FOC cần ghi chú lý do!', '⚠️');
@@ -499,16 +500,24 @@ window.saveBooking = async () => {
   if(linked?.employeeId&&norm(linked.name)===norm(data.seller))data.sellerStaffId=linked.employeeId;
   const ref = doc(db, COL_LIVE, key(label));
   try {
-    await runTransaction(db, async tx => {
-      const snap = await tx.get(ref);
-      if (snap.exists() && !mgr && norm(snap.data().seller) !== norm(data.seller)) throw new Error('LOCKED:' + snap.data().seller);
-      if (snap.exists() && !mgr) data.seller = snap.data().seller;
-      tx.set(ref, data, { merge: true });
-    });
+    const verified=linked?.verified===true&&norm(linked.name)===norm(data.seller)&&
+      typeof window.DolphinStaffId?.performLiveAction==='function';
+    if(verified){
+      await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'booking',data});
+    }else{
+      // Legacy operation is preserved, but client-writable bookings never award XP.
+      await runTransaction(db, async tx => {
+        const snap = await tx.get(ref);
+        if (snap.exists() && !mgr && norm(snap.data().seller) !== norm(data.seller)) throw new Error('LOCKED:' + snap.data().seller);
+        if (snap.exists() && !mgr) data.seller = snap.data().seller;
+        tx.set(ref, data, { merge: true });
+      });
+      toast('Bàn đã lưu; Staff ID chưa xác minh nên không cấp XP.','⚠️');
+    }
     toast('Đã lưu bàn ' + label,'✅'); closeM('m-book'); fireworkBurst();
   } catch (e) {
     if (String(e.message).startsWith('LOCKED')) { toast('Bàn đã có khách đặt trước bởi ' + e.message.split(':')[1] + '!', '🔒'); closeM('m-book'); }
-    else toast('Lỗi hệ thống khi lưu!', '❌');
+    else toast('Không lưu được bàn: '+String(e?.message||e).slice(0,110), '❌');
   }
 };
 const doDelete = async () => {
@@ -695,16 +704,13 @@ window.updCounters = () => {
 window.saveService = async () => {
   if (!db) return toast('Chưa kết nối đám mây!', '❌');
   if (!currentCombo) return toast('Vui lòng chọn Combo!', '⚠️');
-  
   const label = $('s-id').value;
   const selected = COMBOS[currentCombo];
   const service = { combo: currentCombo, package: comboGroup(currentCombo), drinks: {}, foods: {}, status:'pending', savedAt: Date.now() };
-  
   document.querySelectorAll('.s-inp[data-g="drinks"]').forEach(i => {
     const n = parseInt(i.value) || 0;
     if (n > 0) service.drinks[i.dataset.k] = n;
   });
-
   const drinkInputs=[...document.querySelectorAll('.s-inp[data-g="drinks"]')];
   if(drinkInputs.some(i=>i.value.trim()!==''&&(!/^\d+$/.test(i.value.trim())||!Number.isSafeInteger(Number(i.value)))))
     return toast('Số đồ uống phải là số nguyên không âm!', '⚠️');
@@ -720,31 +726,31 @@ window.saveService = async () => {
     const foodInput=document.querySelector('.s-inp[data-g="foods_set"]');
     const raw=foodInput?.value.trim()??'';
     if(!/^[01]$/.test(raw))return toast('Đồ ăn đi kèm chỉ được chọn 0 hoặc 01 set!', '⚠️');
-    const setQty=Number(raw);
-    if(setQty===1){
-      // Lưu từng món cho bếp, toàn bộ item nằm trong cùng 01 set.
-      selected.allowedFoods.forEach(food=>{service.foods[food]=1;});
-    }
+    if(Number(raw)===1)selected.allowedFoods.forEach(food=>{service.foods[food]=1;});
   }
-  if (!Object.keys(service.drinks).length && !Object.keys(service.foods).length) {
+  if (!Object.keys(service.drinks).length && !Object.keys(service.foods).length)
     return toast('Vui lòng nhập ít nhất 1 món!', '⚠️');
-  }
-  
-  const ref = doc(db, COL_LIVE, key(label));
+  const ref=doc(db,COL_LIVE,key(label));
   try {
-    await runTransaction(db, async tx => {
-      const snap = await tx.get(ref);
-      if (!snap.exists()) throw new Error('NOBOOK');
-      if (snap.data().service && norm(snap.data().seller) !== norm(me()) && !isManager()) throw new Error('LOCKED');
-      tx.update(ref, { service });
-    });
-    toast('Đã lưu Combo bàn ' + label,'✅'); closeM('m-service');
-    if(window.DolphinStaffId?.syncSavedActivity)
-      void window.DolphinStaffId.syncSavedActivity({kind:COL_LIVE,id:key(label)})
-        .then(r=>{if(r.addedXP>0)toast('+'+r.addedXP+' XP doanh thu Show','⭐');})
-        .catch(e=>{console.warn('[Show XP] Combo đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e);(window.showToast||window.toast)?.('Đã lưu dữ liệu · XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');});
-  } catch (e) { 
-    toast(e.message === 'LOCKED' ? 'Bạn không có quyền sửa bàn này!' : 'Lỗi hệ thống khi lưu!', '❌'); 
+    const identity=window.DolphinStaffId?.get?.();
+    const verified=identity?.verified===true&&norm(identity.name)===norm(me())&&
+      typeof window.DolphinStaffId?.performLiveAction==='function';
+    if(verified){
+      // Backend validates the seller's server-recorded booking and claims XP once.
+      const reward=await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'combo',data:service});
+      if(reward.xpAwarded>0)toast('+'+reward.xpAwarded+' XP doanh thu Show','⭐');
+    }else{
+      await runTransaction(db, async tx => {
+        const snap=await tx.get(ref);
+        if(!snap.exists())throw new Error('NOBOOK');
+        if(snap.data().service&&norm(snap.data().seller)!==norm(me())&&!isManager())throw new Error('LOCKED');
+        tx.update(ref,{service});
+      });
+      toast('Combo đã lưu; Staff ID chưa xác minh nên không cấp XP.','⚠️');
+    }
+    toast('Đã lưu Combo bàn '+label,'✅');closeM('m-service');
+  }catch(e){
+    toast(e.message==='LOCKED'?'Bạn không có quyền sửa bàn này!':'Không lưu được Combo: '+String(e?.message||e).slice(0,110),'❌');
   }
 };
 

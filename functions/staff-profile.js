@@ -100,7 +100,7 @@ exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
 exports.staffGetAvatarDirectory=onCall(opts,async req=>{
  uidOf(req);
  const profiles=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
- return {profiles:Object.values(profiles).filter(p=>p?.active&&p.employeeId&&p.name).map(p=>({
+ return {profiles:Object.values(profiles).filter(p=>p?.active&&(p.registrationSource!=='self'||p.approved===true)&&p.employeeId&&p.name).map(p=>({
   employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
   selectedFrame:['bronze','silver','gold','mythic'].includes(p.selectedFrame)?p.selectedFrame:'none',
   selectedAvatarMotion:['none','pulse','float','wave','orbit','prism','ascension'].includes(p.selectedAvatarMotion)?p.selectedAvatarMotion:'none',
@@ -154,6 +154,8 @@ exports.staffApproveRegistration=onCall(opts,async req=>{
   await db.ref('staffIdentity/'+uid).transaction(v=>v?.employeeId===employeeId?
    {...v,verified:true,updatedAt:Date.now()}:undefined,undefined,false);
  }));
+ try{await require('./staff-prestige')._rebuildPrestige();}
+ catch(error){console.warn('[Staff approval] Ranking refresh deferred:',error?.message||error);}
  return {employeeId,approved:true};
 });
 
@@ -177,6 +179,8 @@ exports.staffRejectRegistration=onCall(opts,async req=>{
  // staffGetIdentity and every protected callable check active=false. Preserve
  // existing linked identities so each device can create a NEW registration.
  // No order history, Staff ID event log or active staff record is deleted.
+ try{await require('./staff-prestige')._rebuildPrestige();}
+ catch(error){console.warn('[Staff rejection] Ranking refresh deferred:',error?.message||error);}
  return {employeeId,rejected:true,canRegisterAgain:true};
 });
 

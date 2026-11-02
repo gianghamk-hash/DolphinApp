@@ -106,3 +106,27 @@ test('reopening a Bungalow saved on a previous VN day qualifies for a new daily 
  const repeat=await h.call('verified',input);
  assert.equal(repeat.missionXP,0);
 });
+
+test('already completed, client-attributed orders never earn XP from secure callable',async()=>{
+ const h=harness();
+ h.docs.set('res_orders/forged',{status:'completed',completedBy:'Lan'});
+ const result=await h.call('verified',{kind:'res_orders',id:'forged',action:'completed'});
+ assert.equal(result.xpAwarded,0);
+ assert.equal(result.duplicate,true);
+ assert.equal(h.awards.length,0);
+ await assert.rejects(()=>h.call('verified',{kind:'res_orders',id:'forged',action:'preparing'}),e=>e.code==='failed-precondition');
+});
+test('pre-existing prepared-by name is not a server-verified preparation award',async()=>{
+ const h=harness();
+ h.docs.set('bun_orders/attributed',{status:'preparing',preparedBy:'Lan'});
+ const result=await h.call('verified',{kind:'bun_orders',id:'attributed',action:'preparing'});
+ assert.equal(result.xpAwarded,0);
+ assert.equal(h.awards.length,0);
+});
+test('Show accepts Vietnamese display item labels and awards fixed combo XP once',async()=>{
+ const h=harness();
+ await h.call('verified',{kind:'show_tables',id:'D2',action:'booking',data:{leader:'Guest',dining:'A1',guests:4,payment:'Tiền mặt'}});
+ const combo={kind:'show_tables',id:'D2',action:'combo',data:{combo:'combo1',foods:{'Khô bò cay':1,'Đồ ăn đi kèm (01 set)':1},drinks:{'Nước ép dứa':1}}};
+ assert.equal((await h.call('verified',combo)).xpAwarded,1390);
+ assert.equal((await h.call('verified',combo)).xpAwarded,0);
+});

@@ -136,6 +136,9 @@ async function refresh(){
  if(!service?.avatarDirectory)return;
  inflight=(async()=>{
   try{
+   // Pending staff are intentionally absent from the public directory. Refresh
+   // their own private identity to keep cross-device avatar changes in sync.
+   if(own?.employeeId&&own.verified!==true)await service.refresh();
    const result=await service.avatarDirectory();
    const canonical=own&&(result.profiles||[]).find(p=>p.employeeId===own.employeeId);
    if(canonical&&(canonical.profileVersion||0)>=(own.profileVersion||0)){

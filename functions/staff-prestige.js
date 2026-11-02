@@ -41,8 +41,11 @@ function expose(p){
   nameGradient:!!p.nameGradient&&level>=45,
   showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
 }
+function isApprovedProfile(p){
+ return !!p?.active&&(p.registrationSource!=='self'||p.approved===true);
+}
 function leaderboard(registry){
- return Object.values(registry||{}).filter(p=>p?.active&&(p.employeeId!==TEST_ADMIN_ID||p.rankingVisible===true)&&staffPattern.test(p.employeeId)&&p.name)
+ return Object.values(registry||{}).filter(p=>isApprovedProfile(p)&&(p.employeeId!==TEST_ADMIN_ID||p.rankingVisible===true)&&staffPattern.test(p.employeeId)&&p.name)
  .map(expose).sort((a,b)=>b.level-a.level||b.xp-a.xp||a.employeeId.localeCompare(b.employeeId)).slice(0,25);
 }
 async function rebuild(){
@@ -93,21 +96,27 @@ exports.staffGetPrestige=onCall(opts,async req=>{
   getDatabase().ref('staffPrestige/public').once('value'),
   getDatabase().ref('staffPrestige/legends').orderByChild('firstAt').limitToLast(25).once('value')
  ]);
- const pub=await upToDatePublicBoard(snap.val());
- // Also filter old public snapshots until the next board rebuild occurs.
- const admin=(await getDatabase().ref('staffRegistry/DOL-0001').once('value')).val();
- const showAdmin=admin?.active&&admin.rankingVisible===true;
- const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>p.employeeId!==TEST_ADMIN_ID||showAdmin);
+ let pub=await upToDatePublicBoard(snap.val());
+ // Filter server-side, including cached boards built before approval checks.
+ const registry=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
+ const eligible=leaderboard(registry),eligibleIds=new Set(eligible.map(p=>p.employeeId));
+ const cachedIds=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).map(p=>p.employeeId);
+ if(JSON.stringify(cachedIds)!==JSON.stringify(eligible.map(p=>p.employeeId))){
+  try{pub=await rebuild();}catch(error){console.warn('[Prestige] Approval ranking rebuild pending:',error?.message||error);}
+ }
+ const admin=registry[TEST_ADMIN_ID];
+ const showAdmin=isApprovedProfile(admin)&&admin.rankingVisible===true;
+ const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>eligibleIds.has(p.employeeId)&&(p.employeeId!==TEST_ADMIN_ID||showAdmin));
  // Hydrate legacy snapshots created before public personalTheme was introduced.
  // One extra read only while the old snapshot lacks the new public cosmetic field.
  if(employees[0]&&!employees[0].personalTheme&&staffPattern.test(employees[0].employeeId)){
   const active=(await getDatabase().ref('staffRegistry/'+employees[0].employeeId).once('value')).val();
   if(active?.active)employees[0]={...employees[0],personalTheme:active.personalTheme||'dark'};
  }
- const champion=pub.champion?.employeeId===TEST_ADMIN_ID&&!showAdmin
-  ?(employees[0]?{...employees[0],title:'Dolphin Emperor'}:null):pub.champion||null;
+ const champion=employees[0]?{...employees[0],title:'Dolphin Emperor',
+  tiedWith:employees.filter(p=>p.xp===employees[0].xp).map(p=>p.employeeId)}:null;
  return {...pub,showAdminRanking:!!showAdmin,champion,leaderboard:employees,
-  legends:Object.entries(legends.val()||{}).filter(([id])=>id!==TEST_ADMIN_ID||showAdmin)
+  legends:Object.entries(legends.val()||{}).filter(([id])=>isApprovedProfile(registry[id])&&(id!==TEST_ADMIN_ID||showAdmin))
    .map(([,p])=>p).sort((a,b)=>b.firstAt-a.firstAt)};
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
@@ -258,7 +267,10 @@ async function awardVerifiedXP(req,data,options={}){
   Math.abs(amount)>1000000||Math.round(amount*100)!==amount*100)
   throw new HttpsError('invalid-argument','Sự kiện XP không hợp lệ');
  if(source!=='correction'&&amount<0)throw new HttpsError('invalid-argument','XP âm cần sự kiện điều chỉnh');
- const db=getDatabase(),ref=db.ref('staffXpLedger/'+employeeId+'/'+eventId);
+ const db=getDatabase();
+ const recipient=(await db.ref('staffRegistry/'+employeeId).once('value')).val();
+ if(!isApprovedProfile(recipient))throw new HttpsError('permission-denied','Chỉ hồ sơ đã duyệt mới được nhận XP.');
+ const ref=db.ref('staffXpLedger/'+employeeId+'/'+eventId);
  const record={employeeId,eventId,source,amount,approvedBy:options.trusted?'automatic-firestore-trigger':uid(req),at:Date.now()};
  const written=await ref.transaction(v=>v?undefined:record);
  if(!written.committed)return {duplicate:true,employeeId,eventId};

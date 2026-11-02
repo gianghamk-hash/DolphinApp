@@ -29,7 +29,7 @@ concurrency:
   cancel-in-progress: false
 jobs:
   deploy:
-    if: github.ref == 'refs/heads/main' && inputs.rtdb_rules_verified == true && inputs.confirm_project == 'dolphin-f6d67' && (!inputs.enable_automatic_xp || inputs.firestore_staff_writes_verified)
+    if: github.ref == 'refs/heads/main' && inputs.rtdb_rules_verified == true && inputs.confirm_project == 'dolphin-f6d67' && inputs.enable_automatic_xp == false
     runs-on: ubuntu-latest
     environment: production
     steps:
@@ -65,7 +65,7 @@ jobs:
           const fs=require('fs');
           const val=process.env.STAFF_ADMIN_UIDS||'';
           if(!/^[a-zA-Z0-9,_-]+$/.test(val))throw Error('Invalid STAFF_ADMIN_UIDS');
-          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+val+'\nSTAFF_AUTO_XP_ENABLED='+(process.env.AUTO_XP_ENABLED==='true'?'true':'false')+'\n',{mode:0o600});
+          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+val+'\nSTAFF_AUTO_XP_ENABLED=false\nSTAFF_SECURE_AUTO_XP_ENABLED=true\n',{mode:0o600});
           NODE
       - name: Deploy Staff Profile and Prestige Cloud Functions only
         run: |

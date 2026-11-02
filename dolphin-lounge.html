@@ -1106,9 +1106,6 @@ window.executeSaveCustomerName = async function({table,dataToSave}){
     if(!verified)await setDoc(doc(db,'lounge_tables',table),dataToSave,{merge:true});
     window.showToast(`Đã lưu bàn ${table}`,'✅');
     if(reward&&(reward.xpAwarded||reward.missionXP))window.showToast('+'+((reward.xpAwarded||0)+(reward.missionXP||0))+' XP đã xác minh','⭐');
-    if(!verified&&window.DolphinStaffId?.syncSavedActivity)void window.DolphinStaffId.syncSavedActivity({kind:'lounge_tables',id:table})
-      .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP từ bàn '+table,'⭐');})
-      .catch(e=>{console.warn('[Lounge XP] Đồng bộ sau lưu thất bại:',e?.code||e?.message||e);window.showToast('Bàn đã lưu nhưng XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');}); 
     window.closeCustomerNameModal(); 
     Confetti.spawn(innerWidth/2, innerHeight/2, 40); 
   }
@@ -1271,11 +1268,7 @@ window.executeStaffAction = async function(name){
       });
       if(state.lastTransactionWarning){ window.showToast(state.lastTransactionWarning,"⚠️"); playNotificationAlert(); }
       else { window.showToast(`Đã ghi nhận: ${name}`,'📝'); if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100); }
-      if(nextStatus==='completed'&&window.DolphinStaffId?.syncSavedActivity)
-        void window.DolphinStaffId.syncSavedActivity({kind:'lounge_orders',id:orderId})
-          .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP hoàn thành đơn','⭐');})
-          .catch(e=>{console.warn('[Lounge XP] Đơn đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e);window.showToast('Order đã lưu nhưng XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');});
-    } catch(e){ console.error('[Lounge order status]',orderId,nextStatus,e); window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra quyền Firestore'),"❌"); }
+      } catch(e){ console.error('[Lounge order status]',orderId,nextStatus,e); window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra quyền Firestore'),"❌"); }
   } else { window.showToast(`Đã lưu tên: ${name}`,'📝'); renderAll(); }
   state.pendingAction=null;
 };

@@ -1,97 +1,51 @@
 'use strict';
-const {test}=require('node:test'),assert=require('node:assert/strict'),vm=require('node:vm'),fs=require('node:fs'),crypto=require('node:crypto');
-const hash=(...v)=>crypto.createHash('sha256').update(v.join('|')).digest('hex').slice(0,40);
-function fixture(){
- const reg={'DOL-0001':{employeeId:'DOL-0001',name:'Lan',active:true},'DOL-0002':{employeeId:'DOL-0002',name:'Binh',active:true,registrationSource:'self'}};
- const data=new Map([['staffRegistry',reg],...Object.entries(reg).map(([id,p])=>['staffRegistry/'+id,p]),['staffIdentity/u1',{employeeId:'DOL-0001',verified:true}],['staffIdentity/u2',{employeeId:'DOL-0002',verified:false}]]),docs=new Map(),awards=[];
- class HttpsError extends Error{constructor(code,message){super(message);this.code=code}}
- const ref=key=>({once:async()=>({val:()=>data.get(key)||null}),transaction:async fn=>{const current=data.get(key)||null,next=fn(current);if(next===undefined)return {committed:false};data.set(key,next);return {committed:true}}});
- const mod={exports:{},Date,Map,Set,Object,Number,String,Math,console,process:{env:{}}};mod.module={exports:mod.exports};
- mod.require=n=>{
-  if(n==='node:crypto')return crypto;
-  if(n==='firebase-functions/v2/https')return {onCall:(_,f)=>f,HttpsError};
-  if(n==='firebase-admin/database')return {getDatabase:()=>({ref})};
-  if(n==='firebase-admin/firestore')return {getFirestore:()=>({collection:k=>({
-    doc:id=>({get:async()=>({exists:docs.has(k+'/'+id),data:()=>docs.get(k+'/'+id)})}),
-    where:(field,operator,value)=>({limit:count=>({get:async()=>({docs:[...docs.entries()].filter(([key,v])=>key.startsWith(k+'/')&&v?.[field]===value).slice(0,count).map(([key,v])=>({id:key.slice(k.length+1),data:()=>v}))})})}),
-    orderBy:(field,dir)=>({limit:count=>({get:async()=>({docs:[...docs.entries()].filter(([key,v])=>key.startsWith(k+'/')&&v?.[field]!=null).sort((a,b)=>Number(b[1][field])-Number(a[1][field])).slice(0,count).map(([key,v])=>({id:key.slice(k.length+1),data:()=>v}))})})})
-  })})};
-  if(n==='./staff-xp-live-engine.cjs')return require('./staff-xp-live-engine.cjs');
-  if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
-  if(n==='./staff-prestige')return {_awardTrustedLiveXP:async v=>{const k='staffXpLedger/'+v.employeeId+'/'+v.eventId;if(data.has(k))return {duplicate:true};data.set(k,v);awards.push(v);return {duplicate:false}},_rebuildPrestige:async()=>{}};
-  throw Error(n);
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const fs=require('node:fs'),vm=require('node:vm');
+function harness(){
+ const reg={
+  'DOL-0001':{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager',approved:true},
+  'DOL-0002':{employeeId:'DOL-0002',name:'Binh',active:true,registrationSource:'self',approved:false}
  };
- vm.runInNewContext(fs.readFileSync(__dirname+'/staff-xp-rank-sync.js','utf8'),mod);
- return {docs,data,awards,call:(uid,kind,id)=>mod.exports.staffSyncSavedActivityXP({auth:uid?{uid}:null,data:{kind,id}}),recover:uid=>mod.exports.staffSyncMyRecentXP({auth:uid?{uid}:null,data:{}})};
+ const data=new Map([
+  ['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],
+  ['staffIdentity/pending',{verified:false,employeeId:'DOL-0002'}],
+  ['staffIdentity/forged',{verified:true,employeeId:'DOL-0002'}],
+  ...Object.entries(reg).map(([id,p])=>['staffRegistry/'+id,p])
+ ]);
+ class HttpsError extends Error{constructor(code,message){super(message);this.code=code;}}
+ const ctx={module:{exports:{}},console,process,RegExp};
+ ctx.exports=ctx.module.exports;
+ ctx.require=name=>{
+  if(name==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};
+  if(name==='firebase-admin/database')return {getDatabase:()=>({ref:path=>({once:async()=>({val:()=>data.get(path)||null})})})};
+  throw Error(name);
+ };
+ vm.runInNewContext(fs.readFileSync(__dirname+'/staff-xp-rank-sync.js','utf8'),ctx);
+ const req=uid=>({auth:uid?{uid}:null,data:{kind:'bun_tables',id:'201'}});
+ return {api:ctx.exports,data,req};
 }
-test('Lounge sale matches ranking once, ignores FOC',async()=>{
- const h=fixture();h.docs.set('lounge_tables/L20',{openedByStaff:'Lan',pax:1,paymentMethod:'TM'});
- assert.equal((await h.call('u1','lounge_tables','L20')).addedXP,250);
- assert.equal((await h.call('u1','lounge_tables','L20')).addedXP,0);
- h.docs.set('lounge_tables/L21',{openedByStaff:'Lan',pax:3,paymentMethod:'FOC'});
- assert.equal((await h.call('u1','lounge_tables','L21')).addedXP,0);assert.equal(h.awards.length,1);
+test('legacy sync and recovery never credit client-writable sales or work',async()=>{
+ const {api,req}=harness();
+ for(const endpoint of ['staffSyncSavedActivityXP','staffSyncMyRecentXP']){
+  const res=await api[endpoint](req('verified'));
+  assert.equal(res.addedXP,0);
+  assert.equal(res.disabled,true);
+  assert.equal(res.status,'secure-action-required');
+ }
 });
-test('linked self-registration earns XP and Show uses selected package',async()=>{
- const h=fixture();h.docs.set('bun_tables/201',{openedByStaff:'Binh',paymentMethod:'Tiền mặt'});
- assert.equal((await h.call('u2','bun_tables','201')).addedXP,2000);
- h.docs.set('show_tables/S1',{seller:'Lan',payment:'Tiền mặt',service:{combo:'combo2'}});
- assert.equal((await h.call('u1','show_tables','S1')).addedXP,790);
+test('pending, spoofed and anonymous identities cannot invoke legacy sync',async()=>{
+ const {api,req}=harness();
+ for(const endpoint of ['staffSyncSavedActivityXP','staffSyncMyRecentXP']){
+  await assert.rejects(()=>api[endpoint](req(null)),e=>e.code==='unauthenticated');
+  await assert.rejects(()=>api[endpoint](req('pending')),e=>e.code==='permission-denied');
+  await assert.rejects(()=>api[endpoint](req('forged')),e=>e.code==='permission-denied');
+ }
 });
-test('completed order awards all participants once based on ranking work rules',async()=>{
- const h=fixture();h.docs.set('lounge_orders/o1',{status:'completed',preparedBy:'Lan & Binh',completedBy:'Binh'});
- assert.equal((await h.call('u2','lounge_orders','o1')).addedXP,2.5);
- assert.equal(h.awards.find(v=>v.employeeId==='DOL-0001').amount,1);
- assert.equal((await h.call('u1','lounge_orders','o1')).addedXP,0);
-});
-test('previous preparation receipt reduces final award without duplicate XP',async()=>{
- const h=fixture(),id='live:'+hash('work','res_orders','o2','preparing','DOL-0001');
- h.data.set('staffXpLedger/DOL-0001/'+id,{amount:5});
- h.docs.set('res_orders/o2',{status:'completed',preparedBy:'Lan',completedBy:'Lan'});
- assert.equal((await h.call('u1','res_orders','o2')).addedXP,5);
-});
-test('unrelated or anonymous caller cannot award someone else XP',async()=>{
- const h=fixture();h.docs.set('lounge_tables/L20',{openedByStaff:'Lan',pax:3,paymentMethod:'TM'});
- await assert.rejects(()=>h.call('u2','lounge_tables','L20'),e=>e.code==='permission-denied');
- await assert.rejects(()=>h.call(null,'lounge_tables','L20'),e=>e.code==='unauthenticated');
- assert.equal(h.awards.length,0);
-});
-
-
-
-test('stamped authenticated Staff ID disambiguates duplicate employee display names',async()=>{
- const h=fixture(),all=h.data.get('staffRegistry');
- all['DOL-0003']={employeeId:'DOL-0003',name:'Lan',active:true};
- h.docs.set('lounge_tables/L20',{openedByStaff:'Lan',openedByStaffId:'DOL-0001',pax:4,paymentMethod:'TM'});
- const got=await h.call('u1','lounge_tables','L20');
- assert.equal(got.addedXP,1000);
- assert.equal(h.awards.length,1);
- assert.equal(h.awards[0].employeeId,'DOL-0001');
- assert.equal((await h.call('u1','lounge_tables','L20')).addedXP,0);
-});
-test('stamped Staff ID of another employee cannot override the authenticated actor',async()=>{
- const h=fixture();
- h.docs.set('lounge_tables/L21',{openedByStaff:'Lan',openedByStaffId:'DOL-0001',pax:4,paymentMethod:'TM'});
- await assert.rejects(()=>h.call('u2','lounge_tables','L21'),e=>e.code==='permission-denied');
- assert.equal(h.awards.length,0);
-});
-
-test('Self recovery credits Lounge20 with four pax and its completed order once',async()=>{
- const h=fixture(),now=Date.now();
- h.docs.set('lounge_tables/LOUNGE 20',{openedByStaff:'Lan',pax:4,paymentMethod:'TM',updatedAt:now});
- h.docs.set('lounge_orders/o20',{table:'LOUNGE 20',status:'completed',preparedBy:'Lan',completedBy:'Lan',completedAt:now});
- const first=await h.recover('u1');
- assert.equal(first.addedXP,1002.5);
- assert.equal(first.awards,2);
- assert.equal(h.awards.length,2);
- // Reconciliation is throttled to avoid unnecessary Firestore reads.
- await assert.rejects(()=>h.recover('u1'),e=>e.code==='resource-exhausted');
-});
-test('Self recovery excludes yesterday records and other staff members',async()=>{
- const h=fixture(),yesterday=Date.now()-86400000,now=Date.now();
- h.docs.set('lounge_tables/L20',{openedByStaff:'Lan',pax:4,paymentMethod:'TM',updatedAt:yesterday});
- h.docs.set('lounge_tables/L21',{openedByStaff:'Binh',pax:2,paymentMethod:'TM',updatedAt:now});
- const result=await h.recover('u1');
- assert.equal(result.addedXP,0);
- assert.equal(result.checked,0);
- assert.equal(h.awards.length,0);
+test('approved self-registration may query status but receives no legacy XP',async()=>{
+ const {api,req,data}=harness();
+ data.set('staffIdentity/pending',{verified:true,employeeId:'DOL-0002'});
+ data.set('staffRegistry/DOL-0002',{...data.get('staffRegistry/DOL-0002'),approved:true});
+ const res=await api.staffSyncSavedActivityXP(req('pending'));
+ assert.equal(res.addedXP,0);
+ assert.equal(res.employeeId,'DOL-0002');
 });

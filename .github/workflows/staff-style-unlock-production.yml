@@ -9,6 +9,8 @@ on:
       - 'functions/staff-daily-missions.js'
       - 'functions/staff-daily-core.test.cjs'
       - 'functions/staff-daily-missions.test.cjs'
+      - 'functions/staff-xp-rank-sync.js'
+      - 'functions/staff-xp-rank-sync.test.cjs'
       - 'functions/staff-xp-actions.js'
       - 'functions/staff-xp-actions.test.cjs'
       - 'functions/staff-profile.js'
@@ -52,7 +54,7 @@ jobs:
           node --check staff-prestige-profile.js
           node --check dolphin-avatars.js
           node scripts/check-service-pages.cjs
-          node --test scripts/crew-v5.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-engine.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-xp-actions.test.cjs
+          node --test functions/staff-xp-rank-sync.test.cjs scripts/crew-v5.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-engine.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-xp-actions.test.cjs
       - name: Keep legacy XP triggers disabled
         env:
           STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}

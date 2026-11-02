@@ -1,174 +1,27 @@
 'use strict';
 /*
- * XP follows the same completed-order / table revenue rules as the live ranking.
- * This callable reads the already-saved Firestore document. It NEVER writes an
- * operational table or order, and never accepts XP amounts or staff names from
- * the caller. Operational saving must not depend on the XP service.
- *
- * Source Firestore documents are still client-writable. Consequently XP is a
- * gamification metric, not a tamper-proof accounting or payroll measure.
+ * Deprecated XP-from-saved-Firestore endpoints. Retained only so older APKs
+ * do not fail to call a missing Cloud Function. Operational Firestore records
+ * are client-writable and must never become XP awards by reading them back.
+ * Verified employee actions earn XP exclusively via staffRecordLiveAction.
  */
-const crypto=require('node:crypto');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const {getDatabase}=require('firebase-admin/database');
-const {getFirestore}=require('firebase-admin/firestore');
-const rules=require('./staff-xp-live-engine.cjs');
-const engine=require('./staff-xp-engine.cjs');
-const prestige=require('./staff-prestige');
-const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:60};
-const TYPES=new Set(['lounge_tables','bun_tables','show_tables','lounge_orders','bun_orders','res_orders']);
-const norm=x=>String(x||'').normalize('NFC').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi-VN');
-function hashed(...parts){return crypto.createHash('sha256').update(parts.join('|')).digest('hex').slice(0,40);}
-function day(){return new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'});}
-function bad(code,message){throw new HttpsError(code,message);}
-function directory(registry){
- const all=new Map();
- for(const p of Object.values(registry||{})){
-  if(!p?.active||!p.employeeId||!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))continue;
-  for(const name of [p.name,...(Array.isArray(p.nameAliases)?p.nameAliases:[])]){
-   const k=norm(name);if(!k)continue;
-   if(!all.has(k))all.set(k,new Set());
-   all.get(k).add(p.employeeId);
-  }
- }
- return all;
-}
-function resolve(map,name){
- const ids=map.get(norm(name));
- return ids?.size===1?[...ids][0]:null;
-}
-function resolvedForActor(map,name,stamped,who){
- const aliases=[who.profile.name,...(Array.isArray(who.profile.nameAliases)?who.profile.nameAliases:[])];
- if(stamped===who.id&&aliases.some(n=>norm(n)===norm(name)))return who.id;
- return resolve(map,name);
-}
-async function actor(req,db){
+const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
+async function verifiedStaff(req){
  const uid=req.auth?.uid;
- if(!uid)bad('unauthenticated','Cần đăng nhập Staff ID');
- const ident=(await db.ref('staffIdentity/'+uid).once('value')).val();
- if(!ident?.employeeId)bad('permission-denied','Thiết bị chưa liên kết hồ sơ');
- const p=(await db.ref('staffRegistry/'+ident.employeeId).once('value')).val();
- if(!p?.active||p.employeeId!==ident.employeeId)bad('permission-denied','Hồ sơ nhân viên không hoạt động');
- return {uid,id:ident.employeeId,profile:p,manager:new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim())).has(uid)};
+ if(!uid)throw new HttpsError('unauthenticated','Cần đăng nhập Staff ID');
+ const db=getDatabase(),ident=(await db.ref('staffIdentity/'+uid).once('value')).val();
+ if(ident?.verified!==true||!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(ident.employeeId||''))
+  throw new HttpsError('permission-denied','Cần Staff ID đã được quản lý xác minh');
+ const profile=(await db.ref('staffRegistry/'+ident.employeeId).once('value')).val();
+ if(!profile?.active||(profile.registrationSource==='self'&&profile.approved!==true))
+  throw new HttpsError('permission-denied','Hồ sơ đang chờ phê duyệt');
+ return profile.employeeId;
 }
-async function grant(db,employeeId,eventId,source,amount){
- if(amount<=0)return false;
- const receipt=(await db.ref('staffXpLedger/'+employeeId+'/'+eventId).once('value')).val();
- if(receipt)return false;
- const r=await prestige._awardTrustedLiveXP({employeeId,eventId,source,amount},{skipRebuild:true});
- return !r.duplicate;
+function disabled(employeeId){
+ return {saved:false,employeeId,addedXP:0,awards:0,processed:0,checked:0,
+  unmatched:0,disabled:true,status:'secure-action-required'};
 }
-async function sync(kind,id,req){
- const db=getDatabase(),who=await actor(req,db);
- const registry=(await db.ref('staffRegistry').once('value')).val()||{};
- const byName=directory(registry);
- const doc=(await getFirestore().collection(kind).doc(id).get());
- if(!doc.exists)bad('not-found','Bản ghi đã bị xóa hoặc chưa được lưu');
- const v=doc.data()||{},isTable=kind.endsWith('_tables');
- const names=isTable?[kind==='show_tables'?v.seller:v.openedByStaff]:[...rules.names(v.preparedBy),...rules.names(v.completedBy)];
- const participants=new Set(names.map(n=>resolvedForActor(byName,n,
- isTable?(kind==='show_tables'?v.sellerStaffId:v.openedByStaffId):
-  (norm(n)===norm(v.completedBy)?v.completedByStaffId:v.preparedByStaffId),who)).filter(Boolean));
- if(!participants.has(who.id)&&!who.manager)bad('permission-denied','Không nhận diện được Staff ID từ tên nhân viên trên bàn/đơn. Hãy kiểm tra tên đã đăng ký trong Hồ sơ nhân viên và lưu lại.');
- let added=0,awardCount=0;
- if(isTable){
-  const employeeId=resolvedForActor(byName,names[0],kind==='show_tables'?v.sellerStaffId:v.openedByStaffId,who);
-  const revenue=rules.tableValue(kind,v);
-  const amount=engine.revenueXP(revenue);
-  if(employeeId&&amount>0){
-   const claim=db.ref('staffXpSaleClaims/'+kind+'/'+day()+'/'+hashed(kind,id));
-   // Compatible with old staffRecordLiveAction sale claims and ledger keys.
-   const tx=await claim.transaction(prev=>prev&&prev.employeeId!==employeeId?undefined:
-    prev||{employeeId,table:id,createdAt:Date.now()},undefined,false);
-   if(!tx.committed)bad('failed-precondition','Bàn đã được ghi nhận doanh thu cho nhân viên khác');
-   const eventId='live:'+hashed('sale',kind,id,day(),employeeId);
-   if(await grant(db,employeeId,eventId,'revenue',amount)){awardCount++;if(employeeId===who.id)added+=amount;}
-  }
- }else if(v.status==='completed'){
-  const prep=new Set(rules.names(v.preparedBy).map(norm));
-  const done=new Set(rules.names(v.completedBy).map(norm));
-  const keys=new Map([...rules.names(v.preparedBy),...rules.names(v.completedBy)].map(n=>[norm(n),n]));
-  for(const [nameKey,name] of keys){
-   const employeeId=resolvedForActor(byName,name,done.has(nameKey)?v.completedByStaffId:v.preparedByStaffId,who);
-   if(!employeeId)continue;
-   const isLounge=kind==='lounge_orders';
-   const base=done.has(nameKey)?(isLounge?0.25:1):prep.has(nameKey)?(isLounge?0.1:0.5):0;
-   const total=engine.workXP(base);
-   const oldPrepId='live:'+hashed('work',kind,id,'preparing',employeeId);
-   const oldPrep=(await db.ref('staffXpLedger/'+employeeId+'/'+oldPrepId).once('value')).val();
-   // Existing employees may already have received preparation XP from v1.1.26.
-   const amount=Number(Math.max(0,total-Math.max(0,Number(oldPrep?.amount)||0)).toFixed(2));
-   const completeId='live:'+hashed('work',kind,id,'completed',employeeId);
-   if(await grant(db,employeeId,completeId,'work',amount)){awardCount++;if(employeeId===who.id)added+=amount;}
-  }
- }
- if(awardCount)try{await prestige._rebuildPrestige();}catch(e){console.error('[XP sync] board refresh error:',e);}
- return {saved:true,employeeId:who.id,addedXP:Number(added.toFixed(2)),awards:awardCount,
-  status:awardCount?'credited':'already-current-or-ineligible'};
-}
-exports.staffSyncSavedActivityXP=onCall(opts,async req=>{
- const kind=String(req.data?.kind||''),id=String(req.data?.id||'');
- if(!TYPES.has(kind)||!id||id.length>128||id.includes('/'))bad('invalid-argument','Bàn hoặc order không hợp lệ');
- return sync(kind,id,req);
-});
-
-function todayTimestamp(value){
- const t=Number(value);
- return Number.isFinite(t)&&t>0&&new Date(t).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'})===day();
-}
-function profileNames(profile){
- return [...new Set([profile.name,...(Array.isArray(profile.nameAliases)?profile.nameAliases:[])].map(norm).filter(Boolean))];
-}
-function employeeOnCompletedOrder(value,aliases){
- if(value?.status!=='completed'||!todayTimestamp(value.completedAt))return false;
- return [...rules.names(value.preparedBy),...rules.names(value.completedBy)].some(n=>aliases.includes(norm(n)));
-}
-async function recentSelfRecovery(req){
- const db=getDatabase(),who=await actor(req,db),now=Date.now();
- const throttle=db.ref('staffXpSelfRecoveryRate/'+who.uid);
- const allowed=await throttle.transaction(prev=>Number(prev?.at||0)>now-120000?undefined:{at:now},undefined,false);
- if(!allowed.committed)bad('resource-exhausted','Vừa kiểm tra XP. Hãy thử lại sau 2 phút.');
- const aliases=profileNames(who.profile).slice(0,4);
- const fs=getFirestore(),candidates=new Map();
- // A few indexed lookups for the employee's own tables, plus recent completed orders.
- // No full history reads and no client-supplied staff names or XP amounts.
- for(const [kind,field] of [['lounge_tables','openedByStaff'],['bun_tables','openedByStaff'],['show_tables','seller']]){
-  for(const name of [who.profile.name,...(who.profile.nameAliases||[])].filter(Boolean).slice(0,4)){
-   const snap=await fs.collection(kind).where(field,'==',name).limit(30).get();
-   for(const doc of snap.docs){
-    const value=doc.data()||{};
-    if(todayTimestamp(value.updatedAt)&&aliases.includes(norm(value[field]))){
-     candidates.set(kind+'/'+doc.id,{kind,id:doc.id});
-    }
-   }
-  }
- }
- for(const kind of ['lounge_orders','bun_orders','res_orders']){
-  const snap=await fs.collection(kind).orderBy('completedAt','desc').limit(80).get();
-  for(const doc of snap.docs){
-   if(employeeOnCompletedOrder(doc.data(),aliases))
-    candidates.set(kind+'/'+doc.id,{kind,id:doc.id});
-  }
- }
- let addedXP=0,awards=0,processed=0,unmatched=0;
- for(const {kind,id} of [...candidates.values()].slice(0,35)){
-  try{
-   const result=await sync(kind,id,req);
-   processed++;addedXP+=Number(result.addedXP)||0;awards+=Number(result.awards)||0;
-  }catch(e){
-   unmatched++;
-   console.warn('[XP recovery] Skip ineligible saved record:',kind,e?.code||e?.message||e);
-  }
- }
- return {employeeId:who.id,addedXP:Number(addedXP.toFixed(2)),awards,processed,unmatched,
-  checked:candidates.size,status:awards?'credited':candidates.size?'already-current-or-unmatched':'no-today-activity'};
-}
-exports.staffSyncMyRecentXP=onCall(opts,async req=>recentSelfRecovery(req));
-module.exports._todayTimestamp=todayTimestamp;
-module.exports._employeeOnCompletedOrder=employeeOnCompletedOrder;
-
-module.exports._directory=directory;
-module.exports._resolve=resolve;
-
-
-module.exports._resolvedForActor=resolvedForActor;
+exports.staffSyncSavedActivityXP=onCall(opts,async req=>disabled(await verifiedStaff(req)));
+exports.staffSyncMyRecentXP=onCall(opts,async req=>disabled(await verifiedStaff(req)));

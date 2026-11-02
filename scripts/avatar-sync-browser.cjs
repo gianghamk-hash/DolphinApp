@@ -98,10 +98,11 @@ console.log('PASS: browser computed CSS confirms real CW/CCW motion and accessib
 const rankFrame=frames.find(x=>x.file==='ranking/index.html').frame;
 const rankSource=fs.readFileSync(path.join(root,'ranking/index.html'),'utf8');const revenueFn=rankSource.match(/function renderRevenue\(\)\{[\s\S]*?\n\}/)[0],pointsFn=rankSource.match(/function renderPoints\(\)\{[\s\S]*?\n\}/)[0];
 const rankingFrameFn=rankSource.match(/function rankingAvatarFrame\(name\)\{[\s\S]*?\n\}/)[0],rankingTitleFn=rankSource.match(/function rankingTitle\(name\)\{[\s\S]*?\n\}/)[0];
+const rankingCardFn=rankSource.match(/function rankingCardFx\(name\)\{[\s\S]*?\n\}/)[0];
 const switchFn=rankSource.match(/window\.switchMain = function\(tab\)\{[\s\S]*?\n\};/)[0];
-await rankFrame.evaluate(({revenueFn,pointsFn,rankingFrameFn,rankingTitleFn})=>{
+await rankFrame.evaluate(({revenueFn,pointsFn,rankingFrameFn,rankingTitleFn,rankingCardFn})=>{
  const escape=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
- const testCode=[rankingFrameFn,rankingTitleFn,revenueFn,pointsFn,'renderRevenue();renderPoints();'].join('\n');
+ const testCode=[rankingFrameFn,rankingTitleFn,rankingCardFn,revenueFn,pointsFn,'renderRevenue();renderPoints();'].join('\n');
  new Function('$','calcRevenue','calcPoints','formatMoney','formatPoints','sendLeaders','state','esc','rankingAvatar','rankingAvatarId','rankingStaffProfile',testCode)(
   id=>document.getElementById(id),
   ()=>[{name:'AVATAR DEMO',rev:1000,cnt:1,details:['Lounge']}],
@@ -111,7 +112,7 @@ await rankFrame.evaluate(({revenueFn,pointsFn,rankingFrameFn,rankingTitleFn})=>{
   n=>window.DolphinAvatars?.profile(n)?.employeeId||'',
   n=>window.DolphinAvatars?.profile(n)||null
  );
-},{revenueFn,pointsFn,rankingFrameFn,rankingTitleFn});
+},{revenueFn,pointsFn,rankingFrameFn,rankingTitleFn,rankingCardFn});
 const gameFrame=frames.find(x=>x.file==='giaitri/index.html').frame;await gameFrame.evaluate(()=>{window.DolphinLeaderboard={getLeaderboard:async()=>[{player:'Avatar Demo',bestScore:99,totalScore:99,totalGames:1}],getStaffName:()=> 'Avatar Demo',lastError:()=>'',invalidate(){}};window.showLB('snake');});await gameFrame.waitForSelector('#lbContent [data-staff-avatar]',{state:'attached'});
 await profile.getByRole('button',{name:'Chỉnh sửa hồ sơ',exact:true}).click();await profile.locator('#choose-avatar').click();await profile.locator('#avatar-category').selectOption('Khởi đầu Lv.1');await profile.getByRole('button',{name:'Chọn 🐯',exact:true}).click();await a.page.waitForTimeout(1700);await profile.locator('#save-profile').click();await profile.locator('#profile-message').filter({hasText:'Đã lưu hồ sơ'}).waitFor();
 for(const {file,frame} of frames)await frame.waitForFunction(()=>[...document.querySelectorAll('[data-staff-avatar]')].some(el=>el.textContent==='🐯'));

@@ -14,6 +14,7 @@ function harness(){
   if(n==='firebase-functions/v2/https')return {onCall:(_,f)=>f,HttpsError};
   if(n==='./staff-xp-live-engine.cjs')return require('./staff-xp-live-engine.cjs');
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
+  if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>({addedXP:0,awarded:false})};
   if(n==='./staff-prestige')return {_awardTrustedLiveXP:async d=>{const k='staffXpLedger/'+d.employeeId+'/'+d.eventId;if(data.has(k))return {duplicate:true};data.set(k,d);awards.push(d);return {duplicate:false}}};
   throw Error(n);
  };

@@ -222,7 +222,7 @@ test('avatar directory returns public display fields only, omits inactive staff 
  assert.equal(directory.profiles[0].name,'Old name');
  assert.equal(directory.profiles[0].nameAliases.length,0);
  assert.equal(directory.profiles[0].profileVersion,1);
- assert.deepEqual(Object.keys(directory.profiles[0]).sort(),['avatar','employeeId','name','nameAliases','profileVersion','selectedFrame','selectedTitle']);
+ assert.deepEqual(Object.keys(directory.profiles[0]).sort(),['avatar','employeeId','name','nameAliases','profileVersion','selectedAura','selectedCardFx','selectedFrame','selectedNameFx','selectedTitle','selectedTrail']);
  assert.ok(!JSON.stringify(directory).includes('ownerUid'));
 });
 

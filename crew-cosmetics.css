@@ -286,7 +286,10 @@
  #profile-avatar[data-frame="mythic"]::before,
  #leader-emperor-avatar[data-frame="mythic"]::before,
  .fx-frame-preview[data-frame="mythic"]::before,
- #staffOnlineWidget.open .sow-avatar[data-frame="mythic"]::before{
+ #staffOnlineWidget.open .sow-avatar[data-frame="mythic"]::before,
+ #section-level:not([style*="none"]) .level-avatar[data-frame="mythic"]::before,
+ #section-revenue:not([style*="none"]) .drr-frame[data-frame="mythic"]::before,
+ #section-points:not([style*="none"]) .dolphin-staff-avatar[data-frame="mythic"]::before{
   animation:crew-v3-orbit 7s linear infinite!important;
  }
  #profile-avatar[data-frame="mythic"]::after,
@@ -295,7 +298,10 @@
  #staffOnlineWidget.open .sow-avatar[data-frame="mythic"]::after,
  #profile-avatar[data-frame="gold"]::after,
  #leader-emperor-avatar[data-frame="gold"]::after,
- #staffOnlineWidget.open .sow-avatar[data-frame="gold"]::after{
+ #staffOnlineWidget.open .sow-avatar[data-frame="gold"]::after,
+ #section-level:not([style*="none"]) .level-avatar[data-frame="gold"]::after,
+ #section-revenue:not([style*="none"]) .drr-frame[data-frame="gold"]::after,
+ #section-points:not([style*="none"]) .dolphin-staff-avatar[data-frame="gold"]::after{
   animation:crew-v3-shimmer 2.7s ease-in-out infinite alternate!important;
  }
 }

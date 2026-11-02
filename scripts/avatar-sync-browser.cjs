@@ -44,7 +44,7 @@ const orbitQA=await a.page.evaluate(()=>{
   const frame=el.dataset.frame;
   out[frame]={
    rings:el.querySelectorAll(':scope > .crew-fx-orbits > .crew-fx-ring').length,
-   stars:el.querySelectorAll(':scope > .crew-fx-orbits > .crew-fx-star-orbit').length,
+   stars:el.querySelectorAll(':scope > .crew-fx-orbits > .crew-mythic-universe > .crew-mythic-orbit').length,
    text:el.textContent,
    layers:el.querySelectorAll('.crew-fx-layer').length
   };
@@ -53,21 +53,21 @@ const orbitQA=await a.page.evaluate(()=>{
  out.idempotent=[...host.children].every(el=>el.querySelectorAll(':scope > .crew-fx-orbits').length===1);
  const demo=host.children[0];
  demo.dataset.frame='mythic';window.DolphinFrameFX.refresh();
- out.switchToMythic=demo.querySelectorAll('.crew-fx-star-orbit').length===2&&demo.querySelectorAll('.crew-fx-ring').length===0;
+ out.switchToMythic=demo.querySelectorAll('.crew-mythic-orbit').length===4&&demo.querySelectorAll('.crew-fx-ring').length===0;
  demo.dataset.frame='none';window.DolphinFrameFX.refresh();
  out.cleared=demo.querySelectorAll('.crew-fx-orbits').length===0;
  host.remove();return out;
 });
 assert.deepEqual(
  ['bronze','silver','gold','mythic'].map(k=>[orbitQA[k].rings,orbitQA[k].stars]),
- [[1,0],[2,0],[3,0],[0,2]],
+ [[1,0],[2,0],[3,0],[0,4]],
  'Each rarity renders precisely the requested number of animated layers'
 );
 assert.equal(Object.values(orbitQA).filter(v=>v&&typeof v==='object').every(x=>x.text==='🐬'),true,'Orbit layers preserve emoji text content');
 assert.equal(orbitQA.idempotent,true,'Repeated refresh does not create extra rings');
-assert.equal(orbitQA.switchToMythic,true,'Changing rarity swaps rings for exactly two stars');
+assert.equal(orbitQA.switchToMythic,true,'Changing rarity swaps rings for four crystal orbits');
 assert.equal(orbitQA.cleared,true,'Unequipping removes the decorative layers');
-console.log('PASS: live V4 browser orbit counts and frame switching: 1 Bronze, 2 Silver, 3 Gold, 2 Mythic stars.');
+console.log('PASS: live V7 browser orbit counts and frame switching: 1 Bronze, 2 Silver, 3 Gold, 4 Mythic crystal orbits.');
 
 await a.page.emulateMedia({reducedMotion:'no-preference'});
 const movingOrbitQA=await a.page.evaluate(()=>{
@@ -79,7 +79,7 @@ const movingOrbitQA=await a.page.evaluate(()=>{
  }
  window.DolphinFrameFX.refresh();
  for(const el of host.children){
-  sample[el.dataset.frame]=[...el.querySelectorAll('.crew-fx-layer')].map(layer=>({
+  sample[el.dataset.frame]=[...el.querySelectorAll(el.dataset.frame==='mythic'?'.crew-mythic-orbit':'.crew-fx-layer')].map(layer=>({
    name:getComputedStyle(layer).animationName,
    running:getComputedStyle(layer).animationPlayState==='running'
   }));
@@ -89,7 +89,7 @@ const movingOrbitQA=await a.page.evaluate(()=>{
 assert.deepEqual(movingOrbitQA.bronze.map(x=>x.name),['crew-fx-spin-cw']);
 assert.deepEqual(movingOrbitQA.silver.map(x=>x.name),['crew-fx-spin-cw','crew-fx-spin-ccw']);
 assert.deepEqual(movingOrbitQA.gold.map(x=>x.name),['crew-fx-spin-cw','crew-fx-spin-ccw','crew-fx-spin-cw']);
-assert.deepEqual(movingOrbitQA.mythic.map(x=>x.name),['crew-fx-spin-cw','crew-fx-spin-ccw']);
+assert.deepEqual(movingOrbitQA.mythic.map(x=>x.name),['crew-mythic-rotate','crew-mythic-rotate','crew-mythic-rotate','crew-mythic-rotate']);
 assert.ok(Object.values(movingOrbitQA).flat().every(x=>x.running),'All visible preview orbits must actually animate');
 await a.page.emulateMedia({reducedMotion:'reduce'});
 console.log('PASS: browser computed CSS confirms real CW/CCW motion and accessible reduced-motion fallback.');

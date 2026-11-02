@@ -26,7 +26,7 @@ function fixture(options={}){
   if(name==='firebase-admin/database')return {getDatabase:()=>({ref})};
   if(name==='firebase-functions/v2/https')return {onCall:(_,callback)=>callback,HttpsError};
   if(name==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
-  if(name==='../crew-arcade-proof.js')return options.validReplay
+  if(name==='./crew-arcade-proof.cjs')return options.validReplay
    ?{replay:(game)=>({valid:true,score:game==='snake'?100:1000,steps:100})}:engine;
   if(name==='./staff-prestige')return {_rebuildPrestige:async()=>{rebuilds++;}};
   throw Error(name);
@@ -79,4 +79,10 @@ test('shared pure replay engine rejects tampered and impossible inputs',()=>{
   assert.deepEqual(a,b,'Same seed and moves have deterministic results');
  }
  assert.equal(engine.replay('snake',2031,'L').valid,false,'Snake cannot reverse into its body');
+});
+
+test('deployed Cloud Functions proof is identical to browser proof',()=>{
+ const server=fs.readFileSync(__dirname+'/crew-arcade-proof.cjs','utf8');
+ const client=fs.readFileSync(__dirname+'/../crew-arcade-proof.js','utf8');
+ assert.equal(server,client,'Server and browser must replay the exact same game rules');
 });

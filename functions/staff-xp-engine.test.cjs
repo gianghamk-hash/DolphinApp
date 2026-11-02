@@ -25,6 +25,8 @@ test('level progression is monotonically increasing and unlock thresholds are or
  assert.equal(e.levelForXP(9799),2);
  assert.equal(e.levelForXP(9800),3);
  assert.equal(e.xpForLevel(60),8528450);
+ assert.equal(e.xpForLevel(10),198450);
+ assert.equal(e.levelForXP(8528449),59);
  assert.equal(e.levelForXP(1000000000),60);
  const levels=e.PERKS.map(p=>p.level);
  assert(levels.every((v,i)=>!i||v>=levels[i-1]));

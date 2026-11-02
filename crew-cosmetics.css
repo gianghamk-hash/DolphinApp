@@ -547,3 +547,27 @@
 @media(prefers-reduced-motion:reduce){
  [data-crew-trail],[data-crew-card],[data-frame="mythic"]{animation:none!important}
 }
+
+/* V5 tier-unique motion; selection, not current level, determines effect. */
+@keyframes crew-v5-halo-pulse{50%{filter:drop-shadow(0 0 19px #b4e9ff) drop-shadow(0 0 13px #ffe9a0)}}
+@keyframes crew-v5-halo-twin{to{filter:hue-rotate(120deg) drop-shadow(0 0 17px #a1ffff)}}
+@keyframes crew-v5-halo-celestial{50%{filter:drop-shadow(0 0 25px #fff) drop-shadow(0 0 30px #bc8cff)}}
+@keyframes crew-v5-name-wave{50%{text-shadow:0 0 6px #fff,0 0 16px #69ddff}}
+@keyframes crew-v5-name-comet{50%{text-shadow:-7px 0 9px #78f3ff,7px 0 15px #ffaaff}}
+@keyframes crew-v5-name-nova{50%{text-shadow:-5px 0 13px #fff,5px 0 21px #ffdb73,0 0 34px #ca91ff}}
+@keyframes crew-v5-card-breathe{50%{box-shadow:0 0 32px #f7d1ffbb,inset 0 0 24px #99e6ff99}}
+@keyframes crew-v5-card-energy{50%{border-color:#edc8ff;box-shadow:0 0 26px #affeff,inset 0 0 23px #aa7bff}}
+@media(prefers-reduced-motion:no-preference){
+ [data-crew-aura="spark"]{animation:crew-v5-halo-pulse 3.2s ease-in-out infinite}
+ [data-crew-aura="dual"]{animation:crew-v5-halo-twin 5s ease-in-out infinite alternate}
+ [data-crew-aura="celestial"]{animation:crew-v5-halo-celestial 2.8s ease-in-out infinite}
+ [data-crew-trail="wave"]{animation:crew-v5-name-wave 3.2s ease-in-out infinite}
+ [data-crew-trail="comet"]{animation:crew-v5-name-comet 2.8s ease-in-out infinite}
+ [data-crew-trail="nova"]{animation:crew-v5-name-nova 2.2s ease-in-out infinite}
+ [data-crew-card="soft"]{animation:crew-v5-card-breathe 5s ease-in-out infinite}
+ [data-crew-card="energy"]{animation:crew-v5-card-energy 4s linear infinite}
+ [data-crew-card="mythic"]{animation:crew-v5-card-breathe 2.7s ease-in-out infinite}
+}
+@media(prefers-reduced-motion:reduce){
+ [data-crew-aura],[data-crew-trail],[data-crew-card]{animation:none!important}
+}

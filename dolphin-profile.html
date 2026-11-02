@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
-<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=approval-reject-v2">
-<script src="./dolphin-navigation.js?v=1.1.42" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=approval-reject-v2" defer></script><script src="./staff-profile.js?v=1.1.42" defer></script><script src="./dolphin-avatars.js?v=crew-rewards-1" defer></script><script src="./staff-prestige-client.js?v=1.1.42" defer></script><script src="./theme-system.js?v=1.1.42" defer></script><script src="./staff-prestige-profile.js?v=crew-rewards-1" defer></script><script src="./staff-admin-profile.js?v=approval-reject-v2" defer></script><script src="./staff-xp-manager.js?v=1.1.42" defer></script>
+<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=effect-library-v6">
+<script src="./dolphin-navigation.js?v=1.1.42" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=approval-reject-v2" defer></script><script src="./staff-profile.js?v=1.1.42" defer></script><script src="./dolphin-avatars.js?v=crew-rewards-1" defer></script><script src="./staff-prestige-client.js?v=1.1.42" defer></script><script src="./theme-system.js?v=1.1.42" defer></script><script src="./staff-prestige-profile.js?v=effect-library-v6" defer></script><script src="./staff-admin-profile.js?v=approval-reject-v2" defer></script><script src="./staff-xp-manager.js?v=1.1.42" defer></script>
 </head>
 <body>
 <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -66,37 +66,43 @@
  <div class="panel-section"><h3>Dùng trên thiết bị khác</h3><p class="hint">Mã dùng một lần, hiệu lực 10 phút. Chỉ nhập trên thiết bị của bạn.</p><button id="issue-link" type="button" class="secondary full" disabled>Tạo mã liên kết</button><div id="code-panel" hidden><div id="link-code" class="link-code"></div><p id="code-expiry" class="hint"></p><button id="copy-code" class="secondary" type="button">Sao chép mã</button></div></div>
  <section id="claim-section" class="panel-section"><h3>Liên kết hồ sơ có sẵn</h3><p class="hint">Nhập mã lấy từ thiết bị đã có Staff ID để kích hoạt thiết bị này. Có thể dán mã trực tiếp vào ô bên dưới.</p><p id="claim-current" class="hint"></p><form id="link-form"><label for="claim-code">Mã từ thiết bị đã có hồ sơ</label><input id="claim-code" autocomplete="off" spellcheck="false" maxlength="36" pattern="[A-Fa-f0-9]{36}" placeholder="Dán mã liên kết 36 ký tự" required><label id="switch-confirm" class="check-row" hidden><input id="confirm-switch" type="checkbox"><span>Tôi đồng ý chuyển thiết bị này sang hồ sơ trong mã. Hồ sơ cũ được giữ nguyên.</span></label><button id="claim-link" class="primary full" type="submit" disabled>Liên kết hồ sơ có sẵn</button></form></section><p id="device-message" class="hint" role="status"></p>
 </dialog>
-<dialog id="style-dialog" aria-labelledby="style-title"><div class="dialog-head"><div><p class="eyebrow">Dấu ấn riêng</p><h2 id="style-title">Giao diện & hiệu ứng</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng giao diện">✕</button></div><label class="effect-setting" for="staff-flame-check"><span><strong>🔥 Tên phát sáng</strong><small>Lv.3 Lửa Nhỏ → Lv.25 Hỏa Diệm → Lv.60 Thiên Quang. Bật một lần, hiệu ứng tự nâng cấp.</small></span><input id="staff-flame-check" type="checkbox" disabled></label>
-<section class="crew-fx-section" aria-label="Xem trước hiệu ứng tên theo Level">
- <h3>🔥 Hành trình tên phát sáng</h3><p>Đây là hiệu ứng thật, không phải ảnh minh họa. Mỗi mốc có ánh sáng và màu riêng; tên thực tế tự đổi diện mạo khi đạt Level và bật tùy chọn tương ứng.</p>
- <div class="crew-fx-gallery">
-  <div class="crew-fx-tile" data-unlock-level="3" data-fx-kind="name" data-fx-id="ember"><span class="fx-name-preview" data-name-fx="ember">Dolphin</span><small>Lv.3 · Lửa Nhỏ</small><span class="crew-fx-status">🔒 Lv.3</span></div>
-  <div class="crew-fx-tile" data-unlock-level="25" data-fx-kind="name" data-fx-id="inferno"><span class="fx-name-preview" data-name-fx="inferno">Dolphin</span><small>Lv.25 · Hỏa Diệm</small><span class="crew-fx-status">🔒 Lv.25</span></div>
-  <div class="crew-fx-tile" data-unlock-level="45" data-fx-kind="name" data-fx-id="prism"><span class="fx-name-preview" data-name-fx="prism">Dolphin</span><small>Lv.45 · Quang Phổ (bật tên gradient)</small><span class="crew-fx-status">🔒 Lv.45</span></div>
-  <div class="crew-fx-tile" data-unlock-level="60" data-fx-kind="name" data-fx-id="celestial"><span class="fx-name-preview" data-name-fx="celestial">Dolphin</span><small>Lv.60 · Thiên Quang</small><span class="crew-fx-status">🔒 Lv.60</span></div>
- </div>
-</section><section class="panel-section" aria-label="Trang bị phần thưởng"><h3>✨ Trang bị phần thưởng đã mở</h3>
-<p class="hint">Mỗi loại chọn một kiểu; chưa đạt Level thì chưa thể trang bị.</p>
-<div class="cosmetic-selects">
-<label for="staff-frame-select">Khung Avatar<select id="staff-frame-select"></select></label>
-<label for="staff-title-select">Danh hiệu dưới tên<select id="staff-title-select"></select></label>
-<label for="staff-banner-select">Banner hồ sơ<select id="staff-banner-select"></select></label><label for="staff-nameFx-select">🌈 Kiểu tên phát sáng<select id="staff-nameFx-select"></select></label>
-<label for="staff-aura-select">💫 Hào quang Avatar<select id="staff-aura-select"></select></label>
-<label for="staff-trail-select">☄️ Vệt sao<select id="staff-trail-select"></select></label>
-<label for="staff-cardFx-select">✨ Hiệu ứng thẻ hồ sơ<select id="staff-cardFx-select"></select></label>
+<dialog id="style-dialog" aria-labelledby="style-title"><div class="dialog-head"><div><p class="eyebrow">Dấu ấn riêng</p><h2 id="style-title">Giao diện & hiệu ứng</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng giao diện">✕</button></div>
+<p class="crew-library-lead">Chạm vào hình xem trước để trang bị hiệu ứng. Tất cả hiệu ứng — kể cả chưa mở khóa — đều có thể xem trực tiếp. Mỗi nhóm chỉ chọn một kiểu, sau đó bấm <strong>Lưu giao diện</strong>.</p>
+<div class="crew-library-tabs" role="tablist" aria-label="Danh mục hiệu ứng">
+ <button type="button" class="crew-library-tab" role="tab" id="crew-tab-name" data-crew-tab="name" aria-controls="crew-panel-name" aria-selected="true">✨ Tên</button>
+ <button type="button" class="crew-library-tab" role="tab" id="crew-tab-avatar" data-crew-tab="avatar" aria-controls="crew-panel-avatar" aria-selected="false">💎 Avatar</button>
+ <button type="button" class="crew-library-tab" role="tab" id="crew-tab-profile" data-crew-tab="profile" aria-controls="crew-panel-profile" aria-selected="false">👑 Hồ sơ</button>
+ <button type="button" class="crew-library-tab" role="tab" id="crew-tab-theme" data-crew-tab="theme" aria-controls="crew-panel-theme" aria-selected="false">🎨 Chủ đề</button>
 </div>
-<section class="crew-fx-section" aria-label="Xem trước từng cấp khung avatar">
- <h3>💎 Khung avatar theo bậc hiếm</h3><p>Bronze đúc đồng → Silver băng sáng → Gold hào quang hoàng kim → Mythic quỹ đạo cực quang.</p>
- <div class="crew-fx-gallery">
-  <div class="crew-fx-tile" data-unlock-level="5" data-fx-kind="frame" data-fx-id="bronze"><span class="fx-frame-preview" data-frame="bronze" aria-hidden="true">🐬</span><small>Lv.5 · Bronze</small><span class="crew-fx-status">🔒 Lv.5</span></div>
-  <div class="crew-fx-tile" data-unlock-level="22" data-fx-kind="frame" data-fx-id="silver"><span class="fx-frame-preview" data-frame="silver" aria-hidden="true">🐬</span><small>Lv.22 · Silver</small><span class="crew-fx-status">🔒 Lv.22</span></div>
-  <div class="crew-fx-tile" data-unlock-level="40" data-fx-kind="frame" data-fx-id="gold"><span class="fx-frame-preview" data-frame="gold" aria-hidden="true">🐬</span><small>Lv.40 · Gold</small><span class="crew-fx-status">🔒 Lv.40</span></div>
-  <div class="crew-fx-tile" data-unlock-level="60" data-fx-kind="frame" data-fx-id="mythic"><span class="fx-frame-preview" data-frame="mythic" aria-hidden="true">🐬</span><small>Lv.60 · Mythic</small><span class="crew-fx-status">🔒 Lv.60</span></div>
- </div>
+<section class="crew-library-panel" id="crew-panel-name" data-crew-panel="name" role="tabpanel" aria-labelledby="crew-tab-name">
+ <div class="crew-effect-group" data-crew-kind="nameFx"><h3>🔥 Tên phát sáng</h3><p>Hiệu ứng thật hiển thị trực tiếp trên tên nhân viên.</p><div class="crew-fx-gallery" data-crew-gallery="nameFx"></div></div>
+ <div class="crew-effect-group" data-crew-kind="trail"><h3>☄️ Vệt sao quanh tên</h3><p>Các cấp hiệu ứng ánh sáng quét và hai sao băng.</p><div class="crew-fx-gallery" data-crew-gallery="trail"></div></div>
 </section>
-<label class="effect-setting" for="staff-gradient-check"><span><strong>🌈 Tên gradient</strong><small>Mở tại Level 45</small></span><input id="staff-gradient-check" type="checkbox" disabled></label>
+<section class="crew-library-panel" id="crew-panel-avatar" data-crew-panel="avatar" role="tabpanel" aria-labelledby="crew-tab-avatar" hidden>
+ <div class="crew-effect-group" data-crew-kind="frame"><h3>💎 Khung avatar</h3><p>Bronze một vòng → Silver hai vòng ngược chiều → Gold ba vòng → Mythic song tinh.</p><div class="crew-fx-gallery" data-crew-gallery="frame"></div></div>
+ <div class="crew-effect-group" data-crew-kind="aura"><h3>💫 Hào quang avatar</h3><p>Hào quang độc lập với khung; có thể dùng đồng thời.</p><div class="crew-fx-gallery" data-crew-gallery="aura"></div></div>
 </section>
-<div class="panel-section"><h3>Bộ sưu tập chủ đề</h3><p class="hint">Dark, Light, Gray luôn miễn phí. Chủ đề khác mở theo cấp độ.</p><div id="staff-theme-grid" class="theme-grid"></div></div><button type="button" class="primary full" id="staff-save-style" disabled>Lưu giao diện</button><p id="staff-style-info" class="hint" role="status"></p></dialog>
+<section class="crew-library-panel" id="crew-panel-profile" data-crew-panel="profile" role="tabpanel" aria-labelledby="crew-tab-profile" hidden>
+ <div class="crew-effect-group" data-crew-kind="title"><h3>👑 Danh hiệu dưới tên</h3><p>Xem trước chính xác danh hiệu được trang bị.</p><div class="crew-fx-gallery" data-crew-gallery="title"></div></div>
+ <div class="crew-effect-group" data-crew-kind="banner"><h3>🌊 Banner hồ sơ</h3><p>Màu nền và ánh sáng mô phỏng banner trên trang Hồ sơ.</p><div class="crew-fx-gallery" data-crew-gallery="banner"></div></div>
+ <div class="crew-effect-group" data-crew-kind="cardFx"><h3>✨ Hiệu ứng viền thẻ</h3><p>Nhìn trước các cấp viền động của thẻ hồ sơ.</p><div class="crew-fx-gallery" data-crew-gallery="cardFx"></div></div>
+</section>
+<section class="crew-library-panel" id="crew-panel-theme" data-crew-panel="theme" role="tabpanel" aria-labelledby="crew-tab-theme" hidden>
+ <div class="panel-section crew-theme-section"><h3>🎨 Bộ sưu tập chủ đề</h3><p class="hint">Dark, Light, Gray luôn miễn phí. Chủ đề khác mở theo cấp độ.</p><div id="staff-theme-grid" class="theme-grid"></div></div>
+</section>
+<p id="crew-effect-selection-status" class="hint crew-selection-status" role="status" aria-live="polite">Chọn trực tiếp một hình để trang bị, kể cả các hiệu ứng cấp thấp hơn đã mở khóa.</p>
+<div class="cosmetic-selects" id="staff-cosmetic-values" hidden aria-hidden="true">
+ <select id="staff-frame-select" tabindex="-1" aria-label="Khung avatar đã chọn"></select>
+ <select id="staff-title-select" tabindex="-1" aria-label="Danh hiệu đã chọn"></select>
+ <select id="staff-banner-select" tabindex="-1" aria-label="Banner đã chọn"></select>
+ <select id="staff-nameFx-select" tabindex="-1" aria-label="Tên phát sáng đã chọn"></select>
+ <select id="staff-aura-select" tabindex="-1" aria-label="Hào quang đã chọn"></select>
+ <select id="staff-trail-select" tabindex="-1" aria-label="Vệt sao đã chọn"></select>
+ <select id="staff-cardFx-select" tabindex="-1" aria-label="Thẻ hiệu ứng đã chọn"></select>
+ <input id="staff-flame-check" type="checkbox" tabindex="-1">
+ <input id="staff-gradient-check" type="checkbox" tabindex="-1">
+</div>
+<button type="button" class="primary full" id="staff-save-style" disabled>Lưu giao diện</button><p id="staff-style-info" class="hint" role="status"></p></dialog>
 <dialog id="rewards-dialog" aria-labelledby="rewards-title"><div class="dialog-head"><div><p class="eyebrow">Hành trình thăng hạng</p><h2 id="rewards-title">Các mốc phần thưởng</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng phần thưởng">✕</button></div><p class="hint">XP tích lũy theo Staff ID. Cấp độ cao nhất và phần thưởng đã mở được giữ khi điều chỉnh XP thông thường. Admin có thể tự đặt lại tiến trình để thử nghiệm.</p><p id="reward-next-callout" class="reward-next-callout" aria-live="polite"></p><div id="staff-reward-list" class="reward-list"></div><details class="panel-section"><summary>XP được tính như thế nào?</summary><p class="hint">1.000đ doanh thu hợp lệ = 1 XP. 0,1 điểm công việc = 1 XP. XP được tự tính từ bàn đã lưu và đơn hoàn thành theo cùng quy tắc bảng xếp hạng doanh thu/công việc. Chạm “Kiểm tra XP hôm nay” nếu đã phục vụ nhưng chưa thấy điểm.</p><p class="hint">Ngưỡng Level L = 3.500 × (L − 1)² XP. Cấp tối đa: 60. Doanh thu tính cho người mở bàn/người bán; công việc chỉ tính trên đơn hoàn tất.</p></details></dialog>
 <dialog id="admin-dialog" aria-labelledby="admin-title"><div class="dialog-head"><div><p class="eyebrow">Quản lý</p><h2 id="admin-title">Duyệt XP nhân viên</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng duyệt XP">✕</button></div><div id="prestige-admin-mount"></div></dialog>
 <dialog id="crew-approval-dialog" aria-labelledby="crew-approval-dialog-title">

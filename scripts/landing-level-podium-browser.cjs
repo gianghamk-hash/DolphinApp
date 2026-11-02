@@ -187,9 +187,9 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
     script.onload=resolve;script.onerror=reject;document.body.appendChild(script);
    });
   });
-  await page.waitForFunction(()=>!!document.getElementById('daAlert'));
+  await page.waitForFunction(()=>!!document.getElementById('delayAlert'));
   assert.equal(await page.locator('#mgrDash').count(),0);
-  assert.equal(await page.locator('#daAlert').count(),1);
+  assert.equal(await page.locator('#delayAlert').count(),1);
   console.log('PASS: Manager APK Landing does not inject daily summary and still has delayed-order alerts.');
 
   assert.equal(errors.length,0,'browser runtime errors: '+errors.join('; '));

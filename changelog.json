@@ -1,22 +1,22 @@
 {
-  "version": "1.1.54",
-  "previousVersion": "1.1.53",
-  "commit": "d3130eb",
-  "previousCommit": "7815bd5",
-  "buildDate": "2026-11-02T16:19:02.128Z",
-  "summary": "fix: verified-only rankings and secure staff XP across outlets",
+  "version": "1.1.55",
+  "previousVersion": "1.1.54",
+  "commit": "bf4224a",
+  "previousCommit": "d3130eb",
+  "buildDate": "2026-11-02T20:12:45.840Z",
+  "summary": "feat: 10x daily missions and verified Snake/2048 game XP",
   "changes": {
-    "totalCommits": 278,
-    "filesChanged": 19,
+    "totalCommits": 279,
+    "filesChanged": 20,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix: verified-only rankings and secure staff XP across outlets"
+    "feat: 10x daily missions and verified Snake/2048 game XP"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/firebase-staff-prestige-production.yml",
+      "file": ".github/workflows/staff-prestige-tests.yml",
       "type": "update"
     },
     {
@@ -28,15 +28,11 @@
       "type": "update"
     },
     {
-      "file": "dolphin-avatars.js",
+      "file": "crew-arcade-missions.js",
       "type": "update"
     },
     {
-      "file": "dolphin-bungalow.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-lounge.html",
+      "file": "crew-arcade-proof.js",
       "type": "update"
     },
     {
@@ -44,15 +40,23 @@
       "type": "update"
     },
     {
-      "file": "dolphin-restaurant.html",
+      "file": "functions/staff-daily-arcade.test.cjs",
       "type": "update"
     },
     {
-      "file": "dolphin-show.html",
+      "file": "functions/staff-daily-core.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-id.test.js",
+      "file": "functions/staff-daily-core.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.test.cjs",
       "type": "update"
     },
     {
@@ -64,31 +68,31 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-actions.js",
-      "type": "update"
-    },
-    {
       "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-rank-sync.js",
+      "file": "giaitri/games/game2048.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-rank-sync.test.cjs",
+      "file": "giaitri/games/snake.html",
       "type": "update"
     },
     {
-      "file": "ranking/index.html",
+      "file": "scripts/crew-daily-missions-ui.test.cjs",
       "type": "update"
     },
     {
-      "file": "staff-prestige-client.js",
+      "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-profile.css",
       "type": "update"
     }
   ]

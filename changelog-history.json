@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.54",
+      "releaseDate": "2026-11-02T16:19:02.128Z",
+      "summary": "fix: verified-only rankings and secure staff XP across outlets",
+      "details": [
+        "fix: verified-only rankings and secure staff XP across outlets"
+      ]
+    },
+    {
       "version": "1.1.53",
       "releaseDate": "2026-11-02T15:35:06.432Z",
       "summary": "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview",
@@ -390,14 +398,6 @@
       "summary": "Fix TFT online lag with compact atomic rooms and background combat (#160)",
       "details": [
         "Fix TFT online lag with compact atomic rooms and background combat (#160)"
-      ]
-    },
-    {
-      "version": "1.1.4",
-      "releaseDate": "2026-10-30T04:39:11.730Z",
-      "summary": "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization",
-      "details": [
-        "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization"
       ]
     }
   ]

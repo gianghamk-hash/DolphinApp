@@ -1,5 +1,5 @@
 {
-  "version": "1.1.54",
+  "version": "1.1.55",
   "releaseDate": "2026-11-02",
-  "notes": "fix: verified-only rankings and secure staff XP across outlets"
+  "notes": "feat: 10x daily missions and verified Snake/2048 game XP"
 }

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.54",
-  "buildDate": "2026-11-02T16:19:02.128Z",
-  "commit": "d3130eb",
-  "notes": "fix: verified-only rankings and secure staff XP across outlets",
+  "version": "1.1.55",
+  "buildDate": "2026-11-02T20:12:45.840Z",
+  "commit": "bf4224a",
+  "notes": "feat: 10x daily missions and verified Snake/2048 game XP",
   "forceUpdate": false
 }

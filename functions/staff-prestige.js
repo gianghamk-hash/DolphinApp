@@ -155,7 +155,7 @@ exports.staffSetShowcase=onCall(opts,async req=>{
  if(!result.committed)throw new HttpsError('failed-precondition','Hồ sơ không hợp lệ');
  return expose(result.snapshot.val());
 });
-const themeLevels=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30});
+const themeLevels=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30,abyss:4,aurora:12,coral:18,neon:28,cosmic:36,royal:48,obsidian:55});
 exports.staffSetPersonalStyle=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
  const theme=String(req.data?.theme||'dark');

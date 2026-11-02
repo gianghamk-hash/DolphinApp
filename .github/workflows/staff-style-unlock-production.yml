@@ -10,6 +10,7 @@ on:
       - 'functions/staff-daily-core.test.cjs'
       - 'functions/staff-daily-missions.test.cjs'
       - 'functions/staff-xp-actions.js'
+      - 'functions/staff-xp-actions.test.cjs'
       - 'functions/staff-profile.js'
       - 'functions/staff-prestige.js'
       - 'functions/staff-prestige.test.cjs'

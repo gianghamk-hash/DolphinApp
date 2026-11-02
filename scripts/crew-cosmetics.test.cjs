@@ -25,7 +25,7 @@ test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
   assert.ok(css.includes('data-frame="'+id+'"'),'missing '+id+' frame effect');
   assert.ok(html.includes('data-unlock-level="'+level+'" data-fx-kind="frame" data-fx-id="'+id+'"'),'missing '+id+' frame preview');
  }
- assert.match(avatars,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=orbit-v4-20261102/);
  assert.match(avatars,/crew-cosmetics-stylesheet/);
 });
 test('previews accurately show locked, unlocked, and equipped states',()=>{
@@ -79,6 +79,6 @@ test('all ranking tabs and the Emperor read a shared equipped frame',()=>{
  assert.match(rankingHTML,/function rankingTitle\(name\)/);
 });
 test('both PWA cache and runtime resolve exactly the same V3 cosmetic asset',()=>{
- assert.match(worker,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
- assert.match(avatars,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
+ assert.match(worker,/crew-cosmetics\.css\?v=orbit-v4-20261102/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=orbit-v4-20261102/);
 });

@@ -122,35 +122,28 @@ exports.staffGetPrestige=onCall(opts,async req=>{
 exports.staffGetMyProgress=onCall(opts,async req=>{
  const {id,profile,testAdmin}=await currentStaff(req);
  const now=Date.now();
- let actual=profile,checkinTopUpXP=0;
- // Old same-day check-ins had already completed the task but retained 1x XP.
- // Reconcile only the original receipt in a transaction; never re-award a
- // previous date, and never allow client-supplied bonus amounts.
- if(dailyCore.reconcileLegacyCheckin(profile,now).changed){
+ let actual=profile,dailyTopUpXP=0;
+ // Update only verified receipts claimed TODAY at old reward rates.
+ // Transaction idempotency protects concurrent devices and repeated refreshes.
+ if(dailyCore.reconcileLegacyDaily(profile,now).changed){
   const ref=getDatabase().ref('staffRegistry/'+id);
-  let firstUpdate=true;
   try{
-   const transaction=await ref.transaction(v=>{
-    const wasFirst=firstUpdate;firstUpdate=false;
-    const current=v===null&&wasFirst?profile:v;
-    const fixed=dailyCore.reconcileLegacyCheckin(current,now);
+   const transaction=await ref.transaction(current=>{
+    if(current===null)return null;
+    const fixed=dailyCore.reconcileLegacyDaily(current,now);
     return fixed.changed?fixed.profile:undefined;
    },undefined,false);
+   actual=transaction.committed?transaction.snapshot.val():(await ref.once('value')).val()||profile;
    if(transaction.committed){
-    actual=transaction.snapshot.val();
-    const levelStreak=Math.max(1,Number(actual.dailyMissions.streak)||1);
-    checkinTopUpXP=dailyCore.checkinXP(levelStreak)-
-     (15+Math.min(7,levelStreak)*5);
-    try{await rebuild();}catch(e){console.warn('[Crew Daily] Credit saved, board refresh pending:',e?.message||e);}
-   }else{
-    actual=(await ref.once('value')).val()||profile;
+    dailyTopUpXP=Math.max(0,Number(actual.xp||0)-Number(profile.xp||0));
+    try{await rebuild();}catch(e){console.warn('[Crew Daily] Public board refresh pending:',e?.message||e);}
    }
   }catch(e){
-   console.warn('[Crew Daily] Same-day check-in credit retry needed:',e?.message||e);
+   console.warn('[Crew Daily] Same-day bonus retry needed:',e?.message||e);
    actual=(await ref.once('value')).val()||profile;
   }
  }
- return {...expose(actual),dailyMissions:{...dailyCore.view(actual),...(checkinTopUpXP>0?{checkinTopUpXP}:{})},testAdmin};
+ return {...expose(actual),dailyMissions:{...dailyCore.view(actual),...(dailyTopUpXP>0?{dailyTopUpXP,checkinTopUpXP:dailyTopUpXP}:{})},testAdmin};
 });
 exports.staffSetShowcase=onCall(opts,async req=>{
  const {id}=await currentStaff(req);

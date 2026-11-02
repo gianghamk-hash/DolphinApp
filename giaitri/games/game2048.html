@@ -283,6 +283,10 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   </div>
 </div>
 
+<div id="dailyQuestStatus" role="status" aria-live="polite" style="text-align:center;padding:5px 8px;font-size:11px;color:#fbd77a">🔢 Đạt 1.000 điểm trong một ván: +1.000 XP/ngày</div>
+<script src="../../staff-id.js?v=crew-daily-game-v1"></script>
+<script src="../../crew-arcade-proof.js?v=1"></script>
+<script src="../../crew-arcade-missions.js?v=1"></script>
 <!-- ═══════════ LOGIC ═══════════ -->
 <script>
 (function(){
@@ -301,6 +305,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   var won = false;
   var continueAfterWinFlag = false;
   var animating = false;
+  var arcadeRun = null, roundToken = 0;
 
   var cellSize = 0;
   var gapSize = 8;
@@ -531,8 +536,8 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
       }
     }
     if (!empty.length) return null;
-    var pick = empty[Math.floor(Math.random() * empty.length)];
-    var value = Math.random() < 0.9 ? 2 : 4;
+    var pick = empty[Math.floor((arcadeRun?.rng?.()??Math.random()) * empty.length)];
+    var value = (arcadeRun?.rng?.()??Math.random()) < 0.9 ? 2 : 4;
     var tile = { id: nextId++, value: value, r: pick.r, c: pick.c };
     tiles.push(tile);
     return tile;
@@ -641,6 +646,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
     }
 
     saveSnapshot();
+    window.DolphinCrewArcade?.move(arcadeRun,dir);
 
     // Update score
     if (totalGain > 0){
@@ -688,9 +694,8 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
       // Bước 3: sinh tile mới sau animation
       setTimeout(function(){
         var newTile = spawnTile();
-        if (newTile){
-          render();
-        }
+        if (newTile){render();}
+        if(score>=1000)void window.DolphinCrewArcade?.claim(arcadeRun,score);
         animating = false;
 
         // Check win
@@ -747,6 +752,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 
   window.undo = function(){
     if (animating || !history.length) return;
+    window.DolphinCrewArcade?.invalidate(arcadeRun);
     var snap = history.pop();
     tiles = snap.tiles.map(function(t){ return { id: t.id, value: t.value, r: t.r, c: t.c }; });
     score = snap.score;
@@ -869,7 +875,10 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
   });
 
   // ═══════════════ NEW GAME ═══════════════
-  function startNewGame(){
+  async function startNewGame(){
+    const token=++roundToken;
+    arcadeRun=await window.DolphinCrewArcade?.start('2048')||null;
+    if(token!==roundToken)return;
     tiles = [];
     nextId = 1;
     score = 0;

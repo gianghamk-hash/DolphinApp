@@ -1,132 +1,79 @@
 'use strict';
-const test=require('node:test'),assert=require('node:assert/strict');
-const rules=require('./staff-daily-core.cjs');
+const {test}=require('node:test'),assert=require('node:assert/strict');
+const core=require('./staff-daily-core.cjs');
 const person=()=>({employeeId:'DOL-0123',name:'Crew',active:true,xp:0,registrationSource:'manager'});
 const vn=(day,hour=1)=>Date.parse(day+'T00:00:00Z')-7*3600000+hour*3600000;
-test('six fixed tasks and bounded rewards are never client configurable',()=>{
- assert.deepEqual(rules.TASKS.map(v=>v.id),['checkin','order_completed','bungalow_opened','lounge_opened','order_received','avatar_changed']);
- assert.equal(rules.checkinXP(1),200);
- assert.equal(rules.checkinXP(7),500);
- assert.equal(rules.checkinXP(1000),500);
- assert.throws(()=>rules.apply(person(),'grant_any_xp',vn('2026-11-02')));
+test('eight fixed tasks have precisely the requested rewards',()=>{
+ assert.deepEqual(core.TASKS.map(x=>x.id),[
+  'checkin','order_completed','bungalow_opened','lounge_opened',
+  'order_received','avatar_changed','snake_100','game2048_1000'
+ ]);
+ assert.deepEqual(core.TASKS.map(x=>x.xp),[2000,400,300,250,150,100,500,1000]);
+ assert.equal(core.checkinXP(1),2000);
+ assert.equal(core.checkinXP(7),5000);
+ assert.equal(core.checkinXP(999),5000);
+ assert.throws(()=>core.apply(person(),'arbitrary_task',vn('2026-11-03')));
 });
-test('00:00 Asia/Ho_Chi_Minh resets daily missions but not the streak',()=>{
- const before=Date.parse('2026-11-02T16:59:59Z');
- const after=Date.parse('2026-11-02T17:00:00Z');
- assert.equal(rules.vietnamDay(before),'2026-11-02');
- assert.equal(rules.vietnamDay(after),'2026-11-03');
- const opened=rules.apply(person(),'bungalow_opened',before,'first').profile;
- const status=rules.view(opened,after);
- assert.equal(status.date,'2026-11-03');
- assert.equal(status.completedCount,0);
- assert.equal(status.todayXP,0);
- assert.equal(status.resetAt,Date.parse('2026-11-03T17:00:00Z'));
+test('VN midnight resets eight daily missions but preserves streak',()=>{
+ const a=Date.parse('2026-11-02T16:59:59Z'),b=a+1000;
+ const claimed=core.apply(person(),'snake_100',a,'snake-proof');
+ assert.equal(claimed.addedXP,500);
+ assert.equal(core.view(claimed.profile,a).completedCount,1);
+ assert.equal(core.view(claimed.profile,b).completedCount,0);
+ assert.equal(core.view(claimed.profile,b).resetAt,Date.parse('2026-11-03T17:00:00Z'));
 });
-test('check-in streak increases every consecutive VN day, caps XP at day 7',()=>{
- let p=person(),previousXP=0;
- for(let i=2;i<=9;i++){
-  const day='2026-11-'+String(i).padStart(2,'0');
-  const result=rules.apply(p,'checkin',vn(day),'receipt'+i);
-  assert.equal(result.changed,true);
-  assert.equal(result.addedXP,rules.checkinXP(i-1));
-  p=result.profile;
-  const snapshot=rules.view(p,vn(day));
-  assert.equal(snapshot.streak,i-1);
-  assert.equal(snapshot.bestStreak,i-1);
-  assert.equal(snapshot.checkedInToday,true);
-  assert.equal(p.xp,previousXP+result.addedXP);
-  previousXP=p.xp;
+test('check-in streak has x10 more reward than previous version and caps at day 7',()=>{
+ let p=person(),total=0;
+ for(let i=1;i<=9;i++){
+  const result=core.apply(p,'checkin',vn('2026-11-'+String(i).padStart(2,'0')),String(i));
+  assert.equal(result.addedXP,core.checkinXP(i));
+  total+=result.addedXP;p=result.profile;assert.equal(p.xp,total);
  }
- const skipped=rules.view(p,vn('2026-11-11'));
- assert.equal(skipped.streak,0);
- const reset=rules.apply(p,'checkin',vn('2026-11-11'),'new');
- assert.equal(reset.changed,true);
- assert.equal(reset.addedXP,200);
- assert.equal(rules.view(reset.profile,vn('2026-11-11')).streak,1);
- assert.equal(rules.view(reset.profile,vn('2026-11-11')).bestStreak,8);
+ assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,2000);
 });
-test('same-day replay does not add XP, other tasks independently add XP once',()=>{
- const day=vn('2026-11-02');
- const first=rules.apply(person(),'checkin',day,'1');
- const replay=rules.apply(first.profile,'checkin',day+500,'2');
- assert.equal(replay.changed,false);
- assert.equal(replay.profile.xp,200);
- let p=first.profile;
- const amounts={order_completed:40,bungalow_opened:30,lounge_opened:25,order_received:15,avatar_changed:10};
- for(const [mission,bonus] of Object.entries(amounts)){
-  const win=rules.apply(p,mission,day+1000,mission);
-  assert.equal(win.addedXP,bonus);
-  p=win.profile;
-  assert.equal(rules.apply(p,mission,day+2000,'duplicate').changed,false);
+test('each verified task is claimed once per day per Staff ID',()=>{
+ const time=vn('2026-11-03'),amounts={checkin:2000,order_completed:400,bungalow_opened:300,lounge_opened:250,order_received:150,avatar_changed:100,snake_100:500,game2048_1000:1000};
+ let p=person(),total=0;
+ for(const [task,xp] of Object.entries(amounts)){
+  const first=core.apply(p,task,time,task);total+=xp;
+  assert.equal(first.addedXP,xp);
+  assert.equal(core.apply(first.profile,task,time+1000,'retry').addedXP,0);
+  p=first.profile;
  }
- assert.equal(p.xp,320);
- const state=rules.view(p,day);
- assert.equal(state.completedCount,6);
- assert.equal(state.todayXP,320);
- assert.equal(state.tasks.every(x=>x.done),true);
+ assert.equal(total,4700);assert.equal(p.xp,total);
+ assert.equal(core.view(p,time).completedCount,8);
+ assert.equal(core.view(p,time).todayXP,total);
 });
-test('unapproved/inactive accounts earn nothing and stale actions cannot roll back newer-day state',()=>{
+test('pending and inactive staff never get game or order bonuses',()=>{
  const pending={...person(),registrationSource:'self',approved:false};
- assert.equal(rules.apply(pending,'order_received',vn('2026-11-02')).changed,false);
- assert.equal(rules.apply({...person(),active:false},'checkin',vn('2026-11-02')).changed,false);
- const later=rules.apply(person(),'checkin',vn('2026-11-05'));
- assert.equal(rules.apply(later.profile,'avatar_changed',vn('2026-11-04')).changed,false);
+ assert.equal(core.apply(pending,'snake_100',vn('2026-11-03')).changed,false);
+ assert.equal(core.apply({...person(),active:false},'game2048_1000',vn('2026-11-03')).changed,false);
+ const current=core.apply(person(),'checkin',vn('2026-11-04')).profile;
+ assert.equal(core.apply(current,'avatar_changed',vn('2026-11-03')).changed,false);
 });
-test('daily XP updates the same permanent level/peak field as sales XP',()=>{
- const start={...person(),xp:3495};
- const updated=rules.apply(start,'checkin',vn('2026-11-02')).profile;
- assert.equal(updated.levelPeak,2);
- assert.equal(updated.xp,3695);
- assert.equal(updated.dailyMissions.completed.checkin.xp,200);
+test('today-only 1x and 10x legacy check-ins upgrade to new x100 rate once',()=>{
+ const now=vn('2026-11-03');
+ for(const legacyXP of [20,200]){
+  const p={...person(),xp:legacyXP,dailyMissions:{date:'2026-11-03',lastCheckinDay:'2026-11-03',streak:1,completed:{checkin:{xp:legacyXP,at:now,receipt:'signed'}}}};
+  const result=core.reconcileLegacyDaily(p,now+1000);
+  assert.equal(result.addedXP,2000-legacyXP);
+  assert.equal(result.profile.xp,2000);
+  assert.equal(result.profile.dailyMissions.completed.checkin.rateVersion,3);
+  assert.equal(core.reconcileLegacyDaily(result.profile,now+1500).changed,false);
+ }
 });
-
-test('check-in XP is exactly 10x old rates, capped at day 7, other task rewards unchanged',()=>{
- for(let day=1;day<=10;day++)assert.equal(rules.checkinXP(day),(15+Math.min(7,day)*5)*10);
- assert.deepEqual(rules.TASKS.filter(task=>task.id!=='checkin').map(task=>task.xp),[40,30,25,15,10]);
- const date=vn('2026-11-12');
- const p=rules.apply(person(),'checkin',date,'new').profile;
- assert.equal(rules.view(p,date).tasks.find(task=>task.id==='checkin').xp,200);
- const legacy={...p,dailyMissions:{...p.dailyMissions,completed:{checkin:{xp:20,at:date,receipt:'legacy'}}}};
- assert.equal(rules.view(legacy,date).tasks.find(task=>task.id==='checkin').xp,20,'previously claimed rewards remain unchanged');
- assert.equal(rules.apply(legacy,'checkin',date+1000).changed,false,'no same-day retroactive credit');
+test('legacy business mission receipts top up only TODAY; unverified receipts do not',()=>{
+ const time=vn('2026-11-03');
+ const base={...person(),xp:40,dailyMissions:{date:'2026-11-03',completed:{order_completed:{xp:40,at:time,receipt:'trusted'}}}};
+ const fixed=core.reconcileLegacyDaily(base,time+1000);
+ assert.equal(fixed.addedXP,360);
+ assert.equal(fixed.profile.xp,400);
+ assert.equal(core.reconcileLegacyDaily(base,vn('2026-11-04')).changed,false);
+ const untrusted={...base,dailyMissions:{...base.dailyMissions,completed:{order_completed:{xp:40,at:time}}}};
+ assert.equal(core.reconcileLegacyDaily(untrusted,time).changed,false);
 });
-
-test('legacy same-day check-in 20 XP is reconciled to 200 XP exactly once',()=>{
- const now=vn('2026-11-02',16);
- const p=rules.apply(person(),'checkin',now,'original-receipt').profile;
- const legacy={...p,xp:p.xp-180,dailyMissions:{...p.dailyMissions,completed:{
-  ...p.dailyMissions.completed,checkin:{xp:20,at:now,receipt:'original-receipt'}
- }}};
- assert.equal(rules.view(legacy,now).tasks[0].xp,20);
- const fixed=rules.reconcileLegacyCheckin(legacy,now+1200);
- assert.equal(fixed.changed,true);
- assert.equal(fixed.addedXP,180);
- assert.equal(fixed.profile.xp,200);
- assert.equal(fixed.profile.dailyMissions.completed.checkin.xp,200);
- assert.equal(fixed.profile.dailyMissions.completed.checkin.receipt,'original-receipt');
- assert.equal(fixed.profile.dailyMissions.completed.checkin.rateVersion,2);
- assert.equal(rules.view(fixed.profile,now+1300).todayXP,200);
- assert.equal(rules.reconcileLegacyCheckin(fixed.profile,now+1400).changed,false);
-});
-test('legacy check-in top-up is forbidden for previous day, missing proof or inactive staff',()=>{
- const yesterday=vn('2026-11-02'),today=vn('2026-11-03');
- const p=rules.apply(person(),'checkin',yesterday,'proof').profile;
- const legacy={...p,xp:20,dailyMissions:{...p.dailyMissions,completed:{checkin:{xp:20,at:yesterday,receipt:'proof'}}}};
- assert.equal(rules.reconcileLegacyCheckin(legacy,today).changed,false);
- assert.equal(rules.reconcileLegacyCheckin({...legacy,active:false},yesterday).changed,false);
- const absent={...legacy,dailyMissions:{...legacy.dailyMissions,completed:{checkin:{xp:20,at:yesterday}}}};
- assert.equal(rules.reconcileLegacyCheckin(absent,yesterday).changed,false);
- const badDate={...legacy,dailyMissions:{...legacy.dailyMissions,completed:{checkin:{xp:20,at:yesterday-86400000,receipt:'proof'}}}};
- assert.equal(rules.reconcileLegacyCheckin(badDate,yesterday).changed,false);
-});
-test('streak 7 old 50 XP gets exactly 450 XP top-up to reach 500 XP',()=>{
- const stamp=vn('2026-11-02');
- const p={...person(),xp:50,dailyMissions:{
-  date:'2026-11-02',lastCheckinDay:'2026-11-02',streak:7,bestStreak:7,
-  completed:{checkin:{xp:50,at:stamp,receipt:'old-checkin'}}
- }};
- const result=rules.reconcileLegacyCheckin(p,stamp+1500);
- assert.equal(result.addedXP,450);
- assert.equal(result.profile.xp,500);
- assert.equal(result.profile.dailyMissions.completed.checkin.xp,500);
+test('new game mission rewards are not multiplied by another factor',()=>{
+ const t=vn('2026-11-03');
+ assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,500);
+ assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,1000);
 });

@@ -29,6 +29,7 @@ function fixture(options={}){
   if(name==='firebase-admin/database')return {getDatabase:()=>({ref})};
   if(name==='firebase-functions/v2/https')return {onCall:(_,callback)=>callback,HttpsError};
   if(name==='./staff-daily-core.cjs')return core;
+  if(name==='../crew-arcade-proof.js')return require('../crew-arcade-proof.js');
   if(name==='./staff-prestige')return {_rebuildPrestige:async()=>{rebuilds++}};
   throw Error(name);
  };
@@ -42,15 +43,15 @@ test('check-in callable requires manager-approved Staff ID, not arbitrary client
  await assert.rejects(()=>h.api.staffCheckInDaily(req('pending')),e=>e.code==='permission-denied');
  await assert.rejects(()=>h.api.staffCheckInDaily(req('unknown')),e=>e.code==='permission-denied');
  const result=await h.api.staffCheckInDaily(req('worker',{employeeId:'DOL-9999',amount:1000000}));
- assert.equal(result.awarded,true);assert.equal(result.addedXP,200);
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,200);
+ assert.equal(result.awarded,true);assert.equal(result.addedXP,2000);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,2000);
 });
 test('multiple devices cannot claim the same daily task twice',async()=>{
  const h=fixture({cold:true});
  h.data.set('staffIdentity/second',{employeeId:'DOL-0002',verified:true});
  const results=await Promise.all([h.api.staffCheckInDaily(req('worker')),h.api.staffCheckInDaily(req('second'))]);
  assert.equal(results.filter(v=>v.awarded).length,1);
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,200);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,2000);
  assert.equal(h.rebuilds(),1);
 });
 test('business missions are internal-only, idempotent and update profile level',async()=>{
@@ -60,9 +61,9 @@ test('business missions are internal-only, idempotent and update profile level',
  h.data.set('staffRegistry/DOL-0002',{...p,xp:3490});
  const first=await h.api._award(h.employeeId,'order_completed');
  const second=await h.api._award(h.employeeId,'order_completed');
- assert.equal(first.addedXP,40);
+ assert.equal(first.addedXP,400);
  assert.equal(second.addedXP,0);
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,3530);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,3890);
  assert.equal(h.data.get('staffRegistry/DOL-0002').levelPeak,2);
  await assert.rejects(()=>h.api._award(h.employeeId,'unknown_mission'),e=>e.code==='invalid-argument');
 });

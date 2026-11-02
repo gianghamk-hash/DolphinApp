@@ -53,6 +53,57 @@ exports.staffCheckInDaily=onCall(opts,async req=>{
  }
  return result;
 });
+/*
+ * Arcade missions use an issued, single-session seed, then replay all recorded
+ * moves on the server. Raw client scores never grant XP. It is still a local
+ * game: input automation cannot be completely prevented.
+ */
+const arcade=require('../crew-arcade-proof.js');
+const arcadeRules=Object.freeze({
+ snake:{task:'snake_100',threshold:100,minMs:9000},
+ '2048':{task:'game2048_1000',threshold:1000,minMs:15000}
+});
+exports.staffStartArcadeMission=onCall(opts,async req=>{
+ const {employeeId}=await verifiedStaff(req);
+ const game=String(req.data?.game||'');
+ const rule=arcadeRules[game];
+ if(!rule)throw new HttpsError('invalid-argument','Game không hợp lệ.');
+ const startedAt=Date.now(),challengeId=crypto.randomBytes(16).toString('hex');
+ const seed=crypto.randomBytes(4).readUInt32LE(0)||1;
+ const ref=getDatabase().ref('staffDailyGameChallenges/'+req.auth.uid+'/'+game);
+ await ref.set({employeeId,challengeId,seed,startedAt,expiresAt:startedAt+45*60000,used:false});
+ return {game,challengeId,seed,expiresAt:startedAt+45*60000};
+});
+exports.staffFinishArcadeMission=onCall(opts,async req=>{
+ const {employeeId}=await verifiedStaff(req);
+ const game=String(req.data?.game||''),rule=arcadeRules[game];
+ const id=String(req.data?.challengeId||'');
+ const score=Number(req.data?.score);
+ const moves=req.data?.moves;
+ if(!rule||!(/^[a-f0-9]{32}$/.test(id))||
+    !Number.isSafeInteger(score)||score<rule.threshold||
+    typeof moves!=='string'||moves.length>5000||moves.length<1)
+  throw new HttpsError('invalid-argument','Kết quả trò chơi không hợp lệ.');
+ const ref=getDatabase().ref('staffDailyGameChallenges/'+req.auth.uid+'/'+game);
+ const challenge=(await ref.once('value')).val();
+ const now=Date.now();
+ if(!challenge||challenge.employeeId!==employeeId||challenge.challengeId!==id||
+    challenge.used||challenge.expiresAt<now||now-challenge.startedAt<rule.minMs)
+  throw new HttpsError('failed-precondition','Ván chơi chưa hợp lệ hoặc đã kết thúc.');
+ const result=arcade.replay(game,challenge.seed,moves);
+ if(!result.valid||result.score!==score||score<rule.threshold)
+  throw new HttpsError('permission-denied','Điểm số không khớp diễn biến ván chơi.');
+ const claimed=await ref.transaction(v=>{
+  if(v===null)return null; // Retry on cold-cache snapshot before validating challenge.
+  return v.challengeId===id&&v.employeeId===employeeId&&!v.used&&v.expiresAt>=now
+   ?{...v,used:true,usedAt:now}:undefined;
+ },undefined,false);
+ if(!claimed.committed||claimed.snapshot?.val()?.challengeId!==id||
+    claimed.snapshot?.val()?.used!==true)
+  throw new HttpsError('already-exists','Ván chơi đã được gửi.');
+ const bonus=await award(employeeId,rule.task);
+ return {...bonus,game,score,verified:true};
+});
 // Internal-only function (never exported through functions/index.js).
 module.exports._award=award;
 module.exports._verifiedStaff=verifiedStaff;

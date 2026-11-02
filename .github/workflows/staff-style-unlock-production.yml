@@ -9,6 +9,11 @@ on:
       - 'functions/staff-daily-missions.js'
       - 'functions/staff-daily-core.test.cjs'
       - 'functions/staff-daily-missions.test.cjs'
+      - 'functions/staff-daily-arcade.test.cjs'
+      - 'crew-arcade-proof.js'
+      - 'crew-arcade-missions.js'
+      - 'giaitri/games/snake.html'
+      - 'giaitri/games/game2048.html'
       - 'functions/staff-xp-rank-sync.js'
       - 'functions/staff-xp-rank-sync.test.cjs'
       - 'functions/staff-xp-actions.js'
@@ -54,7 +59,7 @@ jobs:
           node --check staff-prestige-profile.js
           node --check dolphin-avatars.js
           node scripts/check-service-pages.cjs
-          node --test functions/staff-xp-rank-sync.test.cjs scripts/crew-v5.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-engine.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-xp-actions.test.cjs
+          node --test functions/staff-xp-rank-sync.test.cjs scripts/crew-v5.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-engine.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs functions/staff-xp-actions.test.cjs
       - name: Keep legacy XP triggers disabled
         env:
           STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
@@ -67,7 +72,7 @@ jobs:
       - name: Deploy authenticated profile cosmetics and XP ranking callables
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffCheckInDaily,functions:staffUpdateMyProfile,functions:staffSetPersonalStyle,functions:staffSetOwnRankingVisibility,functions:staffGetMyProgress,functions:staffGetPrestige,functions:staffGetAvatarDirectory,functions:staffAdjustOwnTestXP,functions:staffSyncSavedActivityXP,functions:staffSyncMyRecentXP,functions:staffRecordLiveAction
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffCheckInDaily,functions:staffUpdateMyProfile,functions:staffSetPersonalStyle,functions:staffSetOwnRankingVisibility,functions:staffGetMyProgress,functions:staffGetPrestige,functions:staffGetAvatarDirectory,functions:staffAdjustOwnTestXP,functions:staffSyncSavedActivityXP,functions:staffSyncMyRecentXP,functions:staffRecordLiveAction,functions:staffStartArcadeMission,functions:staffFinishArcadeMission
       - name: Remove temporary environment
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

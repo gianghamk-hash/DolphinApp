@@ -178,7 +178,7 @@ test('admin sandbox validates XP amounts and never changes staff event ledger',a
 });
 
 
-test('Level 6 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
+test('Level 6 unlocks Bronze frame and exposes Level 7 reward milestone',async()=>{
  const {api,data}=harness({coldCacheProfile:true});
  const old=data.get('staffRegistry/DOL-0001');
  data.set('staffRegistry/DOL-0001',{...old,xp:80000,levelPeak:5});
@@ -186,7 +186,7 @@ test('Level 6 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
  assert.equal(result.level,6);
  assert.equal(result.selectedFrame,'bronze');
  assert.equal(result.nameFlame,true);
- assert.equal(result.nextReward.level,8);
+ assert.equal(result.nextReward.level,7);
  assert(result.unlocked.includes('frame_bronze'));
  assert.equal(result.rewardCatalog.find(r=>r.id==='frame_mythic').level,60);
  await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'light',selectedFrame:'silver'})),e=>e.code==='permission-denied');

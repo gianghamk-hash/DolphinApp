@@ -278,7 +278,10 @@ exports.staffGetIdentity=onCall(opts,async req=>{
  const snap=await getDatabase().ref('staffIdentity/'+uid).once('value'),v=snap.val();
  if(!v||!v.employeeId)return {verified:false};
  const profile=(await staffRoot().child(v.employeeId).once('value')).val();
- if(!profile||!profile.active)return {verified:false};
+ if(!profile||!profile.active)return {
+  verified:false,linked:false,rejected:profile?.registrationSource==='self'&&profile?.rejected===true,
+  canRegisterAgain:profile?.registrationSource==='self'&&profile?.rejected===true
+ };
  return {verified:(v.verified===true||profile.approved===true)&&(profile.registrationSource!=='self'||profile.approved===true),approved:profile.registrationSource!=='self'||profile.approved===true,linked:true,employeeId:profile.employeeId,name:profile.name,
   avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,
   registrationSource:profile.registrationSource||'manager'};

@@ -596,7 +596,9 @@ window.saveCustomerName=async function(){
     if(inp)inp.focus();
     return;
   }
-  if(!sn){window.showToast('Nhập tên NV mở phòng!','⚠️');return;}
+  if(!sn&&!(window.DolphinStaffId?.get?.()?.verified===true&&window.DolphinStaffId.get().name)){
+    window.showToast('Nhập tên NV mở phòng hoặc liên kết Staff ID đã xác minh!','⚠️');return;
+  }
   const existing=state.tableAssignments[t]||{};
   const identity=window.DolphinStaffId?.get?.();
   const verifiedStaff=identity?.verified===true&&!!identity.employeeId&&!!String(identity.name||'').trim();

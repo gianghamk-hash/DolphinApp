@@ -611,3 +611,107 @@
 .fx-motion-preview[data-avatar-motion="ascension"]::after{border:4px double #ffe7a2;box-shadow:0 0 19px #b48dff,0 0 30px #8bf0ff}
 @keyframes crew-motion-pulse{50%{transform:scale(1.19);opacity:.65}}@keyframes crew-motion-float{50%{transform:translateY(-7px)}}@keyframes crew-motion-prism{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
 @media(prefers-reduced-motion:reduce){.crew-mythic-universe *, .crew-avatar-motion,.fx-motion-preview::after,.crew-fx-choice[data-fx-id="mythic"]{animation:none!important}}
+
+
+/* CREW CLUB CELESTIAL V4 · collectible effects at Lv.4–55.
+ * Multiple real rendered layers, no image files, no tap interception. */
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="emerald"]{
+ background:radial-gradient(circle at 30% 15%,#9fffd955,#042d26 72%)!important;
+ border:3px solid #5cddac!important;box-shadow:0 0 0 2px #108b79,0 0 18px #37ffc3bb,inset 0 0 20px #8fffff44!important}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="sapphire"]{
+ background:radial-gradient(circle at 30% 15%,#acd6ff99,#10234f 72%)!important;
+ border:3px solid #91dcff!important;box-shadow:0 0 0 2px #5366ff,0 0 22px #5dabffe3,inset 0 0 19px #c1dcff99!important}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="nebula"]{
+ background:radial-gradient(circle at 30% 30%,#fbdfff55,#1b0c50 74%)!important;
+ border:3px solid #e8a1ff!important;box-shadow:0 0 0 2px #854eff,0 0 17px #d2a4ff,0 0 33px #68f6ff77,inset 0 0 20px #fbadf3!important}
+[data-frame="emerald"] .crew-fx-ring{border-color:#73ffcc;box-shadow:0 0 10px #3bfcc3}
+[data-frame="sapphire"] .crew-fx-ring{border-color:#a3edff;box-shadow:0 0 13px #5da8ff}
+[data-frame="nebula"] .crew-fx-ring{border-color:#d6aeff;box-shadow:0 0 15px #c490ff,0 0 28px #6aefff}
+.crew-motion-core,.crew-motion-ring,.crew-motion-spark{
+ position:absolute;display:block;pointer-events:none;transform-origin:center;
+}
+.crew-motion-core{inset:-14%;border-radius:50%;opacity:.7}
+.crew-motion-ring{inset:calc(-13% - var(--ring-index)*12%);border-radius:50%;border:2px solid transparent}
+.crew-motion-ring[style*="1"]{animation-direction:reverse!important}
+.crew-motion-spark{
+ --angle:calc(var(--spark-index)*45deg);
+ top:50%;left:50%;width:5px;height:5px;border-radius:50%;
+ background:#fff;box-shadow:0 0 8px #fff,0 0 17px currentColor;
+ animation:crew-v4-spark 2.7s ease-in-out infinite;
+ animation-delay:calc(var(--spark-index)*-.23s);
+}
+@keyframes crew-v4-spark{
+ 0%,100%{transform:rotate(var(--angle)) translateY(-29px) scale(.35);opacity:0}
+ 45%{opacity:1}65%{transform:rotate(var(--angle)) translateY(-45px) scale(1.6);opacity:.9}
+}
+@keyframes crew-v4-spin{to{transform:rotate(360deg)}}
+@keyframes crew-v4-counter{to{transform:rotate(-360deg)}}
+@keyframes crew-v4-ripple{0%,100%{transform:scale(.76);opacity:.18}50%{transform:scale(1.25);opacity:.86}}
+@keyframes crew-v4-flare{0%,100%{filter:brightness(1) saturate(1);transform:scale(.95)}50%{filter:brightness(1.9) saturate(2);transform:scale(1.18)}}
+@keyframes crew-v4-burst{0%,100%{transform:scale(.78) rotate(0);opacity:.5}50%{transform:scale(1.19) rotate(180deg);opacity:1}}
+[data-avatar-motion="comet"]>.crew-avatar-motion{
+ inset:-14%;border:3px dashed #ffe19c;box-shadow:0 0 13px #ffd584,0 0 26px #85e4ffbb;
+ animation:crew-v4-spin 2.1s linear infinite}
+[data-avatar-motion="comet"] .crew-motion-core{
+ background:conic-gradient(transparent 30%,#fff6bfdd 47%,#74dbffbb 52%,transparent 62%);
+ filter:blur(8px);animation:crew-v4-spin 1.9s linear infinite}
+[data-avatar-motion="comet"] .crew-motion-ring{border-top-color:#fff3ac;border-bottom-color:#66efff;animation:crew-v4-counter 3s linear infinite}
+[data-avatar-motion="comet"] .crew-motion-spark{color:#ffe3a4}
+[data-avatar-motion="tide"]>.crew-avatar-motion{
+ inset:-12%;border:3px solid #73f5e9;box-shadow:0 0 15px #2bf9f9,0 0 35px #5db9ff9a;
+ animation:crew-v4-ripple 3s ease-in-out infinite}
+[data-avatar-motion="tide"] .crew-motion-ring{border:2px solid #78efff;box-shadow:0 0 15px #5ff1e5;animation:crew-v4-ripple 3s ease-in-out infinite}
+[data-avatar-motion="tide"] .crew-motion-ring[style*="1"]{animation-delay:-1.4s}
+[data-avatar-motion="tide"] .crew-motion-core{background:radial-gradient(circle,transparent 40%,#35eeeb66 90%);filter:blur(8px)}
+[data-avatar-motion="tide"] .crew-motion-spark{color:#6ef6ff}
+[data-avatar-motion="vortex"]>.crew-avatar-motion{
+ inset:-20%;border:4px dotted #c19fff;box-shadow:0 0 20px #8d6aff,0 0 33px #75eaff;
+ animation:crew-v4-counter 3s linear infinite}
+[data-avatar-motion="vortex"] .crew-motion-ring{border:3px dashed #a8c7ff;box-shadow:0 0 16px #a983ff;animation:crew-v4-spin 3.6s linear infinite}
+[data-avatar-motion="vortex"] .crew-motion-core{background:conic-gradient(#b3a4ff00,#a477ffbb,#77f0ff00,#d99affbb,#b3a4ff00);filter:blur(9px);animation:crew-v4-counter 3.3s linear infinite}
+[data-avatar-motion="vortex"] .crew-motion-spark{color:#a784ff}
+[data-avatar-motion="phoenix"]>.crew-avatar-motion{
+ inset:-18%;border:3px solid #ffd279;box-shadow:0 0 18px #ff913a,0 0 37px #f83d61b3;
+ animation:crew-v4-flare 1.8s ease-in-out infinite}
+[data-avatar-motion="phoenix"] .crew-motion-core{
+ background:conic-gradient(#ff5e4900,#ffaf44dd,#ff463aaa,#ffeb9fff,#ff5e4900);filter:blur(11px);
+ animation:crew-v4-spin 4s linear infinite}
+[data-avatar-motion="phoenix"] .crew-motion-ring{border-top:3px solid #ffe5a3;border-bottom:3px solid #ff6f48;animation:crew-v4-spin 3.4s linear infinite}
+[data-avatar-motion="phoenix"] .crew-motion-spark{color:#ff9d58}
+[data-avatar-motion="supernova"]>.crew-avatar-motion{
+ inset:-25%;border:4px double #ffe9bc;box-shadow:0 0 20px #fff1a9,0 0 39px #c581ff,0 0 59px #4cfbffab;
+ animation:crew-v4-burst 4s ease-in-out infinite}
+[data-avatar-motion="supernova"] .crew-motion-core{
+ inset:-24%;background:conic-gradient(from 10deg,#ffb75f88,#64eeffcc,#c38aff99,#fff4bdaa,#ffb75f88);
+ filter:blur(16px);animation:crew-v4-counter 6s linear infinite}
+[data-avatar-motion="supernova"] .crew-motion-ring{border:3px dashed #f8ddff;box-shadow:0 0 19px #d19dff,0 0 35px #71eeff;
+ animation:crew-v4-spin 4s linear infinite}
+[data-avatar-motion="supernova"] .crew-motion-spark{color:#d7c1ff;width:7px;height:7px}
+.fx-motion-preview[data-avatar-motion="comet"]::after{border:3px dashed #ffe5a3;box-shadow:0 0 17px #ffb868;animation:crew-v4-spin 1.9s linear infinite}
+.fx-motion-preview[data-avatar-motion="tide"]::after{border:3px solid #7ffff3;box-shadow:0 0 22px #4dffee;animation:crew-v4-ripple 2s ease-in-out infinite}
+.fx-motion-preview[data-avatar-motion="vortex"]::after{border:4px dotted #c3a5ff;box-shadow:0 0 25px #b3a0ff;animation:crew-v4-counter 2.2s linear infinite}
+.fx-motion-preview[data-avatar-motion="phoenix"]::after{border:3px solid #ffd08c;box-shadow:0 0 24px #ff9746;animation:crew-v4-flare 1.7s ease-in-out infinite}
+.fx-motion-preview[data-avatar-motion="supernova"]::after{border:4px double #fff0c5;box-shadow:0 0 23px #b788ff,0 0 32px #66f3ff;animation:crew-v4-burst 3s ease-in-out infinite}
+:is(#profile-name,.level-person-name,.fx-name-preview)[data-name-fx="tide"]{color:#9afff0!important;text-shadow:0 0 10px #6df8ff,0 0 21px #00bec8}
+:is(#profile-name,.level-person-name,.fx-name-preview)[data-name-fx="nova"]{color:#ffe7aa!important;text-shadow:0 0 10px #fff,0 0 24px #ffbe62,0 0 39px #ff89df}
+:is(#profile-name,.level-person-name,.fx-name-preview)[data-name-fx="royal"]{background:linear-gradient(110deg,#ffeec2,#ffadf1,#fff8dc,#ffeec2);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;filter:drop-shadow(0 0 9px #edbaff);animation:crew-prism-shift 3.5s linear infinite}
+[data-crew-aura="ripple"]{filter:drop-shadow(0 0 10px #6af6ef)}
+[data-crew-aura="nebula"]{filter:drop-shadow(0 0 15px #ac83ff)}
+[data-crew-aura="stardust"]{filter:drop-shadow(0 0 17px #fff4d0)}
+[data-crew-trail="stardust"]{text-shadow:0 0 9px #fff3a9,0 0 20px #83edff}
+[data-crew-trail="meteor"]{text-shadow:0 0 13px #ffb86f,0 0 28px #a86aff}
+[data-crew-trail="starfall"]{text-shadow:0 0 14px #e6ceff,0 0 31px #7ffaff}
+[data-crew-card="ocean"]{box-shadow:inset 0 0 0 2px #5bf8d577,0 0 17px #4de4ff6c}
+[data-crew-card="prism"]{box-shadow:inset 0 0 0 2px #b3a8ff88,0 0 22px #bd91ff8c}
+[data-crew-card="aurora"]{box-shadow:inset 0 0 0 2px #c9fff088,0 0 29px #9cdaffac}
+#crew-profile-banner[data-banner="abyss"]{background:linear-gradient(125deg,#031b33,#065463,#07112e)}
+#crew-profile-banner[data-banner="aurora"]{background:linear-gradient(125deg,#083348,#3167a9,#7745aa)}
+#crew-profile-banner[data-banner="neon"]{background:linear-gradient(125deg,#100b36,#184582,#7b1ab7)}
+#crew-profile-banner[data-banner="cosmic"]{background:linear-gradient(125deg,#0b0b3d,#33347e,#713c91)}
+.crew-theme-swatch{display:block;width:100%;height:38px;border-radius:10px;border:1px solid #ffffff30;box-shadow:inset 0 1px #ffffff44;flex-shrink:0}
+.crew-theme-section .theme-option{gap:8px;min-width:0;transition:border-color .2s,box-shadow .2s}
+.crew-theme-section .theme-option:has(input:checked){box-shadow:0 0 0 2px var(--theme-accent,#e6c176),0 0 20px #75d2ff33}
+@media(prefers-reduced-motion:reduce){
+ .crew-motion-core,.crew-motion-ring,.crew-motion-spark,
+ [data-avatar-motion]>.crew-avatar-motion,.fx-motion-preview[data-avatar-motion]::after{animation:none!important;transition:none!important}
+}

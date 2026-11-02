@@ -264,7 +264,7 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
  if(!issued||issued.claimedUid!==uid)throw new HttpsError('failed-precondition','Mã hết hạn hoặc đã được sử dụng');
  const snap=await staffRoot().child(issued.employeeId).once('value'),profile=snap.val();
  if(!profile||!profile.active)throw new HttpsError('failed-precondition','Nhân viên không còn hoạt động');
- const verified=profile.registrationSource!=='self';
+ const verified=profile.registrationSource!=='self'||profile.approved===true;
  const linked=await getDatabase().ref('staffIdentity/'+uid).transaction(v=>{
   if(v===null&&current?.employeeId)return null;
   if((v?.employeeId||'')!==(current?.employeeId||''))return;
@@ -279,7 +279,7 @@ exports.staffGetIdentity=onCall(opts,async req=>{
  if(!v||!v.employeeId)return {verified:false};
  const profile=(await staffRoot().child(v.employeeId).once('value')).val();
  if(!profile||!profile.active)return {verified:false};
- return {verified:v.verified===true&&profile.registrationSource!=='self',linked:true,employeeId:profile.employeeId,name:profile.name,
+ return {verified:(v.verified===true||profile.approved===true)&&(profile.registrationSource!=='self'||profile.approved===true),approved:profile.registrationSource!=='self'||profile.approved===true,linked:true,employeeId:profile.employeeId,name:profile.name,
   avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,
   registrationSource:profile.registrationSource||'manager'};
 });

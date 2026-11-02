@@ -556,9 +556,16 @@ window.openCustomerNameModal=function(t){
   const openerInput=document.getElementById('bungalow-staff-opener');
   const lockHint=document.getElementById('bungalow-staff-opener-lock');
   const lockName=document.getElementById('bungalow-staff-opener-name-lock');
+  const linkedStaff=window.DolphinStaffId?.get?.();
   if(a.openedByStaff&&a.openedByStaff.trim()){
+    // Never steal the recorded opener of an occupied Bungalow.
     openerInput.value=a.openedByStaff;openerInput.disabled=true;
     lockHint.classList.remove('hidden');lockName.textContent=a.openedByStaff;
+  }else if(linkedStaff?.verified===true&&linkedStaff.employeeId&&linkedStaff.name){
+    // Avoid stale localStorage names silently bypassing verified XP.
+    openerInput.value=linkedStaff.name;openerInput.disabled=true;
+    lockHint.classList.remove('hidden');
+    lockName.textContent=linkedStaff.name+' · '+linkedStaff.employeeId+' (đã xác minh)';
   }else{
     openerInput.value=window.getStaffName()||'';openerInput.disabled=false;
     lockHint.classList.add('hidden');
@@ -591,7 +598,10 @@ window.saveCustomerName=async function(){
   }
   if(!sn){window.showToast('Nhập tên NV mở phòng!','⚠️');return;}
   const existing=state.tableAssignments[t]||{};
-  const finalOpener=(existing.openedByStaff&&existing.openedByStaff.trim())?existing.openedByStaff:sn;
+  const identity=window.DolphinStaffId?.get?.();
+  const verifiedStaff=identity?.verified===true&&!!identity.employeeId&&!!String(identity.name||'').trim();
+  const finalOpener=(existing.openedByStaff&&existing.openedByStaff.trim())
+    ?existing.openedByStaff:(verifiedStaff?identity.name:sn);
   try{
     if(!db)throw Error('Chưa kết nối Firestore');
     const toSave={
@@ -605,21 +615,33 @@ window.saveCustomerName=async function(){
       updatedBy:window.getStaffName()||'N/A',
       updatedAt:Date.now()
     };
-    const identity=window.DolphinStaffId?.get?.();
-    const verified=identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
+    const verified=verifiedStaff&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
       String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(finalOpener).trim().toLocaleLowerCase('vi-VN');
     const reward=verified?await window.DolphinStaffId.performLiveAction({
       kind:COL_TABLES,id:t,action:'booking',data:toSave
     }):null;
     if(!verified)await setDoc(doc(db,COL_TABLES,t),toSave,{merge:true});
     window.showToast(`Đã lưu P.${t}`,'✅');
-    if(reward&&(reward.xpAwarded||reward.missionXP))window.showToast('+'+((reward.xpAwarded||0)+(reward.missionXP||0))+' XP đã xác minh','⭐');
+    if(reward&&(reward.xpAwarded||reward.missionXP)){
+      const gained=(reward.xpAwarded||0)+(reward.missionXP||0);
+      window.showToast('+'+gained.toLocaleString('vi-VN')+' XP · '+identity.employeeId,'⭐');
+      window.dispatchEvent(new CustomEvent('dolphin-xp-synced',{detail:{addedXP:gained,source:'bungalow'}}));
+    }else if(verified&&reward?.duplicate){
+      window.showToast('Bungalow đã được cộng XP doanh thu hôm nay, không cộng trùng.','ℹ️');
+    }else if(!verified&&verifiedStaff){
+      window.showToast('Đã lưu bàn; không cộng XP vì Bungalow đang ghi nhận người mở khác ('+finalOpener+').','⚠️');
+    }else if(!verified&&identity?.employeeId&&!identity?.verified){
+      window.showToast('Đã lưu bàn; Staff ID chưa xác minh nên XP chưa được cộng.','⚠️');
+    }
     if(!verified&&window.DolphinStaffId?.syncSavedActivity)
       void window.DolphinStaffId.syncSavedActivity({kind:COL_TABLES,id:t})
         .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP mở Bungalow','⭐');})
         .catch(e=>{console.warn('[Bungalow XP] Đã lưu, XP chưa đồng bộ:',e?.code||e?.message||e);(window.showToast||window.toast)?.('Đã lưu dữ liệu · XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');});
     window.closeCustomerNameModal();
-  }catch(e){window.showToast('Lỗi lưu!','❌');}
+  }catch(e){
+    console.error('[Bungalow booking] Save/XP error:',e?.code||e?.message||e);
+    window.showToast('Không lưu được Bungalow / XP: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,110),'❌');
+  }
 };
 window.clearCustomerName=async function(){const t=document.getElementById('reception-target-table').value;if(localStorage.getItem('dolphinMasterDevice')==='true'){try{if(db)await deleteDoc(doc(db,COL_TABLES,t));window.showToast('Đã xóa P.'+t,'🧹');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi xóa: '+e.message,'❌');}return;}window.promptManagerAuth('clear',{table:t});};
 let cancelCtx={orderId:null,itemIndex:null,maxQty:0};

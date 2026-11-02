@@ -1,5 +1,5 @@
 {
-  "version": "1.1.41",
+  "version": "1.1.42",
   "releaseDate": "2026-11-02",
-  "notes": "feat(crew-club): owner approvals, 70% XP progression and epic V5 cosmetics"
+  "notes": "fix(staff): restore approval list and require fresh registration after rejection"
 }

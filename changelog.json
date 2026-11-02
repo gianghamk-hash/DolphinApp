@@ -1,24 +1,20 @@
 {
-  "version": "1.1.41",
-  "previousVersion": "1.1.40",
-  "commit": "c5110bb",
-  "previousCommit": "d48920c",
-  "buildDate": "2026-11-02T10:13:09.169Z",
-  "summary": "feat(crew-club): owner approvals, 70% XP progression and epic V5 cosmetics",
+  "version": "1.1.42",
+  "previousVersion": "1.1.41",
+  "commit": "7773cbb",
+  "previousCommit": "c5110bb",
+  "buildDate": "2026-11-02T10:40:18.797Z",
+  "summary": "fix(staff): restore approval list and require fresh registration after rejection",
   "changes": {
-    "totalCommits": 265,
-    "filesChanged": 25,
+    "totalCommits": 266,
+    "filesChanged": 16,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew-club): owner approvals, 70% XP progression and epic V5 cosmetics"
+    "fix(staff): restore approval list and require fresh registration after rejection"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/build.yml",
-      "type": "update"
-    },
     {
       "file": ".github/workflows/staff-access-production.yml",
       "type": "update"
@@ -28,15 +24,7 @@
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-style-unlock-production.yml",
-      "type": "update"
-    },
-    {
-      "file": "crew-cosmetics.css",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-avatars.js",
+      "file": "dolphin-navigation.js",
       "type": "update"
     },
     {
@@ -44,7 +32,7 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-approval-push.js",
+      "file": "functions/index.js",
       "type": "update"
     },
     {
@@ -52,47 +40,23 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.test.cjs",
-      "type": "update"
-    },
-    {
       "file": "functions/staff-profile.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-engine.cjs",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-engine.test.cjs",
+      "file": "scripts/staff-access.test.cjs",
       "type": "update"
     },
     {
-      "file": "ranking/index.html",
+      "file": "scripts/staff-approval-browser.cjs",
       "type": "update"
     },
     {
-      "file": "ranking/staff-prestige-ranking.js",
-      "type": "update"
-    },
-    {
-      "file": "scripts/avatar-sync-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-cosmetics.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-v5.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-access-browser.cjs",
+      "file": "scripts/staff-approval-ui.test.cjs",
       "type": "update"
     },
     {
@@ -108,11 +72,11 @@
       "type": "update"
     },
     {
-      "file": "staff-online.js",
+      "file": "staff-id.js",
       "type": "update"
     },
     {
-      "file": "staff-prestige-profile.js",
+      "file": "staff-profile.css",
       "type": "update"
     }
   ]

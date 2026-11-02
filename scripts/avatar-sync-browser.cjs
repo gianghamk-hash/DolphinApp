@@ -171,8 +171,8 @@ assert.equal(await b.page.locator('.dolphin-prestige').count(),0,'Profile no lon
 assert.equal(await b.page.locator('dialog[open]').count(),0);
 await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();assert.equal(await b.page.locator('#style-dialog').isVisible(),true);assert.equal(await b.page.locator('input[name=staff-theme][value=halloween]').isDisabled(),true);assert.equal(await b.page.locator('#staff-flame-check').isDisabled(),true);assert.equal(await b.page.locator('#staff-save-style').isEnabled(),true);
 await b.page.screenshot({path:path.join(output,'profile-style-mobile.png'),fullPage:true});await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.check('input[name=staff-theme][value=light]');await b.page.click('#staff-save-style');await b.page.locator('#staff-style-info').filter({hasText:'Đã lưu'}).waitFor();assert.equal(await b.page.locator('body').getAttribute('data-theme'),'light');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-light-mobile.png'),fullPage:true});
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.check('input[name=staff-theme][value=gray]');await b.page.click('#staff-save-style');await b.page.waitForFunction(()=>document.body.dataset.theme==='gray');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-gray-mobile.png'),fullPage:true});
+await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=light]');await b.page.click('#staff-save-style');await b.page.locator('#staff-style-info').filter({hasText:'Đã lưu'}).waitFor();assert.equal(await b.page.locator('body').getAttribute('data-theme'),'light');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-light-mobile.png'),fullPage:true});
+await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=gray]');await b.page.click('#staff-save-style');await b.page.waitForFunction(()=>document.body.dataset.theme==='gray');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-gray-mobile.png'),fullPage:true});
 await b.page.getByRole('button',{name:'Phần thưởng',exact:true}).click();assert.equal(await b.page.locator('.reward-row').count(),16);await b.page.keyboard.press('Escape');assert.equal(await b.page.locator('dialog[open]').count(),0);
 
 await b.page.evaluate(()=>{
@@ -201,6 +201,47 @@ assert.equal(await b.page.locator('#staff-title-select').inputValue(),'rookie');
 assert.equal(await b.page.locator('#staff-banner-select').inputValue(),'wave');
 assert.equal(await b.page.locator('#staff-frame-select option[value=silver]').evaluate(option=>option.disabled),true,'Silver cannot be equipped before Level 22');
 assert.equal(await b.page.locator('#staff-gradient-check').isDisabled(),true);
+
+const pick=async(kind,id)=>b.page.locator('.crew-fx-choice[data-fx-kind="'+kind+'"][data-fx-id="'+id+'"]');
+await b.page.locator('[data-crew-tab="name"]').click();
+assert.equal(await b.page.locator('#crew-panel-name').isVisible(),true,'Name effects are visible when its tab is selected');
+assert.equal(await b.page.locator('#crew-panel-avatar').isVisible(),false,'Only one category is visible');
+await b.page.locator('[data-crew-tab="avatar"]').click();
+assert.equal(await b.page.locator('[data-crew-gallery="frame"] .crew-fx-choice').count(),5,'all frames including none have their own previews');
+assert.equal(await b.page.locator('[data-crew-gallery="aura"] .crew-fx-choice').count(),4,'all aura tiers are visible');
+assert.equal(await (await pick('frame','mythic')).locator('[data-frame="mythic"]').count(),1,'locked Mythic renders the real avatar frame');
+assert.equal(await (await pick('frame','mythic')).getAttribute('data-locked'),'true');
+await (await pick('frame','silver')).click();
+assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze','locked Silver preview cannot be equipped');
+assert.ok((await b.page.locator('#crew-effect-selection-status').textContent()).includes('Level 22'));
+await (await pick('frame','none')).click();
+assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'none','an unlocked preview can unequip a frame');
+await (await pick('frame','bronze')).click();
+assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze');
+assert.equal(await (await pick('frame','bronze')).getAttribute('aria-pressed'),'true','preview displays selected checkmark state');
+await (await pick('aura','spark')).click();
+assert.equal(await b.page.locator('#staff-aura-select').inputValue(),'spark');
+await (await pick('aura','dual')).click();
+assert.equal(await b.page.locator('#staff-aura-select').inputValue(),'spark','locked tier cannot overwrite earlier unlock');
+await b.page.locator('[data-crew-tab="name"]').click();
+await (await pick('nameFx','ember')).click();
+await (await pick('trail','wave')).click();
+assert.equal(await b.page.locator('#staff-nameFx-select').inputValue(),'ember');
+assert.equal(await b.page.locator('#staff-trail-select').inputValue(),'wave');
+await b.page.locator('[data-crew-tab="profile"]').click();
+await (await pick('title','rookie')).click();
+await (await pick('banner','wave')).click();
+await (await pick('cardFx','soft')).click();
+assert.equal(await b.page.locator('#staff-title-select').inputValue(),'rookie');
+assert.equal(await b.page.locator('#staff-banner-select').inputValue(),'wave');
+assert.equal(await b.page.locator('#staff-cardFx-select').inputValue(),'soft');
+await b.page.locator('[data-crew-tab="theme"]').click();
+assert.equal(await b.page.locator('#staff-theme-grid .theme-option').count(),18,'theme choices remain available');
+await b.page.locator('[data-crew-tab="avatar"]').click();
+assert.equal(await b.page.locator('#staff-aura-select').inputValue(),'spark','switching categories preserves unsaved choices');
+assert.equal(await (await pick('aura','spark')).getAttribute('aria-pressed'),'true');
+console.log('PASS: 7 click-to-equip preview galleries, locked preview, all categories and unsaved cross-tab selection.');
+
 await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
 
 assert.equal(await b.page.locator('#prestige-admin-launch').isVisible(),false);

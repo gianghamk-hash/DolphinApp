@@ -23,6 +23,8 @@ const CACHE_URLS = [
   BASE + '/dolphin-restaurant.html',
   BASE + '/dolphin-show.html',
   BASE + '/dolphin-profile.html',
+  BASE + '/staff-profile.css?v=effect-library-v6',
+  BASE + '/staff-prestige-profile.js?v=effect-library-v6',
   BASE + '/crew-cosmetics.css?v=crew-v5-20261102',
   BASE + '/staff-profile.js',
   BASE + '/staff-admin-profile.js?v=approval-reject-v2',

@@ -79,16 +79,114 @@ function activeNameTier(){
  if(level>=3&&mine.nameFlame)return 'ember';
  return 'none';
 }
+/* Render every option as a real animated preview, irrespective of Level.
+ * The hidden select remains the single selection source for the existing
+ * validated staffSetPersonalStyle Cloud Function; cards replace dropdown UI. */
+const effectLabels={
+ nameFx:'Tên phát sáng',trail:'Vệt sao',frame:'Khung Avatar',
+ aura:'Hào quang Avatar',title:'Danh hiệu',banner:'Banner',cardFx:'Viền thẻ'
+};
+function makeEffectPreview(kind,id,label){
+ const stage=element('span',undefined,'crew-fx-stage');
+ let preview;
+ if(kind==='frame'){
+  preview=element('span','🐬','fx-frame-preview');
+  preview.dataset.frame=id;
+ }else if(kind==='nameFx'){
+  preview=element('span','Dolphin','fx-name-preview');
+  preview.dataset.nameFx=id;
+ }else if(kind==='trail'){
+  preview=element('span','Dolphin','fx-name-preview fx-trail-preview');
+  preview.dataset.crewTrail=id;
+ }else if(kind==='aura'){
+  preview=element('span','🐬','fx-aura-preview');
+  preview.dataset.crewAura=id;
+ }else if(kind==='cardFx'){
+  preview=element('span','DOLPHIN','fx-card-preview');
+  preview.dataset.crewCard=id;
+ }else if(kind==='banner'){
+  preview=element('span','🐬 DOLPHIN','fx-banner-preview');
+  preview.dataset.banner=id;
+ }else{
+  preview=element('span',id==='none'?'Không danh hiệu':label,'fx-title-preview');
+  preview.dataset.title=id;
+ }
+ preview.setAttribute('aria-hidden','true');
+ stage.append(preview);
+ return stage;
+}
+function initEffectLibrary(){
+ for(const [kind,choices] of Object.entries(cosmeticOptions)){
+  const gallery=document.querySelector('[data-crew-gallery="'+kind+'"]');
+  if(!gallery)continue;
+  gallery.replaceChildren();
+  for(const [id,label,level] of choices){
+   const tile=element('button',undefined,'crew-fx-tile crew-fx-choice');
+   tile.type='button';
+   tile.dataset.unlockLevel=String(level);
+   tile.dataset.fxKind=kind;
+   tile.dataset.fxId=id;
+   tile.setAttribute('aria-pressed','false');
+   tile.setAttribute('aria-label',effectLabels[kind]+': '+label+(level>1?', mở ở Level '+level:''));
+   tile.append(makeEffectPreview(kind,id,label),element('strong',label,'crew-fx-label'));
+   tile.append(element('small',level>1?'Lv.'+level+' · Xem trước trực tiếp':'Mặc định · Xem trước trực tiếp','crew-fx-level'));
+   tile.append(element('span','🔒 Lv.'+level,'crew-fx-status'));
+   tile.addEventListener('click',()=>{
+    const unlocked=!!mine&&mine.level>=level;
+    if(!unlocked){
+     $('crew-effect-selection-status').textContent=!mine?
+      'Đăng ký hoặc liên kết Staff ID để trang bị hiệu ứng.':
+      '🔒 '+label+' mở ở Level '+level+'. Bạn có thể xem trước hiệu ứng nhưng chưa trang bị được.';
+     return;
+    }
+    const select=$('staff-'+kind+'-select');
+    if(!select)return;
+    select.value=id;
+    renderFxGallery();
+    $('crew-effect-selection-status').textContent='✓ Đã chọn '+label+' — bấm Lưu giao diện để áp dụng trên mọi thiết bị.';
+   });
+   gallery.append(tile);
+  }
+ }
+ for(const tab of document.querySelectorAll('[data-crew-tab]')){
+  tab.addEventListener('click',()=>showEffectTab(tab.dataset.crewTab));
+  tab.addEventListener('keydown',event=>{
+   if(!['ArrowLeft','ArrowRight','Home','End'].includes(event.key))return;
+   event.preventDefault();
+   const tabs=[...document.querySelectorAll('[data-crew-tab]')],i=tabs.indexOf(tab);
+   const next=event.key==='Home'?0:event.key==='End'?tabs.length-1:
+    (i+(event.key==='ArrowRight'?1:-1)+tabs.length)%tabs.length;
+   tabs[next].focus();showEffectTab(tabs[next].dataset.crewTab);
+  });
+ }
+ showEffectTab('name');
+ window.DolphinFrameFX?.refresh?.();
+}
+function showEffectTab(group){
+ for(const tab of document.querySelectorAll('[data-crew-tab]')){
+  const active=tab.dataset.crewTab===group;
+  tab.setAttribute('aria-selected',String(active));
+  tab.tabIndex=active?0:-1;
+ }
+ for(const panel of document.querySelectorAll('[data-crew-panel]'))
+  panel.hidden=panel.dataset.crewPanel!==group;
+ window.DolphinFrameFX?.refresh?.();
+}
 function renderFxGallery(){
- const active=activeNameTier();
- for(const tile of document.querySelectorAll('.crew-fx-tile[data-unlock-level]')){
-  const required=Number(tile.dataset.unlockLevel)||1,unlocked=!!mine&&mine.level>=required;
-  const equipped=unlocked&&(tile.dataset.fxKind==='name'?tile.dataset.fxId===active:tile.dataset.fxId===mine?.selectedFrame);
-  tile.dataset.locked=String(!unlocked);tile.dataset.equipped=String(equipped);
+ for(const tile of document.querySelectorAll('.crew-fx-choice[data-unlock-level]')){
+  const kind=tile.dataset.fxKind,id=tile.dataset.fxId;
+  const level=Number(tile.dataset.unlockLevel)||1;
+  const unlocked=!!mine&&mine.level>=level;
+  const selected=$('staff-'+kind+'-select')?.value===id;
+  const equipped=unlocked&&selected;
+  tile.dataset.locked=String(!unlocked);
+  tile.dataset.equipped=String(equipped);
+  tile.setAttribute('aria-pressed',String(equipped));
   const badge=tile.querySelector('.crew-fx-status');
-  if(badge)badge.textContent=equipped?'✦ Đang dùng':unlocked?'✓ Đã mở':'🔒 Lv.'+required;
+  if(badge)badge.textContent=equipped?'✦ Đã chọn':unlocked?'✓ Đã mở':'🔒 Lv.'+level+' · Xem trước';
  }
 }
+
 function previewCosmetics(){
  $('profile-avatar').dataset.frame=mine?.selectedFrame||'none';
  $('profile-avatar').dataset.crewAura=mine?.selectedAura||'none';
@@ -192,6 +290,7 @@ async function save(){
 }
 function init(){
  mine=window.DolphinPrestige?.getMine()||null;
+ initEffectLibrary();
  $('staff-save-style').onclick=save;$('staff-xp-retry').onclick=()=>window.DolphinPrestige?.refresh();
  document.querySelectorAll('[data-admin-test-add]').forEach(button=>{
   button.addEventListener('click',()=>void adminTestXP('add',Number(button.dataset.adminTestAdd)));

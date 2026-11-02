@@ -81,14 +81,9 @@ const css=fs.readFileSync(path.join(root,'staff-access.css'),'utf8');
    {employeeId:'DOL-0001',name:'Owner Manager',verified:true,linked:true},
    [{employeeId:'DOL-ABCDEF1234',name:'New Employee',avatar:'🐯',createdAt:1}]
   );
-  admin.page.on('dialog',d=>d.accept());
-  await admin.page.locator('#dolphinAccessManager:not([hidden])').waitFor();
-  await admin.page.locator('#dolphinAccessManager').click();
-  assert.equal(await admin.page.locator('#dag-pending-list .dag-manager-row').count(),1);
-  await admin.page.locator('#dag-pending-list button').click();
-  await admin.page.waitForFunction(()=>window.__pending.length===0);
-  assert.equal(await admin.page.locator('#dag-pending-list').textContent(),'Hiện không có hồ sơ chờ duyệt.');
-  console.log('PASS: only verified DOL-0001 accesses approval panel and approves a real Staff ID.');
+  assert.equal(await admin.page.locator('#dolphinAccessManager').count(),0,
+    'Manager approval must not float on the homepage');
+  console.log('PASS: DOL-0001 manager approval control is removed from landing.');
   await admin.context.close();
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

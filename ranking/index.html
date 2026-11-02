@@ -303,7 +303,7 @@ function rankingAvatarFrame(name){
  return ['bronze','silver','gold','mythic'].includes(frame)?frame:'none';
 }
 function rankingAllowed(name){
- const id=rankingStaffProfile(name)?.employeeId;
+ const id=typeof window==='undefined'?null:rankingStaffProfile(name)?.employeeId;
  return id!=='DOL-0001'||(typeof window!=='undefined'&&window.DolphinPrestige?.getBoard?.()?.showAdminRanking===true);
 }
 function rankingCardFx(name){

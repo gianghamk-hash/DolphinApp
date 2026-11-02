@@ -98,12 +98,12 @@ test('if active profile is deleted during transaction do not recreate it or leav
  assert.equal(data.has('staffXpLedger/DOL-0001/'+payload.eventId),false);
 });
 
-test('Level 5 may save name flame and Light theme after RTDB cold-cache null',async()=>{
+test('Level 6 may save name flame and Light theme after RTDB cold-cache null',async()=>{
  const {api,data}=harness({coldCacheProfile:true});
  const existing=data.get('staffRegistry/DOL-0001');
  data.set('staffRegistry/DOL-0001',{...existing,xp:80000,levelPeak:5});
  const result=await api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true}));
- assert.equal(result.level,5);
+ assert.equal(result.level,6);
  assert.equal(result.nameFlame,true);
  assert.equal(result.personalTheme,'light');
  assert.equal(data.get('staffRegistry/DOL-0001').xp,80000);
@@ -131,7 +131,7 @@ test('DOL-0001 is Admin sandbox only when verified, with self XP add/reset',asyn
  assert.equal(me.employeeId,'DOL-0001');
  const increased=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:80000}));
  assert.equal(increased.xp,80000);
- assert.equal(increased.level,5);
+ assert.equal(increased.level,6);
  assert.equal(increased.testAdmin,true);
  assert.equal(data.get('staffRegistry/DOL-0001').xp,80000);
  const style=await api.staffSetPersonalStyle(req('lanDevice',{theme:'light',nameFlame:true}));
@@ -270,4 +270,48 @@ test('personal progress exposes daily mission status without including it in pub
  assert.equal(mine.dailyMissions.completedCount,0);
  const publicBoard=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(JSON.stringify(publicBoard).includes('dailyMissions'),false);
+});
+
+test('staffGetMyProgress backfills a verified same-day legacy check-in exactly once',async()=>{
+ const {api,data}=harness({coldCacheProfile:true});
+ const checkedAt=Date.now()-1000;
+ const today=require('./staff-daily-core.cjs').vietnamDay(checkedAt);
+ const p=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...p,xp:20,dailyMissions:{
+  date:today,lastCheckinDay:today,streak:1,bestStreak:1,
+  completed:{checkin:{xp:20,at:checkedAt,receipt:'legacy-checkin-1'}}
+ }});
+ const first=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(first.xp,200);
+ assert.equal(first.dailyMissions.todayXP,200);
+ assert.equal(first.dailyMissions.tasks[0].xp,200);
+ assert.equal(first.dailyMissions.checkinTopUpXP,180);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
+ const second=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(second.xp,200);
+ assert.equal(second.dailyMissions.checkinTopUpXP,undefined);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
+});
+test('old check-in cannot be backfilled after 00:00 Vietnam time',async()=>{
+ const {api,data}=harness();
+ const timestamp=Date.now()-2*86400000;
+ const oldDay=require('./staff-daily-core.cjs').vietnamDay(timestamp);
+ const existing=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...existing,xp:20,dailyMissions:{
+  date:oldDay,lastCheckinDay:oldDay,streak:1,completed:{checkin:{xp:20,at:timestamp,receipt:'old'}}
+ }});
+ const r=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(r.xp,20);
+ assert.equal(r.dailyMissions.todayXP,0);
+});
+test('public Level board is rebuilt on demand for the new 2450 threshold',async()=>{
+ const {api,data}=harness();
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Visible Crew',avatar:'🐬',active:true,xp:2450,levelPeak:1});
+ data.set('staffPrestige/public',{leaderboard:[{employeeId:'DOL-0002',name:'Visible Crew',xp:2450,level:1}],updatedAt:123});
+ const first=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(first.levelRulesVersion,2);
+ assert.equal(first.leaderboard[0].level,2);
+ const second=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(second.leaderboard[0].level,2);
+ assert.equal(data.get('staffPrestige/public').levelRulesVersion,2);
 });

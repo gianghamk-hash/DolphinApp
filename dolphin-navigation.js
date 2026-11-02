@@ -21,6 +21,18 @@
  }
  root.DolphinNavigation={back:back,base:base};
  function init(){
+  // Direct staff-page URLs must not bypass the home-screen access gate.
+  // Profile enrollment remains public so unregistered employees can sign up.
+  if(root.parent===root&&!document.getElementById('landing')&&
+     !/\/dolphin-profile\.html$/.test(location.pathname)&&
+     !document.querySelector('script[src*="staff-access.js"]')){
+   document.documentElement.classList.add('dolphin-access-pending');
+   const link=document.createElement('link');link.rel='stylesheet';
+   link.href=new URL('staff-access.css?v=approval-20261102',base).href;
+   document.head.appendChild(link);
+   const script=document.createElement('script');script.src=new URL('staff-access.js?v=approval-20261102',base).href;
+   document.head.appendChild(script);
+  }
   // The shell owns floating navigation when embedded; games retain their own guarded exit buttons.
   if(root.parent!==root||document.getElementById('landing')||location.pathname.startsWith(new URL('giaitri/games/',base).pathname))return;
   var button=document.createElement('button');button.id='dolphinBackAction';button.type='button';

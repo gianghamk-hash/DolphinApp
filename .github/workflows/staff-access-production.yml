@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/staff-access-production.yml'
       - 'functions/staff-profile.js'
+      - 'functions/staff-approval-push.js'
       - 'functions/index.js'
       - 'functions/staff-id.test.js'
       - 'staff-access.js'

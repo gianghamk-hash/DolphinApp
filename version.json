@@ -1,7 +1,7 @@
 {
-  "version": "1.1.42",
-  "buildDate": "2026-11-02T10:40:18.797Z",
-  "commit": "7773cbb",
-  "notes": "fix(staff): restore approval list and require fresh registration after rejection",
+  "version": "1.1.43",
+  "buildDate": "2026-11-02T11:30:12.637Z",
+  "commit": "fbcd247",
+  "notes": "feat(crew-club): grouped live effect previews with tap-to-equip selection",
   "forceUpdate": false
 }

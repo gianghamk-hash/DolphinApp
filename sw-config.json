@@ -1,5 +1,5 @@
 {
-  "version": "1.1.42",
+  "version": "1.1.43",
   "releaseDate": "2026-11-02",
-  "notes": "fix(staff): restore approval list and require fresh registration after rejection"
+  "notes": "feat(crew-club): grouped live effect previews with tap-to-equip selection"
 }

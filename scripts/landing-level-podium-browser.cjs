@@ -25,8 +25,8 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
   await context.route('**/*',async route=>{
    const url=new URL(route.request().url());
    if(url.origin!==origin)return route.abort();
-   if(url.pathname==='/landing-podium-test.html')return route.fulfill({contentType:'text/html',body:landingPage});
-   if(url.pathname==='/ranking/'||url.pathname==='/ranking/index.html')return route.fulfill({contentType:'text/html',body:rankingPage});
+   if(url.pathname==='/landing-podium-test.html')return route.fulfill({contentType:'text/html; charset=utf-8',body:landingPage});
+   if(url.pathname==='/ranking/'||url.pathname==='/ranking/index.html')return route.fulfill({contentType:'text/html; charset=utf-8',body:rankingPage});
    const file=path.resolve(root,'.'+url.pathname);
    if(!file.startsWith(root+path.sep)||!fs.existsSync(file))return route.fulfill({status:404,body:'missing '+url.pathname});
    const type=file.endsWith('.css')?'text/css':file.endsWith('.js')?'application/javascript':'text/plain';

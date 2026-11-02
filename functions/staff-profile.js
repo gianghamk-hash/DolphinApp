@@ -105,6 +105,8 @@ exports.staffGetAvatarDirectory=onCall(opts,async req=>{
   selectedFrame:['bronze','silver','gold','mythic'].includes(p.selectedFrame)?p.selectedFrame:'none',
   selectedAvatarMotion:['none','pulse','float','wave','orbit','prism','ascension'].includes(p.selectedAvatarMotion)?p.selectedAvatarMotion:'none',
   selectedTitle:['rookie','wave','legend'].includes(p.selectedTitle)?p.selectedTitle:'none',
+  selectedBanner:['default','wave','gold','mythic'].includes(p.selectedBanner)?p.selectedBanner:'default',
+  personalTheme:typeof p.personalTheme==='string'&&p.personalTheme.length<=32?p.personalTheme:'dark',
   selectedNameFx:['none','ember','inferno','prism','celestial'].includes(p.selectedNameFx)?p.selectedNameFx:'none',
   selectedAura:['none','spark','dual','celestial'].includes(p.selectedAura)?p.selectedAura:'none',
   selectedTrail:['none','wave','comet','nova'].includes(p.selectedTrail)?p.selectedTrail:'none',

@@ -16,7 +16,7 @@ function createResolver(){
   if(!p?.employeeId||!p.name||typeof p.avatar!=='string')return;
   const prev=profiles.get(p.employeeId);
   const aliases=[...(prev?.nameAliases||[]),...(p.nameAliases||[]),...(prev&&nameKey(prev.name)!==nameKey(p.name)?[prev.name]:[])];
-  profiles.set(p.employeeId,{employeeId:p.employeeId,name:p.name,avatar:p.avatar.slice(0,24),selectedFrame:p.selectedFrame||prev?.selectedFrame||'none',selectedTitle:p.selectedTitle||prev?.selectedTitle||'none',selectedAura:p.selectedAura||prev?.selectedAura||'none',selectedTrail:p.selectedTrail||prev?.selectedTrail||'none',selectedCardFx:p.selectedCardFx||prev?.selectedCardFx||'none',selectedNameFx:p.selectedNameFx||prev?.selectedNameFx||'none',nameAliases:Array.from(new Set(aliases)).slice(-10)});index();
+  profiles.set(p.employeeId,{employeeId:p.employeeId,name:p.name,avatar:p.avatar.slice(0,24),selectedFrame:p.selectedFrame||prev?.selectedFrame||'none',selectedAvatarMotion:p.selectedAvatarMotion||prev?.selectedAvatarMotion||'none',selectedTitle:p.selectedTitle||prev?.selectedTitle||'none',selectedAura:p.selectedAura||prev?.selectedAura||'none',selectedTrail:p.selectedTrail||prev?.selectedTrail||'none',selectedCardFx:p.selectedCardFx||prev?.selectedCardFx||'none',selectedNameFx:p.selectedNameFx||prev?.selectedNameFx||'none',nameAliases:Array.from(new Set(aliases)).slice(-10)});index();
  }
  function replace(rows){profiles=new Map();for(const p of rows||[])if(p?.employeeId&&p.name&&typeof p.avatar==='string')profiles.set(p.employeeId,{...p,avatar:p.avatar.slice(0,24)});index();}
  function resolve(name,id){
@@ -30,7 +30,7 @@ function avatarHTML(name,id='',avatar='👤'){
 }
 if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
 if(!root.document)return;
-const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-v5-20261102',document.currentScript?.src||location.href).href;
+const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-mythic-v7',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
 try{if(root.parent!==root)shared=root.parent.DolphinAvatars||null;}catch(e){}
 function staffName(){try{return root.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'';}catch(e){return '';}}
@@ -53,6 +53,13 @@ function decorateFrame(el){
  const frame=el?.dataset?.frame||'none';
  const supported=['bronze','silver','gold','mythic'];
  const previous=el?.querySelector(':scope > .crew-fx-orbits');
+ const oldMotion=el?.querySelector(':scope > .crew-avatar-motion');
+ const motion=el?.dataset?.avatarMotion||'none';
+ if(oldMotion&&oldMotion.dataset.kind!==motion)oldMotion.remove();
+ if(motion!=='none'&&!el.querySelector(':scope > .crew-avatar-motion')){
+  const layer=document.createElement('span');layer.className='crew-avatar-motion';layer.dataset.kind=motion;
+  layer.setAttribute('aria-hidden','true');el.appendChild(layer);
+ }
  if(!supported.includes(frame)){
   if(previous)previous.remove();
   if(el?.dataset?.crewFxFrame)delete el.dataset.crewFxFrame;
@@ -63,12 +70,18 @@ function decorateFrame(el){
  const wrap=document.createElement('span');wrap.className='crew-fx-orbits';
  wrap.setAttribute('aria-hidden','true');
  if(frame==='mythic'){
-  for(let i=1;i<=2;i++){
-   const orbit=document.createElement('span');
-   orbit.className='crew-fx-layer crew-fx-star-orbit crew-fx-star-orbit--'+i;
-   const star=document.createElement('span');star.className='crew-fx-star';
-   orbit.appendChild(star);wrap.appendChild(orbit);
+  const universe=document.createElement('span');universe.className='crew-mythic-universe';
+  for(const kind of ['halo','ring-outer','ring-inner','shimmer']){
+   const layer=document.createElement('span');layer.className='crew-mythic-'+kind;universe.appendChild(layer);
   }
+  for(let i=1;i<=4;i++){
+   const orbit=document.createElement('span');orbit.className='crew-mythic-orbit crew-mythic-orbit--'+i;
+   const crystal=document.createElement('span');crystal.className='crew-mythic-crystal';orbit.appendChild(crystal);universe.appendChild(orbit);
+  }
+  for(let i=1;i<=8;i++){
+   const particle=document.createElement('span');particle.className='crew-mythic-particle crew-mythic-particle--'+i;universe.appendChild(particle);
+  }
+  wrap.appendChild(universe);
  }else{
   const count={bronze:1,silver:2,gold:3}[frame];
   for(let i=1;i<=count;i++){
@@ -102,6 +115,8 @@ function paint(){
     : (allowed.includes(el.dataset.frame)?el.dataset.frame:'none');
   if(el.dataset.frame!==frame)el.dataset.frame=frame;
   const aura=chosen?.selectedAura||'none',trail=chosen?.selectedTrail||'none';
+  const motion=chosen?.selectedAvatarMotion||'none';
+  if(el.dataset.avatarMotion!==motion)el.dataset.avatarMotion=motion;
   if(el.dataset.crewAura!==aura)el.dataset.crewAura=aura;
   if(el.dataset.crewTrail!==trail)el.dataset.crewTrail=trail;
   const label='Avatar của '+(name||'nhân viên');if(el.getAttribute('aria-label')!==label)el.setAttribute('aria-label',label);

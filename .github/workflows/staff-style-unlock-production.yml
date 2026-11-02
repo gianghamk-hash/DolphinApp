@@ -11,6 +11,7 @@ on:
       - 'functions/staff-daily-missions.test.cjs'
       - 'functions/staff-daily-arcade.test.cjs'
       - 'crew-arcade-proof.js'
+      - 'functions/crew-arcade-proof.cjs'
       - 'crew-arcade-missions.js'
       - 'giaitri/games/snake.html'
       - 'giaitri/games/game2048.html'
@@ -50,11 +51,13 @@ jobs:
           export_environment_variables: true
       - name: Test Style and Level rules
         run: |
-          npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
+          npm install --prefix functions --no-audit --no-fund
           node --check functions/staff-xp-engine.cjs
           node --check functions/staff-profile.js
           node --check functions/staff-prestige.js
+          node --check functions/crew-arcade-proof.cjs
           node --check functions/staff-daily-missions.js
+          node -e "const api=require('./functions/index.js');if(typeof api.staffStartArcadeMission!=='function'||typeof api.staffFinishArcadeMission!=='function')throw Error('Missing Cloud Functions arcade exports')"
           node --check functions/staff-daily-core.cjs
           node --check staff-prestige-profile.js
           node --check dolphin-avatars.js

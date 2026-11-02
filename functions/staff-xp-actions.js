@@ -12,6 +12,7 @@ const prestige=require('./staff-prestige');
 const live=require('./staff-xp-live-engine.cjs');
 const xp=require('./staff-xp-engine.cjs');
 const daily=require('./staff-daily-missions');
+const dayCore=require('./staff-daily-core.cjs');
 const opts={region:'asia-southeast1',maxInstances:8,timeoutSeconds:60};
 const KINDS=new Set(['lounge_tables','bun_tables','show_tables','lounge_orders','bun_orders','res_orders']);
 const SHOW=new Set(['combo1','combo2','combo3','singer1','singer2','singer3']);
@@ -98,7 +99,13 @@ async function booking(kind,id,data,who){
  if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
  const amount=live.tableValue(kind,existing.after);
  const grant=await onceSale(kind,id,who,xp.revenueXP(amount));
- const missionXP=!existing.before&&['bun_tables','lounge_tables'].includes(kind)
+ // An occupied table may have been left in Firestore after yesterday's tour.
+ // A new verified booking on a later Vietnamese calendar day still counts as
+ // today's first opening, while same-day edits do not re-award the task.
+ const previousAt=Number(existing.before?.updatedAt);
+ const newDailySession=!existing.before||!Number.isFinite(previousAt)||previousAt<=0||
+  dayCore.vietnamDay(previousAt)!==dayCore.vietnamDay();
+ const missionXP=newDailySession&&['bun_tables','lounge_tables'].includes(kind)
   ?await dailyBonus(who.id,kind==='bun_tables'?'bungalow_opened':'lounge_opened'):0;
  return {saved:true,xpAwarded:grant.amount,missionXP,duplicate:grant.duplicate};
 }

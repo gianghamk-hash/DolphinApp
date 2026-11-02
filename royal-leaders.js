@@ -74,6 +74,58 @@ css.textContent=`
 #drl-level .drl-name[data-name-fx="inferno"]::after,#drl-level .drl-name[data-name-fx="celestial"]::after{position:absolute;right:-.7em;top:-.4em;left:auto;bottom:auto;z-index:2;width:auto;height:auto;display:block!important;pointer-events:none;filter:none;opacity:1;animation:crew-sigil-float 2.6s ease-in-out infinite alternate}
 #drl-level .drl-name[data-name-fx="inferno"]::after{content:'✦'!important;color:#ffab3d;-webkit-text-fill-color:#ffab3d;text-shadow:0 0 11px #ffab3d}
 #drl-level .drl-name[data-name-fx="celestial"]::after{content:'✧'!important;color:#c5f5ff;-webkit-text-fill-color:#c5f5ff;text-shadow:0 0 11px #c5f5ff}
+
+/* Compact three-way Landing podium, matching Revenue and Work at every viewport.
+ * Keep the background transparent: equipped theme/banner are soft light
+ * accents, never an opaque panel that dominates the home screen. */
+#dolphin-royal-leaders{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"revenue level work";align-items:center;column-gap:9px;max-width:860px;margin:13px auto 18px}
+#drl-level{width:100%;min-width:0;grid-area:level;transform:translateY(-12px);padding:8px 4px;z-index:3}
+#drl-level .drl-level-surface{min-height:0;padding:8px 5px 10px;border:1px solid #e8c47e2b;border-radius:18px;background:transparent!important;box-shadow:none;backdrop-filter:none!important;-webkit-backdrop-filter:none!important}
+#drl-level .drl-level-surface[data-banner]{background:transparent!important}
+#drl-level .drl-level-surface::before{inset:2px;border:0;border-radius:15px;background:radial-gradient(ellipse at 50% 8%,var(--drl-accent,#ffe1a2),transparent 68%);opacity:.095;pointer-events:none;z-index:0}
+#drl-level .drl-level-surface[data-banner="wave"]::before{background:repeating-linear-gradient(155deg,#46d9f0 0 8px,transparent 8px 22px);opacity:.08}
+#drl-level .drl-level-surface[data-banner="gold"]::before{background:radial-gradient(circle at 50% 8%,#ffe48f,transparent 72%);opacity:.14}
+#drl-level .drl-level-surface[data-banner="mythic"]::before{background:conic-gradient(from 20deg at 50% 30%,#c68bff,#65dfff,#f5d48f,#c68bff);opacity:.12;animation:drl-level-banner-flow 10s linear infinite}
+#drl-level .drl-level-surface::after{inset:-2px;opacity:.18;filter:blur(12px)}
+@keyframes drl-level-banner-flow{to{filter:hue-rotate(360deg)}}
+#drl-level .drl-level-eyebrow{font-size:10px;letter-spacing:.04em}
+#drl-level .drl-level-crown{font-size:22px;margin:2px auto 0}
+#drl-level .drl-level-avatar-stage{min-height:63px;margin:5px auto 3px}
+#drl-level .drl-level-avatar.hero-avatar{width:51px;height:51px;border-radius:15px;font-size:29px}
+#drl-level .drl-level-name-wrap{width:100%;min-width:0}
+#drl-level .drl-name{font-size:14px;line-height:1.2;overflow-wrap:anywhere;max-width:100%}
+#drl-level .drl-level-title{font-size:9px;line-height:1.2;margin-top:3px}
+#drl-level .drl-level-score{font-size:10px;line-height:1.3;margin-top:5px}
+#drl-level .drl-level-theme{font-size:8px;line-height:1.3;margin-top:3px}
+#drl-level[data-status="loading"] .drl-level-surface,#drl-level[data-status="empty"] .drl-level-surface{opacity:.76}
+@media(hover:hover){#drl-level:hover{transform:translateY(-15px)}}
+@media(max-width:700px){
+ #dolphin-royal-leaders{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"revenue level work";gap:5px;margin:10px auto 13px}
+ #drl-level{width:100%;justify-self:stretch;transform:translateY(-9px);padding:5px 1px}
+ #drl-level .drl-level-surface{height:154px;min-height:0;max-height:154px;box-sizing:border-box;padding:5px 3px;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center}
+ #drl-level .drl-level-eyebrow{font-size:9px;letter-spacing:0}
+ #drl-level .drl-level-crown{font-size:19px}
+ #drl-level .drl-level-avatar-stage{min-height:49px;margin:2px auto 1px}
+ #drl-level .drl-level-avatar.hero-avatar{width:42px;height:42px;border-radius:13px;font-size:25px}
+ #drl-level .drl-name{font-size:12px;line-height:1.22}
+ #drl-level .drl-level-title{font-size:8px;margin-top:1px}
+ #drl-level .drl-level-score{font-size:9px;margin-top:2px}
+ #drl-level .drl-level-theme{display:none}
+ #drl-revenue,#drl-work{margin-top:0;padding:11px 4px;min-height:164px;box-sizing:border-box}
+ #drl-revenue .drl-name,#drl-work .drl-name{font-size:13px}
+ #drl-revenue .drl-crown,#drl-work .drl-crown{font-size:25px}
+ #drl-revenue .drl-tag,#drl-work .drl-tag{font-size:9px}
+ #drl-revenue .drl-value,#drl-work .drl-value{font-size:10px}
+}
+@media(max-width:360px){
+ #dolphin-royal-leaders{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
+ #drl-level{width:100%;padding-inline:0}
+ #drl-level .drl-name{font-size:11px}
+ #drl-revenue,#drl-work{padding-inline:2px}
+ #drl-revenue .drl-name,#drl-work .drl-name{font-size:12px}
+ #drl-level .drl-level-avatar.hero-avatar{width:42px;height:42px;font-size:23px}
+}
+@media(prefers-reduced-motion:reduce){#drl-level .drl-level-surface::before{animation:none!important}}
 `;document.head.appendChild(css);
 const e=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function draw(type,data){
@@ -106,22 +158,23 @@ const themeColors={
  newyear:['#c7abff','#87eaff','New Year']
 };
 const safe=(kind,value,fallback)=>allowed[kind].includes(value)?value:fallback;
+let levelBoardLoaded=false;
 function drawLevel(leader){
  const card=$('drl-level'),surface=$('drl-level-surface'),avatar=$('drl-level-avatar');
  if(!card||!surface||!avatar)return;
  const valid=leader&&typeof leader==='object'&&/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(String(leader.employeeId||''))&&typeof leader.name==='string'&&leader.name.trim();
- card.dataset.status=valid?'ready':'empty';
+ card.dataset.status=valid?'ready':levelBoardLoaded?'empty':'loading';
  if(!valid){
   surface.style.removeProperty('--drl-accent');surface.style.removeProperty('--drl-accent2');surface.dataset.personalTheme='dark';
   $('drl-level-glyph').textContent='🐬';
   avatar.dataset.frame='none';avatar.dataset.avatarMotion='none';avatar.dataset.crewAura='none';
   surface.dataset.banner='default';surface.dataset.crewCard='none';
-  $('drl-level-name').textContent='Chưa có dữ liệu';$('drl-level-name').dataset.nameFx='none';
+  $('drl-level-name').textContent=levelBoardLoaded?'Chưa có nhân viên':'Đang tải Level…';$('drl-level-name').dataset.nameFx='none';
   $('drl-level-name-wrap').dataset.crewTrail='none';
-  $('drl-level-title').textContent='Đang chờ bảng Level · XP';
+  $('drl-level-title').textContent=levelBoardLoaded?'Bảng Level công khai đang trống':'Đang đồng bộ bảng Level · XP';
   $('drl-level-score').textContent='LEVEL — · XP —';
   $('drl-level-theme').textContent='';
-  card.setAttribute('aria-label','Top 1 Level: chưa có dữ liệu');
+  card.setAttribute('aria-label',levelBoardLoaded?'Top 1 Level: bảng công khai chưa có nhân viên':'Top 1 Level: đang tải dữ liệu');
   window.DolphinFrameFX?.decorate?.(avatar);
   return;
  }
@@ -159,7 +212,23 @@ function ready(){
  '<div class="drl-card" id="drl-work"></div>';
  const ann=document.getElementById('announcementBar');
  if(ann&&ann.parentNode)ann.parentNode.insertBefore(banner,ann);else landing.appendChild(banner);
- draw('revenue',null);drawLevel(null);draw('work',null);
+ draw('revenue',null);draw('work',null);
+ // The Landing already has DolphinPrestige; use its authoritative public
+ // leaderboard directly. The invisible ranking frame only supplies the
+ // Revenue/Work leader snapshots, never the Level leaderboard.
+ function applyLevelBoard(board){
+  levelBoardLoaded=!!board;
+  const top=Array.isArray(board?.leaderboard)?board.leaderboard[0]||null:null;
+  drawLevel(top);
+ }
+ applyLevelBoard(window.DolphinPrestige?.getBoard?.()||null);
+ window.addEventListener('dolphin-prestige-updated',event=>applyLevelBoard(event.detail));
+ window.addEventListener('dolphin-prestige-status',event=>{
+  if(event.detail?.scope==='board'&&event.detail.state==='error'&&!levelBoardLoaded){
+   $('drl-level-name').textContent='Chưa thể đồng bộ';
+   $('drl-level-title').textContent='Không tải được dữ liệu Level';
+  }
+ });
  // A single same-origin background ranking document owns the Firestore listeners.
  // The landing does not open duplicate ranking listeners itself.
  const frame=document.createElement('iframe');frame.src='ranking/';frame.title='Đồng bộ bảng xếp hạng';
@@ -170,7 +239,8 @@ function ready(){
   if(event.origin!==location.origin||event.source!==frame.contentWindow)return;
   if(!event.data)return;
   if(event.data.type==='dolphin-rank-leaders'){draw('revenue',event.data.revenue);draw('work',event.data.work);}
-  if(event.data.type==='dolphin-level-leader')drawLevel(event.data.leader);
+  // Ignore Level messages from an iframe: only the Landing's own authenticated
+  // DolphinPrestige response may choose a Level champion.
  });
 }
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',ready);else ready();

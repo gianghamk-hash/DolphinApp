@@ -234,6 +234,7 @@ function renderDailyMissions(){
  if(!list)return;
  list.replaceChildren();
  const daily=mine?.dailyMissions;
+ if(daily?.checkinTopUpXP>0)showDailyStatus('✅ Đã tự động bù +'+fmt(daily.checkinTopUpXP)+' XP điểm danh theo mức thưởng x10.');
  if(!daily||!Array.isArray(daily.tasks)){
   const empty=dailyElement('p',mine?'Máy chủ đang cập nhật nhiệm vụ hằng ngày. Vui lòng thử lại.':'Đăng ký và xác minh Staff ID để nhận nhiệm vụ.','hint');
   list.append(empty);

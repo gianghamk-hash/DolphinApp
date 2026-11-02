@@ -26,13 +26,20 @@
   }
   return callable(name,payload);
  }
+ function bounded(promise,ms){
+  let timer;
+  return Promise.race([promise,new Promise((_,reject)=>{
+   timer=setTimeout(()=>reject(Error('Không có kết nối máy chủ')),ms);
+  })]).finally(()=>clearTimeout(timer));
+ }
  async function start(game){
   status('Nhiệm vụ game: đang xác minh Staff ID…');
   try{
-   await root.DolphinStaffId?.ready?.();
+   if(!root.DolphinStaffId?.ready)throw Error('Không có Staff ID');
+   await bounded(root.DolphinStaffId.ready(),2500);
    const staff=root.DolphinStaffId?.get?.();
    if(!staff?.verified){status('Chơi tự do · Xác minh Staff ID để nhận XP.');return null;}
-   const challenge=await api('staffStartArcadeMission',{game});
+   const challenge=await bounded(api('staffStartArcadeMission',{game}),4000);
    status('🎯 Đạt mốc điểm để nhận XP hôm nay!');
    return {game,challengeId:challenge.challengeId,rng:root.DolphinArcadeProof.random(challenge.seed),
     moves:'',submitted:false,eligible:true};

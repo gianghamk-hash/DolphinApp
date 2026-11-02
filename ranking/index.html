@@ -627,7 +627,7 @@ function renderHall(){
  const el=document.getElementById('rank-hall-body'),r=window.DolphinRankRewards;
  if(!el||!r)return;
  el.innerHTML=['revenue','work'].map(c=>'<div style="margin-top:9px"><b>'+(c==='revenue'?'👑 DOANH THU':'🏆 CÔNG VIỆC')+'</b></div>'+
- (r.history(c).length?r.history(c).slice(0,6).map(x=>'<div class="drr-hall-item">'+r.escapeHTML(x.name)+' · '+r.escapeHTML(r.formatPeriod(x.week))+'</div>').join(''):'<div class="drr-hall-item">Chưa có dữ liệu trên thiết bị này</div>')).join('');
+ (r.history(c).length?r.history(c).filter(x=>rankingAllowed(x.name)).slice(0,6).map(x=>'<div class="drr-hall-item">'+r.escapeHTML(x.name)+' · '+r.escapeHTML(r.formatPeriod(x.week))+'</div>').join(''):'<div class="drr-hall-item">Chưa có dữ liệu trên thiết bị này</div>')).join('');
 }
 function renderAll(){
  renderWeekStat();
@@ -654,6 +654,7 @@ window.goBack = function(){
 
 // A directory refresh repaints both leaderboard tabs without waiting for new orders.
 window.DolphinAvatars?.subscribe?.(()=>{renderRevenue();renderPoints();});
+window.addEventListener('dolphin-prestige-updated',()=>{renderRevenue();renderPoints();renderHall();});
 window.DolphinAvatars?.refresh?.();
 /* ════════ INIT ════════ */
 (function init(){

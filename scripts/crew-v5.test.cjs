@@ -2,9 +2,9 @@
 const {test}=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const read=file=>fs.readFileSync(path.resolve(__dirname,'..',file),'utf8');
 const engine=require('../functions/staff-xp-engine.cjs');
-test('XP curve is exactly 70% of old curve, all ranks remain deterministic',()=>{
+test('XP curve is 30% lower than preceding 3500 coefficient, all ranks remain deterministic',()=>{
  for(const level of [2,3,5,15,40,60])assert.equal(engine.xpForLevel(level),2450*(level-1)**2);
- assert.equal(engine.xpForLevel(60),12182450);
+ assert.equal(engine.xpForLevel(60),8528450);
  assert.equal(engine.levelForXP(2450),2);
 });
 test('all three V5 cosmetics expose 3 cumulative unlock stages',()=>{

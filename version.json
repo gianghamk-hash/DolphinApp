@@ -1,7 +1,7 @@
 {
-  "version": "1.1.51",
-  "buildDate": "2026-11-02T14:41:12.388Z",
-  "commit": "1d17c5d",
-  "notes": "fix(crew): compact Landing Level podium, sync rankings and restore Bungalow XP",
+  "version": "1.1.52",
+  "buildDate": "2026-11-02T15:01:54.637Z",
+  "commit": "e832b9b",
+  "notes": "fix(crew): reconcile x10 daily check-in and reduce Level thresholds 30 percent",
   "forceUpdate": false
 }

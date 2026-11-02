@@ -1,54 +1,70 @@
 {
-  "version": "1.1.51",
-  "previousVersion": "1.1.50",
-  "commit": "1d17c5d",
-  "previousCommit": "710d136",
-  "buildDate": "2026-11-02T14:41:12.388Z",
-  "summary": "fix(crew): compact Landing Level podium, sync rankings and restore Bungalow XP",
+  "version": "1.1.52",
+  "previousVersion": "1.1.51",
+  "commit": "e832b9b",
+  "previousCommit": "1d17c5d",
+  "buildDate": "2026-11-02T15:01:54.637Z",
+  "summary": "fix(crew): reconcile x10 daily check-in and reduce Level thresholds 30 percent",
   "changes": {
-    "totalCommits": 275,
-    "filesChanged": 9,
+    "totalCommits": 276,
+    "filesChanged": 13,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(crew): compact Landing Level podium, sync rankings and restore Bungalow XP"
+    "fix(crew): reconcile x10 daily check-in and reduce Level thresholds 30 percent"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-profile-tests.yml",
+      "file": ".github/workflows/staff-style-unlock-production.yml",
       "type": "update"
     },
     {
-      "file": "dolphin-bungalow.html",
+      "file": "docs/DOLPHIN_CREW_CLUB_RULES.md",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.js",
+      "file": "dolphin-profile.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.test.cjs",
+      "file": "functions/staff-daily-core.cjs",
       "type": "update"
     },
     {
-      "file": "index.html",
+      "file": "functions/staff-daily-core.test.cjs",
       "type": "update"
     },
     {
-      "file": "royal-leaders.js",
+      "file": "functions/staff-prestige.js",
       "type": "update"
     },
     {
-      "file": "scripts/landing-level-podium-browser.cjs",
+      "file": "functions/staff-prestige.test.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/landing-level-podium.test.cjs",
+      "file": "functions/staff-xp-engine.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-engine.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-daily-missions-ui.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-v5.test.cjs",
       "type": "update"
     },
     {
       "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

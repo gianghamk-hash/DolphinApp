@@ -1,34 +1,26 @@
 {
-  "version": "1.1.38",
-  "previousVersion": "1.1.37",
-  "commit": "1574a13",
-  "previousCommit": "98eea92",
-  "buildDate": "2026-11-02T04:36:33.301Z",
-  "summary": "feat(crew-club): legendary V3 avatar frames across ranking and online staff",
+  "version": "1.1.39",
+  "previousVersion": "1.1.38",
+  "commit": "7bc5049",
+  "previousCommit": "1574a13",
+  "buildDate": "2026-11-02T06:03:41.292Z",
+  "summary": "feat(crew-club): animated V4 rarity orbits and Mythic twin stars",
   "changes": {
-    "totalCommits": 262,
-    "filesChanged": 9,
+    "totalCommits": 263,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew-club): legendary V3 avatar frames across ranking and online staff"
+    "feat(crew-club): animated V4 rarity orbits and Mythic twin stars"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/staff-profile-tests.yml",
-      "type": "update"
-    },
     {
       "file": "crew-cosmetics.css",
       "type": "update"
     },
     {
       "file": "dolphin-avatars.js",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
       "type": "update"
     },
     {
@@ -49,6 +41,10 @@
     },
     {
       "file": "staff-online.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

@@ -341,3 +341,159 @@
   animation:none!important;transition:none!important;
  }
 }
+
+
+/* ============================================================
+   CREW CLUB V4 — TRUE ORBIT ANIMATIONS
+   1 Bronze ring; 2 counter-rotating Silver rings; 3 Gold rings;
+   exactly 2 luminous star satellites for Mythic.
+   DOM layers are managed by dolphin-avatars.js, not by Firebase.
+   ============================================================ */
+:is(.hero-avatar,.level-avatar,.leader-tile-icon,.dolphin-staff-avatar,.drr-frame,.sow-avatar,.fx-frame-preview)[data-frame]:not([data-frame="none"]){
+ overflow:visible!important;
+ isolation:isolate;
+}
+/* Preserve V3 metal/gems, but avoid phantom pseudo-element rotations.
+   The V4 orbits below are the only moving satellites. */
+:is(.hero-avatar,.level-avatar,.leader-tile-icon,.dolphin-staff-avatar,.drr-frame,.sow-avatar,.fx-frame-preview)[data-frame]::before,
+:is(.hero-avatar,.level-avatar,.leader-tile-icon,.dolphin-staff-avatar,.drr-frame,.sow-avatar,.fx-frame-preview)[data-frame]::after{
+ animation:none!important;
+}
+.crew-fx-orbits{
+ position:absolute!important;
+ display:block!important;
+ inset:0!important;
+ width:auto!important;
+ height:auto!important;
+ padding:0!important;
+ margin:0!important;
+ background:none!important;
+ border:0!important;
+ border-radius:inherit;
+ box-shadow:none!important;
+ pointer-events:none!important;
+ user-select:none!important;
+ overflow:visible!important;
+ z-index:2;
+}
+.crew-fx-layer{
+ position:absolute!important;
+ display:block!important;
+ box-sizing:border-box!important;
+ pointer-events:none!important;
+ margin:0!important;
+ padding:0!important;
+ border-radius:50%!important;
+ transform-origin:50% 50%;
+ animation-play-state:paused!important;
+}
+.crew-fx-ring{
+ --crew-ring-color:#ffc481;
+ --crew-ring-glow:#e6a35ca0;
+ border:2px solid var(--crew-ring-color)!important;
+ background:transparent!important; /* Do not cover the employee's avatar. */
+ box-shadow:inset 0 0 7px var(--crew-ring-glow),0 0 8px var(--crew-ring-glow)!important;
+ animation-name:crew-fx-spin-cw;
+ animation-timing-function:linear;
+ animation-iteration-count:infinite;
+}
+.crew-fx-ring::after{
+ content:""!important;
+ position:absolute!important;
+ top:50%!important;
+ right:-5px!important;
+ left:auto!important;
+ width:9px!important;
+ height:9px!important;
+ border:1px solid var(--crew-ring-color);
+ border-radius:50%!important;
+ background:#fffaf0!important;
+ box-shadow:0 0 5px #fff,0 0 13px var(--crew-ring-color),0 0 22px var(--crew-ring-glow)!important;
+ animation:none!important;
+}
+.crew-fx-ring--1{inset:-9px!important;animation-duration:4.1s;}
+.crew-fx-ring--2{inset:-15px!important;animation-duration:5.3s;animation-name:crew-fx-spin-ccw;}
+.crew-fx-ring--3{inset:-21px!important;animation-duration:6.4s;}
+[data-frame="bronze"] .crew-fx-ring{--crew-ring-color:#edaa66;--crew-ring-glow:#cf723ea6}
+[data-frame="silver"] .crew-fx-ring{--crew-ring-color:#caf6ff;--crew-ring-glow:#67dffff0}
+[data-frame="gold"] .crew-fx-ring{--crew-ring-color:#ffdf65;--crew-ring-glow:#ffbb2be0}
+[data-frame="gold"] .crew-fx-ring--1{animation-duration:3.4s}
+[data-frame="gold"] .crew-fx-ring--2{animation-duration:4.7s}
+[data-frame="gold"] .crew-fx-ring--3{animation-duration:6s}
+.crew-fx-star-orbit{
+ inset:-15px!important;
+ animation-name:crew-fx-spin-cw;
+ animation-duration:3.9s;
+ animation-timing-function:linear;
+ animation-iteration-count:infinite;
+ border:1px dashed #c9a0ff75!important;
+ box-shadow:0 0 9px #915fff60;
+}
+.crew-fx-star-orbit--2{
+ inset:-23px!important;
+ animation-name:crew-fx-spin-ccw;
+ animation-duration:5.1s;
+ animation-delay:-2.6s;
+ border-color:#83eaff85!important;
+}
+.crew-fx-star{
+ position:absolute;
+ top:50%;
+ right:-10px;
+ width:20px;
+ height:20px;
+ margin-top:-10px;
+ display:grid;
+ place-items:center;
+ pointer-events:none;
+}
+.crew-fx-star::before{
+ content:"✦";
+ display:block;
+ position:absolute;
+ inset:0;
+ font-size:22px;
+ line-height:20px;
+ text-align:center;
+ color:#fff9de;
+ -webkit-text-fill-color:#fff9de;
+ text-shadow:0 0 5px #fff,0 0 13px #ffc4ff,0 0 25px #a17bff;
+ animation:crew-fx-twinkle 1.9s ease-in-out infinite alternate;
+}
+.crew-fx-star-orbit--2 .crew-fx-star::before{
+ color:#bdffff;
+ -webkit-text-fill-color:#bdffff;
+ text-shadow:0 0 6px #fff,0 0 15px #7feeff,0 0 27px #85a5ff;
+ animation-delay:-.9s;
+}
+@keyframes crew-fx-spin-cw{to{transform:rotate(360deg)}}
+@keyframes crew-fx-spin-ccw{to{transform:rotate(-360deg)}}
+@keyframes crew-fx-twinkle{to{opacity:.68;transform:scale(.75)}}
+/* Animation budget: visible hero, rarity preview, Top 1, active ranking
+   tab, and expanded Online only. Hidden content stays still. */
+@media(prefers-reduced-motion:no-preference){
+ #profile-avatar .crew-fx-layer,
+ .fx-frame-preview .crew-fx-layer,
+ .leader-tile-icon .crew-fx-layer,
+ #section-level:not([style*="none"]) .level-avatar .crew-fx-layer,
+ #section-revenue:not([style*="none"]) .drr-frame .crew-fx-layer,
+ #section-points:not([style*="none"]) .dolphin-staff-avatar .crew-fx-layer,
+ #staffOnlineWidget.open .sow-avatar .crew-fx-layer{
+  animation-play-state:running!important;
+ }
+}
+@media(prefers-reduced-motion:reduce){
+ .crew-fx-layer,.crew-fx-star::before{
+  animation:none!important;
+  transform:none!important;
+ }
+}
+/* Prevent rings colliding with adjacent rank labels/titles. */
+.crew-fx-tile{overflow:visible;padding-top:17px;padding-bottom:17px}
+.crew-fx-tile .fx-frame-preview{margin:18px 0 22px}
+#staffOnlineWidget .sow-list{padding:20px 15px!important}
+#staffOnlineWidget .sow-item{gap:15px;padding-top:17px;padding-bottom:17px}
+.level-entry{padding-top:20px;padding-bottom:20px}
+.row{overflow:visible}
+.row .drr-frame,.row .dolphin-staff-avatar{margin:15px 20px 15px 12px}
+.leader-tile{padding-top:23px;min-height:134px}

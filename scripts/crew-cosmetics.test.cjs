@@ -25,7 +25,7 @@ test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
   assert.ok(css.includes('data-frame="'+id+'"'),'missing '+id+' frame effect');
   assert.ok(html.includes('data-unlock-level="'+level+'" data-fx-kind="frame" data-fx-id="'+id+'"'),'missing '+id+' frame preview');
  }
- assert.match(avatars,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=orbit-v4-20261102/);
  assert.match(avatars,/crew-cosmetics-stylesheet/);
 });
 test('previews accurately show locked, unlocked, and equipped states',()=>{
@@ -79,6 +79,29 @@ test('all ranking tabs and the Emperor read a shared equipped frame',()=>{
  assert.match(rankingHTML,/function rankingTitle\(name\)/);
 });
 test('both PWA cache and runtime resolve exactly the same V3 cosmetic asset',()=>{
- assert.match(worker,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
- assert.match(avatars,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
+ assert.match(worker,/crew-cosmetics\.css\?v=orbit-v4-20261102/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=orbit-v4-20261102/);
+});
+
+
+test('V4 ring satellites have different physical counts and opposite directions',()=>{
+ const avatarJs=read('dolphin-avatars.js');
+ assert.match(css,/CREW CLUB V4 — TRUE ORBIT ANIMATIONS/);
+ assert.match(avatarJs,/const count=\{bronze:1,silver:2,gold:3\}\[frame\]/);
+ assert.match(avatarJs,/if\(frame==='mythic'\)/);
+ assert.match(avatarJs,/for\(let i=1;i<=2;i\+\+\)/);
+ assert.match(css,/crew-fx-ring--1/);
+ assert.match(css,/crew-fx-ring--2/);
+ assert.match(css,/crew-fx-ring--3/);
+ assert.match(css,/crew-fx-spin-cw/);
+ assert.match(css,/crew-fx-spin-ccw/);
+ assert.match(css,/crew-fx-star-orbit--2/);
+ assert.match(css,/animation-name:crew-fx-spin-ccw/);
+ assert.match(css,/animation-play-state:paused!important/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+ assert.match(avatarJs,/if\(previous&&el\.dataset\.crewFxFrame===frame\)return/);
+ assert.match(avatarJs,/decorateFrames\(\);/);
+ assert.match(profile,/window\.DolphinFrameFX\?\.refresh\?\.\(\)/);
+ assert.match(ranking,/window\.DolphinFrameFX\?\.refresh\?\.\(\)/);
+ assert.match(online,/window\.DolphinFrameFX\?\.refresh\?\.\(\)/);
 });

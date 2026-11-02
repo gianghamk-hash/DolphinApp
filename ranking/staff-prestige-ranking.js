@@ -46,6 +46,7 @@ function renderTiles(){
  text('leader-emperor-name',champion?.name||'Chưa có danh hiệu');
  if($('leader-emperor-name'))$('leader-emperor-name').dataset.nameFx=nameFxTier(champion);
  text('leader-emperor-value',champion?'Lv.'+Number(champion.level||1)+' · '+fmt(champion.xp)+' XP':'XP tích lũy');
+ window.DolphinFrameFX?.refresh?.();
 }
 function el(tag,cls,value){
  const e=document.createElement(tag);if(cls)e.className=cls;if(value!==undefined)e.textContent=String(value);
@@ -84,6 +85,7 @@ function renderLevel(){
   legends.append(item);
  }
  if(!history.length)legends.append(el('p','empty','Chưa có nhân viên được ghi danh.'));
+ window.DolphinFrameFX?.refresh?.();
 }
 function init(){
  document.querySelectorAll('[data-rank-target]').forEach(button=>{

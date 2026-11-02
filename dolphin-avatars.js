@@ -30,12 +30,60 @@ function avatarHTML(name,id='',avatar='👤'){
 }
 if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
 if(!root.document)return;
-const cosmeticsHref=new URL('crew-cosmetics.css?v=legendary-v3-20261102',document.currentScript?.src||location.href).href;
+const cosmeticsHref=new URL('crew-cosmetics.css?v=orbit-v4-20261102',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
 try{if(root.parent!==root)shared=root.parent.DolphinAvatars||null;}catch(e){}
 function staffName(){try{return root.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'';}catch(e){return '';}}
 function get(name,id){return resolver.resolve(name,id)?.avatar||null;}
 function fallback(name){return Array.from(String(name||'').trim())[0]?.toLocaleUpperCase('vi-VN')||'👤';}
+/* One idempotent animator for equipped cosmetics on every UI surface.
+   IMPORTANT: children have no text nodes; existing avatar textContent-based
+   synchronization and ranking checks keep working unchanged. */
+const frameSelector=[
+ '.hero-avatar[data-frame]',
+ '.level-avatar[data-frame]',
+ '.leader-tile-icon[data-frame]',
+ '.dolphin-staff-avatar[data-frame]',
+ '.drr-frame[data-frame]',
+ '.sow-avatar[data-frame]',
+ '.fx-frame-preview[data-frame]',
+ '#profile-avatar[data-frame]'
+].join(',');
+function decorateFrame(el){
+ const frame=el?.dataset?.frame||'none';
+ const supported=['bronze','silver','gold','mythic'];
+ const previous=el?.querySelector(':scope > .crew-fx-orbits');
+ if(!supported.includes(frame)){
+  if(previous)previous.remove();
+  if(el?.dataset?.crewFxFrame)delete el.dataset.crewFxFrame;
+  return;
+ }
+ if(previous&&el.dataset.crewFxFrame===frame)return; // no observer loop
+ if(previous)previous.remove();
+ const wrap=document.createElement('span');wrap.className='crew-fx-orbits';
+ wrap.setAttribute('aria-hidden','true');
+ if(frame==='mythic'){
+  for(let i=1;i<=2;i++){
+   const orbit=document.createElement('span');
+   orbit.className='crew-fx-layer crew-fx-star-orbit crew-fx-star-orbit--'+i;
+   const star=document.createElement('span');star.className='crew-fx-star';
+   orbit.appendChild(star);wrap.appendChild(orbit);
+  }
+ }else{
+  const count={bronze:1,silver:2,gold:3}[frame];
+  for(let i=1;i<=count;i++){
+   const ring=document.createElement('span');
+   ring.className='crew-fx-layer crew-fx-ring crew-fx-ring--'+i;
+   wrap.appendChild(ring);
+  }
+ }
+ el.dataset.crewFxFrame=frame;
+ el.appendChild(wrap);
+}
+function decorateFrames(){
+ for(const el of document.querySelectorAll(frameSelector))decorateFrame(el);
+}
+root.DolphinFrameFX={refresh:decorateFrames,decorate:decorateFrame};
 function paint(){
  scheduled=false;
  const source=shared||api;
@@ -47,13 +95,18 @@ function paint(){
   const avatar=source.get(name,id)||fallback(name);
   if(el.textContent!==avatar)el.textContent=avatar;
   const chosen=source.profile?.(name,id);
-  const frame=['bronze','silver','gold','mythic'].includes(chosen?.selectedFrame)?chosen.selectedFrame:'none';
+  // Ranking may already have a trusted board frame before the directory arrives.
+  const allowed=['bronze','silver','gold','mythic'];
+  const frame=chosen
+    ? (allowed.includes(chosen.selectedFrame)?chosen.selectedFrame:'none')
+    : (allowed.includes(el.dataset.frame)?el.dataset.frame:'none');
   if(el.dataset.frame!==frame)el.dataset.frame=frame;
   const label='Avatar của '+(name||'nhân viên');if(el.getAttribute('aria-label')!==label)el.setAttribute('aria-label',label);
  }
  for(const el of document.querySelectorAll('[data-staff-profile-name]')){
   const name=source.getMine()?.name||staffName()||'Nhân viên';if(el.textContent!==name)el.textContent=name;
  }
+ decorateFrames();
 }
 function schedule(){if(!scheduled){scheduled=true;requestAnimationFrame(paint);}}
 function changed(){schedule();for(const listener of listeners)listener();root.dispatchEvent(new CustomEvent('dolphin-avatars-updated'));}

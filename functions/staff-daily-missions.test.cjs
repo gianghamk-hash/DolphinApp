@@ -29,6 +29,7 @@ function fixture(options={}){
   if(name==='firebase-admin/database')return {getDatabase:()=>({ref})};
   if(name==='firebase-functions/v2/https')return {onCall:(_,callback)=>callback,HttpsError};
   if(name==='./staff-daily-core.cjs')return core;
+  if(name==='../crew-arcade-proof.js')return require('../crew-arcade-proof.js');
   if(name==='./staff-prestige')return {_rebuildPrestige:async()=>{rebuilds++}};
   throw Error(name);
  };

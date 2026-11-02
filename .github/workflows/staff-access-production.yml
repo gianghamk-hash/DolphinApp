@@ -31,7 +31,7 @@ jobs:
           STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
         run: |
           test -n "$FIREBASE_CREDENTIALS" && test -n "$STAFF_ADMIN_UIDS"
-          node -e "if(require('./.firebaserc').projects.default!=='dolphin-f6d67')process.exit(1)"
+          node -e "const fs=require('fs');if(JSON.parse(fs.readFileSync('.firebaserc','utf8')).projects.default!=='dolphin-f6d67')process.exit(1)"
       - uses: google-github-actions/auth@v2
         with:
           credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}

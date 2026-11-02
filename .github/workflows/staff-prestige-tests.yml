@@ -9,6 +9,7 @@ on:
       - 'functions/staff-daily-missions.test.cjs'
       - 'functions/staff-daily-arcade.test.cjs'
       - 'crew-arcade-proof.js'
+      - 'functions/crew-arcade-proof.cjs'
       - 'crew-arcade-missions.js'
       - 'giaitri/games/snake.html'
       - 'giaitri/games/game2048.html'
@@ -44,6 +45,7 @@ jobs:
           node --check functions/staff-daily-missions.js
           node --check functions/staff-daily-core.cjs
           node --check crew-arcade-proof.js
+          node --check functions/crew-arcade-proof.cjs
           node --check crew-arcade-missions.js
           node --check functions/staff-xp-reconcile.js
           node --check functions/staff-xp-engine.cjs

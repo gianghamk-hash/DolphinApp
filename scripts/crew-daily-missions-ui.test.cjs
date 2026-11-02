@@ -2,7 +2,7 @@
 const test=require('node:test'),assert=require('node:assert/strict'),fs=require('node:fs'),path=require('node:path');
 const read=p=>fs.readFileSync(path.join(__dirname,'..',p),'utf8');
 const html=read('dolphin-profile.html'),js=read('staff-prestige-profile.js'),css=read('staff-profile.css');
-test('profile shows six daily tasks, streak, XP progress and authenticated check-in button',()=>{
+test('profile shows eight daily tasks, streak, XP progress and authenticated check-in button',()=>{
  for(const id of ['staff-daily-card','staff-daily-counter','staff-daily-streak','staff-daily-earned','staff-daily-track','staff-daily-list','staff-daily-message'])assert.ok(html.includes('id="'+id+'"'),id);
  assert.match(js,/function renderDailyMissions\(/);
  assert.match(js,/function checkInDaily\(/);

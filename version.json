@@ -1,7 +1,7 @@
 {
-  "version": "1.1.39",
-  "buildDate": "2026-11-02T06:03:41.292Z",
-  "commit": "7bc5049",
-  "notes": "feat(crew-club): animated V4 rarity orbits and Mythic twin stars",
+  "version": "1.1.40",
+  "buildDate": "2026-11-02T09:12:05.254Z",
+  "commit": "d48920c",
+  "notes": "feat(staff): mandatory approved access with locked names and avatar registration",
   "forceUpdate": false
 }

@@ -261,3 +261,12 @@ test('new FX choices unlock cumulatively, prior lower-level choices remain selec
  }));
  assert.equal(epic.selectedCardFx,'mythic');
 });
+
+test('personal progress exposes daily mission status without including it in public leaderboards',async()=>{
+ const {api}=harness();
+ const mine=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(mine.dailyMissions.total,6);
+ assert.equal(mine.dailyMissions.completedCount,0);
+ const publicBoard=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(JSON.stringify(publicBoard).includes('dailyMissions'),false);
+});

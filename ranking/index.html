@@ -304,7 +304,7 @@ function rankingAvatarFrame(name){
 }
 function rankingAllowed(name){
  const id=rankingStaffProfile(name)?.employeeId;
- return id!=='DOL-0001'||window.DolphinPrestige?.getBoard?.()?.showAdminRanking===true;
+ return id!=='DOL-0001'||(typeof window!=='undefined'&&window.DolphinPrestige?.getBoard?.()?.showAdminRanking===true);
 }
 function rankingCardFx(name){
  return rankingStaffProfile(name)?.selectedCardFx||'none';

@@ -43,6 +43,11 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  if(!profile.active)throw new HttpsError('permission-denied','Hồ sơ đã ngừng hoạt động.');
  const linked=await db.ref('staffIdentity/'+uid).transaction(v=>v?.employeeId?(v.employeeId===employeeId?v:undefined):{employeeId,name:profile.name,verified:false,updatedAt:Date.now()});
  if(!linked.committed)throw new HttpsError('failed-precondition','Thiết bị vừa liên kết hồ sơ khác. Hãy tải lại.');
+ // Queue a private notification; FCM delivery is best effort, registration
+ // is never rolled back if no manager device opted in to push.
+ if(profile.registrationSource==='self'&&profile.approved!==true)
+  try{await require('./staff-approval-push').notifyRegistration(profile,db);}
+  catch(e){console.warn('[Staff Approval] Push unavailable:',e.message);}
  return response(profile);
 });
 exports.staffUpdateMyProfile=onCall(opts,async req=>{
@@ -76,6 +81,10 @@ exports.staffGetAvatarDirectory=onCall(opts,async req=>{
   employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
   selectedFrame:['bronze','silver','gold','mythic'].includes(p.selectedFrame)?p.selectedFrame:'none',
   selectedTitle:['rookie','wave','legend'].includes(p.selectedTitle)?p.selectedTitle:'none',
+  selectedNameFx:['none','ember','inferno','prism','celestial'].includes(p.selectedNameFx)?p.selectedNameFx:'none',
+  selectedAura:['none','spark','dual','celestial'].includes(p.selectedAura)?p.selectedAura:'none',
+  selectedTrail:['none','wave','comet','nova'].includes(p.selectedTrail)?p.selectedTrail:'none',
+  selectedCardFx:['none','soft','energy','mythic'].includes(p.selectedCardFx)?p.selectedCardFx:'none',
   nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(-10):[]
  }))};
 });

@@ -38,6 +38,7 @@ function harness(options={}){
   if(n==='firebase-admin/firestore')return {getFirestore:()=>({doc:()=>({set:async value=>data.set('staff_xp_updates/public',value)})})};
   if(n==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};
   if(n==='./staff-xp-engine.cjs')return engine;
+  if(n==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
   throw Error(n);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-prestige.js','utf8'),ctx);
@@ -259,4 +260,13 @@ test('new FX choices unlock cumulatively, prior lower-level choices remain selec
   theme:'dark',selectedNameFx:'celestial',selectedAura:'celestial',selectedTrail:'nova',selectedCardFx:'mythic'
  }));
  assert.equal(epic.selectedCardFx,'mythic');
+});
+
+test('personal progress exposes daily mission status without including it in public leaderboards',async()=>{
+ const {api}=harness();
+ const mine=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(mine.dailyMissions.total,6);
+ assert.equal(mine.dailyMissions.completedCount,0);
+ const publicBoard=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(JSON.stringify(publicBoard).includes('dailyMissions'),false);
 });

@@ -32,3 +32,17 @@ Quy ước này áp dụng khi phát triển, chỉnh sửa, kiểm thử và th
 - Level 60: Banner Mythic (`banner_mythic`)
 
 Mở khóa tự động theo levelPeak; trang Hồ Sơ cho chọn khung, danh hiệu, banner và hiệu ứng đã đạt. Bộ quy tắc trung tâm nằm trong `functions/staff-xp-engine.cjs`, xác thực bởi `staffSetPersonalStyle`.
+
+## Nhiệm vụ hằng ngày — reset 00:00 (Việt Nam)
+
+- Múi giờ cố định: `Asia/Ho_Chi_Minh`. Không cần job xóa dữ liệu: tiến độ được tách theo ngày Việt Nam tại máy chủ. Bước sang 00:00, 6 nhiệm vụ sẽ trở về chưa hoàn thành, còn chuỗi điểm danh và kỷ lục vẫn được giữ.
+- Điểm danh: ngày thứ 1 = **20 XP**, mỗi ngày liên tiếp tăng **5 XP** tới mức trần **50 XP/ngày** từ ngày thứ 7. Bỏ qua một ngày thì chuỗi bắt đầu lại từ 1, kỷ lục không mất.
+- Hoàn thành một order: **40 XP** (chuyển trạng thái đơn sang hoàn thành trên máy chủ).
+- Mở một Bungalow: **30 XP** (tạo lượt mới bằng Staff ID đã xác minh).
+- Mở một bàn Lounge: **25 XP** (tạo bàn mới bằng Staff ID đã xác minh).
+- Nhận một order: **15 XP** (chuyển đơn từ pending sang preparing bằng Staff ID).
+- Đổi avatar: **10 XP** (thực sự lưu avatar khác với avatar hiện tại).
+- Mỗi nhiệm vụ chỉ thưởng tối đa **một lần/ngày** theo Staff ID (tối đa **140–170 XP/ngày**, tùy chuỗi). XP cộng vào `staffRegistry/{employeeId}.xp`, dùng lại công thức Level và `levelPeak` hiện có.
+- Chỉ `staffCheckInDaily` là thao tác do nhân viên gọi trực tiếp. Các nhiệm vụ công việc/đổi avatar được ghi nhận từ callable nghiệp vụ có kiểm tra Staff ID và thao tác thực tế. Không có callable để client tự gửi task/XP tùy ý; dữ liệu Firestore viết trực tiếp theo luồng cũ không phải bằng chứng nhận XP nhiệm vụ.
+- Nút **Điểm danh** và danh sách nhiệm vụ xuất hiện tại Hồ sơ; kết quả đồng bộ giữa thiết bị. Mốc công việc nhận thưởng ngay sau khi thao tác đủ điều kiện, không phải nhấn nhận thủ công.
+- Giữ nguyên quy ước Dolphin Crew Club chỉ để giải trí, **không** dùng làm căn cứ lương hay đánh giá.

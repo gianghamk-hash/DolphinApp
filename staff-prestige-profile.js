@@ -219,6 +219,75 @@ function renderThemes(){
   item.append(input,copy);$('staff-theme-grid').appendChild(item);
  }
 }
+
+// Daily quests use the same server-confirmed identity and progress as Level/XP.
+let dailyCheckinBusy=false;
+function showDailyStatus(message,error=false){
+ const node=$('staff-daily-message');
+ if(node){node.textContent=message;node.dataset.error=String(error);}
+}
+function dailyElement(tag,value,className){
+ return element(tag,value,className);
+}
+function renderDailyMissions(){
+ const list=$('staff-daily-list');
+ if(!list)return;
+ list.replaceChildren();
+ const daily=mine?.dailyMissions;
+ if(!daily||!Array.isArray(daily.tasks)){
+  const empty=dailyElement('p',mine?'Máy chủ đang cập nhật nhiệm vụ hằng ngày. Vui lòng thử lại.':'Đăng ký và xác minh Staff ID để nhận nhiệm vụ.','hint');
+  list.append(empty);
+  $('staff-daily-counter').textContent='0/6';
+  $('staff-daily-track').setAttribute('aria-valuenow','0');
+  $('staff-daily-fill').style.width='0%';
+  $('staff-daily-streak').textContent='🔥 Chuỗi điểm danh: —';
+  $('staff-daily-earned').textContent='⭐ +0 XP hôm nay';
+  return;
+ }
+ const count=Math.max(0,Math.min(daily.total||6,Number(daily.completedCount)||0));
+ $('staff-daily-counter').textContent=count+'/'+(daily.total||6);
+ $('staff-daily-fill').style.width=(100*count/(daily.total||6))+'%';
+ $('staff-daily-track').setAttribute('aria-valuenow',String(count));
+ $('staff-daily-streak').textContent='🔥 Chuỗi: '+daily.streak+' ngày · Kỷ lục '+daily.bestStreak;
+ $('staff-daily-earned').textContent='⭐ +'+fmt(daily.todayXP)+' XP hôm nay';
+ for(const task of daily.tasks){
+  const item=dailyElement('div',undefined,'daily-task');item.dataset.done=String(task.done);
+  const icon=dailyElement('span',task.icon,'daily-task-icon');
+  icon.setAttribute('aria-hidden','true');
+  const body=dailyElement('div',undefined,'daily-task-body');
+  body.append(dailyElement('strong',task.title),dailyElement('small',task.description));
+  const right=dailyElement('div',undefined,'daily-task-right');
+  right.append(dailyElement('span','+'+fmt(task.xp)+' XP','daily-task-xp'));
+  if(task.id==='checkin'&&!task.done){
+   const button=dailyElement('button','Điểm danh','daily-task-checkin');
+   button.type='button';button.disabled=dailyCheckinBusy;
+   button.setAttribute('aria-label','Điểm danh để nhận '+fmt(task.xp)+' XP');
+   button.addEventListener('click',()=>void checkInDaily());
+   right.append(button);
+  }else right.append(dailyElement('span',task.done?'✓ Hoàn thành':'Chưa hoàn thành','daily-task-state'));
+  item.append(icon,body,right);list.append(item);
+ }
+}
+async function checkInDaily(){
+ if(dailyCheckinBusy||!mine?.employeeId)return;
+ dailyCheckinBusy=true;renderDailyMissions();showDailyStatus('Đang xác nhận điểm danh…');
+ try{
+  const result=await window.DolphinPrestige.call('staffCheckInDaily',{});
+  if(result?.missions){
+   mine={...mine,dailyMissions:result.missions};
+   renderDailyMissions();
+  }
+  showDailyStatus(result?.awarded
+   ?'🎉 Điểm danh thành công! +'+fmt(result.addedXP)+' XP. Chuỗi hiện tại: '+result.missions.streak+' ngày.'
+   :'Hôm nay đã điểm danh. Hãy quay lại vào ngày mai.');
+  await window.DolphinPrestige.refresh();
+ }catch(e){showDailyStatus('Không thể điểm danh: '+String(e.message||e.code||'Lỗi kết nối').slice(0,130),true);}
+ finally{dailyCheckinBusy=false;renderDailyMissions();}
+}
+function vietnamToday(){
+ return new Intl.DateTimeFormat('en-CA',{timeZone:'Asia/Ho_Chi_Minh',year:'numeric',month:'2-digit',day:'2-digit'}).format(new Date());
+}
+
 function renderMine(){
  if(!mine){
   $('staff-level-tag').textContent='LEVEL —';$('staff-next-level').textContent='XP được lưu theo Staff ID';
@@ -238,7 +307,7 @@ function renderMine(){
  $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||mine.level<3;
  $('profile-name').classList.toggle('onflame',!!mine?.nameFlame&&mine.level>=3);
  $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&mine.level>=25);
- renderThemes();renderCosmetics();renderRewards();previewCosmetics();renderFxGallery();renderAdminSandbox();
+ renderThemes();renderCosmetics();renderRewards();renderDailyMissions();previewCosmetics();renderFxGallery();renderAdminSandbox();
 }
 function renderAdminSandbox(){
  const panel=$('crew-admin-sandbox');
@@ -303,6 +372,7 @@ function init(){
  $('admin-test-xp-add')?.addEventListener('click',()=>void adminTestXP('add',Number($('admin-test-xp-amount').value)));
  $('admin-test-xp-reset')?.addEventListener('click',()=>void adminTestXP('reset'));
  renderMine();showStatus();
+ setInterval(()=>{if(!document.hidden&&mine?.dailyMissions?.date&&mine.dailyMissions.date!==vietnamToday())void window.DolphinPrestige?.refresh();},30000);
 }
 window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;renderMine();showStatus();});
 window.addEventListener('dolphin-prestige-status',showStatus);

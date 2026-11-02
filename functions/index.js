@@ -293,6 +293,7 @@ exports.staffGetIdentity=onCall(opts,async req=>{
 });
 
 for(const [name,handler] of Object.entries(require('./staff-profile')))exports[name]=handler;
+for(const [name,handler] of Object.entries(require('./staff-daily-missions')))if(!name.startsWith('_'))exports[name]=handler;
 for(const [name,handler] of Object.entries(require('./staff-prestige')))if(!name.startsWith('_'))exports[name]=handler;
 for(const [name,handler] of Object.entries(require('./staff-xp-reconcile')))if(!name.startsWith('_'))exports[name]=handler;
 for(const [name,handler] of Object.entries(require('./staff-xp-live')))if(!name.startsWith('_'))exports[name]=handler;

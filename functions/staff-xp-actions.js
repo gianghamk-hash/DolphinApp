@@ -11,6 +11,7 @@ const {getDatabase}=require('firebase-admin/database');
 const prestige=require('./staff-prestige');
 const live=require('./staff-xp-live-engine.cjs');
 const xp=require('./staff-xp-engine.cjs');
+const daily=require('./staff-daily-missions');
 const opts={region:'asia-southeast1',maxInstances:8,timeoutSeconds:60};
 const KINDS=new Set(['lounge_tables','bun_tables','show_tables','lounge_orders','bun_orders','res_orders']);
 const SHOW=new Set(['combo1','combo2','combo3','singer1','singer2','singer3']);
@@ -48,6 +49,10 @@ async function onceSale(kind,id,who,amount){
  if(!claimed.committed)throw new HttpsError('failed-precondition','Bàn đã được tính XP cho nhân viên khác trong ngày');
  return credit(who.id,'live:'+hash('sale',kind,id,day,who.id),'revenue',amount);
 }
+async function dailyBonus(employeeId,mission){
+ try{return (await daily._award(employeeId,mission)).addedXP||0;}
+ catch(e){console.warn('[Crew Daily] Action saved, mission deferred:',mission,e?.message||e);return 0;}
+}
 function payment(v){const s=str(v,40);if(!s)fail('Thiếu phương thức thanh toán');return s;}
 function stringMap(m){
  if(!m||typeof m!=='object'||Array.isArray(m))return {};
@@ -71,15 +76,15 @@ async function booking(kind,id,data,who){
    const pax=Number(data.pax);
    if(!Number.isSafeInteger(pax)||pax<1||pax>200)fail('Pax phải trong khoảng 1–200');
    if(!str(data.customerName))fail('Thiếu tên khách');
-   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else if(kind==='bun_tables'){
    if(!str(data.customerName)||!str(data.restaurantTable))fail('Thiếu tên khách hoặc bàn nhà hàng');
-   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else{
    const guests=Number(data.guests);
    if(!Number.isSafeInteger(guests)||guests<1||guests>300)fail('Số khách không hợp lệ');
    if(!str(data.leader)||!str(data.dining))fail('Thiếu trưởng đoàn hoặc bàn nhà hàng');
-   update={label:str(data.label||id,70),leader:str(data.leader),dining:str(data.dining,50),guests,payment:pay,focNote:str(data.focNote||'',200),seller:preserveOwner?owner:who.name,updatedAt:Date.now()};
+   update={label:str(data.label||id,70),leader:str(data.leader),dining:str(data.dining,50),guests,payment:pay,focNote:str(data.focNote||'',200),seller:preserveOwner?owner:who.name,...(preserveOwner?{}:{sellerStaffId:who.id}),updatedAt:Date.now()};
   }
   tx.set(ref,update,{merge:true});
   return {before:v,after:{...v,...update},payment:pay,preserveOwner};
@@ -93,7 +98,9 @@ async function booking(kind,id,data,who){
  if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
  const amount=live.tableValue(kind,existing.after);
  const grant=await onceSale(kind,id,who,xp.revenueXP(amount));
- return {saved:true,xpAwarded:grant.amount,duplicate:grant.duplicate};
+ const missionXP=!existing.before&&['bun_tables','lounge_tables'].includes(kind)
+  ?await dailyBonus(who.id,kind==='bun_tables'?'bungalow_opened':'lounge_opened'):0;
+ return {saved:true,xpAwarded:grant.amount,missionXP,duplicate:grant.duplicate};
 }
 async function combo(id,data,who){
  const code=str(data.combo,24);
@@ -117,26 +124,29 @@ async function combo(id,data,who){
 async function work(kind,id,action,who){
  if(!['preparing','completed'].includes(action))fail('Trạng thái công việc không hợp lệ');
  const ref=getFirestore().collection(kind).doc(id),now=Date.now();
- await getFirestore().runTransaction(async tx=>{
+ const transition=await getFirestore().runTransaction(async tx=>{
   const snap=await tx.get(ref);
   if(!snap.exists)throw new HttpsError('not-found','Không tìm thấy đơn');
   const old=snap.data()||{};
   if(old.status==='cancelled'||old.status==='completed'&&(action!=='completed'||old.completedBy!==who.name))throw new HttpsError('failed-precondition','Đơn đã hoàn thành hoặc bị hủy');
   if(action==='completed'){
    if(!['preparing','pending','completed'].includes(old.status))throw new HttpsError('failed-precondition','Trạng thái đơn không hợp lệ');
-   if(old.status!=='completed')tx.update(ref,{status:'completed',completedBy:who.name,completedAt:now,completedTime:dateTime()});
+   if(old.status!=='completed')tx.update(ref,{status:'completed',completedBy:who.name,completedByStaffId:who.id,completedAt:now,completedTime:dateTime()});
   }else{
    const names=live.names(old.preparedBy);
    if(!names.some(n=>n===who.name))names.push(who.name);
-   tx.update(ref,{status:'preparing',preparedBy:names.join(' & '),preparedAt:now});
+   tx.update(ref,{status:'preparing',preparedBy:names.join(' & '),...(old.status==='pending'?{preparedByStaffId:who.id}:{}),preparedAt:now});
   }
+  return {accepted:action==='preparing'&&old.status==='pending',finished:action==='completed'&&old.status!=='completed'};
  });
  const evt='live:'+hash('work',kind,id,action,who.id);
  const preparedBefore=action==='completed'?(await getDatabase().ref('staffXpLedger/'+who.id+'/live:'+hash('work',kind,id,'preparing',who.id)).once('value')).exists():false;
  const lounge=kind==='lounge_orders';
  const amount=action==='preparing'?(lounge?1:5):preparedBefore?(lounge?1.5:5):(lounge?2.5:10);
  const grant=await credit(who.id,evt,'work',amount);
- return {saved:true,xpAwarded:grant.amount,duplicate:grant.duplicate};
+ const missionXP=transition.accepted?await dailyBonus(who.id,'order_received'):
+  transition.finished?await dailyBonus(who.id,'order_completed'):0;
+ return {saved:true,xpAwarded:grant.amount,missionXP,duplicate:grant.duplicate};
 }
 exports.staffRecordLiveAction=onCall(opts,async req=>{
  const who=await staff(req),data=req.data||{},kind=str(data.kind,32),id=idOf(data.id);

@@ -3,6 +3,7 @@ const {getDatabase}=require('firebase-admin/database');
 const {getFirestore}=require('firebase-admin/firestore');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const engine=require('./staff-xp-engine.cjs');
+const dailyCore=require('./staff-daily-core.cjs');
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
 const staffPattern=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/;
 const TEST_ADMIN_ID='DOL-0001'; // Dolphin Crew Club game sandbox; excluded from XP competitions.
@@ -82,7 +83,7 @@ exports.staffGetPrestige=onCall(opts,async req=>{
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
  const {profile,testAdmin}=await currentStaff(req);
- return {...expose(profile),testAdmin};
+ return {...expose(profile),dailyMissions:dailyCore.view(profile),testAdmin};
 });
 exports.staffSetShowcase=onCall(opts,async req=>{
  const {id}=await currentStaff(req);

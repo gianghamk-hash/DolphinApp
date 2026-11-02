@@ -76,13 +76,19 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
   if(submitted!==profile.name)throw new HttpsError('permission-denied','Họ tên đã đăng ký không thể thay đổi.');
  }
  const data=validate({name:profile.name,avatar:req.data?.avatar||profile.avatar});
+ let avatarReallyChanged=false;
  const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
   if(v===null)return null; // Allow RTDB cold-instance retry.
   if(!v.active)return;
   if(data.avatar!==v.avatar&&(avatarThreshold.get(data.avatar)||1)>Math.max(Number(v.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(Number(v.xp)||0)))return;
+  avatarReallyChanged=data.avatar!==v.avatar;
   return {...v,avatar:data.avatar,profileVersion:(v.profileVersion||0)+1,updatedAt:Date.now(),updatedBy:uid};
  });
  if(!result.committed||!result.snapshot.val()?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
+ if(avatarReallyChanged){
+  try{await require('./staff-daily-missions')._award(profile.employeeId,'avatar_changed');}
+  catch(e){console.warn('[Crew Daily] Avatar saved; mission award unavailable:',e?.message||e);}
+ }
  return response(result.snapshot.val());
 });
 exports.staffIssueOwnLinkCode=onCall(opts,async req=>{

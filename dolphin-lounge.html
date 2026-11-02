@@ -1098,9 +1098,15 @@ window.saveCustomerName = async function(){
 window.executeSaveCustomerName = async function({table,dataToSave}){
   try{
     if(!db)throw Error('Chưa kết nối Firestore');
-    await setDoc(doc(db,'lounge_tables',table), dataToSave, { merge: true }); 
+    const identity=window.DolphinStaffId?.get?.();
+    const verified=identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function';
+    const reward=verified?await window.DolphinStaffId.performLiveAction({
+      kind:'lounge_tables',id:table,action:'booking',data:dataToSave
+    }):null;
+    if(!verified)await setDoc(doc(db,'lounge_tables',table),dataToSave,{merge:true});
     window.showToast(`Đã lưu bàn ${table}`,'✅');
-    if(window.DolphinStaffId?.syncSavedActivity)void window.DolphinStaffId.syncSavedActivity({kind:'lounge_tables',id:table})
+    if(reward&&(reward.xpAwarded||reward.missionXP))window.showToast('+'+((reward.xpAwarded||0)+(reward.missionXP||0))+' XP đã xác minh','⭐');
+    if(!verified&&window.DolphinStaffId?.syncSavedActivity)void window.DolphinStaffId.syncSavedActivity({kind:'lounge_tables',id:table})
       .then(r=>{if(r.addedXP>0)window.showToast('+'+r.addedXP+' XP từ bàn '+table,'⭐');})
       .catch(e=>{console.warn('[Lounge XP] Đồng bộ sau lưu thất bại:',e?.code||e?.message||e);window.showToast('Bàn đã lưu nhưng XP chưa cộng: '+String(e?.message||e?.code||'Kiểm tra Staff ID').slice(0,95),'⚠️');}); 
     window.closeCustomerNameModal(); 
@@ -1232,6 +1238,17 @@ window.executeStaffAction = async function(name){
     const {orderId,nextStatus} = pa;
     const ref = doc(db,'lounge_orders',orderId);
     try{
+      const identity=window.DolphinStaffId?.get?.();
+      if(identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
+         String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN')){
+        const reward=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
+        window.showToast('Đã ghi nhận: '+name,'📝');
+        const points=(reward.xpAwarded||0)+(reward.missionXP||0);
+        if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
+        if(nextStatus==='completed')Confetti.spawn(innerWidth/2,innerHeight/2,100);
+        state.pendingAction=null;
+        return;
+      }
       await runTransaction(db, async tx=>{
         const d = await tx.get(ref);
         if(!d.exists()) throw "Đơn không tồn tại!";

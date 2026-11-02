@@ -154,3 +154,26 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 @media(prefers-reduced-motion:reduce){
  .crew-effect-group .crew-fx-choice{transition:none}
 }
+
+/* Crew Club daily quests: compact responsive progress with live reward feedback. */
+.daily-missions{margin:16px 0 12px}
+.daily-missions .section-line h2{margin-top:3px}
+.daily-stats{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:9px;margin:16px 0 10px;color:var(--gold);font-size:12px;font-weight:750}
+.daily-track{width:100%;height:8px;background:color-mix(in srgb,var(--ink) 11%,transparent);border-radius:20px;overflow:hidden}
+.daily-track>span{display:block;height:100%;width:0;background:linear-gradient(90deg,#6de6ca,var(--gold));border-radius:20px;transition:width .35s ease}
+.daily-list{display:grid;gap:10px;margin-top:15px}
+.daily-task{display:flex;align-items:center;gap:12px;border:1px solid var(--line);border-radius:15px;padding:12px;background:color-mix(in srgb,var(--ink) 3%,transparent)}
+.daily-task[data-done="true"]{border-color:color-mix(in srgb,var(--gold) 45%,var(--line));background:color-mix(in srgb,var(--gold) 6%,var(--surface))}
+.daily-task-icon{display:grid;place-items:center;flex-shrink:0;width:39px;height:39px;border-radius:12px;background:color-mix(in srgb,var(--gold) 10%,var(--surface));font-size:21px}
+.daily-task-body{min-width:0;flex:1}
+.daily-task-body strong{display:block;font-size:12px}
+.daily-task-body small{display:block;color:var(--muted);font-size:10px;line-height:1.5;margin-top:3px}
+.daily-task-right{display:flex;align-items:flex-end;flex-direction:column;gap:5px;flex-shrink:0;text-align:right}
+.daily-task-xp{font-size:12px;font-weight:800;color:var(--gold)}
+.daily-task-state{font-size:10px;color:var(--muted);font-weight:600}
+.daily-task[data-done="true"] .daily-task-state{color:var(--gold)}
+.daily-task-checkin{border:1px solid var(--gold);border-radius:9px;background:var(--gold);color:var(--theme-bg2,#122622);font-size:11px;font-weight:800;padding:7px 9px;min-width:88px}
+.daily-task-checkin:disabled{opacity:.65}
+.daily-message[data-error="true"]{color:#ffb3a1}
+@media(max-width:420px){.daily-missions{padding:17px 13px}.daily-task{gap:8px;padding:11px 9px}.daily-task-icon{width:33px;height:33px;font-size:19px}.daily-task-checkin{min-width:75px;font-size:10px;padding:6px 7px}.daily-task-right{max-width:95px}}
+@media(prefers-reduced-motion:reduce){.daily-track>span{transition:none}}

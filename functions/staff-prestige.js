@@ -128,14 +128,16 @@ exports.staffGetMyProgress=onCall(opts,async req=>{
  if(dailyCore.reconcileLegacyDaily(profile,now).changed){
   const ref=getDatabase().ref('staffRegistry/'+id);
   try{
+   let appliedAdjustment=0;
    const transaction=await ref.transaction(current=>{
     if(current===null)return null;
     const fixed=dailyCore.reconcileLegacyDaily(current,now);
+    appliedAdjustment=fixed.changed?fixed.addedXP:0;
     return fixed.changed?fixed.profile:undefined;
    },undefined,false);
    actual=transaction.committed?transaction.snapshot.val():(await ref.once('value')).val()||profile;
    if(transaction.committed){
-    dailyXPAdjustment=Number((Number(actual.xp||0)-Number(profile.xp||0)).toFixed(2));
+    dailyXPAdjustment=appliedAdjustment;
     try{await rebuild();}catch(e){console.warn('[Crew Daily] Public board refresh pending:',e?.message||e);}
    }
   }catch(e){

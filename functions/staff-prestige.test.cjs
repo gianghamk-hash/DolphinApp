@@ -142,7 +142,7 @@ test('DOL-0001 is Admin sandbox only when verified, with self XP add/reset',asyn
  assert.equal(reset.personalTheme,'dark');
  assert.equal(data.get('staffRegistry/DOL-0001').levelPeak,1);
 });
-test('sandbox admin never participates in public XP leaderboard or Emperor',async()=>{
+test('sandbox admin defaults to hidden from public XP leaderboard or Emperor',async()=>{
  const {api,data}=harness();
  data.set('staffRegistry/DOL-0001',{...data.get('staffRegistry/DOL-0001'),xp:900000,levelPeak:14});
  data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,avatar:'🐬',xp:500,levelPeak:1});
@@ -193,12 +193,12 @@ test('Level 5 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
 test('Level 15 can equip Rookie Star and Wave banner, preserving choices on theme-only saves',async()=>{
  const {api,data}=harness();
  const old=data.get('staffRegistry/DOL-0001');
- data.set('staffRegistry/DOL-0001',{...old,xp:980000,levelPeak:15});
+ data.set('staffRegistry/DOL-0001',{...old,xp:engine.xpForLevel(15),levelPeak:15});
  const first=await api.staffSetPersonalStyle(req('lanDevice',{theme:'spring',nameFlame:true,selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave'}));
  assert.equal(first.selectedTitle,'rookie');assert.equal(first.selectedBanner,'wave');
  const second=await api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',nameFlame:true}));
  assert.equal(second.selectedTitle,'rookie');assert.equal(second.selectedBanner,'wave');
- assert.equal(second.xp,980000);
+ assert.equal(second.xp,engine.xpForLevel(15));
  await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',selectedTitle:'legend'})),e=>e.code==='permission-denied');
 });
 test('Level 45 enables gradient, Level 60 unlocks Mythic, and Admin reset relocks all',async()=>{
@@ -223,11 +223,40 @@ test('Server rejects forged gradient and unknown cosmetic values at Level 1',asy
 });
 test('Public board publishes equipped titles and frames, excluding DOL-0001 tester',async()=>{
  const {api,data}=harness();
- data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Colleague',active:true,avatar:'🐯',xp:980000,levelPeak:15,selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave'});
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Colleague',active:true,avatar:'🐯',xp:engine.xpForLevel(15),levelPeak:15,selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave'});
  await api._rebuildPrestige();
  const board=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(board.leaderboard.length,1);assert.equal(board.leaderboard[0].employeeId,'DOL-0002');
  assert.equal(board.leaderboard[0].selectedFrame,'bronze');
  assert.equal(board.leaderboard[0].selectedTitle,'rookie');
  assert.equal(board.leaderboard[0].selectedBanner,'wave');
+});
+
+test('DOL-0001 can opt into and out of public ranking only when verified',async()=>{
+ const {api,data}=harness();
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,xp:500,levelPeak:1});
+ await assert.rejects(()=>api.staffSetOwnRankingVisibility(req('manager',{visible:true})),e=>e.code==='permission-denied');
+ await api.staffSetOwnRankingVisibility(req('lanDevice',{visible:true}));
+ const board=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(board.showAdminRanking,true);
+ assert.ok(board.leaderboard.some(p=>p.employeeId==='DOL-0001'));
+ await api.staffSetOwnRankingVisibility(req('lanDevice',{visible:false}));
+ const hidden=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(hidden.showAdminRanking,false);
+ assert.equal(hidden.leaderboard.some(p=>p.employeeId==='DOL-0001'),false);
+});
+test('new FX choices unlock cumulatively, prior lower-level choices remain selectable',async()=>{
+ const {api,data}=harness();
+ const old=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...old,xp:engine.xpForLevel(60),levelPeak:60});
+ const selected=await api.staffSetPersonalStyle(req('lanDevice',{
+  theme:'dark',selectedNameFx:'ember',selectedAura:'spark',selectedTrail:'wave',
+  selectedCardFx:'soft',selectedFrame:'bronze'
+ }));
+ assert.equal(selected.selectedNameFx,'ember');assert.equal(selected.selectedAura,'spark');
+ assert.equal(selected.selectedTrail,'wave');assert.equal(selected.selectedCardFx,'soft');
+ const epic=await api.staffSetPersonalStyle(req('lanDevice',{
+  theme:'dark',selectedNameFx:'celestial',selectedAura:'celestial',selectedTrail:'nova',selectedCardFx:'mythic'
+ }));
+ assert.equal(epic.selectedCardFx,'mythic');
 });

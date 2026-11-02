@@ -218,6 +218,8 @@ test('avatar directory returns public display fields only, omits inactive staff 
  const a=await api.staffRegisterSelfProfile(req('a',{name:'Old name',avatar:'🐬'}));state.delete('staffProfileRate/a');
  await api.staffUpdateMyProfile(req('a',{name:'Old name',avatar:'🐯'}));
  state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Inactive',active:false});
+ const pendingDirectory=await api.staffGetAvatarDirectory(req('reader'));assert.equal(pendingDirectory.profiles.length,0,'Pending profiles must stay private');
+ state.set('staffRegistry/'+a.employeeId,{...state.get('staffRegistry/'+a.employeeId),approved:true});
  const directory=await api.staffGetAvatarDirectory(req('reader'));assert.equal(directory.profiles.length,1);
  assert.equal(directory.profiles[0].employeeId,a.employeeId);assert.equal(directory.profiles[0].avatar,'🐯');
  assert.equal(directory.profiles[0].name,'Old name');

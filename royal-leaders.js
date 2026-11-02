@@ -96,9 +96,6 @@ css.textContent=`
  :is(#drl-level,#drl-revenue,#drl-work) .drl-level-theme{display:none}
  #drl-revenue,#drl-work{margin-top:0;padding:11px 4px;min-height:164px;box-sizing:border-box}
  #drl-revenue .drl-name,#drl-work .drl-name{font-size:13px}
- #drl-revenue .drl-crown,#drl-work .drl-crown{font-size:25px}
- #drl-revenue .drl-tag,#drl-work .drl-tag{font-size:9px}
- #drl-revenue .drl-value,#drl-work .drl-value{font-size:10px}
 }
 @media(max-width:360px){
  #dolphin-royal-leaders{grid-template-columns:repeat(3,minmax(0,1fr));gap:3px}
@@ -156,8 +153,8 @@ function draw(type,data){
  // display cosmetics ONLY when that name uniquely resolves in the verified
  // staff directory. Never copy a different employee's premium cosmetics.
  const name=typeof top?.name==='string'?top.name:'';
- const employeeId=typeof top?.employeeId==='string'?top.employeeId:
-  typeof top?.staffId==='string'?top.staffId:'';
+ const employeeId=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(String(top?.employeeId||top?.staffId||''))?
+  String(top.employeeId||top.staffId):'';
  const profile=name?window.DolphinAvatars?.profile?.(name,employeeId):null;
  const actor=top?{...profile,name:profile?.name||name,avatar:profile?.avatar||'🐬'}:null;
  renderAppearance(type,actor);

@@ -234,7 +234,7 @@ function renderDailyMissions(){
  if(!list)return;
  list.replaceChildren();
  const daily=mine?.dailyMissions;
- if(daily?.checkinTopUpXP>0)showDailyStatus('✅ Đã tự động bù +'+fmt(daily.checkinTopUpXP)+' XP điểm danh theo mức thưởng x10.');
+ if(daily?.dailyTopUpXP>0)showDailyStatus('✅ Đã tự động bù +'+fmt(daily.dailyTopUpXP)+' XP cho các nhiệm vụ trong ngày theo mức thưởng mới.');
  if(!daily||!Array.isArray(daily.tasks)){
   const empty=dailyElement('p',mine?'Máy chủ đang cập nhật nhiệm vụ hằng ngày. Vui lòng thử lại.':'Đăng ký và xác minh Staff ID để nhận nhiệm vụ.','hint');
   list.append(empty);
@@ -265,7 +265,12 @@ function renderDailyMissions(){
    button.setAttribute('aria-label','Điểm danh để nhận '+fmt(task.xp)+' XP');
    button.addEventListener('click',()=>void checkInDaily());
    right.append(button);
-  }else right.append(dailyElement('span',task.done?'✓ Hoàn thành':'Chưa hoàn thành','daily-task-state'));
+  }else if(['snake_100','game2048_1000'].includes(task.id)&&!task.done){
+    const link=dailyElement('a','Chơi ngay','daily-task-checkin');
+    link.href=task.id==='snake_100'?'./giaitri/games/snake.html':'./giaitri/games/game2048.html';
+    link.setAttribute('aria-label','Chơi '+task.title+' để nhận '+fmt(task.xp)+' XP');
+    right.append(link);
+   }else right.append(dailyElement('span',task.done?'✓ Hoàn thành':'Chưa hoàn thành','daily-task-state'));
   item.append(icon,body,right);list.append(item);
  }
 }

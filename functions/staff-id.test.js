@@ -326,6 +326,7 @@ test('rejected applications cannot be reactivated by approve or old link codes',
  state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner',active:true});
  state.set('staffIdentity/owner',{employeeId:'DOL-0001',verified:true});
  await api.staffRejectRegistration(req('owner',{employeeId:crew.employeeId}));
+ await rejects(()=>api.staffClaimLinkCode(req('crew',{code:code.code,replaceCurrent:true,expectedEmployeeId:crew.employeeId})),'permission-denied');
  await rejects(()=>api.staffApproveRegistration(req('owner',{employeeId:crew.employeeId})),'failed-precondition');
  await rejects(()=>api.staffClaimLinkCode(req('new-phone',{code:code.code})),'failed-precondition');
  await rejects(()=>api.staffRejectRegistration(req('owner',{employeeId:crew.employeeId})),'failed-precondition');

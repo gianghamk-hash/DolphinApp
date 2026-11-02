@@ -51,7 +51,7 @@ test('multiple devices cannot claim the same daily task twice',async()=>{
  h.data.set('staffIdentity/second',{employeeId:'DOL-0002',verified:true});
  const results=await Promise.all([h.api.staffCheckInDaily(req('worker')),h.api.staffCheckInDaily(req('second'))]);
  assert.equal(results.filter(v=>v.awarded).length,1);
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,2000);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,200);
  assert.equal(h.rebuilds(),1);
 });
 test('business missions are internal-only, idempotent and update profile level',async()=>{

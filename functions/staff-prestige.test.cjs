@@ -38,6 +38,7 @@ function harness(options={}){
   if(n==='firebase-admin/firestore')return {getFirestore:()=>({doc:()=>({set:async value=>data.set('staff_xp_updates/public',value)})})};
   if(n==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};
   if(n==='./staff-xp-engine.cjs')return engine;
+  if(n==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
   throw Error(n);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-prestige.js','utf8'),ctx);

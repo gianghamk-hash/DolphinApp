@@ -63,6 +63,12 @@ css.textContent=`
 }
 @media(max-width:360px){#dolphin-royal-leaders{grid-template-columns:repeat(2,minmax(0,1fr))}#drl-level{width:min(100%,280px)}#drl-level .drl-name{font-size:17px}}
 @media(prefers-reduced-motion:reduce){#drl-level .drl-level-crown,#drl-level .drl-name{animation:none!important;transition:none!important}}
+
+/* The unique ID selector on the podium must not suppress equipped name tiers. */
+#drl-level .drl-name[data-name-fx="ember"]{color:#ffe1a0!important;-webkit-text-fill-color:#ffe1a0;text-shadow:0 0 3px #fff0bd,0 0 10px #ffa323,0 0 21px #e3551a;animation:none}
+#drl-level .drl-name[data-name-fx="inferno"]{background:linear-gradient(180deg,#fff9da 0%,#ffe36d 37%,#ff762c 76%,#fb3344 100%);background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:0 0 13px #ff761b90,0 0 28px #d8321790;filter:drop-shadow(0 0 5px #ffb24c);animation:none}
+#drl-level .drl-name[data-name-fx="prism"]{background:linear-gradient(100deg,#eaffff,#77eaff,#b9a1ff,#ffacdd,#eaffff);background-size:250% 100%;background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:0 0 12px #8bdbff80,0 0 22px #b791ff70;animation:crew-prism-shift 4.5s linear infinite}
+#drl-level .drl-name[data-name-fx="celestial"]{background:linear-gradient(95deg,#fffadc,#89f4ff,#ffd36b,#f0a7ff,#fffadc);background-size:280% 100%;background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;text-shadow:0 0 11px #fff0b880,0 0 26px #73eaffad;filter:drop-shadow(0 0 7px #f1b5ff);animation:crew-prism-shift 3.5s linear infinite}
 `;document.head.appendChild(css);
 const e=s=>String(s||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function draw(type,data){
@@ -101,6 +107,7 @@ function drawLevel(leader){
  const valid=leader&&typeof leader==='object'&&/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(String(leader.employeeId||''))&&typeof leader.name==='string'&&leader.name.trim();
  card.dataset.status=valid?'ready':'empty';
  if(!valid){
+  surface.style.removeProperty('--drl-accent');surface.style.removeProperty('--drl-accent2');surface.dataset.personalTheme='dark';
   $('drl-level-glyph').textContent='🐬';
   avatar.dataset.frame='none';avatar.dataset.avatarMotion='none';avatar.dataset.crewAura='none';
   surface.dataset.banner='default';surface.dataset.crewCard='none';

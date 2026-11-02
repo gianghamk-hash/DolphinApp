@@ -1,5 +1,5 @@
 {
-  "version": "1.1.46",
+  "version": "1.1.47",
   "releaseDate": "2026-11-02",
-  "notes": "ci(crew): run profile regression checks when PWA cosmetic cache changes"
+  "notes": "test(crew): validate four celestial Mythic orbit animations in browser"
 }

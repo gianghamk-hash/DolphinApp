@@ -1,70 +1,54 @@
 {
-  "version": "1.1.52",
-  "previousVersion": "1.1.51",
-  "commit": "e832b9b",
-  "previousCommit": "1d17c5d",
-  "buildDate": "2026-11-02T15:01:54.637Z",
-  "summary": "fix(crew): reconcile x10 daily check-in and reduce Level thresholds 30 percent",
+  "version": "1.1.53",
+  "previousVersion": "1.1.52",
+  "commit": "7815bd5",
+  "previousCommit": "e832b9b",
+  "buildDate": "2026-11-02T15:35:06.432Z",
+  "summary": "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview",
   "changes": {
-    "totalCommits": 276,
-    "filesChanged": 13,
+    "totalCommits": 277,
+    "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(crew): reconcile x10 daily check-in and reduce Level thresholds 30 percent"
+    "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-style-unlock-production.yml",
+      "file": "dolphin-avatars.js",
       "type": "update"
     },
     {
-      "file": "docs/DOLPHIN_CREW_CLUB_RULES.md",
+      "file": "dolphin-ui.js",
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "functions/staff-id.test.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-core.cjs",
+      "file": "functions/staff-profile.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-core.test.cjs",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.js",
+      "file": "royal-leaders.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.test.cjs",
+      "file": "scripts/landing-level-podium-browser.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-engine.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-daily-missions-ui.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-v5.test.cjs",
+      "file": "scripts/landing-level-podium.test.cjs",
       "type": "update"
     },
     {
       "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

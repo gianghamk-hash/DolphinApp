@@ -1,5 +1,5 @@
 {
-  "version": "1.1.52",
+  "version": "1.1.53",
   "releaseDate": "2026-11-02",
-  "notes": "fix(crew): reconcile x10 daily check-in and reduce Level thresholds 30 percent"
+  "notes": "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview"
 }

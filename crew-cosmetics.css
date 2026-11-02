@@ -145,6 +145,8 @@
  background:linear-gradient(145deg,#1b3432,#111f28);text-align:center;color:#e9fffc}
 .crew-fx-tile[data-locked="true"]{opacity:.72;border-style:dashed}
 .crew-fx-tile[data-locked="false"]{border-color:#ffdf7b80;box-shadow:inset 0 0 0 1px #ffdf7b20}
+.crew-fx-tile[data-equipped="true"]{border-color:#ffe28f;outline:2px solid #ffe28f;outline-offset:-2px;box-shadow:0 0 15px #f8d36e38,inset 0 0 0 1px #ffe28f55}
+.crew-fx-tile[data-equipped="true"] .crew-fx-status{color:#fff3bf;text-shadow:0 0 7px #fbd77a}
 .crew-fx-tile small{display:block;font-size:10px;line-height:1.45;color:#d4e6df}
 .crew-fx-tile .crew-fx-status{font-size:9px;font-weight:800;color:#fbd77a}
 .fx-name-preview{font-size:17px;line-height:1.4;padding:6px 8px;margin-right:6px;white-space:nowrap}

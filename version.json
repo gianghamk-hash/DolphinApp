@@ -1,7 +1,7 @@
 {
-  "version": "1.1.45",
-  "buildDate": "2026-11-02T12:52:25.033Z",
-  "commit": "284ed6b",
-  "notes": "test(crew): align regression fixtures and PWA assets with Mythic V7",
+  "version": "1.1.46",
+  "buildDate": "2026-11-02T12:53:10.892Z",
+  "commit": "1567198",
+  "notes": "ci(crew): run profile regression checks when PWA cosmetic cache changes",
   "forceUpdate": false
 }

@@ -1,22 +1,22 @@
 {
-  "version": "1.1.45",
-  "previousVersion": "1.1.44",
-  "commit": "284ed6b",
-  "previousCommit": "63e8c65",
-  "buildDate": "2026-11-02T12:52:25.033Z",
-  "summary": "test(crew): align regression fixtures and PWA assets with Mythic V7",
+  "version": "1.1.46",
+  "previousVersion": "1.1.45",
+  "commit": "1567198",
+  "previousCommit": "284ed6b",
+  "buildDate": "2026-11-02T12:53:10.892Z",
+  "summary": "ci(crew): run profile regression checks when PWA cosmetic cache changes",
   "changes": {
-    "totalCommits": 269,
+    "totalCommits": 270,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "test(crew): align regression fixtures and PWA assets with Mythic V7"
+    "ci(crew): run profile regression checks when PWA cosmetic cache changes"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-id.test.js",
+      "file": ".github/workflows/staff-profile-tests.yml",
       "type": "update"
     }
   ]

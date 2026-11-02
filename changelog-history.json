@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.45",
+      "releaseDate": "2026-11-02T12:52:25.033Z",
+      "summary": "test(crew): align regression fixtures and PWA assets with Mythic V7",
+      "details": [
+        "test(crew): align regression fixtures and PWA assets with Mythic V7"
+      ]
+    },
+    {
       "version": "1.1.44",
       "releaseDate": "2026-11-02T12:51:22.344Z",
       "summary": "feat(crew): upgrade Mythic, add avatar motion and name recovery",
@@ -390,14 +398,6 @@
       "summary": "Delete CNAME",
       "details": [
         "Delete CNAME"
-      ]
-    },
-    {
-      "version": "1.0.215",
-      "releaseDate": "2026-10-29T15:46:49.657Z",
-      "summary": "Create CNAME",
-      "details": [
-        "Create CNAME"
       ]
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.45",
+  "version": "1.1.46",
   "releaseDate": "2026-11-02",
-  "notes": "test(crew): align regression fixtures and PWA assets with Mythic V7"
+  "notes": "ci(crew): run profile regression checks when PWA cosmetic cache changes"
 }

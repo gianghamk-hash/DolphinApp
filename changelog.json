@@ -1,34 +1,62 @@
 {
-  "version": "1.1.49",
-  "previousVersion": "1.1.48",
-  "commit": "8747140",
-  "previousCommit": "c157cd4",
-  "buildDate": "2026-11-02T13:48:38.927Z",
-  "summary": "feat(crew): 10x daily check-in rewards, retain legacy XP records",
+  "version": "1.1.50",
+  "previousVersion": "1.1.49",
+  "commit": "710d136",
+  "previousCommit": "8747140",
+  "buildDate": "2026-11-02T14:12:59.883Z",
+  "summary": "feat(landing): elevate Level #1 with all equipped avatar cosmetics",
   "changes": {
-    "totalCommits": 273,
-    "filesChanged": 4,
+    "totalCommits": 274,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): 10x daily check-in rewards, retain legacy XP records"
+    "feat(landing): elevate Level #1 with all equipped avatar cosmetics"
   ],
   "fileChanges": [
     {
-      "file": "docs/DOLPHIN_CREW_CLUB_RULES.md",
+      "file": ".github/workflows/staff-profile-tests.yml",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-core.cjs",
+      "file": "functions/staff-prestige.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-core.test.cjs",
+      "file": "functions/staff-prestige.test.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-missions.test.cjs",
+      "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "ranking/staff-prestige-ranking.js",
+      "type": "update"
+    },
+    {
+      "file": "royal-leaders.js",
+      "type": "update"
+    },
+    {
+      "file": "scripts/landing-level-podium-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/landing-level-podium.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-client.js",
       "type": "update"
     }
   ]

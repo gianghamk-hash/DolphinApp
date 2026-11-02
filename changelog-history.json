@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.49",
+      "releaseDate": "2026-11-02T13:48:38.927Z",
+      "summary": "feat(crew): 10x daily check-in rewards, retain legacy XP records",
+      "details": [
+        "feat(crew): 10x daily check-in rewards, retain legacy XP records"
+      ]
+    },
+    {
       "version": "1.1.48",
       "releaseDate": "2026-11-02T13:23:42.432Z",
       "summary": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #158 from gianghamk-hash/feature/manager-issued-staff-id",
       "details": [
         "Merge pull request #158 from gianghamk-hash/feature/manager-issued-staff-id"
-      ]
-    },
-    {
-      "version": "1.0.219",
-      "releaseDate": "2026-10-30T00:23:15.502Z",
-      "summary": "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030",
-      "details": [
-        "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030"
       ]
     }
   ]

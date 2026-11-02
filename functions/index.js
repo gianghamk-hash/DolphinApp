@@ -245,6 +245,11 @@ exports.staffIssueLinkCode=onCall(opts,async req=>{
 exports.staffClaimLinkCode=onCall(opts,async req=>{
  const uid=requireUid(req);
  const current=(await getDatabase().ref('staffIdentity/'+uid).once('value')).val();
+ if(current?.employeeId){
+  const oldProfile=(await staffRoot().child(current.employeeId).once('value')).val();
+  if(oldProfile?.rejected===true)
+   throw new HttpsError('permission-denied','Đăng ký cũ đã bị từ chối. Hãy đăng ký mới trước khi liên kết thiết bị.');
+ }
  if(current&&current.employeeId&&req.data?.replaceCurrent!==true)throw new HttpsError('failed-precondition','Thiết bị đã có hồ sơ. Hãy xác nhận chuyển hồ sơ trước khi nhập mã.');
  if(req.data?.replaceCurrent===true&&String(req.data.expectedEmployeeId||'')!==(current?.employeeId||''))
   throw new HttpsError('failed-precondition','Hồ sơ trên thiết bị vừa thay đổi. Hãy tải lại và xác nhận.');

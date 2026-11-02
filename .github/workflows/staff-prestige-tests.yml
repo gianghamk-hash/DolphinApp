@@ -7,6 +7,11 @@ on:
       - 'functions/staff-daily-missions.js'
       - 'functions/staff-daily-core.test.cjs'
       - 'functions/staff-daily-missions.test.cjs'
+      - 'functions/staff-daily-arcade.test.cjs'
+      - 'crew-arcade-proof.js'
+      - 'crew-arcade-missions.js'
+      - 'giaitri/games/snake.html'
+      - 'giaitri/games/game2048.html'
       - 'functions/staff-xp-reconcile.js'
       - 'functions/staff-xp-reconcile.test.cjs'
       - 'functions/staff-prestige.test.cjs'
@@ -38,6 +43,8 @@ jobs:
           node --check functions/staff-prestige.js
           node --check functions/staff-daily-missions.js
           node --check functions/staff-daily-core.cjs
+          node --check crew-arcade-proof.js
+          node --check crew-arcade-missions.js
           node --check functions/staff-xp-reconcile.js
           node --check functions/staff-xp-engine.cjs
           node --check functions/staff-xp-rank-sync.js
@@ -49,4 +56,4 @@ jobs:
           node --check staff-xp-manager.js
           node --check theme-system.js
       - name: Staff XP and archival reconciliation tests
-        run: node --test functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs
+        run: node --test functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs

@@ -71,7 +71,7 @@ function renderCosmetics(){
 }
 function activeNameTier(){
  if(!mine)return 'none';
- if(typeof mine.selectedNameFx==='string'&&mine.selectedNameFx!=='none')return mine.selectedNameFx;
+ if(typeof mine.selectedNameFx==='string')return mine.selectedNameFx;
  const level=Number(mine.level)||1;
  if(level>=60&&(mine.nameFlame||mine.nameGradient))return 'celestial';
  if(level>=45&&mine.nameGradient)return 'prism';
@@ -178,7 +178,7 @@ async function save(){
  try{
   const wasTester=mine?.testAdmin===true;
   mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{
-   theme,nameFlame:$('staff-flame-check').checked,nameGradient:$('staff-gradient-check').checked,
+   theme,nameFlame:$('staff-nameFx-select').value!=='none',nameGradient:['prism','celestial'].includes($('staff-nameFx-select').value),
    selectedFrame:$('staff-frame-select').value,selectedTitle:$('staff-title-select').value,
    selectedBanner:$('staff-banner-select').value,
    selectedNameFx:$('staff-nameFx-select').value,selectedAura:$('staff-aura-select').value,

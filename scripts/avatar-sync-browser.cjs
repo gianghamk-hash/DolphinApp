@@ -203,7 +203,8 @@ assert.equal(await b.page.locator('#staff-frame-select option[value=silver]').ev
 assert.equal(await b.page.locator('#staff-gradient-check').isDisabled(),true);
 
 const pick=async(kind,id)=>b.page.locator('.crew-fx-choice[data-fx-kind="'+kind+'"][data-fx-id="'+id+'"]');
-assert.equal(await b.page.locator('#crew-panel-name').isVisible(),true,'Name effects are the initial category');
+await b.page.locator('[data-crew-tab="name"]').click();
+assert.equal(await b.page.locator('#crew-panel-name').isVisible(),true,'Name effects are visible when its tab is selected');
 assert.equal(await b.page.locator('#crew-panel-avatar').isVisible(),false,'Only one category is visible');
 await b.page.locator('[data-crew-tab="avatar"]').click();
 assert.equal(await b.page.locator('[data-crew-gallery="frame"] .crew-fx-choice').count(),5,'all frames including none have their own previews');

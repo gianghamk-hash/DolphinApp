@@ -631,7 +631,8 @@
  position:absolute;display:block;pointer-events:none;transform-origin:center;
 }
 .crew-motion-core{inset:-14%;border-radius:50%;opacity:.7}
-.crew-motion-ring{inset:calc(-13% - var(--ring-index)*12%);border-radius:50%;border:2px solid transparent}
+.crew-motion-ring{inset:-13%;border-radius:50%;border:2px solid transparent}
+.crew-motion-ring[style*='1']{inset:-25%}
 .crew-motion-ring[style*="1"]{animation-direction:reverse!important}
 .crew-motion-spark{
  --angle:calc(var(--spark-index)*45deg);
@@ -715,3 +716,7 @@
  .crew-motion-core,.crew-motion-ring,.crew-motion-spark,
  [data-avatar-motion]>.crew-avatar-motion,.fx-motion-preview[data-avatar-motion]::after{animation:none!important;transition:none!important}
 }
+
+/* Ensure standalone motion can position correctly with Frame = None. */
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,#profile-avatar,.fx-motion-preview)
+[data-avatar-motion]:not([data-avatar-motion="none"]){position:relative;isolation:isolate;overflow:visible}

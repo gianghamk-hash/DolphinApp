@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.37",
+      "releaseDate": "2026-11-02T00:19:01.389Z",
+      "summary": "feat(crew-club): epic name glow and avatar frame tiers",
+      "details": [
+        "feat(crew-club): epic name glow and avatar frame tiers"
+      ]
+    },
+    {
       "version": "1.1.36",
       "releaseDate": "2026-11-01T16:05:57.408Z",
       "summary": "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #149 from gianghamk-hash/fix/tft-apk-lobby-scroll-fullscreen-20261029",
       "details": [
         "Merge pull request #149 from gianghamk-hash/fix/tft-apk-lobby-scroll-fullscreen-20261029"
-      ]
-    },
-    {
-      "version": "1.0.207",
-      "releaseDate": "2026-10-29T14:29:51.849Z",
-      "summary": "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029",
-      "details": [
-        "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029"
       ]
     }
   ]

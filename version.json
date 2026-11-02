@@ -1,7 +1,7 @@
 {
-  "version": "1.1.37",
-  "buildDate": "2026-11-02T00:19:01.389Z",
-  "commit": "98eea92",
-  "notes": "feat(crew-club): epic name glow and avatar frame tiers",
+  "version": "1.1.38",
+  "buildDate": "2026-11-02T04:36:33.301Z",
+  "commit": "1574a13",
+  "notes": "feat(crew-club): legendary V3 avatar frames across ranking and online staff",
   "forceUpdate": false
 }

@@ -1,24 +1,20 @@
 {
-  "version": "1.1.37",
-  "previousVersion": "1.1.36",
-  "commit": "98eea92",
-  "previousCommit": "1b3a1b1",
-  "buildDate": "2026-11-02T00:19:01.389Z",
-  "summary": "feat(crew-club): epic name glow and avatar frame tiers",
+  "version": "1.1.38",
+  "previousVersion": "1.1.37",
+  "commit": "1574a13",
+  "previousCommit": "98eea92",
+  "buildDate": "2026-11-02T04:36:33.301Z",
+  "summary": "feat(crew-club): legendary V3 avatar frames across ranking and online staff",
   "changes": {
-    "totalCommits": 261,
+    "totalCommits": 262,
     "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew-club): epic name glow and avatar frame tiers"
+    "feat(crew-club): legendary V3 avatar frames across ranking and online staff"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/build.yml",
-      "type": "update"
-    },
     {
       "file": ".github/workflows/staff-profile-tests.yml",
       "type": "update"
@@ -32,11 +28,15 @@
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "ranking/index.html",
       "type": "update"
     },
     {
       "file": "ranking/staff-prestige-ranking.js",
+      "type": "update"
+    },
+    {
+      "file": "scripts/avatar-sync-browser.cjs",
       "type": "update"
     },
     {
@@ -48,7 +48,7 @@
       "type": "update"
     },
     {
-      "file": "staff-prestige-profile.js",
+      "file": "staff-online.js",
       "type": "update"
     }
   ]

@@ -4,11 +4,17 @@ const $=id=>document.getElementById(id);
 const themes={dark:'Dark',light:'Light',gray:'Gray',default:'🐬 Dolphin',spring:'🌸 Mùa Xuân',summer:'☀️ Mùa Hè',autumn:'🍁 Mùa Thu',winter:'❄️ Mùa Đông',tet:'🧧 Tết',valentine:'💝 Valentine',womenday:'🌷 Phụ Nữ',reunification:'⭐ 30/4',children:'🎈 Thiếu Nhi',nationalday:'⭐ Quốc Khánh',midautumn:'🏮 Trung Thu',halloween:'🎃 Halloween',christmas:'🎄 Giáng Sinh',newyear:'🎊 Tết Dương Lịch'};
 const themeLevels={default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30};
 const rewards=[[1,'Avatar cơ bản · Bronze'],[3,'Tên phát sáng OnFlame · Avatar Khám phá'],[5,'Bộ avatar Ocean'],[6,'Thăng hạng Silver'],[8,'Chủ đề Dolphin'],[10,'Bốn chủ đề mùa · Avatar Phiêu lưu'],[11,'Thăng hạng Gold'],[15,'Bộ avatar Legends'],[20,'Bảy chủ đề ngày lễ · Avatar Lễ hội'],[21,'Thăng hạng Platinum'],[25,'OnFlame cao cấp'],[30,'Halloween · Giáng Sinh · Tết Dương · Avatar Thần tốc'],[31,'Thăng hạng Diamond'],[40,'Bộ avatar Mythic'],[41,'Thăng hạng Legend'],[60,'Cấp độ tối đa']];
+const XP_RATE=3500;
+const xpAt=level=>XP_RATE*(level-1)**2;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2});
 const cosmeticOptions={
  frame:[['none','Không dùng',1],['bronze','🥉 Bronze',5],['silver','🥈 Silver',22],['gold','🥇 Gold',40],['mythic','💎 Mythic',60]],
  title:[['none','Không dùng',1],['rookie','⭐ Rookie Star',12],['wave','🏄 Wave Rider',25],['legend','👑 Dolphin Legend',50]],
- banner:[['default','Mặc định',1],['wave','🌊 Sóng Biển',15],['gold','🌟 Ánh Kim',35],['mythic','⚡ Mythic',60]]
+ banner:[['default','Mặc định',1],['wave','🌊 Sóng Biển',15],['gold','🌟 Ánh Kim',35],['mythic','⚡ Mythic',60]],
+ nameFx:[['none','Tắt hiệu ứng tên',1],['ember','🔥 Lửa nhỏ',3],['inferno','🔥 Hỏa diệm',25],['prism','🌈 Quang phổ',45],['celestial','✨ Thiên quang',60]],
+ aura:[['none','Tắt hào quang',1],['spark','💫 Spark Ring I',3],['dual','💫 Dual Halo II',25],['celestial','💫 Celestial Pulse III',60]],
+ trail:[['none','Tắt vệt sao',1],['wave','☄️ Wave Shine I',3],['comet','☄️ Twin Comet II',25],['nova','☄️ Royal Nova III',60]],
+ cardFx:[['none','Tắt thẻ hiệu ứng',1],['soft','✨ Soft Glow I',3],['energy','✨ Energy Border II',25],['mythic','✨ Mythic Shimmer III',60]]
 };
 const titleNames={rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'};
 let mine=null;
@@ -28,7 +34,7 @@ function renderRewardHighlights(){
   const got=mine.level>=r.level;
   const cell=element('div',undefined,'reward-highlight'+(got?' is-open':''));
   cell.append(element('span',r.icon||'🎁','reward-highlight-icon'),
-   element('strong',r.label),element('small','Lv.'+r.level+' · '+(got?'Đã mở':'Còn '+fmt(Math.max(0,5000*(r.level-1)**2-mine.xp))+' XP')));
+   element('strong',r.label),element('small','Lv.'+r.level+' · '+(got?'Đã mở':'Còn '+fmt(Math.max(0,xpAt(r.level)-mine.xp))+' XP')));
   box.append(cell);
  }
 }
@@ -36,11 +42,11 @@ function renderRewards(){
  const list=$('staff-reward-list');list.replaceChildren();
  const all=rewardCatalog(),next=all.find(x=>mine&&x.level>mine.level);
  $('reward-next-callout').textContent=next?
-   '🎁 Tiếp theo Lv.'+next.level+': '+next.label+' · còn '+fmt(Math.max(0,5000*(next.level-1)**2-mine.xp))+' XP'
+   '🎁 Tiếp theo Lv.'+next.level+': '+next.label+' · còn '+fmt(Math.max(0,xpAt(next.level)-mine.xp))+' XP'
    :mine?'🏆 Đã mở toàn bộ mốc phần thưởng!':'Đang kết nối XP…';
  for(const reward of all){
   const open=!!mine&&mine.level>=reward.level,row=element('div',undefined,'reward-row'+(open?' unlocked':'')+(next?.id===reward.id?' is-next':''));
-  const body=element('div');body.append(element('strong',reward.label),element('small',fmt(5000*(reward.level-1)**2)+' XP để mở khóa'));
+  const body=element('div');body.append(element('strong',reward.label),element('small',fmt(xpAt(reward.level))+' XP để mở khóa'));
   row.append(element('span','Lv.'+reward.level,'reward-level'),element('span',reward.icon||'🎁','reward-icon'),body,
    element('span',open?'✓ Đã mở':mine?'🔒':'—','reward-state'));
   list.appendChild(row);
@@ -50,7 +56,8 @@ function renderRewards(){
 function renderCosmetics(){
  const dialog=$('style-dialog'),editing=dialog.open;
  for(const [kind,choices] of Object.entries(cosmeticOptions)){
-  const select=$('staff-'+kind+'-select'),old=editing?select.value:null,current=mine?.['selected'+kind[0].toUpperCase()+kind.slice(1)];
+  const select=$('staff-'+kind+'-select');if(!select)continue;
+  const old=editing?select.value:null,current=mine?.['selected'+kind[0].toUpperCase()+kind.slice(1)];
   select.replaceChildren();
   for(const [id,label,level] of choices){
    const option=document.createElement('option');option.value=id;option.textContent=label+(level>1?' · Lv.'+level:'');
@@ -64,6 +71,7 @@ function renderCosmetics(){
 }
 function activeNameTier(){
  if(!mine)return 'none';
+ if(typeof mine.selectedNameFx==='string'&&mine.selectedNameFx!=='none')return mine.selectedNameFx;
  const level=Number(mine.level)||1;
  if(level>=60&&(mine.nameFlame||mine.nameGradient))return 'celestial';
  if(level>=45&&mine.nameGradient)return 'prism';
@@ -83,6 +91,9 @@ function renderFxGallery(){
 }
 function previewCosmetics(){
  $('profile-avatar').dataset.frame=mine?.selectedFrame||'none';
+ $('profile-avatar').dataset.crewAura=mine?.selectedAura||'none';
+ $('profile-avatar').dataset.crewTrail=mine?.selectedTrail||'none';
+ $('crew-profile-banner').dataset.crewCard=mine?.selectedCardFx||'none';
  // Refresh V4 orbital layers immediately after the equipped frame changes.
  window.DolphinFrameFX?.refresh?.();
  $('profile-name').dataset.nameFx=activeNameTier();
@@ -112,12 +123,12 @@ function renderMine(){
  }else{
   $('staff-level-tag').textContent='LEVEL '+mine.level;
   $('staff-xp-summary').textContent=mine.rank+' · '+fmt(mine.xp)+' XP tích lũy';
-  const floor=5000*(mine.level-1)**2,ceil=5000*mine.level**2;
+  const floor=xpAt(mine.level),ceil=xpAt(mine.level+1);
   const percent=mine.level>=60?100:Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)));
   $('staff-xp-fill').style.width=percent+'%';$('staff-xp-track').setAttribute('aria-valuenow',String(Math.round(percent)));
   $('staff-next-level').textContent=mine.level>=60?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1);
   const next=rewardCatalog().find(x=>x.level>mine.level);
-  $('staff-next-reward').textContent=next?'🎁 Lv.'+next.level+' · '+next.label+' — còn '+fmt(Math.max(0,5000*(next.level-1)**2-mine.xp))+' XP':'🏆 Đã mở toàn bộ phần thưởng!';
+  $('staff-next-reward').textContent=next?'🎁 Lv.'+next.level+' · '+next.label+' — còn '+fmt(Math.max(0,xpAt(next.level)-mine.xp))+' XP':'🏆 Đã mở toàn bộ phần thưởng!';
  }
  if(!$('style-dialog').open)$('staff-flame-check').checked=!!mine?.nameFlame&&mine.level>=3;
  $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||mine.level<3;
@@ -169,7 +180,9 @@ async function save(){
   mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{
    theme,nameFlame:$('staff-flame-check').checked,nameGradient:$('staff-gradient-check').checked,
    selectedFrame:$('staff-frame-select').value,selectedTitle:$('staff-title-select').value,
-   selectedBanner:$('staff-banner-select').value
+   selectedBanner:$('staff-banner-select').value,
+   selectedNameFx:$('staff-nameFx-select').value,selectedAura:$('staff-aura-select').value,
+   selectedTrail:$('staff-trail-select').value,selectedCardFx:$('staff-cardFx-select').value
   });
   mine.testAdmin=wasTester;
   try{localStorage.setItem('dolphin_personal_theme',mine.personalTheme);}catch(_){}

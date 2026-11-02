@@ -13,6 +13,7 @@ function harness(){
   if(n==='firebase-admin/firestore')return {getFirestore:()=>db};
   if(n==='firebase-functions/v2/https')return {onCall:(_,f)=>f,HttpsError};
   if(n==='./staff-xp-live-engine.cjs')return require('./staff-xp-live-engine.cjs');
+  if(n==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
   if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>{missionAwards.push({employeeId,taskId});return {addedXP:{lounge_opened:25,bungalow_opened:30,order_received:15,order_completed:40}[taskId]||0,awarded:true};}};
   if(n==='./staff-prestige')return {_awardTrustedLiveXP:async d=>{const k='staffXpLedger/'+d.employeeId+'/'+d.eventId;if(data.has(k))return {duplicate:true};data.set(k,d);awards.push(d);return {duplicate:false}}};
@@ -76,4 +77,32 @@ test('daily rewards are tied to actual first server-side booking and order trans
  assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'completed'})).missionXP,40);
  assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'completed'})).missionXP,0);
  assert.deepEqual(h.missionAwards.map(x=>x.taskId),['lounge_opened','order_received','order_completed']);
+});
+
+test('DOL-0001 verified Bungalow booking receives revenue XP and first-open mission',async()=>{
+ const h=harness();
+ const input={kind:'bun_tables',id:'BGL 201',action:'booking',data:{customerName:'Customer',restaurantTable:'A1',paymentMethod:'TM',openedByStaff:'untrusted client'}};
+ const first=await h.call('verified',input);
+ assert.equal(first.saved,true);
+ assert.equal(first.xpAwarded,2000);
+ assert.equal(first.missionXP,30);
+ assert.equal(h.docs.get('bun_tables/BGL 201').openedByStaff,'Lan');
+ assert.equal(h.docs.get('bun_tables/BGL 201').openedByStaffId,'DOL-0001');
+ const again=await h.call('verified',input);
+ assert.equal(again.xpAwarded,0);
+ assert.equal(again.missionXP,0);
+ assert.equal(h.awards.filter(x=>x.employeeId==='DOL-0001'&&x.amount===2000).length,1);
+});
+test('reopening a Bungalow saved on a previous VN day qualifies for a new daily mission',async()=>{
+ const h=harness();
+ h.docs.set('bun_tables/BGL 202',{
+  customerName:'Yesterday',restaurantTable:'A2',paymentMethod:'TM',
+  openedByStaff:'Lan',openedByStaffId:'DOL-0001',updatedAt:Date.now()-2*86400000
+ });
+ const input={kind:'bun_tables',id:'BGL 202',action:'booking',data:{customerName:'Today',restaurantTable:'A2',paymentMethod:'TM'}};
+ const renewed=await h.call('verified',input);
+ assert.equal(renewed.missionXP,30);
+ assert.equal(renewed.xpAwarded,2000);
+ const repeat=await h.call('verified',input);
+ assert.equal(repeat.missionXP,0);
 });

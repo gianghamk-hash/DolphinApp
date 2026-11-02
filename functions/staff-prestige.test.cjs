@@ -286,11 +286,11 @@ test('staffGetMyProgress backfills a verified same-day legacy check-in exactly o
  assert.equal(first.dailyMissions.todayXP,200);
  assert.equal(first.dailyMissions.tasks[0].xp,200);
  assert.equal(first.dailyMissions.checkinTopUpXP,180);
- assert.equal(data.get('staffRegistry/DOL-0001').xp,2000);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
  const second=await api.staffGetMyProgress(req('lanDevice'));
  assert.equal(second.xp,200);
  assert.equal(second.dailyMissions.checkinTopUpXP,undefined);
- assert.equal(data.get('staffRegistry/DOL-0001').xp,2000);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
 });
 test('read-only profile refresh reverses mistakenly paid 10x check-in today only',async()=>{
  const {api,data}=harness();

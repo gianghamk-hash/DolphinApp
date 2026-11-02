@@ -54,7 +54,7 @@ async function rebuild(){
  const changed=!!top&&previous?.employeeId!==top.employeeId;
  const announcement=changed?{id:'champion-'+top.employeeId+'-'+Date.now(),type:'champion',name:top.name,level:top.level,text:'👑 '+top.name+' đã trở thành Dolphin Emperor!',at:Date.now()}:null;
  const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
- const current={champion:newChampion,
+ const current={levelRulesVersion:engine.LEVEL_RULES_VERSION,champion:newChampion,
   announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
   leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,personalTheme:x.personalTheme,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
@@ -64,13 +64,36 @@ async function rebuild(){
  catch(e){console.warn('[StaffPrestige] realtime signal unavailable:',e.message);}
  return current;
 }
+/*
+ * Public leaderboard cache was built using the old 3,500 XP coefficient.
+ * Recompute it once, behind a short RTDB lease, after deploying the new
+ * 2,450 XP Level formula; never let public ranking permanently stay stale.
+ */
+async function upToDatePublicBoard(snapshot){
+ const old=snapshot||{champion:null,leaderboard:[],updatedAt:0};
+ if(old.levelRulesVersion===engine.LEVEL_RULES_VERSION)return old;
+ const db=getDatabase(),lease=db.ref('staffPrestige/levelRulesRefresh'),now=Date.now();
+ const claimed=await lease.transaction(v=>Number(v?.leaseUntil||0)>now?undefined:
+  {levelRulesVersion:engine.LEVEL_RULES_VERSION,leaseUntil:now+90000,startedAt:now},undefined,false);
+ if(claimed.committed){
+  try{
+   const fresh=await rebuild();
+   await lease.set({levelRulesVersion:engine.LEVEL_RULES_VERSION,completedAt:Date.now(),leaseUntil:0});
+   return fresh;
+  }catch(e){
+   console.warn('[Crew Level] Public board migration will retry:',e?.message||e);
+   try{await lease.remove();}catch(_){}
+  }
+ }
+ return (await db.ref('staffPrestige/public').once('value')).val()||old;
+}
 exports.staffGetPrestige=onCall(opts,async req=>{
  uid(req);
  const [snap,legends]=await Promise.all([
   getDatabase().ref('staffPrestige/public').once('value'),
   getDatabase().ref('staffPrestige/legends').orderByChild('firstAt').limitToLast(25).once('value')
  ]);
- const pub=snap.val()||{champion:null,leaderboard:[],updatedAt:0};
+ const pub=await upToDatePublicBoard(snap.val());
  // Also filter old public snapshots until the next board rebuild occurs.
  const admin=(await getDatabase().ref('staffRegistry/DOL-0001').once('value')).val();
  const showAdmin=admin?.active&&admin.rankingVisible===true;
@@ -88,8 +111,37 @@ exports.staffGetPrestige=onCall(opts,async req=>{
    .map(([,p])=>p).sort((a,b)=>b.firstAt-a.firstAt)};
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
- const {profile,testAdmin}=await currentStaff(req);
- return {...expose(profile),dailyMissions:dailyCore.view(profile),testAdmin};
+ const {id,profile,testAdmin}=await currentStaff(req);
+ const now=Date.now();
+ let actual=profile,checkinTopUpXP=0;
+ // Old same-day check-ins had already completed the task but retained 1x XP.
+ // Reconcile only the original receipt in a transaction; never re-award a
+ // previous date, and never allow client-supplied bonus amounts.
+ if(dailyCore.reconcileLegacyCheckin(profile,now).changed){
+  const ref=getDatabase().ref('staffRegistry/'+id);
+  let firstUpdate=true;
+  try{
+   const transaction=await ref.transaction(v=>{
+    const wasFirst=firstUpdate;firstUpdate=false;
+    const current=v===null&&wasFirst?profile:v;
+    const fixed=dailyCore.reconcileLegacyCheckin(current,now);
+    return fixed.changed?fixed.profile:undefined;
+   },undefined,false);
+   if(transaction.committed){
+    actual=transaction.snapshot.val();
+    const levelStreak=Math.max(1,Number(actual.dailyMissions.streak)||1);
+    checkinTopUpXP=dailyCore.checkinXP(levelStreak)-
+     (15+Math.min(7,levelStreak)*5);
+    try{await rebuild();}catch(e){console.warn('[Crew Daily] Credit saved, board refresh pending:',e?.message||e);}
+   }else{
+    actual=(await ref.once('value')).val()||profile;
+   }
+  }catch(e){
+   console.warn('[Crew Daily] Same-day check-in credit retry needed:',e?.message||e);
+   actual=(await ref.once('value')).val()||profile;
+  }
+ }
+ return {...expose(actual),dailyMissions:{...dailyCore.view(actual),...(checkinTopUpXP>0?{checkinTopUpXP}:{})},testAdmin};
 });
 exports.staffSetShowcase=onCall(opts,async req=>{
  const {id}=await currentStaff(req);

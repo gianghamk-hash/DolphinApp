@@ -8,6 +8,7 @@ const XP_RATE=3500;
 const xpAt=level=>XP_RATE*(level-1)**2;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2});
 const cosmeticOptions={
+ avatarMotion:[['none','Tắt chuyển động',1],['pulse','💗 Soft Pulse',3],['float','🪶 Floating',10],['wave','🌊 Wave Spin',20],['orbit','🪐 Energy Orbit',30],['prism','🌈 Prism Flicker',45],['ascension','👑 Mythic Ascension',60]],
  frame:[['none','Không dùng',1],['bronze','🥉 Bronze',5],['silver','🥈 Silver',22],['gold','🥇 Gold',40],['mythic','💎 Mythic',60]],
  title:[['none','Không dùng',1],['rookie','⭐ Rookie Star',12],['wave','🏄 Wave Rider',25],['legend','👑 Dolphin Legend',50]],
  banner:[['default','Mặc định',1],['wave','🌊 Sóng Biển',15],['gold','🌟 Ánh Kim',35],['mythic','⚡ Mythic',60]],
@@ -83,7 +84,7 @@ function activeNameTier(){
  * The hidden select remains the single selection source for the existing
  * validated staffSetPersonalStyle Cloud Function; cards replace dropdown UI. */
 const effectLabels={
- nameFx:'Tên phát sáng',trail:'Vệt sao',frame:'Khung Avatar',
+ nameFx:'Tên phát sáng',trail:'Vệt sao',frame:'Khung Avatar',avatarMotion:'Chuyển động Avatar',
  aura:'Hào quang Avatar',title:'Danh hiệu',banner:'Banner',cardFx:'Viền thẻ'
 };
 function makeEffectPreview(kind,id,label){
@@ -98,6 +99,9 @@ function makeEffectPreview(kind,id,label){
  }else if(kind==='trail'){
   preview=element('span','Dolphin','fx-name-preview fx-trail-preview');
   preview.dataset.crewTrail=id;
+ }else if(kind==='avatarMotion'){
+  preview=element('span','🐬','fx-aura-preview fx-motion-preview');
+  preview.dataset.avatarMotion=id;
  }else if(kind==='aura'){
   preview=element('span','🐬','fx-aura-preview');
   preview.dataset.crewAura=id;
@@ -189,6 +193,7 @@ function renderFxGallery(){
 
 function previewCosmetics(){
  $('profile-avatar').dataset.frame=mine?.selectedFrame||'none';
+ $('profile-avatar').dataset.avatarMotion=mine?.selectedAvatarMotion||'none';
  $('profile-avatar').dataset.crewAura=mine?.selectedAura||'none';
  $('profile-avatar').dataset.crewTrail=mine?.selectedTrail||'none';
  $('crew-profile-banner').dataset.crewCard=mine?.selectedCardFx||'none';
@@ -278,7 +283,7 @@ async function save(){
   const wasTester=mine?.testAdmin===true;
   mine=await window.DolphinPrestige.call('staffSetPersonalStyle',{
    theme,nameFlame:$('staff-nameFx-select').value!=='none',nameGradient:['prism','celestial'].includes($('staff-nameFx-select').value),
-   selectedFrame:$('staff-frame-select').value,selectedTitle:$('staff-title-select').value,
+   selectedFrame:$('staff-frame-select').value,selectedAvatarMotion:$('staff-avatarMotion-select').value,selectedTitle:$('staff-title-select').value,
    selectedBanner:$('staff-banner-select').value,
    selectedNameFx:$('staff-nameFx-select').value,selectedAura:$('staff-aura-select').value,
    selectedTrail:$('staff-trail-select').value,selectedCardFx:$('staff-cardFx-select').value

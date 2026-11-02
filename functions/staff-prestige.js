@@ -75,6 +75,12 @@ exports.staffGetPrestige=onCall(opts,async req=>{
  const admin=(await getDatabase().ref('staffRegistry/DOL-0001').once('value')).val();
  const showAdmin=admin?.active&&admin.rankingVisible===true;
  const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>p.employeeId!==TEST_ADMIN_ID||showAdmin);
+ // Hydrate legacy snapshots created before public personalTheme was introduced.
+ // One extra read only while the old snapshot lacks the new public cosmetic field.
+ if(employees[0]&&!employees[0].personalTheme&&staffPattern.test(employees[0].employeeId)){
+  const active=(await getDatabase().ref('staffRegistry/'+employees[0].employeeId).once('value')).val();
+  if(active?.active)employees[0]={...employees[0],personalTheme:active.personalTheme||'dark'};
+ }
  const champion=pub.champion?.employeeId===TEST_ADMIN_ID&&!showAdmin
   ?(employees[0]?{...employees[0],title:'Dolphin Emperor'}:null):pub.champion||null;
  return {...pub,showAdminRanking:!!showAdmin,champion,leaderboard:employees,

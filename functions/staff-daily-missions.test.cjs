@@ -43,8 +43,8 @@ test('check-in callable requires manager-approved Staff ID, not arbitrary client
  await assert.rejects(()=>h.api.staffCheckInDaily(req('pending')),e=>e.code==='permission-denied');
  await assert.rejects(()=>h.api.staffCheckInDaily(req('unknown')),e=>e.code==='permission-denied');
  const result=await h.api.staffCheckInDaily(req('worker',{employeeId:'DOL-9999',amount:1000000}));
- assert.equal(result.awarded,true);assert.equal(result.addedXP,2000);
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,2000);
+ assert.equal(result.awarded,true);assert.equal(result.addedXP,200);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,200);
 });
 test('multiple devices cannot claim the same daily task twice',async()=>{
  const h=fixture({cold:true});

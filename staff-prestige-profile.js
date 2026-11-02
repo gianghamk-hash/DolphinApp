@@ -207,7 +207,13 @@ function renderThemes(){
   const input=document.createElement('input');input.type='radio';input.name='staff-theme';input.value=id;input.disabled=!open;
   input.checked=(preserve?chosen:mine?.personalTheme||'dark')===id;
   const copy=element('span',label);copy.appendChild(element('small',open?'Đã mở':level===1?'Cần liên kết hồ sơ':'Mở tại Lv.'+level));
-  item.append(input,copy);$('staff-theme-grid').appendChild(item);
+  const palette=window.ThemeSystem?.getThemes?.()?.[id];
+  const swatch=element('span',undefined,'crew-theme-swatch');
+  swatch.setAttribute('aria-hidden','true');
+  swatch.style.background=palette
+   ?'linear-gradient(135deg,'+palette.bg1+' 0%, '+palette.bg2+' 55%, '+palette.accent+' 100%)'
+   :'linear-gradient(135deg,#132828,#567e7c)';
+  item.append(input,swatch,copy);$('staff-theme-grid').appendChild(item);
  }
 }
 
@@ -225,7 +231,8 @@ function renderDailyMissions(){
  if(!list)return;
  list.replaceChildren();
  const daily=mine?.dailyMissions;
- if(daily?.dailyTopUpXP>0)showDailyStatus('✅ Đã tự động bù +'+fmt(daily.dailyTopUpXP)+' XP cho các nhiệm vụ trong ngày theo mức thưởng mới.');
+ if(daily?.dailyXPAdjustment<0)showDailyStatus('✅ Đã sửa điểm danh về mức gốc: điều chỉnh '+fmt(daily.dailyXPAdjustment)+' XP của hôm nay.');
+ else if(daily?.dailyTopUpXP>0)showDailyStatus('✅ Đã tự động bù +'+fmt(daily.dailyTopUpXP)+' XP cho các nhiệm vụ công việc hôm nay.');
  if(!daily||!Array.isArray(daily.tasks)){
   const empty=dailyElement('p',mine?'Máy chủ đang cập nhật nhiệm vụ hằng ngày. Vui lòng thử lại.':'Đăng ký và xác minh Staff ID để nhận nhiệm vụ.','hint');
   list.append(empty);

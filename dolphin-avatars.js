@@ -83,10 +83,6 @@ const api={get,getMine:()=>own,profile:(name,id)=>resolver.resolve(name,id),setO
  html:(name,id)=>avatarHTML(name,id,get(name,id)||fallback(name))};
 root.DolphinAvatars=shared||api;
 function init(){
- // Shared cosmetics: the same rarity effects in Profile, Ranking, Lounge, Bungalow, Restaurant and Show.
- if(!document.getElementById('crew-cosmetics-stylesheet')){
-  const link=document.createElement('link');link.id='crew-cosmetics-stylesheet';link.rel='stylesheet';link.href=cosmeticsHref;document.head.appendChild(link);
- }
  const style=document.createElement('style');style.textContent=`
 .dolphin-staff-avatar{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#ffffff12;border:1px solid #fbd77a55;font-size:21px;line-height:1;vertical-align:middle;margin-right:7px}
 [data-staff-avatar][data-frame=bronze]{border:3px solid #cb9154!important;box-shadow:0 0 0 1px #77461f,0 0 10px #cb915488!important}
@@ -96,6 +92,10 @@ function init(){
 @keyframes crew-frame-glow{to{box-shadow:0 0 0 2px #bb91ff,0 0 19px #68efff}}
 @media(prefers-reduced-motion:reduce){[data-staff-avatar][data-frame=mythic]{animation:none}}
 `;document.head.appendChild(style);
+ // Place the shared stylesheet AFTER legacy injected rules so the epic tiers win.
+ if(!document.getElementById('crew-cosmetics-stylesheet')){
+  const link=document.createElement('link');link.id='crew-cosmetics-stylesheet';link.rel='stylesheet';link.href=cosmeticsHref;document.head.appendChild(link);
+ }
  new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['data-staff-name','data-staff-id']});
  root.addEventListener('dolphin-staff-id-changed',e=>{(shared||api).setOwn(e.detail);if(!shared)refresh();});
  root.addEventListener('dolphinStaffNameChanged',schedule);

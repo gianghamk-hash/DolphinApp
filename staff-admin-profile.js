@@ -3,7 +3,7 @@
 'use strict';
 if(!document.getElementById('crew-manager-approvals'))return;
 const $=id=>document.getElementById(id);
-let manager=false,polling=false,lastPending=new Set(),lastProfiles=[],fetched=false,renderRequested=false;
+let manager=false,polling=false,lastPending=new Set(),lastProfiles=[],fetched=false,renderRequested=false,recoveryRequests=[];
 function feedback(message){$('crew-manager-feedback').textContent=message;}
 function verifiedOwner(){
  const i=window.DolphinStaffId?.get?.();
@@ -43,6 +43,35 @@ function displayPeople(people){
   const actions=document.createElement('div');actions.className='crew-approval-actions';actions.append(btn,reject);
   row.append(name,actions);list.append(row);
  }
+}
+function displayRecovery(){
+ const list=$('crew-recovery-list');if(!list)return;list.replaceChildren();
+ if(!recoveryRequests.length){const hint=document.createElement('p');hint.className='hint';hint.textContent='Không có yêu cầu khôi phục đang chờ.';list.append(hint);return;}
+ for(const request of recoveryRequests){
+  const row=document.createElement('div');row.className='crew-approval-row';
+  const name=document.createElement('span');name.textContent=request.name+' · '+request.employeeId;
+  const btn=document.createElement('button');btn.type='button';btn.className='secondary';btn.textContent='Cấp mã';
+  btn.onclick=async()=>{
+   if(!window.confirm('Đã xác minh danh tính '+request.name+' ('+request.employeeId+')? Mã cấp ra cho phép liên kết thiết bị vào hồ sơ này.'))return;
+   btn.disabled=true;
+   try{
+    const issued=await window.DolphinStaffId.approveNameRecovery(request.requestId);
+    const output=$('crew-recovery-code');output.textContent=issued.code;output.hidden=false;
+    $('crew-recovery-copy').hidden=false;
+    $('crew-approval-dialog-status').textContent='Đã tạo mã liên kết 10 phút cho '+issued.name+'. Chỉ chuyển riêng cho đúng nhân viên.';
+    await refresh(true);
+   }catch(error){btn.disabled=false;$('crew-approval-dialog-status').textContent='Không cấp được mã: '+String(error.message||error);}
+  };
+  row.append(name,btn);list.append(row);
+ }
+}
+async function refreshRecovery(){
+ if(!verifiedOwner())return;
+ try{
+  const result=await window.DolphinStaffId.listRecoveryRequests();
+  recoveryRequests=Array.isArray(result?.requests)?result.requests:[];
+  if($('crew-approval-dialog').open)displayRecovery();
+ }catch(error){feedback('Không tải được yêu cầu khôi phục: '+String(error.message||error));}
 }
 async function refresh(render=false){
  if(!verifiedOwner())return;
@@ -84,7 +113,7 @@ async function refresh(render=false){
  }catch(error){
   const msg='Chưa tải được danh sách duyệt: '+String(error.message||error);
   feedback(msg);$('crew-approval-dialog-status').textContent=msg;
- }finally{polling=false;renderRequested=false;}
+ }finally{polling=false;renderRequested=false;void refreshRecovery();}
 }
 async function applyVisibility(){
  const toggle=$('crew-manager-ranking-toggle'),visible=toggle.checked;
@@ -109,6 +138,12 @@ function init(){
  $('crew-approval-open').addEventListener('click',()=>{$('crew-approval-dialog').showModal();void refresh(true);});
  $('crew-approval-close').addEventListener('click',()=>$('crew-approval-dialog').close());
  $('crew-approval-refresh').addEventListener('click',()=>void refresh(true));
+ $('crew-recovery-copy')?.addEventListener('click',async()=>{
+  const code=$('crew-recovery-code')?.textContent;
+  if(!code)return;
+  try{await navigator.clipboard.writeText(code);$('crew-approval-dialog-status').textContent='Đã sao chép mã. Chỉ gửi riêng cho đúng nhân viên.';}
+  catch(e){$('crew-approval-dialog-status').textContent='Không sao chép được tự động; nhấn giữ mã để sao chép.';}
+ });
  $('crew-manager-ranking-toggle').addEventListener('change',applyVisibility);
  window.addEventListener('dolphin-staff-id-changed',syncManager);
  window.addEventListener('dolphin-my-progress-updated',syncManager);

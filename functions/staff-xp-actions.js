@@ -144,14 +144,17 @@ async function work(kind,id,action,who){
   if(action==='completed')tx.update(ref,{status:'completed',completedBy:who.name,completedByStaffId:who.id,completedAt:now,completedTime:dateTime()});
   else{
    const names=live.names(old.preparedBy);
-   if(!names.some(n=>n===who.name))names.push(who.name);
+   // A client-written attribution is not proof of a verified server action.
+   if(names.some(n=>n===who.name))return {accepted:false,finished:false,prepared:false};
+   names.push(who.name);
    tx.update(ref,{status:'preparing',preparedBy:names.join(' & '),...(old.status==='pending'?{preparedByStaffId:who.id}:{}),preparedAt:now});
   }
-  return {accepted:action==='preparing'&&old.status==='pending',finished:action==='completed'};
+  return {accepted:action==='preparing'&&old.status==='pending',prepared:action==='preparing',finished:action==='completed'};
  });
  // A client-writable document already marked completed is not evidence of
  // a server-authorized transition, even when it carries the caller's name.
- if(action==='completed'&&!transition.finished)return {saved:true,xpAwarded:0,missionXP:0,duplicate:true};
+ if((action==='completed'&&!transition.finished)||(action==='preparing'&&!transition.prepared))
+  return {saved:true,xpAwarded:0,missionXP:0,duplicate:true};
  const evt='live:'+hash('work',kind,id,action,who.id);
  const preparedBefore=action==='completed'?(await getDatabase().ref('staffXpLedger/'+who.id+'/live:'+hash('work',kind,id,'preparing',who.id)).once('value')).exists():false;
  const lounge=kind==='lounge_orders';

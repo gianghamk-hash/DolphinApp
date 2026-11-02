@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const vm=require('node:vm'),fs=require('node:fs');
 function harness(){
  const data=new Map([['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager'}],['staffIdentity/self',{verified:false,employeeId:'DOL-0002'}],['staffIdentity/manager',{verified:true,employeeId:'DOL-0003'}],['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Manager',active:true,registrationSource:'manager'}]]);
- const docs=new Map(),awards=[];
+ const docs=new Map(),awards=[],missionAwards=[];
  const ref=p=>({once:async()=>({val:()=>data.get(p)||null,exists:()=>data.has(p)}),set:async v=>{data.set(p,v)},transaction:async fn=>{const v=fn(data.get(p)||null);if(v===undefined)return {committed:false};data.set(p,v);return {committed:true,snapshot:{val:()=>v}};}});
  const db={collection:k=>({doc:id=>({key:k+'/'+id})}),runTransaction:async fn=>fn({get:async r=>({exists:docs.has(r.key),data:()=>docs.get(r.key)}),set:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v}),update:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v})})};
  class HttpsError extends Error{constructor(code,msg){super(msg);this.code=code}}
@@ -14,12 +14,12 @@ function harness(){
   if(n==='firebase-functions/v2/https')return {onCall:(_,f)=>f,HttpsError};
   if(n==='./staff-xp-live-engine.cjs')return require('./staff-xp-live-engine.cjs');
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
-  if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>({addedXP:0,awarded:false})};
+  if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>{missionAwards.push({employeeId,taskId});return {addedXP:{lounge_opened:25,bungalow_opened:30,order_received:15,order_completed:40}[taskId]||0,awarded:true};}};
   if(n==='./staff-prestige')return {_awardTrustedLiveXP:async d=>{const k='staffXpLedger/'+d.employeeId+'/'+d.eventId;if(data.has(k))return {duplicate:true};data.set(k,d);awards.push(d);return {duplicate:false}}};
   throw Error(n);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-xp-actions.js','utf8'),ctx);
- return {call:(u,d)=>exp.staffRecordLiveAction({auth:u?{uid:u}:null,data:d}),docs,awards};
+ return {call:(u,d)=>exp.staffRecordLiveAction({auth:u?{uid:u}:null,data:d}),docs,awards,missionAwards};
 }
 test('only manager verified staff can open revenue sessions, no duplicate XP',async()=>{
  const h=harness(),input={kind:'lounge_tables',id:'LOUNGE 1',action:'booking',data:{customerName:'Guest',pax:3,paymentMethod:'TM',openedByStaff:'spoof'}};
@@ -62,4 +62,18 @@ test('authorized manager edits Show combo without receiving XP for another selle
  await h.call('verified',{kind:'show_tables',id:'S9',action:'combo',data:{combo:'combo1',foods:{set:1}}});
  const changed=await h.call('manager',{kind:'show_tables',id:'S9',action:'combo',data:{combo:'combo2',foods:{set:1}}});
  assert.equal(changed.xpAwarded,0);assert.equal(h.docs.get('show_tables/S9').seller,'Lan');
+});
+
+test('daily rewards are tied to actual first server-side booking and order transitions',async()=>{
+ const h=harness(),lounge={kind:'lounge_tables',id:'L9',action:'booking',data:{customerName:'Guest',pax:2,paymentMethod:'TM'}};
+ const first=await h.call('verified',lounge);
+ assert.equal(first.missionXP,25);
+ const repeat=await h.call('verified',lounge);
+ assert.equal(repeat.missionXP,0);
+ h.docs.set('bun_orders/b1',{status:'pending'});
+ assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'preparing'})).missionXP,15);
+ assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'preparing'})).missionXP,0);
+ assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'completed'})).missionXP,40);
+ assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'completed'})).missionXP,0);
+ assert.deepEqual(h.missionAwards.map(x=>x.taskId),['lounge_opened','order_received','order_completed']);
 });

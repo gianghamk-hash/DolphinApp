@@ -31,6 +31,8 @@ const CACHE_URLS = [
   BASE + '/dolphin-avatars.js',
   BASE + '/functions/staff-avatar-catalog.json',
   BASE + '/manifest.json',
+  BASE + '/royal-leaders.js?v=level-podium-v1',
+  BASE + '/ranking/staff-prestige-ranking.js?v=landing-level-v1',
   BASE + '/ranking/index.html',
   BASE + '/caro/index.html',
   BASE + '/staff-access.js?v=approval-reject-v2',

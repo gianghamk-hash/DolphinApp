@@ -27,7 +27,7 @@ test('verified Lounge and Bungalow bookings are routed to authoritative backend'
 test('verified Lounge, Bungalow and Restaurant order statuses are server-authoritative',()=>{
  for(const file of ['dolphin-lounge.html','dolphin-bungalow.html','dolphin-restaurant.html']){
   const src=read(file);
-  assert.match(src,/DolphinStaffId\.performLiveAction\(\{kind:[^\n]*_ORDERS/);
+  assert.match(src,/DolphinStaffId\.performLiveAction\(\{kind:(?:'lounge_orders'|COL_ORDERS)/);
   assert.match(src,/missionXP/);
   assert.match(src,/identity\?\.verified===true/);
  }

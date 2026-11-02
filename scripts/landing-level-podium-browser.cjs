@@ -15,6 +15,8 @@ const rankingPage='<!doctype html><html><body>'+
  'window.DolphinAvatars={profile:()=>null,get:()=>null,subscribe:()=>()=>{}};</script>'+
  '<script src="/ranking/staff-prestige-ranking.js" defer></script></body></html>';
 const landingPage='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
+ '<script>window.fixtureBoard={leaderboard:'+JSON.stringify([champion,{...champion,employeeId:'DOL-0100',name:'Second place',xp:100000}])+',champion:null};'+
+ 'window.DolphinPrestige={getBoard:()=>window.fixtureBoard};</script>'+
  '<script src="/royal-leaders.js" defer></script><script src="/dolphin-avatars.js" defer></script></head>'+
  '<body style="background:#071d1b;color:#fff;margin:0"><div id="landing" style="width:100%;max-width:1100px;margin:auto">'+
  '<div id="announcementBar">Thông báo</div></div></body></html>';
@@ -52,7 +54,9 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
     motionAnimation:getComputedStyle(avatar.querySelector('.crew-avatar-motion')).animationName,
     trailAnimation:getComputedStyle($('drl-level-name-wrap')).animationName,
     nameBackground:getComputedStyle(name).backgroundImage,
-    bannerBackground:getComputedStyle(surface).backgroundImage
+    bannerBackground:getComputedStyle(surface).backgroundImage,
+    bannerGlow:getComputedStyle(surface,'::before').backgroundImage,
+    bannerColor:getComputedStyle(surface).backgroundColor
    };
   });
   assert.equal(state.who,champion.name);
@@ -64,7 +68,8 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
   assert.match(state.motionAnimation,/crew-mythic-rotate/);
   assert.match(state.trailAnimation,/crew-v5-name-nova/);
   assert.match(state.nameBackground,/gradient/);
-  assert.match(state.bannerBackground,/gradient/);
+  assert.equal(state.bannerBackground,'none','Level podium must not have an opaque panel');
+  assert.match(state.bannerGlow,/gradient/,'equipped banner still appears as a subtle translucent light accent');
   const desktop=await page.evaluate(()=>{
    const b=id=>document.getElementById(id).getBoundingClientRect();
    return {left:b('drl-revenue').toJSON(),middle:b('drl-level').toJSON(),right:b('drl-work').toJSON()};
@@ -79,18 +84,28 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
    const b=id=>document.getElementById(id).getBoundingClientRect();
    return {level:b('drl-level').toJSON(),revenue:b('drl-revenue').toJSON(),work:b('drl-work').toJSON(),width:document.documentElement.scrollWidth};
   });
-  assert(mobile.level.y<mobile.revenue.y&&mobile.level.y<mobile.work.y,'center winner on top of mobile cards');
-  assert(mobile.revenue.x<mobile.work.x,'Revenue left, Work right');
-  assert(mobile.level.width>mobile.revenue.width,'Level cosmetics have enough width on phone');
+  assert(mobile.level.y<mobile.revenue.y&&mobile.level.y<mobile.work.y,'Level is slightly raised');
+  assert(mobile.revenue.x<mobile.level.x&&mobile.level.x<mobile.work.x,'Level is between Revenue and Work, not above them in a separate row');
+  assert(Math.abs(mobile.level.width-mobile.revenue.width)<=8,'Level and Revenue widths must match');
+  assert(Math.abs(mobile.level.width-mobile.work.width)<=8,'Level and Work widths must match');
+  assert(mobile.level.height<=Math.max(mobile.revenue.height,mobile.work.height)+55,'Level must not dominate vertical space');
   assert(mobile.width<=361,'no horizontal landing overflow on mobile');
-  console.log('PASS: 360px mobile podium, selected avatar effects retain space and order.');
+  console.log('PASS: 360px mobile compact three-column podium with transparent Level cosmetics.');
   // Any other window attempting to post a forged champion must be rejected.
   await page.evaluate(()=>window.postMessage({type:'dolphin-level-leader',leader:{employeeId:'DOL-0009',name:'FORGED',level:60}},location.origin));
   await page.waitForTimeout(60);
   assert.equal(await page.locator('#drl-level-name').textContent(),champion.name);
   const rankingFrame=page.frames().find(f=>f.url().endsWith('/ranking/'));
   assert(rankingFrame,'same-origin ranking iframe must exist');
+  // The legacy ranking iframe may broadcast its own Level leader; Landing
+  // deliberately ignores that untrusted relay and listens to its own board.
   await rankingFrame.evaluate(()=>{
+   window.fixtureBoard={leaderboard:[{employeeId:'DOL-0099',name:'Iframe candidate',level:59}]};
+   window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:window.fixtureBoard}));
+  });
+  await page.waitForTimeout(100);
+  assert.equal(await page.locator('#drl-level-name').textContent(),champion.name);
+  await page.evaluate(()=>{
    window.fixtureBoard={leaderboard:[{
     employeeId:'DOL-0077',name:'New leader',avatar:'🐯',level:45,xp:700000,rank:'Legend',
     selectedFrame:'gold',selectedAvatarMotion:'float',selectedAura:'spark',
@@ -105,7 +120,14 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
   assert.equal(await page.locator('#drl-level-avatar').getAttribute('data-avatar-motion'),'float');
   assert.equal(await page.locator('#drl-level-surface').getAttribute('data-banner'),'wave');
   console.log('PASS: new Level #1 replaces all equipped effects without stale Mythic satellites.');
-  await rankingFrame.evaluate(()=>{
+  await rankingFrame.evaluate(()=>window.parent.postMessage({
+   type:'dolphin-rank-leaders',
+   revenue:{entries:[{name:'Chiến',value:4000000}]},
+   work:{entries:[{name:'Louis Đặng',value:3}]}
+  },location.origin));
+  await page.waitForFunction(()=>document.querySelector('#drl-revenue .drl-name')?.textContent==='Chiến'&&document.querySelector('#drl-work .drl-name')?.textContent==='Louis Đặng');
+  assert.equal(await page.locator('#drl-level-name').textContent(),'New leader','Revenue/Work updates must not overwrite Level');
+  await page.evaluate(()=>{
    window.fixtureBoard={leaderboard:[]};
    window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:window.fixtureBoard}));
   });

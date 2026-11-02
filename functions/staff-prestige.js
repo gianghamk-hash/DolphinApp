@@ -122,7 +122,7 @@ exports.staffGetPrestige=onCall(opts,async req=>{
 exports.staffGetMyProgress=onCall(opts,async req=>{
  const {id,profile,testAdmin}=await currentStaff(req);
  const now=Date.now();
- let actual=profile,dailyTopUpXP=0;
+ let actual=profile,dailyXPAdjustment=0;
  // Update only verified receipts claimed TODAY at old reward rates.
  // Transaction idempotency protects concurrent devices and repeated refreshes.
  if(dailyCore.reconcileLegacyDaily(profile,now).changed){
@@ -135,7 +135,7 @@ exports.staffGetMyProgress=onCall(opts,async req=>{
    },undefined,false);
    actual=transaction.committed?transaction.snapshot.val():(await ref.once('value')).val()||profile;
    if(transaction.committed){
-    dailyTopUpXP=Math.max(0,Number(actual.xp||0)-Number(profile.xp||0));
+    dailyXPAdjustment=Number((Number(actual.xp||0)-Number(profile.xp||0)).toFixed(2));
     try{await rebuild();}catch(e){console.warn('[Crew Daily] Public board refresh pending:',e?.message||e);}
    }
   }catch(e){
@@ -143,7 +143,7 @@ exports.staffGetMyProgress=onCall(opts,async req=>{
    actual=(await ref.once('value')).val()||profile;
   }
  }
- return {...expose(actual),dailyMissions:{...dailyCore.view(actual),...(dailyTopUpXP>0?{dailyTopUpXP,checkinTopUpXP:dailyTopUpXP}:{})},testAdmin};
+ return {...expose(actual),dailyMissions:{...dailyCore.view(actual),...(dailyXPAdjustment!==0?{dailyXPAdjustment,...(dailyXPAdjustment>0?{dailyTopUpXP:dailyXPAdjustment,checkinTopUpXP:dailyXPAdjustment}:{})}:{})},testAdmin};
 });
 exports.staffSetShowcase=onCall(opts,async req=>{
  const {id}=await currentStaff(req);

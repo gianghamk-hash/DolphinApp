@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.43",
+      "releaseDate": "2026-11-02T11:30:12.637Z",
+      "summary": "feat(crew-club): grouped live effect previews with tap-to-equip selection",
+      "details": [
+        "feat(crew-club): grouped live effect previews with tap-to-equip selection"
+      ]
+    },
+    {
       "version": "1.1.42",
       "releaseDate": "2026-11-02T10:40:18.797Z",
       "summary": "fix(staff): restore approval list and require fresh registration after rejection",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029",
       "details": [
         "Merge pull request #155 from gianghamk-hash/fix/show-master-only-delete-no-password-20261029"
-      ]
-    },
-    {
-      "version": "1.0.213",
-      "releaseDate": "2026-10-29T15:14:03.648Z",
-      "summary": "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029",
-      "details": [
-        "Merge pull request #154 from gianghamk-hash/fix/show-delete-server-verify-20261029"
       ]
     }
   ]

@@ -286,11 +286,11 @@ test('staffGetMyProgress backfills a verified same-day legacy check-in exactly o
  assert.equal(first.dailyMissions.todayXP,2000);
  assert.equal(first.dailyMissions.tasks[0].xp,2000);
  assert.equal(first.dailyMissions.checkinTopUpXP,1980);
- assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,2000);
  const second=await api.staffGetMyProgress(req('lanDevice'));
  assert.equal(second.xp,2000);
  assert.equal(second.dailyMissions.checkinTopUpXP,undefined);
- assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,2000);
 });
 test('old check-in cannot be backfilled after 00:00 Vietnam time',async()=>{
  const {api,data}=harness();

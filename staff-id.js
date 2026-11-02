@@ -66,7 +66,7 @@ function render(){
 async function call(name,data){
  await connect();if(!api)throw Error('Chưa kết nối máy chủ. Vui lòng thử lại.');
  const result=await api(name)(data||{});
- if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration','staffRejectRegistration'].includes(name)){
+ if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration','staffRejectRegistration','staffRequestNameRecovery','staffListRecoveryRequests','staffApproveNameRecovery'].includes(name)){
   if(name==='staffClaimLinkCode')await refresh();
   else{rejection=false;identity={...result.data,linked:true};emit();}
  }
@@ -119,6 +119,9 @@ window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
  listPending:()=>call('staffListPendingApprovals'),
+ requestNameRecovery:name=>call('staffRequestNameRecovery',{name}),
+ listRecoveryRequests:()=>call('staffListRecoveryRequests'),
+ approveNameRecovery:requestId=>call('staffApproveNameRecovery',{requestId}),
  approveRegistration:employeeId=>call('staffApproveRegistration',{employeeId}),
  rejectRegistration:employeeId=>call('staffRejectRegistration',{employeeId}),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},

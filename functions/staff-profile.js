@@ -97,6 +97,7 @@ exports.staffGetAvatarDirectory=onCall(opts,async req=>{
  return {profiles:Object.values(profiles).filter(p=>p?.active&&p.employeeId&&p.name).map(p=>({
   employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
   selectedFrame:['bronze','silver','gold','mythic'].includes(p.selectedFrame)?p.selectedFrame:'none',
+  selectedAvatarMotion:['none','pulse','float','wave','orbit','prism','ascension'].includes(p.selectedAvatarMotion)?p.selectedAvatarMotion:'none',
   selectedTitle:['rookie','wave','legend'].includes(p.selectedTitle)?p.selectedTitle:'none',
   selectedNameFx:['none','ember','inferno','prism','celestial'].includes(p.selectedNameFx)?p.selectedNameFx:'none',
   selectedAura:['none','spark','dual','celestial'].includes(p.selectedAura)?p.selectedAura:'none',
@@ -169,4 +170,69 @@ exports.staffRejectRegistration=onCall(opts,async req=>{
  // existing linked identities so each device can create a NEW registration.
  // No order history, Staff ID event log or active staff record is deleted.
  return {employeeId,rejected:true,canRegisterAgain:true};
+});
+
+/* Name-only recovery request: locating a public name never grants a login token.
+ * The verified DOL-0001 manager issues the 10-minute link code out of band. */
+function normalizedRecoveryName(value){
+ return String(value||'').normalize('NFC').trim().replace(/\s+/g,' ').toLocaleLowerCase('vi-VN');
+}
+exports.staffRequestNameRecovery=onCall(opts,async req=>{
+ const uid=uidOf(req),name=normalizedRecoveryName(req.data?.name);
+ if(name.length<2||name.length>64)throw new HttpsError('invalid-argument','Nhập họ và tên đã đăng ký (2–64 ký tự).');
+ const db=getDatabase(),now=Date.now();
+ // UID throttle limits repeated anonymous account recovery requests.
+ const rate=db.ref('staffRecoveryRate/'+uid);
+ const limit=await rate.transaction(v=>!v||now-(v.last||0)>60000?{last:now}:undefined,undefined,false);
+ if(!limit.committed)throw new HttpsError('resource-exhausted','Vui lòng thử lại sau 1 phút.');
+ const all=(await db.ref('staffRegistry').once('value')).val()||{};
+ const matches=Object.values(all).filter(p=>p?.active&&
+   (p.registrationSource!=='self'||p.approved===true)&&
+   normalizedRecoveryName(p.name)===name);
+ // Generic response avoids exposing whether a name is present in the registry.
+ if(matches.length===1){
+  const employeeId=matches[0].employeeId;
+  const gate=crypto.createHash('sha256').update('staff-recovery:'+name).digest('hex');
+  const nameRate=db.ref('staffRecoveryNameRate/'+gate);
+  const nameLimit=await nameRate.transaction(v=>!v||now-(v.last||0)>300000?{last:now}:undefined,undefined,false);
+  if(nameLimit.committed){
+   const id=crypto.randomBytes(12).toString('hex');
+   await db.ref('staffRecoveryRequests/'+id).set({
+    requestId:id,employeeId,name:matches[0].name,requestedBy:uid,createdAt:now,
+    expiresAt:now+24*3600000,status:'pending'
+   });
+  }
+ }
+ return {submitted:true,message:'Nếu hồ sơ hợp lệ và tên không trùng, yêu cầu sẽ được chuyển cho DOL-0001. Hãy nhận mã liên kết trực tiếp từ quản lý.'};
+});
+exports.staffListRecoveryRequests=onCall(opts,async req=>{
+ await requireAccessManager(req);
+ const rows=(await getDatabase().ref('staffRecoveryRequests').once('value')).val()||{};
+ const now=Date.now();
+ return {requests:Object.values(rows).filter(v=>v?.status==='pending'&&v.expiresAt>now)
+ .sort((a,b)=>a.createdAt-b.createdAt).slice(0,50)
+ .map(v=>({requestId:v.requestId,employeeId:v.employeeId,name:v.name,createdAt:v.createdAt}))};
+});
+exports.staffApproveNameRecovery=onCall(opts,async req=>{
+ const managerUid=await requireAccessManager(req);
+ const requestId=String(req.data?.requestId||'').trim();
+ if(!/^[a-f0-9]{24}$/.test(requestId))throw new HttpsError('invalid-argument','Mã yêu cầu không hợp lệ.');
+ const db=getDatabase(),ref=db.ref('staffRecoveryRequests/'+requestId),now=Date.now();
+ const checked=(await ref.once('value')).val();
+ if(!checked||checked.status!=='pending'||checked.expiresAt<=now)
+  throw new HttpsError('failed-precondition','Yêu cầu đã hết hạn hoặc được xử lý.');
+ const staff=(await db.ref('staffRegistry/'+checked.employeeId).once('value')).val();
+ if(!staff?.active||(staff.registrationSource==='self'&&staff.approved!==true))
+  throw new HttpsError('permission-denied','Hồ sơ không còn được xác minh.');
+ const locked=await ref.transaction(v=>
+  v?.status==='pending'&&v.expiresAt>Date.now()&&v.employeeId===checked.employeeId
+   ?{...v,status:'issued',approvedBy:'DOL-0001',approvedAt:Date.now()}:undefined,
+  undefined,false);
+ if(!locked.committed)throw new HttpsError('failed-precondition','Yêu cầu đã được xử lý.');
+ const code=crypto.randomBytes(18).toString('hex').toUpperCase();
+ const hash=crypto.createHash('sha256').update(code).digest('hex');
+ await db.ref('staffEnrollmentCodes/'+hash).set({
+  employeeId:checked.employeeId,issuedAt:Date.now(),expiresAt:Date.now()+600000,issuedBy:managerUid,recoveryRequestId:requestId
+ });
+ return {code,employeeId:checked.employeeId,name:staff.name,expiresInMinutes:10};
 });

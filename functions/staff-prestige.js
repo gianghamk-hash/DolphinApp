@@ -29,6 +29,7 @@ function expose(p){
   unlocked:[...engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>level>=x.level).map(x=>x.id)],
   rewardCatalog:engine.COSMETIC_REWARDS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
   selectedFrame:cosmeticChoice('frame',p.selectedFrame,level),
+  selectedAvatarMotion:cosmeticChoice('avatarMotion',p.selectedAvatarMotion,level),
   selectedTitle:cosmeticChoice('title',p.selectedTitle,level),
   selectedBanner:cosmeticChoice('banner',p.selectedBanner,level),
   selectedNameFx:cosmeticChoice('nameFx',p.selectedNameFx||((p.nameGradient&&level>=45)?'prism':p.nameFlame&&level>=3?'ember':'none'),level),
@@ -54,7 +55,7 @@ async function rebuild(){
  const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
  const current={champion:newChampion,
   announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
-  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
+  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
  // Small Firestore signal for instant profile refresh, not an XP authority.
@@ -98,9 +99,9 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
  const theme=String(req.data?.theme||'dark');
  const flame=req.data?.nameFlame===true;
- const selected={frame:req.data?.selectedFrame,title:req.data?.selectedTitle,banner:req.data?.selectedBanner,gradient:req.data?.nameGradient,
+ const selected={frame:req.data?.selectedFrame,avatarMotion:req.data?.selectedAvatarMotion,title:req.data?.selectedTitle,banner:req.data?.selectedBanner,gradient:req.data?.nameGradient,
   nameFx:req.data?.selectedNameFx,aura:req.data?.selectedAura,trail:req.data?.selectedTrail,cardFx:req.data?.selectedCardFx};
- for(const type of ['frame','title','banner','nameFx','aura','trail','cardFx']){
+ for(const type of ['frame','avatarMotion','title','banner','nameFx','aura','trail','cardFx']){
   if(selected[type]!==undefined&&!Object.hasOwn(engine.COSMETIC_CHOICES[type],selected[type]))
    throw new HttpsError('invalid-argument','Phần thưởng không hợp lệ: '+type);
  }
@@ -120,9 +121,10 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
   const level=Math.max(engine.progress(Math.max(0,Number(current.xp)||0)).level,Number(current.levelPeak)||1);
   if((themeLevels[theme]||1)>level||(flame&&level<3)||
     (selected.gradient===true&&level<45)||
-    ['frame','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))return;
+    ['frame','avatarMotion','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))return;
   return {...current,personalTheme:theme,nameFlame:flame,
     selectedFrame:selected.frame===undefined?cosmeticChoice('frame',current.selectedFrame,level):selected.frame,
+    selectedAvatarMotion:selected.avatarMotion===undefined?cosmeticChoice('avatarMotion',current.selectedAvatarMotion,level):selected.avatarMotion,
     selectedTitle:selected.title===undefined?cosmeticChoice('title',current.selectedTitle,level):selected.title,
     selectedBanner:selected.banner===undefined?cosmeticChoice('banner',current.selectedBanner,level):selected.banner,
     selectedNameFx:selected.nameFx===undefined?cosmeticChoice('nameFx',current.selectedNameFx,level):selected.nameFx,
@@ -136,7 +138,7 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
   if(!latest?.active)throw new HttpsError('failed-precondition','Hồ sơ không còn hoạt động');
   const level=Math.max(engine.progress(Math.max(0,Number(latest.xp)||0)).level,Number(latest.levelPeak)||1);
   if((themeLevels[theme]||1)>level||(flame&&level<3)||(selected.gradient===true&&level<45)||
-    ['frame','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))
+    ['frame','avatarMotion','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))
    throw new HttpsError('permission-denied','Phần thưởng chưa mở khóa ở Level '+level);
   throw new HttpsError('aborted','Giao dịch lưu giao diện bị gián đoạn. Hãy thử lại.');
  }
@@ -170,7 +172,7 @@ exports.staffAdjustOwnTestXP=onCall(opts,async req=>{
   if(!Number.isSafeInteger(xp)||xp>engine.xpForLevel(60))return;
   const peak=action==='reset'?1:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp));
   return {...current,xp,levelPeak:peak,
-    ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedTitle:'none',selectedBanner:'default',selectedNameFx:'none',selectedAura:'none',selectedTrail:'none',selectedCardFx:'none',personalTheme:'dark',showcase:[]}:{}),
+    ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedAvatarMotion:'none',selectedTitle:'none',selectedBanner:'default',selectedNameFx:'none',selectedAura:'none',selectedTrail:'none',selectedCardFx:'none',personalTheme:'dark',showcase:[]}:{}),
     testXPUpdatedAt:now,updatedAt:now};
  },undefined,false);
  if(!result.committed){

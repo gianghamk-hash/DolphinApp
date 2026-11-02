@@ -2,8 +2,8 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
-<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=effect-library-v6">
-<script src="./dolphin-navigation.js?v=1.1.43" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=approval-reject-v2" defer></script><script src="./staff-profile.js?v=1.1.43" defer></script><script src="./dolphin-avatars.js?v=crew-rewards-1" defer></script><script src="./staff-prestige-client.js?v=1.1.43" defer></script><script src="./theme-system.js?v=1.1.43" defer></script><script src="./staff-prestige-profile.js?v=effect-library-v6" defer></script><script src="./staff-admin-profile.js?v=approval-reject-v2" defer></script><script src="./staff-xp-manager.js?v=1.1.43" defer></script>
+<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-motion-mythic-v7">
+<script src="./dolphin-navigation.js?v=1.1.43" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-recovery-v7" defer></script><script src="./staff-profile.js?v=1.1.43" defer></script><script src="./dolphin-avatars.js?v=crew-motion-mythic-v7" defer></script><script src="./staff-prestige-client.js?v=1.1.43" defer></script><script src="./theme-system.js?v=1.1.43" defer></script><script src="./staff-prestige-profile.js?v=crew-motion-mythic-v7" defer></script><script src="./staff-admin-profile.js?v=crew-recovery-v7" defer></script><script src="./staff-xp-manager.js?v=1.1.43" defer></script>
 </head>
 <body>
 <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -80,6 +80,7 @@
 </section>
 <section class="crew-library-panel" id="crew-panel-avatar" data-crew-panel="avatar" role="tabpanel" aria-labelledby="crew-tab-avatar" hidden>
  <div class="crew-effect-group" data-crew-kind="frame"><h3>💎 Khung avatar</h3><p>Bronze một vòng → Silver hai vòng ngược chiều → Gold ba vòng → Mythic song tinh.</p><div class="crew-fx-gallery" data-crew-gallery="frame"></div></div>
+ <div class="crew-effect-group" data-crew-kind="avatarMotion"><h3>🎬 Chuyển động Avatar</h3><p>Hiệu ứng chuyển động độc lập, mở khóa từ Level 3 đến Mythic Ascension Lv.60.</p><div class="crew-fx-gallery" data-crew-gallery="avatarMotion"></div></div>
  <div class="crew-effect-group" data-crew-kind="aura"><h3>💫 Hào quang avatar</h3><p>Hào quang độc lập với khung; có thể dùng đồng thời.</p><div class="crew-fx-gallery" data-crew-gallery="aura"></div></div>
 </section>
 <section class="crew-library-panel" id="crew-panel-profile" data-crew-panel="profile" role="tabpanel" aria-labelledby="crew-tab-profile" hidden>
@@ -93,6 +94,7 @@
 <p id="crew-effect-selection-status" class="hint crew-selection-status" role="status" aria-live="polite">Chọn trực tiếp một hình để trang bị, kể cả các hiệu ứng cấp thấp hơn đã mở khóa.</p>
 <div class="cosmetic-selects" id="staff-cosmetic-values" hidden aria-hidden="true">
  <select id="staff-frame-select" tabindex="-1" aria-label="Khung avatar đã chọn"></select>
+ <select id="staff-avatarMotion-select" tabindex="-1" aria-label="Chuyển động Avatar đã chọn"></select>
  <select id="staff-title-select" tabindex="-1" aria-label="Danh hiệu đã chọn"></select>
  <select id="staff-banner-select" tabindex="-1" aria-label="Banner đã chọn"></select>
  <select id="staff-nameFx-select" tabindex="-1" aria-label="Tên phát sáng đã chọn"></select>
@@ -108,7 +110,7 @@
 <dialog id="crew-approval-dialog" aria-labelledby="crew-approval-dialog-title">
  <div class="dialog-head"><h2 id="crew-approval-dialog-title">👑 Nhân viên chờ phê duyệt</h2>
  <button type="button" class="icon-button" id="crew-approval-close" aria-label="Đóng duyệt nhân viên">✕</button></div>
- <div id="crew-approval-list"></div><p id="crew-approval-dialog-status" role="status" class="hint"></p>
+ <div id="crew-approval-list"></div><div class="panel-section"><h3>🔑 Yêu cầu quên tài khoản</h3><p class="hint">Chỉ cấp mã sau khi xác nhận danh tính nhân viên. Mã một lần hiệu lực 10 phút.</p><div id="crew-recovery-list"></div><div id="crew-recovery-code" class="link-code" hidden></div><button type="button" class="secondary" id="crew-recovery-copy" hidden>Sao chép mã khôi phục</button></div><p id="crew-approval-dialog-status" role="status" class="hint"></p>
  <button type="button" class="secondary full" id="crew-approval-refresh">Làm mới danh sách</button>
 </dialog>
 <dialog id="avatar-dialog" aria-labelledby="avatar-title"><div class="dialog-head"><h2 id="avatar-title">Chọn avatar</h2><button id="close-avatars" class="icon-button" type="button" aria-label="Đóng bộ chọn avatar">✕</button></div><label for="avatar-category">Bộ sưu tập</label><select id="avatar-category"></select><div id="avatar-grid" class="avatar-grid"></div><p class="hint">Chọn avatar, rồi lưu hồ sơ để áp dụng.</p></dialog>

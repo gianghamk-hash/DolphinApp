@@ -58,3 +58,8 @@ html.dolphin-access-pending body{overflow:hidden!important}
  #dolphinAccessGate .dag-avatars{gap:5px}
  #dolphinAccessGate .dag-avatar{min-height:42px;font-size:22px}
 }
+
+/* Three access tabs including account recovery on narrow screens. */
+#dolphinAccessGate .dag-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
+#dolphinAccessGate .dag-tab{min-width:0;font-size:12px;padding:10px 5px;line-height:1.3}
+@media(max-width:350px){#dolphinAccessGate .dag-tabs{gap:4px}#dolphinAccessGate .dag-tab{font-size:11px}}

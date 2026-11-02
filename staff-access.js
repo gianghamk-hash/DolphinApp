@@ -37,7 +37,7 @@ async function getApi(){
  if(root.DolphinStaffId)return root.DolphinStaffId;
  await new Promise((resolve,reject)=>{
   const s=document.createElement('script');
-  s.src=new URL('staff-id.js',base).href;
+  s.src=new URL('staff-id.js?v=crew-recovery-v7',base).href;
   s.onload=resolve;s.onerror=reject;document.head.appendChild(s);
  });
  if(!root.DolphinStaffId)throw Error('Không thể tải Staff ID.');
@@ -54,6 +54,7 @@ function makeUI(){
   <div class="dag-tabs" role="tablist">
    <button type="button" class="dag-tab" data-tab="register" aria-selected="true">Đăng ký mới</button>
    <button type="button" class="dag-tab" data-tab="link" aria-selected="false">Liên kết thiết bị</button>
+   <button type="button" class="dag-tab" data-tab="recovery" aria-selected="false">Quên tài khoản?</button>
   </div>
   <section class="dag-panel" data-panel="register">
    <form id="dag-register-form">
@@ -75,6 +76,14 @@ function makeUI(){
      <span>Đồng ý chuyển thiết bị đang đăng ký sang Staff ID trong mã liên kết.</span>
     </label>
     <button type="submit" class="dag-primary" data-action="link">Xác minh thiết bị</button>
+   </form>
+  </section>
+  <section class="dag-panel" data-panel="recovery" hidden>
+   <form id="dag-recovery-form">
+    <label for="dag-recovery-name">Họ và tên đã đăng ký</label>
+    <input id="dag-recovery-name" autocomplete="name" minlength="2" maxlength="64" required placeholder="Nhập đúng họ và tên">
+    <p class="dag-help">Chỉ cần nhập họ tên. Nếu hồ sơ hợp lệ, quản lý DOL-0001 sẽ xác minh và cấp mã liên kết một lần. Không ai có thể tự lấy mã của người khác bằng tên.</p>
+    <button type="submit" class="dag-primary" data-action="recovery">Gửi yêu cầu lấy lại tài khoản</button>
    </form>
   </section>
   <section class="dag-panel" data-panel="pending" hidden>
@@ -109,6 +118,7 @@ function makeUI(){
  for(const tab of document.querySelectorAll('.dag-tab'))tab.onclick=()=>{panel(tab.dataset.tab);status('');};
  $('dag-register-form').onsubmit=register;
  $('dag-link-form').onsubmit=link;
+ $('dag-recovery-form').onsubmit=requestRecovery;
  gate.querySelector('[data-action=refresh]').onclick=()=>check(true);
  gate.querySelector('[data-action=switch]').onclick=()=>{panel('link');$('dag-switch-label').hidden=false;};
  gate.querySelector('[data-action=close]').onclick=()=>{gate.hidden=true;panel('register');};
@@ -123,6 +133,15 @@ async function check(force=false){
    api.wasRejected?.()?'Hồ sơ trước đã bị từ chối. Hãy đăng ký lại để nhận Staff ID mới; hồ sơ cũ không còn quyền truy cập.':
    'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
  }catch(e){lock(null);status('Không thể kết nối Firebase: '+(e.message||'Hãy thử lại.'),true);}
+}
+async function requestRecovery(event){
+ event.preventDefault();if(state.busy)return;
+ const name=$('dag-recovery-name').value.trim().replace(/\s+/g,' ');
+ if(name.length<2){status('Nhập họ tên đã đăng ký.',true);return;}
+ busy(true);status('Đang gửi yêu cầu khôi phục…');
+ try{const api=await getApi();const result=await api.requestNameRecovery(name);status(result.message||'Đã gửi yêu cầu. Hãy liên hệ DOL-0001 để nhận mã liên kết.');}
+ catch(e){status('Không gửi được yêu cầu: '+String(e.message||e),true);}
+ finally{busy(false);}
 }
 async function register(event){
  event.preventDefault();if(state.busy)return;

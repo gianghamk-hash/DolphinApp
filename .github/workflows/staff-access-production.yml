@@ -5,6 +5,8 @@ on:
     paths:
       - '.github/workflows/staff-access-production.yml'
       - 'functions/staff-profile.js'
+      - 'staff-admin-profile.js'
+      - 'dolphin-profile.html'
       - 'functions/staff-approval-push.js'
       - 'functions/index.js'
       - 'functions/staff-id.test.js'
@@ -60,7 +62,7 @@ jobs:
       - name: Deploy verified Staff ID and approval callables
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffGetIdentity,functions:staffClaimLinkCode,functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffListPendingApprovals,functions:staffApproveRegistration,functions:staffRejectRegistration
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffGetIdentity,functions:staffClaimLinkCode,functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffListPendingApprovals,functions:staffApproveRegistration,functions:staffRejectRegistration,functions:staffRequestNameRecovery,functions:staffListRecoveryRequests,functions:staffApproveNameRecovery
       - name: Delete temporary environment
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

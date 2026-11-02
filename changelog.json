@@ -1,18 +1,18 @@
 {
-  "version": "1.1.50",
-  "previousVersion": "1.1.49",
-  "commit": "710d136",
-  "previousCommit": "8747140",
-  "buildDate": "2026-11-02T14:12:59.883Z",
-  "summary": "feat(landing): elevate Level #1 with all equipped avatar cosmetics",
+  "version": "1.1.51",
+  "previousVersion": "1.1.50",
+  "commit": "1d17c5d",
+  "previousCommit": "710d136",
+  "buildDate": "2026-11-02T14:41:12.388Z",
+  "summary": "fix(crew): compact Landing Level podium, sync rankings and restore Bungalow XP",
   "changes": {
-    "totalCommits": 274,
-    "filesChanged": 11,
+    "totalCommits": 275,
+    "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(landing): elevate Level #1 with all equipped avatar cosmetics"
+    "fix(crew): compact Landing Level podium, sync rankings and restore Bungalow XP"
   ],
   "fileChanges": [
     {
@@ -20,23 +20,19 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.js",
+      "file": "dolphin-bungalow.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.test.cjs",
+      "file": "functions/staff-xp-actions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     },
     {
       "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/staff-prestige-ranking.js",
       "type": "update"
     },
     {
@@ -53,10 +49,6 @@
     },
     {
       "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-client.js",
       "type": "update"
     }
   ]

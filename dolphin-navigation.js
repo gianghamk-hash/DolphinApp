@@ -28,7 +28,7 @@
      !document.querySelector('script[src*="staff-access.js"]')){
    document.documentElement.classList.add('dolphin-access-pending');
    const link=document.createElement('link');link.rel='stylesheet';
-   link.href=new URL('staff-access.css?v=approval-20261102',base).href;
+   link.href=new URL('staff-access.css?v=approval-reject-v2',base).href;
    document.head.appendChild(link);
    const script=document.createElement('script');script.src=new URL('staff-access.js?v=approval-reject-v2',base).href;
    document.head.appendChild(script);

@@ -303,8 +303,13 @@ function rankingAvatarFrame(name){
  return ['bronze','silver','gold','mythic'].includes(frame)?frame:'none';
 }
 function rankingAllowed(name){
- const id=typeof window==='undefined'?null:rankingStaffProfile(name)?.employeeId;
- return id!=='DOL-0001'||(typeof window!=='undefined'&&window.DolphinPrestige?.getBoard?.()?.showAdminRanking===true);
+ // staffGetAvatarDirectory returns approved staff only. Unknown, unapproved or
+ // unresolved names must not appear on revenue/work leaderboards.
+ const profile=rankingStaffProfile(name);
+ if(!profile?.employeeId)return false;
+ const mine=window.DolphinStaffId?.get?.();
+ if(mine?.employeeId===profile.employeeId&&mine.verified!==true)return false;
+ return profile.employeeId!=='DOL-0001'||window.DolphinPrestige?.getBoard?.()?.showAdminRanking===true;
 }
 function rankingCardFx(name){
  return rankingStaffProfile(name)?.selectedCardFx||'none';
@@ -629,6 +634,8 @@ function renderHall(){
  el.innerHTML=['revenue','work'].map(c=>'<div style="margin-top:9px"><b>'+(c==='revenue'?'👑 DOANH THU':'🏆 CÔNG VIỆC')+'</b></div>'+
  (r.history(c).length?r.history(c).filter(x=>rankingAllowed(x.name)).slice(0,6).map(x=>'<div class="drr-hall-item">'+r.escapeHTML(x.name)+' · '+r.escapeHTML(r.formatPeriod(x.week))+'</div>').join(''):'<div class="drr-hall-item">Chưa có dữ liệu trên thiết bị này</div>')).join('');
 }
+window.DolphinAvatars?.subscribe?.(()=>renderAll());
+window.addEventListener('dolphin-prestige-updated',()=>renderAll());
 function renderAll(){
  renderWeekStat();
  // Both leaderboards publish on every Firestore snapshot, independent of active tab.

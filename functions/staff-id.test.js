@@ -275,7 +275,9 @@ test('manager can reject a pending employee, revoke every linked device, then is
   const identity=await api.staffGetIdentity(req(linked));
   assert.equal(identity.verified,false);assert.equal(identity.rejected,true);
  }
+ state.delete('staffProfileRate/worker');
  await rejects(()=>api.staffUpdateMyProfile(req('worker',{avatar:'🐠'})),'permission-denied');
+ state.delete('staffProfileRate/worker');
  await rejects(()=>api.staffIssueOwnLinkCode(req('worker')),'permission-denied');
  state.delete('staffProfileRate/worker');
  const next=await api.staffRegisterSelfProfile(req('worker',{name:'Corrected Name',avatar:'🐯'}));

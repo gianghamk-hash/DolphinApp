@@ -93,10 +93,14 @@ exports.staffFinishArcadeMission=onCall(opts,async req=>{
  const result=arcade.replay(game,challenge.seed,moves);
  if(!result.valid||result.score!==score||score<rule.threshold)
   throw new HttpsError('permission-denied','Điểm số không khớp diễn biến ván chơi.');
- const claimed=await ref.transaction(v=>
-  v&&v.challengeId===id&&v.employeeId===employeeId&&!v.used&&v.expiresAt>=now
-   ?{...v,used:true,usedAt:now}:undefined,undefined,false);
- if(!claimed.committed)throw new HttpsError('already-exists','Ván chơi đã được gửi.');
+ const claimed=await ref.transaction(v=>{
+  if(v===null)return null; // Retry on cold-cache snapshot before validating challenge.
+  return v.challengeId===id&&v.employeeId===employeeId&&!v.used&&v.expiresAt>=now
+   ?{...v,used:true,usedAt:now}:undefined;
+ },undefined,false);
+ if(!claimed.committed||claimed.snapshot?.val()?.challengeId!==id||
+    claimed.snapshot?.val()?.used!==true)
+  throw new HttpsError('already-exists','Ván chơi đã được gửi.');
  const bonus=await award(employeeId,rule.task);
  return {...bonus,game,score,verified:true};
 });

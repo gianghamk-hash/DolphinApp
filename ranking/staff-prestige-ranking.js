@@ -8,6 +8,13 @@ const fmt=(n,max=2)=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:
 let board=null,mine=null,expanded=false;
 function text(id,value){const e=$(id);if(e)e.textContent=value;}
 function displayAvatar(name,id,fallback){return window.DolphinAvatars?.get(name,id)||fallback||'🐬';}
+function nameFxTier(person){
+ const level=Number(person?.level)||1;
+ return level>=60&&(person?.nameFlame||person?.nameGradient)?'celestial':
+  level>=45&&person?.nameGradient?'prism':
+  level>=25&&person?.nameFlame?'inferno':
+  level>=3&&person?.nameFlame?'ember':'none';
+}
 function topTile(kind,nameId,valueId){
  const leader=window.DolphinRankRewards?.current(kind)?.entries?.[0];
  text(nameId,leader?.name||'Chưa có dữ liệu');
@@ -29,6 +36,7 @@ function renderTiles(){
  text('leader-emperor-avatar',champion?displayAvatar(champion.name,champion.employeeId,champion.avatar):'👑');
  $('leader-emperor-avatar').dataset.frame=champion?.selectedFrame||'none';
  text('leader-emperor-name',champion?.name||'Chưa có danh hiệu');
+ if($('leader-emperor-name'))$('leader-emperor-name').dataset.nameFx=nameFxTier(champion);
  text('leader-emperor-value',champion?'Lv.'+Number(champion.level||1)+' · '+fmt(champion.xp)+' XP':'XP tích lũy');
 }
 function el(tag,cls,value){
@@ -47,11 +55,7 @@ function renderLevel(){
   const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=p.selectedFrame||'none';
   const person=el('span','level-person');
   const nameLabel=el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':''));
-  const nameTier=Number(p.level)>=60&&(p.nameFlame||p.nameGradient)?'celestial':
-   Number(p.level)>=45&&p.nameGradient?'prism':
-   Number(p.level)>=25&&p.nameFlame?'inferno':
-   Number(p.level)>=3&&p.nameFlame?'ember':'none';
-  nameLabel.dataset.nameFx=nameTier;
+  nameLabel.dataset.nameFx=nameFxTier(p);
   nameLabel.classList.toggle('crew-name-flame',!!p.nameFlame);
   nameLabel.classList.toggle('crew-name-gradient',!!p.nameGradient);
   person.append(nameLabel,el('small','level-person-rank',({rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'})[p.selectedTitle]||p.rank||'Dolphin Crew'));

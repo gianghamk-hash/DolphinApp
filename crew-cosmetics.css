@@ -571,3 +571,6 @@
 @media(prefers-reduced-motion:reduce){
  [data-crew-aura],[data-crew-trail],[data-crew-card]{animation:none!important}
 }
+
+/* New collectible name selector replaces the two legacy flame/gradient toggles. */
+#style-dialog label[for="staff-flame-check"],#style-dialog label[for="staff-gradient-check"]{display:none!important}

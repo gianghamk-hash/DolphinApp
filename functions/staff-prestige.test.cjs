@@ -315,3 +315,31 @@ test('public Level board is rebuilt on demand for the new 2450 threshold',async(
  assert.equal(second.leaderboard[0].level,2);
  assert.equal(data.get('staffPrestige/public').levelRulesVersion,2);
 });
+
+test('pending registrations never enter Level rankings, Emperor or legends, even with stale cache',async()=>{
+ const {api,data}=harness();
+ const approved={employeeId:'DOL-0002',name:'Approved',avatar:'🐬',active:true,registrationSource:'self',approved:true,xp:2000};
+ const pending={employeeId:'DOL-0003',name:'Pending',avatar:'🐬',active:true,registrationSource:'self',approved:false,xp:9999999};
+ data.set('staffRegistry/DOL-0002',approved);
+ data.set('staffRegistry/DOL-0003',pending);
+ await api._rebuildPrestige();
+ let board=await api.staffGetPrestige(req('lanDevice'));
+ assert.deepEqual(Array.from(board.leaderboard.map(p=>p.employeeId)),['DOL-0002']);
+ assert.equal(board.champion.employeeId,'DOL-0002');
+ assert.equal(board.legends.some(p=>p.name==='Pending'),false);
+ // Revoke a former winner without a rebuild: even cached results must exclude them.
+ data.set('staffRegistry/DOL-0002',{...approved,approved:false});
+ board=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(board.leaderboard.length,0);
+ assert.equal(board.champion,null);
+ assert.equal(board.legends.some(p=>p.name==='Approved'),false);
+});
+test('manager and trusted live grants cannot credit unapproved registrations',async()=>{
+ const {api,data}=harness();
+ const pending={employeeId:'DOL-0003',name:'Pending',active:true,registrationSource:'self',approved:false,xp:0};
+ data.set('staffRegistry/DOL-0003',pending);
+ const event={employeeId:'DOL-0003',eventId:'test:pending:001',source:'revenue',amount:250};
+ await assert.rejects(()=>api._awardTrustedLiveXP(event),e=>e.code==='permission-denied');
+ await assert.rejects(()=>api.staffGrantVerifiedXP(req('manager',event)),e=>e.code==='permission-denied');
+ assert.equal(data.has('staffXpLedger/DOL-0003/test:pending:001'),false);
+});

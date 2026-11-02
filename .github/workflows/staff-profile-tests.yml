@@ -1,10 +1,10 @@
 name: Staff profile checks
 on:
   pull_request:
-    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','scripts/staff-access-browser.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
   push:
     branches: [main]
-    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-access.js','staff-access.css','scripts/staff-access.test.cjs','scripts/staff-access-browser.cjs','dolphin-navigation.js','index.html','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','ranking/index.html','.github/workflows/staff-profile-tests.yml']
 permissions:
   contents: read
 jobs:
@@ -19,6 +19,7 @@ jobs:
           node --check staff-profile.js
           node --check staff-id.js
           node --check staff-access.js
+          node --check scripts/staff-access-browser.cjs
           node --check dolphin-navigation.js
           node --check functions/staff-xp-actions.js
           node --check staff-sync.js
@@ -31,6 +32,7 @@ jobs:
           node scripts/check-service-pages.cjs
       - run: npm install --no-save --package-lock=false playwright
       - run: npx playwright install --with-deps chromium
+      - run: node scripts/staff-access-browser.cjs
       - run: node scripts/avatar-sync-browser.cjs
         env:
           AVATAR_QA_OUTPUT: ${{ runner.temp }}/dolphin-avatar-qa

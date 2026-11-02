@@ -58,7 +58,7 @@ exports.staffCheckInDaily=onCall(opts,async req=>{
  * moves on the server. Raw client scores never grant XP. It is still a local
  * game: input automation cannot be completely prevented.
  */
-const arcade=require('../crew-arcade-proof.js');
+const arcade=require('./crew-arcade-proof.cjs');
 const arcadeRules=Object.freeze({
  snake:{task:'snake_100',threshold:100,minMs:9000},
  '2048':{task:'game2048_1000',threshold:1000,minMs:15000}

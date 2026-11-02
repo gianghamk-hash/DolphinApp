@@ -51,14 +51,28 @@ const frameSelector=[
 ].join(',');
 function decorateFrame(el){
  const frame=el?.dataset?.frame||'none';
- const supported=['bronze','silver','gold','mythic'];
+ const supported=['bronze','silver','gold','mythic','emerald','sapphire','nebula'];
  const previous=el?.querySelector(':scope > .crew-fx-orbits');
  const oldMotion=el?.querySelector(':scope > .crew-avatar-motion');
  const motion=el?.dataset?.avatarMotion||'none';
  if(oldMotion&&oldMotion.dataset.kind!==motion)oldMotion.remove();
  if(motion!=='none'&&!el.querySelector(':scope > .crew-avatar-motion')){
   const layer=document.createElement('span');layer.className='crew-avatar-motion';layer.dataset.kind=motion;
-  layer.setAttribute('aria-hidden','true');el.appendChild(layer);
+  layer.setAttribute('aria-hidden','true');
+  // Layered, pointer-transparent V4 particle system. Animations never alter
+  // the avatar emoji or intercept taps; generated once per equipped motion.
+  if(['comet','tide','vortex','phoenix','supernova'].includes(motion)){
+   const core=document.createElement('span');core.className='crew-motion-core';layer.appendChild(core);
+   for(let i=0;i<2;i++){
+    const ring=document.createElement('span');ring.className='crew-motion-ring';
+    ring.style.setProperty('--ring-index',String(i));layer.appendChild(ring);
+   }
+   for(let i=0;i<8;i++){
+    const spark=document.createElement('span');spark.className='crew-motion-spark';
+    spark.style.setProperty('--spark-index',String(i));layer.appendChild(spark);
+   }
+  }
+  el.appendChild(layer);
  }
  if(!supported.includes(frame)){
   if(previous)previous.remove();
@@ -83,7 +97,7 @@ function decorateFrame(el){
   }
   wrap.appendChild(universe);
  }else{
-  const count={bronze:1,silver:2,gold:3}[frame];
+  const count={bronze:1,silver:2,gold:3}[frame]||{emerald:2,sapphire:3,nebula:4}[frame];
   for(let i=1;i<=count;i++){
    const ring=document.createElement('span');
    ring.className='crew-fx-layer crew-fx-ring crew-fx-ring--'+i;

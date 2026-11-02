@@ -56,7 +56,7 @@ async function rebuild(){
  const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
  const current={champion:newChampion,
   announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
-  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
+  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,personalTheme:x.personalTheme,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
  // Small Firestore signal for instant profile refresh, not an XP authority.
@@ -75,6 +75,12 @@ exports.staffGetPrestige=onCall(opts,async req=>{
  const admin=(await getDatabase().ref('staffRegistry/DOL-0001').once('value')).val();
  const showAdmin=admin?.active&&admin.rankingVisible===true;
  const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>p.employeeId!==TEST_ADMIN_ID||showAdmin);
+ // Hydrate legacy snapshots created before public personalTheme was introduced.
+ // One extra read only while the old snapshot lacks the new public cosmetic field.
+ if(employees[0]&&!employees[0].personalTheme&&staffPattern.test(employees[0].employeeId)){
+  const active=(await getDatabase().ref('staffRegistry/'+employees[0].employeeId).once('value')).val();
+  if(active?.active)employees[0]={...employees[0],personalTheme:active.personalTheme||'dark'};
+ }
  const champion=pub.champion?.employeeId===TEST_ADMIN_ID&&!showAdmin
   ?(employees[0]?{...employees[0],title:'Dolphin Emperor'}:null):pub.champion||null;
  return {...pub,showAdminRanking:!!showAdmin,champion,leaderboard:employees,

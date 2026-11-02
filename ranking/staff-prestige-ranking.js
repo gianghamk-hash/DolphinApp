@@ -39,6 +39,25 @@ function topTile(kind,nameId,valueId){
  icon.dataset.crewCard=profile?.selectedCardFx||'none';
  }
 }
+/* Landing Top Level uses the same authoritative list as the Level leaderboard.
+   Only the #1 entry and its chosen public cosmetics travel to the parent. */
+function publishLandingLevel(){
+ if(window.parent===window)return;
+ const leader=Array.isArray(board?.leaderboard)?board.leaderboard[0]||null:null;
+ const current=leader?.employeeId?window.DolphinAvatars?.profile?.(leader.name,leader.employeeId):null;
+ const view=leader?{
+  employeeId:leader.employeeId,name:leader.name,avatar:current?.avatar||leader.avatar||'🐬',
+  level:leader.level,xp:leader.xp,rank:leader.rank,
+  selectedFrame:leader.selectedFrame,selectedAvatarMotion:leader.selectedAvatarMotion,
+  selectedAura:leader.selectedAura,selectedTrail:leader.selectedTrail,
+  selectedNameFx:leader.selectedNameFx,selectedTitle:leader.selectedTitle,
+  selectedBanner:leader.selectedBanner,selectedCardFx:leader.selectedCardFx,
+  personalTheme:leader.personalTheme
+ }:null;
+ try{window.parent.postMessage({type:'dolphin-level-leader',leader:view},location.origin);}
+ catch(error){console.warn('[Level podium] sync unavailable:',error?.message||error);}
+}
+
 function renderTiles(){
  topTile('revenue','leader-revenue-name','leader-revenue-value');
  topTile('work','leader-work-name','leader-work-value');
@@ -98,11 +117,11 @@ function init(){
  $('level-board-more')?.addEventListener('click',()=>{expanded=!expanded;renderLevel();});
  board=window.DolphinPrestige?.getBoard?.()||null;
  mine=window.DolphinPrestige?.getMine?.()||null;
- renderTiles();renderLevel();
+ renderTiles();renderLevel();publishLandingLevel();
 }
 window.addEventListener('dolphinRankRewardsUpdated',renderTiles);
-window.DolphinAvatars?.subscribe?.(()=>{renderTiles();renderLevel();});
-window.addEventListener('dolphin-prestige-updated',event=>{board=event.detail;renderTiles();renderLevel();});
+window.DolphinAvatars?.subscribe?.(()=>{renderTiles();renderLevel();publishLandingLevel();});
+window.addEventListener('dolphin-prestige-updated',event=>{board=event.detail;renderTiles();renderLevel();publishLandingLevel();});
 window.addEventListener('dolphin-my-progress-updated',event=>{mine=event.detail;renderLevel();});
 window.addEventListener('dolphin-prestige-status',event=>{
  if(event.detail?.scope==='board'&&event.detail.state==='error'&&!board){

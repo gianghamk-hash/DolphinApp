@@ -69,7 +69,7 @@ async function refresh(){
 }
 window.DolphinPrestige={refresh,getBoard:()=>publicBoard,getMine:()=>me,getStatus:()=>statuses,call:async(name,data)=>(await connect())(name,data)};
 async function subscribeProfileSignal(){
- if(!/dolphin-profile\.html$/.test(location.pathname))return;
+ if(!/dolphin-profile\.html$|\/ranking\/(?:index\.html)?$/.test(location.pathname))return;
  try{
   await connect();
   const [fb,fs]=await Promise.all([

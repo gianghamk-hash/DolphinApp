@@ -69,6 +69,32 @@ assert.equal(orbitQA.switchToMythic,true,'Changing rarity swaps rings for exactl
 assert.equal(orbitQA.cleared,true,'Unequipping removes the decorative layers');
 console.log('PASS: live V4 browser orbit counts and frame switching: 1 Bronze, 2 Silver, 3 Gold, 2 Mythic stars.');
 
+await a.page.emulateMedia({reducedMotion:'no-preference'});
+const movingOrbitQA=await a.page.evaluate(()=>{
+ const host=document.createElement('div');document.body.appendChild(host);
+ const sample={};
+ for(const rarity of ['bronze','silver','gold','mythic']){
+  const el=document.createElement('span');el.className='fx-frame-preview';
+  el.dataset.frame=rarity;el.textContent='🐬';host.appendChild(el);
+ }
+ window.DolphinFrameFX.refresh();
+ for(const el of host.children){
+  sample[el.dataset.frame]=[...el.querySelectorAll('.crew-fx-layer')].map(layer=>({
+   name:getComputedStyle(layer).animationName,
+   running:getComputedStyle(layer).animationPlayState==='running'
+  }));
+ }
+ host.remove();return sample;
+});
+assert.deepEqual(movingOrbitQA.bronze.map(x=>x.name),['crew-fx-spin-cw']);
+assert.deepEqual(movingOrbitQA.silver.map(x=>x.name),['crew-fx-spin-cw','crew-fx-spin-ccw']);
+assert.deepEqual(movingOrbitQA.gold.map(x=>x.name),['crew-fx-spin-cw','crew-fx-spin-ccw','crew-fx-spin-cw']);
+assert.deepEqual(movingOrbitQA.mythic.map(x=>x.name),['crew-fx-spin-cw','crew-fx-spin-ccw']);
+assert.ok(Object.values(movingOrbitQA).flat().every(x=>x.running),'All visible preview orbits must actually animate');
+await a.page.emulateMedia({reducedMotion:'reduce'});
+console.log('PASS: browser computed CSS confirms real CW/CCW motion and accessible reduced-motion fallback.');
+
+
 const rankFrame=frames.find(x=>x.file==='ranking/index.html').frame;
 const rankSource=fs.readFileSync(path.join(root,'ranking/index.html'),'utf8');const revenueFn=rankSource.match(/function renderRevenue\(\)\{[\s\S]*?\n\}/)[0],pointsFn=rankSource.match(/function renderPoints\(\)\{[\s\S]*?\n\}/)[0];
 const rankingFrameFn=rankSource.match(/function rankingAvatarFrame\(name\)\{[\s\S]*?\n\}/)[0],rankingTitleFn=rankSource.match(/function rankingTitle\(name\)\{[\s\S]*?\n\}/)[0];

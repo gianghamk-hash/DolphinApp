@@ -13,7 +13,7 @@ const avatars=read('dolphin-avatars.js');
 test('all four name effects have distinct styles and correctly staged unlock previews',()=>{
  for(const [id,level] of [['ember',3],['inferno',25],['prism',45],['celestial',60]]){
   assert.ok(css.includes('data-name-fx="'+id+'"'),'missing '+id+' name effect selector');
-  assert.ok(html.includes('data-unlock-level="'+level+'" data-fx-kind="name" data-fx-id="'+id+'"'),'missing '+id+' name preview');
+  assert.ok(profile.includes("['"+id+"',")&&profile.includes("element('span','Dolphin','fx-name-preview')"),'missing '+id+' dynamic name preview');
  }
  assert.match(profile,/function activeNameTier\(/);
  assert.match(profile,/dataset\.nameFx=activeNameTier\(\)/);
@@ -23,7 +23,7 @@ test('all four name effects have distinct styles and correctly staged unlock pre
 test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
  for(const [id,level] of [['bronze',5],['silver',22],['gold',40],['mythic',60]]){
   assert.ok(css.includes('data-frame="'+id+'"'),'missing '+id+' frame effect');
-  assert.ok(html.includes('data-unlock-level="'+level+'" data-fx-kind="frame" data-fx-id="'+id+'"'),'missing '+id+' frame preview');
+  assert.ok(profile.includes("['"+id+"',")&&profile.includes("preview.dataset.frame=id"),'missing '+id+' dynamic frame preview');
  }
  assert.match(avatars,/crew-cosmetics\.css\?v=crew-v5-20261102/);
  assert.match(avatars,/crew-cosmetics-stylesheet/);

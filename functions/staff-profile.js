@@ -97,6 +97,7 @@ exports.staffGetAvatarDirectory=onCall(opts,async req=>{
  return {profiles:Object.values(profiles).filter(p=>p?.active&&p.employeeId&&p.name).map(p=>({
   employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
   selectedFrame:['bronze','silver','gold','mythic'].includes(p.selectedFrame)?p.selectedFrame:'none',
+  selectedAvatarMotion:['none','pulse','float','wave','orbit','prism','ascension'].includes(p.selectedAvatarMotion)?p.selectedAvatarMotion:'none',
   selectedTitle:['rookie','wave','legend'].includes(p.selectedTitle)?p.selectedTitle:'none',
   selectedNameFx:['none','ember','inferno','prism','celestial'].includes(p.selectedNameFx)?p.selectedNameFx:'none',
   selectedAura:['none','spark','dual','celestial'].includes(p.selectedAura)?p.selectedAura:'none',

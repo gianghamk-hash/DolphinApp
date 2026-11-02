@@ -3,7 +3,7 @@
 const engine=require('./staff-xp-engine.cjs');
 const ZONE='Asia/Ho_Chi_Minh';
 const TASKS=Object.freeze([
- Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Duy trì chuỗi để tăng XP mỗi ngày',xp:20}),
+ Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Duy trì chuỗi để tăng XP mỗi ngày · XP x10',xp:200}),
  Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:40}),
  Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:30}),
  Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:25}),
@@ -28,7 +28,7 @@ function nextMidnight(day){
  return utcDate(day)+86400000-7*3600000;
 }
 function checkinXP(streak){
- return 15+Math.min(7,Math.max(1,Number(streak)||1))*5;
+ return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*10;
 }
 function todayCompleted(record,day){
  return record?.date===day&&record.completed&&typeof record.completed==='object'

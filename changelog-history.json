@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.55",
+      "releaseDate": "2026-11-02T20:12:45.840Z",
+      "summary": "feat: 10x daily missions and verified Snake/2048 game XP",
+      "details": [
+        "feat: 10x daily missions and verified Snake/2048 game XP"
+      ]
+    },
+    {
       "version": "1.1.54",
       "releaseDate": "2026-11-02T16:19:02.128Z",
       "summary": "fix: verified-only rankings and secure staff XP across outlets",
@@ -390,14 +398,6 @@
       "summary": "Show TFT round opponents and enable combat shop and bench controls (#161)",
       "details": [
         "Show TFT round opponents and enable combat shop and bench controls (#161)"
-      ]
-    },
-    {
-      "version": "1.1.5",
-      "releaseDate": "2026-10-30T06:04:17.100Z",
-      "summary": "Fix TFT online lag with compact atomic rooms and background combat (#160)",
-      "details": [
-        "Fix TFT online lag with compact atomic rooms and background combat (#160)"
       ]
     }
   ]

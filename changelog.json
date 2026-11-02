@@ -1,18 +1,18 @@
 {
-  "version": "1.1.55",
-  "previousVersion": "1.1.54",
-  "commit": "bf4224a",
-  "previousCommit": "d3130eb",
-  "buildDate": "2026-11-02T20:12:45.840Z",
-  "summary": "feat: 10x daily missions and verified Snake/2048 game XP",
+  "version": "1.1.56",
+  "previousVersion": "1.1.55",
+  "commit": "4534bb8",
+  "previousCommit": "bf4224a",
+  "buildDate": "2026-11-02T20:32:28.082Z",
+  "summary": "fix(firebase): package arcade verifier so daily XP Functions can start",
   "changes": {
-    "totalCommits": 279,
-    "filesChanged": 20,
+    "totalCommits": 280,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: 10x daily missions and verified Snake/2048 game XP"
+    "fix(firebase): package arcade verifier so daily XP Functions can start"
   ],
   "fileChanges": [
     {
@@ -28,27 +28,11 @@
       "type": "update"
     },
     {
-      "file": "crew-arcade-missions.js",
-      "type": "update"
-    },
-    {
-      "file": "crew-arcade-proof.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-profile.html",
+      "file": "functions/crew-arcade-proof.cjs",
       "type": "update"
     },
     {
       "file": "functions/staff-daily-arcade.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-core.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-core.test.cjs",
       "type": "update"
     },
     {
@@ -60,39 +44,7 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-actions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/game2048.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-daily-missions-ui.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.css",
+      "file": "scripts/verify-firebase-source-boundary.cjs",
       "type": "update"
     }
   ]

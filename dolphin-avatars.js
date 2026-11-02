@@ -30,6 +30,7 @@ function avatarHTML(name,id='',avatar='👤'){
 }
 if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
 if(!root.document)return;
+const cosmeticsHref=new URL('crew-cosmetics.css?v=epic-fx-20261102',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
 try{if(root.parent!==root)shared=root.parent.DolphinAvatars||null;}catch(e){}
 function staffName(){try{return root.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'';}catch(e){return '';}}
@@ -91,6 +92,10 @@ function init(){
 @keyframes crew-frame-glow{to{box-shadow:0 0 0 2px #bb91ff,0 0 19px #68efff}}
 @media(prefers-reduced-motion:reduce){[data-staff-avatar][data-frame=mythic]{animation:none}}
 `;document.head.appendChild(style);
+ // Place the shared stylesheet AFTER legacy injected rules so the epic tiers win.
+ if(!document.getElementById('crew-cosmetics-stylesheet')){
+  const link=document.createElement('link');link.id='crew-cosmetics-stylesheet';link.rel='stylesheet';link.href=cosmeticsHref;document.head.appendChild(link);
+ }
  new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['data-staff-name','data-staff-id']});
  root.addEventListener('dolphin-staff-id-changed',e=>{(shared||api).setOwn(e.detail);if(!shared)refresh();});
  root.addEventListener('dolphinStaffNameChanged',schedule);

@@ -1,0 +1,162 @@
+/* Dolphin Crew Club · Epic cosmetics v2
+ * One visual language across Profile, Ranking and every staff-avatar outlet.
+ * Cosmetic-only: no change to XP, permissions, orders or Firebase data.
+ */
+:root { --crew-glow-gold:#ffe18b; --crew-glow-cyan:#77eaff; }
+/* Names: four clearly different collectible tiers. All animation is decoration. */
+#profile-name[data-name-fx], .level-person-name[data-name-fx]:not([data-name-fx="none"]),
+.fx-name-preview[data-name-fx] {
+  display:inline-block; position:relative; max-width:100%; overflow-wrap:anywhere;
+  font-weight:900; letter-spacing:.015em; -webkit-text-fill-color:initial;
+}
+#profile-name[data-name-fx="ember"],.level-person-name[data-name-fx="ember"],.leader-tile-name[data-name-fx="ember"],.fx-name-preview[data-name-fx="ember"]{
+  color:#ffe1a0!important; -webkit-text-fill-color:#ffe1a0;
+  text-shadow:0 0 2px #fff0bd,0 0 9px #ffa323,0 0 20px #e3551a;
+}
+#profile-name[data-name-fx="inferno"],.level-person-name[data-name-fx="inferno"],.leader-tile-name[data-name-fx="inferno"],.fx-name-preview[data-name-fx="inferno"]{
+  background:linear-gradient(180deg,#fff9da 0%,#ffe36d 37%,#ff762c 76%,#fb3344 100%);
+  background-clip:text;-webkit-background-clip:text;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  text-shadow:0 0 13px #ff761b90,0 0 28px #d8321790;
+  filter:drop-shadow(0 0 5px #ffb24c);
+}
+#profile-name[data-name-fx="prism"],.level-person-name[data-name-fx="prism"],.leader-tile-name[data-name-fx="prism"],.fx-name-preview[data-name-fx="prism"]{
+  background:linear-gradient(100deg,#eaffff,#77eaff,#b9a1ff,#ffacdd,#eaffff);
+  background-size:250% 100%;background-clip:text;-webkit-background-clip:text;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  text-shadow:0 0 12px #8bdbff80,0 0 22px #b791ff70;
+  animation:crew-prism-shift 4.5s linear infinite;
+}
+#profile-name[data-name-fx="celestial"],.level-person-name[data-name-fx="celestial"],.leader-tile-name[data-name-fx="celestial"],.fx-name-preview[data-name-fx="celestial"]{
+  background:linear-gradient(95deg,#fffadc,#89f4ff,#ffd36b,#f0a7ff,#fffadc);
+  background-size:280% 100%;background-clip:text;-webkit-background-clip:text;
+  color:transparent!important;-webkit-text-fill-color:transparent!important;
+  text-shadow:0 0 11px #fff0b880,0 0 26px #73eaffad;
+  filter:drop-shadow(0 0 7px #f1b5ff);
+  animation:crew-prism-shift 3.5s linear infinite;
+}
+@keyframes crew-prism-shift{to{background-position:280% 0}}
+/* Hero-tier sigils: visually advertise the rarity without covering the actual name. */
+#profile-name[data-name-fx="inferno"]::after,
+#profile-name[data-name-fx="celestial"]::after,
+.fx-name-preview[data-name-fx="inferno"]::after,
+.fx-name-preview[data-name-fx="celestial"]::after{
+  position:absolute;right:-.82em;top:-.35em;pointer-events:none;font-size:.65em;
+  -webkit-text-fill-color:initial;text-shadow:0 0 9px currentColor;
+  animation:crew-sigil-float 2.6s ease-in-out infinite alternate;
+}
+#profile-name[data-name-fx="inferno"]::after,.fx-name-preview[data-name-fx="inferno"]::after{content:'✦';color:#ffab3d}
+#profile-name[data-name-fx="celestial"]::after,.fx-name-preview[data-name-fx="celestial"]::after{content:'✧';color:#c5f5ff}
+@keyframes crew-sigil-float{to{transform:translate3d(0,-3px,0) scale(1.18);opacity:.72}}
+/* Remove old generic flame/gradient animations: tier data is the visual source of truth. */
+#profile-name[data-name-fx]:not([data-name-fx="none"]){animation-duration:4.5s}
+#profile-name[data-name-fx="ember"],#profile-name[data-name-fx="inferno"]{animation:none}
+.level-person-name[data-name-fx]{animation:none!important}
+/* The base avatar surface must make room for outer halos without clipping glyphs. */
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame]:not([data-frame="none"]){
+ position:relative;isolation:isolate;overflow:visible;box-sizing:border-box;
+ border-radius:26%!important;flex-shrink:0;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame]:not([data-frame="none"])::before,
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame]:not([data-frame="none"])::after{
+ position:absolute;display:block;pointer-events:none;user-select:none;
+}
+/* BRONZE: machined bronze, bevel, copper rivet. */
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="bronze"]{
+ border:3px solid #f1b76d!important;
+ background:radial-gradient(circle at 30% 15%,#ad723c55,transparent 65%),#392719!important;
+ box-shadow:inset 0 0 0 2px #583016,0 0 0 2px #77401d,0 0 12px #e2954baf!important;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="bronze"]::before{
+ content:'';inset:-6px;border:2px solid #a76533;border-radius:29%;
+ box-shadow:0 0 8px #d3814380;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="bronze"]::after{
+ content:'◆';right:-9px;top:-11px;color:#f9c982;font-size:12px;text-shadow:0 0 8px #f4a24b;
+}
+/* SILVER: icy double ring + clear radiant flare. */
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="silver"]{
+ border:3px solid #e9faff!important;
+ background:radial-gradient(circle at 20% 10%,#d4f4ff88,transparent 70%),#203c52!important;
+ box-shadow:inset 0 0 0 2px #477f99,0 0 0 2px #81cdef,0 0 16px #73dcffd1!important;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="silver"]::before{
+ content:'';inset:-7px;border:2px solid #b8efff;border-radius:31%;
+ box-shadow:0 0 12px #78e5ffb0;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="silver"]::after{
+ content:'✦';right:-10px;top:-14px;font-size:17px;color:#e9ffff;text-shadow:0 0 9px #66d9ff;
+}
+/* GOLD: intense concentric halo + bright royal star. */
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="gold"]{
+ border:4px solid #ffdf78!important;
+ background:radial-gradient(circle at 25% 10%,#ffd56990,transparent 62%),#4b3518!important;
+ box-shadow:inset 0 0 0 2px #bf7a15,0 0 0 3px #f2bb43,0 0 21px #ffd04ce5,0 0 35px #f9a72555!important;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="gold"]::before{
+ content:'';inset:-10px;border-radius:35%;border:3px solid transparent;
+ background:conic-gradient(from 35deg,#ffcf42,#fff9bf,#c77c16,#ffcf42,#fff7b3,#ffcf42) border-box;
+ -webkit-mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);
+ -webkit-mask-composite:xor;mask-composite:exclude;
+ box-shadow:0 0 13px #ffc84d;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="gold"]::after{
+ content:'✦';right:-13px;top:-16px;color:#fff2aa;font-size:21px;text-shadow:0 0 10px #ffd052,0 0 20px #fa9a21;
+}
+/* MYTHIC: animated spectral orbit, diamond star and a double luminous aura. */
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="mythic"]{
+ border:4px solid #f6ccff!important;
+ background:radial-gradient(circle at 30% 20%,#aa7bff8c,transparent 70%),#251e56!important;
+ box-shadow:inset 0 0 0 2px #a27bf0,0 0 0 3px #83edff,0 0 20px #b285ffee,0 0 36px #5ae4ff99!important;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="mythic"]::before{
+ content:'';inset:-11px;border-radius:35%;padding:3px;
+ background:conic-gradient(#7ceaff,#efe2ff,#fd97ff,#ffdd87,#7ceaff,#917cff,#7ceaff);
+ -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);
+ -webkit-mask-composite:xor;mask-composite:exclude;
+ filter:drop-shadow(0 0 5px #b09aff);
+ animation:crew-mythic-orbit 5s linear infinite;
+}
+:is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame="mythic"]::after{
+ content:'✧';right:-14px;top:-17px;font-size:23px;color:#fff3ff;
+ text-shadow:0 0 8px #fff,0 0 17px #b683ff,0 0 25px #67eaff;
+ animation:crew-mythic-spark 2.1s ease-in-out infinite alternate;
+}
+@keyframes crew-mythic-orbit{to{transform:rotate(360deg)}}
+@keyframes crew-mythic-spark{to{transform:translate3d(0,-3px,0) scale(1.16);opacity:.7}}
+/* Tiny list avatars remain premium but do not animate dozens of elements simultaneously. */
+:is(.dolphin-staff-avatar,.level-avatar,[data-staff-avatar])[data-frame]::before,
+:is(.dolphin-staff-avatar,.level-avatar,[data-staff-avatar])[data-frame]::after{animation:none!important}
+:is(.dolphin-staff-avatar,.level-avatar,[data-staff-avatar])[data-frame="gold"]::before,
+:is(.dolphin-staff-avatar,.level-avatar,[data-staff-avatar])[data-frame="mythic"]::before{inset:-6px}
+:is(.dolphin-staff-avatar,.level-avatar,[data-staff-avatar])[data-frame]::after{font-size:11px;right:-7px;top:-10px}
+/* The profile hero and the Emperor tile are where expensive rarity motion belongs. */
+#profile-avatar[data-frame="mythic"]::before,.fx-frame-preview[data-frame="mythic"]::before,
+#leader-emperor-avatar[data-frame="mythic"]::before{animation:crew-mythic-orbit 5s linear infinite!important}
+#profile-avatar[data-frame="mythic"]::after,.fx-frame-preview[data-frame="mythic"]::after,
+#leader-emperor-avatar[data-frame="mythic"]::after{animation:crew-mythic-spark 2.1s ease-in-out infinite alternate!important}
+/* Rarity gallery: previews are true CSS renderings of the equippable effects. */
+.crew-fx-section{margin-top:16px;padding-top:16px;border-top:1px solid var(--line,#ffffff24)}
+.crew-fx-section>h3{margin-bottom:5px}
+.crew-fx-section>p{margin:0 0 12px;font-size:11px;color:var(--muted,#b7c6c0)}
+.crew-fx-gallery{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;padding:7px 0}
+.crew-fx-tile{position:relative;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+ gap:9px;min-height:92px;padding:13px 8px;border:1px solid #ffffff2a;border-radius:15px;
+ background:linear-gradient(145deg,#1b3432,#111f28);text-align:center;color:#e9fffc}
+.crew-fx-tile[data-locked="true"]{opacity:.72;border-style:dashed}
+.crew-fx-tile[data-locked="false"]{border-color:#ffdf7b80;box-shadow:inset 0 0 0 1px #ffdf7b20}
+.crew-fx-tile[data-equipped="true"]{border-color:#ffe28f;outline:2px solid #ffe28f;outline-offset:-2px;box-shadow:0 0 15px #f8d36e38,inset 0 0 0 1px #ffe28f55}
+.crew-fx-tile[data-equipped="true"] .crew-fx-status{color:#fff3bf;text-shadow:0 0 7px #fbd77a}
+.crew-fx-tile small{display:block;font-size:10px;line-height:1.45;color:#d4e6df}
+.crew-fx-tile .crew-fx-status{font-size:9px;font-weight:800;color:#fbd77a}
+.fx-name-preview{font-size:17px;line-height:1.4;padding:6px 8px;margin-right:6px;white-space:nowrap}
+.fx-frame-preview{display:grid;place-items:center;width:45px;height:45px;font-size:27px;line-height:1;margin:6px 0}
+@media(max-width:420px){.crew-fx-gallery{gap:7px}.crew-fx-tile{padding:10px 4px;min-height:88px}.fx-name-preview{font-size:15px}}
+@media(prefers-reduced-motion:reduce){
+ #profile-name[data-name-fx],.fx-name-preview[data-name-fx],.level-person-name[data-name-fx],
+ #profile-name[data-name-fx]::after,.fx-name-preview[data-name-fx]::after,
+ :is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame]::before,
+ :is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,.fx-frame-preview)[data-frame]::after{
+  animation:none!important;transition:none!important;filter:none!important;
+ }
+}

@@ -62,8 +62,28 @@ function renderCosmetics(){
  if(!editing)$('staff-gradient-check').checked=!!mine?.nameGradient&&mine.level>=45;
  $('staff-gradient-check').disabled=!mine||mine.level<45;
 }
+function activeNameTier(){
+ if(!mine)return 'none';
+ const level=Number(mine.level)||1;
+ if(level>=60&&(mine.nameFlame||mine.nameGradient))return 'celestial';
+ if(level>=45&&mine.nameGradient)return 'prism';
+ if(level>=25&&mine.nameFlame)return 'inferno';
+ if(level>=3&&mine.nameFlame)return 'ember';
+ return 'none';
+}
+function renderFxGallery(){
+ const active=activeNameTier();
+ for(const tile of document.querySelectorAll('.crew-fx-tile[data-unlock-level]')){
+  const required=Number(tile.dataset.unlockLevel)||1,unlocked=!!mine&&mine.level>=required;
+  const equipped=unlocked&&(tile.dataset.fxKind==='name'?tile.dataset.fxId===active:tile.dataset.fxId===mine?.selectedFrame);
+  tile.dataset.locked=String(!unlocked);tile.dataset.equipped=String(equipped);
+  const badge=tile.querySelector('.crew-fx-status');
+  if(badge)badge.textContent=equipped?'✦ Đang dùng':unlocked?'✓ Đã mở':'🔒 Lv.'+required;
+ }
+}
 function previewCosmetics(){
  $('profile-avatar').dataset.frame=mine?.selectedFrame||'none';
+ $('profile-name').dataset.nameFx=activeNameTier();
  $('crew-profile-banner').dataset.banner=mine?.selectedBanner||'default';
  const label=$('profile-title'),title=mine?.selectedTitle||'none';
  label.textContent=titleNames[title]||'';label.hidden=!titleNames[title];
@@ -101,7 +121,7 @@ function renderMine(){
  $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||mine.level<3;
  $('profile-name').classList.toggle('onflame',!!mine?.nameFlame&&mine.level>=3);
  $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&mine.level>=25);
- renderThemes();renderCosmetics();renderRewards();previewCosmetics();renderAdminSandbox();
+ renderThemes();renderCosmetics();renderRewards();previewCosmetics();renderFxGallery();renderAdminSandbox();
 }
 function renderAdminSandbox(){
  const panel=$('crew-admin-sandbox');

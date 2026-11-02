@@ -47,3 +47,11 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 .reward-highlight.is-open{border-color:color-mix(in srgb,var(--gold) 60%,transparent);background:color-mix(in srgb,var(--gold) 7%,transparent)}
 .reward-highlight-icon{font-size:21px}.reward-highlight strong{font-size:11px;line-height:1.4}.reward-highlight small{font-size:10px;color:var(--muted);line-height:1.4}
 @media(max-width:360px){.reward-highlights{gap:6px}.reward-highlight{padding:9px}}
+
+/* Staff approval inbox: two explicit actions stay usable on narrow phones. */
+.crew-approval-row{display:flex;align-items:center;gap:10px;flex-wrap:wrap;padding:13px 0;border-bottom:1px solid #ffffff2b}
+.crew-approval-row>span{flex:1 1 130px;overflow-wrap:anywhere;min-width:0}
+.crew-approval-actions{display:flex;gap:8px;flex:0 0 auto;flex-wrap:wrap}
+.crew-approval-actions button{padding:9px 12px;min-height:42px;border-radius:10px;font:700 13px system-ui}
+.crew-approval-actions .crew-reject-button{color:#ffd7d7;border:1px solid #e88787;background:#501f37}
+.crew-approval-actions button:disabled{opacity:.55;cursor:wait}

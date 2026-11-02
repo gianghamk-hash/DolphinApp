@@ -1,82 +1,22 @@
 {
-  "version": "1.1.44",
-  "previousVersion": "1.1.43",
-  "commit": "63e8c65",
-  "previousCommit": "fbcd247",
-  "buildDate": "2026-11-02T12:51:22.344Z",
-  "summary": "feat(crew): upgrade Mythic, add avatar motion and name recovery",
+  "version": "1.1.45",
+  "previousVersion": "1.1.44",
+  "commit": "284ed6b",
+  "previousCommit": "63e8c65",
+  "buildDate": "2026-11-02T12:52:25.033Z",
+  "summary": "test(crew): align regression fixtures and PWA assets with Mythic V7",
   "changes": {
-    "totalCommits": 268,
-    "filesChanged": 16,
+    "totalCommits": 269,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): upgrade Mythic, add avatar motion and name recovery"
+    "test(crew): align regression fixtures and PWA assets with Mythic V7"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-access-production.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/staff-profile-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": "crew-cosmetics.css",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-avatars.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-navigation.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.cjs",
-      "type": "update"
-    },
-    {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-recovery.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-access.css",
-      "type": "update"
-    },
-    {
-      "file": "staff-access.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-admin-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
+      "file": "functions/staff-id.test.js",
       "type": "update"
     }
   ]

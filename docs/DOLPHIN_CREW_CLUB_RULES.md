@@ -36,7 +36,7 @@ Mở khóa tự động theo levelPeak; trang Hồ Sơ cho chọn khung, danh hi
 ## Nhiệm vụ hằng ngày — reset 00:00 (Việt Nam)
 
 - Múi giờ cố định: `Asia/Ho_Chi_Minh`. Không cần job xóa dữ liệu: tiến độ được tách theo ngày Việt Nam tại máy chủ. Bước sang 00:00, 6 nhiệm vụ sẽ trở về chưa hoàn thành, còn chuỗi điểm danh và kỷ lục vẫn được giữ.
-- Điểm danh: ngày thứ 1 = **200 XP**, mỗi ngày liên tiếp tăng **50 XP** tới mức trần **500 XP/ngày** từ ngày thứ 7 (hệ số x10 từ ngày 02/11/2026). Những ngày đã nhận thưởng trước khi cập nhật không được cộng bù. Bỏ qua một ngày thì chuỗi bắt đầu lại từ 1, kỷ lục không mất.
+- Điểm danh: ngày thứ 1 = **200 XP**, mỗi ngày liên tiếp tăng **50 XP** tới mức trần **500 XP/ngày** từ ngày thứ 7 (hệ số x10 từ ngày 02/11/2026). Nếu đã điểm danh trước khi cập nhật x10 trong **cùng ngày giờ Việt Nam**, hệ thống tự bù phần chênh lệch một lần khi mở Hồ sơ (ví dụ từ 20 lên 200 XP: cộng thêm 180 XP). Không cộng bù những ngày cũ đã qua 00:00. Bản ghi thưởng được cập nhật để hiển thị đúng x10, không cho nhận trùng. Bỏ qua một ngày thì chuỗi bắt đầu lại từ 1, kỷ lục không mất.
 - Hoàn thành một order: **40 XP** (chuyển trạng thái đơn sang hoàn thành trên máy chủ).
 - Mở một Bungalow: **30 XP** (tạo lượt mới bằng Staff ID đã xác minh).
 - Mở một bàn Lounge: **25 XP** (tạo bàn mới bằng Staff ID đã xác minh).
@@ -46,3 +46,10 @@ Mở khóa tự động theo levelPeak; trang Hồ Sơ cho chọn khung, danh hi
 - Chỉ `staffCheckInDaily` là thao tác do nhân viên gọi trực tiếp. Các nhiệm vụ công việc/đổi avatar được ghi nhận từ callable nghiệp vụ có kiểm tra Staff ID và thao tác thực tế. Không có callable để client tự gửi task/XP tùy ý; dữ liệu Firestore viết trực tiếp theo luồng cũ không phải bằng chứng nhận XP nhiệm vụ.
 - Nút **Điểm danh** và danh sách nhiệm vụ xuất hiện tại Hồ sơ; kết quả đồng bộ giữa thiết bị. Mốc công việc nhận thưởng ngay sau khi thao tác đủ điều kiện, không phải nhấn nhận thủ công.
 - Giữ nguyên quy ước Dolphin Crew Club chỉ để giải trí, **không** dùng làm căn cứ lương hay đánh giá.
+
+## Điều chỉnh ngưỡng Level tháng 11/2026
+
+- Hệ số Level giảm thêm **30%**, từ **3.500** xuống **2.450**. Công thức: `XP(L) = 2.450 × (L − 1)²`, tối đa Level 60.
+- Level 2: 2.450 XP; Level 3: 9.800 XP; Level 10: 198.450 XP; Level 60: 8.528.450 XP.
+- XP tích lũy, sổ ghi thưởng, điều kiện nhiệm vụ và `levelPeak` không bị xóa hoặc đặt lại. Cấp và phần thưởng sẽ được tính lại theo công thức mới; Level đã mở trước đó không bị hạ.
+- Bảng xếp hạng Level công khai tự được tính lại khi người dùng đầu tiên tải dữ liệu sau khi backend được triển khai (sửa bản snapshot cũ một lần có khóa tránh ghi đồng thời).

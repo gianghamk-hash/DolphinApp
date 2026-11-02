@@ -30,6 +30,7 @@ function avatarHTML(name,id='',avatar='👤'){
 }
 if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
 if(!root.document)return;
+const cosmeticsHref=new URL('crew-cosmetics.css?v=epic-fx-20261102',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
 try{if(root.parent!==root)shared=root.parent.DolphinAvatars||null;}catch(e){}
 function staffName(){try{return root.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'';}catch(e){return '';}}
@@ -82,6 +83,10 @@ const api={get,getMine:()=>own,profile:(name,id)=>resolver.resolve(name,id),setO
  html:(name,id)=>avatarHTML(name,id,get(name,id)||fallback(name))};
 root.DolphinAvatars=shared||api;
 function init(){
+ // Shared cosmetics: the same rarity effects in Profile, Ranking, Lounge, Bungalow, Restaurant and Show.
+ if(!document.getElementById('crew-cosmetics-stylesheet')){
+  const link=document.createElement('link');link.id='crew-cosmetics-stylesheet';link.rel='stylesheet';link.href=cosmeticsHref;document.head.appendChild(link);
+ }
  const style=document.createElement('style');style.textContent=`
 .dolphin-staff-avatar{display:inline-flex;align-items:center;justify-content:center;flex-shrink:0;width:32px;height:32px;border-radius:50%;background:#ffffff12;border:1px solid #fbd77a55;font-size:21px;line-height:1;vertical-align:middle;margin-right:7px}
 [data-staff-avatar][data-frame=bronze]{border:3px solid #cb9154!important;box-shadow:0 0 0 1px #77461f,0 0 10px #cb915488!important}

@@ -391,7 +391,7 @@
  --crew-ring-color:#ffc481;
  --crew-ring-glow:#e6a35ca0;
  border:2px solid var(--crew-ring-color)!important;
- background:conic-gradient(from 0deg,transparent 0 65%,var(--crew-ring-glow) 80%,transparent 98%)!important;
+ background:transparent!important; /* Do not cover the employee's avatar. */
  box-shadow:inset 0 0 7px var(--crew-ring-glow),0 0 8px var(--crew-ring-glow)!important;
  animation-name:crew-fx-spin-cw;
  animation-timing-function:linear;

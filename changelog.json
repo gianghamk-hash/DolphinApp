@@ -1,26 +1,54 @@
 {
-  "version": "1.1.53",
-  "previousVersion": "1.1.52",
-  "commit": "7815bd5",
-  "previousCommit": "e832b9b",
-  "buildDate": "2026-11-02T15:35:06.432Z",
-  "summary": "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview",
+  "version": "1.1.54",
+  "previousVersion": "1.1.53",
+  "commit": "d3130eb",
+  "previousCommit": "7815bd5",
+  "buildDate": "2026-11-02T16:19:02.128Z",
+  "summary": "fix: verified-only rankings and secure staff XP across outlets",
   "changes": {
-    "totalCommits": 277,
-    "filesChanged": 9,
+    "totalCommits": 278,
+    "filesChanged": 19,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview"
+    "fix: verified-only rankings and secure staff XP across outlets"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/firebase-staff-prestige-production.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-profile-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-style-unlock-production.yml",
+      "type": "update"
+    },
     {
       "file": "dolphin-avatars.js",
       "type": "update"
     },
     {
-      "file": "dolphin-ui.js",
+      "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-lounge.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-show.html",
       "type": "update"
     },
     {
@@ -28,27 +56,39 @@
       "type": "update"
     },
     {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
       "file": "functions/staff-profile.js",
       "type": "update"
     },
     {
-      "file": "index.html",
+      "file": "functions/staff-xp-actions.js",
       "type": "update"
     },
     {
-      "file": "royal-leaders.js",
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/landing-level-podium-browser.cjs",
+      "file": "functions/staff-xp-rank-sync.js",
       "type": "update"
     },
     {
-      "file": "scripts/landing-level-podium.test.cjs",
+      "file": "functions/staff-xp-rank-sync.test.cjs",
       "type": "update"
     },
     {
-      "file": "service-worker.js",
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-client.js",
       "type": "update"
     }
   ]

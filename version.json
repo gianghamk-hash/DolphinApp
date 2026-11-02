@@ -1,7 +1,7 @@
 {
-  "version": "1.1.53",
-  "buildDate": "2026-11-02T15:35:06.432Z",
-  "commit": "7815bd5",
-  "notes": "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview",
+  "version": "1.1.54",
+  "buildDate": "2026-11-02T16:19:02.128Z",
+  "commit": "d3130eb",
+  "notes": "fix: verified-only rankings and secure staff XP across outlets",
   "forceUpdate": false
 }

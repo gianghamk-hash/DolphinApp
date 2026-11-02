@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.53",
+      "releaseDate": "2026-11-02T15:35:06.432Z",
+      "summary": "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview",
+      "details": [
+        "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview"
+      ]
+    },
+    {
       "version": "1.1.52",
       "releaseDate": "2026-11-02T15:01:54.637Z",
       "summary": "fix(crew): reconcile x10 daily check-in and reduce Level thresholds 30 percent",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization",
       "details": [
         "Merge pull request #159 from gianghamk-hash/perf/tft-network-optimization"
-      ]
-    },
-    {
-      "version": "1.1.3",
-      "releaseDate": "2026-10-30T03:44:33.609Z",
-      "summary": "fix(ranking): merge staff name case and spacing variants",
-      "details": [
-        "fix(ranking): merge staff name case and spacing variants"
       ]
     }
   ]

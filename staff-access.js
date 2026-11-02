@@ -37,7 +37,7 @@ async function getApi(){
  if(root.DolphinStaffId)return root.DolphinStaffId;
  await new Promise((resolve,reject)=>{
   const s=document.createElement('script');
-  s.src=new URL('staff-id.js',base).href;
+  s.src=new URL('staff-id.js?v=crew-recovery-v7',base).href;
   s.onload=resolve;s.onerror=reject;document.head.appendChild(s);
  });
  if(!root.DolphinStaffId)throw Error('Không thể tải Staff ID.');
@@ -136,7 +136,7 @@ async function check(force=false){
 }
 async function requestRecovery(event){
  event.preventDefault();if(state.busy)return;
- const name=$('dag-recovery-name').value.trim().replace(/\\s+/g,' ');
+ const name=$('dag-recovery-name').value.trim().replace(/\s+/g,' ');
  if(name.length<2){status('Nhập họ tên đã đăng ký.',true);return;}
  busy(true);status('Đang gửi yêu cầu khôi phục…');
  try{const api=await getApi();const result=await api.requestNameRecovery(name);status(result.message||'Đã gửi yêu cầu. Hãy liên hệ DOL-0001 để nhận mã liên kết.');}

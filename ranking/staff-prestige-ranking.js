@@ -47,6 +47,11 @@ function renderLevel(){
   const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=p.selectedFrame||'none';
   const person=el('span','level-person');
   const nameLabel=el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':''));
+  const nameTier=Number(p.level)>=60&&(p.nameFlame||p.nameGradient)?'celestial':
+   Number(p.level)>=45&&p.nameGradient?'prism':
+   Number(p.level)>=25&&p.nameFlame?'inferno':
+   Number(p.level)>=3&&p.nameFlame?'ember':'none';
+  nameLabel.dataset.nameFx=nameTier;
   nameLabel.classList.toggle('crew-name-flame',!!p.nameFlame);
   nameLabel.classList.toggle('crew-name-gradient',!!p.nameGradient);
   person.append(nameLabel,el('small','level-person-rank',({rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'})[p.selectedTitle]||p.rank||'Dolphin Crew'));

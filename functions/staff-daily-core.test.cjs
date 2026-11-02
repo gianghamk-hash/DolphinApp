@@ -8,10 +8,10 @@ test('eight fixed tasks have precisely the requested rewards',()=>{
   'checkin','order_completed','bungalow_opened','lounge_opened',
   'order_received','avatar_changed','snake_100','game2048_1000'
  ]);
- assert.deepEqual(core.TASKS.map(x=>x.xp),[2000,400,300,250,150,100,500,1000]);
- assert.equal(core.checkinXP(1),2000);
- assert.equal(core.checkinXP(7),5000);
- assert.equal(core.checkinXP(999),5000);
+ assert.deepEqual(core.TASKS.map(x=>x.xp),[200,400,300,250,150,100,500,1000]);
+ assert.equal(core.checkinXP(1),200);
+ assert.equal(core.checkinXP(7),500);
+ assert.equal(core.checkinXP(999),500);
  assert.throws(()=>core.apply(person(),'arbitrary_task',vn('2026-11-03')));
 });
 test('VN midnight resets eight daily missions but preserves streak',()=>{
@@ -22,17 +22,17 @@ test('VN midnight resets eight daily missions but preserves streak',()=>{
  assert.equal(core.view(claimed.profile,b).completedCount,0);
  assert.equal(core.view(claimed.profile,b).resetAt,Date.parse('2026-11-03T17:00:00Z'));
 });
-test('check-in streak has x10 more reward than previous version and caps at day 7',()=>{
+test('check-in remains 200–500 XP independent of 10x work quests',()=>{
  let p=person(),total=0;
  for(let i=1;i<=9;i++){
   const result=core.apply(p,'checkin',vn('2026-11-'+String(i).padStart(2,'0')),String(i));
   assert.equal(result.addedXP,core.checkinXP(i));
   total+=result.addedXP;p=result.profile;assert.equal(p.xp,total);
  }
- assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,2000);
+ assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,200);
 });
 test('each verified task is claimed once per day per Staff ID',()=>{
- const time=vn('2026-11-03'),amounts={checkin:2000,order_completed:400,bungalow_opened:300,lounge_opened:250,order_received:150,avatar_changed:100,snake_100:500,game2048_1000:1000};
+ const time=vn('2026-11-03'),amounts={checkin:200,order_completed:400,bungalow_opened:300,lounge_opened:250,order_received:150,avatar_changed:100,snake_100:500,game2048_1000:1000};
  let p=person(),total=0;
  for(const [task,xp] of Object.entries(amounts)){
   const first=core.apply(p,task,time,task);total+=xp;
@@ -40,7 +40,7 @@ test('each verified task is claimed once per day per Staff ID',()=>{
   assert.equal(core.apply(first.profile,task,time+1000,'retry').addedXP,0);
   p=first.profile;
  }
- assert.equal(total,4700);assert.equal(p.xp,total);
+ assert.equal(total,2900);assert.equal(p.xp,total);
  assert.equal(core.view(p,time).completedCount,8);
  assert.equal(core.view(p,time).todayXP,total);
 });
@@ -51,16 +51,22 @@ test('pending and inactive staff never get game or order bonuses',()=>{
  const current=core.apply(person(),'checkin',vn('2026-11-04')).profile;
  assert.equal(core.apply(current,'avatar_changed',vn('2026-11-03')).changed,false);
 });
-test('today-only 1x and 10x legacy check-ins upgrade to new x100 rate once',()=>{
+test('same-day check-in corrects old 1x and mistaken 100x rewards once',()=>{
  const now=vn('2026-11-03');
- for(const legacyXP of [20,200]){
+ for(const [legacyXP,correction] of [[20,180],[200,0],[2000,-1800]]){
   const p={...person(),xp:legacyXP,dailyMissions:{date:'2026-11-03',lastCheckinDay:'2026-11-03',streak:1,completed:{checkin:{xp:legacyXP,at:now,receipt:'signed'}}}};
   const result=core.reconcileLegacyDaily(p,now+1000);
-  assert.equal(result.addedXP,2000-legacyXP);
-  assert.equal(result.profile.xp,2000);
-  assert.equal(result.profile.dailyMissions.completed.checkin.rateVersion,3);
-  assert.equal(core.reconcileLegacyDaily(result.profile,now+1500).changed,false);
+  assert.equal(result.addedXP,correction);
+  assert.equal(result.profile.xp,legacyXP+correction);
+  if(correction){
+   assert.equal(result.profile.dailyMissions.completed.checkin.rateVersion,4);
+   assert.equal(core.reconcileLegacyDaily(result.profile,now+1500).changed,false);
+  }else assert.equal(result.changed,false);
  }
+ const day2=vn('2026-11-03'),second={...person(),xp:2600,dailyMissions:{
+ date:'2026-11-03',streak:2,lastCheckinDay:'2026-11-03',
+ completed:{checkin:{xp:2500,at:day2,receipt:'signed-2'}}}};
+ assert.equal(core.reconcileLegacyDaily(second,day2+500).profile.xp,350);
 });
 test('legacy business mission receipts top up only TODAY; unverified receipts do not',()=>{
  const time=vn('2026-11-03');

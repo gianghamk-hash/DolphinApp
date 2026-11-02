@@ -25,7 +25,7 @@ test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
   assert.ok(css.includes('data-frame="'+id+'"'),'missing '+id+' frame effect');
   assert.ok(html.includes('data-unlock-level="'+level+'" data-fx-kind="frame" data-fx-id="'+id+'"'),'missing '+id+' frame preview');
  }
- assert.match(avatars,/crew-cosmetics\.css\?v=epic-fx-20261102/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
  assert.match(avatars,/crew-cosmetics-stylesheet/);
 });
 test('previews accurately show locked, unlocked, and equipped states',()=>{
@@ -41,4 +41,44 @@ test('premium animations are accessible and contained on narrow/mobile screens',
  assert.match(css,/:is\(\.dolphin-staff-avatar,\.level-avatar,\[data-staff-avatar\]\)\[data-frame\]::before/);
  assert.match(css,/animation:none!important/);
  assert.ok(!css.includes('position:fixed'),'cosmetics must never cover the page');
+});
+
+const rankingHTML=read('ranking/index.html');
+const online=read('staff-online.js');
+const worker=read('service-worker.js');
+test('V3 rarity makes each equipped avatar visually distinct on every surface',()=>{
+ assert.match(css,/CREW CLUB LEGENDARY FRAMES V3/);
+ for(const name of ['hero-avatar','level-avatar','leader-tile-icon','dolphin-staff-avatar','drr-frame','sow-avatar']){
+  assert.ok(css.includes('.'+name),'V3 must style '+name);
+ }
+ for(const key of ['bronze','silver','gold','mythic']){
+  assert.match(css,new RegExp('data-frame="'+key+'"'));
+ }
+ assert.match(css,/--crew-fx-glyph:"♛"/);
+ assert.match(css,/--crew-fx-glyph:"✧"/);
+ assert.match(css,/crew-v3-orbit/);
+ assert.match(css,/#staffOnlineWidget\.open \.sow-avatar\[data-frame="mythic"\]/);
+ assert.match(css,/#section-level:not\(\[style\*="none"\]\) \.level-avatar\[data-frame="mythic"\]/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+});
+test('online people use linked Staff ID directory for equipped frame and title',()=>{
+ assert.match(online,/function onlineCosmetics\(staff\)/);
+ assert.match(online,/staff\.staffId\s*\?\s*window\.DolphinAvatars\?\.profile\?\./);
+ assert.match(online,/data-frame="'\+effect\.frame/);
+ assert.match(online,/sow-title/);
+ assert.match(online,/DolphinAvatars\?\.subscribe\?\.\(renderList\)/);
+});
+test('all ranking tabs and the Emperor read a shared equipped frame',()=>{
+ assert.match(ranking,/function equippedFrame\(person\)/);
+ assert.match(ranking,/icon\.dataset\.frame=equippedFrame\(profile\)/);
+ assert.match(ranking,/avatar\.dataset\.frame=equippedFrame\(p\)/);
+ assert.match(ranking,/dataset\.frame=equippedFrame\(champion\)/);
+ assert.match(rankingHTML,/function rankingAvatarFrame\(name\)/);
+ assert.match(rankingHTML,/class="drr-frame[^"\n]*" data-frame="\$\{rankingAvatarFrame\(e\.name\)\}"/);
+ assert.match(rankingHTML,/class="dolphin-staff-avatar" data-frame="\$\{rankingAvatarFrame\(e\.name\)\}"/);
+ assert.match(rankingHTML,/function rankingTitle\(name\)/);
+});
+test('both PWA cache and runtime resolve exactly the same V3 cosmetic asset',()=>{
+ assert.match(worker,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=legendary-v3-20261102/);
 });

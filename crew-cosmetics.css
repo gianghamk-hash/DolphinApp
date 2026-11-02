@@ -574,3 +574,40 @@
 
 /* New collectible name selector replaces the two legacy flame/gradient toggles. */
 #style-dialog label[for="staff-flame-check"],#style-dialog label[for="staff-gradient-check"]{display:none!important}
+
+/* Dolphin Crew Club V7: celestial Mythic frame + separately equipped Avatar Motion. */
+.crew-mythic-universe,.crew-mythic-universe>span,.crew-mythic-orbit .crew-mythic-crystal,.crew-avatar-motion{position:absolute;inset:0;pointer-events:none;border-radius:50%;transform-origin:center}
+.crew-mythic-universe{inset:-20%;isolation:isolate;filter:drop-shadow(0 0 9px #d09bff)}
+.crew-mythic-halo{inset:-22%!important;background:conic-gradient(from 30deg,#ffe19b66,#9b56ffcc,#42ecfbbb,#ffe49a99,#bf68ffcc,#ffe19b66);filter:blur(17px);animation:crew-mythic-rotate 13s linear infinite,crew-mythic-breathe 2.7s ease-in-out infinite alternate}
+.crew-mythic-ring-outer{inset:-10%!important;border:3px solid transparent;background:conic-gradient(#fff6b6,#a46aff,#76ecff,#fff4b1,#bf78ff,#fff6b6) border-box;mask:linear-gradient(#000 0 0) padding-box,linear-gradient(#000 0 0);mask-composite:exclude;box-shadow:0 0 12px #ad83ffdd,0 0 25px #ffd47a88;animation:crew-mythic-rotate 5s linear infinite}
+.crew-mythic-ring-inner{inset:5%!important;border:2px dashed #d0f4ff;box-shadow:0 0 13px #69e9ff, inset 0 0 14px #eaa2ff;animation:crew-mythic-counter 3.5s linear infinite}
+.crew-mythic-shimmer{inset:-8%!important;border:3px solid transparent;border-top-color:#fff7ce;border-bottom-color:#c184ff;filter:drop-shadow(0 0 6px #fff);animation:crew-mythic-counter 2.5s linear infinite}
+.crew-mythic-orbit{inset:-24%!important;animation:crew-mythic-rotate 5s linear infinite}
+.crew-mythic-orbit--2{inset:-35%!important;animation-duration:7s;animation-direction:reverse}
+.crew-mythic-orbit--3{inset:-44%!important;animation-duration:9s}
+.crew-mythic-orbit--4{inset:-50%!important;animation-duration:11s;animation-direction:reverse}
+.crew-mythic-crystal{inset:-7px auto auto 50%!important;width:14px;height:14px;border-radius:3px!important;transform:translateX(-50%) rotate(45deg);background:linear-gradient(135deg,#fff7c1,#60e7ff 55%,#d18aff);box-shadow:0 0 11px 4px #e2baff,0 0 23px #79eaff}
+.crew-mythic-orbit--3 .crew-mythic-crystal{width:8px;height:8px}
+.crew-mythic-orbit--4 .crew-mythic-crystal{width:10px;height:10px}
+.crew-mythic-particle{inset:50% auto auto 50%!important;width:4px;height:4px;background:#fff7d6;box-shadow:0 0 9px 3px #9ceaff;animation:crew-mythic-spark 2.3s ease-in-out infinite alternate}
+.crew-mythic-particle--1{--px:-70px;--py:-45px}.crew-mythic-particle--2{--px:60px;--py:-65px;animation-delay:-.3s}.crew-mythic-particle--3{--px:-55px;--py:70px;animation-delay:-.6s}.crew-mythic-particle--4{--px:80px;--py:34px;animation-delay:-.9s}.crew-mythic-particle--5{--px:0px;--py:-85px;animation-delay:-1.2s}.crew-mythic-particle--6{--px:-85px;--py:5px;animation-delay:-1.5s}.crew-mythic-particle--7{--px:19px;--py:88px;animation-delay:-1.8s}.crew-mythic-particle--8{--px:79px;--py:-25px;animation-delay:-2s}
+@keyframes crew-mythic-rotate{to{transform:rotate(360deg)}}@keyframes crew-mythic-counter{to{transform:rotate(-360deg)}}@keyframes crew-mythic-breathe{to{opacity:.75;filter:blur(21px)}}@keyframes crew-mythic-spark{from{transform:translate(calc(var(--px)*.7),calc(var(--py)*.7)) scale(.4);opacity:.2}to{transform:translate(var(--px),var(--py)) scale(1.7);opacity:1}}
+.crew-fx-choice[data-fx-kind="frame"][data-fx-id="mythic"][data-equipped="true"]{box-shadow:0 0 18px #e3b7ff,0 0 36px #8feaff99,inset 0 0 24px #dcb4ff44;border-color:#ffe6a9!important;animation:crew-mythic-breathe 2.6s ease-in-out infinite alternate}
+.crew-avatar-motion{z-index:2;inset:-7%;border:2px solid transparent}
+[data-avatar-motion="pulse"]>.crew-avatar-motion{border-color:#ffcae7;box-shadow:0 0 15px #ee86de;animation:crew-motion-pulse 2s ease-in-out infinite}
+[data-avatar-motion="float"]>.crew-avatar-motion{border-color:#b4efff;box-shadow:0 0 17px #8ee6fa;animation:crew-motion-float 2.7s ease-in-out infinite}
+[data-avatar-motion="wave"]>.crew-avatar-motion{border:3px dashed #7bdbff;box-shadow:0 0 17px #3beef0;animation:crew-mythic-rotate 4s linear infinite}
+[data-avatar-motion="orbit"]>.crew-avatar-motion{border:3px dotted #ffe8a3;box-shadow:0 0 15px #e5bd65,0 0 24px #8bdfff;animation:crew-mythic-counter 3s linear infinite}
+[data-avatar-motion="prism"]>.crew-avatar-motion{border:3px solid #fff;box-shadow:0 0 20px #a0caff;animation:crew-motion-prism 2.4s linear infinite}
+[data-avatar-motion="ascension"]>.crew-avatar-motion{inset:-14%;border:4px double #ffeec1;box-shadow:0 0 13px #fce794,0 0 26px #a879ff,0 0 42px #79eaff;animation:crew-mythic-rotate 3s linear infinite,crew-motion-pulse 1.5s ease-in-out infinite}
+.fx-motion-preview{position:relative;display:grid;place-items:center;isolation:isolate}
+.fx-motion-preview::after{content:"";position:absolute;inset:-18%;border:3px dotted #ffe9b7;border-radius:50%;box-shadow:0 0 15px #a7d8ff;animation:crew-mythic-rotate 3s linear infinite}
+.fx-motion-preview[data-avatar-motion="none"]::after{display:none}
+.fx-motion-preview[data-avatar-motion="pulse"]::after{animation:crew-motion-pulse 1.8s ease-in-out infinite;border-style:solid}
+.fx-motion-preview[data-avatar-motion="float"]::after{animation:crew-motion-float 2.5s ease-in-out infinite}
+.fx-motion-preview[data-avatar-motion="wave"]::after{border-color:#63eaff}
+.fx-motion-preview[data-avatar-motion="orbit"]::after{border-color:#f3d889}
+.fx-motion-preview[data-avatar-motion="prism"]::after{animation:crew-motion-prism 2s linear infinite}
+.fx-motion-preview[data-avatar-motion="ascension"]::after{border:4px double #ffe7a2;box-shadow:0 0 19px #b48dff,0 0 30px #8bf0ff}
+@keyframes crew-motion-pulse{50%{transform:scale(1.19);opacity:.65}}@keyframes crew-motion-float{50%{transform:translateY(-7px)}}@keyframes crew-motion-prism{0%{filter:hue-rotate(0)}100%{filter:hue-rotate(360deg)}}
+@media(prefers-reduced-motion:reduce){.crew-mythic-universe *, .crew-avatar-motion,.fx-motion-preview::after,.crew-fx-choice[data-fx-id="mythic"]{animation:none!important}}

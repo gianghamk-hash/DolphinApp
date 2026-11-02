@@ -224,13 +224,14 @@ test('Server rejects forged gradient and unknown cosmetic values at Level 1',asy
 });
 test('Public board publishes equipped titles and frames, excluding DOL-0001 tester',async()=>{
  const {api,data}=harness();
- data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Colleague',active:true,avatar:'🐯',xp:engine.xpForLevel(15),levelPeak:15,selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave'});
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Colleague',active:true,avatar:'🐯',xp:engine.xpForLevel(15),levelPeak:15,selectedFrame:'bronze',selectedTitle:'rookie',selectedBanner:'wave',personalTheme:'spring'});
  await api._rebuildPrestige();
  const board=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(board.leaderboard.length,1);assert.equal(board.leaderboard[0].employeeId,'DOL-0002');
  assert.equal(board.leaderboard[0].selectedFrame,'bronze');
  assert.equal(board.leaderboard[0].selectedTitle,'rookie');
  assert.equal(board.leaderboard[0].selectedBanner,'wave');
+  assert.equal(board.leaderboard[0].personalTheme,'spring','Landing receives the equipped public theme');
 });
 
 test('DOL-0001 can opt into and out of public ranking only when verified',async()=>{

@@ -119,7 +119,9 @@ async function check(force=false){
   const identity=force?await api.refresh():api.get();
   if(identity?.verified===true&&identity?.employeeId){unlock(identity);return;}
   lock(identity);
-  status(identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
+  status(identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
+   api.wasRejected?.()?'Hồ sơ trước đã bị từ chối. Hãy đăng ký lại để nhận Staff ID mới; hồ sơ cũ không còn quyền truy cập.':
+   'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
  }catch(e){lock(null);status('Không thể kết nối Firebase: '+(e.message||'Hãy thử lại.'),true);}
 }
 async function register(event){

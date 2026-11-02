@@ -6,13 +6,15 @@
 'use strict';
 const config={apiKey:'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ',authDomain:'dolphin-f6d67.firebaseapp.com',projectId:'dolphin-f6d67'};
 const profilePage=new URL('./dolphin-profile.html',document.currentScript?.src||location.href).href;
-let api=null, identity=null, uid='', initialized=false, connection=null;
+let api=null, identity=null, rejection=false, uid='', initialized=false, connection=null;
 const manager=()=>navigator.userAgent.includes('DolphinManager')||window.DOLPHIN_APP_TYPE==='manager';
 const htmlEscape=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function emit(){
  if(identity){
   if(window.applySyncedStaffProfile)window.applySyncedStaffProfile(identity);
   try{const value=JSON.stringify(identity);if(localStorage.getItem('dolphinStaffProfile')!==value)localStorage.setItem('dolphinStaffProfile',value);}catch(e){}
+ }else{
+  try{localStorage.removeItem('dolphinStaffProfile');}catch(_){}
  }
  window.dispatchEvent(new CustomEvent('dolphin-staff-id-changed',{detail:identity}));
 }
@@ -37,6 +39,7 @@ async function refresh(){
  if(!api)return null;
  try{
   const r=await api('staffGetIdentity')({});
+  rejection=r.data?.rejected===true;
   identity=r.data&&(r.data.linked||r.data.verified)?{...r.data,linked:true}:null;emit();return identity;
  }catch(e){console.warn('[StaffID] Backend chưa sẵn sàng:',e);return identity;}
 }
@@ -63,9 +66,9 @@ function render(){
 async function call(name,data){
  await connect();if(!api)throw Error('Chưa kết nối máy chủ. Vui lòng thử lại.');
  const result=await api(name)(data||{});
- if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration'].includes(name)){
+ if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration','staffRejectRegistration'].includes(name)){
   if(name==='staffClaimLinkCode')await refresh();
-  else{identity={...result.data,linked:true};emit();}
+  else{rejection=false;identity={...result.data,linked:true};emit();}
  }
  return result.data;
 }
@@ -111,12 +114,13 @@ async function retryXP(){
  }finally{retryingXP=false;}
 }
 
-window.DolphinStaffId={get:()=>identity,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
+window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
  update:data=>call('staffUpdateMyProfile',data),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
  listPending:()=>call('staffListPendingApprovals'),
  approveRegistration:employeeId=>call('staffApproveRegistration',{employeeId}),
+ rejectRegistration:employeeId=>call('staffRejectRegistration',{employeeId}),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},
  syncSavedActivity:syncXP,retrySavedXP:retryXP,
  recoverTodayXP:async()=>{await connect();if(!api)throw Error('Chưa kết nối Firebase XP');const result=await api('staffSyncMyRecentXP')({});return result.data;},

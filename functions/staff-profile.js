@@ -33,15 +33,32 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  const uid=uidOf(req),data=validate(req.data);await throttle(uid);
   if((avatarThreshold.get(data.avatar)||1)>1)throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');
  const db=getDatabase(),current=(await db.ref('staffIdentity/'+uid).once('value')).val();
- if(current?.employeeId)return response(await ownProfile(uid));
- // Stable per Firebase UID: retries/concurrent registrations cannot mint extra IDs.
- const employeeId='DOL-'+crypto.createHash('sha256').update(uid).digest('hex').slice(0,10).toUpperCase();
+ let rejectedId=null;
+ if(current?.employeeId){
+  const prior=(await db.ref('staffRegistry/'+current.employeeId).once('value')).val();
+  if(prior?.active)return response(await ownProfile(uid));
+  // Only a specifically rejected, self-registered application may be replaced.
+  // Other inactive accounts cannot bypass their deactivation by re-registering.
+  if(!prior||prior.registrationSource!=='self'||prior.rejected!==true)
+   throw new HttpsError('permission-denied','Hồ sơ đã ngừng hoạt động. Vui lòng liên hệ quản lý.');
+  rejectedId=current.employeeId;
+ }
+ // Every rejection creates a different stable Staff ID, even on the same
+ // Firebase anonymous UID. Deterministic retries never create extra profiles.
+ const seed=rejectedId?uid+':reregister:'+rejectedId:uid;
+ const employeeId='DOL-'+crypto.createHash('sha256').update(seed).digest('hex').slice(0,10).toUpperCase();
  const ref=db.ref('staffRegistry/'+employeeId);
  const result=await ref.transaction(v=>v?(v.ownerUid===uid?v:undefined):{employeeId,...data,active:true,registrationSource:'self',approved:false,ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()});
  if(!result.committed)throw new HttpsError('already-exists','Không cấp được ID. Vui lòng liên hệ quản lý.');
  const profile=result.snapshot.val();
  if(!profile.active)throw new HttpsError('permission-denied','Hồ sơ đã ngừng hoạt động.');
- const linked=await db.ref('staffIdentity/'+uid).transaction(v=>v?.employeeId?(v.employeeId===employeeId?v:undefined):{employeeId,name:profile.name,verified:false,updatedAt:Date.now()});
+ const linked=await db.ref('staffIdentity/'+uid).transaction(v=>{
+  // RTDB may first invoke a transaction with null cache. Do not silently
+  // unlink another Staff ID or resurrect a rejected identity.
+  if(v===null&&current?.employeeId)return null;
+  if((v?.employeeId||'')!==(rejectedId||''))return;
+  return {employeeId,name:profile.name,verified:false,updatedAt:Date.now()};
+ },undefined,false);
  if(!linked.committed)throw new HttpsError('failed-precondition','Thiết bị vừa liên kết hồ sơ khác. Hãy tải lại.');
  // Queue a private notification; FCM delivery is best effort, registration
  // is never rolled back if no manager device opted in to push.
@@ -129,4 +146,27 @@ exports.staffApproveRegistration=onCall(opts,async req=>{
    {...v,verified:true,updatedAt:Date.now()}:undefined,undefined,false);
  }));
  return {employeeId,approved:true};
+});
+
+/* Manager rejection revokes the pending profile server-side, including ALL
+ * linked devices. Retain the rejected record for an audit trail. The former
+ * Staff ID never becomes active again; re-registration issues a new ID. */
+exports.staffRejectRegistration=onCall(opts,async req=>{
+ await requireAccessManager(req);
+ const employeeId=String(req.data?.employeeId||'').trim().toUpperCase();
+ if(!/^DOL-[A-F0-9]{10}$/.test(employeeId))
+  throw new HttpsError('invalid-argument','Staff ID chờ duyệt không hợp lệ.');
+ const db=getDatabase(),ref=db.ref('staffRegistry/'+employeeId);
+ const result=await ref.transaction(v=>{
+  if(v===null)return null; // cold-instance retry against server snapshot
+  if(!v.active||v.registrationSource!=='self'||v.approved===true||v.rejected===true)return;
+  return {...v,active:false,approved:false,rejected:true,rejectedAt:Date.now(),
+   rejectedBy:'DOL-0001',updatedAt:Date.now()};
+ },undefined,false);
+ if(!result.committed||result.snapshot.val()?.rejected!==true)
+  throw new HttpsError('failed-precondition','Chỉ được từ chối hồ sơ tự đăng ký đang chờ duyệt.');
+ // staffGetIdentity and every protected callable check active=false. Preserve
+ // existing linked identities so each device can create a NEW registration.
+ // No order history, Staff ID event log or active staff record is deleted.
+ return {employeeId,rejected:true,canRegisterAgain:true};
 });

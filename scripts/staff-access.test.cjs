@@ -13,8 +13,8 @@ const identity=read('functions/index.js');
 const nav=read('dolphin-navigation.js');
 test('home access is closed by default and linked verification is checked on startup',()=>{
  assert.match(home,/document\.documentElement\.classList\.add\('dolphin-access-pending'\)/);
- assert.match(home,/staff-access\.js\?v=approval-20261102/);
- assert.match(home,/staff-access\.css\?v=approval-20261102/);
+ assert.match(home,/staff-access\.js\?v=approval-reject-v2/);
+ assert.match(home,/staff-access\.css\?v=approval-reject-v2/);
  assert.match(gate,/identity\?\.verified===true&&identity\?\.employeeId/);
  assert.match(gate,/await api\.ready\(\)/);
  assert.match(css,/html\.dolphin-access-pending #landing/);
@@ -44,7 +44,7 @@ test('manager DOL-0001 approval uses trusted server-side identity',()=>{
  assert.match(identity,/profile\.approved===true/);
 });
 test('direct staff-entry navigation and linked devices cannot bypass approval',()=>{
- assert.match(nav,/staff-access\.js\?v=approval-20261102/);
+ assert.match(nav,/staff-access\.js\?v=approval-reject-v2/);
  assert.match(gate,/root\.parent!==root/);
  assert.match(gate,/panel\('pending'\)/);
  assert.match(gate,/api\.link\(\$\('dag-code'\)\.value\.trim\(\)/);

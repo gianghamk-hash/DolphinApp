@@ -245,6 +245,11 @@ exports.staffIssueLinkCode=onCall(opts,async req=>{
 exports.staffClaimLinkCode=onCall(opts,async req=>{
  const uid=requireUid(req);
  const current=(await getDatabase().ref('staffIdentity/'+uid).once('value')).val();
+ if(current?.employeeId){
+  const oldProfile=(await staffRoot().child(current.employeeId).once('value')).val();
+  if(oldProfile?.rejected===true)
+   throw new HttpsError('permission-denied','Đăng ký cũ đã bị từ chối. Hãy đăng ký mới trước khi liên kết thiết bị.');
+ }
  if(current&&current.employeeId&&req.data?.replaceCurrent!==true)throw new HttpsError('failed-precondition','Thiết bị đã có hồ sơ. Hãy xác nhận chuyển hồ sơ trước khi nhập mã.');
  if(req.data?.replaceCurrent===true&&String(req.data.expectedEmployeeId||'')!==(current?.employeeId||''))
   throw new HttpsError('failed-precondition','Hồ sơ trên thiết bị vừa thay đổi. Hãy tải lại và xác nhận.');
@@ -278,7 +283,10 @@ exports.staffGetIdentity=onCall(opts,async req=>{
  const snap=await getDatabase().ref('staffIdentity/'+uid).once('value'),v=snap.val();
  if(!v||!v.employeeId)return {verified:false};
  const profile=(await staffRoot().child(v.employeeId).once('value')).val();
- if(!profile||!profile.active)return {verified:false};
+ if(!profile||!profile.active)return {
+  verified:false,linked:false,rejected:profile?.registrationSource==='self'&&profile?.rejected===true,
+  canRegisterAgain:profile?.registrationSource==='self'&&profile?.rejected===true
+ };
  return {verified:(v.verified===true||profile.approved===true)&&(profile.registrationSource!=='self'||profile.approved===true),approved:profile.registrationSource!=='self'||profile.approved===true,linked:true,employeeId:profile.employeeId,name:profile.name,
   avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,
   registrationSource:profile.registrationSource||'manager'};

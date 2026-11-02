@@ -1,22 +1,110 @@
 {
-  "version": "1.1.47",
-  "previousVersion": "1.1.46",
-  "commit": "634a3dd",
-  "previousCommit": "1567198",
-  "buildDate": "2026-11-02T12:54:23.044Z",
-  "summary": "test(crew): validate four celestial Mythic orbit animations in browser",
+  "version": "1.1.48",
+  "previousVersion": "1.1.47",
+  "commit": "c157cd4",
+  "previousCommit": "634a3dd",
+  "buildDate": "2026-11-02T13:23:42.432Z",
+  "summary": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
   "changes": {
-    "totalCommits": 271,
-    "filesChanged": 1,
+    "totalCommits": 272,
+    "filesChanged": 23,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "test(crew): validate four celestial Mythic orbit animations in browser"
+    "feat(crew): six daily missions, midnight reset and escalating check-in streak"
   ],
   "fileChanges": [
     {
-      "file": "scripts/avatar-sync-browser.cjs",
+      "file": ".github/workflows/staff-prestige-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-profile-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-style-unlock-production.yml",
+      "type": "update"
+    },
+    {
+      "file": "docs/DOLPHIN_CREW_CLUB_RULES.md",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-lounge.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-core.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-core.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-daily-missions-ui.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-profile.css",
       "type": "update"
     }
   ]

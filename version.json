@@ -1,7 +1,7 @@
 {
-  "version": "1.1.47",
-  "buildDate": "2026-11-02T12:54:23.044Z",
-  "commit": "634a3dd",
-  "notes": "test(crew): validate four celestial Mythic orbit animations in browser",
+  "version": "1.1.48",
+  "buildDate": "2026-11-02T13:23:42.432Z",
+  "commit": "c157cd4",
+  "notes": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
   "forceUpdate": false
 }

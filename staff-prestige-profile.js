@@ -238,16 +238,16 @@ function renderDailyMissions(){
  if(!daily||!Array.isArray(daily.tasks)){
   const empty=dailyElement('p',mine?'Máy chủ đang cập nhật nhiệm vụ hằng ngày. Vui lòng thử lại.':'Đăng ký và xác minh Staff ID để nhận nhiệm vụ.','hint');
   list.append(empty);
-  $('staff-daily-counter').textContent='0/6';
+  $('staff-daily-counter').textContent='0/8';
   $('staff-daily-track').setAttribute('aria-valuenow','0');
   $('staff-daily-fill').style.width='0%';
   $('staff-daily-streak').textContent='🔥 Chuỗi điểm danh: —';
   $('staff-daily-earned').textContent='⭐ +0 XP hôm nay';
   return;
  }
- const count=Math.max(0,Math.min(daily.total||6,Number(daily.completedCount)||0));
- $('staff-daily-counter').textContent=count+'/'+(daily.total||6);
- $('staff-daily-fill').style.width=(100*count/(daily.total||6))+'%';
+ const count=Math.max(0,Math.min(daily.total||8,Number(daily.completedCount)||0));
+ $('staff-daily-counter').textContent=count+'/'+(daily.total||8);
+ $('staff-daily-fill').style.width=(100*count/(daily.total||8))+'%';
  $('staff-daily-track').setAttribute('aria-valuenow',String(count));
  $('staff-daily-streak').textContent='🔥 Chuỗi: '+daily.streak+' ngày · Kỷ lục '+daily.bestStreak;
  $('staff-daily-earned').textContent='⭐ +'+fmt(daily.todayXP)+' XP hôm nay';

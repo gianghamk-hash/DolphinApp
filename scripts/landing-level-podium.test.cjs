@@ -52,3 +52,17 @@ test('Level uses its own authoritative Firebase leaderboard; Revenue/Work relay 
  assert.match(landing,/frame\.src='ranking\/'/);
  assert.doesNotMatch(landing,/getFirestore|onSnapshot\(/);
 });
+
+test('Manager APK Landing has no inserted daily overview or redundant staff-online dashboard listener',()=>{
+ const ui=get('dolphin-ui.js'),manager=get('manager/dashboard.html');
+ assert.doesNotMatch(ui,/function ensureDashEl|function injectDashboardStyles|function renderDashboard|function listenStaff|dashStats/);
+ assert.doesNotMatch(ui,/TỔNG QUAN HÔM NAY|mgrGrid|mgrTime/);
+ assert.match(ui,/function hideManagerWidgets\(/);
+ assert.match(ui,/function listenOrders\(/);
+ assert.match(ui,/function updateDelayAlert\(/);
+ assert.match(ui,/document\.getElementById\('mgrDash'\)\?\.remove\(\)/);
+ assert.match(index,/html\[data-app="manager"\] #mgrDash/);
+ assert.match(index,/dolphin-ui\.js\?v=manager-summary-removed-v3/);
+ assert.match(index,/manager\/dashboard\.html/);
+ assert.match(manager,/Manager Dashboard/);
+});

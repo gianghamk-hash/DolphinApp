@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.36",
+      "releaseDate": "2026-11-01T16:05:57.408Z",
+      "summary": "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone",
+      "details": [
+        "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone"
+      ]
+    },
+    {
       "version": "1.1.35",
       "releaseDate": "2026-11-01T15:25:09.557Z",
       "summary": "feat(profile): add DOL-0001 personal XP testing controls",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029",
       "details": [
         "Merge pull request #148 from gianghamk-hash/fix/tft-apk-65-35-layout-20261029"
-      ]
-    },
-    {
-      "version": "1.0.206",
-      "releaseDate": "2026-10-29T14:25:16.480Z",
-      "summary": "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029",
-      "details": [
-        "Merge pull request #147 from gianghamk-hash/fix/tft-android-balanced-hud-20261029"
       ]
     }
   ]

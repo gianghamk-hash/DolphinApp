@@ -1,7 +1,7 @@
 {
-  "version": "1.1.36",
-  "buildDate": "2026-11-01T16:05:57.408Z",
-  "commit": "1b3a1b1",
-  "notes": "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone",
+  "version": "1.1.37",
+  "buildDate": "2026-11-02T00:19:01.389Z",
+  "commit": "98eea92",
+  "notes": "feat(crew-club): epic name glow and avatar frame tiers",
   "forceUpdate": false
 }

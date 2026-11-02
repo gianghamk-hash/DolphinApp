@@ -266,7 +266,7 @@ test('new FX choices unlock cumulatively, prior lower-level choices remain selec
 test('personal progress exposes daily mission status without including it in public leaderboards',async()=>{
  const {api}=harness();
  const mine=await api.staffGetMyProgress(req('lanDevice'));
- assert.equal(mine.dailyMissions.total,6);
+ assert.equal(mine.dailyMissions.total,8);
  assert.equal(mine.dailyMissions.completedCount,0);
  const publicBoard=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(JSON.stringify(publicBoard).includes('dailyMissions'),false);
@@ -282,13 +282,13 @@ test('staffGetMyProgress backfills a verified same-day legacy check-in exactly o
   completed:{checkin:{xp:20,at:checkedAt,receipt:'legacy-checkin-1'}}
  }});
  const first=await api.staffGetMyProgress(req('lanDevice'));
- assert.equal(first.xp,200);
- assert.equal(first.dailyMissions.todayXP,200);
- assert.equal(first.dailyMissions.tasks[0].xp,200);
- assert.equal(first.dailyMissions.checkinTopUpXP,180);
+ assert.equal(first.xp,2000);
+ assert.equal(first.dailyMissions.todayXP,2000);
+ assert.equal(first.dailyMissions.tasks[0].xp,2000);
+ assert.equal(first.dailyMissions.checkinTopUpXP,1980);
  assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
  const second=await api.staffGetMyProgress(req('lanDevice'));
- assert.equal(second.xp,200);
+ assert.equal(second.xp,2000);
  assert.equal(second.dailyMissions.checkinTopUpXP,undefined);
  assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
 });

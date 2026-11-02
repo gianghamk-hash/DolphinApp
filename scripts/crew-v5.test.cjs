@@ -10,7 +10,8 @@ test('XP curve is 30% lower than preceding 3500 coefficient, all ranks remain de
 test('V5 cosmetics preserve old unlock stages while adding new milestone levels',()=>{
  for(const kind of ['aura','trail','cardFx']){
   const stages=Object.values(engine.COSMETIC_CHOICES[kind]).filter(x=>x>1);
-  for(const stage of [3,25,60,6,36,52])assert.ok(stages.includes(stage),kind+' missing Lv.'+stage);
+  const newTiers={aura:[6,36,52],trail:[12,36,55],cardFx:[12,36,52]};
+   for(const stage of [3,25,60,...newTiers[kind]])assert.ok(stages.includes(stage),kind+' missing Lv.'+stage);
  }
  const profile=read('staff-prestige-profile.js');
  assert.match(profile,/staff-aura-select/);

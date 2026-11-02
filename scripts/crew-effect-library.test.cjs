@@ -9,7 +9,7 @@ test('every cosmetic is organized into a visual gallery without visible dropdown
  for(const category of ['nameFx','trail','frame','aura','title','banner','cardFx']){
   assert.match(html,new RegExp('data-crew-gallery="'+category+'"'));
   assert.match(html,new RegExp('id="staff-'+category+'-select"'));
-  assert.match(js,new RegExp('staff-\\'\\+kind\\+\\'-select'));
+  assert.ok(js.includes("'staff-'+kind+'-select'"),'view should use the same selection state');
  }
  assert.match(html,/id="staff-cosmetic-values" hidden aria-hidden="true"/);
  assert.match(html,/id="staff-save-style"/);

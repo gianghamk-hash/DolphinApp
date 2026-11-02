@@ -8,6 +8,10 @@ const champion={
  selectedTrail:'nova',selectedNameFx:'celestial',selectedTitle:'legend',
  selectedBanner:'mythic',selectedCardFx:'mythic',personalTheme:'winter'
 };
+const directoryProfiles=[
+ {employeeId:'DOL-0042',name:'Chiến',avatar:'🦊',selectedFrame:'mythic',selectedAvatarMotion:'ascension',selectedAura:'celestial',selectedTrail:'nova',selectedNameFx:'prism',selectedTitle:'legend',selectedBanner:'mythic',selectedCardFx:'mythic',personalTheme:'winter'},
+ {employeeId:'DOL-0088',name:'Louis Đặng',avatar:'🐉',selectedFrame:'gold',selectedAvatarMotion:'float',selectedAura:'spark',selectedTrail:'wave',selectedNameFx:'ember',selectedTitle:'wave',selectedBanner:'gold',selectedCardFx:'energy',personalTheme:'autumn'}
+];
 const rankingPage='<!doctype html><html><body>'+
  '<span id="leader-emperor-avatar"></span><span id="leader-emperor-name"></span><span id="leader-emperor-value"></span>'+
  '<script>window.fixtureBoard={leaderboard:'+JSON.stringify([champion,{...champion,employeeId:'DOL-0100',name:'Second place',xp:100000}])+',champion:null};'+
@@ -16,7 +20,8 @@ const rankingPage='<!doctype html><html><body>'+
  '<script src="/ranking/staff-prestige-ranking.js" defer></script></body></html>';
 const landingPage='<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1">'+
  '<script>window.fixtureBoard={leaderboard:'+JSON.stringify([champion,{...champion,employeeId:'DOL-0100',name:'Second place',xp:100000}])+',champion:null};'+
- 'window.DolphinPrestige={getBoard:()=>window.fixtureBoard};</script>'+
+ 'window.DolphinPrestige={getBoard:()=>window.fixtureBoard};'+
+ 'window.DolphinStaffId={ready:()=>Promise.resolve(),get:()=>null,avatarDirectory:async()=>({profiles:'+JSON.stringify(directoryProfiles)+'})};</script>'+
  '<script src="/royal-leaders.js" defer></script><script src="/dolphin-avatars.js" defer></script></head>'+
  '<body style="background:#071d1b;color:#fff;margin:0"><div id="landing" style="width:100%;max-width:1100px;margin:auto">'+
  '<div id="announcementBar">Thông báo</div></div></body></html>';
@@ -127,6 +132,45 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
   },location.origin));
   await page.waitForFunction(()=>document.querySelector('#drl-revenue .drl-name')?.textContent==='Chiến'&&document.querySelector('#drl-work .drl-name')?.textContent==='Louis Đặng');
   assert.equal(await page.locator('#drl-level-name').textContent(),'New leader','Revenue/Work updates must not overwrite Level');
+
+  await page.waitForFunction(()=>{
+   const revenue=document.getElementById('drl-revenue-avatar'),work=document.getElementById('drl-work-avatar');
+   return revenue?.dataset.frame==='mythic'&&work?.dataset.frame==='gold'&&
+    revenue.querySelectorAll('.crew-mythic-orbit').length===4&&work.querySelectorAll('.crew-fx-ring').length===3;
+  });
+  const styled=await page.evaluate(()=>{
+   const inspect=kind=>{
+    const $=id=>document.getElementById('drl-'+kind+'-'+id),a=$('avatar'),n=$('name'),surface=$('surface');
+    return {name:n.textContent,avatar:$('glyph').textContent,frame:a.dataset.frame,
+     motion:a.dataset.avatarMotion,aura:a.dataset.crewAura,trail:$('name-wrap').dataset.crewTrail,
+     nameFx:n.dataset.nameFx,banner:surface.dataset.banner,cardFx:surface.dataset.crewCard,
+     theme:surface.dataset.personalTheme,title:$('title').textContent,score:$('score').textContent,
+     orbits:a.querySelectorAll('.crew-mythic-orbit').length,rings:a.querySelectorAll('.crew-fx-ring').length};
+   };
+   return {revenue:inspect('revenue'),work:inspect('work'),crowns:document.querySelectorAll('.drl-crown,.drl-level-crown').length};
+  });
+  assert.equal(styled.crowns,0,'no default crowns on any of the three Top 1 cards');
+  assert.deepEqual([styled.revenue.name,styled.revenue.avatar,styled.revenue.frame,styled.revenue.motion,
+    styled.revenue.aura,styled.revenue.trail,styled.revenue.nameFx,styled.revenue.banner,
+    styled.revenue.cardFx,styled.revenue.theme,styled.revenue.orbits],
+    ['Chiến','🦊','mythic','ascension','celestial','nova','prism','mythic','mythic','winter',4]);
+  assert.deepEqual([styled.work.name,styled.work.avatar,styled.work.frame,styled.work.motion,
+    styled.work.aura,styled.work.trail,styled.work.nameFx,styled.work.banner,
+    styled.work.cardFx,styled.work.theme,styled.work.rings],
+    ['Louis Đặng','🐉','gold','float','spark','wave','ember','gold','energy','autumn',3]);
+  assert.equal(styled.revenue.title,'👑 Dolphin Legend');
+  assert.equal(styled.work.title,'🌊 Wave Rider');
+  assert.equal(styled.revenue.score,'4.000.000 đ');
+  assert.equal(styled.work.score,'3 điểm');
+  console.log('PASS: both operational winners show complete equipped Staff ID appearance without preset flames or crowns.');
+  await page.evaluate(()=>{
+    window.DolphinAvatars.setOwn({employeeId:'DOL-0099',name:'Chiến',avatar:'🐻',selectedFrame:'silver'});
+  });
+  await page.waitForFunction(()=>document.getElementById('drl-revenue-avatar')?.dataset.frame==='none');
+  assert.equal(await page.locator('#drl-revenue-avatar .crew-mythic-orbit').count(),0);
+  assert.equal(await page.locator('#drl-revenue-name').textContent(),'Chiến');
+  console.log('PASS: duplicate names cannot accidentally receive a different employee\'s premium cosmetics.');
+
   await page.evaluate(()=>{
    window.fixtureBoard={leaderboard:[]};
    window.dispatchEvent(new CustomEvent('dolphin-prestige-updated',{detail:window.fixtureBoard}));
@@ -134,6 +178,20 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
   await page.waitForFunction(()=>document.getElementById('drl-level')?.dataset.status==='empty');
   assert.equal(await page.locator('#drl-level-avatar .crew-fx-orbits').count(),0);
   assert.equal(await page.locator('#drl-level-avatar .crew-avatar-motion').count(),0);
+
+  // Simulate the Manager APK user agent with the real Landing UI enhancer.
+  await page.evaluate(async()=>{
+   Object.defineProperty(navigator,'userAgent',{configurable:true,get:()=> 'DolphinManager Test'});
+   await new Promise((resolve,reject)=>{
+    const script=document.createElement('script');script.src='/dolphin-ui.js';
+    script.onload=resolve;script.onerror=reject;document.body.appendChild(script);
+   });
+  });
+  await page.waitForFunction(()=>!!document.getElementById('daAlert'));
+  assert.equal(await page.locator('#mgrDash').count(),0);
+  assert.equal(await page.locator('#daAlert').count(),1);
+  console.log('PASS: Manager APK Landing does not inject daily summary and still has delayed-order alerts.');
+
   assert.equal(errors.length,0,'browser runtime errors: '+errors.join('; '));
   console.log('PASS: no leader state clears chosen effects, frame remains stable.');
  }finally{await browser.close();}

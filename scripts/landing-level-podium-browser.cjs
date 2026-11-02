@@ -88,7 +88,7 @@ const landingPage='<!doctype html><html><head><meta name="viewport" content="wid
   assert(mobile.revenue.x<mobile.level.x&&mobile.level.x<mobile.work.x,'Level is between Revenue and Work, not above them in a separate row');
   assert(Math.abs(mobile.level.width-mobile.revenue.width)<=8,'Level and Revenue widths must match');
   assert(Math.abs(mobile.level.width-mobile.work.width)<=8,'Level and Work widths must match');
-  assert(mobile.level.height<=Math.max(mobile.revenue.height,mobile.work.height)+55,'Level must not dominate vertical space');
+  assert(mobile.level.height<=Math.max(mobile.revenue.height,mobile.work.height)+32,'Level must not dominate vertical space: '+JSON.stringify(mobile));
   assert(mobile.width<=361,'no horizontal landing overflow on mobile');
   console.log('PASS: 360px mobile compact three-column podium with transparent Level cosmetics.');
   // Any other window attempting to post a forged champion must be rejected.

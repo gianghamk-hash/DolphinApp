@@ -102,16 +102,16 @@ css.textContent=`
 @media(max-width:700px){
  #dolphin-royal-leaders{grid-template-columns:repeat(3,minmax(0,1fr));grid-template-areas:"revenue level work";gap:5px;margin:10px auto 13px}
  #drl-level{width:100%;justify-self:stretch;transform:translateY(-9px);padding:5px 1px}
- #drl-level .drl-level-surface{padding:8px 3px 9px;border-radius:15px}
+ #drl-level .drl-level-surface{height:154px;min-height:0;max-height:154px;box-sizing:border-box;padding:5px 3px;border-radius:15px;display:flex;flex-direction:column;align-items:center;justify-content:center}
  #drl-level .drl-level-eyebrow{font-size:9px;letter-spacing:0}
  #drl-level .drl-level-crown{font-size:19px}
- #drl-level .drl-level-avatar-stage{min-height:55px;margin:4px auto 2px}
- #drl-level .drl-level-avatar.hero-avatar{width:45px;height:45px;border-radius:13px;font-size:26px}
+ #drl-level .drl-level-avatar-stage{min-height:49px;margin:2px auto 1px}
+ #drl-level .drl-level-avatar.hero-avatar{width:42px;height:42px;border-radius:13px;font-size:25px}
  #drl-level .drl-name{font-size:12px;line-height:1.22}
- #drl-level .drl-level-title{font-size:8px}
- #drl-level .drl-level-score{font-size:9px}
+ #drl-level .drl-level-title{font-size:8px;margin-top:1px}
+ #drl-level .drl-level-score{font-size:9px;margin-top:2px}
  #drl-level .drl-level-theme{display:none}
- #drl-revenue,#drl-work{margin-top:0;padding:11px 4px}
+ #drl-revenue,#drl-work{margin-top:0;padding:11px 4px;min-height:164px;box-sizing:border-box}
  #drl-revenue .drl-name,#drl-work .drl-name{font-size:13px}
  #drl-revenue .drl-crown,#drl-work .drl-crown{font-size:25px}
  #drl-revenue .drl-tag,#drl-work .drl-tag{font-size:9px}

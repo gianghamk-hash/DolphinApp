@@ -253,3 +253,80 @@ test('Manager ID DOL-0001 cannot be spoofed by registration or unverified identi
  state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Head Manager',active:true});
  await rejects(()=>api.staffListPendingApprovals(req('attacker')),'permission-denied');
 });
+
+
+test('manager can reject a pending employee, revoke every linked device, then issue a fresh Staff ID',async()=>{
+ const {api,state}=harness('manager',{cold:true});
+ const first=await api.staffRegisterSelfProfile(req('worker',{name:'Initial Name',avatar:'🐬'}));
+ state.delete('staffProfileRate/worker');
+ const code=await api.staffIssueOwnLinkCode(req('worker'));
+ const link=await api.staffClaimLinkCode(req('second-device',{code:code.code}));
+ assert.equal(link.employeeId,first.employeeId);
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner',active:true,registrationSource:'manager'});
+ state.set('staffIdentity/manager-device',{employeeId:'DOL-0001',name:'Owner',verified:true});
+ assert.equal((await api.staffListPendingApprovals(req('manager-device'))).profiles.length,1);
+ const result=await api.staffRejectRegistration(req('manager-device',{employeeId:first.employeeId}));
+ assert.equal(result.rejected,true);assert.equal(result.canRegisterAgain,true);
+ const prior=state.get('staffRegistry/'+first.employeeId);
+ assert.equal(prior.active,false);assert.equal(prior.rejected,true);
+ assert.equal(prior.rejectedBy,'DOL-0001');
+ assert.equal((await api.staffListPendingApprovals(req('manager-device'))).profiles.length,0);
+ for(const linked of ['worker','second-device']){
+  const identity=await api.staffGetIdentity(req(linked));
+  assert.equal(identity.verified,false);assert.equal(identity.rejected,true);
+ }
+ await rejects(()=>api.staffUpdateMyProfile(req('worker',{avatar:'🐠'})),'permission-denied');
+ await rejects(()=>api.staffIssueOwnLinkCode(req('worker')),'permission-denied');
+ state.delete('staffProfileRate/worker');
+ const next=await api.staffRegisterSelfProfile(req('worker',{name:'Corrected Name',avatar:'🐯'}));
+ assert.notEqual(next.employeeId,first.employeeId);
+ assert.match(next.employeeId,/^DOL-[A-F0-9]{10}$/);
+ assert.equal(next.verified,false);
+ assert.equal((await api.staffGetIdentity(req('worker'))).employeeId,next.employeeId);
+ assert.equal(state.get('staffRegistry/'+first.employeeId).active,false);
+ assert.equal(state.get('staffRegistry/'+next.employeeId).name,'Corrected Name');
+ state.delete('staffProfileRate/worker');
+ const repeated=await api.staffRegisterSelfProfile(req('worker',{name:'Another Name',avatar:'🐬'}));
+ assert.equal(repeated.employeeId,next.employeeId);
+ assert.equal(repeated.name,'Corrected Name');
+ assert.equal((await api.staffListPendingApprovals(req('manager-device'))).profiles.length,1);
+});
+test('a rejected linked device cannot enter and must register a new independent application',async()=>{
+ const {api,state}=harness();
+ const user=await api.staffRegisterSelfProfile(req('first',{name:'Crew One'}));
+ state.delete('staffProfileRate/first');
+ const code=await api.staffIssueOwnLinkCode(req('first'));
+ await api.staffClaimLinkCode(req('second',{code:code.code}));
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner',active:true});
+ state.set('staffIdentity/owner',{employeeId:'DOL-0001',verified:true});
+ await api.staffRejectRegistration(req('owner',{employeeId:user.employeeId}));
+ const second=await api.staffRegisterSelfProfile(req('second',{name:'Crew Two'}));
+ assert.notEqual(second.employeeId,user.employeeId);
+ assert.equal((await api.staffGetIdentity(req('second'))).verified,false);
+ assert.equal((await api.staffGetIdentity(req('first'))).rejected,true);
+});
+test('rejection rejects unauthorized callers, forged ID and already approved applicants',async()=>{
+ const {api,state}=harness();
+ const crew=await api.staffRegisterSelfProfile(req('crew',{name:'Valid Crew'}));
+ await rejects(()=>api.staffRejectRegistration(req(null,{employeeId:crew.employeeId})),'unauthenticated');
+ await rejects(()=>api.staffRejectRegistration(req('crew',{employeeId:crew.employeeId})),'permission-denied');
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner',active:true,registrationSource:'manager'});
+ state.set('staffIdentity/owner',{employeeId:'DOL-0001',verified:true});
+ await rejects(()=>api.staffRejectRegistration(req('owner',{employeeId:'DOL-0001'})),'invalid-argument');
+ await rejects(()=>api.staffRejectRegistration(req('owner',{employeeId:'../../escape'})),'invalid-argument');
+ await api.staffApproveRegistration(req('owner',{employeeId:crew.employeeId}));
+ await rejects(()=>api.staffRejectRegistration(req('owner',{employeeId:crew.employeeId})),'failed-precondition');
+ assert.equal((await api.staffGetIdentity(req('crew'))).verified,true);
+});
+test('rejected applications cannot be reactivated by approve or old link codes',async()=>{
+ const {api,state}=harness();
+ const crew=await api.staffRegisterSelfProfile(req('crew',{name:'Crew'}));
+ state.delete('staffProfileRate/crew');
+ const code=await api.staffIssueOwnLinkCode(req('crew'));
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner',active:true});
+ state.set('staffIdentity/owner',{employeeId:'DOL-0001',verified:true});
+ await api.staffRejectRegistration(req('owner',{employeeId:crew.employeeId}));
+ await rejects(()=>api.staffApproveRegistration(req('owner',{employeeId:crew.employeeId})),'failed-precondition');
+ await rejects(()=>api.staffClaimLinkCode(req('new-phone',{code:code.code})),'failed-precondition');
+ await rejects(()=>api.staffRejectRegistration(req('owner',{employeeId:crew.employeeId})),'failed-precondition');
+});

@@ -497,3 +497,80 @@
 .row{overflow:visible}
 .row .drr-frame,.row .dolphin-staff-avatar{margin:15px 20px 15px 12px}
 .leader-tile{padding-top:23px;min-height:134px}
+
+
+/* CREW CLUB V5 — independently equipped collectible cosmetics. */
+[data-crew-aura]:not([data-crew-aura="none"]){isolation:isolate;overflow:visible!important}
+[data-crew-aura="spark"]{filter:drop-shadow(0 0 9px #f3d879)}
+[data-crew-aura="dual"]{filter:drop-shadow(0 0 12px #79d7ff) drop-shadow(0 0 7px #c2a6ff)}
+[data-crew-aura="celestial"]{filter:drop-shadow(0 0 14px #b6efff) drop-shadow(0 0 19px #c08bff)}
+[data-crew-trail="wave"]{text-shadow:0 0 7px #bfefff!important}
+[data-crew-trail="comet"]{text-shadow:0 0 10px #a4eaff,0 0 19px #f0b5ff!important}
+[data-crew-trail="nova"]{text-shadow:0 0 12px #fff,0 0 25px #79e5ff,0 0 40px #ffc781!important}
+[data-crew-card="soft"]{box-shadow:inset 0 0 0 2px #b8f7f666,0 0 22px #8cdeff66!important}
+[data-crew-card="energy"]{border:2px solid #8deafc!important;box-shadow:inset 0 0 22px #3e9af766,0 0 24px #80dcff99!important}
+[data-crew-card="mythic"]{
+ border:3px solid #efd4ff!important;
+ box-shadow:inset 0 0 25px #a485efaa,0 0 26px #b879ffdd,0 0 45px #83dfff88!important;
+}
+@keyframes crew-v5-sweep{to{background-position:220% 0}}
+@keyframes crew-v5-cosmos{50%{filter:drop-shadow(0 0 18px #fff) drop-shadow(0 0 32px #af7aff);transform:scale(1.035)}}
+@media(prefers-reduced-motion:no-preference){
+ [data-crew-trail="wave"]{animation:crew-v5-sweep 4s linear infinite}
+ [data-crew-card="energy"]{animation:crew-v5-sweep 6s linear infinite}
+ [data-frame="mythic"].hero-avatar,
+ [data-frame="mythic"].fx-frame-preview,
+ #leader-emperor-avatar[data-frame="mythic"]{animation:crew-v5-cosmos 3.5s ease-in-out infinite!important}
+}
+:is(.hero-avatar,.level-avatar,.leader-tile-icon,.dolphin-staff-avatar,.drr-frame,.sow-avatar,.fx-frame-preview)[data-frame="mythic"]{
+ box-shadow:inset 0 0 0 2px #fff7ff,0 0 0 5px #9febff,
+  0 0 22px 6px #d38cff,0 0 45px 8px #87f2ff99,0 0 68px #ffc8ff88!important;
+}
+[data-frame="mythic"] .crew-fx-star{
+ width:27px;height:27px;right:-14px;margin-top:-13px;
+ filter:drop-shadow(0 0 11px #fff) drop-shadow(0 0 20px #c997ff);
+}
+[data-frame="mythic"] .crew-fx-star::before{
+ content:"✦";font-size:31px;line-height:27px;
+ text-shadow:0 0 8px #fff,0 0 17px #f1a9ff,0 0 28px #b27fff,0 0 37px #82fbff!important;
+}
+[data-frame="mythic"] .crew-fx-star-orbit--2 .crew-fx-star::before{
+ content:"✧";font-size:35px;color:#c9ffff!important;
+ text-shadow:0 0 8px #fff,0 0 19px #70f9ff,0 0 32px #86b8ff!important;
+}
+#crew-manager-approvals .effect-setting{margin-top:15px}
+.crew-approval-row{display:flex;align-items:center;gap:12px;justify-content:space-between;padding:13px 0;border-bottom:1px solid #ffffff30}
+.crew-approval-row span{min-width:0;overflow-wrap:anywhere;flex:1}
+.crew-approval-row button{flex-shrink:0}
+#crew-approval-count{color:#ffdc77}
+#crew-approval-badge{margin-left:8px}
+@media(prefers-reduced-motion:reduce){
+ [data-crew-trail],[data-crew-card],[data-frame="mythic"]{animation:none!important}
+}
+
+/* V5 tier-unique motion; selection, not current level, determines effect. */
+@keyframes crew-v5-halo-pulse{50%{filter:drop-shadow(0 0 19px #b4e9ff) drop-shadow(0 0 13px #ffe9a0)}}
+@keyframes crew-v5-halo-twin{to{filter:hue-rotate(120deg) drop-shadow(0 0 17px #a1ffff)}}
+@keyframes crew-v5-halo-celestial{50%{filter:drop-shadow(0 0 25px #fff) drop-shadow(0 0 30px #bc8cff)}}
+@keyframes crew-v5-name-wave{50%{text-shadow:0 0 6px #fff,0 0 16px #69ddff}}
+@keyframes crew-v5-name-comet{50%{text-shadow:-7px 0 9px #78f3ff,7px 0 15px #ffaaff}}
+@keyframes crew-v5-name-nova{50%{text-shadow:-5px 0 13px #fff,5px 0 21px #ffdb73,0 0 34px #ca91ff}}
+@keyframes crew-v5-card-breathe{50%{box-shadow:0 0 32px #f7d1ffbb,inset 0 0 24px #99e6ff99}}
+@keyframes crew-v5-card-energy{50%{border-color:#edc8ff;box-shadow:0 0 26px #affeff,inset 0 0 23px #aa7bff}}
+@media(prefers-reduced-motion:no-preference){
+ [data-crew-aura="spark"]{animation:crew-v5-halo-pulse 3.2s ease-in-out infinite}
+ [data-crew-aura="dual"]{animation:crew-v5-halo-twin 5s ease-in-out infinite alternate}
+ [data-crew-aura="celestial"]{animation:crew-v5-halo-celestial 2.8s ease-in-out infinite}
+ [data-crew-trail="wave"]{animation:crew-v5-name-wave 3.2s ease-in-out infinite}
+ [data-crew-trail="comet"]{animation:crew-v5-name-comet 2.8s ease-in-out infinite}
+ [data-crew-trail="nova"]{animation:crew-v5-name-nova 2.2s ease-in-out infinite}
+ [data-crew-card="soft"]{animation:crew-v5-card-breathe 5s ease-in-out infinite}
+ [data-crew-card="energy"]{animation:crew-v5-card-energy 4s linear infinite}
+ [data-crew-card="mythic"]{animation:crew-v5-card-breathe 2.7s ease-in-out infinite}
+}
+@media(prefers-reduced-motion:reduce){
+ [data-crew-aura],[data-crew-trail],[data-crew-card]{animation:none!important}
+}
+
+/* New collectible name selector replaces the two legacy flame/gradient toggles. */
+#style-dialog label[for="staff-flame-check"],#style-dialog label[for="staff-gradient-check"]{display:none!important}

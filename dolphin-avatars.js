@@ -16,7 +16,7 @@ function createResolver(){
   if(!p?.employeeId||!p.name||typeof p.avatar!=='string')return;
   const prev=profiles.get(p.employeeId);
   const aliases=[...(prev?.nameAliases||[]),...(p.nameAliases||[]),...(prev&&nameKey(prev.name)!==nameKey(p.name)?[prev.name]:[])];
-  profiles.set(p.employeeId,{employeeId:p.employeeId,name:p.name,avatar:p.avatar.slice(0,24),selectedFrame:p.selectedFrame||prev?.selectedFrame||'none',selectedTitle:p.selectedTitle||prev?.selectedTitle||'none',nameAliases:Array.from(new Set(aliases)).slice(-10)});index();
+  profiles.set(p.employeeId,{employeeId:p.employeeId,name:p.name,avatar:p.avatar.slice(0,24),selectedFrame:p.selectedFrame||prev?.selectedFrame||'none',selectedTitle:p.selectedTitle||prev?.selectedTitle||'none',selectedAura:p.selectedAura||prev?.selectedAura||'none',selectedTrail:p.selectedTrail||prev?.selectedTrail||'none',selectedCardFx:p.selectedCardFx||prev?.selectedCardFx||'none',selectedNameFx:p.selectedNameFx||prev?.selectedNameFx||'none',nameAliases:Array.from(new Set(aliases)).slice(-10)});index();
  }
  function replace(rows){profiles=new Map();for(const p of rows||[])if(p?.employeeId&&p.name&&typeof p.avatar==='string')profiles.set(p.employeeId,{...p,avatar:p.avatar.slice(0,24)});index();}
  function resolve(name,id){
@@ -30,7 +30,7 @@ function avatarHTML(name,id='',avatar='👤'){
 }
 if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
 if(!root.document)return;
-const cosmeticsHref=new URL('crew-cosmetics.css?v=orbit-v4-20261102',document.currentScript?.src||location.href).href;
+const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-v5-20261102',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
 try{if(root.parent!==root)shared=root.parent.DolphinAvatars||null;}catch(e){}
 function staffName(){try{return root.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'';}catch(e){return '';}}
@@ -101,6 +101,9 @@ function paint(){
     ? (allowed.includes(chosen.selectedFrame)?chosen.selectedFrame:'none')
     : (allowed.includes(el.dataset.frame)?el.dataset.frame:'none');
   if(el.dataset.frame!==frame)el.dataset.frame=frame;
+  const aura=chosen?.selectedAura||'none',trail=chosen?.selectedTrail||'none';
+  if(el.dataset.crewAura!==aura)el.dataset.crewAura=aura;
+  if(el.dataset.crewTrail!==trail)el.dataset.crewTrail=trail;
   const label='Avatar của '+(name||'nhân viên');if(el.getAttribute('aria-label')!==label)el.setAttribute('aria-label',label);
  }
  for(const el of document.querySelectorAll('[data-staff-profile-name]')){

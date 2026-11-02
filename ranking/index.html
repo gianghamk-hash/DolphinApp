@@ -302,6 +302,13 @@ function rankingAvatarFrame(name){
  const frame=rankingStaffProfile(name)?.selectedFrame;
  return ['bronze','silver','gold','mythic'].includes(frame)?frame:'none';
 }
+function rankingAllowed(name){
+ const id=typeof window==='undefined'?null:rankingStaffProfile(name)?.employeeId;
+ return id!=='DOL-0001'||(typeof window!=='undefined'&&window.DolphinPrestige?.getBoard?.()?.showAdminRanking===true);
+}
+function rankingCardFx(name){
+ return rankingStaffProfile(name)?.selectedCardFx||'none';
+}
 function rankingTitle(name){
  const title=rankingStaffProfile(name)?.selectedTitle;
  return ({rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend'})[title]||'';
@@ -480,7 +487,7 @@ function calcRevenue(){
   });
 
   return Array.from(emp.values())
-    .filter(e => e.rev > 0)
+    .filter(e => e.rev > 0 && rankingAllowed(e.name))
     .sort((a, b) => b.rev - a.rev)
     .slice(0, TOP_N);
 }
@@ -504,7 +511,7 @@ function renderRevenue(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" data-frame="${rankingAvatarFrame(e.name)}" data-staff-avatar data-staff-name="${esc(e.name)}" data-staff-id="${rankingAvatarId(e.name)}" style="width:34px;height:34px">${rankingAvatar(e.name)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}${rankingTitle(e.name)?' <small class="crew-ranking-title">'+esc(rankingTitle(e.name))+'</small>':''}</div></span></div>
+        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" data-frame="${rankingAvatarFrame(e.name)}" data-crew-card="${rankingCardFx(e.name)}" data-staff-avatar data-staff-name="${esc(e.name)}" data-staff-id="${rankingAvatarId(e.name)}" style="width:34px;height:34px">${rankingAvatar(e.name)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}${rankingTitle(e.name)?' <small class="crew-ranking-title">'+esc(rankingTitle(e.name))+'</small>':''}</div></span></div>
         <div class="sub-count" style="text-align:left;opacity:.7">${lbl}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">
@@ -568,7 +575,7 @@ function calcPoints(){
       else if(didPrepare){e.points += lounge?0.1:0.5;e.onlyPrepare+=1;}
     });
   });
-  return Array.from(emp.values()).map(e=>({...e,points:Number(e.points.toFixed(2))})).filter(e=>e.points>0).sort((a,b)=>b.points-a.points||a.name.localeCompare(b.name,'vi')).slice(0,TOP_N);
+  return Array.from(emp.values()).map(e=>({...e,points:Number(e.points.toFixed(2))})).filter(e=>e.points>0&&rankingAllowed(e.name)).sort((a,b)=>b.points-a.points||a.name.localeCompare(b.name,'vi')).slice(0,TOP_N);
 }
 
 function renderPoints(){
@@ -620,7 +627,7 @@ function renderHall(){
  const el=document.getElementById('rank-hall-body'),r=window.DolphinRankRewards;
  if(!el||!r)return;
  el.innerHTML=['revenue','work'].map(c=>'<div style="margin-top:9px"><b>'+(c==='revenue'?'👑 DOANH THU':'🏆 CÔNG VIỆC')+'</b></div>'+
- (r.history(c).length?r.history(c).slice(0,6).map(x=>'<div class="drr-hall-item">'+r.escapeHTML(x.name)+' · '+r.escapeHTML(r.formatPeriod(x.week))+'</div>').join(''):'<div class="drr-hall-item">Chưa có dữ liệu trên thiết bị này</div>')).join('');
+ (r.history(c).length?r.history(c).filter(x=>rankingAllowed(x.name)).slice(0,6).map(x=>'<div class="drr-hall-item">'+r.escapeHTML(x.name)+' · '+r.escapeHTML(r.formatPeriod(x.week))+'</div>').join(''):'<div class="drr-hall-item">Chưa có dữ liệu trên thiết bị này</div>')).join('');
 }
 function renderAll(){
  renderWeekStat();
@@ -647,6 +654,7 @@ window.goBack = function(){
 
 // A directory refresh repaints both leaderboard tabs without waiting for new orders.
 window.DolphinAvatars?.subscribe?.(()=>{renderRevenue();renderPoints();});
+window.addEventListener('dolphin-prestige-updated',()=>{renderRevenue();renderPoints();renderHall();});
 window.DolphinAvatars?.refresh?.();
 /* ════════ INIT ════════ */
 (function init(){

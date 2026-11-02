@@ -17,6 +17,7 @@ function equippedFrame(person){
  return ['bronze','silver','gold','mythic'].includes(frame)?frame:'none';
 }
 function nameFxTier(person){
+ if(person?.selectedNameFx&&person.selectedNameFx!=='none')return person.selectedNameFx;
  const level=Number(person?.level)||1;
  return level>=60&&(person?.nameFlame||person?.nameGradient)?'celestial':
   level>=45&&person?.nameGradient?'prism':
@@ -35,6 +36,7 @@ function topTile(kind,nameId,valueId){
   icon.dataset.staffId=profile?.employeeId||'';
   icon.textContent=leader?.name?displayAvatar(leader.name,profile?.employeeId,kind==='revenue'?'💰':'🏆'):kind==='revenue'?'💰':'🏆';
   icon.dataset.frame=equippedFrame(profile);
+ icon.dataset.crewCard=profile?.selectedCardFx||'none';
  }
 }
 function renderTiles(){
@@ -43,6 +45,8 @@ function renderTiles(){
  const champion=board?.champion;
  text('leader-emperor-avatar',champion?displayAvatar(champion.name,champion.employeeId,champion.avatar):'👑');
  $('leader-emperor-avatar').dataset.frame=equippedFrame(champion);
+ $('leader-emperor-avatar').dataset.crewAura=champion?.selectedAura||'none';
+ $('leader-emperor-avatar').dataset.crewTrail=champion?.selectedTrail||'none';
  text('leader-emperor-name',champion?.name||'Chưa có danh hiệu');
  if($('leader-emperor-name'))$('leader-emperor-name').dataset.nameFx=nameFxTier(champion);
  text('leader-emperor-value',champion?'Lv.'+Number(champion.level||1)+' · '+fmt(champion.xp)+' XP':'XP tích lũy');
@@ -61,7 +65,7 @@ function renderLevel(){
   const own=p.employeeId===window.DolphinStaffId?.get?.()?.employeeId;
   const item=el('div','level-entry'+(own?' is-me':''));
   const rank=el('span','level-position',i===0?'♛':i+1);
-  const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=equippedFrame(p);
+  const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=equippedFrame(p);avatar.dataset.crewAura=p.selectedAura||'none';avatar.dataset.crewTrail=p.selectedTrail||'none';
   const person=el('span','level-person');
   const nameLabel=el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':''));
   nameLabel.dataset.nameFx=nameFxTier(p);

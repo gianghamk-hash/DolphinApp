@@ -31,11 +31,16 @@ function expose(p){
   selectedFrame:cosmeticChoice('frame',p.selectedFrame,level),
   selectedTitle:cosmeticChoice('title',p.selectedTitle,level),
   selectedBanner:cosmeticChoice('banner',p.selectedBanner,level),
+  selectedNameFx:cosmeticChoice('nameFx',p.selectedNameFx||((p.nameGradient&&level>=45)?'prism':p.nameFlame&&level>=3?'ember':'none'),level),
+  selectedAura:cosmeticChoice('aura',p.selectedAura,level),
+  selectedTrail:cosmeticChoice('trail',p.selectedTrail,level),
+  selectedCardFx:cosmeticChoice('cardFx',p.selectedCardFx,level),
+  rankingVisible:p.employeeId===TEST_ADMIN_ID?p.rankingVisible===true:true,
   nameGradient:!!p.nameGradient&&level>=45,
   showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
 }
 function leaderboard(registry){
- return Object.values(registry||{}).filter(p=>p?.active&&p.employeeId!==TEST_ADMIN_ID&&staffPattern.test(p.employeeId)&&p.name)
+ return Object.values(registry||{}).filter(p=>p?.active&&(p.employeeId!==TEST_ADMIN_ID||p.rankingVisible===true)&&staffPattern.test(p.employeeId)&&p.name)
  .map(expose).sort((a,b)=>b.level-a.level||b.xp-a.xp||a.employeeId.localeCompare(b.employeeId)).slice(0,25);
 }
 async function rebuild(){
@@ -49,7 +54,7 @@ async function rebuild(){
  const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
  const current={champion:newChampion,
   announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
-  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
+  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
  // Small Firestore signal for instant profile refresh, not an XP authority.
@@ -65,11 +70,13 @@ exports.staffGetPrestige=onCall(opts,async req=>{
  ]);
  const pub=snap.val()||{champion:null,leaderboard:[],updatedAt:0};
  // Also filter old public snapshots until the next board rebuild occurs.
- const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>p.employeeId!==TEST_ADMIN_ID);
- const champion=pub.champion?.employeeId===TEST_ADMIN_ID
+ const admin=(await getDatabase().ref('staffRegistry/DOL-0001').once('value')).val();
+ const showAdmin=admin?.active&&admin.rankingVisible===true;
+ const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>p.employeeId!==TEST_ADMIN_ID||showAdmin);
+ const champion=pub.champion?.employeeId===TEST_ADMIN_ID&&!showAdmin
   ?(employees[0]?{...employees[0],title:'Dolphin Emperor'}:null):pub.champion||null;
- return {...pub,champion,leaderboard:employees,
-  legends:Object.entries(legends.val()||{}).filter(([id])=>id!==TEST_ADMIN_ID)
+ return {...pub,showAdminRanking:!!showAdmin,champion,leaderboard:employees,
+  legends:Object.entries(legends.val()||{}).filter(([id])=>id!==TEST_ADMIN_ID||showAdmin)
    .map(([,p])=>p).sort((a,b)=>b.firstAt-a.firstAt)};
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
@@ -91,8 +98,9 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
  const theme=String(req.data?.theme||'dark');
  const flame=req.data?.nameFlame===true;
- const selected={frame:req.data?.selectedFrame,title:req.data?.selectedTitle,banner:req.data?.selectedBanner,gradient:req.data?.nameGradient};
- for(const type of ['frame','title','banner']){
+ const selected={frame:req.data?.selectedFrame,title:req.data?.selectedTitle,banner:req.data?.selectedBanner,gradient:req.data?.nameGradient,
+  nameFx:req.data?.selectedNameFx,aura:req.data?.selectedAura,trail:req.data?.selectedTrail,cardFx:req.data?.selectedCardFx};
+ for(const type of ['frame','title','banner','nameFx','aura','trail','cardFx']){
   if(selected[type]!==undefined&&!Object.hasOwn(engine.COSMETIC_CHOICES[type],selected[type]))
    throw new HttpsError('invalid-argument','Phần thưởng không hợp lệ: '+type);
  }
@@ -112,11 +120,15 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
   const level=Math.max(engine.progress(Math.max(0,Number(current.xp)||0)).level,Number(current.levelPeak)||1);
   if((themeLevels[theme]||1)>level||(flame&&level<3)||
     (selected.gradient===true&&level<45)||
-    ['frame','title','banner'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))return;
+    ['frame','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))return;
   return {...current,personalTheme:theme,nameFlame:flame,
     selectedFrame:selected.frame===undefined?cosmeticChoice('frame',current.selectedFrame,level):selected.frame,
     selectedTitle:selected.title===undefined?cosmeticChoice('title',current.selectedTitle,level):selected.title,
     selectedBanner:selected.banner===undefined?cosmeticChoice('banner',current.selectedBanner,level):selected.banner,
+    selectedNameFx:selected.nameFx===undefined?cosmeticChoice('nameFx',current.selectedNameFx,level):selected.nameFx,
+    selectedAura:selected.aura===undefined?cosmeticChoice('aura',current.selectedAura,level):selected.aura,
+    selectedTrail:selected.trail===undefined?cosmeticChoice('trail',current.selectedTrail,level):selected.trail,
+    selectedCardFx:selected.cardFx===undefined?cosmeticChoice('cardFx',current.selectedCardFx,level):selected.cardFx,
     nameGradient:selected.gradient===undefined?!!current.nameGradient&&level>=45:selected.gradient,updatedAt:Date.now()};
  },undefined,false);
  if(!result.committed){
@@ -124,7 +136,7 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
   if(!latest?.active)throw new HttpsError('failed-precondition','Hồ sơ không còn hoạt động');
   const level=Math.max(engine.progress(Math.max(0,Number(latest.xp)||0)).level,Number(latest.levelPeak)||1);
   if((themeLevels[theme]||1)>level||(flame&&level<3)||(selected.gradient===true&&level<45)||
-    ['frame','title','banner'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))
+    ['frame','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))
    throw new HttpsError('permission-denied','Phần thưởng chưa mở khóa ở Level '+level);
   throw new HttpsError('aborted','Giao dịch lưu giao diện bị gián đoạn. Hãy thử lại.');
  }
@@ -158,7 +170,7 @@ exports.staffAdjustOwnTestXP=onCall(opts,async req=>{
   if(!Number.isSafeInteger(xp)||xp>engine.xpForLevel(60))return;
   const peak=action==='reset'?1:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp));
   return {...current,xp,levelPeak:peak,
-    ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedTitle:'none',selectedBanner:'default',personalTheme:'dark',showcase:[]}:{}),
+    ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedTitle:'none',selectedBanner:'default',selectedNameFx:'none',selectedAura:'none',selectedTrail:'none',selectedCardFx:'none',personalTheme:'dark',showcase:[]}:{}),
     testXPUpdatedAt:now,updatedAt:now};
  },undefined,false);
  if(!result.committed){
@@ -237,3 +249,21 @@ module.exports._rebuildPrestige=rebuild;
 
 // Internal only: functions/index.js deliberately skips underscore-prefixed exports.
 module.exports._awardTrustedLiveXP=(data,options={})=>awardVerifiedXP(null,data,{trusted:true,...options});
+
+
+/* DOL-0001 is the sole authorized owner of its public leaderboard visibility.
+   Defaults to hidden; never grant this permission using a client-supplied ID. */
+exports.staffSetOwnRankingVisibility=onCall(opts,async req=>{
+ const {id,testAdmin}=await currentStaff(req);
+ if(id!==TEST_ADMIN_ID||!testAdmin)throw new HttpsError('permission-denied','Chỉ DOL-0001 đã xác minh được đổi chế độ xếp hạng.');
+ if(typeof req.data?.visible!=='boolean')throw new HttpsError('invalid-argument','Trạng thái hiển thị không hợp lệ.');
+ const ref=getDatabase().ref('staffRegistry/'+id),visible=req.data.visible;
+ const result=await ref.transaction(p=>{
+  if(p===null)return null;
+  if(!p.active||p.employeeId!==TEST_ADMIN_ID)return;
+  return {...p,rankingVisible:visible,updatedAt:Date.now()};
+ },undefined,false);
+ if(!result.committed||!result.snapshot.val()?.active)throw new HttpsError('failed-precondition','Không thể cập nhật hồ sơ quản lý.');
+ await rebuild();
+ return {visible,employeeId:id};
+});

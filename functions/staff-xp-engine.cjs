@@ -3,7 +3,7 @@
 const XP_PER_1000_VND=1;
 const XP_PER_POINT_TENTH=1;
 const MIN_LEVEL=1;
-const LEVEL_COEFFICIENT=5000;
+const LEVEL_COEFFICIENT=3500; // 70% of previous XP threshold
 const MAX_LEVEL=60;
 const PERKS=Object.freeze([
  {
@@ -130,11 +130,15 @@ const PERKS=Object.freeze([
 ]);
 
 /* One authoritative catalog for automatic Crew Club rewards. Just for fun. */
-const COSMETIC_REWARDS=Object.freeze([{"id":"name_flame","level":3,"type":"effect","label":"🔥 Tên phát sáng","icon":"🔥"},{"id":"frame_bronze","level":5,"type":"frame","label":"Khung avatar Bronze","icon":"🥉"},{"id":"theme_dolphin","level":8,"type":"theme","label":"Chủ đề Dolphin","icon":"🐬"},{"id":"theme_seasons","level":10,"type":"theme","label":"Bộ chủ đề 4 mùa","icon":"🌸"},{"id":"title_rookie","level":12,"type":"title","label":"Danh hiệu Rookie Star","icon":"⭐"},{"id":"banner_wave","level":15,"type":"banner","label":"Banner Sóng Biển","icon":"🌊"},{"id":"theme_festival","level":20,"type":"theme","label":"Bộ chủ đề lễ hội","icon":"🎊"},{"id":"frame_silver","level":22,"type":"frame","label":"Khung avatar Silver","icon":"🥈"},{"id":"title_wave","level":25,"type":"title","label":"Danh hiệu Wave Rider","icon":"🏄"},{"id":"theme_special","level":30,"type":"theme","label":"Bộ chủ đề đặc biệt","icon":"✨"},{"id":"banner_gold","level":35,"type":"banner","label":"Banner Ánh Kim","icon":"🌟"},{"id":"frame_gold","level":40,"type":"frame","label":"Khung avatar Gold","icon":"🥇"},{"id":"name_gradient","level":45,"type":"effect","label":"Tên gradient","icon":"🌈"},{"id":"title_legend","level":50,"type":"title","label":"Danh hiệu Dolphin Legend","icon":"👑"},{"id":"frame_mythic","level":60,"type":"frame","label":"Khung avatar Mythic","icon":"💎"},{"id":"banner_mythic","level":60,"type":"banner","label":"Banner Mythic","icon":"⚡"}]);
+const COSMETIC_REWARDS=Object.freeze([{"id":"aura_spark","level":3,"type":"aura","label":"💫 Hào quang Avatar I","icon":"💫"},{"id":"trail_wave","level":3,"type":"trail","label":"☄️ Vệt sao I","icon":"☄️"},{"id":"card_soft","level":3,"type":"cardFx","label":"✨ Viền thẻ I","icon":"✨"},{"id":"aura_dual","level":25,"type":"aura","label":"💫 Hào quang Avatar II","icon":"💫"},{"id":"trail_comet","level":25,"type":"trail","label":"☄️ Vệt sao II","icon":"☄️"},{"id":"card_energy","level":25,"type":"cardFx","label":"✨ Viền thẻ II","icon":"✨"},{"id":"aura_celestial","level":60,"type":"aura","label":"💫 Hào quang Avatar III","icon":"💫"},{"id":"trail_nova","level":60,"type":"trail","label":"☄️ Vệt sao III","icon":"☄️"},{"id":"card_mythic","level":60,"type":"cardFx","label":"✨ Viền thẻ III","icon":"✨"},{"id":"name_flame","level":3,"type":"effect","label":"🔥 Tên phát sáng","icon":"🔥"},{"id":"frame_bronze","level":5,"type":"frame","label":"Khung avatar Bronze","icon":"🥉"},{"id":"theme_dolphin","level":8,"type":"theme","label":"Chủ đề Dolphin","icon":"🐬"},{"id":"theme_seasons","level":10,"type":"theme","label":"Bộ chủ đề 4 mùa","icon":"🌸"},{"id":"title_rookie","level":12,"type":"title","label":"Danh hiệu Rookie Star","icon":"⭐"},{"id":"banner_wave","level":15,"type":"banner","label":"Banner Sóng Biển","icon":"🌊"},{"id":"theme_festival","level":20,"type":"theme","label":"Bộ chủ đề lễ hội","icon":"🎊"},{"id":"frame_silver","level":22,"type":"frame","label":"Khung avatar Silver","icon":"🥈"},{"id":"title_wave","level":25,"type":"title","label":"Danh hiệu Wave Rider","icon":"🏄"},{"id":"theme_special","level":30,"type":"theme","label":"Bộ chủ đề đặc biệt","icon":"✨"},{"id":"banner_gold","level":35,"type":"banner","label":"Banner Ánh Kim","icon":"🌟"},{"id":"frame_gold","level":40,"type":"frame","label":"Khung avatar Gold","icon":"🥇"},{"id":"name_gradient","level":45,"type":"effect","label":"Tên gradient","icon":"🌈"},{"id":"title_legend","level":50,"type":"title","label":"Danh hiệu Dolphin Legend","icon":"👑"},{"id":"frame_mythic","level":60,"type":"frame","label":"Khung avatar Mythic","icon":"💎"},{"id":"banner_mythic","level":60,"type":"banner","label":"Banner Mythic","icon":"⚡"}].sort((a,b)=>a.level-b.level));
 const COSMETIC_CHOICES=Object.freeze({
  frame:Object.freeze({none:1,bronze:5,silver:22,gold:40,mythic:60}),
  title:Object.freeze({none:1,rookie:12,wave:25,legend:50}),
- banner:Object.freeze({default:1,wave:15,gold:35,mythic:60})
+ banner:Object.freeze({default:1,wave:15,gold:35,mythic:60}),
+ nameFx:Object.freeze({none:1,ember:3,inferno:25,prism:45,celestial:60}),
+ aura:Object.freeze({none:1,spark:3,dual:25,celestial:60}),
+ trail:Object.freeze({none:1,wave:3,comet:25,nova:60}),
+ cardFx:Object.freeze({none:1,soft:3,energy:25,mythic:60})
 });
 function asNonnegativeInteger(x,label){
  if(typeof x!=='number'||!Number.isFinite(x)||x<0||!Number.isSafeInteger(x))throw Error(label+' phải là số nguyên không âm');

@@ -19,14 +19,14 @@ function unlock(identity){
  document.documentElement.classList.remove('dolphin-access-pending');
  document.documentElement.classList.add('dolphin-access-allowed');
  $('dolphinAccessGate').hidden=true;
- $('dolphinAccessManager').hidden=!(identity.employeeId==='DOL-0001'&&identity.verified===true);
+ // Staff approval controls now live exclusively inside DOL-0001's profile.
 }
 function lock(identity){
  state.allowed=false;
  document.documentElement.classList.remove('dolphin-access-allowed');
  document.documentElement.classList.add('dolphin-access-pending');
  $('dolphinAccessGate').hidden=false;
- $('dolphinAccessManager').hidden=true;
+
  if(identity?.employeeId){
   panel('pending');
   $('dag-pending-id').textContent=identity.employeeId;
@@ -96,9 +96,7 @@ function makeUI(){
   <p id="dag-status" class="dag-status" role="status" aria-live="polite">Đang xác thực Staff ID…</p>
  </div>`;
  document.body.appendChild(gate);
- const manager=document.createElement('button');manager.id='dolphinAccessManager';
- manager.type='button';manager.hidden=true;manager.textContent='👑 Duyệt nhân viên';
- document.body.appendChild(manager);manager.onclick=()=>openManager();
+
  const grid=$('dag-avatar-list');
  for(const emoji of starters){
   const btn=document.createElement('button');btn.type='button';btn.className='dag-avatar';

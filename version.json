@@ -1,7 +1,7 @@
 {
-  "version": "1.1.48",
-  "buildDate": "2026-11-02T13:23:42.432Z",
-  "commit": "c157cd4",
-  "notes": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
+  "version": "1.1.49",
+  "buildDate": "2026-11-02T13:48:38.927Z",
+  "commit": "8747140",
+  "notes": "feat(crew): 10x daily check-in rewards, retain legacy XP records",
   "forceUpdate": false
 }

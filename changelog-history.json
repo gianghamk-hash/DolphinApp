@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.48",
+      "releaseDate": "2026-11-02T13:23:42.432Z",
+      "summary": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
+      "details": [
+        "feat(crew): six daily missions, midnight reset and escalating check-in streak"
+      ]
+    },
+    {
       "version": "1.1.47",
       "releaseDate": "2026-11-02T12:54:23.044Z",
       "summary": "test(crew): validate four celestial Mythic orbit animations in browser",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030",
       "details": [
         "Merge pull request #157 from gianghamk-hash/fix/loading-logo-custom-domain-20261030"
-      ]
-    },
-    {
-      "version": "1.0.218",
-      "releaseDate": "2026-10-30T00:17:19.889Z",
-      "summary": "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030",
-      "details": [
-        "Merge pull request #156 from gianghamk-hash/fix/logo-custom-domain-20261030"
       ]
     }
   ]

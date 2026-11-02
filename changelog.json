@@ -1,54 +1,22 @@
 {
-  "version": "1.1.48",
-  "previousVersion": "1.1.47",
-  "commit": "c157cd4",
-  "previousCommit": "634a3dd",
-  "buildDate": "2026-11-02T13:23:42.432Z",
-  "summary": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
+  "version": "1.1.49",
+  "previousVersion": "1.1.48",
+  "commit": "8747140",
+  "previousCommit": "c157cd4",
+  "buildDate": "2026-11-02T13:48:38.927Z",
+  "summary": "feat(crew): 10x daily check-in rewards, retain legacy XP records",
   "changes": {
-    "totalCommits": 272,
-    "filesChanged": 23,
+    "totalCommits": 273,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): six daily missions, midnight reset and escalating check-in streak"
+    "feat(crew): 10x daily check-in rewards, retain legacy XP records"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-prestige-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/staff-profile-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/staff-style-unlock-production.yml",
-      "type": "update"
-    },
-    {
       "file": "docs/DOLPHIN_CREW_CLUB_RULES.md",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-bungalow.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-lounge.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-restaurant.html",
-      "type": "update"
-    },
-    {
-      "file": "functions/index.js",
       "type": "update"
     },
     {
@@ -60,51 +28,7 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-missions.js",
-      "type": "update"
-    },
-    {
       "file": "functions/staff-daily-missions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-id.test.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-actions.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-actions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-daily-missions-ui.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.css",
       "type": "update"
     }
   ]

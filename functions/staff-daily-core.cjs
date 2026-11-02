@@ -82,4 +82,42 @@ function apply(profile,taskId,time=Date.now(),receipt=''){
  };
  return {changed:true,profile:nextProfile,addedXP};
 }
-module.exports={ZONE,TASKS,vietnamDay,daysBetween,nextMidnight,checkinXP,view,apply};
+/**
+ * Idempotent upgrade for an already claimed check-in at the old (1x) rate.
+ * Only the CURRENT Vietnam calendar day is eligible, using the original
+ * server-stamped receipt and verified check-in day; no prior-day inflation.
+ * RTDB caller must apply the returned profile in a transaction.
+ */
+function reconcileLegacyCheckin(profile,time=Date.now()){
+ const unchanged={changed:false,profile,addedXP:0};
+ if(!profile?.active||(profile.registrationSource==='self'&&profile.approved!==true))
+  return unchanged;
+ const record=profile.dailyMissions||{},day=vietnamDay(time);
+ if(record.date!==day||record.lastCheckinDay!==day)return unchanged;
+ const entry=record.completed?.checkin;
+ const claimedAt=Number(entry?.at);
+ const streak=Math.max(1,Number(record.streak)||1);
+ const legacyXP=15+Math.min(7,streak)*5;
+ if(!entry||Number(entry.xp)!==legacyXP||
+  typeof entry.receipt!=='string'||!entry.receipt.length||
+  !Number.isFinite(claimedAt)||claimedAt<=0||vietnamDay(claimedAt)!==day)
+  return unchanged;
+ const targetXP=checkinXP(streak),addedXP=targetXP-legacyXP;
+ if(addedXP<=0)return unchanged;
+ const total=Number((Math.max(0,Number(profile.xp)||0)+addedXP).toFixed(2));
+ if(!Number.isSafeInteger(Math.trunc(total))||total>Number.MAX_SAFE_INTEGER)
+  return unchanged;
+ return {
+  changed:true,addedXP,
+  profile:{
+   ...profile,xp:total,levelPeak:Math.max(Number(profile.levelPeak)||1,engine.levelForXP(total)),
+   dailyMissions:{
+    ...record,
+    completed:{...record.completed,checkin:{...entry,xp:targetXP,rateVersion:2,backfilledAt:time}}
+   },
+   updatedAt:time
+  }
+ };
+}
+
+module.exports={ZONE,TASKS,vietnamDay,daysBetween,nextMidnight,checkinXP,view,apply,reconcileLegacyCheckin};

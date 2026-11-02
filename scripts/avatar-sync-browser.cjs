@@ -31,6 +31,44 @@ await profile.locator('#profile-name-input').fill('Avatar Demo');await profile.l
 const id=await profile.locator('#employee-id').textContent();
 const frames=[];for(const file of ['dolphin-bungalow.html','dolphin-lounge.html','dolphin-show.html','dolphin-restaurant.html','ranking/index.html','giaitri/index.html']){const f=await a.page.evaluateHandle(file=>{const f=document.createElement('iframe');f.src='/'+file;document.body.appendChild(f);return f;},file);const el=f.asElement();const frame=await el.contentFrame();await frame.waitForSelector('script[src*="dolphin-avatars.js"]',{state:'attached'});frames.push({file,frame});}
 await a.page.waitForFunction(()=>window.DolphinAvatars?.get('AVATAR DEMO')==='🐬');
+
+await a.page.waitForFunction(()=>!!window.DolphinFrameFX&&!!document.getElementById('crew-cosmetics-stylesheet')?.sheet);
+const orbitQA=await a.page.evaluate(()=>{
+ const host=document.createElement('div');host.id='crew-orbit-browser-test';document.body.appendChild(host);
+ const out={};
+ for(const frame of ['bronze','silver','gold','mythic']){
+  const el=document.createElement('span');el.className='fx-frame-preview';el.dataset.frame=frame;el.textContent='🐬';host.appendChild(el);
+ }
+ window.DolphinFrameFX.refresh();
+ for(const el of host.children){
+  const frame=el.dataset.frame;
+  out[frame]={
+   rings:el.querySelectorAll(':scope > .crew-fx-orbits > .crew-fx-ring').length,
+   stars:el.querySelectorAll(':scope > .crew-fx-orbits > .crew-fx-star-orbit').length,
+   text:el.textContent,
+   layers:el.querySelectorAll('.crew-fx-layer').length
+  };
+ }
+ window.DolphinFrameFX.refresh();
+ out.idempotent=[...host.children].every(el=>el.querySelectorAll(':scope > .crew-fx-orbits').length===1);
+ const demo=host.children[0];
+ demo.dataset.frame='mythic';window.DolphinFrameFX.refresh();
+ out.switchToMythic=demo.querySelectorAll('.crew-fx-star-orbit').length===2&&demo.querySelectorAll('.crew-fx-ring').length===0;
+ demo.dataset.frame='none';window.DolphinFrameFX.refresh();
+ out.cleared=demo.querySelectorAll('.crew-fx-orbits').length===0;
+ host.remove();return out;
+});
+assert.deepEqual(
+ ['bronze','silver','gold','mythic'].map(k=>[orbitQA[k].rings,orbitQA[k].stars]),
+ [[1,0],[2,0],[3,0],[0,2]],
+ 'Each rarity renders precisely the requested number of animated layers'
+);
+assert.equal(Object.values(orbitQA).filter(v=>v&&typeof v==='object').every(x=>x.text==='🐬'),true,'Orbit layers preserve emoji text content');
+assert.equal(orbitQA.idempotent,true,'Repeated refresh does not create extra rings');
+assert.equal(orbitQA.switchToMythic,true,'Changing rarity swaps rings for exactly two stars');
+assert.equal(orbitQA.cleared,true,'Unequipping removes the decorative layers');
+console.log('PASS: live V4 browser orbit counts and frame switching: 1 Bronze, 2 Silver, 3 Gold, 2 Mythic stars.');
+
 const rankFrame=frames.find(x=>x.file==='ranking/index.html').frame;
 const rankSource=fs.readFileSync(path.join(root,'ranking/index.html'),'utf8');const revenueFn=rankSource.match(/function renderRevenue\(\)\{[\s\S]*?\n\}/)[0],pointsFn=rankSource.match(/function renderPoints\(\)\{[\s\S]*?\n\}/)[0];
 const rankingFrameFn=rankSource.match(/function rankingAvatarFrame\(name\)\{[\s\S]*?\n\}/)[0],rankingTitleFn=rankSource.match(/function rankingTitle\(name\)\{[\s\S]*?\n\}/)[0];

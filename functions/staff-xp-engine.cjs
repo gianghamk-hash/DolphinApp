@@ -3,7 +3,8 @@
 const XP_PER_1000_VND=1;
 const XP_PER_POINT_TENTH=1;
 const MIN_LEVEL=1;
-const LEVEL_COEFFICIENT=3500; // 70% of previous XP threshold
+const LEVEL_COEFFICIENT=2450; // 30% less than the immediately preceding 3,500 XP coefficient
+const LEVEL_RULES_VERSION=2;
 const MAX_LEVEL=60;
 const PERKS=Object.freeze([
  {
@@ -174,4 +175,4 @@ function progress(xp){
  return {xp,level,rank:rankForLevel(level),xpIntoLevel:xp-floor,xpNeeded:ceil===null?0:ceil-floor,
   nextLevelAt:ceil,unlocked:PERKS.filter(p=>level>=p.level).map(p=>p.id)};
 }
-module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,PERKS,COSMETIC_REWARDS,COSMETIC_CHOICES,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};
+module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,LEVEL_COEFFICIENT,LEVEL_RULES_VERSION,PERKS,COSMETIC_REWARDS,COSMETIC_CHOICES,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};

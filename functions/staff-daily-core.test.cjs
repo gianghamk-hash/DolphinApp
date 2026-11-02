@@ -90,3 +90,43 @@ test('check-in XP is exactly 10x old rates, capped at day 7, other task rewards 
  assert.equal(rules.view(legacy,date).tasks.find(task=>task.id==='checkin').xp,20,'previously claimed rewards remain unchanged');
  assert.equal(rules.apply(legacy,'checkin',date+1000).changed,false,'no same-day retroactive credit');
 });
+
+test('legacy same-day check-in 20 XP is reconciled to 200 XP exactly once',()=>{
+ const now=vn('2026-11-02',16);
+ const p=rules.apply(person(),'checkin',now,'original-receipt').profile;
+ const legacy={...p,xp:p.xp-180,dailyMissions:{...p.dailyMissions,completed:{
+  ...p.dailyMissions.completed,checkin:{xp:20,at:now,receipt:'original-receipt'}
+ }}};
+ assert.equal(rules.view(legacy,now).tasks[0].xp,20);
+ const fixed=rules.reconcileLegacyCheckin(legacy,now+1200);
+ assert.equal(fixed.changed,true);
+ assert.equal(fixed.addedXP,180);
+ assert.equal(fixed.profile.xp,200);
+ assert.equal(fixed.profile.dailyMissions.completed.checkin.xp,200);
+ assert.equal(fixed.profile.dailyMissions.completed.checkin.receipt,'original-receipt');
+ assert.equal(fixed.profile.dailyMissions.completed.checkin.rateVersion,2);
+ assert.equal(rules.view(fixed.profile,now+1300).todayXP,200);
+ assert.equal(rules.reconcileLegacyCheckin(fixed.profile,now+1400).changed,false);
+});
+test('legacy check-in top-up is forbidden for previous day, missing proof or inactive staff',()=>{
+ const yesterday=vn('2026-11-02'),today=vn('2026-11-03');
+ const p=rules.apply(person(),'checkin',yesterday,'proof').profile;
+ const legacy={...p,xp:20,dailyMissions:{...p.dailyMissions,completed:{checkin:{xp:20,at:yesterday,receipt:'proof'}}}};
+ assert.equal(rules.reconcileLegacyCheckin(legacy,today).changed,false);
+ assert.equal(rules.reconcileLegacyCheckin({...legacy,active:false},yesterday).changed,false);
+ const absent={...legacy,dailyMissions:{...legacy.dailyMissions,completed:{checkin:{xp:20,at:yesterday}}}};
+ assert.equal(rules.reconcileLegacyCheckin(absent,yesterday).changed,false);
+ const badDate={...legacy,dailyMissions:{...legacy.dailyMissions,completed:{checkin:{xp:20,at:yesterday-86400000,receipt:'proof'}}}};
+ assert.equal(rules.reconcileLegacyCheckin(badDate,yesterday).changed,false);
+});
+test('streak 7 old 50 XP gets exactly 450 XP top-up to reach 500 XP',()=>{
+ const stamp=vn('2026-11-02');
+ const p={...person(),xp:50,dailyMissions:{
+  date:'2026-11-02',lastCheckinDay:'2026-11-02',streak:7,bestStreak:7,
+  completed:{checkin:{xp:50,at:stamp,receipt:'old-checkin'}}
+ }};
+ const result=rules.reconcileLegacyCheckin(p,stamp+1500);
+ assert.equal(result.addedXP,450);
+ assert.equal(result.profile.xp,500);
+ assert.equal(result.profile.dailyMissions.completed.checkin.xp,500);
+});

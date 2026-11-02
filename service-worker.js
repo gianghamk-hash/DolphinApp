@@ -24,7 +24,7 @@ const CACHE_URLS = [
   BASE + '/dolphin-show.html',
   BASE + '/dolphin-profile.html',
   BASE + '/staff-profile.css?v=daily-missions-v1',
-  BASE + '/staff-prestige-profile.js?v=daily-missions-v1',
+  BASE + '/staff-prestige-profile.js?v=crew-level-2450-backfill-v2',
   BASE + '/crew-cosmetics.css?v=crew-mythic-v7',
   BASE + '/staff-profile.js',
   BASE + '/staff-admin-profile.js?v=approval-reject-v2',

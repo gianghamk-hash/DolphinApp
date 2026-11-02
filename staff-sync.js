@@ -39,13 +39,13 @@
     if(!trimmed)return false;
     var old=readName();
     if(locked()){
-      if(old!==trimmed){notify('Tên nhân viên đã khóa: '+old+'. Mở Hồ sơ nhân viên để đổi tên.');return false;}
+      if(old!==trimmed){notify('Tên nhân viên đã khóa theo Staff ID: '+old+'. Không thể tự thay đổi.');return false;}
       return true;
     }
     // Existing employees get one final confirmation/change. New staff enter once.
     var message=old
-      ?'Tên hiện tại: '+old+'\\nTên xác nhận: '+trimmed+'\\n\\nTên được dùng chung toàn hệ thống. Sau khi lưu, hãy đổi tên tại Hồ sơ nhân viên. Tiếp tục?'
-      :'Xác nhận tên nhân viên: '+trimmed+'?\\n\\nTên được dùng chung toàn hệ thống. Sau khi lưu, hãy đổi tên tại Hồ sơ nhân viên.';
+      ?'Tên hiện tại: '+old+'\\nTên xác nhận: '+trimmed+'\\n\\nTên được dùng chung toàn hệ thống và sẽ khóa sau khi đăng ký. Tiếp tục?'
+      :'Xác nhận tên nhân viên: '+trimmed+'?\\n\\nTên được dùng chung toàn hệ thống và không thể thay đổi sau khi đăng ký.';
     if(typeof window.confirm==='function'&&!window.confirm(message))return false;
     try {
       localStorage.setItem(MAIN_KEY,trimmed);

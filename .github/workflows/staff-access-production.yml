@@ -1,0 +1,63 @@
+name: Deploy Dolphin Staff Access Gate
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/staff-access-production.yml'
+      - 'functions/staff-profile.js'
+      - 'functions/index.js'
+      - 'functions/staff-id.test.js'
+      - 'staff-access.js'
+      - 'staff-access.css'
+      - 'scripts/staff-access.test.cjs'
+permissions:
+  contents: read
+concurrency:
+  group: firebase-staff-access-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.repository == 'gianghamk-hash/DolphinApp'
+    runs-on: ubuntu-latest
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check credentials and project
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          test -n "$FIREBASE_CREDENTIALS" && test -n "$STAFF_ADMIN_UIDS"
+          node -e "const fs=require('fs');if(JSON.parse(fs.readFileSync('.firebaserc','utf8')).projects.default!=='dolphin-f6d67')process.exit(1)"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - name: Check access authorization
+        run: |
+          npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
+          node --check functions/staff-profile.js
+          node --check functions/index.js
+          node --check functions/staff-xp-actions.js
+          node --check staff-access.js
+          node --test functions/staff-id.test.js functions/staff-xp-actions.test.cjs scripts/staff-access.test.cjs
+      - name: Keep legacy XP triggers disabled
+        env:
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          node - <<'NODE'
+          const fs=require('fs'),ids=process.env.STAFF_ADMIN_UIDS||'';
+          if(!/^[a-zA-Z0-9,_-]+$/.test(ids))throw Error('Invalid STAFF_ADMIN_UIDS');
+          fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+ids+'\nSTAFF_AUTO_XP_ENABLED=false\nSTAFF_SECURE_AUTO_XP_ENABLED=true\n',{mode:0o600});
+          NODE
+      - name: Deploy verified Staff ID and approval callables
+        run: |
+          npm install -g firebase-tools
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffGetIdentity,functions:staffClaimLinkCode,functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffListPendingApprovals,functions:staffApproveRegistration
+      - name: Delete temporary environment
+        if: always()
+        run: rm -f functions/.env.dolphin-f6d67

@@ -12,7 +12,7 @@ for(const button of document.querySelectorAll('[data-open-dialog]'))button.addEv
  const dialog=$(button.dataset.openDialog);if(dialog&&!dialog.open)dialog.showModal();
 });
 for(const button of document.querySelectorAll('[data-close-dialog]'))button.addEventListener('click',()=>button.closest('dialog').close());
-function setBusy(value){busy=value;for(const id of ['save-profile','choose-avatar','profile-name-input','claim-link','issue-link'])$(id).disabled=value||(id==='issue-link'&&!profile);}
+function setBusy(value){busy=value;for(const id of ['save-profile','choose-avatar','profile-name-input','claim-link','issue-link'])$(id).disabled=value||(id==='issue-link'&&!profile)||(id==='profile-name-input'&&!!profile);}
 function render(fill=true){
  profile=api.get();
  if(fill){
@@ -24,10 +24,10 @@ function render(fill=true){
  if($('profile-avatar'))$('profile-avatar').textContent=avatar;
  $('profile-name').textContent=profile?.name||'Hồ sơ của bạn';
  $('employee-id').textContent=profile?.employeeId||'ID sẽ được tự cấp';
- $('profile-state').textContent=profile?(profile.verified?'Đã xác minh':'Chưa xác minh'):'Sẵn sàng đăng ký';
+ $('profile-state').textContent=profile?(profile.verified?'Đã xác minh':'Đang chờ quản lý duyệt'):'Sẵn sàng đăng ký';
  $('device-status').textContent=profile?'Đã liên kết':'Chưa liên kết';
  $('created-at').textContent=profile?.createdAt?new Date(profile.createdAt).toLocaleDateString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'—';
- $('save-profile').textContent=profile?'Lưu thay đổi':'Đăng ký hồ sơ & thiết bị';
+ $('save-profile').textContent=profile?'Lưu avatar':'Đăng ký hồ sơ & thiết bị';
  $('registration-note').hidden=!!profile;
  $('switch-confirm').hidden=!profile;
  $('confirm-switch').checked=false;
@@ -44,7 +44,7 @@ $('profile-form').addEventListener('submit',async e=>{
  e.preventDefault();if(busy)return;
  const data={name:$('profile-name-input').value.trim(),avatar};
  setBusy(true);message(profile?'Đang lưu thay đổi…':'Đang đăng ký hồ sơ và thiết bị…');
- try{await (profile?api.update(data):api.register(data));render();message('Đã lưu hồ sơ. Tên và avatar của bạn đã được cập nhật.');$('profile-edit-dialog')?.close();}
+ try{const wasRegistered=!!profile;await (profile?api.update({avatar}):api.register(data));render();message(wasRegistered?'Đã lưu hồ sơ và avatar. Họ tên đã được khóa.':'Đã lưu hồ sơ. Vui lòng chờ DOL-0001 xác minh.');$('profile-edit-dialog')?.close();}
  catch(err){message(errorText(err),true);setBusy(false);}
 });
 function renderAvatars(){

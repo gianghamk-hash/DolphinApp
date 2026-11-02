@@ -129,7 +129,7 @@ test('two cold claimants cannot both consume the same code',async()=>{
 test('self-service endpoints require authentication and validate all editable fields',async()=>{
  const {api}=harness();
  for(const name of ['staffRegisterSelfProfile','staffUpdateMyProfile','staffIssueOwnLinkCode'])await rejects(()=>api[name](req(null)),'unauthenticated');
- for(const data of [{name:'A'},{name:'<script>'},{name:'Alice',avatar:'<img>'},{name:'Alice',department:'Manager'}])
+ for(const data of [{name:'A'},{name:'<script>'},{name:'Alice',avatar:'<img>'}])
   await rejects(()=>api.staffRegisterSelfProfile(req('user',data)),'invalid-argument');
 });
 
@@ -152,9 +152,11 @@ test('profile updates only affect the current employee and reject inactive/unlin
  const {api,state}=harness();
  const original=await api.staffRegisterSelfProfile(req('owner',{name:'Alice',avatar:'🐬'}));
  state.delete('staffProfileRate/owner');
- const saved=await api.staffUpdateMyProfile(req('owner',{name:'New name',avatar:'🐯',department:'Lounge',employeeId:'DOL-OTHER',verified:true}));
+ await rejects(()=>api.staffUpdateMyProfile(req('owner',{name:'New name',avatar:'🐯',employeeId:'DOL-OTHER',verified:true})),'permission-denied');
+  state.delete('staffProfileRate/owner');
+  const saved=await api.staffUpdateMyProfile(req('owner',{avatar:'🐯',employeeId:'DOL-OTHER',verified:true}));
  assert.equal(saved.employeeId,original.employeeId);assert.equal(saved.avatar,'🐯');assert.equal(saved.verified,false);
- assert.equal((await api.staffGetIdentity(req('owner'))).name,'New name');
+ assert.equal((await api.staffGetIdentity(req('owner'))).name,'Alice');
  await rejects(()=>api.staffUpdateMyProfile(req('stranger',{name:'Hijack',avatar:'🐯',employeeId:original.employeeId})),'failed-precondition');
  state.get('staffRegistry/'+original.employeeId).active=false;state.delete('staffProfileRate/owner');
  await rejects(()=>api.staffUpdateMyProfile(req('owner',{name:'Retry'})),'permission-denied');
@@ -170,8 +172,8 @@ test('an employee can link a second device without a manager; both see the lates
  assert.equal(linked.employeeId,first.employeeId);assert.equal(linked.verified,false);
  assert.equal((await api.staffGetIdentity(req('second'))).avatar,'🐬');
  state.delete('staffProfileRate/first');
- await api.staffUpdateMyProfile(req('first',{name:'Updated',avatar:'🐠',department:'Show'}));
- assert.equal((await api.staffGetIdentity(req('second'))).name,'Updated');
+ await api.staffUpdateMyProfile(req('first',{name:'Alice',avatar:'🐠'}));
+ assert.equal((await api.staffGetIdentity(req('second'))).name,'Alice');
  assert.equal((await api.staffGetIdentity(req('second'))).avatar,'🐠');
  await rejects(()=>api.staffClaimLinkCode(req('third',{code:code.code})),'failed-precondition');
 });
@@ -179,9 +181,9 @@ test('an employee can link a second device without a manager; both see the lates
 test('profile edits retry an empty RTDB cache instead of falsely reporting an inactive employee',async()=>{
  const {api,state}=harness('manager',{cold:true});
  await api.staffRegisterSelfProfile(req('cold-editor',{name:'Original'}));state.delete('staffProfileRate/cold-editor');
- const result=await api.staffUpdateMyProfile(req('cold-editor',{name:'Updated',avatar:'🐯',department:'Show'}));
- assert.equal(result.name,'Updated');assert.equal(result.avatar,'🐯');
- assert.equal((await api.staffGetIdentity(req('cold-editor'))).name,'Updated');
+ const result=await api.staffUpdateMyProfile(req('cold-editor',{name:'Original',avatar:'🐯'}));
+ assert.equal(result.name,'Original');assert.equal(result.avatar,'🐯');
+ assert.equal((await api.staffGetIdentity(req('cold-editor'))).name,'Original');
 });
 
 test('linked devices cannot switch identity and concurrent claims cannot overwrite a device identity',async()=>{
@@ -213,13 +215,41 @@ test('avatar directory returns public display fields only, omits inactive staff 
  const {api,state}=harness('manager',{cold:true});
  await rejects(()=>api.staffGetAvatarDirectory(req(null)),'unauthenticated');
  const a=await api.staffRegisterSelfProfile(req('a',{name:'Old name',avatar:'🐬'}));state.delete('staffProfileRate/a');
- await api.staffUpdateMyProfile(req('a',{name:'New name',avatar:'🐯'}));
+ await api.staffUpdateMyProfile(req('a',{name:'Old name',avatar:'🐯'}));
  state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Inactive',active:false});
  const directory=await api.staffGetAvatarDirectory(req('reader'));assert.equal(directory.profiles.length,1);
  assert.equal(directory.profiles[0].employeeId,a.employeeId);assert.equal(directory.profiles[0].avatar,'🐯');
- assert.equal(directory.profiles[0].nameAliases[0],'Old name');
+ assert.equal(directory.profiles[0].name,'Old name');
+ assert.equal(directory.profiles[0].nameAliases.length,0);
  assert.equal(directory.profiles[0].profileVersion,1);
  assert.deepEqual(Object.keys(directory.profiles[0]).sort(),['avatar','employeeId','name','nameAliases','profileVersion','selectedFrame','selectedTitle']);
  assert.ok(!JSON.stringify(directory).includes('ownerUid'));
 });
 
+
+test('DOL-0001 approves registered staff and unlocks their linked device',async()=>{
+ const {api,state}=harness();
+ const employee=await api.staffRegisterSelfProfile(req('worker',{name:'New Crew',avatar:'🐯'}));
+ assert.equal(employee.verified,false);assert.equal(employee.approved,false);
+ await rejects(()=>api.staffListPendingApprovals(req('worker')),'permission-denied');
+ await rejects(()=>api.staffApproveRegistration(req('worker',{employeeId:employee.employeeId})),'permission-denied');
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Head Manager',active:true});
+ state.set('staffIdentity/manager-device',{employeeId:'DOL-0001',name:'Head Manager',verified:true});
+ const pending=await api.staffListPendingApprovals(req('manager-device'));
+ assert.equal(pending.profiles.length,1);assert.equal(pending.profiles[0].name,'New Crew');
+ assert.equal(pending.profiles[0].ownerUid,undefined);
+ const approved=await api.staffApproveRegistration(req('manager-device',{employeeId:employee.employeeId}));
+ assert.equal(approved.approved,true);
+ assert.equal(state.get('staffRegistry/'+employee.employeeId).approved,true);
+ assert.equal(state.get('staffIdentity/worker').verified,true);
+ assert.equal((await api.staffGetIdentity(req('worker'))).verified,true);
+ assert.equal((await api.staffListPendingApprovals(req('manager-device'))).profiles.length,0);
+});
+test('Manager ID DOL-0001 cannot be spoofed by registration or unverified identity',async()=>{
+ const {api,state}=harness();
+ await api.staffRegisterSelfProfile(req('attacker',{name:'Fake Manager',employeeId:'DOL-0001'}));
+ await rejects(()=>api.staffListPendingApprovals(req('attacker')),'permission-denied');
+ state.set('staffIdentity/attacker',{employeeId:'DOL-0001',verified:false,name:'Fake Manager'});
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Head Manager',active:true});
+ await rejects(()=>api.staffListPendingApprovals(req('attacker')),'permission-denied');
+});

@@ -1,0 +1,60 @@
+/* Dolphin Staff Access Gate — approved employee/device onboarding.
+   The browser gate is UX; data access must also be enforced by server rules. */
+html.dolphin-access-pending #landing,
+html.dolphin-access-pending #app-view { visibility:hidden!important }
+html.dolphin-access-pending body{overflow:hidden!important}
+#dolphinAccessGate{
+ position:fixed;inset:0;z-index:2147483640;
+ display:flex;align-items:center;justify-content:center;
+ padding:18px;overflow-y:auto;
+ background:radial-gradient(ellipse at 52% -15%,#305f55 0%,#0b2724 45%,#041412 100%);
+ color:#f7f6ee;font:500 14px/1.5 system-ui,-apple-system,'Segoe UI',sans-serif;
+}
+#dolphinAccessGate[hidden]{display:none!important}
+#dolphinAccessGate *{box-sizing:border-box}
+#dolphinAccessGate .dag-card{
+ width:min(100%,440px);max-height:calc(100dvh - 36px);overflow-y:auto;
+ border:1px solid #c7a35c80;border-radius:26px;padding:24px;
+ background:linear-gradient(160deg,#16453e,#091e20);
+ box-shadow:0 22px 70px #000b,0 0 45px #f0c46d22;
+}
+#dolphinAccessGate .dag-logo{text-align:center;font-size:42px;margin:0}
+#dolphinAccessGate h1{margin:2px 0 0;text-align:center;letter-spacing:.11em;color:#ffe3a3;font-size:21px}
+#dolphinAccessGate .dag-sub{text-align:center;color:#b6d5c9;font-size:12px;margin:3px 0 23px}
+#dolphinAccessGate .dag-tabs{display:flex;gap:8px;margin-bottom:19px}
+#dolphinAccessGate button{cursor:pointer;font:inherit}
+#dolphinAccessGate .dag-tab{flex:1;background:#0b302b;color:#bde3d5;border:1px solid #608d7d;border-radius:12px;padding:10px;font-weight:800}
+#dolphinAccessGate .dag-tab[aria-selected=true]{background:#f6d478;border-color:#f6d478;color:#112c2a}
+#dolphinAccessGate .dag-panel[hidden]{display:none!important}
+#dolphinAccessGate label{display:block;font-size:12px;color:#e3f6e9;font-weight:800;margin-bottom:6px}
+#dolphinAccessGate input{display:block;width:100%;padding:13px 14px;border-radius:12px;border:1px solid #6a9683;background:#0c2b28;color:#fff;font-size:15px}
+#dolphinAccessGate input:focus-visible,#dolphinAccessGate button:focus-visible{outline:3px solid #fff0ab;outline-offset:2px}
+#dolphinAccessGate p.dag-help{color:#b6d5c9;font-size:12px;margin:8px 0 16px}
+#dolphinAccessGate .dag-primary{background:linear-gradient(100deg,#ffe5a1,#eabb55);border:0;border-radius:12px;padding:13px;color:#17312b;font-weight:900;width:100%;margin-top:14px}
+#dolphinAccessGate button:disabled{opacity:.55;cursor:not-allowed}
+#dolphinAccessGate .dag-avatars{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:8px;margin:12px 0 16px}
+#dolphinAccessGate .dag-avatar{display:grid;place-items:center;min-height:47px;background:#0f3834;border:1px solid #4c8272;border-radius:13px;font-size:25px}
+#dolphinAccessGate .dag-avatar[aria-pressed=true]{border:2px solid #ffe089;box-shadow:0 0 12px #edc76d88;background:#2f4b3e}
+#dolphinAccessGate .dag-status{text-align:center;padding:10px;border-radius:11px;background:#112f2a;margin-top:16px;white-space:pre-wrap}
+#dolphinAccessGate .dag-status[data-error=true]{color:#ffd4c8;border:1px solid #e68562}
+#dolphinAccessGate .dag-pending{text-align:center;padding:15px 0}
+#dolphinAccessGate .dag-pending strong{display:block;color:#ffe2a0;font-size:18px}
+#dolphinAccessGate .dag-secondary{border:1px solid #94b8a7;background:transparent;color:#f7f5e9;border-radius:12px;padding:10px 13px;margin-top:10px}
+#dolphinAccessGate .dag-switch{display:flex;gap:7px;align-items:flex-start;margin:10px 0}
+#dolphinAccessGate .dag-switch input{width:auto;margin:4px}
+#dolphinAccessGate .dag-manager-row{padding:12px 0;border-bottom:1px solid #ffffff22;display:flex;align-items:center;gap:10px}
+#dolphinAccessGate .dag-manager-row .dag-person{flex:1;min-width:0;overflow-wrap:anywhere}
+#dolphinAccessGate .dag-manager-row button{border:0;border-radius:9px;background:#f3d07d;color:#16312c;padding:8px 12px;font-weight:800}
+#dolphinAccessGate .dag-back{width:100%}
+#dolphinAccessManager{
+ position:fixed;bottom:calc(88px + env(safe-area-inset-bottom,0px));left:14px;
+ z-index:2147483001;background:#103d36;color:#ffdf8f;border:2px solid #f1cb72;
+ border-radius:30px;padding:10px 14px;font:800 12px system-ui;box-shadow:0 4px 20px #0007;
+}
+#dolphinAccessManager[hidden]{display:none!important}
+@media(max-width:400px){
+ #dolphinAccessGate{padding:9px}
+ #dolphinAccessGate .dag-card{padding:16px;border-radius:18px}
+ #dolphinAccessGate .dag-avatars{gap:5px}
+ #dolphinAccessGate .dag-avatar{min-height:42px;font-size:22px}
+}

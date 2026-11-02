@@ -27,7 +27,7 @@ async function staff(req){
  const identity=(await db.ref('staffIdentity/'+u).once('value')).val();
  if(identity?.verified!==true||!identity.employeeId)throw new HttpsError('permission-denied','Cần Staff ID do quản lý xác minh. Hồ sơ tự đăng ký chưa được cấp XP.');
  const p=(await db.ref('staffRegistry/'+identity.employeeId).once('value')).val();
- if(!p?.active||p.registrationSource==='self')throw new HttpsError('permission-denied','Hồ sơ chưa được xác minh');
+ if(!p?.active||(p.registrationSource==='self'&&p.approved!==true))throw new HttpsError('permission-denied','Hồ sơ chưa được quản lý duyệt');
  if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))throw new HttpsError('permission-denied','Staff ID không hợp lệ');
  const managers=new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()));
  return {id:p.employeeId,name:p.name,uid:u,admin:managers.has(u)};

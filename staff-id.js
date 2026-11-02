@@ -63,7 +63,7 @@ function render(){
 async function call(name,data){
  await connect();if(!api)throw Error('Chưa kết nối máy chủ. Vui lòng thử lại.');
  const result=await api(name)(data||{});
- if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory'].includes(name)){
+ if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration'].includes(name)){
   if(name==='staffClaimLinkCode')await refresh();
   else{identity={...result.data,linked:true};emit();}
  }
@@ -115,6 +115,8 @@ window.DolphinStaffId={get:()=>identity,refresh,ready:connect,register:data=>cal
  update:data=>call('staffUpdateMyProfile',data),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
+ listPending:()=>call('staffListPendingApprovals'),
+ approveRegistration:employeeId=>call('staffApproveRegistration',{employeeId}),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},
  syncSavedActivity:syncXP,retrySavedXP:retryXP,
  recoverTodayXP:async()=>{await connect();if(!api)throw Error('Chưa kết nối Firebase XP');const result=await api('staffSyncMyRecentXP')({});return result.data;},

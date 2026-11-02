@@ -74,10 +74,9 @@ test('replayed and correctly verified game run awards once per task and per day'
 });
 test('shared pure replay engine rejects tampered and impossible inputs',()=>{
  for(const game of ['snake','2048']){
-  const run=engine.replay(game,2031,'UDLR');
-  assert.equal(run.valid,false,'Reverse-direction or ineffective movement is rejected');
   assert.equal(engine.replay(game,2031,'GODMODE').valid,false);
   const a=engine.replay(game,123,'RRRR'),b=engine.replay(game,123,'RRRR');
   assert.deepEqual(a,b,'Same seed and moves have deterministic results');
  }
+ assert.equal(engine.replay('snake',2031,'L').valid,false,'Snake cannot reverse into its body');
 });

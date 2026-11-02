@@ -27,7 +27,6 @@
 
   var DELAY_MS      = 5 * 60 * 1000;
   var ALERT_POLL_MS = 20000;
-  var DASH_POLL_MS  = 30000;
 
   var TOAST_MAX        = 5;
   var TOAST_DEFAULT_MS = 3200;
@@ -502,131 +501,7 @@
     el.classList.add('show');
   }
 
-  /* ============================================================
-     D1: MINI DASHBOARD FOR MANAGER — ĐẨY XUỐNG CUỐI
-     ============================================================ */
-  function injectDashboardStyles(){
-    if (document.getElementById('mgrDashStyles')) return;
-    var s = document.createElement('style');
-    s.id = 'mgrDashStyles';
-    s.textContent = [
-      '#mgrDash{',
-      '  display:none;',
-      '  margin:2rem auto 0.5rem;',                       /* ← đẩy xuống: margin-top lớn */
-      '  max-width:min(92vw,900px);',
-      '  background:linear-gradient(135deg,rgba(15,61,56,.85),rgba(10,43,40,.92));',
-      '  border:2px solid var(--theme-border, rgba(244,184,66,.55));',
-      '  border-radius:18px;padding:14px 18px;',
-      '  box-shadow:0 8px 28px rgba(0,0,0,.5),0 0 32px var(--theme-glow, rgba(244,184,66,.25)),inset 0 0 24px var(--theme-glow, rgba(244,184,66,.06));',
-      '  backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);',
-      '  font-family:"Nunito",sans-serif;',
-      '}',
-      '#mgrDash.show{ display:block;animation:mgrIn .6s ease-out; }',
-      '@keyframes mgrIn{ from{opacity:0;transform:translateY(-8px)} to{opacity:1;transform:translateY(0)} }',
-      '#mgrDash .mgr-head{ display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px;padding-bottom:8px;border-bottom:1px dashed var(--theme-border-soft, rgba(244,184,66,.25)); }',
-      '#mgrDash .mgr-title{ font-size:12px;font-weight:900;color:var(--theme-accent, #FBD77A);text-transform:uppercase;letter-spacing:.12em;text-shadow:0 0 10px var(--theme-glow, rgba(244,184,66,.5));display:flex;align-items:center;gap:6px; }',
-      '#mgrDash .mgr-time{ font-size:10.5px;font-weight:700;color:var(--theme-accent2, #bfe9dc);opacity:.85;font-variant-numeric:tabular-nums; }',
-      '#mgrDash .mgr-grid{ display:grid;grid-template-columns:repeat(3,1fr);gap:8px; }',
-      '@media(min-width:640px){ #mgrDash .mgr-grid{ grid-template-columns:repeat(5,1fr); } }',
-      '#mgrDash .mgr-item{ position:relative;background:rgba(0,0,0,.22);border:1.5px solid var(--theme-border-soft, rgba(244,184,66,.22));border-radius:12px;padding:9px 8px;text-align:center;cursor:pointer;transition:all .25s ease; }',
-      '#mgrDash .mgr-item:hover{ background:rgba(244,184,66,.10);border-color:var(--theme-border, rgba(244,184,66,.55));transform:translateY(-2px);box-shadow:0 6px 16px var(--theme-glow, rgba(244,184,66,.3)); }',
-      '#mgrDash .mgr-item.no-click{ cursor:default; }',
-      '#mgrDash .mgr-item.no-click:hover{ transform:none;background:rgba(0,0,0,.22);box-shadow:none; }',
-      '#mgrDash .mgr-label{ font-size:9.5px;font-weight:800;color:var(--theme-accent2, #bfe9dc);text-transform:uppercase;letter-spacing:.06em;opacity:.85;margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }',
-      '#mgrDash .mgr-value{ font-family:"Fraunces","Nunito",serif;font-size:20px;font-weight:900;line-height:1;color:var(--theme-accent, #FBD77A);text-shadow:0 0 12px var(--theme-glow, rgba(244,184,66,.5));font-variant-numeric:tabular-nums; }',
-      '#mgrDash .mgr-value.danger{ color:#FF6B6B;text-shadow:0 0 12px rgba(239,68,68,.6); }',
-      '#mgrDash .mgr-value.ok{ color:#66BB6A;text-shadow:0 0 12px rgba(102,187,106,.5); }',
-      '#mgrDash .mgr-sub{ font-size:9px;font-weight:700;color:var(--theme-accent2, #bfe9dc);opacity:.7;margin-top:2px; }',
-      '@media(max-width:520px){',
-      '  #mgrDash{ padding:11px 12px;margin-top:1.5rem; }',
-      '  #mgrDash .mgr-title{ font-size:11px; }',
-      '  #mgrDash .mgr-value{ font-size:17px; }',
-      '  #mgrDash .mgr-item{ padding:8px 6px; }',
-      '}'
-    ].join('\n');
-    document.head.appendChild(s);
-  }
-
-  /* ═══════════ ĐẨY XUỐNG CUỐI — SAU AREA GRID ═══════════ */
-  function ensureDashEl(){
-    var el = document.getElementById('mgrDash');
-    if (el) return el;
-    el = document.createElement('div');
-    el.id = 'mgrDash';
-    el.innerHTML =
-      '<div class="mgr-head">' +
-      '  <div class="mgr-title">📊 TỔNG QUAN HÔM NAY</div>' +
-      '  <div class="mgr-time" id="mgrTime">--:--</div>' +
-      '</div>' +
-      '<div class="mgr-grid" id="mgrGrid"></div>';
-
-    /* Chèn NGAY SAU .area-grid */
-    var areaGrid = document.querySelector('.area-grid');
-    if (areaGrid && areaGrid.parentNode){
-      if (areaGrid.nextSibling){
-        areaGrid.parentNode.insertBefore(el, areaGrid.nextSibling);
-      } else {
-        areaGrid.parentNode.appendChild(el);
-      }
-    } else {
-      /* Fallback: chèn cuối container chính */
-      var container = document.querySelector('#landing > div > div');
-      if (container) container.appendChild(el);
-      else document.body.appendChild(el);
-    }
-    return el;
-  }
-
-  var dashStats = {
-    lounge:    { total:0, pending:0, preparing:0, done:0, delayed:0 },
-    bungalow:  { total:0, pending:0, preparing:0, done:0, delayed:0 },
-    restaurant:{ total:0, pending:0, preparing:0, done:0, delayed:0 },
-    staffOnline: 0
-  };
-
-  function renderDashboard(){
-    var el = document.getElementById('mgrDash');
-    if (!el || !el.classList.contains('show')) return;
-    var t = new Date();
-    var timeEl = document.getElementById('mgrTime');
-    if (timeEl) timeEl.textContent = String(t.getHours()).padStart(2,'0') + ':' + String(t.getMinutes()).padStart(2,'0');
-
-    var totalAll = 0, pendingAll = 0, delayedAll = 0;
-    AREAS.forEach(function(a){
-      var s = dashStats[a.key];
-      if (!s) return;
-      totalAll += s.total; pendingAll += s.pending; delayedAll += s.delayed;
-    });
-
-    document.getElementById('mgrGrid').innerHTML =
-      '<div class="mgr-item no-click">' +
-      '  <div class="mgr-label">📦 Tổng đơn</div>' +
-      '  <div class="mgr-value">' + totalAll + '</div>' +
-      '  <div class="mgr-sub">' + pendingAll + ' chờ xử lý</div>' +
-      '</div>' +
-      '<div class="mgr-item" onclick="openApp(\'lounge\')">' +
-      '  <div class="mgr-label">🍸 Lounge</div>' +
-      '  <div class="mgr-value">' + dashStats.lounge.total + '</div>' +
-      '  <div class="mgr-sub">' + dashStats.lounge.pending + ' chờ</div>' +
-      '</div>' +
-      '<div class="mgr-item" onclick="openApp(\'bungalow\')">' +
-      '  <div class="mgr-label">🌴 Bungalow</div>' +
-      '  <div class="mgr-value">' + dashStats.bungalow.total + '</div>' +
-      '  <div class="mgr-sub">' + dashStats.bungalow.pending + ' chờ</div>' +
-      '</div>' +
-      '<div class="mgr-item" onclick="openApp(\'restaurant\')">' +
-      '  <div class="mgr-label">🍽️ Restaurant</div>' +
-      '  <div class="mgr-value">' + dashStats.restaurant.total + '</div>' +
-      '  <div class="mgr-sub">' + dashStats.restaurant.pending + ' chờ</div>' +
-      '</div>' +
-      '<div class="mgr-item no-click">' +
-      '  <div class="mgr-label">⚠️ Trễ / 🟢 Online</div>' +
-      '  <div class="mgr-value ' + (delayedAll > 0 ? 'danger' : 'ok') + '">' +
-           delayedAll + ' <span style="font-size:14px;opacity:.7;">/</span> ' + dashStats.staffOnline +
-      '  </div>' +
-      '  <div class="mgr-sub">quá 5 phút · nhân viên</div>' +
-      '</div>';
-  }
+  /* Manager Landing overview widget was removed by design. */
 
   /* ============================================================
      C2: EMPTY STATES
@@ -694,7 +569,6 @@
       function onReady(){
         if (hasLanding() && !isIframe()){
           listenOrders(fbStore, db);
-          if (isManager()) listenStaff(fbStore, db);
         }
       }
 
@@ -711,21 +585,13 @@
     AREAS.forEach(function(a){
       fbStore.onSnapshot(fbStore.collection(db, a.col), function(snap){
         var now = Date.now();
-        var total = 0, pending = 0, preparing = 0, done = 0, delayed = 0;
+        var delayed = 0;
         snap.forEach(function(doc){
           var o = doc.data() || {};
-          total++;
-          if (o.status === 'pending'){
-            pending++;
-            if (o.timestamp && (now - o.timestamp) > DELAY_MS) delayed++;
-          } else if (o.status === 'preparing') preparing++;
-          else if (o.status === 'completed') done++;
+          if (o.status === 'pending' && o.timestamp && (now - o.timestamp) > DELAY_MS) delayed++;
         });
         delayedCache[a.key] = { count: delayed };
-        dashStats[a.key] = { total: total, pending: pending, preparing: preparing, done: done, delayed: delayed };
         updateDelayAlert();
-        var d = document.getElementById('mgrDash');
-        if (d && d.classList.contains('show')) renderDashboard();
       }, function(err){
         console.warn('[DolphinUI] listen error', a.col, err);
       });
@@ -733,21 +599,6 @@
     setInterval(updateDelayAlert, ALERT_POLL_MS);
   }
 
-  function listenStaff(fbStore, db){
-    fbStore.onSnapshot(fbStore.collection(db, 'staff_online'), function(snap){
-      var now = Date.now();
-      var count = 0;
-      snap.forEach(function(doc){
-        var d = doc.data() || {};
-        if (d.lastSeen && (now - d.lastSeen) < 90000) count++;
-      });
-      dashStats.staffOnline = count;
-      var el = document.getElementById('mgrDash');
-      if (el && el.classList.contains('show')) renderDashboard();
-    }, function(err){
-      console.warn('[DolphinUI] staff listen error:', err);
-    });
-  }
   /* ============================================================
      ✅ ẨN WIDGET NHẠC + THÔNG BÁO TRÊN MANAGER.APK
      ============================================================ */
@@ -851,16 +702,9 @@
       if (isManager()) hideManagerWidgets();
 
       injectAlertStyles();
-      injectDashboardStyles();
       ensureAlertEl();
-      if (isManager()){
-        var d = ensureDashEl();
-        d.classList.add('show');
-        setInterval(function(){
-          var el = document.getElementById('mgrDash');
-          if (el && el.classList.contains('show')) renderDashboard();
-        }, DASH_POLL_MS);
-      }
+      // Clean up any stale widget inserted by an older cached Manager script.
+      document.getElementById('mgrDash')?.remove();
       initFirebase();
     } else {
       injectEmptyStates();

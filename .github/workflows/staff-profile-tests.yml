@@ -1,10 +1,10 @@
 name: Staff profile checks
 on:
   pull_request:
-    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','.github/workflows/staff-profile-tests.yml']
   push:
     branches: [main]
-    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','.github/workflows/staff-profile-tests.yml']
+    paths: ['dolphin-profile.html','staff-profile.css','staff-prestige-profile.js','staff-prestige-client.js','dolphin-avatars*','avatar-system.js','staff-profile.js','staff-id.js','staff-sync*','staff-online.js','functions/staff-profile.js','functions/staff-avatar-catalog.json','functions/staff-id.test.js','functions/index.js','scripts/avatar-sync-browser.cjs','scripts/crew-cosmetics.test.cjs','crew-cosmetics.css','ranking/staff-prestige-ranking.js','.github/workflows/staff-profile-tests.yml']
 permissions:
   contents: read
 jobs:
@@ -23,7 +23,7 @@ jobs:
           node --check staff-online.js
           node --check functions/staff-profile.js
           node --check dolphin-avatars.js
-          node --test functions/staff-id.test.js staff-sync.test.js dolphin-avatars.test.cjs
+          node --test functions/staff-id.test.js staff-sync.test.js dolphin-avatars.test.cjs scripts/crew-cosmetics.test.cjs
           node scripts/check-service-pages.cjs
       - run: npm install --no-save --package-lock=false playwright
       - run: npx playwright install --with-deps chromium

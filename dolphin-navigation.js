@@ -30,7 +30,7 @@
    const link=document.createElement('link');link.rel='stylesheet';
    link.href=new URL('staff-access.css?v=approval-20261102',base).href;
    document.head.appendChild(link);
-   const script=document.createElement('script');script.src=new URL('staff-access.js?v=approval-20261102',base).href;
+   const script=document.createElement('script');script.src=new URL('staff-access.js?v=approval-reject-v2',base).href;
    document.head.appendChild(script);
   }
   // The shell owns floating navigation when embedded; games retain their own guarded exit buttons.

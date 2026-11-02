@@ -25,7 +25,7 @@ test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
   assert.ok(css.includes('data-frame="'+id+'"'),'missing '+id+' frame effect');
   assert.ok(profile.includes("['"+id+"',")&&profile.includes("preview.dataset.frame=id"),'missing '+id+' dynamic frame preview');
  }
- assert.match(avatars,/crew-cosmetics\.css\?v=crew-v5-20261102/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=crew-mythic-v7/);
  assert.match(avatars,/crew-cosmetics-stylesheet/);
 });
 test('previews accurately show locked, unlocked, and equipped states',()=>{
@@ -79,8 +79,8 @@ test('all ranking tabs and the Emperor read a shared equipped frame',()=>{
  assert.match(rankingHTML,/function rankingTitle\(name\)/);
 });
 test('both PWA cache and runtime resolve exactly the same V3 cosmetic asset',()=>{
- assert.match(worker,/crew-cosmetics\.css\?v=crew-v5-20261102/);
- assert.match(avatars,/crew-cosmetics\.css\?v=crew-v5-20261102/);
+ assert.match(worker,/crew-cosmetics\.css\?v=crew-mythic-v7/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=crew-mythic-v7/);
 });
 
 
@@ -89,7 +89,7 @@ test('V4 ring satellites have different physical counts and opposite directions'
  assert.match(css,/CREW CLUB V4 — TRUE ORBIT ANIMATIONS/);
  assert.match(avatarJs,/const count=\{bronze:1,silver:2,gold:3\}\[frame\]/);
  assert.match(avatarJs,/if\(frame==='mythic'\)/);
- assert.match(avatarJs,/for\(let i=1;i<=2;i\+\+\)/);
+ assert.match(avatarJs,/for\(let i=1;i<=4;i\+\+\)/);
  assert.match(css,/crew-fx-ring--1/);
  assert.match(css,/crew-fx-ring--2/);
  assert.match(css,/crew-fx-ring--3/);

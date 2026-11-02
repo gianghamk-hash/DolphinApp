@@ -47,6 +47,13 @@
  <button type="button" class="secondary test-xp-reset" id="admin-test-xp-reset">Đặt lại XP & Level về 0 / 1</button>
  <p id="admin-test-xp-result" class="hint" role="status" aria-live="polite"></p>
 </section>
+<section id="crew-manager-approvals" class="card crew-manager-panel" hidden aria-label="Quản lý nhân viên DOL-0001">
+ <div class="section-line"><h2>👑 Quản lý nhân viên</h2><span id="crew-approval-count" class="level-tag">0 hồ sơ</span></div>
+ <p class="hint">Chỉ tài khoản DOL-0001 đã xác minh có thể phê duyệt nhân viên.</p>
+ <button type="button" class="primary full" id="crew-approval-open">Duyệt nhân viên <span id="crew-approval-badge" hidden>🔴</span></button>
+ <label class="effect-setting" for="crew-manager-ranking-toggle"><span><strong>Hiện trên bảng xếp hạng</strong><small>Bật để DOL-0001 tham gia xếp hạng; tắt để ẩn khỏi bảng công khai.</small></span><input type="checkbox" id="crew-manager-ranking-toggle"></label>
+ <p id="crew-manager-feedback" class="hint" role="status"></p>
+</section>
 <a class="settings-row ranking-shortcut" href="./ranking/index.html#level" aria-label="Mở bảng xếp hạng Level và XP trong app Bảng Xếp Hạng"><span class="action-icon"><svg class="icon" aria-hidden="true"><use href="#i-crown"/></svg></span><span><strong>Bảng xếp hạng Level · XP</strong><small>Xem Dolphin Emperor, thứ hạng nhân viên và Legendary Wall tại app Bảng Xếp Hạng.</small></span><span aria-hidden="true">↗</span></a>
 <button id="prestige-admin-launch" type="button" class="settings-row" data-open-dialog="admin-dialog" hidden><span class="action-icon"><svg class="icon"><use href="#i-shield"/></svg></span><span><strong>Duyệt XP nhân viên</strong><small>Dành cho quản lý được cấp quyền</small></span><span aria-hidden="true">↗</span></button>
 <p class="page-note">Dolphin Crew Club chỉ để vui chơi và mở khóa trải nghiệm. Không liên quan đến lương, thưởng hoặc đánh giá công việc.</p>
@@ -73,7 +80,10 @@
 <div class="cosmetic-selects">
 <label for="staff-frame-select">Khung Avatar<select id="staff-frame-select"></select></label>
 <label for="staff-title-select">Danh hiệu dưới tên<select id="staff-title-select"></select></label>
-<label for="staff-banner-select">Banner hồ sơ<select id="staff-banner-select"></select></label>
+<label for="staff-banner-select">Banner hồ sơ<select id="staff-banner-select"></select></label><label for="staff-nameFx-select">🌈 Kiểu tên phát sáng<select id="staff-nameFx-select"></select></label>
+<label for="staff-aura-select">💫 Hào quang Avatar<select id="staff-aura-select"></select></label>
+<label for="staff-trail-select">☄️ Vệt sao<select id="staff-trail-select"></select></label>
+<label for="staff-cardFx-select">✨ Hiệu ứng thẻ hồ sơ<select id="staff-cardFx-select"></select></label>
 </div>
 <section class="crew-fx-section" aria-label="Xem trước từng cấp khung avatar">
  <h3>💎 Khung avatar theo bậc hiếm</h3><p>Bronze đúc đồng → Silver băng sáng → Gold hào quang hoàng kim → Mythic quỹ đạo cực quang.</p>
@@ -87,7 +97,13 @@
 <label class="effect-setting" for="staff-gradient-check"><span><strong>🌈 Tên gradient</strong><small>Mở tại Level 45</small></span><input id="staff-gradient-check" type="checkbox" disabled></label>
 </section>
 <div class="panel-section"><h3>Bộ sưu tập chủ đề</h3><p class="hint">Dark, Light, Gray luôn miễn phí. Chủ đề khác mở theo cấp độ.</p><div id="staff-theme-grid" class="theme-grid"></div></div><button type="button" class="primary full" id="staff-save-style" disabled>Lưu giao diện</button><p id="staff-style-info" class="hint" role="status"></p></dialog>
-<dialog id="rewards-dialog" aria-labelledby="rewards-title"><div class="dialog-head"><div><p class="eyebrow">Hành trình thăng hạng</p><h2 id="rewards-title">Các mốc phần thưởng</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng phần thưởng">✕</button></div><p class="hint">XP tích lũy theo Staff ID. Cấp độ cao nhất và phần thưởng đã mở được giữ khi điều chỉnh XP thông thường. Admin có thể tự đặt lại tiến trình để thử nghiệm.</p><p id="reward-next-callout" class="reward-next-callout" aria-live="polite"></p><div id="staff-reward-list" class="reward-list"></div><details class="panel-section"><summary>XP được tính như thế nào?</summary><p class="hint">1.000đ doanh thu hợp lệ = 1 XP. 0,1 điểm công việc = 1 XP. XP được tự tính từ bàn đã lưu và đơn hoàn thành theo cùng quy tắc bảng xếp hạng doanh thu/công việc. Chạm “Kiểm tra XP hôm nay” nếu đã phục vụ nhưng chưa thấy điểm.</p><p class="hint">Ngưỡng Level L = 5.000 × (L − 1)² XP. Cấp tối đa: 60. Doanh thu tính cho người mở bàn/người bán; công việc chỉ tính trên đơn hoàn tất.</p></details></dialog>
+<dialog id="rewards-dialog" aria-labelledby="rewards-title"><div class="dialog-head"><div><p class="eyebrow">Hành trình thăng hạng</p><h2 id="rewards-title">Các mốc phần thưởng</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng phần thưởng">✕</button></div><p class="hint">XP tích lũy theo Staff ID. Cấp độ cao nhất và phần thưởng đã mở được giữ khi điều chỉnh XP thông thường. Admin có thể tự đặt lại tiến trình để thử nghiệm.</p><p id="reward-next-callout" class="reward-next-callout" aria-live="polite"></p><div id="staff-reward-list" class="reward-list"></div><details class="panel-section"><summary>XP được tính như thế nào?</summary><p class="hint">1.000đ doanh thu hợp lệ = 1 XP. 0,1 điểm công việc = 1 XP. XP được tự tính từ bàn đã lưu và đơn hoàn thành theo cùng quy tắc bảng xếp hạng doanh thu/công việc. Chạm “Kiểm tra XP hôm nay” nếu đã phục vụ nhưng chưa thấy điểm.</p><p class="hint">Ngưỡng Level L = 3.500 × (L − 1)² XP. Cấp tối đa: 60. Doanh thu tính cho người mở bàn/người bán; công việc chỉ tính trên đơn hoàn tất.</p></details></dialog>
 <dialog id="admin-dialog" aria-labelledby="admin-title"><div class="dialog-head"><div><p class="eyebrow">Quản lý</p><h2 id="admin-title">Duyệt XP nhân viên</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng duyệt XP">✕</button></div><div id="prestige-admin-mount"></div></dialog>
+<dialog id="crew-approval-dialog" aria-labelledby="crew-approval-dialog-title">
+ <div class="dialog-head"><h2 id="crew-approval-dialog-title">👑 Nhân viên chờ phê duyệt</h2>
+ <button type="button" class="icon-button" id="crew-approval-close" aria-label="Đóng duyệt nhân viên">✕</button></div>
+ <div id="crew-approval-list"></div><p id="crew-approval-dialog-status" role="status" class="hint"></p>
+ <button type="button" class="secondary full" id="crew-approval-refresh">Làm mới danh sách</button>
+</dialog>
 <dialog id="avatar-dialog" aria-labelledby="avatar-title"><div class="dialog-head"><h2 id="avatar-title">Chọn avatar</h2><button id="close-avatars" class="icon-button" type="button" aria-label="Đóng bộ chọn avatar">✕</button></div><label for="avatar-category">Bộ sưu tập</label><select id="avatar-category"></select><div id="avatar-grid" class="avatar-grid"></div><p class="hint">Chọn avatar, rồi lưu hồ sơ để áp dụng.</p></dialog>
 </body></html>

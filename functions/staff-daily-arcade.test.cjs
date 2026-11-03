@@ -29,6 +29,7 @@ function fixture(options={}){
   if(name==='./crew-arcade-proof.cjs')return options.validReplay
    ?{replay:(game)=>({valid:true,score:game==='snake'?100:1000,steps:100})}:engine;
   if(name==='./staff-prestige')return {_rebuildPrestige:async()=>{rebuilds++;}};
+  if(name==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
   throw Error(name);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-daily-missions.js','utf8'),ctx);

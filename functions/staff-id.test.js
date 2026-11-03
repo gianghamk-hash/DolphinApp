@@ -338,3 +338,79 @@ test('rejected application cannot reactivate by manager approval or forged old l
  await rejects(()=>api.staffApproveRegistration(req('owner',{employeeId:crew.employeeId})),'failed-precondition');
  assert.equal((await api.staffGetIdentity(req('crew'))).rejected,true);
 });
+
+
+test('registration rejects short names, accent/case/whitespace duplicates and pending re-registration',async()=>{
+ const {api,state}=harness();
+ await rejects(()=>api.staffRegisterSelfProfile(req('short',{name:'An Le'})),'invalid-argument');
+ const first=await api.staffRegisterSelfProfile(req('first',{name:'Nguyễn Văn An'}));
+ assert.equal(first.verified,false);
+ await rejects(()=>api.staffRegisterSelfProfile(req('second',{name:'  NGUYEN   VAN AN  '})),'already-exists');
+ const copy=await api.staffRegisterSelfProfile(req('first',{name:'Different Employee'}));
+ assert.equal(copy.employeeId,first.employeeId);
+ assert.equal([...state.keys()].filter(k=>k.startsWith('staffRegistry/')).length,1);
+ await rejects(()=>api.staffRequestNameRecovery(req('first',{name:'Nguyễn Văn An'})),'permission-denied');
+ await rejects(()=>api.staffIssueOwnLinkCode(req('first')),'permission-denied');
+});
+test('manager-issued profiles cannot reuse existing pending names',async()=>{
+ const {api}=harness();
+ await api.staffRegisterSelfProfile(req('worker',{name:'Trần Hoàng Anh'}));
+ await rejects(()=>api.staffCreateProfile(req('manager',{employeeId:'DOL-0004',name:'tran hoang anh'})),'already-exists');
+ await rejects(()=>api.staffCreateProfile(req('manager',{employeeId:'DOL-0004',name:'Hai'})),'invalid-argument');
+});
+test('legacy short-name account must rename and keeps ID, XP, work, level and history',async()=>{
+ const {api,state}=harness();
+ const id='DOL-0008',prior={employeeId:id,name:'Lan',active:true,registrationSource:'manager',
+  xp:213745,levelPeak:14,history:{orderA:{amount:250}},revenueXP:6800,workScore:95,avatar:'🐬'};
+ state.set('staffRegistry/'+id,prior);
+ state.set('staffIdentity/old-phone',{employeeId:id,name:'Lan',verified:true});
+ state.set('staffIdentity/new-phone',{employeeId:id,name:'Lan',verified:true});
+ const invalid=await api.staffGetIdentity(req('old-phone'));
+ assert.equal(invalid.verified,true);assert.equal(invalid.requiresNameChange,true);
+ assert.match(invalid.nameIssue,/6 ký tự/);
+ const changed=await api.staffCorrectMyName(req('old-phone',{name:'Nguyễn Thị Lan'}));
+ assert.equal(changed.employeeId,id);assert.equal(changed.requiresNameChange,false);
+ const after=state.get('staffRegistry/'+id);
+ assert.equal(after.name,'Nguyễn Thị Lan');assert.deepEqual(after.nameAliases,['Lan']);
+ for(const key of ['xp','levelPeak','revenueXP','workScore'])assert.equal(after[key],prior[key]);
+ assert.deepEqual(after.history,prior.history);
+ assert.equal(state.get('staffIdentity/new-phone').name,'Nguyễn Thị Lan');
+ assert.equal((await api.staffGetIdentity(req('new-phone'))).requiresNameChange,false);
+ state.delete('staffProfileRate/old-phone');
+ await rejects(()=>api.staffCorrectMyName(req('old-phone',{name:'Another Valid Name'})),'failed-precondition');
+});
+test('historical duplicate approved IDs must independently correct names before entrance',async()=>{
+ const {api,state}=harness();
+ for(const id of ['DOL-0002','DOL-0003']){
+  state.set('staffRegistry/'+id,{employeeId:id,name:'Trần Thanh Bình',active:true,xp:id==='DOL-0002'?72000:43000,registrationSource:'manager'});
+  state.set('staffIdentity/phone-'+id,{employeeId:id,name:'Trần Thanh Bình',verified:true});
+ }
+ assert.equal((await api.staffGetIdentity(req('phone-DOL-0002'))).requiresNameChange,true);
+ assert.equal((await api.staffGetIdentity(req('phone-DOL-0003'))).requiresNameChange,true);
+ await api.staffCorrectMyName(req('phone-DOL-0002',{name:'Bình Trần Hải'}));
+ assert.equal(state.get('staffRegistry/DOL-0002').xp,72000);
+ assert.equal((await api.staffGetIdentity(req('phone-DOL-0002'))).requiresNameChange,false);
+ // Old name remains a preserved alias, so it cannot be newly registered.
+ await rejects(()=>api.staffRegisterSelfProfile(req('new',{name:'Trần Thanh Bình'})),'already-exists');
+ assert.equal((await api.staffGetIdentity(req('phone-DOL-0003'))).requiresNameChange,true);
+ await api.staffCorrectMyName(req('phone-DOL-0003',{name:'Bình Nguyễn Hải'}));
+ assert.equal(state.get('staffRegistry/DOL-0003').xp,43000);
+ assert.equal((await api.staffGetIdentity(req('phone-DOL-0003'))).requiresNameChange,false);
+});
+test('pending legacy name can be corrected but not approved until compliant',async()=>{
+ const {api,state}=harness();
+ const id='DOL-1111111111';
+ state.set('staffRegistry/'+id,{employeeId:id,name:'Test 1',ownerUid:'pending',active:true,registrationSource:'self',approved:false,xp:900});
+ state.set('staffIdentity/pending',{employeeId:id,name:'Test 1',verified:false});
+ state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Manager Dolphin',active:true,registrationSource:'manager'});
+ state.set('staffIdentity/manager-device',{employeeId:'DOL-0001',name:'Manager Dolphin',verified:true});
+ await rejects(()=>api.staffApproveRegistration(req('manager-device',{employeeId:id})),'failed-precondition');
+ assert.equal((await api.staffGetIdentity(req('pending'))).requiresNameChange,true);
+ const renamed=await api.staffCorrectMyName(req('pending',{name:'Phạm Văn Phúc'}));
+ assert.equal(renamed.verified,false);
+ assert.equal(state.get('staffRegistry/'+id).xp,900);
+ const confirmed=await api.staffApproveRegistration(req('manager-device',{employeeId:id}));
+ assert.equal(confirmed.approved,true);
+ const after=await api.staffGetIdentity(req('pending'));
+ assert.equal(after.verified,true);assert.equal(after.requiresNameChange,false);
+});

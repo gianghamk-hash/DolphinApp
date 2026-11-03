@@ -104,16 +104,29 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
 exports.staffRepairMyName=onCall(opts,async req=>{
  const uid=uidOf(req),name=names.normalize(req.data?.name);
  if(!names.valid(name))throw new HttpsError('invalid-argument','Tên mới phải trên 6 ký tự (7–64).');
- await throttle(uid);
+ // Mandatory legacy-name repair is already restricted to the linked Staff ID,
+ // to a valid unique name, and to one successful change. Do not share the
+ // 1.5-second profile-action throttle with registration or gate refreshes:
+ // the user must be able to repair an invalid name immediately.
  const db=getDatabase(),ident=(await db.ref('staffIdentity/'+uid).once('value')).val();
  if(!ident?.employeeId)throw new HttpsError('failed-precondition','Thiết bị chưa liên kết Staff ID.');
  const id=ident.employeeId,ref=db.ref('staffRegistry');
- let duplicate=false,notEligible=false;
+ // Warm the RTDB snapshot before the transaction. A cold initial null in an
+ // Admin SDK transaction must not be mistaken for an absent Staff ID.
+ const initial=(await ref.once('value')).val();
+ if(!initial?.[id]?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
+ let duplicate=false,notEligible=false,alreadyApplied=false;
  const result=await ref.transaction(registry=>{
-  registry=registry||{};
+  if(!registry)return; // Never overwrite the registry on an unknown snapshot.
+  duplicate=false;notEligible=false;alreadyApplied=false;
   const p=registry[id];
   if(!p?.active){notEligible=true;return;}
-  if(!names.needsRename(registry,id)){notEligible=true;return;}
+  if(!names.needsRename(registry,id)){
+   // A successful previous request might have lost its HTTP response.
+   // Treat a retry of that exact name as success, not as a blocked rename.
+   if(names.key(p.name)===names.key(name)){alreadyApplied=true;return;}
+   notEligible=true;return;
+  }
   if(names.nameConflict(registry,name,id)){duplicate=true;return;}
   const previous=names.normalize(p.name);
   const aliases=Array.isArray(p.nameAliases)?p.nameAliases.filter(x=>typeof x==='string'):[];
@@ -121,9 +134,13 @@ exports.staffRepairMyName=onCall(opts,async req=>{
   return {...registry,[id]:{...p,name,nameAliases:aliases.slice(-20),
    profileVersion:(Number(p.profileVersion)||0)+1,nameRepairedAt:Date.now(),updatedAt:Date.now()}};
  },undefined,false);
- if(!result.committed)throw new HttpsError(duplicate?'already-exists':'failed-precondition',
+ if(!result.committed&&!alreadyApplied)throw new HttpsError(duplicate?'already-exists':'failed-precondition',
   duplicate?'Tên đã được nhân viên khác sử dụng.':notEligible?'Hồ sơ không thuộc diện phải sửa tên.':'Không cập nhật được tên. Hãy thử lại.');
- const updated=result.snapshot.val()[id];
+ // For an idempotent retry, re-read the server instead of assuming that the
+ // aborted transaction contains a snapshot.
+ const updated=result.committed?result.snapshot.val()[id]:(await ref.child(id).once('value')).val();
+ if(!updated?.active||names.key(updated.name)!==names.key(name))
+  throw new HttpsError('failed-precondition','Tên nhân viên đã thay đổi. Hãy kiểm tra lại hồ sơ.');
  // Never change Staff ID; preserve the immutable XP ledger and level peak.
  const identities=(await db.ref('staffIdentity').once('value')).val()||{};
  await Promise.all(Object.entries(identities).filter(([,v])=>v?.employeeId===id).map(async ([device])=>{

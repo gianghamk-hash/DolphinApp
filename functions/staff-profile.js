@@ -194,6 +194,31 @@ async function requireAccessManager(req){
   throw new HttpsError('permission-denied','Chưa xác thực quản lý DOL-0001.');
  return uid;
 }
+/* DOL-0001-only approved employee directory. Never expose Firebase UIDs,
+ * recovery tokens or private profile data to the browser. */
+exports.staffListApprovedProfiles=onCall(opts,async req=>{
+ await requireAccessManager(req);
+ const db=getDatabase();
+ const [registrySnap,identitySnap]=await Promise.all([
+  db.ref('staffRegistry').once('value'),
+  db.ref('staffIdentity').once('value')
+ ]);
+ const entries=registrySnap.val()||{},linked=identitySnap.val()||{};
+ const deviceCount=new Map();
+ for(const value of Object.values(linked)){
+  if(value?.employeeId)deviceCount.set(value.employeeId,(deviceCount.get(value.employeeId)||0)+1);
+ }
+ const profiles=Object.values(entries).filter(p=>p?.employeeId&&p.active&&
+  (p.registrationSource!=='self'||p.approved===true))
+  .map(p=>({employeeId:p.employeeId,name:p.name||'',avatar:p.avatar||'🐬',
+   department:p.department||'',createdAt:Number(p.createdAt)||0,
+   approvedAt:Number(p.approvedAt)||0,
+   source:p.registrationSource==='self'?'self':'manager',
+   deviceCount:deviceCount.get(p.employeeId)||0}))
+  .sort((a,b)=>a.name.localeCompare(b.name,'vi')||a.employeeId.localeCompare(b.employeeId))
+  .slice(0,500);
+ return {profiles,total:profiles.length};
+});
 exports.staffListPendingApprovals=onCall(opts,async req=>{
  await requireAccessManager(req);
  const entries=(await getDatabase().ref('staffRegistry').once('value')).val()||{};

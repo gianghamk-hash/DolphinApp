@@ -17,6 +17,7 @@ const source=fs.readFileSync(path.join(__dirname,'..','staff-admin-profile.js'),
   '<div id="crew-manager-access-status" hidden><span id="crew-manager-access-message"></span>'+
   '<p id="crew-manager-auth-diagnostic"></p><button id="crew-manager-verify-retry">Kiểm tra lại</button></div>'+
   '<button id="crew-manager-link-open">Liên kết lại</button>'+
+  '<button id="crew-manager-copy-uid">Sao chép UID</button>'+
   '<button id="crew-approved-open">Đã duyệt</button><span id="crew-approved-count"></span>'+
   '<button id="crew-recovery-open">Khôi phục</button><span id="crew-recovery-count"></span>'+
   '<button id="crew-approval-open"><span id="crew-approval-open-label">Duyệt nhân viên</span><span id="crew-approval-badge" hidden>🔴</span></button>'+

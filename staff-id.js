@@ -115,7 +115,7 @@ async function retryXP(){
 }
 
 window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
- update:data=>call('staffUpdateMyProfile',data),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
+ update:data=>call('staffUpdateMyProfile',data),repairName:name=>call('staffRepairMyName',{name}),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
  listPending:()=>call('staffListPendingApprovals'),

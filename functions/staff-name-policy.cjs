@@ -20,7 +20,8 @@ function validateName(value){
 function conflict(registry,name,employeeId){
  const key=canonicalName(name);
  return Object.values(registry||{}).some(p=>
-  p?.employeeId&&p.employeeId!==employeeId&&canonicalName(p.name)===key);
+  p?.employeeId&&p.employeeId!==employeeId&&
+  [p.name,...(Array.isArray(p.nameAliases)?p.nameAliases:[])].some(alias=>canonicalName(alias)===key));
 }
 function reason(registry,profile){
  if(!profile?.name||Array.from(displayName(profile.name)).length<=6||Array.from(displayName(profile.name)).length>64||

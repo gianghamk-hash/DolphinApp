@@ -2,7 +2,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const vm=require('node:vm'),fs=require('node:fs');
 function harness(){
- const data=new Map([['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager'}],['staffIdentity/self',{verified:false,employeeId:'DOL-0002'}],['staffIdentity/manager',{verified:true,employeeId:'DOL-0003'}],['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Manager',active:true,registrationSource:'manager'}]]);
+ const data=new Map([['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager'}],['staffIdentity/self',{verified:false,employeeId:'DOL-0002'}],['staffIdentity/manager',{verified:true,employeeId:'DOL-0003'}],['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Manager',active:true,registrationSource:'manager'}],['staffIdentity/owner',{verified:true,employeeId:'DOL-0004'}],['staffRegistry/DOL-0004',{employeeId:'DOL-0004',name:'Đỗ Thành Đạt',nameAliases:['Dat G'],active:true,registrationSource:'manager'}],['staffIdentity/intruder',{verified:true,employeeId:'DOL-0005'}],['staffRegistry/DOL-0005',{employeeId:'DOL-0005',name:'Another Employee',active:true,registrationSource:'manager'}]]);
  const docs=new Map(),awards=[],missionAwards=[];
  const ref=p=>({once:async()=>({val:()=>data.get(p)||null,exists:()=>data.has(p)}),set:async v=>{data.set(p,v)},transaction:async fn=>{const v=fn(data.get(p)||null);if(v===undefined)return {committed:false};data.set(p,v);return {committed:true,snapshot:{val:()=>v}};}});
  const db={collection:k=>({doc:id=>({key:k+'/'+id})}),runTransaction:async fn=>fn({get:async r=>({exists:docs.has(r.key),data:()=>docs.get(r.key)}),set:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v}),update:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v})})};
@@ -33,10 +33,10 @@ test('only manager verified staff can open revenue sessions, no duplicate XP',as
 });
 test('Show needs verified booking; same combo is not counted twice',async()=>{
  const h=harness(),combo={kind:'show_tables',id:'S1',action:'combo',data:{combo:'combo2',foods:{set:1}}};
- await assert.rejects(()=>h.call('verified',combo),e=>e.code==='failed-precondition');
- await h.call('verified',{kind:'show_tables',id:'S1',action:'booking',data:{leader:'L',dining:'J1',guests:2,payment:'Tiền mặt'}});
- assert.equal((await h.call('verified',combo)).xpAwarded,790);
- assert.equal((await h.call('verified',combo)).xpAwarded,0);
+ await assert.rejects(()=>h.call('owner',combo),e=>e.code==='failed-precondition');
+ await h.call('owner',{kind:'show_tables',id:'S1',action:'booking',data:{leader:'L',dining:'J1',guests:2,payment:'Tiền mặt'}});
+ assert.equal((await h.call('owner',combo)).xpAwarded,790);
+ assert.equal((await h.call('owner',combo)).xpAwarded,0);
 });
 test('Work credits verified prepare and remaining completion XP once',async()=>{
  const h=harness();h.docs.set('lounge_orders/o1',{status:'pending'});
@@ -164,4 +164,59 @@ test('opening an FOC Lounge table can grant first daily mission XP but not reven
  assert.equal(res.xpAwarded,0);
  assert.equal(res.missionXP,250);
  assert.equal(h.awards.filter(x=>x.source==='revenue').length,0);
+});
+
+
+test('verified DOL-0001 manager can update other staff Lounge PAX, preserving original seller and XP',async()=>{
+ const h=harness();
+ h.docs.set('lounge_tables/LOUNGE 3',{customerName:'Chị Uyên',pax:3,paymentMethod:'TM',openedByStaff:'Dat G',openedByStaffId:'DOL-0004'});
+ const before=h.awards.length;
+ const update=await h.call('verified',{kind:'lounge_tables',id:'LOUNGE 3',action:'update',data:{
+  customerName:'Chị Uyên',pax:4,paymentMethod:'TM',openedByStaff:'forged manager',openedByStaffId:'DOL-0001'
+ }});
+ assert.equal(update.saved,true);assert.equal(update.xpAwarded,0);assert.equal(update.missionXP,0);
+ const saved=h.docs.get('lounge_tables/LOUNGE 3');
+ assert.equal(saved.pax,4);assert.equal(saved.openedByStaff,'Dat G');
+ assert.equal(saved.openedByStaffId,'DOL-0004');assert.equal(saved.updatedBy,'Lan');
+ assert.equal(saved.updatedByStaffId,'DOL-0001');assert.equal(h.awards.length,before);
+});
+test('same verified employee can edit renamed/legacy Lounge table using Staff ID or server nameAliases',async()=>{
+ const h=harness(),req=(id)=>({kind:'lounge_tables',id,action:'update',
+  data:{customerName:'Chị Uyên',pax:4,paymentMethod:'TM'}});
+ h.docs.set('lounge_tables/with-id',{customerName:'Chị Uyên',pax:3,paymentMethod:'TM',openedByStaff:'Dat G',openedByStaffId:'DOL-0004'});
+ h.docs.set('lounge_tables/legacy',{customerName:'Chị Uyên',pax:3,paymentMethod:'TM',openedByStaff:'Dat G'});
+ const a=await h.call('owner',req('with-id')),b=await h.call('owner',req('legacy'));
+ assert.equal(a.xpAwarded,0);assert.equal(b.xpAwarded,0);
+ assert.equal(h.docs.get('lounge_tables/with-id').openedByStaff,'Dat G');
+ assert.equal(h.docs.get('lounge_tables/with-id').openedByStaffId,'DOL-0004');
+ assert.equal(h.docs.get('lounge_tables/legacy').openedByStaff,'Dat G');
+ assert.equal(h.docs.get('lounge_tables/with-id').pax,4);
+ assert.equal(h.awards.length,0);
+});
+test('ordinary employee and forged client opener cannot edit another Staff ID Lounge table',async()=>{
+ const h=harness();h.docs.set('lounge_tables/LOUNGE 3',{
+  customerName:'Chị Uyên',pax:3,paymentMethod:'TM',openedByStaff:'Dat G',openedByStaffId:'DOL-0004'
+ });
+ const input={kind:'lounge_tables',id:'LOUNGE 3',action:'update',data:{
+  customerName:'Chị Uyên',pax:5,paymentMethod:'TM',openedByStaff:'Another Employee',openedByStaffId:'DOL-0005'
+ }};
+ await assert.rejects(()=>h.call('intruder',input),e=>e.code==='permission-denied');
+ assert.equal(h.docs.get('lounge_tables/LOUNGE 3').pax,3);
+ assert.equal(h.awards.length,0);
+});
+test('Lounge update of nonexistent table fails instead of booking/awarding new XP',async()=>{
+ const h=harness();
+ await assert.rejects(()=>h.call('verified',{kind:'lounge_tables',id:'deleted',action:'update',data:{
+  customerName:'Guest',pax:2,paymentMethod:'TM'
+ }}),e=>e.code==='failed-precondition');
+ assert.equal(h.awards.length,0);
+});
+
+test('Lounge form edits occupied tables through no-XP server-side update while master PIN stays UI-only',()=>{
+ const html=fs.readFileSync(__dirname+'/../dolphin-lounge.html','utf8');
+ assert.match(html,/const editExisting=!!\(String\(current\.openedByStaff/);
+ assert.match(html,/action:editExisting\?'update':'booking'/);
+ assert.match(html,/if\(origPax>0 && pax!==origPax\)/);
+ assert.match(html,/window\.promptManagerAuth\('save'/);
+ assert.match(html,/performLiveAction/);
 });

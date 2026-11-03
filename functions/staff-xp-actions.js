@@ -35,7 +35,10 @@ async function staff(req){
  if(namePolicy.needsRename(registry,p.employeeId))throw new HttpsError('permission-denied','Hãy cập nhật họ tên Staff ID trước khi tiếp tục nghiệp vụ.');
  if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))throw new HttpsError('permission-denied','Staff ID không hợp lệ');
  const managers=new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()));
- return {id:p.employeeId,name:p.name,uid:u,admin:managers.has(u)};
+ // DOL-0001 is an existing verified manager account; a Manager APK or
+ // client-side Master PIN is not proof of server-side authorization.
+ const masterVerified=p.employeeId==='DOL-0001'&&p.registrationSource!=='self'&&identity.verified===true;
+ return {id:p.employeeId,name:p.name,nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(x=>typeof x==='string'):[],uid:u,admin:managers.has(u)||masterVerified};
 }
 async function credit(employeeId,eventId,source,amount){
  if(amount<=0)return {duplicate:true};
@@ -67,23 +70,33 @@ function stringMap(m){
  }
  return out;
 }
-async function booking(kind,id,data,who){
+async function booking(kind,id,data,who,{editOnly=false}={}){
  const db=getFirestore(),ref=db.collection(kind).doc(id);
  const pay=payment(data.paymentMethod||data.payment);
  const existing=await db.runTransaction(async tx=>{
   const old=await tx.get(ref),v=old.exists?old.data():null;
+  if(editOnly&&!v)throw new HttpsError('failed-precondition','Bàn không còn tồn tại. Hãy tải lại trước khi cập nhật.');
   const owner=str(kind==='show_tables'?v?.seller:v?.openedByStaff);
-  if(owner&&owner!==who.name&&!who.admin)throw new HttpsError('permission-denied','Bàn đang được mở bởi nhân viên khác');
-  const preserveOwner=!!(owner&&owner!==who.name&&who.admin);
+  const ownerId=str(kind==='show_tables'?v?.sellerStaffId:v?.openedByStaffId,70);
+  // A stable Staff ID is authoritative when present. Legacy name-only tables
+  // can match the same verified staff member's server-side name aliases.
+  const sameOwner=ownerId?ownerId===who.id
+   :!!owner&&[who.name,...who.nameAliases].some(n=>namePolicy.key(n)===namePolicy.key(owner));
+  const differentOwner=!!(ownerId||owner)&&!sameOwner;
+  if(differentOwner&&!who.admin)throw new HttpsError('permission-denied','Bàn do nhân viên khác mở. Chỉ người mở bàn hoặc quản lý đã xác minh mới được cập nhật.');
+  // Manager correction updates customer/PAX/payment without taking seller XP.
+  if(editOnly&&!owner&&!ownerId&&!who.admin)throw new HttpsError('permission-denied','Bàn chưa có nhân viên mở. Cần quản lý xác minh để chỉnh sửa.');
+  // All edits preserve the original opener and existing Staff ID.
+  const preserveOwner=editOnly||(differentOwner&&who.admin);
   let update;
   if(kind==='lounge_tables'){
    const pax=Number(data.pax);
    if(!Number.isSafeInteger(pax)||pax<1||pax>200)fail('Pax phải trong khoảng 1–200');
    if(!str(data.customerName))fail('Thiếu tên khách');
-   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedByStaffId:who.id,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else if(kind==='bun_tables'){
    if(!str(data.customerName)||!str(data.restaurantTable))fail('Thiếu tên khách hoặc bàn nhà hàng');
-   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedByStaffId:who.id,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else{
    const guests=Number(data.guests);
    if(!Number.isSafeInteger(guests)||guests<1||guests>300)fail('Số khách không hợp lệ');
@@ -99,6 +112,7 @@ async function booking(kind,id,data,who){
   await getDatabase().ref('staffXpShowProofs/'+hash(id)).set({employeeId:who.id,payment:pay,day:vnDay(),updatedAt:Date.now()});
   return {saved:true,xpAwarded:0};
  }
+ if(editOnly)return {saved:true,xpAwarded:0,missionXP:0,edited:true,managerOverride:existing.preserveOwner};
  if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
  const amount=live.tableValue(kind,existing.after);
  const grant=await onceSale(kind,id,who,xp.revenueXP(amount));
@@ -173,7 +187,8 @@ exports.staffRecordLiveAction=onCall(opts,async req=>{
  if(!KINDS.has(kind))fail('Phân hệ không hợp lệ');
  if(kind.endsWith('_orders'))return work(kind,id,str(data.action,24),who);
  if(kind==='show_tables'&&data.action==='combo')return combo(id,data.data||{},who);
- if(data.action!=='booking')fail('Thao tác không hợp lệ');
- return booking(kind,id,data.data||{},who);
+ const editOnly=kind==='lounge_tables'&&data.action==='update';
+ if(data.action!=='booking'&&!editOnly)fail('Thao tác không hợp lệ');
+ return booking(kind,id,data.data||{},who,{editOnly});
 });
 

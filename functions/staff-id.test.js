@@ -352,6 +352,7 @@ test('registration rejects short names, accent/case/whitespace duplicates and pe
  assert.equal(copy.employeeId,first.employeeId);
  assert.equal([...state.keys()].filter(k=>k.startsWith('staffRegistry/')).length,1);
  await rejects(()=>api.staffRequestNameRecovery(req('first',{name:'Nguyễn Văn An'})),'permission-denied');
+ state.delete('staffProfileRate/first');
  await rejects(()=>api.staffIssueOwnLinkCode(req('first')),'permission-denied');
 });
 test('manager-issued profiles cannot reuse existing pending names',async()=>{

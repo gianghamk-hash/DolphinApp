@@ -119,6 +119,7 @@ window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
  listPending:()=>call('staffListPendingApprovals'),
+ listApproved:()=>call('staffListApprovedProfiles'),
  requestNameRecovery:name=>call('staffRequestNameRecovery',{name}),
  listRecoveryRequests:()=>call('staffListRecoveryRequests'),
  approveNameRecovery:requestId=>call('staffApproveNameRecovery',{requestId}),

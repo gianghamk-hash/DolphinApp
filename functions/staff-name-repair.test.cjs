@@ -12,21 +12,25 @@ function fixture({coldAborts=0}={}){
  };
  const identities={uid6:{employeeId:'DOL-0006',name:'Đạt G'}};
  const snap=v=>({val:()=>structuredClone(v)});
- let rateAccess=0,transactionAttempts=0;
+ let rateAccess=0,transactionAttempts=0,rootTransactions=0;
  const db={ref(path){
   if(path.startsWith('staffProfileRate/')){rateAccess++;throw Error('Unexpected profile throttle');}
   if(path==='staffRegistry')return {
    once:async()=>snap(registry),
-   child:id=>({once:async()=>snap(registry[id])}),
-   transaction:async updater=>{
-    transactionAttempts++;
-    if(coldAborts-->0){updater({});return {committed:false,snapshot:snap(registry)};}
-    const next=updater(structuredClone(registry));
-    if(next===undefined)return {committed:false,snapshot:snap(registry)};
-    Object.keys(registry).forEach(k=>delete registry[k]);
-    Object.assign(registry,next);
-    return {committed:true,snapshot:snap(registry)};
-   }
+   transaction:async()=>{rootTransactions++;throw Error('Root registry transaction forbidden for rename');},
+   child:id=>({
+    once:async()=>snap(registry[id]),
+    transaction:async updater=>{
+     transactionAttempts++;
+     // Firebase may first call updater with a cold null local cache.
+     const first=updater(null);
+     if(coldAborts-->0)return {committed:false,snapshot:snap(registry[id])};
+     const next=updater(structuredClone(registry[id]));
+     if(next===undefined)return {committed:false,snapshot:snap(registry[id])};
+     registry[id]=next;
+     return {committed:true,snapshot:snap(next)};
+    }
+   })
   };
   if(path==='staffIdentity')return {once:async()=>snap(identities)};
   if(path.startsWith('staffIdentity/')){
@@ -51,7 +55,7 @@ function fixture({coldAborts=0}={}){
   throw Error('Unexpected import: '+id);
  };
  vm.runInNewContext(code,{module:{exports:exported},exports:exported,require:fakeRequire,console,Date,Buffer,setTimeout,clearTimeout});
- return {repair:exported.staffRepairMyName,registry,identities,getRateAccess:()=>rateAccess,getTransactionAttempts:()=>transactionAttempts};
+ return {repair:exported.staffRepairMyName,registry,identities,getRateAccess:()=>rateAccess,getTransactionAttempts:()=>transactionAttempts,getRootTransactions:()=>rootTransactions};
 }
 
 test('mandatory repair bypasses unrelated 1.5-second profile throttle and retains Staff ID and XP',async()=>{
@@ -83,17 +87,17 @@ test('reject duplicate and arbitrary rename while preserving stored identity',as
  assert.equal(f.registry['DOL-0006'].name,'Đỗ Thành Đạt');
 });
 
-test('retry cold transaction abort while server still requires a mandatory rename',async()=>{
- const f=fixture({coldAborts:2});
+test('employee-only transaction avoids directory-wide contention and safely handles a cold cache',async()=>{
+ const f=fixture();
  const r=await f.repair({auth:{uid:'uid6'},data:{name:'Đỗ Thành Đạt'}});
  assert.equal(r.employeeId,'DOL-0006');
- assert.equal(r.name,'Đỗ Thành Đạt');
- assert.equal(f.getTransactionAttempts(),3);
+ assert.equal(f.getTransactionAttempts(),1);
+ assert.equal(f.getRootTransactions(),0);
  assert.equal(f.registry['DOL-0006'].xp,16302.5);
- assert.equal(f.identities.uid6.name,'Đỗ Thành Đạt');
+ assert.equal(f.registry['DOL-0006'].revenue,900000);
 });
-test('cold abort exhaustion never misreports legacy short name as ineligible',async()=>{
- const f=fixture({coldAborts:5});
+test('aborted employee transaction reports retry instead of false success',async()=>{
+ const f=fixture({coldAborts:1});
  await assert.rejects(()=>f.repair({auth:{uid:'uid6'},data:{name:'Đỗ Thành Đạt'}}),e=>e.code==='unavailable');
  assert.equal(f.registry['DOL-0006'].name,'Đạt G');
 });

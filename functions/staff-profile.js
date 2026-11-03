@@ -110,46 +110,44 @@ exports.staffRepairMyName=onCall(opts,async req=>{
  // the user must be able to repair an invalid name immediately.
  const db=getDatabase(),ident=(await db.ref('staffIdentity/'+uid).once('value')).val();
  if(!ident?.employeeId)throw new HttpsError('failed-precondition','Thiết bị chưa liên kết Staff ID.');
- const id=ident.employeeId,ref=db.ref('staffRegistry');
- // Warm the RTDB snapshot before the transaction. A cold initial null in an
- // Admin SDK transaction must not be mistaken for an absent Staff ID.
- const initial=(await ref.once('value')).val();
- if(!initial?.[id]?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
- // A transaction may start on an empty/stale local snapshot even after a
- // successful server read. Reconcile every abort against a fresh server read,
- // never convert a transient abort into "not eligible" for a short legacy name.
- let updated=null;
- for(let attempt=0;attempt<3;attempt++){
-  const result=await ref.transaction(registry=>{
-   if(!registry?.[id]?.active)return; // Initial/cold snapshot: do not overwrite.
-   const p=registry[id];
-   if(!names.needsRename(registry,id))return; // Reconcile against server below.
-   if(names.nameConflict(registry,name,id))return;
-   const previous=names.normalize(p.name);
-   const aliases=Array.isArray(p.nameAliases)?p.nameAliases.filter(x=>typeof x==='string'):[];
-   if(previous&&previous!==name&&!aliases.includes(previous))aliases.push(previous);
-   return {...registry,[id]:{...p,name,nameAliases:aliases.slice(-20),
-    profileVersion:(Number(p.profileVersion)||0)+1,nameRepairedAt:Date.now(),updatedAt:Date.now()}};
-  },undefined,false);
-  if(result.committed){updated=result.snapshot.val()?.[id];break;}
-  // The transaction was aborted. Determine the reason from the authoritative
-  // registry snapshot; transaction callback state is not a reliable reason.
-  const latest=(await ref.once('value')).val()||{};
-  const profile=latest[id];
-  if(!profile?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
-  if(!names.needsRename(latest,id)&&names.key(profile.name)===names.key(name)){
-   updated=profile;break; // Idempotent retry after a committed lost response.
-  }
-  if(names.nameConflict(latest,name,id))
-   throw new HttpsError('already-exists','Tên đã được nhân viên khác sử dụng.');
-  if(!names.needsRename(latest,id))
+ const id=ident.employeeId,registryRef=db.ref('staffRegistry');
+ // A transaction at staffRegistry root conflicts with every XP/profile update
+ // anywhere in the directory. The older implementation repeatedly aborted
+ // without ever saving this simple name change. Read the directory to enforce
+ // uniqueness, then update ONLY the target employee's name fields.
+ const initial=(await registryRef.once('value')).val()||{};
+ const oldProfile=initial[id];
+ if(!oldProfile?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
+ if(!names.needsRename(initial,id)){
+  if(names.key(oldProfile.name)!==names.key(name))
    throw new HttpsError('failed-precondition','Hồ sơ đã có tên hợp lệ. Hãy tải lại để cập nhật.');
-  // The authoritative snapshot still requires the rename: retry rather than
-  // incorrectly reporting an ineligible profile.
  }
- if(!updated)throw new HttpsError('unavailable','Chưa lưu được tên do đồng bộ Firebase. Hãy thử lại.');
- if(!updated.active||names.key(updated.name)!==names.key(name))
-  throw new HttpsError('failed-precondition','Tên nhân viên đã thay đổi. Hãy kiểm tra lại hồ sơ.');
+ if(names.nameConflict(initial,name,id))
+  throw new HttpsError('already-exists','Tên đã được nhân viên khác sử dụng.');
+ const profileRef=registryRef.child(id);
+ // A per-employee transaction avoids unrelated staff updates invalidating
+ // the compare-and-swap. On an empty local cache, use the freshly read profile
+ // as the proposed value; Firebase compares with server state and retries with
+ // the actual profile if it has changed.
+ const result=await profileRef.transaction(current=>{
+  const profile=current===null?oldProfile:current;
+  if(!profile?.active)return;
+  if(names.key(profile.name)===names.key(name))return profile;
+  if(names.key(profile.name)!==names.key(oldProfile.name))return;
+  const previous=names.normalize(profile.name);
+  const aliases=Array.isArray(profile.nameAliases)?profile.nameAliases.filter(x=>typeof x==='string'):[];
+  if(previous&&!aliases.includes(previous))aliases.push(previous);
+  return {...profile,name,nameAliases:aliases.slice(-20),
+   profileVersion:(Number(profile.profileVersion)||0)+1,
+   nameRepairedAt:Date.now(),updatedAt:Date.now()};
+ },undefined,false);
+ // Always check the stored profile, including after an aborted transaction.
+ const updated=(await profileRef.once('value')).val();
+ if(!updated?.active)throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động.');
+ if(names.key(updated.name)!==names.key(name)){
+  if(!result.committed)throw new HttpsError('unavailable','Không thể cập nhật tên lúc này. Vui lòng thử lại.');
+  throw new HttpsError('failed-precondition','Tên nhân viên đã thay đổi. Hãy tải lại.');
+ }
  // Never change Staff ID; preserve the immutable XP ledger and level peak.
  const identities=(await db.ref('staffIdentity').once('value')).val()||{};
  await Promise.all(Object.entries(identities).filter(([,v])=>v?.employeeId===id).map(async ([device])=>{

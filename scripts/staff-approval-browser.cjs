@@ -13,11 +13,23 @@ const source=fs.readFileSync(path.join(__dirname,'..','staff-admin-profile.js'),
   await page.goto('about:blank');
   await page.setContent('<!DOCTYPE html><html><body>'+
   '<section id="crew-manager-approvals" hidden>'+
-  '<span id="crew-approval-count"></span>'+
+  '<span id="crew-approval-count"></span><p id="crew-manager-feedback"></p>'+
+  '<div id="crew-manager-access-status" hidden><span id="crew-manager-access-message"></span>'+
+  '<p id="crew-manager-auth-diagnostic"></p><button id="crew-manager-verify-retry">Kiểm tra lại</button></div>'+
+  '<button id="crew-manager-link-open">Liên kết lại</button>'+
+  '<button id="crew-manager-copy-uid">Sao chép UID</button>'+
+  '<button id="crew-approved-open">Đã duyệt</button><span id="crew-approved-count"></span>'+
+  '<button id="crew-recovery-open">Khôi phục</button><span id="crew-recovery-count"></span>'+
   '<button id="crew-approval-open"><span id="crew-approval-open-label">Duyệt nhân viên</span><span id="crew-approval-badge" hidden>🔴</span></button>'+
-  '<input type="checkbox" id="crew-manager-ranking-toggle">'+
-  '<p id="crew-manager-feedback"></p></section>'+
+  '<span id="crew-pending-description"></span><input type="checkbox" id="crew-manager-ranking-toggle"></section>'+
+  '<dialog id="crew-approved-dialog"><button id="crew-approved-close">Đóng</button>'+
+  '<input id="crew-approved-search"><select id="crew-approved-sort"><option value="name">Tên</option></select>'+
+  '<p id="crew-approved-summary"></p><div id="crew-approved-list"></div>'+
+  '<button id="crew-approved-refresh">Làm mới</button></dialog>'+
+  '<dialog id="devices-dialog"><input id="claim-code"></dialog>'+
   '<dialog id="crew-approval-dialog"><div id="crew-approval-list"></div>'+
+  '<section id="crew-recovery-section"><div id="crew-recovery-list"></div>'+
+  '<div id="crew-recovery-code"></div><button id="crew-recovery-copy"></button></section>'+
   '<p id="crew-approval-dialog-status"></p><button id="crew-approval-refresh">Làm mới</button>'+
   '<button id="crew-approval-close">Đóng</button></dialog></body></html>');
   await page.evaluate(()=>{
@@ -29,6 +41,9 @@ const source=fs.readFileSync(path.join(__dirname,'..','staff-admin-profile.js'),
    let queries=0;
    window.DolphinStaffId={
     get:()=>({employeeId:'DOL-0001',verified:true}),
+    getVerificationStatus:()=>({state:'verified',uid:'test-admin-uid'}),
+    listApproved:async()=>({profiles:[]}),
+    listRecoveryRequests:async()=>({requests:[]}),
     listPending:async()=>{if(++queries===1)await held;return {profiles:window.__pending.slice()};},
     rejectRegistration:async id=>{window.__rejected.push(id);window.__pending=window.__pending.filter(p=>p.employeeId!==id);},
     approveRegistration:async id=>{window.__approved.push(id);window.__pending=window.__pending.filter(p=>p.employeeId!==id);}

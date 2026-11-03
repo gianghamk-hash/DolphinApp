@@ -203,6 +203,16 @@ function syncManager(){
  void refresh();void refreshApproved();
 }
 function init(){
+ $('crew-manager-copy-uid').addEventListener('click',async()=>{
+  const uid=window.DolphinStaffId?.getVerificationStatus?.()?.uid;
+  if(!uid){$('crew-manager-access-message').textContent='Firebase chưa cung cấp UID thiết bị. Hãy kiểm tra kết nối.';return;}
+  try{
+   await navigator.clipboard.writeText(uid);
+   $('crew-manager-access-message').textContent='Đã sao chép UID thiết bị. Chỉ cung cấp UID này cho người quản trị Firebase được ủy quyền để khôi phục liên kết DOL-0001.';
+  }catch(error){
+   $('crew-manager-access-message').textContent='Không sao chép được UID. Hãy sử dụng một trình duyệt hoặc thiết bị hỗ trợ sao chép và thử lại.';
+  }
+ });
  $('crew-manager-link-open').addEventListener('click',()=>{
   if(verifiedOwner())return;
   const dialog=$('devices-dialog');

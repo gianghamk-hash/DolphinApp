@@ -49,3 +49,15 @@ test('verified DOL-0001 manages approved directory and grouped actions',()=>{
  assert.match(backend,/deviceCount/);
  assert.match(workflow,/functions:staffListApprovedProfiles/);
 });
+
+test('DOL-0001 management controls remain discoverable when identity refresh is incomplete',()=>{
+ const ui=read('staff-admin-profile.js'),html=read('dolphin-profile.html');
+ assert.match(html,/id="crew-manager-access-status"/);
+ assert.match(html,/id="crew-manager-verify-retry"/);
+ assert.match(ui,/const showShell=owner\|\|\(managerDevice&&!i\?\.employeeId\)/);
+ assert.match(ui,/\$\('crew-manager-approvals'\)\.hidden=!showShell/);
+ assert.match(ui,/\$\(id\)\.disabled=!manager/);
+ assert.match(ui,/await window\.DolphinStaffId\.refresh\(\)/);
+ assert.match(ui,/manager=verifiedOwner\(\)/);
+ assert.match(ui,/if\(!verifiedOwner\(\)\)return/);
+});

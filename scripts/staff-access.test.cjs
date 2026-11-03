@@ -44,7 +44,7 @@ test('manager DOL-0001 approval uses trusted server-side identity',()=>{
  assert.match(identity,/profile\.approved===true/);
 });
 test('direct staff-entry navigation and linked devices cannot bypass approval',()=>{
- assert.match(nav,/staff-access\.js\?v=crew-recovery-v7/);
+ assert.match(nav,/staff-access\.js\?v=crew-name-policy-v1/);
  assert.match(gate,/root\.parent!==root/);
  assert.match(gate,/panel\('pending'\)/);
  assert.match(gate,/api\.link\(\$\('dag-code'\)\.value\.trim\(\)/);

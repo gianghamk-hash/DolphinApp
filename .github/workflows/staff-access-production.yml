@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/staff-access-production.yml'
       - 'functions/staff-profile.js'
+      - 'functions/staff-avatar-catalog.json'
       - 'staff-admin-profile.js'
       - 'dolphin-profile.html'
       - 'functions/staff-approval-push.js'
@@ -44,6 +45,7 @@ jobs:
         run: |
           npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
           node --check functions/staff-profile.js
+          node -e "const c=require('./functions/staff-avatar-catalog.json');const a=Object.values(c).flat();if(a.length!==new Set(a).size||!c['Hoàng gia Lv.55'].includes('👑'))throw Error('Invalid curated avatar catalog')"
           node --check functions/index.js
           node --check functions/staff-xp-actions.js
           node --check staff-access.js
@@ -62,7 +64,7 @@ jobs:
       - name: Deploy verified Staff ID and approval callables
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffGetIdentity,functions:staffClaimLinkCode,functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffListPendingApprovals,functions:staffApproveRegistration,functions:staffRejectRegistration,functions:staffRequestNameRecovery,functions:staffListRecoveryRequests,functions:staffApproveNameRecovery
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffGetAvatarDirectory,functions:staffGetIdentity,functions:staffClaimLinkCode,functions:staffRegisterSelfProfile,functions:staffUpdateMyProfile,functions:staffIssueOwnLinkCode,functions:staffListPendingApprovals,functions:staffApproveRegistration,functions:staffRejectRegistration,functions:staffRequestNameRecovery,functions:staffListRecoveryRequests,functions:staffApproveNameRecovery
       - name: Delete temporary environment
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

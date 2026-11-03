@@ -1,7 +1,7 @@
 {
-  "version": "1.1.70",
-  "buildDate": "2026-11-03T10:02:00.070Z",
-  "commit": "75ed3a8",
-  "notes": "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)",
+  "version": "1.1.71",
+  "buildDate": "2026-11-03T10:26:06.280Z",
+  "commit": "cf51599",
+  "notes": "Keep DOL-0001 account management discoverable and show verification errors (#226)",
   "forceUpdate": false
 }

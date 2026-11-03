@@ -1,50 +1,34 @@
 {
-  "version": "1.1.70",
-  "previousVersion": "1.1.69",
-  "commit": "75ed3a8",
-  "previousCommit": "344769d",
-  "buildDate": "2026-11-03T10:02:00.070Z",
-  "summary": "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)",
+  "version": "1.1.71",
+  "previousVersion": "1.1.70",
+  "commit": "cf51599",
+  "previousCommit": "75ed3a8",
+  "buildDate": "2026-11-03T10:26:06.280Z",
+  "summary": "Keep DOL-0001 account management discoverable and show verification errors (#226)",
   "changes": {
-    "totalCommits": 294,
-    "filesChanged": 8,
+    "totalCommits": 295,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)"
+    "Keep DOL-0001 account management discoverable and show verification errors (#226)"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/staff-access-production.yml",
-      "type": "update"
-    },
     {
       "file": "dolphin-profile.html",
       "type": "update"
     },
     {
-      "file": "index.html",
+      "file": "scripts/staff-approval-ui.test.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/staff-access.test.cjs",
+      "file": "staff-admin-profile.js",
       "type": "update"
     },
     {
-      "file": "scripts/staff-identity-refresh.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-access.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
+      "file": "staff-profile.css",
       "type": "update"
     }
   ]

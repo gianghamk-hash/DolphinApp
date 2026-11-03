@@ -1,5 +1,5 @@
 {
-  "version": "1.1.70",
+  "version": "1.1.71",
   "releaseDate": "2026-11-03",
-  "notes": "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)"
+  "notes": "Keep DOL-0001 account management discoverable and show verification errors (#226)"
 }

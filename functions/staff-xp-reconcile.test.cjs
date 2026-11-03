@@ -62,3 +62,15 @@ test('ambiguous employee aliases never automatically receive XP',()=>{
  const events=api._fromSession('bun_history','duplicate',{date:new Date().toISOString().slice(0,10),tables:{'201':{openedByStaff:'Lan'}}},map);
  assert.equal(events.length,0);
 });
+
+test('approved renamed employee retains historical work attribution by name alias',()=>{
+ const registry={
+  'DOL-0010':{employeeId:'DOL-0010',name:'Nguyen Van Minh',nameAliases:['Minh'],active:true,approved:true,registrationSource:'self'}
+ };
+ const map=api._nameDirectory(registry);
+ const date=new Date().toISOString().slice(0,10);
+ const events=api._fromSession('bun_history','old-name-session',{date,tables:{'201':{openedByStaff:'Minh',paymentMethod:'TM'}},orders:[{status:'completed',completedBy:'Minh'}]},map);
+ assert.equal(events.filter(x=>x.source==='revenue').length,1);
+ assert.equal(events.find(x=>x.source==='work').amount,1000);
+ assert.ok(events.every(x=>x.employeeId==='DOL-0010'));
+});

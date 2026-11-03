@@ -180,9 +180,16 @@ function syncManager(){
  $('crew-manager-approvals').hidden=!showShell;
  const banner=$('crew-manager-access-status');
  banner.hidden=manager||!showShell;
- $('crew-manager-access-message').textContent=owner
-  ?'Staff ID DOL-0001 chưa được Firebase xác minh trên thiết bị này. Chức năng quản lý tạm khóa.'
-  :i?.employeeId?'Thiết bị đang liên kết '+i.employeeId+', không phải DOL-0001. Chức năng quản lý bị khóa.':'Chưa xác định được Staff ID của thiết bị. Hãy kiểm tra liên kết DOL-0001.';
+ const verification=window.DolphinStaffId?.getVerificationStatus?.()||{};
+ const state=verification.state||'connecting';
+ const identifier=verification.uid?verification.uid.slice(-8):'chưa có';
+ $('crew-manager-auth-diagnostic').textContent='Trạng thái Firebase: '+state+' · UID thiết bị (8 ký tự cuối): '+identifier;
+ $('crew-manager-access-message').textContent=manager?'Đã xác minh quản lý.'
+  :state==='error'?'Firebase đang lỗi kết nối: '+(verification.message||'Không thể xác minh. Hãy thử lại.')
+  :state==='checking'||state==='connecting'?'Đang kiểm tra liên kết Staff ID từ máy chủ…'
+  :owner?'DOL-0001 chưa có đủ quyền xác minh trên thiết bị. Không thể duyệt tài khoản.'
+  :i?.employeeId?'Thiết bị đang liên kết '+i.employeeId+', không phải DOL-0001. Cần liên kết đúng tài khoản.'
+  :'UID Firebase trên thiết bị chưa liên kết Staff ID. Bấm “Liên kết lại Staff ID” và nhập mã một lần do quản trị viên được xác minh cấp. Không cần đăng ký tài khoản mới.';
  for(const id of ['crew-approved-open','crew-approval-open','crew-recovery-open','crew-manager-ranking-toggle'])
   $(id).disabled=!manager;
  if(!manager){
@@ -196,6 +203,12 @@ function syncManager(){
  void refresh();void refreshApproved();
 }
 function init(){
+ $('crew-manager-link-open').addEventListener('click',()=>{
+  if(verifiedOwner())return;
+  const dialog=$('devices-dialog');
+  if(dialog&&!dialog.open)dialog.showModal();
+  $('claim-code')?.focus();
+ });
  $('crew-manager-verify-retry').addEventListener('click',async()=>{
   const button=$('crew-manager-verify-retry');button.disabled=true;
   $('crew-manager-access-message').textContent='Đang kiểm tra quyền từ Firebase…';
@@ -203,7 +216,6 @@ function init(){
    await window.DolphinStaffId.ready();
    await window.DolphinStaffId.refresh();
    syncManager();
-   if(!verifiedOwner())$('crew-manager-access-message').textContent='Thiết bị chưa được xác minh là DOL-0001. Hãy kiểm tra liên kết Staff ID trong mục Thiết bị.';
   }catch(error){
    $('crew-manager-access-message').textContent='Không kết nối được Firebase: '+String(error.message||error);
   }finally{button.disabled=false;}
@@ -228,6 +240,7 @@ function init(){
  });
  $('crew-manager-ranking-toggle').addEventListener('change',applyVisibility);
  window.addEventListener('dolphin-staff-id-changed',syncManager);
+ window.addEventListener('dolphin-staff-verification',syncManager);
  window.addEventListener('dolphin-my-progress-updated',syncManager);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden){void refresh();if($('crew-approved-dialog').open)void refreshApproved();}});
  setInterval(()=>{if(manager&&!document.hidden)void refresh();},25000);

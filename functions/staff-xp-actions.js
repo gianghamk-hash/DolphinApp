@@ -28,9 +28,15 @@ function dateTime(){return new Date().toLocaleTimeString('vi-VN',{timeZone:'Asia
 async function staff(req){
  const u=uid(req),db=getDatabase();
  const identity=(await db.ref('staffIdentity/'+u).once('value')).val();
- if(identity?.verified!==true||!identity.employeeId)throw new HttpsError('permission-denied','Cần Staff ID do quản lý xác minh. Hồ sơ tự đăng ký chưa được cấp XP.');
+ if(!identity?.employeeId)throw new HttpsError('permission-denied','Thiết bị chưa liên kết Staff ID. Vui lòng liên kết hồ sơ đã có.');
  const p=(await db.ref('staffRegistry/'+identity.employeeId).once('value')).val();
- if(!p?.active||(p.registrationSource==='self'&&p.approved!==true))throw new HttpsError('permission-denied','Hồ sơ chưa được quản lý duyệt');
+ if(!p?.active)throw new HttpsError('permission-denied','Hồ sơ nhân viên không còn hoạt động.');
+ if(p.registrationSource==='self'&&p.approved!==true)throw new HttpsError('permission-denied','Hồ sơ chưa được quản lý duyệt');
+ // Match staffGetIdentity: the authoritative registry approval grants verified
+ // access even if one linked device still has a stale identity.verified=false.
+ // A self-registered but UNAPPROVED profile can never pass this check.
+ const verified=identity.verified===true||p.approved===true;
+ if(!verified)throw new HttpsError('permission-denied','Cần Staff ID do quản lý xác minh. Hồ sơ tự đăng ký chưa được cấp XP.');
  const registry=(await db.ref('staffRegistry').once('value')).val()||{};
  if(namePolicy.needsRename(registry,p.employeeId))throw new HttpsError('permission-denied','Hãy cập nhật họ tên Staff ID trước khi tiếp tục nghiệp vụ.');
  if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))throw new HttpsError('permission-denied','Staff ID không hợp lệ');

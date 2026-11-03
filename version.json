@@ -1,7 +1,7 @@
 {
-  "version": "1.1.72",
-  "buildDate": "2026-11-03T10:26:49.741Z",
-  "commit": "8683e14",
-  "notes": "test(manager): align visibility regression with secure locked Manager shell (#227)",
+  "version": "1.1.73",
+  "buildDate": "2026-11-03T10:34:28.258Z",
+  "commit": "3b919e8",
+  "notes": "Fix Manager Staff ID recheck loop with true Firebase UID diagnostics and secure relinking (#228)",
   "forceUpdate": false
 }

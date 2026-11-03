@@ -1,22 +1,54 @@
 {
-  "version": "1.1.72",
-  "previousVersion": "1.1.71",
-  "commit": "8683e14",
-  "previousCommit": "cf51599",
-  "buildDate": "2026-11-03T10:26:49.741Z",
-  "summary": "test(manager): align visibility regression with secure locked Manager shell (#227)",
+  "version": "1.1.73",
+  "previousVersion": "1.1.72",
+  "commit": "3b919e8",
+  "previousCommit": "8683e14",
+  "buildDate": "2026-11-03T10:34:28.258Z",
+  "summary": "Fix Manager Staff ID recheck loop with true Firebase UID diagnostics and secure relinking (#228)",
   "changes": {
-    "totalCommits": 296,
-    "filesChanged": 1,
+    "totalCommits": 297,
+    "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "test(manager): align visibility regression with secure locked Manager shell (#227)"
+    "Fix Manager Staff ID recheck loop with true Firebase UID diagnostics and secure relinking (#228)"
   ],
   "fileChanges": [
     {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/staff-access.test.cjs",
+      "type": "update"
+    },
+    {
       "file": "scripts/staff-approval-ui.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/staff-identity-refresh.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-access.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-admin-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

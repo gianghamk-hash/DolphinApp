@@ -1,5 +1,5 @@
 {
-  "version": "1.1.72",
+  "version": "1.1.73",
   "releaseDate": "2026-11-03",
-  "notes": "test(manager): align visibility regression with secure locked Manager shell (#227)"
+  "notes": "Fix Manager Staff ID recheck loop with true Firebase UID diagnostics and secure relinking (#228)"
 }

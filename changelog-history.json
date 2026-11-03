@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.72",
+      "releaseDate": "2026-11-03T10:26:49.741Z",
+      "summary": "test(manager): align visibility regression with secure locked Manager shell (#227)",
+      "details": [
+        "test(manager): align visibility regression with secure locked Manager shell (#227)"
+      ]
+    },
+    {
       "version": "1.1.71",
       "releaseDate": "2026-11-03T10:26:06.280Z",
       "summary": "Keep DOL-0001 account management discoverable and show verification errors (#226)",
@@ -390,14 +398,6 @@
       "summary": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP",
       "details": [
         "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP"
-      ]
-    },
-    {
-      "version": "1.1.22",
-      "releaseDate": "2026-11-01T10:01:09.068Z",
-      "summary": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)",
-      "details": [
-        "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)"
       ]
     }
   ]

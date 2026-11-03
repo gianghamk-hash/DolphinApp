@@ -15,6 +15,7 @@ function harness(responses){
   rejection:false,refreshPending:null,refreshSequence:0,unlinkedConfirmations:0,
   api:()=>async()=>{const next=responses.shift();if(typeof next==='function')return next();if(next instanceof Error)throw next;return {data:next};},
   emit:()=>events.push(state.identity),
+  reportVerification:(stateName,message='')=>{state.verificationState=stateName;state.verificationMessage=message;},
   console:{warn:()=>{}},JSON,Promise,Error
  };
  const context=vm.createContext(state);
@@ -55,6 +56,19 @@ test('concurrent refresh calls share a single in-flight backend request',async()
 test('all identity asset entry points use consistent cache version',()=>{
  for(const file of ['index.html','dolphin-profile.html','staff-access.js','service-worker.js','scripts/staff-access.test.cjs']){
   const text=fs.readFileSync(require('node:path').join(__dirname,'..',file),'utf8');
-  assert.match(text,/crew-identity-stable-v2/);
+  assert.match(text,/crew-identity-diagnostic-v3/);
  }
+});
+
+test('unlinked Firebase UID reports a recoverable identity state',async()=>{
+ const h=harness([{verified:false},{verified:false}]);
+ await h.refresh();await h.refresh();
+ assert.equal(h.state.verificationState,'unlinked');
+ assert.equal(h.state.identity,null);
+});
+test('temporary network errors are distinguished from an unlinked UID',async()=>{
+ const h=harness([new Error('network unavailable')]);
+ await h.refresh();
+ assert.equal(h.state.verificationState,'error');
+ assert.equal(h.state.identity.employeeId,'DOL-0001');
 });

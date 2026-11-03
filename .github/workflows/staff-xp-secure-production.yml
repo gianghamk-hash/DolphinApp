@@ -5,6 +5,7 @@ on:
     paths:
       - '.github/workflows/staff-xp-secure-production.yml'
       - 'functions/staff-xp-actions.js'
+      - 'functions/staff-name-policy.cjs'
       - 'functions/staff-xp-engine.cjs'
       - 'functions/staff-xp-engine.test.cjs'
       - 'functions/staff-xp-reconcile.js'

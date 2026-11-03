@@ -19,7 +19,8 @@ test('verified Lounge and Bungalow bookings are routed to authoritative backend'
  for(const file of ['dolphin-lounge.html','dolphin-bungalow.html']){
   const src=read(file);
   assert.match(src,/DolphinStaffId\.performLiveAction\(\{/);
-  assert.match(src,/action:'booking'/);
+  if(file==='dolphin-lounge.html')assert.match(src,/action:editExisting\?'update':'booking'/);
+  else assert.match(src,/action:'booking'/);
   assert.match(src,/identity\?\.verified===true/);
   assert.match(src,/if\(!verified\)await setDoc/);
  }

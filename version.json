@@ -1,7 +1,7 @@
 {
-  "version": "1.1.71",
-  "buildDate": "2026-11-03T10:26:06.280Z",
-  "commit": "cf51599",
-  "notes": "Keep DOL-0001 account management discoverable and show verification errors (#226)",
+  "version": "1.1.72",
+  "buildDate": "2026-11-03T10:26:49.741Z",
+  "commit": "8683e14",
+  "notes": "test(manager): align visibility regression with secure locked Manager shell (#227)",
   "forceUpdate": false
 }

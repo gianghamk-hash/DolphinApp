@@ -1,34 +1,22 @@
 {
-  "version": "1.1.71",
-  "previousVersion": "1.1.70",
-  "commit": "cf51599",
-  "previousCommit": "75ed3a8",
-  "buildDate": "2026-11-03T10:26:06.280Z",
-  "summary": "Keep DOL-0001 account management discoverable and show verification errors (#226)",
+  "version": "1.1.72",
+  "previousVersion": "1.1.71",
+  "commit": "8683e14",
+  "previousCommit": "cf51599",
+  "buildDate": "2026-11-03T10:26:49.741Z",
+  "summary": "test(manager): align visibility regression with secure locked Manager shell (#227)",
   "changes": {
-    "totalCommits": 295,
-    "filesChanged": 4,
+    "totalCommits": 296,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Keep DOL-0001 account management discoverable and show verification errors (#226)"
+    "test(manager): align visibility regression with secure locked Manager shell (#227)"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
       "file": "scripts/staff-approval-ui.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-admin-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.css",
       "type": "update"
     }
   ]

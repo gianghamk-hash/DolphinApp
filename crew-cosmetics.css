@@ -814,3 +814,24 @@
 @media(prefers-reduced-motion:reduce){
  .crew-avatar-insignia,.crew-avatar-insignia::after,.crew-avatar-insignia::before{animation:none!important}
 }
+
+
+/* Character styling extends to staff presence, ranking and the Landing podium. */
+:is(.sow-name,.leader-tile-name,.drl-name,.level-person-name)[data-name-fx="tide"]{color:#9afff0!important;text-shadow:0 0 10px #6df8ff,0 0 21px #00bec8}
+:is(.sow-name,.leader-tile-name,.drl-name,.level-person-name)[data-name-fx="nova"]{color:#ffe7aa!important;text-shadow:0 0 10px #fff,0 0 24px #ffbe62,0 0 39px #ff89df}
+:is(.sow-name,.leader-tile-name,.drl-name,.level-person-name)[data-name-fx="royal"]{
+ background:linear-gradient(110deg,#ffeec2,#ffadf1,#fff8dc,#ffeec2);background-size:250% 100%;
+ background-clip:text;-webkit-background-clip:text;color:transparent!important;-webkit-text-fill-color:transparent!important;
+ filter:drop-shadow(0 0 9px #edbaff);animation:crew-prism-shift 3.5s linear infinite;
+}
+:is(.sow-name,.leader-tile-name,.drl-name)[data-name-fx="ember"]{color:#ffe1a0!important;text-shadow:0 0 7px #ffa323,0 0 18px #e3551a}
+:is(.sow-name,.leader-tile-name,.drl-name)[data-name-fx="inferno"]{color:#ffbc77!important;text-shadow:0 0 10px #ff6c1c,0 0 22px #fc496c}
+:is(.sow-name,.leader-tile-name,.drl-name)[data-name-fx="prism"]{color:#b3e9ff!important;text-shadow:0 0 12px #77eaff,0 0 23px #b791ff;animation:crew-prism-shift 4s linear infinite}
+:is(.sow-name,.leader-tile-name,.drl-name)[data-name-fx="celestial"]{color:#fff4bc!important;text-shadow:0 0 11px #ffd06b,0 0 25px #83ebff}
+:is(.leader-tile,.drl-surface,.sow-item)[data-banner="abyss"]{background-image:linear-gradient(115deg,#092235bb,#05545e66)!important}
+:is(.leader-tile,.drl-surface,.sow-item)[data-banner="aurora"]{background-image:linear-gradient(115deg,#09405188,#7952bb77)!important}
+:is(.leader-tile,.drl-surface,.sow-item)[data-banner="neon"]{background-image:linear-gradient(115deg,#24206799,#9523ab66)!important}
+:is(.leader-tile,.drl-surface,.sow-item)[data-banner="cosmic"]{background-image:linear-gradient(115deg,#0c124a88,#6645ac66)!important}
+@media(prefers-reduced-motion:reduce){
+ :is(.sow-name,.leader-tile-name,.drl-name,.level-person-name)[data-name-fx]{animation:none!important}
+}

@@ -31,7 +31,7 @@ function response(profile){return {linked:true,verified:profile.registrationSour
  avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
 exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  const uid=uidOf(req);await throttle(uid);
-  if((avatarThreshold.get(data.avatar)||1)>1)throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');
+
  const db=getDatabase(),current=(await db.ref('staffIdentity/'+uid).once('value')).val();
  let rejectedId=null;
  if(current?.employeeId){
@@ -44,6 +44,8 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
   rejectedId=current.employeeId;
  }
  const data=validate(req.data);
+ if((avatarThreshold.get(data.avatar)||1)>1)
+  throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');
  // Every rejection creates a different stable Staff ID, even on the same
  // Firebase anonymous UID. Deterministic retries never create extra profiles.
  const seed=rejectedId?uid+':reregister:'+rejectedId:uid;

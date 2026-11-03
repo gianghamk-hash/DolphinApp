@@ -829,7 +829,7 @@ function setupRealtimeListeners(){
   }));
   activeStreams.push(onSnapshot(collection(db,'lounge_tables'), snap=>{
     const a={};
-    snap.forEach(d=>{ a[d.id] = { customerName:d.data().customerName, restaurantTable:d.data().restaurantTable||'', pax:parseInt(d.data().pax)||0, paymentMethod:d.data().paymentMethod||'TM', focReason:d.data().focReason||'', openedByStaff:d.data().openedByStaff||'' }; });
+    snap.forEach(d=>{ a[d.id] = { customerName:d.data().customerName, restaurantTable:d.data().restaurantTable||'', pax:parseInt(d.data().pax)||0, paymentMethod:d.data().paymentMethod||'TM', focReason:d.data().focReason||'', openedByStaff:d.data().openedByStaff||'', openedByStaffId:d.data().openedByStaffId||'' }; });
     state.tableAssignments = a;
     window.updateWelcomeLabels();
     renderAll();
@@ -1100,8 +1100,10 @@ window.executeSaveCustomerName = async function({table,dataToSave}){
     if(!db)throw Error('Chưa kết nối Firestore');
     const identity=window.DolphinStaffId?.get?.();
     const verified=identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function';
+    const current=state.tableAssignments[table]||{};
+    const editExisting=!!(String(current.openedByStaff||'').trim()||String(current.openedByStaffId||'').trim());
     const reward=verified?await window.DolphinStaffId.performLiveAction({
-      kind:'lounge_tables',id:table,action:'booking',data:dataToSave
+      kind:'lounge_tables',id:table,action:editExisting?'update':'booking',data:dataToSave
     }):null;
     if(!verified)await setDoc(doc(db,'lounge_tables',table),dataToSave,{merge:true});
     window.showToast(`Đã lưu bàn ${table}`,'✅');

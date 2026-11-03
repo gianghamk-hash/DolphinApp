@@ -136,8 +136,8 @@ test('two cold claimants cannot both consume the same code',async()=>{
 test('self-service endpoints require authentication and validate all editable fields',async()=>{
  const {api}=harness();
  for(const name of ['staffRegisterSelfProfile','staffUpdateMyProfile','staffIssueOwnLinkCode'])await rejects(()=>api[name](req(null)),'unauthenticated');
- for(const data of [{name:'A'},{name:'<script>'},{name:'Alice Nguyen',avatar:'<img>'}])
-  await rejects(()=>api.staffRegisterSelfProfile(req('user',data)),'invalid-argument');
+ for(const [i,data] of [{name:'A'},{name:'<script>'},{name:'Alice Nguyen',avatar:'<img>'}].entries()
+  await rejects(()=>api.staffRegisterSelfProfile(req('user-'+i,data)),'invalid-argument');
 });
 
 test('self-registration assigns a stable ID and cannot grant verified employee or Manager privileges',async()=>{
@@ -308,6 +308,7 @@ test('manager can reject a pending employee, revoke every linked device, then is
 test('pending employees cannot issue, claim or switch device before approval',async()=>{
  const {api,state}=harness();
  const crew=await api.staffRegisterSelfProfile(req('first',{name:'Crew One'}));
+ state.delete('staffProfileRate/first');
  await rejects(()=>api.staffIssueOwnLinkCode(req('first')),'permission-denied');
  state.set('staffEnrollmentCodes/'+crypto.createHash('sha256').update('D'.repeat(36)).digest('hex'),{
   employeeId:crew.employeeId,expiresAt:Date.now()+600000
@@ -346,6 +347,7 @@ test('registration rejects short names, accent/case/whitespace duplicates and pe
  const first=await api.staffRegisterSelfProfile(req('first',{name:'Nguyễn Văn An'}));
  assert.equal(first.verified,false);
  await rejects(()=>api.staffRegisterSelfProfile(req('second',{name:'  NGUYEN   VAN AN  '})),'already-exists');
+ state.delete('staffProfileRate/first');
  const copy=await api.staffRegisterSelfProfile(req('first',{name:'Different Employee'}));
  assert.equal(copy.employeeId,first.employeeId);
  assert.equal([...state.keys()].filter(k=>k.startsWith('staffRegistry/')).length,1);
@@ -371,7 +373,7 @@ test('legacy short-name account must rename and keeps ID, XP, work, level and hi
  const changed=await api.staffCorrectMyName(req('old-phone',{name:'Nguyễn Thị Lan'}));
  assert.equal(changed.employeeId,id);assert.equal(changed.requiresNameChange,false);
  const after=state.get('staffRegistry/'+id);
- assert.equal(after.name,'Nguyễn Thị Lan');assert.deepEqual(after.nameAliases,['Lan']);
+ assert.equal(after.name,'Nguyễn Thị Lan');assert.deepEqual(Array.from(after.nameAliases),['Lan']);
  for(const key of ['xp','levelPeak','revenueXP','workScore'])assert.equal(after[key],prior[key]);
  assert.deepEqual(after.history,prior.history);
  assert.equal(state.get('staffIdentity/new-phone').name,'Nguyễn Thị Lan');

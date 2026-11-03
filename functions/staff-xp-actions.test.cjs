@@ -17,6 +17,7 @@ function harness(){
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
   if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>{missionAwards.push({employeeId,taskId});return {addedXP:{lounge_opened:250,bungalow_opened:300,order_received:150,order_completed:400}[taskId]||0,awarded:true};}};
   if(n==='./staff-prestige')return {_awardTrustedLiveXP:async d=>{const k='staffXpLedger/'+d.employeeId+'/'+d.eventId;if(data.has(k))return {duplicate:true};data.set(k,d);awards.push(d);return {duplicate:false}}};
+  if(n==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
   throw Error(n);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-xp-actions.js','utf8'),ctx);

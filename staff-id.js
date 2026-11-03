@@ -8,6 +8,11 @@ const config={apiKey:'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ',authDomain:'dolph
 const profilePage=new URL('./dolphin-profile.html',document.currentScript?.src||location.href).href;
 let api=null, identity=null, rejection=false, uid='', initialized=false, connection=null;
 let refreshPending=null,refreshSequence=0,unlinkedConfirmations=0;
+let verificationState='connecting',verificationMessage='Đang kết nối Firebase…';
+function reportVerification(state,message=''){
+ verificationState=state;verificationMessage=message;
+ window.dispatchEvent(new CustomEvent('dolphin-staff-verification',{detail:{state,message}}));
+}
 const manager=()=>navigator.userAgent.includes('DolphinManager')||window.DOLPHIN_APP_TYPE==='manager';
 const htmlEscape=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function emit(){
@@ -29,11 +34,11 @@ async function init(){
   let app;try{app=fb.getApp('staff-identity-app');}catch(e){app=fb.initializeApp(config,'staff-identity-app');}
   const a=auth.getAuth(app);if(a.authStateReady)await a.authStateReady();
   const user=a.currentUser|| (await auth.signInAnonymously(a)).user;
-  uid=user.uid;const functions=func.getFunctions(app,'asia-southeast1');
+  uid=user.uid;reportVerification('checking');const functions=func.getFunctions(app,'asia-southeast1');
   api=name=>func.httpsCallable(functions,name);
   await refresh();
   void retryXP();
- }catch(e){initialized=false;api=null;console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);throw e;}
+ }catch(e){initialized=false;api=null;reportVerification('error',e?.message||String(e));console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);throw e;}
 }
 function connect(){
  if(!connection)connection=init().catch(e=>{connection=null;throw e;});
@@ -59,12 +64,14 @@ function refresh(){
    if(data.linked===true&&data.employeeId){
     unlinkedConfirmations=0;
     rejection=data.rejected===true;
+    reportVerification(data.verified===true?'verified':'pending');
     const next={...data,linked:true};
     if(!sameIdentity(next,identity)){identity=next;emit();}
     return identity;
    }
    if(data.verified===true&&data.employeeId){
     unlinkedConfirmations=0;rejection=false;
+    reportVerification('verified');
     const next={...data,linked:true};
     if(!sameIdentity(next,identity)){identity=next;emit();}
     return identity;
@@ -73,15 +80,18 @@ function refresh(){
    // a transient auth/backend inconsistency. Require confirmation before
    // clearing the UI, while all privileged operations remain server-checked.
    if(identity?.verified===true&&identity.employeeId&&data.rejected!==true&&++unlinkedConfirmations<2){
+    reportVerification('checking','Đang xác nhận lại liên kết thiết bị…');
     console.warn('[StaffID] Trạng thái trống tạm thời, sẽ xác minh lại.');
     return identity;
    }
    unlinkedConfirmations=0;
    rejection=data.rejected===true;
+   reportVerification(data.rejected===true?'rejected':data.canRegisterAgain===true?'inactive':'unlinked');
    if(identity!==null){identity=null;emit();}
    return identity;
   }catch(e){
    // Network, unavailable and callable errors do not revoke a Staff ID.
+   reportVerification('error',e?.message||String(e));
    console.warn('[StaffID] Tạm thời không xác minh được; giữ hồ sơ đang hiển thị:',e?.message||e);
    return identity;
   }
@@ -161,7 +171,7 @@ async function retryXP(){
  }finally{retryingXP=false;}
 }
 
-window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
+window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,getVerificationStatus:()=>({state:verificationState,message:verificationMessage,uid:uid||'',employeeId:identity?.employeeId||''}),refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
  update:data=>call('staffUpdateMyProfile',data),repairName:name=>call('staffRepairMyName',{name}),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
  avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),

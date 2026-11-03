@@ -72,8 +72,8 @@ test('legacy invalid or duplicate names require remediation while keeping Staff 
 test('production Staff ID client exposes repairName and all entry points load matching asset version',()=>{
  assert.match(staffClient,/repairName:name=>call\('staffRepairMyName',\{name\}\)/);
  assert.match(gate,/api\.repairName\(name\)/);
- assert.match(home,/staff-id\.js\?v=crew-identity-stable-v2/);
- assert.match(staffProfilePage,/staff-id\.js\?v=crew-identity-stable-v2/);
- assert.match(gate,/staff-id\.js\?v=crew-identity-stable-v2/);
- assert.match(sw,/staff-id\.js\?v=crew-identity-stable-v2/);
+ assert.match(home,/staff-id\.js\?v=crew-identity-diagnostic-v3/);
+ assert.match(staffProfilePage,/staff-id\.js\?v=crew-identity-diagnostic-v3/);
+ assert.match(gate,/staff-id\.js\?v=crew-identity-diagnostic-v3/);
+ assert.match(sw,/staff-id\.js\?v=crew-identity-diagnostic-v3/);
 });

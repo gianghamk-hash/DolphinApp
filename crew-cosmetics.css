@@ -791,7 +791,7 @@
  text-shadow:0 0 5px #fff,0 0 11px #ffc44e,0 0 19px #b69cff;
  animation:crew-crown-float 2.8s ease-in-out infinite;
 }
-[data-avatar-rarity="mythic"]>.crew-avatar-insignia::before{content:"✦";color:#e4bbff;text-shadow:0 0 13px #aa86ff,0 0 20px #75eeff}
+[data-avatar-rarity="mythic"]>.crew-avatar-insignia::before{content:"♛";color:#f0d0ff;text-shadow:0 0 13px #aa86ff,0 0 20px #75eeff}
 .crew-avatar-insignia::after{
  content:"";position:absolute;inset:-9%;border-radius:38%;border:1px dashed #ffe6ac88;
  box-shadow:0 0 9px #eacaff8f;animation:crew-v4-spin 16s linear infinite;
@@ -810,7 +810,7 @@
  content:"♛";position:absolute;right:-5px;top:-11px;font-size:15px;color:#fff4be;
  text-shadow:0 0 7px #ffc978,0 0 13px #ad7cff;pointer-events:none;
 }
-.avatar-choice[data-avatar-rarity="mythic"]::after{content:"✦";color:#d8b9ff}
+.avatar-choice[data-avatar-rarity="mythic"]::after{content:"♛";color:#e7c4ff}
 @media(prefers-reduced-motion:reduce){
  .crew-avatar-insignia,.crew-avatar-insignia::after,.crew-avatar-insignia::before{animation:none!important}
 }

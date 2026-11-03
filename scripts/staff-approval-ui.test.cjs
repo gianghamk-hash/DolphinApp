@@ -61,3 +61,14 @@ test('DOL-0001 management controls remain discoverable when identity refresh is 
  assert.match(ui,/manager=verifiedOwner\(\)/);
  assert.match(ui,/if\(!verifiedOwner\(\)\)return/);
 });
+
+test('Manager can open secure Staff ID linking without bypassing server approval',()=>{
+ const ui=read('staff-admin-profile.js'),html=read('dolphin-profile.html'),auth=read('staff-id.js');
+ assert.match(html,/id="crew-manager-link-open"/);
+ assert.match(html,/id="crew-manager-auth-diagnostic"/);
+ assert.match(ui,/\$\('devices-dialog'\)/);
+ assert.match(ui,/\$\('claim-code'\)\?\.focus\(\)/);
+ assert.match(auth,/getVerificationStatus:/);
+ assert.match(ui,/manager=verifiedOwner\(\)/);
+ assert.match(ui,/\$\(id\)\.disabled=!manager/);
+});

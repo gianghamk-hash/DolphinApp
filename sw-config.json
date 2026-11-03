@@ -1,5 +1,5 @@
 {
-  "version": "1.1.65",
+  "version": "1.1.66",
   "releaseDate": "2026-11-03",
-  "notes": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)"
+  "notes": "ci(staff): require rename regression tests before Firebase production deployment (#221)"
 }

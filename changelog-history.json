@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.65",
+      "releaseDate": "2026-11-03T08:05:40.777Z",
+      "summary": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)",
+      "details": [
+        "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)"
+      ]
+    },
+    {
       "version": "1.1.64",
       "releaseDate": "2026-11-03T08:02:05.151Z",
       "summary": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)",
@@ -390,14 +398,6 @@
       "summary": "Fix nationality summary to count table groups (#173)",
       "details": [
         "Fix nationality summary to count table groups (#173)"
-      ]
-    },
-    {
-      "version": "1.1.15",
-      "releaseDate": "2026-10-31T13:18:45.978Z",
-      "summary": "Guest list: focused dietary filters and nationality counts by area (#172)",
-      "details": [
-        "Guest list: focused dietary filters and nationality counts by area (#172)"
       ]
     }
   ]

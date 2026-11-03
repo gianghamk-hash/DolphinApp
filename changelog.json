@@ -1,26 +1,22 @@
 {
-  "version": "1.1.65",
-  "previousVersion": "1.1.64",
-  "commit": "8510929",
-  "previousCommit": "9487360",
-  "buildDate": "2026-11-03T08:05:40.777Z",
-  "summary": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)",
+  "version": "1.1.66",
+  "previousVersion": "1.1.65",
+  "commit": "eddece1",
+  "previousCommit": "8510929",
+  "buildDate": "2026-11-03T08:07:03.216Z",
+  "summary": "ci(staff): require rename regression tests before Firebase production deployment (#221)",
   "changes": {
-    "totalCommits": 289,
-    "filesChanged": 2,
+    "totalCommits": 290,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)"
+    "ci(staff): require rename regression tests before Firebase production deployment (#221)"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-name-repair.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-profile.js",
+      "file": ".github/workflows/staff-access-production.yml",
       "type": "update"
     }
   ]

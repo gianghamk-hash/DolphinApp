@@ -146,13 +146,13 @@ test('V4 complex animations have layered spark, ring and core nodes with reduced
 
 test('avatar categories are ascending numeric Level and every collection has a curated theme',()=>{
  const catalog=JSON.parse(read('functions/staff-avatar-catalog.json'));
- const groups=Object.keys(catalog),levels=groups.map(s=>Number((s.match(/Lv\\.(\\d+)/)||[])[1]));
+ const groups=Object.keys(catalog),levels=groups.map(s=>Number((s.match(/Lv\.(\d+)/)||[])[1]));
  assert.deepEqual(levels,[1,2,3,5,7,10,12,15,18,20,28,30,36,40,48,55]);
  const all=Object.values(catalog).flat();
  assert.equal(new Set(all).size,all.length,'every avatar appears in only one folder');
  for(const [name,required] of Object.entries({
   'Ocean Collection Lv.5':['🦈','🐙','🪼','🐧'],
-  'Safari Lv.7':['🦁','🦒','🐆'],
+  'Safari Lv.7':['🦓','🦒','🐆'],
   'Thủy thủ Lv.12':['⚓','⛵','🚢'],
   'Thiên hà Lv.36':['🌌','🪐','☄️'],
   'Mythic Collection Lv.40':['🐉','🐦‍🔥','🔱'],

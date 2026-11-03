@@ -30,3 +30,22 @@ test('manager notifications remain in-app after dismissal of one pending request
  assert.match(client,/rejectRegistration:employeeId=>call\('staffRejectRegistration'/);
  assert.match(client,/wasRejected:\(\)=>rejection/);
 });
+
+test('verified DOL-0001 manages approved directory and grouped actions',()=>{
+ const ui=read('staff-admin-profile.js'),html=read('dolphin-profile.html');
+ const api=read('staff-id.js'),backend=read('functions/staff-profile.js');
+ const workflow=read('.github/workflows/staff-access-production.yml');
+ assert.match(html,/id="crew-approved-dialog"/);
+ assert.match(html,/id="crew-approved-search"/);
+ assert.match(html,/id="crew-approved-sort"/);
+ assert.match(html,/id="crew-recovery-open"/);
+ assert.match(html,/Cài đặt cá nhân/);
+ assert.match(html,/Trung tâm nhân sự/);
+ assert.match(ui,/listApproved\(\)/);
+ assert.match(ui,/function renderApproved/);
+ assert.match(api,/listApproved:\(\)=>call\('staffListApprovedProfiles'\)/);
+ assert.match(backend,/exports\.staffListApprovedProfiles=onCall/);
+ assert.match(backend,/await requireAccessManager\(req\)/);
+ assert.match(backend,/deviceCount/);
+ assert.match(workflow,/functions:staffListApprovedProfiles/);
+});

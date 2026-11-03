@@ -40,6 +40,7 @@ function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs'); // Independently tested staff progression callables. // Ignore independent push exports while unit-testing legacy Staff ID.
   if(n==='./staff-profile'){const sub={...context,exports:{}};vm.runInNewContext(fs.readFileSync(__dirname+'/staff-profile.js','utf8'),sub);return sub.exports;}
   if(n==='./staff-avatar-catalog.json')return require('./staff-avatar-catalog.json');
+  if(n==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
   throw Error(n);
  }};
  vm.runInNewContext(source,context);

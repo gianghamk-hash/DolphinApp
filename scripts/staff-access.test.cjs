@@ -13,8 +13,8 @@ const identity=read('functions/index.js');
 const nav=read('dolphin-navigation.js');
 test('home access is closed by default and linked verification is checked on startup',()=>{
  assert.match(home,/document\.documentElement\.classList\.add\('dolphin-access-pending'\)/);
- assert.match(home,/staff-access\.js\?v=crew-recovery-v7/);
- assert.match(home,/staff-access\.css\?v=crew-recovery-v7/);
+ assert.match(home,/staff-access\.js\?v=crew-name-policy-v1/);
+ assert.match(home,/staff-access\.css\?v=crew-name-policy-v1/);
  assert.match(gate,/identity\?\.verified===true&&identity\?\.employeeId/);
  assert.match(gate,/await api\.ready\(\)/);
  assert.match(css,/html\.dolphin-access-pending #landing/);
@@ -49,4 +49,19 @@ test('direct staff-entry navigation and linked devices cannot bypass approval',(
  assert.match(gate,/panel\('pending'\)/);
  assert.match(gate,/api\.link\(\$\('dag-code'\)\.value\.trim\(\)/);
  assert.match(gate,/state\.busy/);
+});
+
+test('pending approval cannot access registration, recovery or device linking',()=>{
+ assert.match(gate,/state\.pending/);
+ assert.match(gate,/state\.pending&&name!=='pending'/);
+ assert.match(gate,/state\.busy\|\|state\.pending\|\|state\.needsRename/);
+ assert.doesNotMatch(gate,/data-action="switch"/);
+ assert.match(identity,/Đang chờ quản lý duyệt/);
+});
+test('legacy invalid or duplicate names require remediation while keeping Staff ID',()=>{
+ assert.match(gate,/data-panel="rename"/);
+ assert.match(gate,/api\.repairName\(name\)/);
+ assert.match(identity,/requiresNameChange/);
+ assert.match(backend,/exports\.staffRepairMyName/);
+ assert.match(backend,/nameAliases:aliases\.slice/);
 });

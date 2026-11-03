@@ -31,6 +31,10 @@ const css=fs.readFileSync(path.join(root,'staff-access.css'),'utf8');
       window.__staff={...info,employeeId:'DOL-ABCDEF1234',verified:false,linked:true,approved:false};
       return window.__staff;
      },
+     correctName:async name=>{
+      window.__staff={...window.__staff,name,requiresNameChange:false,nameIssue:''};
+      return window.__staff;
+     },
      link:async code=>{
       window.__staff={employeeId:'DOL-0002',name:'Existing Crew',avatar:'🐬',verified:true,linked:true};
       return window.__staff;
@@ -65,8 +69,34 @@ const css=fs.readFileSync(path.join(root,'staff-access.css'),'utf8');
   assert.equal(await fresh.page.evaluate(()=>window.DolphinStaffAccess.isAllowed()),false);
   assert.equal(await fresh.page.locator('#dag-pending-id').textContent(),'DOL-ABCDEF1234');
   assert.equal(await fresh.page.locator('#dag-register-form [name=department]').count(),0);
+  assert.equal(await fresh.page.locator('.dag-tabs').isVisible(),false,'Pending user cannot select register/recovery/link tabs');
+  assert.equal(await fresh.page.locator('#dag-pending-name').isVisible(),true);
+  assert.equal(await fresh.page.locator('[data-action=switch]').count(),0);
+  await fresh.page.evaluate(()=>document.querySelector('[data-tab=register]').click());
+  assert.equal(await fresh.page.locator('[data-panel=register]').isVisible(),false,'Scripted tab selection still blocked');
+  await fresh.page.evaluate(()=>{
+   window.__staff={...window.__staff,verified:true,approved:true};
+   window.dispatchEvent(new CustomEvent('dolphin-staff-id-changed',{detail:window.__staff}));
+  });
+  await fresh.page.waitForFunction(()=>window.DolphinStaffAccess.isAllowed());
+  console.log('PASS: pending cannot re-register/link/recover; approval alone unlocks landing.');
+
   console.log('PASS: new staff choose avatar, register without department and wait for manager.');
   await fresh.context.close();
+
+  const old=await device({employeeId:'DOL-0011',name:'Test 1',verified:true,linked:true,
+    requiresNameChange:true,nameIssue:'Tên nhân viên phải dài hơn 6 ký tự.',xp:98000,levelPeak:12});
+  assert.equal(await old.page.evaluate(()=>window.DolphinStaffAccess.isAllowed()),false);
+  assert.equal(await old.page.locator('[data-panel=rename]').isVisible(),true);
+  assert.equal(await old.page.locator('.dag-tabs').isVisible(),false);
+  await old.page.locator('#dag-rename-name').fill('Nguyễn Văn Hoàng');
+  await old.page.locator('[data-action=rename]').click();
+  await old.page.waitForFunction(()=>window.DolphinStaffAccess.isAllowed());
+  const state=await old.page.evaluate(()=>window.__staff);
+  assert.equal(state.employeeId,'DOL-0011');assert.equal(state.xp,98000);
+  assert.equal(state.levelPeak,12);
+  console.log('PASS: old invalid name must be corrected before landing without replacing Staff ID or XP.');
+  await old.context.close();
 
   const linked=await device(null);
   await linked.page.locator('[data-tab=link]').click();

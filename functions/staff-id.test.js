@@ -353,3 +353,29 @@ test('rejected applications cannot be reactivated by approve or old link codes',
  await rejects(()=>api.staffClaimLinkCode(req('new-phone',{code})),'failed-precondition');
  await rejects(()=>api.staffRejectRegistration(req('owner',{employeeId:crew.employeeId})),'failed-precondition');
 });
+
+test('duplicate registration is rejected without issuing a second Staff ID',async()=>{
+ const {api,state}=harness();
+ const a=await api.staffRegisterSelfProfile(req('first',{name:'Nguyen Van Nam'}));
+ await rejects(()=>api.staffRegisterSelfProfile(req('second',{name:' NGUYEN   VAN NAM '})),'already-exists');
+ assert.equal(state.get('staffIdentity/second'),undefined);
+ assert.equal([...state.keys()].filter(k=>k.startsWith('staffRegistry/')).length,1);
+ assert.equal((await api.staffGetIdentity(req('first'))).employeeId,a.employeeId);
+});
+test('legacy short-name repair keeps XP, level, Staff ID and historical aliases',async()=>{
+ const {api,state}=harness();
+ state.set('staffRegistry/DOL-0008',{employeeId:'DOL-0008',name:'Minh',active:true,approved:true,registrationSource:'manager',xp:123450,levelPeak:15,workPoints:28,revenue:5000000});
+ state.set('staffIdentity/legacy',{employeeId:'DOL-0008',name:'Minh',verified:true});
+ const before=await api.staffGetIdentity(req('legacy'));
+ assert.equal(before.verified,false);
+ assert.equal(before.requiresNameChange,true);
+ const fixed=await api.staffRepairMyName(req('legacy',{name:'Nguyen Van Minh'}));
+ assert.equal(fixed.employeeId,'DOL-0008');
+ const after=state.get('staffRegistry/DOL-0008');
+ assert.equal(after.xp,123450);
+ assert.equal(after.levelPeak,15);
+ assert.equal(after.workPoints,28);
+ assert.equal(after.revenue,5000000);
+ assert.ok(after.nameAliases.includes('Minh'));
+ assert.equal((await api.staffGetIdentity(req('legacy'))).verified,true);
+});

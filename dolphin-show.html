@@ -737,8 +737,31 @@ window.saveService = async () => {
       typeof window.DolphinStaffId?.performLiveAction==='function';
     if(verified){
       // Backend validates the seller's server-recorded booking and claims XP once.
-      const reward=await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'combo',data:service});
-      if(reward.xpAwarded>0)toast('+'+reward.xpAwarded+' XP doanh thu Show','⭐');
+      let reward=await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'combo',data:service});
+      if(reward.requiresVerifiedBooking&&!reward.managerOverride){
+        // A legacy booking was saved without server-side proof. The combo is
+        // already saved for service. Attempt a one-time authenticated booking
+        // re-confirmation using fresh server data (never a cached display name
+        // or client-supplied XP), then retry the idempotent combo award.
+        try{
+          const latest=await getDocFromServer(ref);
+          const table=latest.exists()?latest.data():null;
+          const sellerMatches=table&&norm(table.seller)===norm(identity.name)&&
+            (!table.sellerStaffId||table.sellerStaffId===identity.employeeId);
+          const bookingValid=table&&table.leader&&table.dining&&Number(table.guests)>0&&table.payment;
+          if(sellerMatches&&bookingValid){
+            await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'booking',
+              data:{label,leader:table.leader,dining:table.dining,guests:table.guests,
+                payment:table.payment,focNote:table.focNote||''}});
+            reward=await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'combo',data:service});
+          }
+        }catch(recoveryError){
+          console.warn('[Dolphin Show] Combo saved but booking re-verification failed:',recoveryError);
+        }
+      }
+      if(reward.requiresVerifiedBooking){
+        toast('Combo đã lưu. Chưa ghi XP: mở Thông tin đặt bàn và lưu lại bằng Staff ID xác minh.','⚠️');
+      }else if(reward.xpAwarded>0)toast('+'+reward.xpAwarded+' XP doanh thu Show','⭐');
     }else{
       await runTransaction(db, async tx => {
         const snap=await tx.get(ref);

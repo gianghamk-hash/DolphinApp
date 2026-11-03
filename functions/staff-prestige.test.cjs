@@ -4,8 +4,8 @@ const fs=require('node:fs'),vm=require('node:vm');
 const engine=require('./staff-xp-engine.cjs');
 function harness(options={}){
  const data=new Map([
-  ['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',avatar:'🐬',active:true,xp:0}],
-  ['staffIdentity/lanDevice',{employeeId:'DOL-0001',name:'Lan',verified:true}]
+  ['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan Nguyen',avatar:'🐬',active:true,xp:0}],
+  ['staffIdentity/lanDevice',{employeeId:'DOL-0001',name:'Lan Nguyen',verified:true}]
  ]);
  const read=path=>{
   if(data.has(path))return data.get(path);
@@ -147,7 +147,7 @@ test('DOL-0001 is Admin sandbox only when verified, with self XP add/reset',asyn
 test('sandbox admin defaults to hidden from public XP leaderboard or Emperor',async()=>{
  const {api,data}=harness();
  data.set('staffRegistry/DOL-0001',{...data.get('staffRegistry/DOL-0001'),xp:900000,levelPeak:14});
- data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,avatar:'🐬',xp:500,levelPeak:1});
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh Nguyen',active:true,avatar:'🐬',xp:500,levelPeak:1});
  assert.deepEqual(Array.from(api._leaderboard({a:data.get('staffRegistry/DOL-0001'),b:data.get('staffRegistry/DOL-0002')}).map(p=>p.employeeId)),['DOL-0002']);
  await api._rebuildPrestige();
  const board=await api.staffGetPrestige(req('lanDevice'));
@@ -157,10 +157,10 @@ test('sandbox admin defaults to hidden from public XP leaderboard or Emperor',as
 });
 test('no self-admin privilege for unverified identity, other Staff ID or anonymous caller',async()=>{
  const {api,data}=harness();
- data.set('staffIdentity/lanDevice',{employeeId:'DOL-0001',name:'Lan',verified:false});
+ data.set('staffIdentity/lanDevice',{employeeId:'DOL-0001',name:'Lan Nguyen',verified:false});
  assert.equal((await api.staffGetMyProgress(req('lanDevice'))).testAdmin,false);
  await assert.rejects(()=>api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:5000})),e=>e.code==='permission-denied');
- data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,xp:0,registrationSource:'manager'});
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh Nguyen',active:true,xp:0,registrationSource:'manager'});
  data.set('staffIdentity/otherDevice',{employeeId:'DOL-0002',verified:true});
  assert.equal((await api.staffGetMyProgress(req('otherDevice'))).testAdmin,false);
  await assert.rejects(()=>api.staffAdjustOwnTestXP(req('otherDevice',{action:'reset'})),e=>e.code==='permission-denied');
@@ -237,7 +237,7 @@ test('Public board publishes equipped titles and frames, excluding DOL-0001 test
 
 test('DOL-0001 can opt into and out of public ranking only when verified',async()=>{
  const {api,data}=harness();
- data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh',active:true,xp:500,levelPeak:1});
+ data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Binh Nguyen',active:true,xp:500,levelPeak:1});
  await assert.rejects(()=>api.staffSetOwnRankingVisibility(req('manager',{visible:true})),e=>e.code==='permission-denied');
  await api.staffSetOwnRankingVisibility(req('lanDevice',{visible:true}));
  const board=await api.staffGetPrestige(req('lanDevice'));

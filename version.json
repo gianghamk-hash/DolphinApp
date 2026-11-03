@@ -1,7 +1,7 @@
 {
-  "version": "1.1.61",
-  "buildDate": "2026-11-03T05:10:51.006Z",
-  "commit": "4789399",
-  "notes": "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID",
+  "version": "1.1.62",
+  "buildDate": "2026-11-03T07:24:09.123Z",
+  "commit": "8aae524",
+  "notes": "fix(staff): restore repairName API for mandatory iPhone name change",
   "forceUpdate": false
 }

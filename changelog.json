@@ -1,50 +1,42 @@
 {
-  "version": "1.1.61",
-  "previousVersion": "1.1.60",
-  "commit": "4789399",
-  "previousCommit": "0c460ad",
-  "buildDate": "2026-11-03T05:10:51.006Z",
-  "summary": "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID",
+  "version": "1.1.62",
+  "previousVersion": "1.1.61",
+  "commit": "8aae524",
+  "previousCommit": "4789399",
+  "buildDate": "2026-11-03T07:24:09.123Z",
+  "summary": "fix(staff): restore repairName API for mandatory iPhone name change",
   "changes": {
-    "totalCommits": 285,
-    "filesChanged": 8,
+    "totalCommits": 286,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID"
+    "fix(staff): restore repairName API for mandatory iPhone name change"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-xp-actions.test.cjs",
+      "file": "dolphin-profile.html",
       "type": "update"
     },
     {
-      "file": "rank-rewards.js",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "rank-rewards.test.js",
+      "file": "scripts/staff-access.test.cjs",
       "type": "update"
     },
     {
-      "file": "ranking/index.html",
+      "file": "service-worker.js",
       "type": "update"
     },
     {
-      "file": "ranking/work-points.test.js",
+      "file": "staff-access.js",
       "type": "update"
     },
     {
-      "file": "scripts/avatar-sync-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-cosmetics.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-v5.test.cjs",
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

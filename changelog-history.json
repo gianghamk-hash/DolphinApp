@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.61",
+      "releaseDate": "2026-11-03T05:10:51.006Z",
+      "summary": "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID",
+      "details": [
+        "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID"
+      ]
+    },
+    {
       "version": "1.1.60",
       "releaseDate": "2026-11-03T04:34:08.163Z",
       "summary": "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #168: hide Push controls after setup",
       "details": [
         "Merge pull request #168: hide Push controls after setup"
-      ]
-    },
-    {
-      "version": "1.1.11",
-      "releaseDate": "2026-10-31T02:51:09.933Z",
-      "summary": "Merge pull request #167: simplify notification opt-in for everyone",
-      "details": [
-        "Merge pull request #167: simplify notification opt-in for everyone"
       ]
     }
   ]

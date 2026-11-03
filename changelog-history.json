@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.58",
+      "releaseDate": "2026-11-03T00:46:16.355Z",
+      "summary": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars",
+      "details": [
+        "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars"
+      ]
+    },
+    {
       "version": "1.1.57",
       "releaseDate": "2026-11-03T00:02:58.068Z",
       "summary": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation",
@@ -390,14 +398,6 @@
       "summary": "Fix custom-domain URLs and restore floating Back controls (#164)",
       "details": [
         "Fix custom-domain URLs and restore floating Back controls (#164)"
-      ]
-    },
-    {
-      "version": "1.1.8",
-      "releaseDate": "2026-10-30T07:44:01.872Z",
-      "summary": "Fix order and service notifications and restore music (#163)",
-      "details": [
-        "Fix order and service notifications and restore music (#163)"
       ]
     }
   ]

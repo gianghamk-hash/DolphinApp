@@ -1,106 +1,58 @@
 {
-  "version": "1.1.58",
-  "previousVersion": "1.1.57",
-  "commit": "177f419",
-  "previousCommit": "8dabb7d",
-  "buildDate": "2026-11-03T00:46:16.355Z",
-  "summary": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars",
+  "version": "1.1.59",
+  "previousVersion": "1.1.58",
+  "commit": "c68caf5",
+  "previousCommit": "177f419",
+  "buildDate": "2026-11-03T01:04:50.457Z",
+  "summary": "feat(crew): 100x verified order handling XP without changing sales or daily missions",
   "changes": {
-    "totalCommits": 282,
-    "filesChanged": 22,
+    "totalCommits": 283,
+    "filesChanged": 10,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars"
+    "feat(crew): 100x verified order handling XP without changing sales or daily missions"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-access-production.yml",
+      "file": ".github/workflows/staff-style-unlock-production.yml",
       "type": "update"
     },
     {
-      "file": "crew-cosmetics.css",
+      "file": ".github/workflows/staff-xp-secure-production.yml",
       "type": "update"
     },
     {
-      "file": "dolphin-avatars.js",
+      "file": "docs/STAFF_XP_GUIDE_VI.md",
       "type": "update"
     },
     {
-      "file": "dolphin-bungalow.html",
+      "file": "docs/STAFF_XP_RULES_CURRENT_VI.md",
       "type": "update"
     },
     {
-      "file": "dolphin-lounge.html",
+      "file": "functions/staff-xp-actions.js",
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     },
     {
-      "file": "dolphin-restaurant.html",
+      "file": "functions/staff-xp-engine.cjs",
       "type": "update"
     },
     {
-      "file": "dolphin-show.html",
+      "file": "functions/staff-xp-engine.test.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-avatar-catalog.json",
+      "file": "functions/staff-xp-live-engine.test.cjs",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/index.html",
-      "type": "update"
-    },
-    {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/staff-prestige-ranking.js",
-      "type": "update"
-    },
-    {
-      "file": "royal-leaders.js",
-      "type": "update"
-    },
-    {
-      "file": "scripts/avatar-sync-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-cosmetics.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/landing-level-podium.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-recovery.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-online.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.js",
+      "file": "functions/staff-xp-reconcile.test.cjs",
       "type": "update"
     }
   ]

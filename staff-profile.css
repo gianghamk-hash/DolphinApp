@@ -204,3 +204,12 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 .crew-directory-info small{font-size:10px;color:var(--muted);overflow-wrap:anywhere;line-height:1.45}
 .crew-approved-pill{font-size:10px;white-space:nowrap;font-weight:800;color:var(--gold)}
 @media(max-width:390px){.crew-manager-tile{padding:11px}.crew-directory-person{padding:10px;gap:8px}.crew-approved-pill{font-size:9px}}
+
+/* Keep the management entry discoverable while Firebase identity is being checked. */
+.crew-manager-access-status{display:flex;align-items:flex-start;justify-content:space-between;gap:12px;
+ padding:12px;margin:14px 0;border:1px solid var(--line);border-radius:12px;
+ background:color-mix(in srgb,var(--gold) 7%,var(--surface));font-size:12px;line-height:1.5}
+.crew-manager-access-status[hidden]{display:none!important}
+.crew-manager-access-status .secondary{flex-shrink:0;font-size:11px}
+.crew-manager-tile:disabled{opacity:.55;cursor:not-allowed}
+@media(max-width:390px){.crew-manager-access-status{flex-direction:column}}

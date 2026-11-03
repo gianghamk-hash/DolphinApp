@@ -137,16 +137,25 @@ async function combo(id,data,who){
  if(!SHOW.has(code))fail('Combo không được hỗ trợ');
  const db=getFirestore(),ref=db.collection('show_tables').doc(id);
  const proof=(await getDatabase().ref('staffXpShowProofs/'+hash(id)).once('value')).val();
- if((!proof||proof.employeeId!==who.id||proof.day!==vnDay())&&!who.admin)throw new HttpsError('failed-precondition','Cần lưu đặt bàn bằng Staff ID đã xác minh trước khi tính doanh thu Show.');
+ const currentProof=!!proof&&proof.employeeId===who.id&&proof.day===vnDay();
  const service={combo:code,package:str(data.package||'',50),drinks:stringMap(data.drinks),foods:stringMap(data.foods),status:'pending',savedAt:Date.now()};
  if(!Object.keys(service.drinks).length&&!Object.keys(service.foods).length)fail('Combo phải có món');
  await db.runTransaction(async tx=>{
   const snap=await tx.get(ref);
   if(!snap.exists)throw new HttpsError('not-found','Không tìm thấy bàn Show');
-  if(str(snap.data()?.seller)!==who.name&&!who.admin)throw new HttpsError('permission-denied','Bàn thuộc nhân viên khác');
+  const table=snap.data()||{};
+  const ownerId=str(table.sellerStaffId,70);
+  // Stable Staff ID is authoritative. For old name-only bookings use only
+  // aliases provided by the authenticated employee's server-side profile.
+  const matches=ownerId?ownerId===who.id:
+   [who.name,...who.nameAliases].some(n=>namePolicy.key(n)===namePolicy.key(str(table.seller)));
+  if(!matches&&!who.admin)throw new HttpsError('permission-denied','Bàn thuộc nhân viên khác');
   tx.update(ref,{service});
  });
- if(who.admin&&(!proof||proof.employeeId!==who.id))return {saved:true,xpAwarded:0,managerOverride:true};
+ // Legacy client-written bookings have no trusted XP proof. Save the actual
+ // service operation, but never mint revenue XP from an untrusted booking.
+ // The UI can offer to re-save this booking via the verified staff callable.
+ if(!currentProof)return {saved:true,xpAwarded:0,requiresVerifiedBooking:true,managerOverride:who.admin};
  const amount=proof.payment.toUpperCase()==='FOC'?0:xp.revenueXP(live.tableValue('show_tables',{seller:who.name,payment:proof.payment,service}));
  const grant=await onceSale('show_tables',id,who,amount);
  return {saved:true,xpAwarded:grant.amount,duplicate:grant.duplicate};

@@ -16,11 +16,11 @@ test('Show only credits paid known combos after selection',()=>{
 test('completed work is credited once per person, with role precedence',()=>{
  const done={status:'completed',preparedBy:'Mai & Lan',completedBy:'Mai & Binh'};
  assert.deepEqual(live.workTransition('lounge_orders',{status:'preparing'},done),[
-  {name:'Mai',source:'work',amount:2.5},{name:'Lan',source:'work',amount:1},{name:'Binh',source:'work',amount:2.5}
+  {name:'Mai',source:'work',amount:250},{name:'Lan',source:'work',amount:100},{name:'Binh',source:'work',amount:250}
  ]);
  assert.deepEqual(live.workTransition('lounge_orders',done,{...done,notes:'changed'}),[]);
  assert.deepEqual(live.workTransition('res_orders',null,done),[
-  {name:'Mai',source:'work',amount:10},{name:'Lan',source:'work',amount:5},{name:'Binh',source:'work',amount:10}
+  {name:'Mai',source:'work',amount:1000},{name:'Lan',source:'work',amount:500},{name:'Binh',source:'work',amount:1000}
  ]);
 });
 test('stable receipt id for a document incarnation prevents retry double-credits',()=>{

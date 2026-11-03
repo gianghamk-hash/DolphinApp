@@ -32,6 +32,8 @@ function topTile(kind,nameId,valueId){
  const icon=$(kind==='revenue'?'leader-revenue-avatar':'leader-work-avatar');
  if(icon){
   const profile=leader?.name?window.DolphinAvatars?.profile?.(leader.name):null;
+  if(leader?.name)icon.dataset.staffAvatar='';
+  else delete icon.dataset.staffAvatar;
   icon.dataset.staffName=leader?.name||'';
   icon.dataset.staffId=profile?.employeeId||'';
   icon.textContent=leader?.name?displayAvatar(leader.name,profile?.employeeId,kind==='revenue'?'💰':'🏆'):kind==='revenue'?'💰':'🏆';
@@ -63,13 +65,19 @@ function renderTiles(){
  topTile('work','leader-work-name','leader-work-value');
  const champion=board?.champion;
  text('leader-emperor-avatar',champion?displayAvatar(champion.name,champion.employeeId,champion.avatar):'👑');
+ if(champion)$('leader-emperor-avatar').dataset.staffAvatar='';
+ else delete $('leader-emperor-avatar').dataset.staffAvatar;
+ $('leader-emperor-avatar').dataset.staffName=champion?.name||'';
+ $('leader-emperor-avatar').dataset.staffId=champion?.employeeId||'';
  $('leader-emperor-avatar').dataset.frame=equippedFrame(champion);
  $('leader-emperor-avatar').dataset.avatarMotion=champion?.selectedAvatarMotion||'none';
  $('leader-emperor-avatar').dataset.crewAura=champion?.selectedAura||'none';
  $('leader-emperor-avatar').dataset.crewTrail=champion?.selectedTrail||'none';
  $('leader-emperor-avatar').dataset.crewCard=champion?.selectedCardFx||'none';
  text('leader-emperor-name',champion?.name||'Chưa có danh hiệu');
- if($('leader-emperor-name'))$('leader-emperor-name').dataset.nameFx=nameFxTier(champion);
+ if($('leader-emperor-name')){$('leader-emperor-name').dataset.nameFx=nameFxTier(champion);$('leader-emperor-name').dataset.crewTrail=champion?.selectedTrail||'none';}
+ const emperorTile=$('leader-emperor-avatar').closest('.leader-tile');
+ if(emperorTile){emperorTile.dataset.banner=champion?.selectedBanner||'default';emperorTile.dataset.crewCard=champion?.selectedCardFx||'none';}
  text('leader-emperor-value',champion?'Lv.'+Number(champion.level||1)+' · '+fmt(champion.xp)+' XP':'XP tích lũy');
  window.DolphinFrameFX?.refresh?.();
 }

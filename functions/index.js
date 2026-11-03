@@ -239,6 +239,8 @@ exports.staffIssueLinkCode=onCall(opts,async req=>{
  if(!staffCodePattern.test(employeeId))throw new HttpsError('invalid-argument','Mã nhân viên không hợp lệ');
  const snap=await staffRoot().child(employeeId).once('value'),profile=snap.val();
  if(!profile||!profile.active)throw new HttpsError('not-found','Không tìm thấy nhân viên đang hoạt động');
+ if(profile.registrationSource==='self'&&profile.approved!==true)
+  throw new HttpsError('failed-precondition','Nhân viên đang chờ duyệt, không thể cấp mã liên kết.');
  const code=crypto.randomBytes(18).toString('hex').toUpperCase();
  const tokenHash=crypto.createHash('sha256').update(code).digest('hex');
  await staffTokenRoot().child(tokenHash).set({employeeId,issuedAt:Date.now(),expiresAt:Date.now()+10*60*1000});
@@ -273,6 +275,8 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
  if(!issued||issued.claimedUid!==uid)throw new HttpsError('failed-precondition','Mã hết hạn hoặc đã được sử dụng');
  const snap=await staffRoot().child(issued.employeeId).once('value'),profile=snap.val();
  if(!profile||!profile.active)throw new HttpsError('failed-precondition','Nhân viên không còn hoạt động');
+ if(profile.registrationSource==='self'&&profile.approved!==true)
+  throw new HttpsError('failed-precondition','Không thể liên kết hồ sơ đang chờ duyệt.');
  const verified=profile.registrationSource!=='self'||profile.approved===true;
  const linked=await getDatabase().ref('staffIdentity/'+uid).transaction(v=>{
   if(v===null&&current?.employeeId)return null;

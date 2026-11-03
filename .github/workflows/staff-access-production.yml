@@ -18,6 +18,7 @@ on:
       - 'dolphin-navigation.js'
       - 'staff-access.css'
       - 'scripts/staff-access.test.cjs'
+      - 'scripts/staff-identity-refresh.test.cjs'
 permissions:
   contents: read
 concurrency:
@@ -55,6 +56,8 @@ jobs:
           node --check functions/index.js
           node --check functions/staff-xp-actions.js
           node --check staff-access.js
+          node --check staff-id.js
+          node --test scripts/staff-identity-refresh.test.cjs
           node --check staff-admin-profile.js
           node --test scripts/staff-approval-ui.test.cjs
           node --test functions/staff-id.test.js functions/staff-xp-actions.test.cjs scripts/staff-access.test.cjs

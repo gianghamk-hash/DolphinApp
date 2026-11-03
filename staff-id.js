@@ -7,6 +7,7 @@
 const config={apiKey:'AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ',authDomain:'dolphin-f6d67.firebaseapp.com',projectId:'dolphin-f6d67'};
 const profilePage=new URL('./dolphin-profile.html',document.currentScript?.src||location.href).href;
 let api=null, identity=null, rejection=false, uid='', initialized=false, connection=null;
+let refreshPending=null,refreshSequence=0,unlinkedConfirmations=0;
 const manager=()=>navigator.userAgent.includes('DolphinManager')||window.DOLPHIN_APP_TYPE==='manager';
 const htmlEscape=x=>String(x||'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function emit(){
@@ -32,16 +33,62 @@ async function init(){
   api=name=>func.httpsCallable(functions,name);
   await refresh();
   void retryXP();
- }catch(e){initialized=false;api=null;console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);}
+ }catch(e){initialized=false;api=null;console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);throw e;}
 }
-function connect(){if(!connection||!initialized)connection=init();return connection;}
-async function refresh(){
- if(!api)return null;
- try{
-  const r=await api('staffGetIdentity')({});
-  rejection=r.data?.rejected===true;
-  identity=r.data&&(r.data.linked||r.data.verified)?{...r.data,linked:true}:null;emit();return identity;
- }catch(e){console.warn('[StaffID] Backend chưa sẵn sàng:',e);return identity;}
+function connect(){
+ if(!connection)connection=init().catch(e=>{connection=null;throw e;});
+ return connection;
+}
+function sameIdentity(a,b){
+ if(!a||!b)return a===b;
+ const keys=new Set([...Object.keys(a),...Object.keys(b)]);
+ return [...keys].every(key=>JSON.stringify(a[key])===JSON.stringify(b[key]));
+}
+function refresh(){
+ if(!api)return Promise.resolve(identity);
+ // One request at a time; slow responses must never overwrite a later
+ // authentication state or temporarily erase a verified profile.
+ if(refreshPending)return refreshPending;
+ const seq=++refreshSequence;
+ const promise=(async()=>{
+  try{
+   const r=await api('staffGetIdentity')({});
+   if(seq!==refreshSequence)return identity;
+   const data=r?.data;
+   if(!data||typeof data!=='object')throw Error('Phản hồi xác minh không hợp lệ');
+   if(data.linked===true&&data.employeeId){
+    unlinkedConfirmations=0;
+    rejection=data.rejected===true;
+    const next={...data,linked:true};
+    if(!sameIdentity(next,identity)){identity=next;emit();}
+    return identity;
+   }
+   if(data.verified===true&&data.employeeId){
+    unlinkedConfirmations=0;rejection=false;
+    const next={...data,linked:true};
+    if(!sameIdentity(next,identity)){identity=next;emit();}
+    return identity;
+   }
+   // A single empty response after a verified profile may be produced by
+   // a transient auth/backend inconsistency. Require confirmation before
+   // clearing the UI, while all privileged operations remain server-checked.
+   if(identity?.verified===true&&identity.employeeId&&data.rejected!==true&&++unlinkedConfirmations<2){
+    console.warn('[StaffID] Trạng thái trống tạm thời, sẽ xác minh lại.');
+    return identity;
+   }
+   unlinkedConfirmations=0;
+   rejection=data.rejected===true;
+   if(identity!==null){identity=null;emit();}
+   return identity;
+  }catch(e){
+   // Network, unavailable and callable errors do not revoke a Staff ID.
+   console.warn('[StaffID] Tạm thời không xác minh được; giữ hồ sơ đang hiển thị:',e?.message||e);
+   return identity;
+  }
+ })();
+ refreshPending=promise;
+ void promise.finally(()=>{if(refreshPending===promise)refreshPending=null;});
+ return promise;
 }
 function ui(){
  if(document.getElementById('dolphinStaffIdPanel'))return;
@@ -131,7 +178,7 @@ window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:
  open:()=>{if(typeof window.openApp==='function'){window.openApp('profile');return;}window.location.assign(profilePage);},
  openManager:()=>{render();document.getElementById('dolphinStaffIdPanel').style.display='flex';}};
 window.addEventListener('storage',e=>{if(e.key==='dolphinStaffProfile'&&api)refresh();});
-window.addEventListener('focus',()=>{if(api)refresh().then(retryXP);});
+window.addEventListener('focus',()=>{if(api)void refresh().then(retryXP);});
 setInterval(()=>{if(document.visibilityState==='visible'&&api)void retryXP();},120000);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',connect);else connect();
 })();

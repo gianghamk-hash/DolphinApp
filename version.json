@@ -1,7 +1,7 @@
 {
-  "version": "1.1.56",
-  "buildDate": "2026-11-02T20:32:28.082Z",
-  "commit": "4534bb8",
-  "notes": "fix(firebase): package arcade verifier so daily XP Functions can start",
+  "version": "1.1.57",
+  "buildDate": "2026-11-03T00:02:58.068Z",
+  "commit": "8dabb7d",
+  "notes": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation",
   "forceUpdate": false
 }

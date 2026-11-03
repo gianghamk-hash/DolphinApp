@@ -1,5 +1,5 @@
 {
-  "version": "1.1.56",
-  "releaseDate": "2026-11-02",
-  "notes": "fix(firebase): package arcade verifier so daily XP Functions can start"
+  "version": "1.1.57",
+  "releaseDate": "2026-11-03",
+  "notes": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation"
 }

@@ -1,42 +1,42 @@
 {
-  "version": "1.1.56",
-  "previousVersion": "1.1.55",
-  "commit": "4534bb8",
-  "previousCommit": "bf4224a",
-  "buildDate": "2026-11-02T20:32:28.082Z",
-  "summary": "fix(firebase): package arcade verifier so daily XP Functions can start",
+  "version": "1.1.57",
+  "previousVersion": "1.1.56",
+  "commit": "8dabb7d",
+  "previousCommit": "4534bb8",
+  "buildDate": "2026-11-03T00:02:58.068Z",
+  "summary": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation",
   "changes": {
-    "totalCommits": 280,
-    "filesChanged": 8,
+    "totalCommits": 281,
+    "filesChanged": 18,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(firebase): package arcade verifier so daily XP Functions can start"
+    "feat(crew): restore check-in XP and unlock premium avatars, themes, animation"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-prestige-tests.yml",
+      "file": "crew-cosmetics.css",
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-profile-tests.yml",
+      "file": "dolphin-avatars.js",
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-style-unlock-production.yml",
+      "file": "dolphin-profile.html",
       "type": "update"
     },
     {
-      "file": "functions/crew-arcade-proof.cjs",
+      "file": "functions/staff-avatar-catalog.json",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-arcade.test.cjs",
+      "file": "functions/staff-daily-core.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-missions.js",
+      "file": "functions/staff-daily-core.test.cjs",
       "type": "update"
     },
     {
@@ -44,7 +44,47 @@
       "type": "update"
     },
     {
-      "file": "scripts/verify-firebase-source-boundary.cjs",
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-engine.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/avatar-sync-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-cosmetics.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-v5.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/staff-recovery.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "theme-system.js",
       "type": "update"
     }
   ]

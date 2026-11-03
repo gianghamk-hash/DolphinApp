@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.56",
+      "releaseDate": "2026-11-02T20:32:28.082Z",
+      "summary": "fix(firebase): package arcade verifier so daily XP Functions can start",
+      "details": [
+        "fix(firebase): package arcade verifier so daily XP Functions can start"
+      ]
+    },
+    {
       "version": "1.1.55",
       "releaseDate": "2026-11-02T20:12:45.840Z",
       "summary": "feat: 10x daily missions and verified Snake/2048 game XP",
@@ -390,14 +398,6 @@
       "summary": "Fix game leaderboards and sync TFT final standings automatically (#162)",
       "details": [
         "Fix game leaderboards and sync TFT final standings automatically (#162)"
-      ]
-    },
-    {
-      "version": "1.1.6",
-      "releaseDate": "2026-10-30T06:28:28.819Z",
-      "summary": "Show TFT round opponents and enable combat shop and bench controls (#161)",
-      "details": [
-        "Show TFT round opponents and enable combat shop and bench controls (#161)"
       ]
     }
   ]

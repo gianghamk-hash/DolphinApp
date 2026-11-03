@@ -39,6 +39,11 @@ function connect(){
  if(!connection)connection=init().catch(e=>{connection=null;throw e;});
  return connection;
 }
+function sameIdentity(a,b){
+ if(!a||!b)return a===b;
+ const keys=new Set([...Object.keys(a),...Object.keys(b)]);
+ return [...keys].every(key=>JSON.stringify(a[key])===JSON.stringify(b[key]));
+}
 function refresh(){
  if(!api)return Promise.resolve(identity);
  // One request at a time; slow responses must never overwrite a later
@@ -55,13 +60,13 @@ function refresh(){
     unlinkedConfirmations=0;
     rejection=data.rejected===true;
     const next={...data,linked:true};
-    if(JSON.stringify(next)!==JSON.stringify(identity)){identity=next;emit();}
+    if(!sameIdentity(next,identity)){identity=next;emit();}
     return identity;
    }
    if(data.verified===true&&data.employeeId){
     unlinkedConfirmations=0;rejection=false;
     const next={...data,linked:true};
-    if(JSON.stringify(next)!==JSON.stringify(identity)){identity=next;emit();}
+    if(!sameIdentity(next,identity)){identity=next;emit();}
     return identity;
    }
    // A single empty response after a verified profile may be produced by

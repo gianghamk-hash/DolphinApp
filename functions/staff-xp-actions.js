@@ -13,6 +13,7 @@ const live=require('./staff-xp-live-engine.cjs');
 const xp=require('./staff-xp-engine.cjs');
 const daily=require('./staff-daily-missions');
 const dayCore=require('./staff-daily-core.cjs');
+const names=require('./staff-name-policy.cjs');
 const opts={region:'asia-southeast1',maxInstances:8,timeoutSeconds:60};
 const KINDS=new Set(['lounge_tables','bun_tables','show_tables','lounge_orders','bun_orders','res_orders']);
 const SHOW=new Set(['combo1','combo2','combo3','singer1','singer2','singer3']);
@@ -31,6 +32,7 @@ async function staff(req){
  const p=(await db.ref('staffRegistry/'+identity.employeeId).once('value')).val();
  if(!p?.active||(p.registrationSource==='self'&&p.approved!==true))throw new HttpsError('permission-denied','Hồ sơ chưa được quản lý duyệt');
  if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))throw new HttpsError('permission-denied','Staff ID không hợp lệ');
+ if(await names.check(db,p))throw new HttpsError('failed-precondition','Tên nhân viên chưa hợp lệ. Vui lòng đổi tên trong Dolphin Staff trước khi thao tác.');
  const managers=new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()));
  return {id:p.employeeId,name:p.name,uid:u,admin:managers.has(u)};
 }

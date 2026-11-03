@@ -1,5 +1,5 @@
 {
-  "version": "1.1.69",
+  "version": "1.1.70",
   "releaseDate": "2026-11-03",
-  "notes": "Fix Staff Profile check and refresh Staff ID client after directory update (#224)"
+  "notes": "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)"
 }

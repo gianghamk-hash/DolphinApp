@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.69",
+      "releaseDate": "2026-11-03T09:27:56.408Z",
+      "summary": "Fix Staff Profile check and refresh Staff ID client after directory update (#224)",
+      "details": [
+        "Fix Staff Profile check and refresh Staff ID client after directory update (#224)"
+      ]
+    },
+    {
       "version": "1.1.68",
       "releaseDate": "2026-11-03T09:26:20.813Z",
       "summary": "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)",
@@ -390,14 +398,6 @@
       "summary": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel",
       "details": [
         "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel"
-      ]
-    },
-    {
-      "version": "1.1.19",
-      "releaseDate": "2026-11-01T04:27:27.890Z",
-      "summary": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
-      "details": [
-        "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)"
       ]
     }
   ]

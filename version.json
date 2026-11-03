@@ -1,7 +1,7 @@
 {
-  "version": "1.1.69",
-  "buildDate": "2026-11-03T09:27:56.408Z",
-  "commit": "344769d",
-  "notes": "Fix Staff Profile check and refresh Staff ID client after directory update (#224)",
+  "version": "1.1.70",
+  "buildDate": "2026-11-03T10:02:00.070Z",
+  "commit": "75ed3a8",
+  "notes": "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)",
   "forceUpdate": false
 }

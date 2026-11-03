@@ -1,20 +1,28 @@
 {
-  "version": "1.1.69",
-  "previousVersion": "1.1.68",
-  "commit": "344769d",
-  "previousCommit": "dd31066",
-  "buildDate": "2026-11-03T09:27:56.408Z",
-  "summary": "Fix Staff Profile check and refresh Staff ID client after directory update (#224)",
+  "version": "1.1.70",
+  "previousVersion": "1.1.69",
+  "commit": "75ed3a8",
+  "previousCommit": "344769d",
+  "buildDate": "2026-11-03T10:02:00.070Z",
+  "summary": "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)",
   "changes": {
-    "totalCommits": 293,
-    "filesChanged": 4,
+    "totalCommits": 294,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix Staff Profile check and refresh Staff ID client after directory update (#224)"
+    "Fix intermittent DOL-0001 profile disappearance in Dolphin Manager (#225)"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/staff-access-production.yml",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
     {
       "file": "index.html",
       "type": "update"
@@ -24,11 +32,19 @@
       "type": "update"
     },
     {
+      "file": "scripts/staff-identity-refresh.test.cjs",
+      "type": "update"
+    },
+    {
       "file": "service-worker.js",
       "type": "update"
     },
     {
       "file": "staff-access.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

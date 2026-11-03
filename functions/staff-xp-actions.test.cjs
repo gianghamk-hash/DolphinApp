@@ -2,7 +2,7 @@
 const {test}=require('node:test'),assert=require('node:assert/strict');
 const vm=require('node:vm'),fs=require('node:fs');
 function harness(){
- const data=new Map([['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager'}],['staffIdentity/self',{verified:false,employeeId:'DOL-0002'}],['staffIdentity/manager',{verified:true,employeeId:'DOL-0003'}],['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Manager',active:true,registrationSource:'manager'}],['staffIdentity/owner',{verified:true,employeeId:'DOL-0004'}],['staffRegistry/DOL-0004',{employeeId:'DOL-0004',name:'Đỗ Thành Đạt',nameAliases:['Dat G'],active:true,registrationSource:'manager'}],['staffIdentity/intruder',{verified:true,employeeId:'DOL-0005'}],['staffRegistry/DOL-0005',{employeeId:'DOL-0005',name:'Another Employee',active:true,registrationSource:'manager'}]]);
+ const data=new Map([['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager'}],['staffIdentity/self',{verified:false,employeeId:'DOL-0002'}],['staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Self Pending',active:true,registrationSource:'self',approved:false}],['staffIdentity/approvedSelf',{verified:false,employeeId:'DOL-0006'}],['staffRegistry/DOL-0006',{employeeId:'DOL-0006',name:'Nguyễn Tiến Nam',active:true,registrationSource:'self',approved:true}],['staffIdentity/manager',{verified:true,employeeId:'DOL-0003'}],['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Manager',active:true,registrationSource:'manager'}],['staffIdentity/owner',{verified:true,employeeId:'DOL-0004'}],['staffRegistry/DOL-0004',{employeeId:'DOL-0004',name:'Đỗ Thành Đạt',nameAliases:['Dat G'],active:true,registrationSource:'manager'}],['staffIdentity/intruder',{verified:true,employeeId:'DOL-0005'}],['staffRegistry/DOL-0005',{employeeId:'DOL-0005',name:'Another Employee',active:true,registrationSource:'manager'}]]);
  const docs=new Map(),awards=[],missionAwards=[];
  const ref=p=>({once:async()=>({val:()=>data.get(p)||null,exists:()=>data.has(p)}),set:async v=>{data.set(p,v)},transaction:async fn=>{const v=fn(data.get(p)||null);if(v===undefined)return {committed:false};data.set(p,v);return {committed:true,snapshot:{val:()=>v}};}});
  const db={collection:k=>({doc:id=>({key:k+'/'+id})}),runTransaction:async fn=>fn({get:async r=>({exists:docs.has(r.key),data:()=>docs.get(r.key)}),set:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v}),update:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v})})};
@@ -30,6 +30,19 @@ test('only manager verified staff can open revenue sessions, no duplicate XP',as
  assert.equal((await h.call('verified',input)).xpAwarded,750);
  assert.equal(h.docs.get('lounge_tables/LOUNGE 1').openedByStaff,'Lan');
  assert.equal((await h.call('verified',input)).xpAwarded,0);assert.equal(h.awards.length,1);
+});
+test('approved self-registered staff may book even if device verified flag is stale',async()=>{
+ const h=harness(),input={kind:'show_tables',id:'BGL 301',action:'booking',
+  data:{leader:'Anh Long',dining:'A1',guests:10,payment:'Chuyển khoản'}};
+ const saved=await h.call('approvedSelf',input);
+ assert.equal(saved.saved,true);
+ assert.equal(h.docs.get('show_tables/BGL 301').sellerStaffId,'DOL-0006');
+ assert.equal(h.docs.get('show_tables/BGL 301').seller,'Nguyễn Tiến Nam');
+});
+test('unapproved self registration remains blocked with or without a verified device flag',async()=>{
+ const h=harness(),input={kind:'show_tables',id:'BGL 302',action:'booking',
+  data:{leader:'Guest',dining:'A2',guests:3,payment:'Tiền mặt'}};
+ await assert.rejects(()=>h.call('self',input),e=>e.code==='permission-denied');
 });
 test('Show needs verified booking; same combo is not counted twice',async()=>{
  const h=harness(),combo={kind:'show_tables',id:'S1',action:'combo',data:{combo:'combo2',foods:{set:1}}};

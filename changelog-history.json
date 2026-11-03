@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.59",
+      "releaseDate": "2026-11-03T01:04:50.457Z",
+      "summary": "feat(crew): 100x verified order handling XP without changing sales or daily missions",
+      "details": [
+        "feat(crew): 100x verified order handling XP without changing sales or daily missions"
+      ]
+    },
+    {
       "version": "1.1.58",
       "releaseDate": "2026-11-03T00:46:16.355Z",
       "summary": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #165: add independent staff Push notifications",
       "details": [
         "Merge pull request #165: add independent staff Push notifications"
-      ]
-    },
-    {
-      "version": "1.1.9",
-      "releaseDate": "2026-10-30T09:09:45.339Z",
-      "summary": "Fix custom-domain URLs and restore floating Back controls (#164)",
-      "details": [
-        "Fix custom-domain URLs and restore floating Back controls (#164)"
       ]
     }
   ]

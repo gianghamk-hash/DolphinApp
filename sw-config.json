@@ -1,5 +1,5 @@
 {
-  "version": "1.1.59",
+  "version": "1.1.60",
   "releaseDate": "2026-11-03",
-  "notes": "feat(crew): 100x verified order handling XP without changing sales or daily missions"
+  "notes": "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID"
 }

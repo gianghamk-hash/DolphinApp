@@ -46,10 +46,37 @@ test('unapproved self registration remains blocked with or without a verified de
 });
 test('Show needs verified booking; same combo is not counted twice',async()=>{
  const h=harness(),combo={kind:'show_tables',id:'S1',action:'combo',data:{combo:'combo2',foods:{set:1}}};
- await assert.rejects(()=>h.call('owner',combo),e=>e.code==='failed-precondition');
+ await assert.rejects(()=>h.call('owner',combo),e=>e.code==='not-found');
  await h.call('owner',{kind:'show_tables',id:'S1',action:'booking',data:{leader:'L',dining:'J1',guests:2,payment:'Tiền mặt'}});
  assert.equal((await h.call('owner',combo)).xpAwarded,790);
  assert.equal((await h.call('owner',combo)).xpAwarded,0);
+});
+test('legacy Show booking can save combo with no invented XP, then verified booking earns once',async()=>{
+ const h=harness();
+ h.docs.set('show_tables/BGL 301',{label:'BGL 301',seller:'Lan',
+  leader:'Anh Long',dining:'A1',guests:10,payment:'Chuyển khoản'});
+ const combo={kind:'show_tables',id:'BGL 301',action:'combo',
+  data:{combo:'combo1',drinks:{Coke:3},foods:{'Đồ ăn đi kèm':1}}};
+ const pending=await h.call('verified',combo);
+ assert.equal(pending.saved,true);
+ assert.equal(pending.requiresVerifiedBooking,true);
+ assert.equal(pending.xpAwarded,0);
+ assert.equal(h.awards.length,0);
+ assert.equal(h.docs.get('show_tables/BGL 301').service.combo,'combo1');
+ await h.call('verified',{kind:'show_tables',id:'BGL 301',action:'booking',
+  data:{leader:'Anh Long',dining:'A1',guests:10,payment:'Chuyển khoản'}});
+ const earned=await h.call('verified',combo);
+ assert.equal(earned.saved,true);
+ assert.ok(earned.xpAwarded>0);
+ assert.equal((await h.call('verified',combo)).xpAwarded,0);
+});
+test('legacy Show combo cannot be saved by a different verified employee',async()=>{
+ const h=harness();
+ h.docs.set('show_tables/S-legacy',{label:'S-legacy',seller:'Another Employee',
+  sellerStaffId:'DOL-0005',leader:'X',dining:'A1',guests:3,payment:'TM'});
+ await assert.rejects(()=>h.call('verified',{kind:'show_tables',id:'S-legacy',
+  action:'combo',data:{combo:'combo1',foods:{set:1}}}),e=>e.code==='permission-denied');
+ assert.equal(h.docs.get('show_tables/S-legacy').service,undefined);
 });
 test('Work credits verified prepare and remaining completion XP once',async()=>{
  const h=harness();h.docs.set('lounge_orders/o1',{status:'pending'});

@@ -67,7 +67,7 @@ async function call(name,data){
  await connect();if(!api)throw Error('Chưa kết nối máy chủ. Vui lòng thử lại.');
  const result=await api(name)(data||{});
  if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration','staffRejectRegistration','staffRequestNameRecovery','staffListRecoveryRequests','staffApproveNameRecovery'].includes(name)){
-  if(name==='staffClaimLinkCode')await refresh();
+  if(name==='staffClaimLinkCode'||name==='staffRepairMyName')await refresh();
   else{rejection=false;identity={...result.data,linked:true};emit();}
  }
  return result.data;

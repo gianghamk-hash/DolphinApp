@@ -1,7 +1,7 @@
 {
-  "version": "1.1.66",
-  "buildDate": "2026-11-03T08:07:03.216Z",
-  "commit": "eddece1",
-  "notes": "ci(staff): require rename regression tests before Firebase production deployment (#221)",
+  "version": "1.1.67",
+  "buildDate": "2026-11-03T11:07:45.056Z",
+  "commit": "36fe94e",
+  "notes": "Fix Staff ID rename blocked by contended full-registry transactions (#222)",
   "forceUpdate": false
 }

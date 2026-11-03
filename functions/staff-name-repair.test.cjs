@@ -5,20 +5,22 @@ const fs=require('node:fs');
 const vm=require('node:vm');
 const names=require('./staff-name-policy.cjs');
 
-function fixture(){
+function fixture({coldAborts=0}={}){
  const registry={
   'DOL-0006':{employeeId:'DOL-0006',name:'Đạt G',active:true,createdAt:2,xp:16302.5,levelPeak:4,revenue:900000},
   'DOL-0001':{employeeId:'DOL-0001',name:'Nguyễn Văn An',active:true,createdAt:1}
  };
  const identities={uid6:{employeeId:'DOL-0006',name:'Đạt G'}};
  const snap=v=>({val:()=>structuredClone(v)});
- let rateAccess=0;
+ let rateAccess=0,transactionAttempts=0;
  const db={ref(path){
   if(path.startsWith('staffProfileRate/')){rateAccess++;throw Error('Unexpected profile throttle');}
   if(path==='staffRegistry')return {
    once:async()=>snap(registry),
    child:id=>({once:async()=>snap(registry[id])}),
    transaction:async updater=>{
+    transactionAttempts++;
+    if(coldAborts-->0){updater({});return {committed:false,snapshot:snap(registry)};}
     const next=updater(structuredClone(registry));
     if(next===undefined)return {committed:false,snapshot:snap(registry)};
     Object.keys(registry).forEach(k=>delete registry[k]);
@@ -49,7 +51,7 @@ function fixture(){
   throw Error('Unexpected import: '+id);
  };
  vm.runInNewContext(code,{module:{exports:exported},exports:exported,require:fakeRequire,console,Date,Buffer,setTimeout,clearTimeout});
- return {repair:exported.staffRepairMyName,registry,identities,getRateAccess:()=>rateAccess};
+ return {repair:exported.staffRepairMyName,registry,identities,getRateAccess:()=>rateAccess,getTransactionAttempts:()=>transactionAttempts};
 }
 
 test('mandatory repair bypasses unrelated 1.5-second profile throttle and retains Staff ID and XP',async()=>{
@@ -79,4 +81,19 @@ test('reject duplicate and arbitrary rename while preserving stored identity',as
  await f.repair({auth:{uid:'uid6'},data:{name:'Đỗ Thành Đạt'}});
  await assert.rejects(()=>f.repair({auth:{uid:'uid6'},data:{name:'Đỗ Thành Đạt Mới'}}),e=>e.code==='failed-precondition');
  assert.equal(f.registry['DOL-0006'].name,'Đỗ Thành Đạt');
+});
+
+test('retry cold transaction abort while server still requires a mandatory rename',async()=>{
+ const f=fixture({coldAborts:2});
+ const r=await f.repair({auth:{uid:'uid6'},data:{name:'Đỗ Thành Đạt'}});
+ assert.equal(r.employeeId,'DOL-0006');
+ assert.equal(r.name,'Đỗ Thành Đạt');
+ assert.equal(f.getTransactionAttempts(),3);
+ assert.equal(f.registry['DOL-0006'].xp,16302.5);
+ assert.equal(f.identities.uid6.name,'Đỗ Thành Đạt');
+});
+test('cold abort exhaustion never misreports legacy short name as ineligible',async()=>{
+ const f=fixture({coldAborts:5});
+ await assert.rejects(()=>f.repair({auth:{uid:'uid6'},data:{name:'Đỗ Thành Đạt'}}),e=>e.code==='unavailable');
+ assert.equal(f.registry['DOL-0006'].name,'Đạt G');
 });

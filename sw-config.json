@@ -1,5 +1,5 @@
 {
-  "version": "1.1.57",
+  "version": "1.1.58",
   "releaseDate": "2026-11-03",
-  "notes": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation"
+  "notes": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars"
 }

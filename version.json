@@ -1,7 +1,7 @@
 {
-  "version": "1.1.57",
-  "buildDate": "2026-11-03T00:02:58.068Z",
-  "commit": "8dabb7d",
-  "notes": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation",
+  "version": "1.1.58",
+  "buildDate": "2026-11-03T00:46:16.355Z",
+  "commit": "177f419",
+  "notes": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars",
   "forceUpdate": false
 }

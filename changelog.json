@@ -1,20 +1,24 @@
 {
-  "version": "1.1.57",
-  "previousVersion": "1.1.56",
-  "commit": "8dabb7d",
-  "previousCommit": "4534bb8",
-  "buildDate": "2026-11-03T00:02:58.068Z",
-  "summary": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation",
+  "version": "1.1.58",
+  "previousVersion": "1.1.57",
+  "commit": "177f419",
+  "previousCommit": "8dabb7d",
+  "buildDate": "2026-11-03T00:46:16.355Z",
+  "summary": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars",
   "changes": {
-    "totalCommits": 281,
-    "filesChanged": 18,
+    "totalCommits": 282,
+    "filesChanged": 22,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): restore check-in XP and unlock premium avatars, themes, animation"
+    "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/staff-access-production.yml",
+      "type": "update"
+    },
     {
       "file": "crew-cosmetics.css",
       "type": "update"
@@ -24,7 +28,23 @@
       "type": "update"
     },
     {
+      "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-lounge.html",
+      "type": "update"
+    },
+    {
       "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-show.html",
       "type": "update"
     },
     {
@@ -32,27 +52,27 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-core.cjs",
+      "file": "giaitri/games/tactics-online/index.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-core.test.cjs",
+      "file": "giaitri/index.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-missions.test.cjs",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.js",
+      "file": "ranking/index.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-prestige.test.cjs",
+      "file": "ranking/staff-prestige-ranking.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-engine.cjs",
+      "file": "royal-leaders.js",
       "type": "update"
     },
     {
@@ -64,7 +84,7 @@
       "type": "update"
     },
     {
-      "file": "scripts/crew-v5.test.cjs",
+      "file": "scripts/landing-level-podium.test.cjs",
       "type": "update"
     },
     {
@@ -76,15 +96,11 @@
       "type": "update"
     },
     {
-      "file": "staff-prestige-profile.js",
+      "file": "staff-online.js",
       "type": "update"
     },
     {
       "file": "staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "theme-system.js",
       "type": "update"
     }
   ]

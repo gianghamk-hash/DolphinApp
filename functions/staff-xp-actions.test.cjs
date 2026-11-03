@@ -33,10 +33,10 @@ test('only manager verified staff can open revenue sessions, no duplicate XP',as
 });
 test('Show needs verified booking; same combo is not counted twice',async()=>{
  const h=harness(),combo={kind:'show_tables',id:'S1',action:'combo',data:{combo:'combo2',foods:{set:1}}};
- await assert.rejects(()=>h.call('verified',combo),e=>e.code==='failed-precondition');
- await h.call('verified',{kind:'show_tables',id:'S1',action:'booking',data:{leader:'L',dining:'J1',guests:2,payment:'Tiền mặt'}});
- assert.equal((await h.call('verified',combo)).xpAwarded,790);
- assert.equal((await h.call('verified',combo)).xpAwarded,0);
+ await assert.rejects(()=>h.call('owner',combo),e=>e.code==='failed-precondition');
+ await h.call('owner',{kind:'show_tables',id:'S1',action:'booking',data:{leader:'L',dining:'J1',guests:2,payment:'Tiền mặt'}});
+ assert.equal((await h.call('owner',combo)).xpAwarded,790);
+ assert.equal((await h.call('owner',combo)).xpAwarded,0);
 });
 test('Work credits verified prepare and remaining completion XP once',async()=>{
  const h=harness();h.docs.set('lounge_orders/o1',{status:'pending'});

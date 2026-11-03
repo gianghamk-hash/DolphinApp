@@ -1,5 +1,5 @@
 {
-  "version": "1.1.68",
+  "version": "1.1.69",
   "releaseDate": "2026-11-03",
-  "notes": "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)"
+  "notes": "Fix Staff Profile check and refresh Staff ID client after directory update (#224)"
 }

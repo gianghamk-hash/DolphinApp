@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.68",
+      "releaseDate": "2026-11-03T09:26:20.813Z",
+      "summary": "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)",
+      "details": [
+        "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)"
+      ]
+    },
+    {
       "version": "1.1.67",
       "releaseDate": "2026-11-03T08:44:20.921Z",
       "summary": "Fix Staff ID rename blocked by contended full-registry transactions (#222)",
@@ -390,14 +398,6 @@
       "summary": "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)",
       "details": [
         "feat: Dolphin Staff Prestige, Show combo revenue, permanent XP and public honors (#176)"
-      ]
-    },
-    {
-      "version": "1.1.18",
-      "releaseDate": "2026-10-31T15:31:23.117Z",
-      "summary": "Synchronize staff avatars across all apps and expose device linking (#175)",
-      "details": [
-        "Synchronize staff avatars across all apps and expose device linking (#175)"
       ]
     }
   ]

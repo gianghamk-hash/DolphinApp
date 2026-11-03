@@ -1,46 +1,34 @@
 {
-  "version": "1.1.68",
-  "previousVersion": "1.1.67",
-  "commit": "dd31066",
-  "previousCommit": "36fe94e",
-  "buildDate": "2026-11-03T09:26:20.813Z",
-  "summary": "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)",
+  "version": "1.1.69",
+  "previousVersion": "1.1.68",
+  "commit": "344769d",
+  "previousCommit": "dd31066",
+  "buildDate": "2026-11-03T09:27:56.408Z",
+  "summary": "Fix Staff Profile check and refresh Staff ID client after directory update (#224)",
   "changes": {
-    "totalCommits": 292,
-    "filesChanged": 7,
+    "totalCommits": 293,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)"
+    "Fix Staff Profile check and refresh Staff ID client after directory update (#224)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-access-production.yml",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "scripts/staff-access.test.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-profile.js",
+      "file": "service-worker.js",
       "type": "update"
     },
     {
-      "file": "scripts/staff-approval-ui.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-admin-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.css",
+      "file": "staff-access.js",
       "type": "update"
     }
   ]

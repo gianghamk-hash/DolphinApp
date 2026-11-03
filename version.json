@@ -1,7 +1,7 @@
 {
-  "version": "1.1.68",
-  "buildDate": "2026-11-03T09:26:20.813Z",
-  "commit": "dd31066",
-  "notes": "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)",
+  "version": "1.1.69",
+  "buildDate": "2026-11-03T09:27:56.408Z",
+  "commit": "344769d",
+  "notes": "Fix Staff Profile check and refresh Staff ID client after directory update (#224)",
   "forceUpdate": false
 }

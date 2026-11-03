@@ -742,14 +742,14 @@
 }
 /* Tailored radius so large and compact icons share a consistent visual language. */
 :is(.dolphin-staff-avatar,.level-avatar,.sow-avatar,.drr-frame,.leader-tile-icon){
- --crew-spark-radius:20px;overflow:visible!important;isolation:isolate;
+ --crew-spark-near:-16px;--crew-spark-far:-27px;overflow:visible!important;isolation:isolate;
 }
-:is(.hero-avatar,.drl-level-avatar,#profile-avatar,.fx-frame-preview){--crew-spark-radius:31px}
+:is(.hero-avatar,.drl-level-avatar,#profile-avatar,.fx-frame-preview){--crew-spark-near:-25px;--crew-spark-far:-42px}
 .crew-motion-spark{width:4px;height:4px}
 @keyframes crew-v4-spark{
- 0%,100%{transform:rotate(var(--angle)) translateY(calc(-.8 * var(--crew-spark-radius,29px))) scale(.25);opacity:0}
+ 0%,100%{transform:rotate(var(--angle)) translateY(var(--crew-spark-near,-24px)) scale(.25);opacity:0}
  45%{opacity:1}
- 65%{transform:rotate(var(--angle)) translateY(calc(-1.38 * var(--crew-spark-radius,29px))) scale(1.4);opacity:.9}
+ 65%{transform:rotate(var(--angle)) translateY(var(--crew-spark-far,-40px)) scale(1.4);opacity:.9}
 }
 /* Mythic at Lv40: celestial dragon/phoenix with an unmistakable royal sigil. */
 [data-avatar-rarity="mythic"][data-frame="none"],

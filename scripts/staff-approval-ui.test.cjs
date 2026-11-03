@@ -54,7 +54,7 @@ test('DOL-0001 management controls remain discoverable when identity refresh is 
  const ui=read('staff-admin-profile.js'),html=read('dolphin-profile.html');
  assert.match(html,/id="crew-manager-access-status"/);
  assert.match(html,/id="crew-manager-verify-retry"/);
- assert.match(ui,/const showShell=owner\|\|\(managerDevice&&!i\?\.employeeId\)/);
+ assert.match(ui,/const showShell=owner\|\|managerDevice/);
  assert.match(ui,/\$\('crew-manager-approvals'\)\.hidden=!showShell/);
  assert.match(ui,/\$\(id\)\.disabled=!manager/);
  assert.match(ui,/await window\.DolphinStaffId\.refresh\(\)/);

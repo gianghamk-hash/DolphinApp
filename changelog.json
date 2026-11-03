@@ -1,34 +1,30 @@
 {
-  "version": "1.1.63",
-  "previousVersion": "1.1.62",
-  "commit": "997428d",
-  "previousCommit": "8aae524",
-  "buildDate": "2026-11-03T07:47:04.201Z",
-  "summary": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)",
+  "version": "1.1.64",
+  "previousVersion": "1.1.63",
+  "commit": "9487360",
+  "previousCommit": "997428d",
+  "buildDate": "2026-11-03T08:02:05.151Z",
+  "summary": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)",
   "changes": {
-    "totalCommits": 287,
-    "filesChanged": 4,
+    "totalCommits": 288,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)"
+    "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-lounge.html",
+      "file": "functions/package.json",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.js",
+      "file": "functions/staff-name-repair.test.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-daily-missions-ui.test.cjs",
+      "file": "functions/staff-profile.js",
       "type": "update"
     }
   ]

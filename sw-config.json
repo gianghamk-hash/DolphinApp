@@ -1,5 +1,5 @@
 {
-  "version": "1.1.63",
+  "version": "1.1.64",
   "releaseDate": "2026-11-03",
-  "notes": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)"
+  "notes": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)"
 }

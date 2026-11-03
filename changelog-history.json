@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.63",
+      "releaseDate": "2026-11-03T07:47:04.201Z",
+      "summary": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)",
+      "details": [
+        "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)"
+      ]
+    },
+    {
       "version": "1.1.62",
       "releaseDate": "2026-11-03T07:24:09.123Z",
       "summary": "fix(staff): restore repairName API for mandatory iPhone name change",
@@ -390,14 +398,6 @@
       "summary": "feat(show): Daily Show and singer combos with one complete food set per package",
       "details": [
         "feat(show): Daily Show and singer combos with one complete food set per package"
-      ]
-    },
-    {
-      "version": "1.1.13",
-      "releaseDate": "2026-10-31T05:02:57.683Z",
-      "summary": "Merge pull request #170: confine Push controls to System Dashboard",
-      "details": [
-        "Merge pull request #170: confine Push controls to System Dashboard"
       ]
     }
   ]

@@ -5,13 +5,15 @@ on:
     paths:
       - '.github/workflows/staff-xp-secure-production.yml'
       - 'functions/staff-xp-actions.js'
+      - 'functions/staff-xp-engine.cjs'
+      - 'functions/staff-xp-engine.test.cjs'
       - 'functions/staff-xp-reconcile.js'
       - 'functions/index.js'
       - 'functions/staff-xp-actions.test.cjs'
 permissions:
   contents: read
 concurrency:
-  group: firebase-staff-xp-secure-production
+  group: firebase-crew-xp-serialized-production
   cancel-in-progress: false
 jobs:
   production:

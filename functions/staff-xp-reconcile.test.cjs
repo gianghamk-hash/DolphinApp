@@ -48,11 +48,11 @@ test('Bungalow and Lounge archive revenue and completed work score',()=>{
  const bgl=api._fromSession('bun_history','session-bgl',{date,tables:{'201':{openedByStaff:'Lan',paymentMethod:'CASH'},'202':{openedByStaff:'Lan',paymentMethod:'FOC'}},orders:[{status:'completed',preparedBy:'Lan',completedBy:'Lan'}]},map);
  assert.equal(bgl.filter(x=>x.source==='revenue').length,1);
  assert.equal(bgl.find(x=>x.source==='revenue').amount,2000);
- assert.equal(bgl.find(x=>x.source==='work').amount,10);
+ assert.equal(bgl.find(x=>x.source==='work').amount,1000);
  const lounge=api._fromSession('lounge_history_sessions','session-lounge',{date,tables:{'LOUNGE 1':{openedByStaff:'Lan',pax:8},'LOUNGE 2':{openedByStaff:'Minh',pax:4,payment:'FOC'}},orders:[{status:'completed',preparedBy:'Lan',completedBy:'Minh'}]},map);
  assert.equal(lounge.find(x=>x.source==='revenue').amount,2000);
- assert.equal(lounge.find(x=>x.source==='work'&&x.staffName==='Lan').amount,1);
- assert.equal(lounge.find(x=>x.source==='work'&&x.staffName==='Minh').amount,2.5);
+ assert.equal(lounge.find(x=>x.source==='work'&&x.staffName==='Lan').amount,100);
+ assert.equal(lounge.find(x=>x.source==='work'&&x.staffName==='Minh').amount,250);
 });
 test('ambiguous employee aliases never automatically receive XP',()=>{
  const map=api._nameDirectory({

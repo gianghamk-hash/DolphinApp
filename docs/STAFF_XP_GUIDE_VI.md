@@ -1,5 +1,8 @@
 # XP và phần thưởng Dolphin
 
+> **Tài liệu lịch sử (01/11/2026), có công thức và quy trình cũ.** Xem [QUY TẮC XP HIỆN HÀNH](./STAFF_XP_RULES_CURRENT_VI.md) để biết chính xác mức XP nghiệp vụ mới (×100), điểm danh, doanh thu và Level.
+
+
 Đối chiếu mã nguồn ngày 01/11/2026. XP ở đây là XP nghề nghiệp của nhân viên, tách biệt điểm các trò chơi và bảng doanh thu theo tuần.
 
 ## Trạng thái thực tế

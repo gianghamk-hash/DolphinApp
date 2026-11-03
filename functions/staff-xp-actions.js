@@ -158,7 +158,8 @@ async function work(kind,id,action,who){
  const evt='live:'+hash('work',kind,id,action,who.id);
  const preparedBefore=action==='completed'?(await getDatabase().ref('staffXpLedger/'+who.id+'/live:'+hash('work',kind,id,'preparing',who.id)).once('value')).exists():false;
  const lounge=kind==='lounge_orders';
- const amount=action==='preparing'?(lounge?1:5):preparedBefore?(lounge?1.5:5):(lounge?2.5:10);
+ const workPoints=action==='preparing'?(lounge?0.1:0.5):preparedBefore?(lounge?0.15:0.5):(lounge?0.25:1);
+ const amount=xp.workXP(workPoints); // Same authoritative 100x work rate as reconciliations.
  const grant=await credit(who.id,evt,'work',amount);
  const missionXP=transition.accepted?await dailyBonus(who.id,'order_received'):
   transition.finished?await dailyBonus(who.id,'order_completed'):0;

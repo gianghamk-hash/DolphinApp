@@ -178,3 +178,29 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 .daily-message[data-error="true"]{color:#ffb3a1}
 @media(max-width:420px){.daily-missions{padding:17px 13px}.daily-task{gap:8px;padding:11px 9px}.daily-task-icon{width:33px;height:33px;font-size:19px}.daily-task-checkin{min-width:75px;font-size:10px;padding:6px 7px}.daily-task-right{max-width:95px}}
 @media(prefers-reduced-motion:reduce){.daily-track>span{transition:none}}
+
+/* Staff profile: manager tools first, grouped and touch-friendly on mobile. */
+.crew-action-heading{font-size:13px;font-weight:850;letter-spacing:.025em;margin:23px 0 10px;color:var(--gold)}
+.crew-manager-panel{margin:16px 0 18px}
+.crew-manager-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.crew-manager-tile{min-width:0;display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;
+ min-height:82px;padding:14px;border:1px solid var(--line);border-radius:14px;
+ background:color-mix(in srgb,var(--gold) 9%,var(--surface));color:var(--ink);font-family:inherit;cursor:pointer}
+.crew-manager-tile:first-child{grid-column:1/-1;border-color:color-mix(in srgb,var(--gold) 55%,var(--line))}
+.crew-manager-tile strong{font-size:13px}.crew-manager-tile small{font-size:11px;color:var(--muted)}
+.crew-manager-tile:focus-visible,.crew-directory-controls select:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.crew-manager-options{margin-top:10px;border-top:1px solid var(--line);padding-top:13px}
+.crew-manager-options summary{cursor:pointer;font-size:12px;font-weight:800;color:var(--ink)}
+.crew-manager-options .effect-setting{margin-top:12px}
+.crew-directory-controls{display:flex;align-items:center;gap:12px;margin:12px 0}
+.crew-directory-controls label{margin:0;flex:1;font-size:12px}
+.crew-directory-controls select{max-width:185px;min-height:39px}
+.crew-directory-list{display:grid;gap:9px;max-height:52vh;overflow-y:auto;margin:14px 0;padding:2px}
+.crew-directory-person{display:flex;align-items:center;gap:10px;min-width:0;border:1px solid var(--line);
+ border-radius:13px;padding:12px;background:color-mix(in srgb,var(--ink) 3%,var(--surface))}
+.crew-directory-avatar{font-size:26px;flex-shrink:0}
+.crew-directory-info{min-width:0;flex:1;display:flex;flex-direction:column;gap:4px}
+.crew-directory-info strong{font-size:13px;overflow-wrap:anywhere}
+.crew-directory-info small{font-size:10px;color:var(--muted);overflow-wrap:anywhere;line-height:1.45}
+.crew-approved-pill{font-size:10px;white-space:nowrap;font-weight:800;color:var(--gold)}
+@media(max-width:390px){.crew-manager-tile{padding:11px}.crew-directory-person{padding:10px;gap:8px}.crew-approved-pill{font-size:9px}}

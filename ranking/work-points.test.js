@@ -112,3 +112,46 @@ test('Show archive revenue counts only sessions within week and excludes FOC',()
  assert.equal(out.Lan.rev,2000000);
  assert.equal(out.Minh.rev,3290000);
 });
+
+
+test('DOL-0006 Lounge sales follow Staff ID across a corrected nickname and archived session',()=>{
+ const profile={employeeId:'DOL-0006',name:'Đặng Văn Đạt',avatar:'🐬',nameAliases:['Dat G']};
+ context.window={
+  DolphinAvatars:{profile:(name,id)=>{
+   if(id)return id==='DOL-0006'?profile:null;
+   return ['Dat G','Đặng Văn Đạt'].includes(String(name).trim())?profile:null;
+  }},
+  DolphinStaffId:{get:()=>({employeeId:'DOL-0003',verified:true})}
+ };
+ state.loungeTables={
+  first:{openedByStaff:'Dat G',openedByStaffId:'DOL-0006',pax:3,paymentMethod:'TM'},
+  second:{openedByStaff:'Đặng Văn Đạt',openedByStaffId:'DOL-0006',pax:2,paymentMethod:'TM'},
+  excluded:{openedByStaff:'Dat G',openedByStaffId:'DOL-0006',pax:100,paymentMethod:'FOC'},
+  invalid:{openedByStaff:'Đặng Văn Đạt',openedByStaffId:'DOL-9999',pax:20,paymentMethod:'TM'}
+ };
+ state.loungeHistory=[{date:'2026-10-27',tables:{
+  archived:{openedByStaff:'Dat G',pax:1,paymentMethod:'TM'}
+ }}];
+ state.bunTables={};state.bunHistory=[];state.showTables={};state.showHistory=[];
+ try{
+  const rows=context.calcRevenue();
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].employeeId,'DOL-0006');
+  assert.equal(rows[0].name,'Đặng Văn Đạt');
+  assert.equal(rows[0].rev,1500000); // 3 + 2 + 1 PAX; excludes FOC and mismatched ID.
+  assert.equal(rows[0].cnt,3);
+ }finally{delete context.window;}
+});
+test('excluded Lounge payments remain zero revenue even when valid Staff ID exists',()=>{
+ context.window={DolphinAvatars:{profile:(name,id)=>id==='DOL-0006'
+  ?{employeeId:'DOL-0006',name:'Đặng Văn Đạt',avatar:'🐬'}:null},
+  DolphinStaffId:{get:()=>({employeeId:'DOL-0003',verified:true})}};
+ state.loungeTables={
+  foc:{openedByStaff:'Dat G',openedByStaffId:'DOL-0006',pax:5,paymentMethod:'FOC'},
+  pending:{openedByStaff:'Dat G',openedByStaffId:'DOL-0006',pax:4,paymentMethod:'TA_UNPAID'},
+  ktour:{openedByStaff:'Dat G',openedByStaffId:'DOL-0006',pax:3,paymentMethod:'KTOUR'}
+ };
+ state.loungeHistory=[];state.bunTables={};state.bunHistory=[];state.showTables={};state.showHistory=[];
+ try{assert.equal(context.calcRevenue().length,0);}
+ finally{delete context.window;}
+});

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.62",
-  "buildDate": "2026-11-03T07:24:09.123Z",
-  "commit": "8aae524",
-  "notes": "fix(staff): restore repairName API for mandatory iPhone name change",
+  "version": "1.1.63",
+  "buildDate": "2026-11-03T07:47:04.201Z",
+  "commit": "997428d",
+  "notes": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)",
   "forceUpdate": false
 }

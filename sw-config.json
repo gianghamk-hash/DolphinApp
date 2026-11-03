@@ -1,5 +1,5 @@
 {
-  "version": "1.1.62",
+  "version": "1.1.63",
   "releaseDate": "2026-11-03",
-  "notes": "fix(staff): restore repairName API for mandatory iPhone name change"
+  "notes": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)"
 }

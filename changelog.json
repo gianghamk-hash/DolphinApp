@@ -1,42 +1,34 @@
 {
-  "version": "1.1.62",
-  "previousVersion": "1.1.61",
-  "commit": "8aae524",
-  "previousCommit": "4789399",
-  "buildDate": "2026-11-03T07:24:09.123Z",
-  "summary": "fix(staff): restore repairName API for mandatory iPhone name change",
+  "version": "1.1.63",
+  "previousVersion": "1.1.62",
+  "commit": "997428d",
+  "previousCommit": "8aae524",
+  "buildDate": "2026-11-03T07:47:04.201Z",
+  "summary": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)",
   "changes": {
-    "totalCommits": 286,
-    "filesChanged": 6,
+    "totalCommits": 287,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(staff): restore repairName API for mandatory iPhone name change"
+    "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-profile.html",
+      "file": "dolphin-lounge.html",
       "type": "update"
     },
     {
-      "file": "index.html",
+      "file": "functions/staff-xp-actions.js",
       "type": "update"
     },
     {
-      "file": "scripts/staff-access.test.cjs",
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     },
     {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-access.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
+      "file": "scripts/crew-daily-missions-ui.test.cjs",
       "type": "update"
     }
   ]

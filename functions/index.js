@@ -218,17 +218,23 @@ function requireStaffAdmin(req){
  if(!staffAdminIds().has(uid))throw new HttpsError('permission-denied','UID chưa được cấp quyền quản trị nhân sự');
  return uid;
 }
+const staffNames=require('./staff-name-policy.cjs');
 const staffCodePattern=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/;
 const staffRoot=()=>getDatabase().ref('staffRegistry');
 const staffTokenRoot=()=>getDatabase().ref('staffEnrollmentCodes');
 exports.staffCreateProfile=onCall(opts,async req=>{
  requireStaffAdmin(req);
  const employeeId=String(req.data?.employeeId||'').trim().toUpperCase();
- const name=String(req.data?.name||'').trim().replace(/\s+/g,' ').slice(0,64);
- if(!staffCodePattern.test(employeeId)||name.length<2)throw new HttpsError('invalid-argument','Mã DOL-0001 và tên nhân viên hợp lệ là bắt buộc');
- const ref=staffRoot().child(employeeId);
- const created=await ref.transaction(v=>v?undefined:{employeeId,name,active:true,createdAt:Date.now()},undefined,false);
- if(!created.committed)throw new HttpsError('already-exists','Mã nhân viên đã được cấp');
+ const name=staffNames.normalize(req.data?.name);
+ if(!staffCodePattern.test(employeeId)||!staffNames.valid(name))throw new HttpsError('invalid-argument','Mã nhân viên và họ tên dài hơn 6 ký tự là bắt buộc');
+ let duplicate=false;
+ const created=await staffRoot().transaction(registry=>{
+  registry=registry||{};
+  if(registry[employeeId])return;
+  if(staffNames.nameConflict(registry,name)){duplicate=true;return;}
+  return {...registry,[employeeId]:{employeeId,name,active:true,createdAt:Date.now()}};
+ },undefined,false);
+ if(!created.committed)throw new HttpsError('already-exists',duplicate?'Tên đã có hồ sơ nhân viên.':'Mã nhân viên đã được cấp');
  return {employeeId,name};
 });
 exports.staffIssueLinkCode=onCall(opts,async req=>{
@@ -246,6 +252,9 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
  const uid=requireUid(req);
  const current=(await getDatabase().ref('staffIdentity/'+uid).once('value')).val();
  if(current?.employeeId){
+  const pendingProfile=(await staffRoot().child(current.employeeId).once('value')).val();
+  if(pendingProfile?.active&&pendingProfile.registrationSource==='self'&&pendingProfile.approved!==true)
+   throw new HttpsError('permission-denied','Đang chờ quản lý duyệt. Không thể chuyển hoặc liên kết Staff ID khác.');
   const oldProfile=(await staffRoot().child(current.employeeId).once('value')).val();
   if(oldProfile?.rejected===true)
    throw new HttpsError('permission-denied','Đăng ký cũ đã bị từ chối. Hãy đăng ký mới trước khi liên kết thiết bị.');
@@ -287,7 +296,9 @@ exports.staffGetIdentity=onCall(opts,async req=>{
   verified:false,linked:false,rejected:profile?.registrationSource==='self'&&profile?.rejected===true,
   canRegisterAgain:profile?.registrationSource==='self'&&profile?.rejected===true
  };
- return {verified:(v.verified===true||profile.approved===true)&&(profile.registrationSource!=='self'||profile.approved===true),approved:profile.registrationSource!=='self'||profile.approved===true,linked:true,employeeId:profile.employeeId,name:profile.name,
+ const registry=(await staffRoot().once('value')).val()||{};
+ const requiresNameChange=staffNames.needsRename(registry,profile.employeeId);
+ return {verified:!requiresNameChange&&(v.verified===true||profile.approved===true)&&(profile.registrationSource!=='self'||profile.approved===true),requiresNameChange,approved:profile.registrationSource!=='self'||profile.approved===true,linked:true,employeeId:profile.employeeId,name:profile.name,
   avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,
   registrationSource:profile.registrationSource||'manager'};
 });

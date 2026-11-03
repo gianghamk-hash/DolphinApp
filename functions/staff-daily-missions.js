@@ -5,6 +5,7 @@ const crypto=require('node:crypto');
 const {getDatabase}=require('firebase-admin/database');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const core=require('./staff-daily-core.cjs');
+const namePolicy=require('./staff-name-policy.cjs');
 const opts={region:'asia-southeast1',maxInstances:8,timeoutSeconds:30};
 const idPattern=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/;
 async function verifiedStaff(req){
@@ -17,6 +18,8 @@ async function verifiedStaff(req){
  const profile=(await db.ref('staffRegistry/'+id).once('value')).val();
  if(!profile?.active||(profile.registrationSource==='self'&&profile.approved!==true))
   throw new HttpsError('permission-denied','Hồ sơ chưa được quản lý xác minh.');
+ const registry=(await db.ref('staffRegistry').once('value')).val()||{};
+ if(namePolicy.needsRename(registry,id))throw new HttpsError('permission-denied','Cần đổi họ tên hợp lệ trước khi nhận XP.');
  return {employeeId:id};
 }
 async function award(employeeId,taskId){

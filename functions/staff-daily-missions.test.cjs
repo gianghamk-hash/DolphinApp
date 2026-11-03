@@ -31,6 +31,7 @@ function fixture(options={}){
   if(name==='./staff-daily-core.cjs')return core;
   if(name==='./crew-arcade-proof.cjs')return require('../crew-arcade-proof.js');
   if(name==='./staff-prestige')return {_rebuildPrestige:async()=>{rebuilds++}};
+  if(name==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
   throw Error(name);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-daily-missions.js','utf8'),mod);

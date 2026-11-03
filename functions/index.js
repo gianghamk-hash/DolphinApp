@@ -220,12 +220,14 @@ function requireStaffAdmin(req){
 }
 const staffCodePattern=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/;
 const staffRoot=()=>getDatabase().ref('staffRegistry');
+const staffNames=require('./staff-name-policy.cjs');
 const staffTokenRoot=()=>getDatabase().ref('staffEnrollmentCodes');
 exports.staffCreateProfile=onCall(opts,async req=>{
  requireStaffAdmin(req);
  const employeeId=String(req.data?.employeeId||'').trim().toUpperCase();
- const name=String(req.data?.name||'').trim().replace(/\s+/g,' ').slice(0,64);
- if(!staffCodePattern.test(employeeId)||name.length<2)throw new HttpsError('invalid-argument','Mã DOL-0001 và tên nhân viên hợp lệ là bắt buộc');
+ if(!staffCodePattern.test(employeeId))throw new HttpsError('invalid-argument','Mã DOL không hợp lệ');
+ const name=staffNames.validateName(req.data?.name);
+ await staffNames.reserve(getDatabase(),name,employeeId);
  const ref=staffRoot().child(employeeId);
  const created=await ref.transaction(v=>v?undefined:{employeeId,name,active:true,createdAt:Date.now()},undefined,false);
  if(!created.committed)throw new HttpsError('already-exists','Mã nhân viên đã được cấp');
@@ -247,6 +249,8 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
  const current=(await getDatabase().ref('staffIdentity/'+uid).once('value')).val();
  if(current?.employeeId){
   const oldProfile=(await staffRoot().child(current.employeeId).once('value')).val();
+  if(oldProfile?.active&&oldProfile.registrationSource==='self'&&oldProfile.approved!==true)
+   throw new HttpsError('permission-denied','Đang chờ quản lý duyệt. Không thể liên kết Staff ID khác.');
   if(oldProfile?.rejected===true)
    throw new HttpsError('permission-denied','Đăng ký cũ đã bị từ chối. Hãy đăng ký mới trước khi liên kết thiết bị.');
  }
@@ -287,7 +291,9 @@ exports.staffGetIdentity=onCall(opts,async req=>{
   verified:false,linked:false,rejected:profile?.registrationSource==='self'&&profile?.rejected===true,
   canRegisterAgain:profile?.registrationSource==='self'&&profile?.rejected===true
  };
+ const nameIssue=await staffNames.check(getDatabase(),profile);
  return {verified:(v.verified===true||profile.approved===true)&&(profile.registrationSource!=='self'||profile.approved===true),approved:profile.registrationSource!=='self'||profile.approved===true,linked:true,employeeId:profile.employeeId,name:profile.name,
+  requiresNameChange:!!nameIssue,nameIssue,
   avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,
   registrationSource:profile.registrationSource||'manager'};
 });

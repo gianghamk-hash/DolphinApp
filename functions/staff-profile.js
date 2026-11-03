@@ -51,7 +51,7 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  const ref=db.ref('staffRegistry');
  let conflict=false;
  const result=await ref.transaction(registry=>{
-  if(registry===null)return null; // Re-run with current server state.
+  registry=registry||{}; // RTDB retries against the server snapshot.
   const v=registry[employeeId];
   if(v)return v.ownerUid===uid?registry:undefined;
   if(names.nameConflict(registry,data.name)){conflict=true;return;}
@@ -110,7 +110,7 @@ exports.staffRepairMyName=onCall(opts,async req=>{
  const id=ident.employeeId,ref=db.ref('staffRegistry');
  let duplicate=false,notEligible=false;
  const result=await ref.transaction(registry=>{
-  if(registry===null)return null;
+  registry=registry||{};
   const p=registry[id];
   if(!p?.active){notEligible=true;return;}
   if(!names.needsRename(registry,id)){notEligible=true;return;}

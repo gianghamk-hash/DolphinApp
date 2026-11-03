@@ -2,7 +2,7 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
-<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-identity-stable-v2">
+<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-controls-v2">
 <link rel="stylesheet" href="./staff-access.css?v=crew-name-policy-v1"><script src="./staff-access.js?v=crew-name-policy-v1" defer></script>
 <script src="./dolphin-navigation.js?v=1.1.70" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-identity-stable-v2" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=crew-global-v9" defer></script><script src="./staff-prestige-client.js?v=1.1.70" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./staff-prestige-profile.js?v=crew-wow-v8" defer></script><script src="./staff-admin-profile.js?v=crew-identity-stable-v2" defer></script><script src="./staff-xp-manager.js?v=1.1.70" defer></script>
 </head>
@@ -24,6 +24,10 @@
 <section id="crew-manager-approvals" class="card crew-manager-panel" hidden aria-label="Trung tâm quản lý nhân sự DOL-0001">
  <div class="section-line"><div><p class="eyebrow">DOL-0001 · Quản lý</p><h2>👑 Trung tâm nhân sự</h2></div><span id="crew-approval-count" class="level-tag">Đang tải…</span></div>
  <p class="hint">Quản lý hồ sơ đã duyệt, đơn chờ duyệt và yêu cầu khôi phục trên cùng một màn hình. Chỉ DOL-0001 đã xác minh có quyền truy cập.</p>
+ <div id="crew-manager-access-status" class="crew-manager-access-status" role="status" aria-live="polite" hidden>
+  <span id="crew-manager-access-message">Đang xác minh quyền quản lý…</span>
+  <button type="button" class="secondary" id="crew-manager-verify-retry">Kiểm tra lại Staff ID</button>
+ </div>
  <div class="crew-manager-action-grid">
   <button type="button" class="crew-manager-tile" id="crew-approved-open"><strong>✅ Đã phê duyệt</strong><small id="crew-approved-count">Đang tải…</small></button>
   <button type="button" class="crew-manager-tile" id="crew-approval-open"><strong id="crew-approval-open-label">⏳ Chờ phê duyệt</strong><small><span id="crew-approval-badge" hidden aria-label="Có nhân viên chờ duyệt">🔴 </span><span id="crew-pending-description">Xem hồ sơ mới</span></small></button>

@@ -1,5 +1,6 @@
 'use strict';
 const crypto=require('node:crypto');
+const names=require('./staff-name-policy.cjs');
 const {getDatabase}=require('firebase-admin/database');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const catalog=require('./staff-avatar-catalog.json');
@@ -9,9 +10,9 @@ for(const [group,items] of Object.entries(catalog))for(const item of items){cons
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
 function uidOf(req){if(!req.auth?.uid)throw new HttpsError('unauthenticated','Vui lòng kết nối trước.');return req.auth.uid;}
 function validate(data){
- const name=String(data?.name||'').normalize('NFC').trim().replace(/\s+/g,' ');
+ const name=names.normalize(data?.name);
  const avatar=data?.avatar||'🐬';
- if(name.length<2||name.length>64||/[\u0000-\u001f<>]/.test(name))throw new HttpsError('invalid-argument','Tên cần từ 2–64 ký tự, không chứa ký tự đặc biệt.');
+ if(!names.valid(name))throw new HttpsError('invalid-argument','Họ tên phải dài hơn 6 ký tự (7–64), không chứa ký tự không hợp lệ.');
  if(!avatars.has(avatar))throw new HttpsError('invalid-argument','Avatar không hợp lệ.');
  return {name,avatar};
 }
@@ -47,10 +48,17 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  // Firebase anonymous UID. Deterministic retries never create extra profiles.
  const seed=rejectedId?uid+':reregister:'+rejectedId:uid;
  const employeeId='DOL-'+crypto.createHash('sha256').update(seed).digest('hex').slice(0,10).toUpperCase();
- const ref=db.ref('staffRegistry/'+employeeId);
- const result=await ref.transaction(v=>v?(v.ownerUid===uid?v:undefined):{employeeId,...data,active:true,registrationSource:'self',approved:false,ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()});
- if(!result.committed)throw new HttpsError('already-exists','Không cấp được ID. Vui lòng liên hệ quản lý.');
- const profile=result.snapshot.val();
+ const ref=db.ref('staffRegistry');
+ let conflict=false;
+ const result=await ref.transaction(registry=>{
+  if(registry===null)return null; // Re-run with current server state.
+  const v=registry[employeeId];
+  if(v)return v.ownerUid===uid?registry:undefined;
+  if(names.nameConflict(registry,data.name)){conflict=true;return;}
+  return {...registry,[employeeId]:{employeeId,...data,active:true,registrationSource:'self',approved:false,ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()}};
+ },undefined,false);
+ if(!result.committed)throw new HttpsError('already-exists',conflict?'Họ tên này đã có tài khoản. Hãy dùng tên khác hoặc khôi phục Staff ID cũ.':'Không cấp được ID. Vui lòng liên hệ quản lý.');
+ const profile=result.snapshot.val()[employeeId];
  if(!profile.active)throw new HttpsError('permission-denied','Hồ sơ đã ngừng hoạt động.');
  const linked=await db.ref('staffIdentity/'+uid).transaction(v=>{
   // RTDB may first invoke a transaction with null cache. Do not silently
@@ -90,6 +98,39 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
   catch(e){console.warn('[Crew Daily] Avatar saved; mission award unavailable:',e?.message||e);}
  }
  return response(result.snapshot.val());
+});
+/* One-time mandatory remediation for pre-existing invalid/duplicate names.
+ * Keep employeeId and all XP, sales, scores, cosmetics and history unchanged. */
+exports.staffRepairMyName=onCall(opts,async req=>{
+ const uid=uidOf(req),name=names.normalize(req.data?.name);
+ if(!names.valid(name))throw new HttpsError('invalid-argument','Tên mới phải trên 6 ký tự (7–64).');
+ await throttle(uid);
+ const db=getDatabase(),ident=(await db.ref('staffIdentity/'+uid).once('value')).val();
+ if(!ident?.employeeId)throw new HttpsError('failed-precondition','Thiết bị chưa liên kết Staff ID.');
+ const id=ident.employeeId,ref=db.ref('staffRegistry');
+ let duplicate=false,notEligible=false;
+ const result=await ref.transaction(registry=>{
+  if(registry===null)return null;
+  const p=registry[id];
+  if(!p?.active){notEligible=true;return;}
+  if(!names.needsRename(registry,id)){notEligible=true;return;}
+  if(names.nameConflict(registry,name,id)){duplicate=true;return;}
+  const previous=names.normalize(p.name);
+  const aliases=Array.isArray(p.nameAliases)?p.nameAliases.filter(x=>typeof x==='string'):[];
+  if(previous&&previous!==name&&!aliases.includes(previous))aliases.push(previous);
+  return {...registry,[id]:{...p,name,nameAliases:aliases.slice(-20),
+   profileVersion:(Number(p.profileVersion)||0)+1,nameRepairedAt:Date.now(),updatedAt:Date.now()}};
+ },undefined,false);
+ if(!result.committed)throw new HttpsError(duplicate?'already-exists':'failed-precondition',
+  duplicate?'Tên đã được nhân viên khác sử dụng.':notEligible?'Hồ sơ không thuộc diện phải sửa tên.':'Không cập nhật được tên. Hãy thử lại.');
+ const updated=result.snapshot.val()[id];
+ // Never change Staff ID; preserve the immutable XP ledger and level peak.
+ const identities=(await db.ref('staffIdentity').once('value')).val()||{};
+ await Promise.all(Object.entries(identities).filter(([,v])=>v?.employeeId===id).map(async ([device])=>{
+  await db.ref('staffIdentity/'+device).transaction(v=>v?.employeeId===id?{...v,name:updated.name,updatedAt:Date.now()}:undefined,undefined,false);
+ }));
+ try{await require('./staff-prestige')._rebuildPrestige();}catch(e){console.warn('[Staff Name] Ranking refresh deferred:',e.message);}
+ return {...response(updated),requiresNameChange:false};
 });
 exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
  const uid=uidOf(req);await throttle(uid);const profile=await ownProfile(uid);

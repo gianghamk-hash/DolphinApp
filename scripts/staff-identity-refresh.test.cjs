@@ -4,7 +4,7 @@ const assert=require('node:assert/strict');
 const fs=require('node:fs');
 const vm=require('node:vm');
 const source=fs.readFileSync(require.resolve('../staff-id.js'),'utf8');
-const first=source.indexOf('function refresh(){');
+const first=source.indexOf('function sameIdentity(');
 const last=source.indexOf('\nfunction ui(){',first);
 assert.ok(first>0&&last>first,'refresh function must exist');
 

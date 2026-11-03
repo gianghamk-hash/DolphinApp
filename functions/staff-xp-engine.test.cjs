@@ -2,15 +2,19 @@
 const {test}=require('node:test');
 const assert=require('node:assert/strict');
 const e=require('./staff-xp-engine.cjs');
-test('1,000 VND = 1 XP; 0.1 work point = 1 XP',()=>{
+test('Revenue stays 1 XP per 1,000 VND; 0.1 work point is now 100 XP',()=>{
  assert.equal(e.revenueXP(2290000),2290);
  assert.equal(e.revenueXP(3290000),3290);
  assert.equal(e.revenueXP(999),0);
- assert.equal(e.workXP(0.1),1);
- assert.equal(e.workXP(1.25),12.5);
- assert.equal(e.workXP(2.5),25);
- assert.equal(e.totalXP(2000000,1.5),2015);
- assert.equal(e.workXP(0.25),2.5);
+ assert.equal(e.workXP(0.1),100);
+ assert.equal(e.workXP(1.25),1250);
+ assert.equal(e.workXP(2.5),2500);
+ assert.equal(e.totalXP(2000000,1.5),3500);
+ assert.equal(e.workXP(0.25),250);
+ assert.equal(e.workXP(0.15),150);
+ assert.equal(e.workXP(0.5),500);
+ assert.equal(e.workXP(1),1000);
+ assert.equal(e.XP_PER_POINT_TENTH,100);
 });
 test('reject negative and invalid revenue/points',()=>{
  for(const value of [-1,NaN,Infinity,1.5])assert.throws(()=>e.revenueXP(value));

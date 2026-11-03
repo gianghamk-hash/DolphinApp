@@ -52,15 +52,27 @@ function renderAvatars(){
  const group=$('avatar-category').value,need=Number((group.match(/Lv\.(\d+)/)||[])[1])||1,level=window.DolphinPrestige?.getMine()?.level||1;
  for(const emoji of catalog[group]||[]){
   const button=document.createElement('button');button.type='button';button.className='avatar-choice';button.textContent=emoji;
-  button.setAttribute('aria-label','Chọn '+emoji);button.setAttribute('aria-pressed',String(emoji===avatar));
+  const rarity=window.DolphinFrameFX?.rarityOf?.(emoji)||'common';
+  button.dataset.avatarRarity=rarity;
+  button.setAttribute('aria-label',(rarity==='sovereign'?'👑 Hoàng gia ':rarity==='mythic'?'💎 Mythic ':'Chọn ')+emoji);
+  button.setAttribute('aria-pressed',String(emoji===avatar));
   if(need>level){button.disabled=true;button.title='Mở khóa tại Level '+need;button.style.opacity='.35';}
   button.onclick=()=>{dirty=true;avatar=emoji;$('choose-avatar').textContent=emoji;$('avatar-dialog').close();};grid.appendChild(button);
  }
 }
 $('choose-avatar').onclick=async()=>{
  try{
-  if(!Object.keys(catalog).length){const res=await fetch('./functions/staff-avatar-catalog.json?v=crew-wow-v8');if(!res.ok)throw Error('Chưa tải được bộ avatar');catalog=await res.json();
-   for(const category of Object.keys(catalog)){const option=document.createElement('option');option.value=category;option.textContent=category;$('avatar-category').appendChild(option);}}
+  if(!Object.keys(catalog).length){const res=await fetch('./functions/staff-avatar-catalog.json?v=crew-global-v9');if(!res.ok)throw Error('Chưa tải được bộ avatar');catalog=await res.json();
+   const levelOf=label=>Number((label.match(/Lv\.(\d+)/)||[])[1])||1;
+   const categories=Object.keys(catalog).sort((a,b)=>levelOf(a)-levelOf(b)||a.localeCompare(b,'vi'));
+   const select=$('avatar-category'),previous=select.value;
+   select.replaceChildren();
+   for(const category of categories){
+    const option=document.createElement('option');option.value=category;
+    option.textContent=category;select.appendChild(option);
+   }
+   // Always present Level 1 first; preserve an explicit previous choice.
+   select.value=previous&&catalog[previous]?previous:categories[0];}
   renderAvatars();$('avatar-dialog').showModal();
  }catch(e){message(errorText(e),true);}
 };

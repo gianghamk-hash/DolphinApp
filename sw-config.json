@@ -1,5 +1,5 @@
 {
-  "version": "1.1.67",
+  "version": "1.1.68",
   "releaseDate": "2026-11-03",
-  "notes": "Fix Staff ID rename blocked by contended full-registry transactions (#222)"
+  "notes": "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)"
 }

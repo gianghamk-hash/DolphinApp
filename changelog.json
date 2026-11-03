@@ -1,26 +1,26 @@
 {
-  "version": "1.1.67",
-  "previousVersion": "1.1.66",
-  "commit": "36fe94e",
-  "previousCommit": "eddece1",
-  "buildDate": "2026-11-03T11:07:45.056Z",
-  "summary": "Fix Staff ID rename blocked by contended full-registry transactions (#222)",
+  "version": "1.1.68",
+  "previousVersion": "1.1.67",
+  "commit": "4c2061a",
+  "previousCommit": "36fe94e",
+  "buildDate": "2026-11-03T13:06:22.694Z",
+  "summary": "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)",
   "changes": {
-    "totalCommits": 291,
+    "totalCommits": 292,
     "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix Staff ID rename blocked by contended full-registry transactions (#222)"
+    "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-name-repair.test.cjs",
+      "file": "functions/staff-xp-actions.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-profile.js",
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     }
   ]

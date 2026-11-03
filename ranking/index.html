@@ -84,7 +84,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 </style>
 <script src="../staff-sync.js" defer></script>
 <script src="../staff-id.js?v=1.1.57" defer></script>
-<script src="../dolphin-avatars.js?v=crew-rewards-1" defer></script>
+<script src="../dolphin-avatars.js?v=crew-global-v9" defer></script>
 <script src="../staff-prestige-client.js?v=1.1.57" defer></script>
 </head>
 <body class="dolphin-ranking-page">
@@ -178,7 +178,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
 <script src="../theme-system.js?v=1.1.57" defer></script>
 <script src="../rank-rewards.js?v=1.1.57"></script>
-<script src="./staff-prestige-ranking.js?v=landing-level-v1" defer></script>
+<script src="./staff-prestige-ranking.js?v=crew-global-v9" defer></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
@@ -300,7 +300,7 @@ function rankingAvatarId(name){return esc(rankingStaffProfile(name)?.employeeId|
 // Shared cosmetic directory is authoritative; no additional Firestore listeners.
 function rankingAvatarFrame(name){
  const frame=rankingStaffProfile(name)?.selectedFrame;
- return ['bronze','silver','gold','mythic'].includes(frame)?frame:'none';
+ return ['bronze','silver','gold','mythic','emerald','sapphire','nebula'].includes(frame)?frame:'none';
 }
 function rankingAllowed(name){
  // Pure ranking formula tests run without a browser; production still checks the roster.
@@ -318,7 +318,7 @@ function rankingCardFx(name){
 }
 function rankingTitle(name){
  const title=rankingStaffProfile(name)?.selectedTitle;
- return ({rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend'})[title]||'';
+ return ({rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'})[title]||'';
 }
 
 /* ════════ FIREBASE ════════ */

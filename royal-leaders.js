@@ -170,15 +170,15 @@ function draw(type,data){
 
 const $=id=>document.getElementById(id);
 const allowed={
- frame:['none','bronze','silver','gold','mythic'],
- avatarMotion:['none','pulse','float','wave','orbit','prism','ascension'],
- aura:['none','spark','dual','celestial'],
- trail:['none','wave','comet','nova'],
- nameFx:['none','ember','inferno','prism','celestial'],
- banner:['default','wave','gold','mythic'],
- cardFx:['none','soft','energy','mythic']
+ frame:['none','bronze','silver','gold','mythic','emerald','sapphire','nebula'],
+ avatarMotion:['none','pulse','float','wave','orbit','prism','ascension','comet','tide','vortex','phoenix','supernova'],
+ aura:['none','spark','dual','celestial','ripple','nebula','stardust'],
+ trail:['none','wave','comet','nova','stardust','meteor','starfall'],
+ nameFx:['none','ember','inferno','prism','celestial','tide','nova','royal'],
+ banner:['default','wave','gold','mythic','abyss','aurora','neon','cosmic'],
+ cardFx:['none','soft','energy','mythic','ocean','prism','aurora']
 };
-const titles={none:'',rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend'};
+const titles={none:'',rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'};
 const themeColors={
  dark:['#fbd77a','#76e9dd','Dark'],light:['#f3e4ba','#8ddce8','Light'],gray:['#c7d2e5','#7cdacf','Gray'],
  default:['#fbd77a','#71e3d5','Dolphin'],spring:['#b6ee9b','#8fdbfc','Spring'],summer:['#ffd87f','#58e9cf','Summer'],
@@ -187,7 +187,8 @@ const themeColors={
  reunification:['#ffb867','#fbea7a','30/4'],children:['#83e8fa','#fec0b6','Children'],
  nationalday:['#ffb76f','#ffe978','Quốc Khánh'],midautumn:['#f7d58c','#c9a9ff','Trung Thu'],
  halloween:['#ffa45b','#b282f7','Halloween'],christmas:['#8aebbb','#ef9aa7','Christmas'],
- newyear:['#c7abff','#87eaff','New Year']
+ newyear:['#c7abff','#87eaff','New Year'],
+ abyss:['#56f4ee','#a8f7ff','Vực sâu'],aurora:['#b9f8ea','#bd9cff','Cực quang'],coral:['#ffac9d','#ffe6b4','San hô'],neon:['#69ffe8','#eab4ff','Cyber Neon'],cosmic:['#a9bfff','#efabff','Ngân hà'],royal:['#ffe39c','#eed1ff','Hoàng gia'],obsidian:['#e6d9ff','#99e9ff','Obsidian']
 };
 const safe=(kind,value,fallback)=>allowed[kind].includes(value)?value:fallback;
 let levelBoardLoaded=false;

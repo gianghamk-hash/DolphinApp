@@ -11,7 +11,7 @@ test('three transparent equally-sized Landing podiums: Revenue, raised Level, Wo
  assert.match(landing,/#drl-level\{width:100%;min-width:0;grid-area:level;transform:translateY\(-12px\)/);
  assert.match(landing,/:is\(#drl-level,#drl-revenue,#drl-work\) \.drl-level-surface/);
  assert.match(landing,/:is\(#drl-level,#drl-revenue,#drl-work\) \.drl-level-surface\[data-banner="mythic"\]::before/);
- assert.match(index,/royal-leaders\.js\?v=equipped-top3-v3/);
+ assert.match(index,/royal-leaders\.js\?v=crew-global-v9/);
  for(const slot of ["revenue","level","work"])assert.ok(landing.includes("podium('"+slot+"'"));
 });
 test('the Top 1 winners have no decorative crown or hard-coded name flames',()=>{

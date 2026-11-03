@@ -429,18 +429,19 @@
     var identity=staff.staffId
       ? window.DolphinAvatars?.profile?.(staff.name,staff.staffId)
       : null;
-    var allowed=['bronze','silver','gold','mythic'];
+    var allowed=['bronze','silver','gold','mythic','emerald','sapphire','nebula'];
     var titles={
       rookie:'⭐ Rookie Star',
       wave:'🌊 Wave Rider',
-      legend:'👑 Dolphin Legend'
+      legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'
     };
     return {
       frame:allowed.includes(identity?.selectedFrame)?identity.selectedFrame:'none',
       title:titles[identity?.selectedTitle]||'',
       cardFx:identity?.selectedCardFx||'none',
       nameFx:identity?.selectedNameFx||'none',
-      trail:identity?.selectedTrail||'none'
+      trail:identity?.selectedTrail||'none',
+      motion:identity?.selectedAvatarMotion||'none',aura:identity?.selectedAura||'none'
     };
   }
 
@@ -515,7 +516,7 @@
 
       return [
         '<div class="sow-item ' + (isMe ? 'sow-me' : '') + '" data-crew-card="'+escapeHtml(effect.cardFx)+'">',
-        '  <div class="sow-avatar" data-frame="'+effect.frame+'" data-staff-avatar data-staff-name="'+escapeHtml(s.name)+'" data-staff-id="'+escapeHtml(s.staffId||'')+'">' + escapeHtml(String(window.DolphinAvatars?.get(s.name,s.staffId)||s.avatar||ctx.icon).slice(0,24)) + '</div>',
+        '  <div class="sow-avatar" data-frame="'+effect.frame+'" data-avatar-motion="'+escapeHtml(effect.motion)+'" data-crew-aura="'+escapeHtml(effect.aura)+'" data-staff-avatar data-staff-name="'+escapeHtml(s.name)+'" data-staff-id="'+escapeHtml(s.staffId||'')+'">' + escapeHtml(String(window.DolphinAvatars?.get(s.name,s.staffId)||s.avatar||ctx.icon).slice(0,24)) + '</div>',
         '  <div class="sow-info">',
         '    <div class="sow-name" data-name-fx="'+escapeHtml(effect.nameFx)+'" data-crew-trail="'+escapeHtml(effect.trail)+'">' + escapeHtml(s.name) + (s.staffId?' <small>'+escapeHtml(s.staffId)+'</small>':'') + (isMe ? ' <span class="sow-you">BẠN</span>' : '') + '</div>',
         '    <div class="sow-meta">' + ctx.label + ' · ' + durText + escapeHtml(detail) + '</div>',

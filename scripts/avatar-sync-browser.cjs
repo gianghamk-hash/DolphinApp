@@ -170,7 +170,44 @@ assert.equal(await b.page.locator('.dolphin-prestige').count(),0,'Profile no lon
 
 assert.equal(await b.page.locator('dialog[open]').count(),0);
 await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();assert.equal(await b.page.locator('#style-dialog').isVisible(),true);assert.equal(await b.page.locator('input[name=staff-theme][value=halloween]').isDisabled(),true);assert.equal(await b.page.locator('#staff-flame-check').isDisabled(),true);assert.equal(await b.page.locator('#staff-save-style').isEnabled(),true);
-await b.page.screenshot({path:path.join(output,'profile-style-mobile.png'),fullPage:true});await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
+await b.page.screenshot({path:path.join(output,'profile-style-mobile.png'),fullPage:true});
+// Exercise the exact shared renderer used in Profile, Ranking, Online and Landing.
+const globalFX=await b.page.evaluate(()=>{
+ const classes=['hero-avatar','level-avatar','sow-avatar','drr-frame','dolphin-staff-avatar','leader-tile-icon'];
+ const nodes=[];
+ for(const cls of classes){
+  const node=document.createElement('span');node.className=cls;
+  node.textContent='👑';node.dataset.frame='nebula';
+  node.dataset.avatarMotion='supernova';node.dataset.crewAura='stardust';
+  document.body.appendChild(node);nodes.push(node);
+ }
+ const rare=document.createElement('span');rare.className='level-avatar';
+ rare.textContent='🐉';rare.dataset.frame='none';rare.dataset.avatarMotion='phoenix';
+ document.body.appendChild(rare);nodes.push(rare);
+ window.DolphinFrameFX.refresh();window.DolphinFrameFX.refresh();
+ const results=nodes.map(node=>({
+  rarity:node.dataset.avatarRarity,
+  insignias:node.querySelectorAll(':scope > .crew-avatar-insignia').length,
+  motions:node.querySelectorAll(':scope > .crew-avatar-motion').length,
+  rings:node.querySelectorAll(':scope > .crew-fx-orbits .crew-fx-ring').length,
+  sparks:node.querySelectorAll(':scope > .crew-avatar-motion .crew-motion-spark').length,
+  text:node.textContent
+ }));
+ nodes.forEach(node=>node.remove());return results;
+});
+assert.equal(globalFX.length,7);
+for(const fx of globalFX.slice(0,6)){
+ assert.equal(fx.rarity,'sovereign');assert.equal(fx.insignias,1);
+ assert.equal(fx.motions,1);assert.equal(fx.rings,4);
+ assert.equal(fx.sparks,8);assert.equal(fx.text,'👑');
+}
+assert.equal(globalFX[6].rarity,'mythic');
+assert.equal(globalFX[6].insignias,1);
+assert.equal(globalFX[6].motions,1);
+assert.equal(globalFX[6].text,'🐉');
+console.log('PASS: six global avatar surfaces share Mythic/Sovereign rank, five-layer FX and idempotent render; frame-none keeps rare animation.');
+
+await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
 await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=light]');await b.page.click('#staff-save-style');await b.page.locator('#staff-style-info').filter({hasText:'Đã lưu'}).waitFor();assert.equal(await b.page.locator('body').getAttribute('data-theme'),'light');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-light-mobile.png'),fullPage:true});
 await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=gray]');await b.page.click('#staff-save-style');await b.page.waitForFunction(()=>document.body.dataset.theme==='gray');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-gray-mobile.png'),fullPage:true});
 await b.page.getByRole('button',{name:'Phần thưởng',exact:true}).click();assert.equal(await b.page.locator('.reward-row').count(),16);await b.page.keyboard.press('Escape');assert.equal(await b.page.locator('dialog[open]').count(),0);

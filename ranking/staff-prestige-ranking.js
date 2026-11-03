@@ -14,7 +14,7 @@ function equippedFrame(person){
  if(!person)return 'none';
  const profile=window.DolphinAvatars?.profile?.(person.name,person.employeeId);
  const frame=profile?.selectedFrame||person.selectedFrame;
- return ['bronze','silver','gold','mythic'].includes(frame)?frame:'none';
+ return ['bronze','silver','gold','mythic','emerald','sapphire','nebula'].includes(frame)?frame:'none';
 }
 function nameFxTier(person){
  if(person?.selectedNameFx&&person.selectedNameFx!=='none')return person.selectedNameFx;
@@ -32,6 +32,8 @@ function topTile(kind,nameId,valueId){
  const icon=$(kind==='revenue'?'leader-revenue-avatar':'leader-work-avatar');
  if(icon){
   const profile=leader?.name?window.DolphinAvatars?.profile?.(leader.name):null;
+  if(leader?.name)icon.dataset.staffAvatar='';
+  else delete icon.dataset.staffAvatar;
   icon.dataset.staffName=leader?.name||'';
   icon.dataset.staffId=profile?.employeeId||'';
   icon.textContent=leader?.name?displayAvatar(leader.name,profile?.employeeId,kind==='revenue'?'💰':'🏆'):kind==='revenue'?'💰':'🏆';
@@ -63,11 +65,19 @@ function renderTiles(){
  topTile('work','leader-work-name','leader-work-value');
  const champion=board?.champion;
  text('leader-emperor-avatar',champion?displayAvatar(champion.name,champion.employeeId,champion.avatar):'👑');
+ if(champion)$('leader-emperor-avatar').dataset.staffAvatar='';
+ else delete $('leader-emperor-avatar').dataset.staffAvatar;
+ $('leader-emperor-avatar').dataset.staffName=champion?.name||'';
+ $('leader-emperor-avatar').dataset.staffId=champion?.employeeId||'';
  $('leader-emperor-avatar').dataset.frame=equippedFrame(champion);
+ $('leader-emperor-avatar').dataset.avatarMotion=champion?.selectedAvatarMotion||'none';
  $('leader-emperor-avatar').dataset.crewAura=champion?.selectedAura||'none';
  $('leader-emperor-avatar').dataset.crewTrail=champion?.selectedTrail||'none';
+ $('leader-emperor-avatar').dataset.crewCard=champion?.selectedCardFx||'none';
  text('leader-emperor-name',champion?.name||'Chưa có danh hiệu');
- if($('leader-emperor-name'))$('leader-emperor-name').dataset.nameFx=nameFxTier(champion);
+ if($('leader-emperor-name')){$('leader-emperor-name').dataset.nameFx=nameFxTier(champion);$('leader-emperor-name').dataset.crewTrail=champion?.selectedTrail||'none';}
+ const emperorTile=$('leader-emperor-avatar').closest('.leader-tile');
+ if(emperorTile){emperorTile.dataset.banner=champion?.selectedBanner||'default';emperorTile.dataset.crewCard=champion?.selectedCardFx||'none';}
  text('leader-emperor-value',champion?'Lv.'+Number(champion.level||1)+' · '+fmt(champion.xp)+' XP':'XP tích lũy');
  window.DolphinFrameFX?.refresh?.();
 }
@@ -84,13 +94,13 @@ function renderLevel(){
   const own=p.employeeId===window.DolphinStaffId?.get?.()?.employeeId;
   const item=el('div','level-entry'+(own?' is-me':''));
   const rank=el('span','level-position',i===0?'♛':i+1);
-  const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=equippedFrame(p);avatar.dataset.crewAura=p.selectedAura||'none';avatar.dataset.crewTrail=p.selectedTrail||'none';
+  const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=equippedFrame(p);avatar.dataset.crewAura=p.selectedAura||'none';avatar.dataset.crewTrail=p.selectedTrail||'none';avatar.dataset.avatarMotion=p.selectedAvatarMotion||'none';avatar.dataset.crewCard=p.selectedCardFx||'none';
   const person=el('span','level-person');
   const nameLabel=el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':''));
-  nameLabel.dataset.nameFx=nameFxTier(p);
+  nameLabel.dataset.nameFx=nameFxTier(p);nameLabel.dataset.crewTrail=p.selectedTrail||'none';
   nameLabel.classList.toggle('crew-name-flame',!!p.nameFlame);
   nameLabel.classList.toggle('crew-name-gradient',!!p.nameGradient);
-  person.append(nameLabel,el('small','level-person-rank',({rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend'})[p.selectedTitle]||p.rank||'Dolphin Crew'));
+  person.append(nameLabel,el('small','level-person-rank',({rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'})[p.selectedTitle]||p.rank||'Dolphin Crew'));
   const score=el('span','level-score','Lv.'+Number(p.level||1));
   score.append(el('small','level-score-xp',fmt(p.xp)+' XP'));
   item.append(rank,avatar,person,score);list.append(item);

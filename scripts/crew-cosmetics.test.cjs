@@ -25,7 +25,7 @@ test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
   assert.ok(css.includes('data-frame="'+id+'"'),'missing '+id+' frame effect');
   assert.ok(profile.includes("['"+id+"',")&&profile.includes("preview.dataset.frame=id"),'missing '+id+' dynamic frame preview');
  }
- assert.match(avatars,/crew-cosmetics\.css\?v=crew-wow-v8/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=crew-global-v9/);
  assert.match(avatars,/crew-cosmetics-stylesheet/);
 });
 test('previews accurately show locked, unlocked, and equipped states',()=>{
@@ -79,8 +79,8 @@ test('all ranking tabs and the Emperor read a shared equipped frame',()=>{
  assert.match(rankingHTML,/function rankingTitle\(name\)/);
 });
 test('both PWA cache and runtime resolve exactly the same V3 cosmetic asset',()=>{
- assert.match(worker,/crew-cosmetics\.css\?v=crew-wow-v8/);
- assert.match(avatars,/crew-cosmetics\.css\?v=crew-wow-v8/);
+ assert.match(worker,/crew-cosmetics\.css\?v=crew-global-v9/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=crew-global-v9/);
 });
 
 
@@ -141,4 +141,44 @@ test('V4 complex animations have layered spark, ring and core nodes with reduced
  assert.match(css,/prefers-reduced-motion:reduce/);
  assert.match(avatars,/layer\.setAttribute\('aria-hidden','true'\)/);
  assert.match(avatars,/if\(previous&&el\.dataset\.crewFxFrame===frame\)return/);
+});
+
+
+test('avatar categories are ascending numeric Level and every collection has a curated theme',()=>{
+ const catalog=JSON.parse(read('functions/staff-avatar-catalog.json'));
+ const groups=Object.keys(catalog),levels=groups.map(s=>Number((s.match(/Lv\.(\d+)/)||[])[1]));
+ assert.deepEqual(levels,[1,2,3,5,7,10,12,15,18,20,28,30,36,40,48,55]);
+ const all=Object.values(catalog).flat();
+ assert.equal(new Set(all).size,all.length,'every avatar appears in only one folder');
+ for(const [name,required] of Object.entries({
+  'Ocean Collection Lv.5':['🦈','🐙','🪼','🐧'],
+  'Safari Lv.7':['🦓','🦒','🐆'],
+  'Thủy thủ Lv.12':['⚓','⛵','🚢'],
+  'Thiên hà Lv.36':['🌌','🪐','☄️'],
+  'Mythic Collection Lv.40':['🐉','🐦‍🔥','🔱'],
+  'Hoàng gia Lv.55':['👑','🤴','👸','🏰']
+ }))for(const avatar of required)assert.ok(catalog[name].includes(avatar),name+' missing '+avatar);
+ assert.ok(read('staff-profile.js').includes('Object.keys(catalog).sort((a,b)=>levelOf(a)-levelOf(b)'), 'picker must sort levels numerically');
+});
+test('every public crew surface supports new frames, motions and real mythical rarity',()=>{
+ const avatar=read('dolphin-avatars.js');
+ const rank=read('ranking/staff-prestige-ranking.js');
+ const rankingPage=read('ranking/index.html');
+ const online=read('staff-online.js');
+ const landing=read('royal-leaders.js');
+ for(const id of ['emerald','sapphire','nebula']){
+  for(const source of [avatar,rank,rankingPage,online,landing])assert.ok(source.includes(id),id+' missing in crew renderer');
+ }
+ for(const id of ['comet','tide','vortex','phoenix','supernova']){
+  assert.ok(landing.includes(id),id+' missing in podium allowlist');
+  assert.ok(css.includes('data-avatar-motion="'+id+'"'),id+' missing live CSS');
+ }
+ assert.ok(rank.includes('avatar.dataset.avatarMotion=p.selectedAvatarMotion'),'level board must supply motion');
+ assert.match(online,/data-avatar-motion/);
+ assert.match(rank,/leader-emperor-avatar'\)\.dataset\.avatarMotion/);
+ assert.match(avatar,/const mythicAvatars=new Set/);
+ assert.match(avatar,/const royalAvatars=new Set/);
+ assert.match(css,/crew-avatar-insignia::before/);
+ assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ for(const name of ['.sow-avatar','.drr-frame','.leader-tile-icon'])assert.ok(css.includes(name));
 });

@@ -30,12 +30,18 @@ function avatarHTML(name,id='',avatar='👤'){
 }
 if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
 if(!root.document)return;
-const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-wow-v8',document.currentScript?.src||location.href).href;
+const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-global-v9',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
 try{if(root.parent!==root)shared=root.parent.DolphinAvatars||null;}catch(e){}
 function staffName(){try{return root.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'';}catch(e){return '';}}
 function get(name,id){return resolver.resolve(name,id)?.avatar||null;}
 function fallback(name){return Array.from(String(name||'').trim())[0]?.toLocaleUpperCase('vi-VN')||'👤';}
+/* Rarity is derived only from the server-validated avatar catalog values.
+   The same glyph uses the same visual treatment in every Dolphin subapp. */
+const mythicAvatars=new Set(['🐉','🐲','🐦‍🔥','🦄','🧞','🔱','🪄']);
+const royalAvatars=new Set(['👑','💎','🗡️','🛡️','⚜️','🎖️','🏵️','🤴','👸','🫅','🏰','💍','🗝️','🪙']);
+function rarityOf(value){const v=String(value||'').trim();return royalAvatars.has(v)?'sovereign':mythicAvatars.has(v)?'mythic':'common';}
+
 /* One idempotent animator for equipped cosmetics on every UI surface.
    IMPORTANT: children have no text nodes; existing avatar textContent-based
    synchronization and ranking checks keep working unchanged. */
@@ -47,6 +53,8 @@ const frameSelector=[
  '.drr-frame[data-frame]',
  '.sow-avatar[data-frame]',
  '.fx-frame-preview[data-frame]',
+ '.avatar-choice[data-avatar-rarity]',
+ '[data-avatar-motion]:not([data-avatar-motion="none"])',
  '#profile-avatar[data-frame]'
 ].join(',');
 function decorateFrame(el){
@@ -55,6 +63,18 @@ function decorateFrame(el){
  const previous=el?.querySelector(':scope > .crew-fx-orbits');
  const oldMotion=el?.querySelector(':scope > .crew-avatar-motion');
  const motion=el?.dataset?.avatarMotion||'none';
+ // A semantic mythic/royal insignia is independent of the equipped frame.
+ // No textual child nodes: avatar textContent and cross-app sync stay stable.
+ const glyph=el.dataset.avatarGlyph||el.querySelector('.drl-level-glyph')?.textContent||String(el.textContent||'').trim();
+ const rarity=rarityOf(glyph);
+ if(el.dataset.avatarRarity!==rarity)el.dataset.avatarRarity=rarity;
+ const insignia=el.querySelector(':scope > .crew-avatar-insignia');
+ if(rarity==='common'){insignia?.remove();}
+ else if(!insignia){
+  const jewel=document.createElement('span');jewel.className='crew-avatar-insignia';
+  jewel.setAttribute('aria-hidden','true');el.appendChild(jewel);
+ }
+
  if(oldMotion&&oldMotion.dataset.kind!==motion)oldMotion.remove();
  if(motion!=='none'&&!el.querySelector(':scope > .crew-avatar-motion')){
   const layer=document.createElement('span');layer.className='crew-avatar-motion';layer.dataset.kind=motion;
@@ -110,7 +130,7 @@ function decorateFrame(el){
 function decorateFrames(){
  for(const el of document.querySelectorAll(frameSelector))decorateFrame(el);
 }
-root.DolphinFrameFX={refresh:decorateFrames,decorate:decorateFrame};
+root.DolphinFrameFX={refresh:decorateFrames,decorate:decorateFrame,rarityOf};
 function paint(){
  scheduled=false;
  const source=shared||api;
@@ -119,20 +139,30 @@ function paint(){
   const profile=mine?source.getMine():null;
   const name=mine?(profile?.name||staffName()):el.getAttribute('data-staff-name');
   const id=mine?profile?.employeeId:el.getAttribute('data-staff-id');
-  const avatar=source.get(name,id)||fallback(name);
+  const avatar=source.get(name,id)||el.dataset.avatarGlyph||el.textContent.trim()||fallback(name);
   if(el.textContent!==avatar)el.textContent=avatar;
+  el.dataset.avatarGlyph=avatar;
   const chosen=source.profile?.(name,id);
-  // Ranking may already have a trusted board frame before the directory arrives.
-  const allowed=['bronze','silver','gold','mythic'];
+  // Keep already-rendered, server-backed board cosmetics while the directory
+  // is loading, instead of silently wiping premium styles to "none".
+  const allowed=['bronze','silver','gold','mythic','emerald','sapphire','nebula'];
   const frame=chosen
     ? (allowed.includes(chosen.selectedFrame)?chosen.selectedFrame:'none')
     : (allowed.includes(el.dataset.frame)?el.dataset.frame:'none');
   if(el.dataset.frame!==frame)el.dataset.frame=frame;
-  const aura=chosen?.selectedAura||'none',trail=chosen?.selectedTrail||'none';
-  const motion=chosen?.selectedAvatarMotion||'none';
-  if(el.dataset.avatarMotion!==motion)el.dataset.avatarMotion=motion;
-  if(el.dataset.crewAura!==aura)el.dataset.crewAura=aura;
-  if(el.dataset.crewTrail!==trail)el.dataset.crewTrail=trail;
+  for(const [key,value] of [
+   ['avatarMotion',chosen?.selectedAvatarMotion],
+   ['crewAura',chosen?.selectedAura],
+   ['crewTrail',chosen?.selectedTrail],
+   ['crewCard',chosen?.selectedCardFx],
+   ['crewBanner',chosen?.selectedBanner],
+   ['crewNameFx',chosen?.selectedNameFx]
+  ]){
+   const chosenValue=value||el.dataset[key]||'none';
+   if(el.dataset[key]!==chosenValue)el.dataset[key]=chosenValue;
+  }
+  const rarity=rarityOf(avatar);
+  if(el.dataset.avatarRarity!==rarity)el.dataset.avatarRarity=rarity;
   const label='Avatar của '+(name||'nhân viên');if(el.getAttribute('aria-label')!==label)el.setAttribute('aria-label',label);
  }
  for(const el of document.querySelectorAll('[data-staff-profile-name]')){

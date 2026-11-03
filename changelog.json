@@ -1,26 +1,46 @@
 {
-  "version": "1.1.67",
-  "previousVersion": "1.1.66",
-  "commit": "36fe94e",
-  "previousCommit": "eddece1",
-  "buildDate": "2026-11-03T08:44:20.921Z",
-  "summary": "Fix Staff ID rename blocked by contended full-registry transactions (#222)",
+  "version": "1.1.68",
+  "previousVersion": "1.1.67",
+  "commit": "dd31066",
+  "previousCommit": "36fe94e",
+  "buildDate": "2026-11-03T09:26:20.813Z",
+  "summary": "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)",
   "changes": {
-    "totalCommits": 291,
-    "filesChanged": 2,
+    "totalCommits": 292,
+    "filesChanged": 7,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix Staff ID rename blocked by contended full-registry transactions (#222)"
+    "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-name-repair.test.cjs",
+      "file": ".github/workflows/staff-access-production.yml",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
       "type": "update"
     },
     {
       "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "scripts/staff-approval-ui.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "staff-admin-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-profile.css",
       "type": "update"
     }
   ]

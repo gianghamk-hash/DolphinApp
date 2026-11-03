@@ -1,7 +1,7 @@
 {
-  "version": "1.1.67",
-  "buildDate": "2026-11-03T08:44:20.921Z",
-  "commit": "36fe94e",
-  "notes": "Fix Staff ID rename blocked by contended full-registry transactions (#222)",
+  "version": "1.1.68",
+  "buildDate": "2026-11-03T09:26:20.813Z",
+  "commit": "dd31066",
+  "notes": "Add DOL-0001 approved staff directory and organize Staff Profile actions (#223)",
   "forceUpdate": false
 }

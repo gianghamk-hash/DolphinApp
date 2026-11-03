@@ -50,6 +50,7 @@ jobs:
           npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
           node --check functions/staff-profile.js
           node --test functions/staff-name-policy.test.cjs
+          node --test functions/staff-name-repair.test.cjs
           node -e "const c=require('./functions/staff-avatar-catalog.json');const a=Object.values(c).flat();if(a.length!==new Set(a).size||!c['Hoàng gia Lv.55'].includes('👑'))throw Error('Invalid curated avatar catalog')"
           node --check functions/index.js
           node --check functions/staff-xp-actions.js

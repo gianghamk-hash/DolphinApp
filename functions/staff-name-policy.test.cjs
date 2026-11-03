@@ -13,6 +13,7 @@ test('strict greater-than-six Unicode characters and normalization',()=>{
  assert.equal(policy.valid('abcdefg'),true);
  assert.equal(policy.valid('  Nguyễn Văn An '),true);
  assert.equal(policy.key('  NGUYỄN   VĂN AN  '),policy.key('Nguyễn Văn An'));
+ assert.equal(policy.key('Nguyen Van An'),policy.key('Nguyễn Văn An'));
 });
 test('active duplicate check includes pending and approved names, excludes inactive records',()=>{
  assert.equal(policy.nameConflict(registry,'nguyễn văn an').employeeId,'DOL-0001');

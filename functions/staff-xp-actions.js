@@ -11,6 +11,7 @@ const {getDatabase}=require('firebase-admin/database');
 const prestige=require('./staff-prestige');
 const live=require('./staff-xp-live-engine.cjs');
 const xp=require('./staff-xp-engine.cjs');
+const namePolicy=require('./staff-name-policy.cjs');
 const daily=require('./staff-daily-missions');
 const dayCore=require('./staff-daily-core.cjs');
 const opts={region:'asia-southeast1',maxInstances:8,timeoutSeconds:60};
@@ -30,6 +31,8 @@ async function staff(req){
  if(identity?.verified!==true||!identity.employeeId)throw new HttpsError('permission-denied','Cần Staff ID do quản lý xác minh. Hồ sơ tự đăng ký chưa được cấp XP.');
  const p=(await db.ref('staffRegistry/'+identity.employeeId).once('value')).val();
  if(!p?.active||(p.registrationSource==='self'&&p.approved!==true))throw new HttpsError('permission-denied','Hồ sơ chưa được quản lý duyệt');
+ const registry=(await db.ref('staffRegistry').once('value')).val()||{};
+ if(namePolicy.needsRename(registry,p.employeeId))throw new HttpsError('permission-denied','Hãy cập nhật họ tên Staff ID trước khi tiếp tục nghiệp vụ.');
  if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))throw new HttpsError('permission-denied','Staff ID không hợp lệ');
  const managers=new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()));
  return {id:p.employeeId,name:p.name,uid:u,admin:managers.has(u)};

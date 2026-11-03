@@ -11,6 +11,9 @@ const profile=read('staff-profile.js');
 const backend=read('functions/staff-profile.js');
 const identity=read('functions/index.js');
 const nav=read('dolphin-navigation.js');
+const staffClient=read('staff-id.js');
+const staffProfilePage=read('dolphin-profile.html');
+const sw=read('service-worker.js');
 test('home access is closed by default and linked verification is checked on startup',()=>{
  assert.match(home,/document\.documentElement\.classList\.add\('dolphin-access-pending'\)/);
  assert.match(home,/staff-access\.js\?v=crew-name-policy-v1/);
@@ -64,4 +67,13 @@ test('legacy invalid or duplicate names require remediation while keeping Staff 
  assert.match(identity,/requiresNameChange/);
  assert.match(backend,/exports\.staffRepairMyName/);
  assert.match(backend,/nameAliases:aliases\.slice/);
+});
+
+test('production Staff ID client exposes repairName and all entry points load matching asset version',()=>{
+ assert.match(staffClient,/repairName:name=>call\('staffRepairMyName',\{name\}\)/);
+ assert.match(gate,/api\.repairName\(name\)/);
+ assert.match(home,/staff-id\.js\?v=crew-rename-api-v2/);
+ assert.match(staffProfilePage,/staff-id\.js\?v=crew-rename-api-v2/);
+ assert.match(gate,/staff-id\.js\?v=crew-rename-api-v2/);
+ assert.match(sw,/staff-id\.js\?v=crew-rename-api-v2/);
 });

@@ -178,7 +178,7 @@ test('admin sandbox validates XP amounts and never changes staff event ledger',a
 });
 
 
-test('Level 6 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
+test('Level 6 unlocks Bronze frame and exposes Level 7 reward milestone',async()=>{
  const {api,data}=harness({coldCacheProfile:true});
  const old=data.get('staffRegistry/DOL-0001');
  data.set('staffRegistry/DOL-0001',{...old,xp:80000,levelPeak:5});
@@ -186,7 +186,7 @@ test('Level 6 unlocks Bronze frame and exposes next Level 8 reward',async()=>{
  assert.equal(result.level,6);
  assert.equal(result.selectedFrame,'bronze');
  assert.equal(result.nameFlame,true);
- assert.equal(result.nextReward.level,8);
+ assert.equal(result.nextReward.level,7);
  assert(result.unlocked.includes('frame_bronze'));
  assert.equal(result.rewardCatalog.find(r=>r.id==='frame_mythic').level,60);
  await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'light',selectedFrame:'silver'})),e=>e.code==='permission-denied');
@@ -282,15 +282,30 @@ test('staffGetMyProgress backfills a verified same-day legacy check-in exactly o
   completed:{checkin:{xp:20,at:checkedAt,receipt:'legacy-checkin-1'}}
  }});
  const first=await api.staffGetMyProgress(req('lanDevice'));
- assert.equal(first.xp,2000);
- assert.equal(first.dailyMissions.todayXP,2000);
- assert.equal(first.dailyMissions.tasks[0].xp,2000);
- assert.equal(first.dailyMissions.checkinTopUpXP,1980);
- assert.equal(data.get('staffRegistry/DOL-0001').xp,2000);
+ assert.equal(first.xp,200);
+ assert.equal(first.dailyMissions.todayXP,200);
+ assert.equal(first.dailyMissions.tasks[0].xp,200);
+ assert.equal(first.dailyMissions.checkinTopUpXP,180);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
  const second=await api.staffGetMyProgress(req('lanDevice'));
- assert.equal(second.xp,2000);
+ assert.equal(second.xp,200);
  assert.equal(second.dailyMissions.checkinTopUpXP,undefined);
- assert.equal(data.get('staffRegistry/DOL-0001').xp,2000);
+ assert.equal(data.get('staffRegistry/DOL-0001').xp,200);
+});
+test('read-only profile refresh reverses mistakenly paid 10x check-in today only',async()=>{
+ const {api,data}=harness();
+ const checkedAt=Date.now()-1000,day=require('./staff-daily-core.cjs').vietnamDay(checkedAt);
+ const p=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...p,xp:2650,dailyMissions:{
+  date:day,lastCheckinDay:day,streak:2,
+  completed:{checkin:{xp:2500,at:checkedAt,receipt:'daily-100x'}}}});
+ const first=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(first.xp,400); // 2,650 - 2,250
+ assert.equal(first.dailyMissions.tasks[0].xp,250);
+ assert.equal(first.dailyMissions.dailyXPAdjustment,-2250);
+ const second=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(second.xp,400);
+ assert.equal(second.dailyMissions.dailyXPAdjustment,undefined);
 });
 test('old check-in cannot be backfilled after 00:00 Vietnam time',async()=>{
  const {api,data}=harness();

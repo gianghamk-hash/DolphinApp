@@ -59,7 +59,7 @@ function renderAvatars(){
 }
 $('choose-avatar').onclick=async()=>{
  try{
-  if(!Object.keys(catalog).length){const res=await fetch('./functions/staff-avatar-catalog.json');if(!res.ok)throw Error('Chưa tải được bộ avatar');catalog=await res.json();
+  if(!Object.keys(catalog).length){const res=await fetch('./functions/staff-avatar-catalog.json?v=crew-wow-v8');if(!res.ok)throw Error('Chưa tải được bộ avatar');catalog=await res.json();
    for(const category of Object.keys(catalog)){const option=document.createElement('option');option.value=category;option.textContent=category;$('avatar-category').appendChild(option);}}
   renderAvatars();$('avatar-dialog').showModal();
  }catch(e){message(errorText(e),true);}

@@ -3,7 +3,7 @@
 const engine=require('./staff-xp-engine.cjs');
 const ZONE='Asia/Ho_Chi_Minh';
 const TASKS=Object.freeze([
- Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Duy trì chuỗi để tăng XP mỗi ngày · thưởng x10 mới',xp:2000}),
+ Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Ngày 1: 200 XP · tăng 50 XP/ngày · tối đa 500 XP',xp:200}),
  Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:400}),
  Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:300}),
  Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:250}),
@@ -30,7 +30,7 @@ function nextMidnight(day){
  return utcDate(day)+86400000-7*3600000;
 }
 function checkinXP(streak){
- return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*100;
+ return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*10;
 }
 function todayCompleted(record,day){
  return record?.date===day&&record.completed&&typeof record.completed==='object'
@@ -85,9 +85,11 @@ function apply(profile,taskId,time=Date.now(),receipt=''){
  return {changed:true,profile:nextProfile,addedXP};
 }
 /**
- * Idempotent same-day top-up of verified historical daily receipts only.
- * Supports 1x and previous 10x check-in; legacy business tasks were 1x.
- * Never re-awards an already completed task or a previous day.
+ * Correct only today's authenticated receipt, never re-claim a task.
+ * Check-in is NOT a x10 business mission: 200→500 XP for streak days 1→7.
+ * Prior releases mistakenly paid 2,000→5,000; reverse that exact receipt
+ * once, alongside topping up older 1x business tasks.
+ * Past days are not available in the daily record and are left untouched.
  */
 function reconcileLegacyDaily(profile,time=Date.now()){
  const unchanged={changed:false,profile,addedXP:0};
@@ -96,24 +98,24 @@ function reconcileLegacyDaily(profile,time=Date.now()){
  const record=profile.dailyMissions||{},day=vietnamDay(time);
  if(record.date!==day)return unchanged;
  const entries={...todayCompleted(record,day)};
- let extra=0,changed=false;
+ let adjustment=0,changed=false;
  for(const task of TASKS){
   const entry=entries[task.id],at=Number(entry?.at);
   if(!entry||typeof entry.receipt!=='string'||!entry.receipt.length||
     !Number.isFinite(at)||at<=0||vietnamDay(at)!==day)continue;
   const base=task.id==='checkin'?
-   (15+Math.min(7,Math.max(1,Number(record.streak)||1))*5):task.xp/10;
-  const allowed=task.id==='checkin'?[base,base*10]:[base];
+    15+Math.min(7,Math.max(1,Number(record.streak)||1))*5:task.xp/10;
+  const allowed=task.id==='checkin'?[base,base*100]:[base];
   const target=task.id==='checkin'?checkinXP(record.streak):task.xp;
-  if(!allowed.includes(Number(entry.xp))||Number(entry.xp)>=target)continue;
-  extra+=target-Number(entry.xp);
-  entries[task.id]={...entry,xp:target,rateVersion:3,backfilledAt:time};
+  if(!allowed.includes(Number(entry.xp))||Number(entry.xp)===target)continue;
+  adjustment+=target-Number(entry.xp);
+  entries[task.id]={...entry,xp:target,rateVersion:4,backfilledAt:time};
   changed=true;
  }
  if(!changed)return unchanged;
- const xp=Number((Math.max(0,Number(profile.xp)||0)+extra).toFixed(2));
+ const xp=Number(Math.max(0,Number(profile.xp||0)+adjustment).toFixed(2));
  if(!Number.isFinite(xp)||xp>Number.MAX_SAFE_INTEGER)return unchanged;
- return {changed:true,addedXP:extra,profile:{
+ return {changed:true,addedXP:adjustment,profile:{
   ...profile,xp,levelPeak:Math.max(Number(profile.levelPeak)||1,engine.levelForXP(xp)),
   dailyMissions:{...record,completed:entries},updatedAt:time
  }};

@@ -32,7 +32,7 @@ test('recovery UI and identity response are isolated from profile writes',()=>{
 });
 test('avatar motion is server-validated, level-gated, persistent and previewable',()=>{
  assert.deepEqual(engine.COSMETIC_CHOICES.avatarMotion,{
-  none:1,pulse:3,float:10,wave:20,orbit:30,prism:45,ascension:60
+  none:1,pulse:3,float:10,wave:20,orbit:30,prism:45,ascension:60,comet:6,tide:14,vortex:24,phoenix:36,supernova:52
  });
  assert.match(prestige,/selectedAvatarMotion:cosmeticChoice\('avatarMotion'/);
  assert.match(prestige,/selectedAvatarMotion:selected\.avatarMotion===undefined/);

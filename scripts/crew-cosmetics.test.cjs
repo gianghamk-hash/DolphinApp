@@ -25,7 +25,7 @@ test('Bronze Silver Gold and Mythic are rendered by one shared stylesheet',()=>{
   assert.ok(css.includes('data-frame="'+id+'"'),'missing '+id+' frame effect');
   assert.ok(profile.includes("['"+id+"',")&&profile.includes("preview.dataset.frame=id"),'missing '+id+' dynamic frame preview');
  }
- assert.match(avatars,/crew-cosmetics\.css\?v=crew-mythic-v7/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=crew-wow-v8/);
  assert.match(avatars,/crew-cosmetics-stylesheet/);
 });
 test('previews accurately show locked, unlocked, and equipped states',()=>{
@@ -79,8 +79,8 @@ test('all ranking tabs and the Emperor read a shared equipped frame',()=>{
  assert.match(rankingHTML,/function rankingTitle\(name\)/);
 });
 test('both PWA cache and runtime resolve exactly the same V3 cosmetic asset',()=>{
- assert.match(worker,/crew-cosmetics\.css\?v=crew-mythic-v7/);
- assert.match(avatars,/crew-cosmetics\.css\?v=crew-mythic-v7/);
+ assert.match(worker,/crew-cosmetics\.css\?v=crew-wow-v8/);
+ assert.match(avatars,/crew-cosmetics\.css\?v=crew-wow-v8/);
 });
 
 
@@ -104,4 +104,41 @@ test('V4 ring satellites have different physical counts and opposite directions'
  assert.match(profile,/window\.DolphinFrameFX\?\.refresh\?\.\(\)/);
  assert.match(ranking,/window\.DolphinFrameFX\?\.refresh\?\.\(\)/);
  assert.match(online,/window\.DolphinFrameFX\?\.refresh\?\.\(\)/);
+});
+
+
+test('new collectible themes, frames, motions and avatar sets have validated unlock levels',()=>{
+ const engine=require('../functions/staff-xp-engine.cjs');
+ const backend=read('functions/staff-prestige.js'),themes=read('theme-system.js');
+ const catalog=JSON.parse(read('functions/staff-avatar-catalog.json'));
+ const ui=read('staff-prestige-profile.js');
+ const expectedMotion={comet:6,tide:14,vortex:24,phoenix:36,supernova:52};
+ for(const [name,level] of Object.entries(expectedMotion)){
+  assert.equal(engine.COSMETIC_CHOICES.avatarMotion[name],level);
+  assert.ok(ui.includes("'"+name+"'"),name+' missing UI');
+  assert.ok(css.includes('data-avatar-motion="'+name+'"'),name+' missing CSS');
+ }
+ for(const [id,level] of Object.entries({emerald:12,sapphire:28,nebula:48})){
+  assert.equal(engine.COSMETIC_CHOICES.frame[id],level);
+  assert.ok(css.includes('data-frame="'+id+'"'));
+ }
+ for(const id of ['abyss','aurora','coral','neon','cosmic','royal','obsidian']){
+  assert.ok(backend.includes(id+':'),id+' server approval missing');
+  assert.ok(themes.includes('"'+id+'"'),id+' theme definition missing');
+  assert.ok(ui.includes(id+':'),id+' UI level missing');
+ }
+ const labels=Object.keys(catalog);
+ for(const level of [2,7,12,18,28,36,48,55]){
+  assert.ok(labels.some(x=>x.includes('Lv.'+level)),'missing avatar unlock Lv.'+level);
+ }
+ assert.equal(new Set(Object.values(catalog).flat()).size,Object.values(catalog).flat().length);
+});
+test('V4 complex animations have layered spark, ring and core nodes with reduced-motion fallback',()=>{
+ const avatars=read('dolphin-avatars.js');
+ for(const name of ['crew-motion-core','crew-motion-ring','crew-motion-spark'])assert.ok(avatars.includes(name));
+ assert.match(css,/CREW CLUB CELESTIAL V4/);
+ assert.match(css,/crew-v4-spark/);
+ assert.match(css,/prefers-reduced-motion:reduce/);
+ assert.match(avatars,/layer\.setAttribute\('aria-hidden','true'\)/);
+ assert.match(avatars,/if\(previous&&el\.dataset\.crewFxFrame===frame\)return/);
 });

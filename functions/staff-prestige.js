@@ -122,20 +122,22 @@ exports.staffGetPrestige=onCall(opts,async req=>{
 exports.staffGetMyProgress=onCall(opts,async req=>{
  const {id,profile,testAdmin}=await currentStaff(req);
  const now=Date.now();
- let actual=profile,dailyTopUpXP=0;
+ let actual=profile,dailyXPAdjustment=0;
  // Update only verified receipts claimed TODAY at old reward rates.
  // Transaction idempotency protects concurrent devices and repeated refreshes.
  if(dailyCore.reconcileLegacyDaily(profile,now).changed){
   const ref=getDatabase().ref('staffRegistry/'+id);
   try{
+   let appliedAdjustment=0;
    const transaction=await ref.transaction(current=>{
     if(current===null)return null;
     const fixed=dailyCore.reconcileLegacyDaily(current,now);
+    appliedAdjustment=fixed.changed?fixed.addedXP:0;
     return fixed.changed?fixed.profile:undefined;
    },undefined,false);
    actual=transaction.committed?transaction.snapshot.val():(await ref.once('value')).val()||profile;
    if(transaction.committed){
-    dailyTopUpXP=Math.max(0,Number(actual.xp||0)-Number(profile.xp||0));
+    dailyXPAdjustment=appliedAdjustment;
     try{await rebuild();}catch(e){console.warn('[Crew Daily] Public board refresh pending:',e?.message||e);}
    }
   }catch(e){
@@ -143,7 +145,7 @@ exports.staffGetMyProgress=onCall(opts,async req=>{
    actual=(await ref.once('value')).val()||profile;
   }
  }
- return {...expose(actual),dailyMissions:{...dailyCore.view(actual),...(dailyTopUpXP>0?{dailyTopUpXP,checkinTopUpXP:dailyTopUpXP}:{})},testAdmin};
+ return {...expose(actual),dailyMissions:{...dailyCore.view(actual),...(dailyXPAdjustment!==0?{dailyXPAdjustment,...(dailyXPAdjustment>0?{dailyTopUpXP:dailyXPAdjustment,checkinTopUpXP:dailyXPAdjustment}:{})}:{})},testAdmin};
 });
 exports.staffSetShowcase=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
@@ -155,7 +157,7 @@ exports.staffSetShowcase=onCall(opts,async req=>{
  if(!result.committed)throw new HttpsError('failed-precondition','Hồ sơ không hợp lệ');
  return expose(result.snapshot.val());
 });
-const themeLevels=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30});
+const themeLevels=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30,abyss:4,aurora:12,coral:18,neon:28,cosmic:36,royal:48,obsidian:55});
 exports.staffSetPersonalStyle=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
  const theme=String(req.data?.theme||'dark');

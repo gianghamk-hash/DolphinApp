@@ -1,7 +1,7 @@
 {
-  "version": "1.1.60",
-  "buildDate": "2026-11-03T04:34:08.163Z",
-  "commit": "0c460ad",
-  "notes": "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID",
+  "version": "1.1.61",
+  "buildDate": "2026-11-03T05:10:51.006Z",
+  "commit": "4789399",
+  "notes": "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID",
   "forceUpdate": false
 }

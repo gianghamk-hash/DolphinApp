@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.60",
+      "releaseDate": "2026-11-03T04:34:08.163Z",
+      "summary": "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID",
+      "details": [
+        "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID"
+      ]
+    },
+    {
       "version": "1.1.59",
       "releaseDate": "2026-11-03T01:04:50.457Z",
       "summary": "feat(crew): 100x verified order handling XP without changing sales or daily missions",
@@ -390,14 +398,6 @@
       "summary": "Merge pull request #167: simplify notification opt-in for everyone",
       "details": [
         "Merge pull request #167: simplify notification opt-in for everyone"
-      ]
-    },
-    {
-      "version": "1.1.10",
-      "releaseDate": "2026-10-31T02:32:07.477Z",
-      "summary": "Merge pull request #165: add independent staff Push notifications",
-      "details": [
-        "Merge pull request #165: add independent staff Push notifications"
       ]
     }
   ]

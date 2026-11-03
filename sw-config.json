@@ -1,5 +1,5 @@
 {
-  "version": "1.1.60",
+  "version": "1.1.61",
   "releaseDate": "2026-11-03",
-  "notes": "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID"
+  "notes": "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID"
 }

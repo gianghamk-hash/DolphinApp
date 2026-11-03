@@ -39,7 +39,8 @@ test('avatar motion is server-validated, level-gated, persistent and previewable
  assert.match(prestige,/\['frame','avatarMotion','title'/);
  assert.match(profile,/data-crew-gallery="avatarMotion"/);
  assert.match(profile,/id="staff-avatarMotion-select"/);
- assert.match(avatar,/dataset\.avatarMotion/);
+ assert.match(avatar,/selectedAvatarMotion/);
+ assert.match(avatar,/avatarMotion/);
  assert.match(cosmetics,/crew-avatar-motion/);
  assert.match(cosmetics,/crew-mythic-universe/);
  assert.match(cosmetics,/crew-mythic-orbit--4/);

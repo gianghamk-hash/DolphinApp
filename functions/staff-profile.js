@@ -134,6 +134,8 @@ exports.staffRepairMyName=onCall(opts,async req=>{
 });
 exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
  const uid=uidOf(req);await throttle(uid);const profile=await ownProfile(uid);
+ if(profile.registrationSource==='self'&&profile.approved!==true)
+  throw new HttpsError('permission-denied','Hồ sơ đang chờ duyệt, chưa được liên kết thiết bị khác.');
  const code=crypto.randomBytes(18).toString('hex').toUpperCase(),hash=crypto.createHash('sha256').update(code).digest('hex');
  await getDatabase().ref('staffEnrollmentCodes/'+hash).set({employeeId:profile.employeeId,issuedAt:Date.now(),expiresAt:Date.now()+600000,issuedBy:uid});
  return {code,expiresInMinutes:10,employeeId:profile.employeeId};
@@ -232,6 +234,12 @@ function normalizedRecoveryName(value){
 }
 exports.staffRequestNameRecovery=onCall(opts,async req=>{
  const uid=uidOf(req),name=normalizedRecoveryName(req.data?.name);
+ const current=(await getDatabase().ref('staffIdentity/'+uid).once('value')).val();
+ if(current?.employeeId){
+  const own=(await getDatabase().ref('staffRegistry/'+current.employeeId).once('value')).val();
+  if(own?.active&&own.registrationSource==='self'&&own.approved!==true)
+   throw new HttpsError('permission-denied','Đang chờ duyệt. Không thể yêu cầu quên tài khoản.');
+ }
  if(name.length<2||name.length>64)throw new HttpsError('invalid-argument','Nhập họ và tên đã đăng ký (2–64 ký tự).');
  const db=getDatabase(),now=Date.now();
  // UID throttle limits repeated anonymous account recovery requests.

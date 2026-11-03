@@ -4,18 +4,21 @@
 if(!root.document||root.parent!==root||root.DolphinStaffAccess)return;
 const base=new URL('./',document.currentScript?.src||location.href);
 const $=id=>document.getElementById(id);
-const state={allowed:false,busy:false,mode:'register',avatar:'🐬',initialized:false};
+const state={allowed:false,busy:false,mode:'register',avatar:'🐬',initialized:false,identity:null};
 const starters=['🐬','🐳','🐠','🐢','🦊','🐯','🦁','👨‍🍳','👩‍🍳','⭐','🌊','🔥'];
 document.documentElement.classList.add('dolphin-access-pending');
 function status(message,error=false){const el=$('dag-status');if(el){el.textContent=message;el.dataset.error=String(error);}}
 function busy(on){state.busy=on;for(const el of document.querySelectorAll('#dolphinAccessGate button[data-action],#dolphinAccessGate input'))el.disabled=on;}
 function panel(name){
+ if(state.identity?.employeeId&&name!=='pending'&&name!=='rename'&&name!=='manager')return;
  state.mode=name;
  for(const p of document.querySelectorAll('.dag-panel'))p.hidden=p.dataset.panel!==name;
  for(const b of document.querySelectorAll('.dag-tab'))b.setAttribute('aria-selected',String(b.dataset.tab===name));
 }
 function unlock(identity){
  state.allowed=true;
+ state.identity=identity||null;
+ $('dolphinAccessGate').dataset.accessState='allowed';
  document.documentElement.classList.remove('dolphin-access-pending');
  document.documentElement.classList.add('dolphin-access-allowed');
  $('dolphinAccessGate').hidden=true;
@@ -23,21 +26,32 @@ function unlock(identity){
 }
 function lock(identity){
  state.allowed=false;
+ state.identity=identity||null;
  document.documentElement.classList.remove('dolphin-access-allowed');
  document.documentElement.classList.add('dolphin-access-pending');
  $('dolphinAccessGate').hidden=false;
-
- if(identity?.employeeId){
+ const linked=!!identity?.employeeId;
+ const needsRename=linked&&identity?.requiresNameChange===true;
+ $('dolphinAccessGate').dataset.accessState=needsRename?'rename':linked?'pending':'entry';
+ if(needsRename){
+  panel('rename');
+  $('dag-rename-name').value='';
+  $('dag-rename-current').textContent=identity.name||'';
+  $('dag-rename-reason').textContent=identity.nameIssue||'Tên chưa đạt chuẩn.';
+  $('dag-rename-id').textContent=identity.employeeId;
+ }else if(linked){
   panel('pending');
   $('dag-pending-id').textContent=identity.employeeId;
   $('dag-pending-name').textContent=identity.name||'';
- }else if(state.mode!=='register'&&state.mode!=='link')panel('register');
+ }else if(state.mode!=='register'&&state.mode!=='link'&&state.mode!=='recovery'){
+  panel('register');
+ }
 }
 async function getApi(){
  if(root.DolphinStaffId)return root.DolphinStaffId;
  await new Promise((resolve,reject)=>{
   const s=document.createElement('script');
-  s.src=new URL('staff-id.js?v=crew-recovery-v7',base).href;
+  s.src=new URL('staff-id.js?v=staff-name-v10',base).href;
   s.onload=resolve;s.onerror=reject;document.head.appendChild(s);
  });
  if(!root.DolphinStaffId)throw Error('Không thể tải Staff ID.');
@@ -59,8 +73,8 @@ function makeUI(){
   <section class="dag-panel" data-panel="register">
    <form id="dag-register-form">
     <label for="dag-name">Họ và tên nhân viên</label>
-    <input id="dag-name" name="name" autocomplete="name" minlength="2" maxlength="64" required placeholder="Nhập họ và tên chính xác">
-    <p class="dag-help">Tên đăng ký chỉ được đặt một lần, không thể tự đổi về sau.</p>
+    <input id="dag-name" name="name" autocomplete="name" minlength="7" maxlength="64" required placeholder="Tối thiểu 7 ký tự, không trùng tên">
+    <p class="dag-help">Tên đăng ký phải trên 6 ký tự, không trùng tài khoản khác. Chỉ hồ sơ không hợp lệ mới được đổi tên để tiếp tục.</p>
     <label>Chọn Avatar khởi đầu</label>
     <div class="dag-avatars" id="dag-avatar-list" role="group" aria-label="Chọn avatar"></div>
     <button type="submit" class="dag-primary" data-action="register">Đăng ký và gửi duyệt</button>
@@ -93,7 +107,21 @@ function makeUI(){
     <p>Staff ID: <b id="dag-pending-id"></b></p>
     <p class="dag-help">Khi được quản lý phê duyệt, thiết bị sẽ tự động vào DolphinApp. Không cần đăng ký lại.</p>
     <button type="button" class="dag-secondary" data-action="refresh">Kiểm tra lại</button>
-    <button type="button" class="dag-secondary" data-action="switch">Liên kết Staff ID khác</button>
+    <p class="dag-help">Trong lúc chờ duyệt không thể đăng ký mới, khôi phục hay liên kết thiết bị.</p>
+   </div>
+  </section>
+  <section class="dag-panel" data-panel="rename" hidden>
+   <div class="dag-pending">
+    <strong>🔐 Cần chuẩn hóa tên tài khoản</strong>
+    <p>Tên hiện tại: <b id="dag-rename-current"></b></p>
+    <p>Staff ID giữ nguyên: <b id="dag-rename-id"></b></p>
+    <p class="dag-help" id="dag-rename-reason"></p>
+    <form id="dag-rename-form">
+     <label for="dag-rename-name">Nhập tên mới, dài hơn 6 ký tự và không trùng</label>
+     <input id="dag-rename-name" autocomplete="name" minlength="7" maxlength="64" required placeholder="Họ và tên mới">
+     <button type="submit" class="dag-primary" data-action="rename">Lưu tên mới (không thay Staff ID)</button>
+    </form>
+    <p class="dag-help">XP, Level, doanh thu, điểm công việc và lịch sử cũ tiếp tục gắn với Staff ID này. Hồ sơ chờ duyệt vẫn phải chờ quản lý sau khi đổi tên.</p>
    </div>
   </section>
   <section class="dag-panel" data-panel="manager" hidden>
@@ -115,27 +143,28 @@ function makeUI(){
   btn.onclick=()=>{state.avatar=emoji;for(const b of grid.children)b.setAttribute('aria-pressed',String(b===btn));};
   grid.appendChild(btn);
  }
- for(const tab of document.querySelectorAll('.dag-tab'))tab.onclick=()=>{panel(tab.dataset.tab);status('');};
+ for(const tab of document.querySelectorAll('.dag-tab'))tab.onclick=()=>{if(state.identity?.employeeId)return;panel(tab.dataset.tab);status('');};
  $('dag-register-form').onsubmit=register;
  $('dag-link-form').onsubmit=link;
  $('dag-recovery-form').onsubmit=requestRecovery;
+ $('dag-rename-form').onsubmit=correctName;
  gate.querySelector('[data-action=refresh]').onclick=()=>check(true);
- gate.querySelector('[data-action=switch]').onclick=()=>{panel('link');$('dag-switch-label').hidden=false;};
  gate.querySelector('[data-action=close]').onclick=()=>{gate.hidden=true;panel('register');};
 }
 async function check(force=false){
  try{
   const api=await getApi();await api.ready();
   const identity=force?await api.refresh():api.get();
-  if(identity?.verified===true&&identity?.employeeId){unlock(identity);return;}
+  if(identity?.verified===true&&identity?.employeeId&&!identity.requiresNameChange){unlock(identity);return;}
   lock(identity);
-  status(identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
+  status(identity?.requiresNameChange?'Bắt buộc đổi tên hợp lệ trước khi tiếp tục sử dụng DolphinApp.':
+   identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
    api.wasRejected?.()?'Hồ sơ trước đã bị từ chối. Hãy đăng ký lại để nhận Staff ID mới; hồ sơ cũ không còn quyền truy cập.':
    'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
  }catch(e){lock(null);status('Không thể kết nối Firebase: '+(e.message||'Hãy thử lại.'),true);}
 }
 async function requestRecovery(event){
- event.preventDefault();if(state.busy)return;
+ event.preventDefault();if(state.busy||state.identity?.employeeId)return;
  const name=$('dag-recovery-name').value.trim().replace(/\s+/g,' ');
  if(name.length<2){status('Nhập họ tên đã đăng ký.',true);return;}
  busy(true);status('Đang gửi yêu cầu khôi phục…');
@@ -144,16 +173,16 @@ async function requestRecovery(event){
  finally{busy(false);}
 }
 async function register(event){
- event.preventDefault();if(state.busy)return;
+ event.preventDefault();if(state.busy||state.identity?.employeeId)return;
  const name=$('dag-name').value.trim().replace(/\s+/g,' ');
- if(name.length<2){status('Nhập đúng họ và tên.',true);return;}
+ if(Array.from(name).length<=6){status('Tên phải dài hơn 6 ký tự, không trùng bất kỳ tài khoản nào.',true);return;}
  busy(true);status('Đang đăng ký hồ sơ và thiết bị…');
  try{const api=await getApi();await api.register({name,avatar:state.avatar});await check(true);}
  catch(e){status('Không đăng ký được: '+(e.message||'Lỗi không xác định.'),true);}
  finally{busy(false);}
 }
 async function link(event){
- event.preventDefault();if(state.busy)return;
+ event.preventDefault();if(state.busy||state.identity?.employeeId)return;
  busy(true);
  try{
   const api=await getApi(),id=api.get();
@@ -165,6 +194,19 @@ async function link(event){
   $('dag-code').value='';$('dag-switch-confirm').checked=false;
   await check(true);
  }catch(e){status('Không thể liên kết: '+(e.message||'Mã không hợp lệ.'),true);}
+ finally{busy(false);}
+}
+async function correctName(event){
+ event.preventDefault();if(state.busy||!state.identity?.requiresNameChange)return;
+ const name=$('dag-rename-name').value.trim().replace(/\s+/g,' ');
+ if(Array.from(name).length<=6){status('Tên phải dài hơn 6 ký tự.',true);return;}
+ busy(true);status('Đang kiểm tra tên và giữ nguyên Staff ID…');
+ try{
+  const api=await getApi();
+  await api.correctName(name);
+  await check(true);
+  status(api.get()?.verified?'Tên đã hợp lệ. Đã mở lại DolphinApp.':'Đã sửa tên thành công. Tiếp tục chờ DOL-0001 duyệt.');
+ }catch(e){status('Không thể đổi tên: '+String(e?.message||e),true);}
  finally{busy(false);}
 }
 async function openManager(){
@@ -200,7 +242,7 @@ function init(){
  };
  root.addEventListener('dolphin-staff-id-changed',event=>{
   const id=event.detail;
-  if(id?.verified===true&&id.employeeId)unlock(id);
+  if(id?.verified===true&&id.employeeId&&!id.requiresNameChange)unlock(id);
   else if(!state.busy&&state.mode!=='manager')lock(id);
  });
  setInterval(()=>{if(!document.hidden&&!state.allowed)void check(true);},15000);

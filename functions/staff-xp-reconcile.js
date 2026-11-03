@@ -32,7 +32,7 @@ function names(text){
 function nameDirectory(registry){
  const map=new Map();
  for(const profile of Object.values(registry||{})){
-  if(!profile?.active||profile.registrationSource==='self'||!profile.employeeId)continue;
+  if(!profile?.active||(profile.registrationSource==='self'&&profile.approved!==true)||!profile.employeeId)continue;
   for(const name of [profile.name,...(Array.isArray(profile.nameAliases)?profile.nameAliases:[])]){
    const k=key(name);if(!k)continue;
    if(!map.has(k))map.set(k,new Set());

@@ -63,3 +63,10 @@ html.dolphin-access-pending body{overflow:hidden!important}
 #dolphinAccessGate .dag-tabs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr))}
 #dolphinAccessGate .dag-tab{min-width:0;font-size:12px;padding:10px 5px;line-height:1.3}
 @media(max-width:350px){#dolphinAccessGate .dag-tabs{gap:4px}#dolphinAccessGate .dag-tab{font-size:11px}}
+
+/* Pending employees cannot navigate back into registration or recovery. */
+#dolphinAccessGate[data-access-state="pending"] .dag-tabs,
+#dolphinAccessGate[data-access-state="rename"] .dag-tabs{display:none!important}
+#dolphinAccessGate[data-access-state="pending"] .dag-panel:not([data-panel="pending"]),
+#dolphinAccessGate[data-access-state="rename"] .dag-panel:not([data-panel="rename"]){display:none!important}
+#dolphinAccessGate[data-access-state="rename"] #dag-rename-name{margin-top:6px}

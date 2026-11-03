@@ -288,7 +288,18 @@ function cleanStaffName(value){
 }
 
 function staffNameKey(value){
-  return cleanStaffName(value).toLocaleLowerCase('vi-VN');
+  const name=cleanStaffName(value);
+  // Merge old and new staff names ONLY when directory uniquely resolves them
+  // to one permanent Staff ID; ambiguous legacy names remain unassigned.
+  if(typeof window!=='undefined'){
+   const profile=window.DolphinAvatars?.profile?.(name);
+   if(profile?.employeeId)return profile.employeeId;
+  }
+  return name.toLocaleLowerCase('vi-VN');
+}
+function currentRankingName(value){
+ if(typeof window==='undefined')return cleanStaffName(value);
+ return window.DolphinAvatars?.profile?.(value)?.name||cleanStaffName(value);
 }
 // Resolve by verified Staff ID directory (and unique previous-name aliases), not by emoji fallback alone.
 function rankingStaffProfile(name){return window.DolphinAvatars?.profile?.(name)||null;}
@@ -457,7 +468,7 @@ function calcRevenue(){
     name = cleanStaffName(name);
     if (!name) return;
     const key = staffNameKey(name);
-    if (!emp.has(key)) emp.set(key, { name, rev: 0, cnt: 0, details: [] });
+    if (!emp.has(key)) emp.set(key, { name:currentRankingName(name), rev: 0, cnt: 0, details: [] });
     const employee = emp.get(key);
     employee.rev += rev;
     employee.cnt += 1;
@@ -567,7 +578,7 @@ function collectAllOrders(){
 function calcPoints(){
   const emp = new Map();
   function ensure(key, name){
-    if (!emp.has(key)) emp.set(key, { name, points: 0, both: 0, onlyComplete: 0, onlyPrepare: 0 });
+    if (!emp.has(key)) emp.set(key, { name:currentRankingName(name), points: 0, both: 0, onlyComplete: 0, onlyPrepare: 0 });
     return emp.get(key);
   }
   collectAllOrders().forEach(o => {

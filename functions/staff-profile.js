@@ -3,15 +3,15 @@ const crypto=require('node:crypto');
 const {getDatabase}=require('firebase-admin/database');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const catalog=require('./staff-avatar-catalog.json');
+const names=require('./staff-name-policy.cjs');
 const avatars=new Set(Object.values(catalog).flat());
 const avatarThreshold=new Map();
 for(const [group,items] of Object.entries(catalog))for(const item of items){const required=Number((group.match(/Lv\.(\d+)/)||[])[1])||1;avatarThreshold.set(item,Math.min(required,avatarThreshold.get(item)??Infinity));}
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
 function uidOf(req){if(!req.auth?.uid)throw new HttpsError('unauthenticated','Vui lòng kết nối trước.');return req.auth.uid;}
 function validate(data){
- const name=String(data?.name||'').normalize('NFC').trim().replace(/\s+/g,' ');
+ const name=names.validateName(data?.name);
  const avatar=data?.avatar||'🐬';
- if(name.length<2||name.length>64||/[\u0000-\u001f<>]/.test(name))throw new HttpsError('invalid-argument','Tên cần từ 2–64 ký tự, không chứa ký tự đặc biệt.');
  if(!avatars.has(avatar))throw new HttpsError('invalid-argument','Avatar không hợp lệ.');
  return {name,avatar};
 }
@@ -30,8 +30,8 @@ async function ownProfile(uid){
 function response(profile){return {linked:true,verified:profile.registrationSource!=='self'||profile.approved===true,approved:profile.registrationSource!=='self'||profile.approved===true,employeeId:profile.employeeId,name:profile.name,
  avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
 exports.staffRegisterSelfProfile=onCall(opts,async req=>{
- const uid=uidOf(req),data=validate(req.data);await throttle(uid);
-  if((avatarThreshold.get(data.avatar)||1)>1)throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');
+ const uid=uidOf(req);await throttle(uid);
+
  const db=getDatabase(),current=(await db.ref('staffIdentity/'+uid).once('value')).val();
  let rejectedId=null;
  if(current?.employeeId){
@@ -43,10 +43,14 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
    throw new HttpsError('permission-denied','Hồ sơ đã ngừng hoạt động. Vui lòng liên hệ quản lý.');
   rejectedId=current.employeeId;
  }
+ const data=validate(req.data);
+ if((avatarThreshold.get(data.avatar)||1)>1)
+  throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');
  // Every rejection creates a different stable Staff ID, even on the same
  // Firebase anonymous UID. Deterministic retries never create extra profiles.
  const seed=rejectedId?uid+':reregister:'+rejectedId:uid;
  const employeeId='DOL-'+crypto.createHash('sha256').update(seed).digest('hex').slice(0,10).toUpperCase();
+ await names.reserve(db,data.name,employeeId);
  const ref=db.ref('staffRegistry/'+employeeId);
  const result=await ref.transaction(v=>v?(v.ownerUid===uid?v:undefined):{employeeId,...data,active:true,registrationSource:'self',approved:false,ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()});
  if(!result.committed)throw new HttpsError('already-exists','Không cấp được ID. Vui lòng liên hệ quản lý.');
@@ -75,6 +79,7 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
   const submitted=String(req.data.name).normalize('NFC').trim().replace(/\s+/g,' ');
   if(submitted!==profile.name)throw new HttpsError('permission-denied','Họ tên đã đăng ký không thể thay đổi.');
  }
+ if(await names.check(getDatabase(),profile))throw new HttpsError('failed-precondition','Vui lòng đổi tên nhân viên chưa hợp lệ trước khi chỉnh sửa hồ sơ.');
  const data=validate({name:profile.name,avatar:req.data?.avatar||profile.avatar});
  let avatarReallyChanged=false;
  const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
@@ -91,8 +96,43 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
  }
  return response(result.snapshot.val());
 });
+/* Correct only invalid/duplicate historical staff names. Never create a new
+ * employeeId, XP ledger, level, sales attribution or work record. */
+exports.staffCorrectMyName=onCall(opts,async req=>{
+ const uid=uidOf(req);await throttle(uid);
+ const db=getDatabase(),old=await ownProfile(uid);
+ const issue=await names.check(db,old);
+ if(!issue)throw new HttpsError('failed-precondition','Tên hiện tại đã hợp lệ và được khóa theo Staff ID.');
+ const name=names.validateName(req.data?.name);
+ if(names.canonicalName(name)===names.canonicalName(old.name))
+  throw new HttpsError('invalid-argument','Vui lòng chọn tên mới khác tên cũ.');
+ await names.reserve(db,name,old.employeeId);
+ const ref=db.ref('staffRegistry/'+old.employeeId),now=Date.now();
+ const result=await ref.transaction(v=>{
+  if(v===null)return null; // RTDB cold-cache retry against server snapshot.
+  if(!v.active||v.name!==old.name)return;
+  const aliases=[...(Array.isArray(v.nameAliases)?v.nameAliases:[]),v.name]
+    .filter((a,i,all)=>typeof a==='string'&&all.indexOf(a)===i).slice(-30);
+  return {...v,name,nameAliases:aliases,nameUpdatedAt:now,
+   updatedAt:now,profileVersion:(v.profileVersion||0)+1};
+ },undefined,false);
+ if(!result.committed||result.snapshot.val()?.name!==name)
+  throw new HttpsError('aborted','Hồ sơ vừa thay đổi. Hãy tải lại rồi thử lại.');
+ // Linked devices always resolve name from staffRegistry, not the cached UID.
+ const identities=(await db.ref('staffIdentity').once('value')).val()||{};
+ await Promise.all(Object.entries(identities).filter(([,v])=>v?.employeeId===old.employeeId)
+  .map(async ([device])=>{
+   try{await db.ref('staffIdentity/'+device).transaction(v=>
+    v?.employeeId===old.employeeId?{...v,name,updatedAt:Date.now()}:undefined,undefined,false);
+   }catch(e){console.warn('[Staff Name] Device refresh deferred:',e?.message||e);}
+  }));
+ return {...response(result.snapshot.val()),requiresNameChange:false,corrected:true};
+});
 exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
  const uid=uidOf(req);await throttle(uid);const profile=await ownProfile(uid);
+ if(profile.registrationSource==='self'&&profile.approved!==true)
+  throw new HttpsError('permission-denied','Hồ sơ đang chờ quản lý duyệt, không được liên kết thiết bị.');
+ if(await names.check(getDatabase(),profile))throw new HttpsError('failed-precondition','Vui lòng đổi tên chưa hợp lệ trước khi liên kết thiết bị.');
  const code=crypto.randomBytes(18).toString('hex').toUpperCase(),hash=crypto.createHash('sha256').update(code).digest('hex');
  await getDatabase().ref('staffEnrollmentCodes/'+hash).set({employeeId:profile.employeeId,issuedAt:Date.now(),expiresAt:Date.now()+600000,issuedBy:uid});
  return {code,expiresInMinutes:10,employeeId:profile.employeeId};
@@ -140,6 +180,8 @@ exports.staffApproveRegistration=onCall(opts,async req=>{
  if(!/^DOL-[A-F0-9]{10}$/.test(employeeId))
   throw new HttpsError('invalid-argument','Staff ID chờ duyệt không hợp lệ.');
  const db=getDatabase(),ref=db.ref('staffRegistry/'+employeeId);
+ const before=(await ref.once('value')).val();
+ if(!before||await names.check(db,before))throw new HttpsError('failed-precondition','Tên nhân viên chưa hợp lệ hoặc bị trùng. Nhân viên cần đổi tên trước khi duyệt.');
  const result=await ref.transaction(v=>{
   if(v===null)return null; // RTDB cold read can retry.
   if(!v.active||v.registrationSource!=='self')return;
@@ -193,6 +235,12 @@ exports.staffRequestNameRecovery=onCall(opts,async req=>{
  const uid=uidOf(req),name=normalizedRecoveryName(req.data?.name);
  if(name.length<2||name.length>64)throw new HttpsError('invalid-argument','Nhập họ và tên đã đăng ký (2–64 ký tự).');
  const db=getDatabase(),now=Date.now();
+ const identity=(await db.ref('staffIdentity/'+uid).once('value')).val();
+ if(identity?.employeeId){
+  const current=(await db.ref('staffRegistry/'+identity.employeeId).once('value')).val();
+  if(current?.active&&current.registrationSource==='self'&&current.approved!==true)
+   throw new HttpsError('permission-denied','Hồ sơ đang chờ duyệt; không được yêu cầu khôi phục hoặc tạo tài khoản khác.');
+ }
  // UID throttle limits repeated anonymous account recovery requests.
  const rate=db.ref('staffRecoveryRate/'+uid);
  const limit=await rate.transaction(v=>!v||now-(v.last||0)>60000?{last:now}:undefined,undefined,false);

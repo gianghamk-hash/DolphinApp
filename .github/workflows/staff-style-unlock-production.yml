@@ -21,6 +21,7 @@ on:
       - 'functions/staff-xp-actions.js'
       - 'functions/staff-xp-actions.test.cjs'
       - 'functions/staff-profile.js'
+      - 'functions/staff-name-policy.cjs'
       - 'functions/staff-prestige.js'
       - 'functions/staff-prestige.test.cjs'
 permissions:

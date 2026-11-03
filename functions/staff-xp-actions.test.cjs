@@ -154,3 +154,14 @@ test('Lounge completed directly receives 250 work XP plus unchanged daily missio
  assert.equal(done.xpAwarded,250);
  assert.equal(done.missionXP,400);
 });
+
+
+test('opening an FOC Lounge table can grant first daily mission XP but not revenue XP',async()=>{
+ const h=harness();
+ const res=await h.call('verified',{kind:'lounge_tables',id:'FOC-L1',action:'booking',
+  data:{customerName:'Guest',pax:5,paymentMethod:'FOC'}});
+ assert.equal(res.saved,true);
+ assert.equal(res.xpAwarded,0);
+ assert.equal(res.missionXP,250);
+ assert.equal(h.awards.filter(x=>x.source==='revenue').length,0);
+});

@@ -17,7 +17,7 @@ test('strict greater-than-six Unicode characters and normalization',()=>{
 test('active duplicate check includes pending and approved names, excludes inactive records',()=>{
  assert.equal(policy.nameConflict(registry,'nguyễn văn an').employeeId,'DOL-0001');
  assert.equal(policy.nameConflict(registry,'Trần Thị Lan').employeeId,'DOL-0004');
- assert.equal(policy.nameConflict(registry,'Trần Thị Lan','DOL-0004'),null);
+ assert.equal(policy.nameConflict(registry,'Trần Thị Lan','DOL-0004').employeeId,'DOL-0005');
 });
 test('legacy remediation targets only short names and later duplicate accounts',()=>{
  assert.equal(policy.needsRename(registry,'DOL-0001'),false);

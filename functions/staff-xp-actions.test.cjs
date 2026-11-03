@@ -74,7 +74,7 @@ test('legacy Show combo cannot be saved by a different verified employee',async(
  const h=harness();
  h.docs.set('show_tables/S-legacy',{label:'S-legacy',seller:'Another Employee',
   sellerStaffId:'DOL-0005',leader:'X',dining:'A1',guests:3,payment:'TM'});
- await assert.rejects(()=>h.call('verified',{kind:'show_tables',id:'S-legacy',
+ await assert.rejects(()=>h.call('owner',{kind:'show_tables',id:'S-legacy',
   action:'combo',data:{combo:'combo1',foods:{set:1}}}),e=>e.code==='permission-denied');
  assert.equal(h.docs.get('show_tables/S-legacy').service,undefined);
 });

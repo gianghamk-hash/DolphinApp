@@ -35,7 +35,10 @@ async function staff(req){
  if(namePolicy.needsRename(registry,p.employeeId))throw new HttpsError('permission-denied','Hãy cập nhật họ tên Staff ID trước khi tiếp tục nghiệp vụ.');
  if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(p.employeeId))throw new HttpsError('permission-denied','Staff ID không hợp lệ');
  const managers=new Set(String(process.env.STAFF_ADMIN_UIDS||'').split(',').map(x=>x.trim()));
- return {id:p.employeeId,name:p.name,uid:u,admin:managers.has(u)};
+ // DOL-0001 is an existing verified manager account; a Manager APK or
+ // client-side Master PIN is not proof of server-side authorization.
+ const masterVerified=p.employeeId==='DOL-0001'&&p.registrationSource!=='self'&&identity.verified===true;
+ return {id:p.employeeId,name:p.name,nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(x=>typeof x==='string'):[],uid:u,admin:managers.has(u)||masterVerified};
 }
 async function credit(employeeId,eventId,source,amount){
  if(amount<=0)return {duplicate:true};
@@ -73,8 +76,15 @@ async function booking(kind,id,data,who){
  const existing=await db.runTransaction(async tx=>{
   const old=await tx.get(ref),v=old.exists?old.data():null;
   const owner=str(kind==='show_tables'?v?.seller:v?.openedByStaff);
-  if(owner&&owner!==who.name&&!who.admin)throw new HttpsError('permission-denied','Bàn đang được mở bởi nhân viên khác');
-  const preserveOwner=!!(owner&&owner!==who.name&&who.admin);
+  const ownerId=str(kind==='show_tables'?v?.sellerStaffId:v?.openedByStaffId,70);
+  // A stable Staff ID is authoritative when present. Legacy name-only tables
+  // can match the same verified staff member's server-side name aliases.
+  const sameOwner=ownerId?ownerId===who.id
+   :!!owner&&[who.name,...who.nameAliases].some(n=>namePolicy.key(n)===namePolicy.key(owner));
+  const differentOwner=!!(ownerId||owner)&&!sameOwner;
+  if(differentOwner&&!who.admin)throw new HttpsError('permission-denied','Bàn đang được mở bởi nhân viên khác');
+  // Manager correction updates customer/PAX/payment without taking seller XP.
+  const preserveOwner=differentOwner&&who.admin;
   let update;
   if(kind==='lounge_tables'){
    const pax=Number(data.pax);

@@ -76,7 +76,7 @@ test('all ranking tabs and the Emperor read a shared equipped frame',()=>{
   assert.match(rankingHTML,/function rankingAvatarFrame\(name,employeeId\)/);
   assert.match(rankingHTML,/class="drr-frame[^"\n]*" data-frame="\$\{rankingAvatarFrame\(e\.name,e\.employeeId\)\}"/);
  assert.match(rankingHTML,/class="dolphin-staff-avatar" data-frame="\$\{rankingAvatarFrame\(e\.name\)\}"/);
- assert.match(rankingHTML,/function rankingTitle\(name\)/);
+ assert.match(rankingHTML,/function rankingTitle\(name,employeeId\)/);
 });
 test('both PWA cache and runtime resolve exactly the same V3 cosmetic asset',()=>{
  assert.match(worker,/crew-cosmetics\.css\?v=crew-global-v9/);

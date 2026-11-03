@@ -54,7 +54,7 @@ exports.staffRegisterSelfProfile=onCall(opts,async req=>{
   registry=registry||{}; // RTDB retries against the server snapshot.
   const v=registry[employeeId];
   if(v)return v.ownerUid===uid?registry:undefined;
-  if(names.nameConflict(registry,data.name)){conflict=true;return;}
+  if(names.nameConflict(registry,data.name,rejectedId||'')){conflict=true;return;}
   return {...registry,[employeeId]:{employeeId,...data,active:true,registrationSource:'self',approved:false,ownerUid:uid,createdAt:Date.now(),updatedAt:Date.now()}};
  },undefined,false);
  if(!result.committed)throw new HttpsError('already-exists',conflict?'Họ tên này đã có tài khoản. Hãy dùng tên khác hoặc khôi phục Staff ID cũ.':'Không cấp được ID. Vui lòng liên hệ quản lý.');

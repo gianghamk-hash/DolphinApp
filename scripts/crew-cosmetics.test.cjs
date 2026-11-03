@@ -173,7 +173,7 @@ test('every public crew surface supports new frames, motions and real mythical r
   assert.ok(landing.includes(id),id+' missing in podium allowlist');
   assert.ok(css.includes('data-avatar-motion="'+id+'"'),id+' missing live CSS');
  }
- assert.match(rank,/avatar\.dataset\.avatarMotion=p\.selectedAvatarMotion/);
+ assert.ok(rank.includes('avatar.dataset.avatarMotion=p.selectedAvatarMotion'),'level board must supply motion');
  assert.match(online,/data-avatar-motion/);
  assert.match(rank,/leader-emperor-avatar'\)\.dataset\.avatarMotion/);
  assert.match(avatar,/const mythicAvatars=new Set/);

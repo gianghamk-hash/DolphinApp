@@ -68,3 +68,14 @@ test('same employee receives the merged rank badge regardless of case or spacing
  assert.equal(api.get('giang đập chai','work').title,'WORK CHAMPION');
 });
 
+
+
+test('weekly revenue cache retains Staff ID across corrected display names',()=>{
+ const {api}=harness();
+ api.publish([{name:'Dat G',employeeId:'DOL-0006',rev:500000}],'2026-W44');
+ assert.equal(api.current('revenue').entries[0].employeeId,'DOL-0006');
+ api.publish([{name:'Đặng Văn Đạt',employeeId:'DOL-0006',rev:750000}],'2026-W44');
+ assert.equal(api.current('revenue').entries[0].employeeId,'DOL-0006');
+ assert.equal(api.current('revenue').entries[0].value,750000);
+ assert.equal(api.history('revenue').length,1,'Name change should not make a new person in Hall of Fame');
+});

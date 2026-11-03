@@ -98,8 +98,8 @@ console.log('PASS: browser computed CSS confirms real CW/CCW motion and accessib
 
 const rankFrame=frames.find(x=>x.file==='ranking/index.html').frame;
 const rankSource=fs.readFileSync(path.join(root,'ranking/index.html'),'utf8');const revenueFn=rankSource.match(/function renderRevenue\(\)\{[\s\S]*?\n\}/)[0],pointsFn=rankSource.match(/function renderPoints\(\)\{[\s\S]*?\n\}/)[0];
-const rankingFrameFn=rankSource.match(/function rankingAvatarFrame\(name\)\{[\s\S]*?\n\}/)[0],rankingTitleFn=rankSource.match(/function rankingTitle\(name\)\{[\s\S]*?\n\}/)[0];
-const rankingCardFn=rankSource.match(/function rankingCardFx\(name\)\{[\s\S]*?\n\}/)[0];
+const rankingFrameFn=rankSource.match(/function rankingAvatarFrame\(name,employeeId\)\{[\s\S]*?\n\}/)[0],rankingTitleFn=rankSource.match(/function rankingTitle\(name,employeeId\)\{[\s\S]*?\n\}/)[0];
+const rankingCardFn=rankSource.match(/function rankingCardFx\(name,employeeId\)\{[\s\S]*?\n\}/)[0];
 const switchFn=rankSource.match(/window\.switchMain = function\(tab\)\{[\s\S]*?\n\};/)[0];
 await rankFrame.evaluate(({revenueFn,pointsFn,rankingFrameFn,rankingTitleFn,rankingCardFn})=>{
  const escape=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));

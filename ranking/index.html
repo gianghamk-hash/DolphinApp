@@ -291,33 +291,33 @@ function staffNameKey(value){
   return cleanStaffName(value).toLocaleLowerCase('vi-VN');
 }
 // Resolve by verified Staff ID directory (and unique previous-name aliases), not by emoji fallback alone.
-function rankingStaffProfile(name){return window.DolphinAvatars?.profile?.(name)||null;}
-function rankingAvatar(name){
-  const profile=rankingStaffProfile(name);
+function rankingStaffProfile(name,employeeId){return window.DolphinAvatars?.profile?.(name,employeeId)||null;}
+function rankingAvatar(name,employeeId){
+  const profile=rankingStaffProfile(name,employeeId);
   return esc(window.DolphinAvatars?.get(name,profile?.employeeId)||'👤');
 }
-function rankingAvatarId(name){return esc(rankingStaffProfile(name)?.employeeId||'');}
+function rankingAvatarId(name,employeeId){return esc(rankingStaffProfile(name,employeeId)?.employeeId||'');}
 // Shared cosmetic directory is authoritative; no additional Firestore listeners.
-function rankingAvatarFrame(name){
- const frame=rankingStaffProfile(name)?.selectedFrame;
+function rankingAvatarFrame(name,employeeId){
+ const frame=rankingStaffProfile(name,employeeId)?.selectedFrame;
  return ['bronze','silver','gold','mythic','emerald','sapphire','nebula'].includes(frame)?frame:'none';
 }
-function rankingAllowed(name){
+function rankingAllowed(name,employeeId){
  // Pure ranking formula tests run without a browser; production still checks the roster.
  if(typeof window==='undefined')return true;
  // staffGetAvatarDirectory returns approved staff only. Unknown, unapproved or
  // unresolved names must not appear on revenue/work leaderboards.
- const profile=rankingStaffProfile(name);
+ const profile=rankingStaffProfile(name,employeeId);
  if(!profile?.employeeId)return false;
  const mine=window.DolphinStaffId?.get?.();
  if(mine?.employeeId===profile.employeeId&&mine.verified!==true)return false;
  return profile.employeeId!=='DOL-0001'||window.DolphinPrestige?.getBoard?.()?.showAdminRanking===true;
 }
-function rankingCardFx(name){
- return rankingStaffProfile(name)?.selectedCardFx||'none';
+function rankingCardFx(name,employeeId){
+ return rankingStaffProfile(name,employeeId)?.selectedCardFx||'none';
 }
-function rankingTitle(name){
- const title=rankingStaffProfile(name)?.selectedTitle;
+function rankingTitle(name,employeeId){
+ const title=rankingStaffProfile(name,employeeId)?.selectedTitle;
  return ({rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'})[title]||'';
 }
 
@@ -453,11 +453,18 @@ function collectShowTables(){
 function calcRevenue(){
   const emp = new Map();
 
-  function add(name, rev, label){
+  function add(name, rev, label, employeeId=''){
     name = cleanStaffName(name);
-    if (!name) return;
-    const key = staffNameKey(name);
-    if (!emp.has(key)) emp.set(key, { name, rev: 0, cnt: 0, details: [] });
+    employeeId = String(employeeId||'').trim();
+    if (!name && !employeeId) return;
+    // Stable Staff IDs from verified bookings survive name corrections and
+    // nicknames; old records without IDs resolve via unique name aliases.
+    const profile = typeof window==='undefined' ? null : rankingStaffProfile(name,employeeId);
+    const resolvedId = profile?.employeeId || employeeId;
+    const canonicalName = profile?.name || name;
+    if (!canonicalName) return;
+    const key = resolvedId ? 'id:'+resolvedId : 'name:'+staffNameKey(canonicalName);
+    if (!emp.has(key)) emp.set(key, {name:canonicalName, employeeId:resolvedId||'', rev:0, cnt:0, details:[]});
     const employee = emp.get(key);
     employee.rev += rev;
     employee.cnt += 1;
@@ -471,7 +478,7 @@ function calcRevenue(){
     if (!staff) return;
     const pax = parseInt(t.pax) || 0;
     if (pax <= 0) return;
-    add(staff, pax * PRICE_LOUNGE_PAX, 'Lounge x' + pax);
+    add(staff, pax * PRICE_LOUNGE_PAX, 'Lounge x' + pax, t.openedByStaffId);
   });
 
   // 2. Bungalow
@@ -479,7 +486,7 @@ function calcRevenue(){
     if (isExcludedFromRevenue(t)) return;
     const staff = (t.openedByStaff || '').trim();
     if (!staff) return;
-    add(staff, PRICE_BUNGALOW, 'BGL');
+    add(staff, PRICE_BUNGALOW, 'BGL', t.openedByStaffId);
   });
 
   // 3. Dolphin Show: trừ FOC; các phương thức khác vẫn được tính theo combo bán.
@@ -490,11 +497,11 @@ function calcRevenue(){
     const label = t.label || '';
     const price = getShowPrice(t);
     if (price <= 0) return;
-    add(staff, price, (t.service?.combo||'')+' · '+label);
+    add(staff, price, (t.service?.combo||'')+' · '+label, t.sellerStaffId);
   });
 
   return Array.from(emp.values())
-    .filter(e => e.rev > 0 && rankingAllowed(e.name))
+    .filter(e => e.rev > 0 && rankingAllowed(e.name,e.employeeId))
     .sort((a, b) => b.rev - a.rev)
     .slice(0, TOP_N);
 }
@@ -518,7 +525,7 @@ function renderRevenue(){
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">
-        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" data-frame="${rankingAvatarFrame(e.name)}" data-crew-card="${rankingCardFx(e.name)}" data-staff-avatar data-staff-name="${esc(e.name)}" data-staff-id="${rankingAvatarId(e.name)}" style="width:34px;height:34px">${rankingAvatar(e.name)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}${rankingTitle(e.name)?' <small class="crew-ranking-title">'+esc(rankingTitle(e.name))+'</small>':''}</div></span></div>
+        <div style="display:flex;align-items:center;gap:7px;min-width:0"><span class="drr-frame ${(rewards && rewards.tier(r) || {}).tier || ''}" data-frame="${rankingAvatarFrame(e.name,e.employeeId)}" data-crew-card="${rankingCardFx(e.name,e.employeeId)}" data-staff-avatar data-staff-name="${esc(e.name)}" data-staff-id="${rankingAvatarId(e.name,e.employeeId)}" style="width:34px;height:34px">${rankingAvatar(e.name,e.employeeId)}</span><span>${esc(e.name)}<div>${rewards?rewards.badge(e.name):''}${rankingTitle(e.name,e.employeeId)?' <small class="crew-ranking-title">'+esc(rankingTitle(e.name,e.employeeId))+'</small>':''}</div></span></div>
         <div class="sub-count" style="text-align:left;opacity:.7">${lbl}</div>
       </div>
       <div style="text-align:right;flex-shrink:0">

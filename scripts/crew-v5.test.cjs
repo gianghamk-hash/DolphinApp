@@ -43,7 +43,7 @@ test('only the owner can change ranking visibility and all three public boards f
  assert.match(backend,/!testAdmin/);
  assert.match(backend,/rankingVisible===true/);
  assert.match(ranking,/rankingAllowed/);
- assert.match(ranking,/e\.rev > 0 && rankingAllowed\(e\.name\)/);
+  assert.match(ranking,/e\.rev > 0 && rankingAllowed\(e\.name,e\.employeeId\)/);
  assert.match(ranking,/e\.points>0&&rankingAllowed\(e\.name\)/);
 });
 test('Mythic remains exactly two moving stars with stronger glow, and avatar context follows Staff ID',()=>{

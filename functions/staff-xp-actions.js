@@ -107,12 +107,12 @@ async function booking(kind,id,data,who,{editOnly=false}={}){
   return {before:v,after:{...v,...update},payment:pay,preserveOwner};
  });
  if(kind==='show_tables'){
-  if(editOnly)return {saved:true,xpAwarded:0,missionXP:0,edited:true,managerOverride:existing.preserveOwner};
   if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
   // Proof of an actual verified booking, independent of client-writable show_tables.
   await getDatabase().ref('staffXpShowProofs/'+hash(id)).set({employeeId:who.id,payment:pay,day:vnDay(),updatedAt:Date.now()});
   return {saved:true,xpAwarded:0};
  }
+ if(editOnly)return {saved:true,xpAwarded:0,missionXP:0,edited:true,managerOverride:existing.preserveOwner};
  if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
  const amount=live.tableValue(kind,existing.after);
  const grant=await onceSale(kind,id,who,xp.revenueXP(amount));

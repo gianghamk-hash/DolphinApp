@@ -4,6 +4,7 @@ const {getFirestore}=require('firebase-admin/firestore');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const engine=require('./staff-xp-engine.cjs');
 const dailyCore=require('./staff-daily-core.cjs');
+const namePolicy=require('./staff-name-policy.cjs');
 const opts={region:'asia-southeast1',maxInstances:5,timeoutSeconds:30};
 const staffPattern=/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/;
 const TEST_ADMIN_ID='DOL-0001'; // Dolphin Crew Club game sandbox; excluded from XP competitions.
@@ -16,6 +17,8 @@ async function currentStaff(req){
  if(!id||!staffPattern.test(id))throw new HttpsError('permission-denied','Cần liên kết Staff ID');
  const p=(await getDatabase().ref('staffRegistry/'+id).once('value')).val();
  if(!p?.active)throw new HttpsError('permission-denied','Nhân viên không còn hoạt động');
+ const registry=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
+ if(namePolicy.needsRename(registry,id))throw new HttpsError('permission-denied','Cần cập nhật tên hợp lệ trước khi sử dụng hồ sơ.');
  return {id,profile:p,testAdmin:id===TEST_ADMIN_ID&&identity?.verified===true&&p.registrationSource!=='self'};
 }
 function cosmeticChoice(type,selected,level){

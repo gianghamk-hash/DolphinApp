@@ -229,7 +229,7 @@ exports.staffCreateProfile=onCall(opts,async req=>{
  if(!staffCodePattern.test(employeeId)||!staffNames.valid(name))throw new HttpsError('invalid-argument','Mã nhân viên và họ tên dài hơn 6 ký tự là bắt buộc');
  let duplicate=false;
  const created=await staffRoot().transaction(registry=>{
-  if(registry===null)return null;
+  registry=registry||{};
   if(registry[employeeId])return;
   if(staffNames.nameConflict(registry,name)){duplicate=true;return;}
   return {...registry,[employeeId]:{employeeId,name,active:true,createdAt:Date.now()}};

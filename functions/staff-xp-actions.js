@@ -83,7 +83,7 @@ async function booking(kind,id,data,who,{editOnly=false}={}){
   const sameOwner=ownerId?ownerId===who.id
    :!!owner&&[who.name,...who.nameAliases].some(n=>namePolicy.key(n)===namePolicy.key(owner));
   const differentOwner=!!(ownerId||owner)&&!sameOwner;
-  if(differentOwner&&!who.admin)throw new HttpsError('permission-denied','Bàn đang được mở bởi nhân viên khác');
+  if(differentOwner&&!who.admin)throw new HttpsError('permission-denied','Bàn do nhân viên khác mở. Chỉ người mở bàn hoặc quản lý đã xác minh mới được cập nhật.');
   // Manager correction updates customer/PAX/payment without taking seller XP.
   if(editOnly&&!owner&&!ownerId&&!who.admin)throw new HttpsError('permission-denied','Bàn chưa có nhân viên mở. Cần quản lý xác minh để chỉnh sửa.');
   // All edits preserve the original opener and existing Staff ID.

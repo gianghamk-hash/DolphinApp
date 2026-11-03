@@ -152,7 +152,7 @@ async function check(force=false){
   status(identity?.requiresNameChange?'Hãy cập nhật tên hợp lệ để tiếp tục sử dụng ứng dụng.':identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
    api.wasRejected?.()?'Hồ sơ trước đã bị từ chối. Hãy đăng ký lại để nhận Staff ID mới; hồ sơ cũ không còn quyền truy cập.':
    'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
- }catch(e){lock(null);status('Không thể kết nối Firebase: '+(e.message||'Hãy thử lại.'),true);}
+ }catch(e){lock(root.DolphinStaffId?.get?.()||null);status('Không thể kết nối Firebase: '+(e.message||'Hãy thử lại.'),true);}
 }
 async function renameAccount(event){
  event.preventDefault();if(state.busy||!state.needsRename)return;

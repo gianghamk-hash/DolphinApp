@@ -40,10 +40,10 @@ test('Show needs verified booking; same combo is not counted twice',async()=>{
 test('Work credits verified prepare and remaining completion XP once',async()=>{
  const h=harness();h.docs.set('lounge_orders/o1',{status:'pending'});
  const a={kind:'lounge_orders',id:'o1',action:'preparing'},b={...a,action:'completed'};
- assert.equal((await h.call('verified',a)).xpAwarded,1);
- assert.equal((await h.call('verified',b)).xpAwarded,1.5);
+ assert.equal((await h.call('verified',a)).xpAwarded,100);
+ assert.equal((await h.call('verified',b)).xpAwarded,150);
  assert.equal((await h.call('verified',b)).xpAwarded,0);
- assert.equal(h.awards.reduce((n,x)=>n+x.amount,0),2.5);
+ assert.equal(h.awards.reduce((n,x)=>n+x.amount,0),250);
 });
 test('completed client-writable legacy source cannot retroactively grant XP',async()=>{
  const h=harness();h.docs.set('res_orders/o2',{status:'completed',completedBy:'Guest'});
@@ -129,4 +129,27 @@ test('Show accepts Vietnamese display item labels and awards fixed combo XP once
  const combo={kind:'show_tables',id:'D2',action:'combo',data:{combo:'combo1',foods:{'Khô bò cay':1,'Đồ ăn đi kèm (01 set)':1},drinks:{'Nước ép dứa':1}}};
  assert.equal((await h.call('verified',combo)).xpAwarded,1390);
  assert.equal((await h.call('verified',combo)).xpAwarded,0);
+});
+
+test('Restaurant operation XP is 500 for prepare and 500 more for completing',async()=>{
+ const h=harness();h.docs.set('res_orders/restaurant1',{status:'pending'});
+ const first=await h.call('verified',{kind:'res_orders',id:'restaurant1',action:'preparing'});
+ const second=await h.call('verified',{kind:'res_orders',id:'restaurant1',action:'completed'});
+ assert.equal(first.xpAwarded,500);
+ assert.equal(second.xpAwarded,500);
+ assert.equal(h.awards.reduce((sum,a)=>sum+a.amount,0),1000);
+ assert.equal((await h.call('verified',{kind:'res_orders',id:'restaurant1',action:'completed'})).xpAwarded,0);
+});
+test('Bungalow completed without preparing receives 1000 work XP; daily reward remains 400',async()=>{
+ const h=harness();h.docs.set('bun_orders/bglTest',{status:'pending'});
+ const done=await h.call('verified',{kind:'bun_orders',id:'bglTest',action:'completed'});
+ assert.equal(done.xpAwarded,1000);
+ assert.equal(done.missionXP,400);
+ assert.equal((await h.call('verified',{kind:'bun_orders',id:'bglTest',action:'completed'})).xpAwarded,0);
+});
+test('Lounge completed directly receives 250 work XP plus unchanged daily mission XP',async()=>{
+ const h=harness();h.docs.set('lounge_orders/lnTest',{status:'pending'});
+ const done=await h.call('verified',{kind:'lounge_orders',id:'lnTest',action:'completed'});
+ assert.equal(done.xpAwarded,250);
+ assert.equal(done.missionXP,400);
 });

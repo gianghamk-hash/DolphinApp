@@ -45,7 +45,7 @@ const CACHE_URLS = [
   BASE + '/dolphin-alerts.js?v=1',
   BASE + '/push-config.js',
   BASE + '/dolphin-push.js',
-  BASE + '/staff-id.js?v=crew-rename-api-v2',
+  BASE + '/staff-id.js?v=crew-approved-v1',
   BASE + '/dolphin-navigation.js?v=1',
   BASE + '/theme-system.js?v=crew-wow-v8',
   BASE + '/avatar-system.js',

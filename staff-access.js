@@ -46,7 +46,7 @@ async function getApi(){
  if(root.DolphinStaffId)return root.DolphinStaffId;
  await new Promise((resolve,reject)=>{
   const s=document.createElement('script');
-  s.src=new URL('staff-id.js?v=crew-rename-api-v2',base).href;
+  s.src=new URL('staff-id.js?v=crew-approved-v1',base).href;
   s.onload=resolve;s.onerror=reject;document.head.appendChild(s);
  });
  if(!root.DolphinStaffId)throw Error('Không thể tải Staff ID.');

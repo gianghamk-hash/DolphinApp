@@ -1,5 +1,5 @@
 {
-  "version": "1.1.73",
+  "version": "1.1.74",
   "releaseDate": "2026-11-03",
-  "notes": "Fix Manager Staff ID recheck loop with true Firebase UID diagnostics and secure relinking (#228)"
+  "notes": "Fix Staff Profile browser regression fixture for updated DOL-0001 management UI (#229)"
 }

@@ -1,18 +1,18 @@
 {
-  "version": "1.1.73",
-  "previousVersion": "1.1.72",
-  "commit": "3b919e8",
-  "previousCommit": "8683e14",
-  "buildDate": "2026-11-03T10:34:28.258Z",
-  "summary": "Fix Manager Staff ID recheck loop with true Firebase UID diagnostics and secure relinking (#228)",
+  "version": "1.1.74",
+  "previousVersion": "1.1.73",
+  "commit": "46c5efa",
+  "previousCommit": "3b919e8",
+  "buildDate": "2026-11-03T10:49:19.861Z",
+  "summary": "Fix Staff Profile browser regression fixture for updated DOL-0001 management UI (#229)",
   "changes": {
-    "totalCommits": 297,
-    "filesChanged": 9,
+    "totalCommits": 298,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix Manager Staff ID recheck loop with true Firebase UID diagnostics and secure relinking (#228)"
+    "Fix Staff Profile browser regression fixture for updated DOL-0001 management UI (#229)"
   ],
   "fileChanges": [
     {
@@ -20,35 +20,11 @@
       "type": "update"
     },
     {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-access.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-approval-ui.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-identity-refresh.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-access.js",
+      "file": "scripts/staff-approval-browser.cjs",
       "type": "update"
     },
     {
       "file": "staff-admin-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
       "type": "update"
     }
   ]

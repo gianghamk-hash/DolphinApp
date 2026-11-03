@@ -174,10 +174,12 @@ test('an employee can link a second device without a manager; both see the lates
  const {api,state}=harness('manager',{cold:true});
  const first=await api.staffRegisterSelfProfile(req('first',{name:'Alice Nguyen',avatar:'🐬'}));
  state.delete('staffProfileRate/first');
+ state.set('staffRegistry/'+first.employeeId,{...state.get('staffRegistry/'+first.employeeId),approved:true});
+ state.set('staffIdentity/first',{...state.get('staffIdentity/first'),verified:true});
  const code=await api.staffIssueOwnLinkCode(req('first'));
  assert.equal(code.expiresInMinutes,10);
  const linked=await api.staffClaimLinkCode(req('second',{code:code.code}));
- assert.equal(linked.employeeId,first.employeeId);assert.equal(linked.verified,false);
+ assert.equal(linked.employeeId,first.employeeId);assert.equal(linked.verified,true);
  assert.equal((await api.staffGetIdentity(req('second'))).avatar,'🐬');
  state.delete('staffProfileRate/first');
  await api.staffUpdateMyProfile(req('first',{name:'Alice Nguyen',avatar:'🐠'}));
@@ -197,8 +199,12 @@ test('profile edits retry an empty RTDB cache instead of falsely reporting an in
 test('linked devices cannot switch identity and concurrent claims cannot overwrite a device identity',async()=>{
  const {api,state}=harness();
  const a=await api.staffRegisterSelfProfile(req('a',{name:'Alice Nguyen'}));
- const b=await api.staffRegisterSelfProfile(req('b',{name:'Bob'}));
+ const b=await api.staffRegisterSelfProfile(req('b',{name:'Bob Nguyen'}));
  state.delete('staffProfileRate/a');state.delete('staffProfileRate/b');
+ for(const [who,p] of [['a',a],['b',b]]){
+  state.set('staffRegistry/'+p.employeeId,{...state.get('staffRegistry/'+p.employeeId),approved:true});
+  state.set('staffIdentity/'+who,{...state.get('staffIdentity/'+who),verified:true});
+ }
  const ca=await api.staffIssueOwnLinkCode(req('a')),cb=await api.staffIssueOwnLinkCode(req('b'));
  await rejects(()=>api.staffClaimLinkCode(req('a',{code:cb.code})),'failed-precondition');
  const results=await Promise.allSettled([api.staffClaimLinkCode(req('new',{code:ca.code})),api.staffClaimLinkCode(req('new',{code:cb.code}))]);
@@ -209,7 +215,11 @@ test('linked devices cannot switch identity and concurrent claims cannot overwri
 test('switching a registered device requires explicit consent and the expected old ID; preserves both profiles',async()=>{
  const {api,state}=harness('manager',{cold:true});
  const a=await api.staffRegisterSelfProfile(req('a',{name:'Alice Nguyen',avatar:'🐯'}));
- const b=await api.staffRegisterSelfProfile(req('b',{name:'Bob'}));state.delete('staffProfileRate/a');
+ const b=await api.staffRegisterSelfProfile(req('b',{name:'Bob Nguyen'}));state.delete('staffProfileRate/a');
+ for(const [who,p] of [['a',a],['b',b]]){
+  state.set('staffRegistry/'+p.employeeId,{...state.get('staffRegistry/'+p.employeeId),approved:true});
+  state.set('staffIdentity/'+who,{...state.get('staffIdentity/'+who),verified:true});
+ }
  const link=await api.staffIssueOwnLinkCode(req('a'));
  await rejects(()=>api.staffClaimLinkCode(req('b',{code:link.code,replaceCurrent:true,expectedEmployeeId:a.employeeId})),'failed-precondition');
  const switched=await api.staffClaimLinkCode(req('b',{code:link.code,replaceCurrent:true,expectedEmployeeId:b.employeeId}));

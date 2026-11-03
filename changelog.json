@@ -1,20 +1,24 @@
 {
-  "version": "1.1.68",
-  "previousVersion": "1.1.67",
-  "commit": "4c2061a",
-  "previousCommit": "36fe94e",
-  "buildDate": "2026-11-03T13:06:22.694Z",
-  "summary": "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)",
+  "version": "1.1.69",
+  "previousVersion": "1.1.68",
+  "commit": "75ea1a9",
+  "previousCommit": "4c2061a",
+  "buildDate": "2026-11-03T14:14:10.953Z",
+  "summary": "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)",
   "changes": {
-    "totalCommits": 292,
-    "filesChanged": 2,
+    "totalCommits": 293,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)"
+    "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)"
   ],
   "fileChanges": [
+    {
+      "file": "dolphin-show.html",
+      "type": "update"
+    },
     {
       "file": "functions/staff-xp-actions.js",
       "type": "update"

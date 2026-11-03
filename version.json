@@ -1,7 +1,7 @@
 {
-  "version": "1.1.68",
-  "buildDate": "2026-11-03T13:06:22.694Z",
-  "commit": "4c2061a",
-  "notes": "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)",
+  "version": "1.1.69",
+  "buildDate": "2026-11-03T14:14:10.953Z",
+  "commit": "75ea1a9",
+  "notes": "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)",
   "forceUpdate": false
 }

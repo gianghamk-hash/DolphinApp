@@ -1,5 +1,5 @@
 {
-  "version": "1.1.68",
+  "version": "1.1.69",
   "releaseDate": "2026-11-03",
-  "notes": "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)"
+  "notes": "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)"
 }

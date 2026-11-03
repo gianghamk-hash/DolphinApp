@@ -70,11 +70,12 @@ function stringMap(m){
  }
  return out;
 }
-async function booking(kind,id,data,who){
+async function booking(kind,id,data,who,{editOnly=false}={}){
  const db=getFirestore(),ref=db.collection(kind).doc(id);
  const pay=payment(data.paymentMethod||data.payment);
  const existing=await db.runTransaction(async tx=>{
   const old=await tx.get(ref),v=old.exists?old.data():null;
+  if(editOnly&&!v)throw new HttpsError('failed-precondition','Bàn không còn tồn tại. Hãy tải lại trước khi cập nhật.');
   const owner=str(kind==='show_tables'?v?.seller:v?.openedByStaff);
   const ownerId=str(kind==='show_tables'?v?.sellerStaffId:v?.openedByStaffId,70);
   // A stable Staff ID is authoritative when present. Legacy name-only tables
@@ -84,16 +85,18 @@ async function booking(kind,id,data,who){
   const differentOwner=!!(ownerId||owner)&&!sameOwner;
   if(differentOwner&&!who.admin)throw new HttpsError('permission-denied','Bàn đang được mở bởi nhân viên khác');
   // Manager correction updates customer/PAX/payment without taking seller XP.
-  const preserveOwner=differentOwner&&who.admin;
+  if(editOnly&&!owner&&!ownerId&&!who.admin)throw new HttpsError('permission-denied','Bàn chưa có nhân viên mở. Cần quản lý xác minh để chỉnh sửa.');
+  // All edits preserve the original opener and existing Staff ID.
+  const preserveOwner=editOnly||(differentOwner&&who.admin);
   let update;
   if(kind==='lounge_tables'){
    const pax=Number(data.pax);
    if(!Number.isSafeInteger(pax)||pax<1||pax>200)fail('Pax phải trong khoảng 1–200');
    if(!str(data.customerName))fail('Thiếu tên khách');
-   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),pax,restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedByStaffId:who.id,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else if(kind==='bun_tables'){
    if(!str(data.customerName)||!str(data.restaurantTable))fail('Thiếu tên khách hoặc bàn nhà hàng');
-   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
+   update={customerName:str(data.customerName,100),restaurantTable:str(data.restaurantTable,30),paymentMethod:pay,openedByStaff:preserveOwner?owner:who.name,...(preserveOwner?{}:{openedByStaffId:who.id}),updatedBy:who.name,updatedByStaffId:who.id,updatedAt:Date.now(),focReason:str(data.focReason||'',200)};
   }else{
    const guests=Number(data.guests);
    if(!Number.isSafeInteger(guests)||guests<1||guests>300)fail('Số khách không hợp lệ');
@@ -104,6 +107,7 @@ async function booking(kind,id,data,who){
   return {before:v,after:{...v,...update},payment:pay,preserveOwner};
  });
  if(kind==='show_tables'){
+  if(editOnly)return {saved:true,xpAwarded:0,missionXP:0,edited:true,managerOverride:existing.preserveOwner};
   if(existing.preserveOwner)return {saved:true,xpAwarded:0,managerOverride:true};
   // Proof of an actual verified booking, independent of client-writable show_tables.
   await getDatabase().ref('staffXpShowProofs/'+hash(id)).set({employeeId:who.id,payment:pay,day:vnDay(),updatedAt:Date.now()});
@@ -183,7 +187,8 @@ exports.staffRecordLiveAction=onCall(opts,async req=>{
  if(!KINDS.has(kind))fail('Phân hệ không hợp lệ');
  if(kind.endsWith('_orders'))return work(kind,id,str(data.action,24),who);
  if(kind==='show_tables'&&data.action==='combo')return combo(id,data.data||{},who);
- if(data.action!=='booking')fail('Thao tác không hợp lệ');
- return booking(kind,id,data.data||{},who);
+ const editOnly=kind==='lounge_tables'&&data.action==='update';
+ if(data.action!=='booking'&&!editOnly)fail('Thao tác không hợp lệ');
+ return booking(kind,id,data.data||{},who,{editOnly});
 });
 

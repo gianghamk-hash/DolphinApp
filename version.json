@@ -1,7 +1,7 @@
 {
-  "version": "1.1.64",
-  "buildDate": "2026-11-03T08:02:05.151Z",
-  "commit": "9487360",
-  "notes": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)",
+  "version": "1.1.65",
+  "buildDate": "2026-11-03T08:05:40.777Z",
+  "commit": "8510929",
+  "notes": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)",
   "forceUpdate": false
 }

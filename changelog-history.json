@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.64",
+      "releaseDate": "2026-11-03T08:02:05.151Z",
+      "summary": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)",
+      "details": [
+        "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)"
+      ]
+    },
+    {
       "version": "1.1.63",
       "releaseDate": "2026-11-03T07:47:04.201Z",
       "summary": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)",
@@ -390,14 +398,6 @@
       "summary": "Guest list: focused dietary filters and nationality counts by area (#172)",
       "details": [
         "Guest list: focused dietary filters and nationality counts by area (#172)"
-      ]
-    },
-    {
-      "version": "1.1.14",
-      "releaseDate": "2026-10-31T05:50:14.066Z",
-      "summary": "feat(show): Daily Show and singer combos with one complete food set per package",
-      "details": [
-        "feat(show): Daily Show and singer combos with one complete food set per package"
       ]
     }
   ]

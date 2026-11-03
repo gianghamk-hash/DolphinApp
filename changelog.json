@@ -1,24 +1,20 @@
 {
-  "version": "1.1.64",
-  "previousVersion": "1.1.63",
-  "commit": "9487360",
-  "previousCommit": "997428d",
-  "buildDate": "2026-11-03T08:02:05.151Z",
-  "summary": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)",
+  "version": "1.1.65",
+  "previousVersion": "1.1.64",
+  "commit": "8510929",
+  "previousCommit": "9487360",
+  "buildDate": "2026-11-03T08:05:40.777Z",
+  "summary": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)",
   "changes": {
-    "totalCommits": 288,
-    "filesChanged": 3,
+    "totalCommits": 289,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)"
+    "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)"
   ],
   "fileChanges": [
-    {
-      "file": "functions/package.json",
-      "type": "update"
-    },
     {
       "file": "functions/staff-name-repair.test.cjs",
       "type": "update"

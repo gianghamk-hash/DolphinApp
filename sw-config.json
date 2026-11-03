@@ -1,5 +1,5 @@
 {
-  "version": "1.1.64",
+  "version": "1.1.65",
   "releaseDate": "2026-11-03",
-  "notes": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)"
+  "notes": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)"
 }

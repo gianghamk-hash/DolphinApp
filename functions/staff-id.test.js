@@ -279,9 +279,8 @@ test('manager can reject a pending employee, revoke every linked device, then is
  const {api,state}=harness('manager',{cold:true});
  const first=await api.staffRegisterSelfProfile(req('worker',{name:'Initial Name',avatar:'🐬'}));
  state.delete('staffProfileRate/worker');
- const code=await api.staffIssueOwnLinkCode(req('worker'));
- const link=await api.staffClaimLinkCode(req('second-device',{code:code.code}));
- assert.equal(link.employeeId,first.employeeId);
+ // Simulate a legacy second device linked before pending accounts were locked.
+ state.set('staffIdentity/second-device',{employeeId:first.employeeId,name:first.name,verified:false});
  state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner Manager',active:true,registrationSource:'manager'});
  state.set('staffIdentity/manager-device',{employeeId:'DOL-0001',name:'Owner Manager',verified:true});
  assert.equal((await api.staffListPendingApprovals(req('manager-device'))).profiles.length,1);
@@ -317,8 +316,8 @@ test('a rejected linked device cannot enter and must register a new independent 
  const {api,state}=harness();
  const user=await api.staffRegisterSelfProfile(req('first',{name:'Crew One'}));
  state.delete('staffProfileRate/first');
- const code=await api.staffIssueOwnLinkCode(req('first'));
- await api.staffClaimLinkCode(req('second',{code:code.code}));
+ // Existing pending device link from an older app version.
+ state.set('staffIdentity/second',{employeeId:user.employeeId,name:user.name,verified:false});
  state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner Manager',active:true});
  state.set('staffIdentity/owner',{employeeId:'DOL-0001',verified:true});
  await api.staffRejectRegistration(req('owner',{employeeId:user.employeeId}));
@@ -344,7 +343,8 @@ test('rejected applications cannot be reactivated by approve or old link codes',
  const {api,state}=harness();
  const crew=await api.staffRegisterSelfProfile(req('crew',{name:'Crew Member'}));
  state.delete('staffProfileRate/crew');
- const code=await api.staffIssueOwnLinkCode(req('crew'));
+ const code='C'.repeat(36),tokenHash=crypto.createHash('sha256').update(code).digest('hex');
+ state.set('staffEnrollmentCodes/'+tokenHash,{employeeId:crew.employeeId,expiresAt:Date.now()+600000});
  state.set('staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Owner Manager',active:true});
  state.set('staffIdentity/owner',{employeeId:'DOL-0001',verified:true});
  await api.staffRejectRegistration(req('owner',{employeeId:crew.employeeId}));

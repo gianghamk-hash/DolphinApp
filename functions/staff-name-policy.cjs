@@ -2,7 +2,7 @@
 // Name policy is shared by registration, login, and legacy-name remediation.
 // NFKC + case folding makes visually equivalent spacing/case/Unicode collide.
 const normalize=name=>String(name||'').normalize('NFKC').trim().replace(/\s+/g,' ');
-const key=name=>normalize(name).toLocaleLowerCase('vi-VN');
+const key=name=>normalize(name).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
 const valid=name=>{const n=normalize(name);return n.length>=7&&n.length<=64&&!/[\u0000-\u001f<>]/.test(n);};
 const approved=p=>p?.registrationSource!=='self'||p.approved===true;
 const ordered=registry=>Object.values(registry||{}).filter(p=>p&&p.active&&p.employeeId)

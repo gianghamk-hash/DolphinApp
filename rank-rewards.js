@@ -20,14 +20,14 @@
  function publishCategory(category,rows,week){
   if(!TIERS[category]||!Array.isArray(rows))return;
   const entries=rows.filter(x=>clean(x.name)&&Number.isFinite(category==='work'?x.points:x.rev)&&(category==='work'?x.points:x.rev)>0)
-   .slice(0,10).map((x,i)=>({rank:i+1,name:clean(x.name),value:category==='work'?x.points:x.rev}));
+   .slice(0,10).map((x,i)=>({rank:i+1,name:clean(x.name),...(x.employeeId?{employeeId:String(x.employeeId)}:{}),value:category==='work'?x.points:x.rev}));
   const prev=current(category),now={week:String(week||''),entries,updatedAt:Date.now()};
   if(prev.week===now.week&&JSON.stringify(prev.entries)===JSON.stringify(entries))return;
   const data=all();data[category]=now;
   try{localStorage.setItem(KEY,JSON.stringify(data));}catch(e){}
   const winner=entries[0];
   if(winner){
-   const h=read(HISTORY)||{},old=history(category),id=now.week+'|'+winner.name;
+   const h=read(HISTORY)||{},old=history(category),id=now.week+'|'+(winner.employeeId||winner.name);
    if(!old.some(x=>x.id===id)){old.unshift({id,name:winner.name,week:now.week,firstSeen:now.updatedAt});h[category]=old.slice(0,52);try{localStorage.setItem(HISTORY,JSON.stringify(h));}catch(e){}}
   }
   try{root.dispatchEvent(new CustomEvent('dolphinRankRewardsUpdated',{detail:{category,...now}}));}catch(e){}

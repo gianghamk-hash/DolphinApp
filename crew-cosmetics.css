@@ -720,3 +720,97 @@
 /* Ensure standalone motion can position correctly with Frame = None. */
 :is(.hero-avatar,.level-avatar,.dolphin-staff-avatar,.leader-tile-icon,#profile-avatar,.fx-motion-preview)
 [data-avatar-motion]:not([data-avatar-motion="none"]){position:relative;isolation:isolate;overflow:visible}
+
+
+/* CREW CLUB GLOBAL V9 — an equipped Staff ID has identical cosmetics everywhere.
+   Ornament scales with the actual icon, is pointer-transparent and respects A11Y. */
+:is(.hero-avatar,.level-avatar,.leader-tile-icon,.dolphin-staff-avatar,.drr-frame,.sow-avatar,.fx-frame-preview,.fx-motion-preview)[data-frame],
+:is(.hero-avatar,.level-avatar,.leader-tile-icon,.dolphin-staff-avatar,.drr-frame,.sow-avatar,.fx-frame-preview,.fx-motion-preview)[data-avatar-motion]{
+ position:relative;isolation:isolate;overflow:visible!important;
+}
+:is(.sow-avatar,.drr-frame,.leader-tile-icon)[data-frame="emerald"]{
+ border:3px solid #7afac7!important;background:radial-gradient(circle at 30% 15%,#7fffdb70,#033c3f 80%)!important;
+ box-shadow:0 0 0 2px #168d77,0 0 17px #44ffbdad,inset 0 0 15px #88dff044!important
+}
+:is(.sow-avatar,.drr-frame,.leader-tile-icon)[data-frame="sapphire"]{
+ border:3px solid #afe7ff!important;background:radial-gradient(circle at 25% 15%,#d2ecff90,#112d62 80%)!important;
+ box-shadow:0 0 0 2px #588cde,0 0 19px #5eaeffad,inset 0 0 13px #cbdeff99!important
+}
+:is(.sow-avatar,.drr-frame,.leader-tile-icon)[data-frame="nebula"]{
+ border:3px solid #edc1ff!important;background:radial-gradient(circle at 25% 15%,#ffe3ff99,#301049 80%)!important;
+ box-shadow:0 0 0 2px #bd8bea,0 0 23px #dc9bffc9,inset 0 0 14px #8cf8ff80!important
+}
+/* Tailored radius so large and compact icons share a consistent visual language. */
+:is(.dolphin-staff-avatar,.level-avatar,.sow-avatar,.drr-frame,.leader-tile-icon){
+ --crew-spark-radius:20px;overflow:visible!important;isolation:isolate;
+}
+:is(.hero-avatar,.drl-level-avatar,#profile-avatar,.fx-frame-preview){--crew-spark-radius:31px}
+.crew-motion-spark{width:4px;height:4px}
+@keyframes crew-v4-spark{
+ 0%,100%{transform:rotate(var(--angle)) translateY(calc(-.8 * var(--crew-spark-radius,29px))) scale(.25);opacity:0}
+ 45%{opacity:1}
+ 65%{transform:rotate(var(--angle)) translateY(calc(-1.38 * var(--crew-spark-radius,29px))) scale(1.4);opacity:.9}
+}
+/* Mythic at Lv40: celestial dragon/phoenix with an unmistakable royal sigil. */
+[data-avatar-rarity="mythic"][data-frame="none"],
+.avatar-choice[data-avatar-rarity="mythic"]{
+ background:radial-gradient(circle at 24% 18%,#e4c6ff90,transparent 45%),
+  radial-gradient(circle at 85% 85%,#2adfff6b,transparent 60%),#1b1243!important;
+ border:2px solid #b894ff!important;
+ box-shadow:0 0 0 2px #784bca88,0 0 16px #b38bffd1,0 0 28px #6becff55!important;
+ border-radius:26%!important;
+}
+/* Sovereign at Lv55: gold, obsidian and a bright crown — NOT an ordinary emoji. */
+[data-avatar-rarity="sovereign"][data-frame="none"],
+.avatar-choice[data-avatar-rarity="sovereign"]{
+ background:radial-gradient(circle at 20% 12%,#fff5b5aa,transparent 48%),
+  radial-gradient(circle at 75% 80%,#7bc7ff50,transparent 62%),#1c112f!important;
+ border:3px solid #ffe29b!important;
+ box-shadow:inset 0 0 0 1px #a77931,0 0 0 2px #4d3688,0 0 16px #ffe4a9d9,0 0 29px #bd8affaa!important;
+ border-radius:26%!important;
+}
+.crew-avatar-insignia{
+ position:absolute;inset:-11%;display:block;pointer-events:none!important;
+ border-radius:34%;z-index:5;isolation:isolate;overflow:visible;
+ background:conic-gradient(from 20deg,#fff4c922,transparent 20%,#80ecff2c 40%,transparent 65%,#ffe8af55 90%,#fff4c922);
+ box-shadow:0 0 16px #b9b1ff88;
+ animation:crew-royal-halo 7s ease-in-out infinite;
+}
+[data-avatar-rarity="sovereign"]>.crew-avatar-insignia{
+ border:2px solid #ffdd8b;
+ background:conic-gradient(from 40deg,#fff9c977,#fff0b51a 18%,#9edfff44 38%,#fff4bd88 60%,#bda4ff44 80%,#fff9c977);
+ box-shadow:0 0 0 2px #6a4c86,0 0 17px #ffe3a9aa,0 0 27px #bdaaff88;
+}
+[data-avatar-rarity="mythic"]>.crew-avatar-insignia{
+ border:2px solid #d6baff;
+ box-shadow:0 0 12px #ad96ffcc,0 0 26px #75e9ff77;
+}
+.crew-avatar-insignia::before{
+ content:"♛";position:absolute;top:-.85em;left:50%;transform:translateX(-50%);
+ display:block;font-size:clamp(11px,1.05em,23px);font-weight:900;line-height:1;color:#fff0c8;
+ text-shadow:0 0 5px #fff,0 0 11px #ffc44e,0 0 19px #b69cff;
+ animation:crew-crown-float 2.8s ease-in-out infinite;
+}
+[data-avatar-rarity="mythic"]>.crew-avatar-insignia::before{content:"✦";color:#e4bbff;text-shadow:0 0 13px #aa86ff,0 0 20px #75eeff}
+.crew-avatar-insignia::after{
+ content:"";position:absolute;inset:-9%;border-radius:38%;border:1px dashed #ffe6ac88;
+ box-shadow:0 0 9px #eacaff8f;animation:crew-v4-spin 16s linear infinite;
+}
+[data-avatar-rarity="mythic"]>.crew-avatar-insignia::after{border-color:#b7dfff88;animation-direction:reverse}
+@keyframes crew-royal-halo{0%,100%{filter:brightness(1)}50%{filter:brightness(1.3)}}
+@keyframes crew-crown-float{0%,100%{transform:translate(-50%,0) scale(.94)}50%{transform:translate(-50%,-3px) scale(1.16)}}
+/* Smaller icons prioritize legibility and battery life; hero/Emperor stay rich. */
+:is(.dolphin-staff-avatar,.level-avatar,.sow-avatar,.drr-frame,.leader-tile-icon)>.crew-avatar-insignia{
+ inset:-7%;border-width:1px!important;box-shadow:0 0 8px #edd4ffaa!important;
+}
+:is(.dolphin-staff-avatar,.level-avatar,.sow-avatar,.drr-frame,.leader-tile-icon)>.crew-avatar-insignia::after{display:none}
+.avatar-choice[data-avatar-rarity]{position:relative;overflow:visible;isolation:isolate}
+.avatar-choice[data-avatar-rarity="sovereign"]::after,
+.avatar-choice[data-avatar-rarity="mythic"]::after{
+ content:"♛";position:absolute;right:-5px;top:-11px;font-size:15px;color:#fff4be;
+ text-shadow:0 0 7px #ffc978,0 0 13px #ad7cff;pointer-events:none;
+}
+.avatar-choice[data-avatar-rarity="mythic"]::after{content:"✦";color:#d8b9ff}
+@media(prefers-reduced-motion:reduce){
+ .crew-avatar-insignia,.crew-avatar-insignia::after,.crew-avatar-insignia::before{animation:none!important}
+}

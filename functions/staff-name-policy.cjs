@@ -9,7 +9,7 @@ const ordered=registry=>Object.values(registry||{}).filter(p=>p&&p.active&&p.emp
  .sort((a,b)=>(Number(a.createdAt)||0)-(Number(b.createdAt)||0)||String(a.employeeId).localeCompare(String(b.employeeId)));
 function nameConflict(registry,name,exceptId=''){
  const k=key(name);
- return ordered(registry).find(p=>p.employeeId!==exceptId&&key(p.name)===k)||null;
+ return Object.values(registry||{}).find(p=>p?.employeeId&&p.employeeId!==exceptId&&key(p.name)===k)||null;
 }
 function needsRename(registry,id){
  const p=registry?.[id];if(!p?.active)return false;

@@ -136,7 +136,7 @@ test('two cold claimants cannot both consume the same code',async()=>{
 test('self-service endpoints require authentication and validate all editable fields',async()=>{
  const {api}=harness();
  for(const name of ['staffRegisterSelfProfile','staffUpdateMyProfile','staffIssueOwnLinkCode'])await rejects(()=>api[name](req(null)),'unauthenticated');
- for(const [i,data] of [{name:'A'},{name:'<script>'},{name:'Alice Nguyen',avatar:'<img>'}].entries()
+ for(const [i,data] of [{name:'A'},{name:'<script>'},{name:'Alice Nguyen',avatar:'<img>'}].entries())
   await rejects(()=>api.staffRegisterSelfProfile(req('user-'+i,data)),'invalid-argument');
 });
 

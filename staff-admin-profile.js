@@ -127,15 +127,38 @@ async function applyVisibility(){
  finally{toggle.disabled=false;}
 }
 function syncManager(){
+ const identity=window.DolphinStaffId?.get?.();
+ const managerApk=/DolphinManager/.test(navigator.userAgent)||window.DOLPHIN_APP_TYPE==='manager';
  manager=verifiedOwner();
- $('crew-manager-approvals').hidden=!manager;
- if(!manager){lastPending.clear();lastProfiles=[];fetched=false;return;}
+ // The APK is dedicated to DOL-0001, not proof that this Firebase UID
+ // belongs to DOL-0001. Keep the console visible but locked until verified.
+ $('crew-manager-approvals').hidden=!(managerApk||manager);
+ const state=$('crew-manager-status');
+ if(state){
+  state.textContent=manager?'🛡️ DOL-0001 đã xác minh · Quyền quản lý đang hoạt động':
+   '🔒 APK Manager dành cho DOL-0001. UID thiết bị hiện chưa được xác minh; cần liên kết đúng tài khoản ở mục Thiết bị.';
+ }
+ for(const id of ['crew-approval-open','crew-recovery-open','crew-manager-ranking-toggle']){
+  const button=$(id);if(button)button.disabled=!manager;
+ }
+ if(!manager){
+  lastPending.clear();lastProfiles=[];fetched=false;
+  $('crew-approval-count').textContent='Chưa xác minh';
+  return;
+ }
  const mine=window.DolphinPrestige?.getMine?.();
  if(mine?.employeeId==='DOL-0001')$('crew-manager-ranking-toggle').checked=mine.rankingVisible===true;
  void refresh();
 }
 function init(){
  $('crew-approval-open').addEventListener('click',()=>{$('crew-approval-dialog').showModal();void refresh(true);});
+ $('crew-recovery-open').addEventListener('click',()=>{
+  if(!verifiedOwner())return;
+  $('crew-approval-dialog').showModal();
+  void refresh(true);
+  void refreshRecovery();
+  $('crew-recovery-section')?.scrollIntoView({block:'nearest'});
+ });
  $('crew-approval-close').addEventListener('click',()=>$('crew-approval-dialog').close());
  $('crew-approval-refresh').addEventListener('click',()=>void refresh(true));
  $('crew-recovery-copy')?.addEventListener('click',async()=>{

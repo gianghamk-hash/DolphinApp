@@ -2,6 +2,7 @@
 (function(root){
 'use strict';
 if(!root.document||root.parent!==root||root.DolphinStaffAccess)return;
+const managerAPK=()=>/DolphinManager/.test(navigator.userAgent)||root.DOLPHIN_APP_TYPE==='manager';
 const base=new URL('./',document.currentScript?.src||location.href);
 const $=id=>document.getElementById(id);
 const state={allowed:false,busy:false,mode:'register',avatar:'🐬',initialized:false,pending:false,needsRename:false};
@@ -17,7 +18,7 @@ function panel(name){
  for(const b of document.querySelectorAll('.dag-tab'))b.setAttribute('aria-selected',String(b.dataset.tab===name));
 }
 function unlock(identity){
- if(identity?.requiresNameChange||identity?.verified!==true)return lock(identity);
+ if(identity?.requiresNameChange||identity?.verified!==true||(managerAPK()&&identity?.managerSession!==true))return lock(identity);
  state.pending=false;state.needsRename=false;state.allowed=true;
  document.documentElement.classList.remove('dolphin-access-pending');
  document.documentElement.classList.add('dolphin-access-allowed');
@@ -36,6 +37,10 @@ function lock(identity){
  if(state.needsRename){
   state.mode='rename';panel('rename');
   $('dag-rename-current').textContent=identity?.name||'';
+ }else if(managerAPK()){
+  state.pending=false;state.mode='link';panel('link');
+  for(const tab of document.querySelectorAll('.dag-tab'))tab.hidden=tab.dataset.tab!=='link';
+  status('Manager APK cần mã liên kết DOL-0001 từ thiết bị đã xác minh.');
  }else if(identity?.employeeId){
   state.mode='pending';panel('pending');
   $('dag-pending-id').textContent=identity.employeeId;
@@ -151,7 +156,7 @@ async function check(force=false){
   lock(identity);
   status(identity?.requiresNameChange?'Hãy cập nhật tên hợp lệ để tiếp tục sử dụng ứng dụng.':identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
    api.wasRejected?.()?'Hồ sơ trước đã bị từ chối. Hãy đăng ký lại để nhận Staff ID mới; hồ sơ cũ không còn quyền truy cập.':
-   'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
+   managerAPK()?'Manager APK chỉ dành cho DOL-0001. Nhập mã liên kết từ thiết bị đã xác minh.':'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
  }catch(e){lock(root.DolphinStaffId?.get?.()||null);status('Không thể kết nối Firebase: '+(e.message||'Hãy thử lại.'),true);}
 }
 async function renameAccount(event){

@@ -178,3 +178,17 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 .daily-message[data-error="true"]{color:#ffb3a1}
 @media(max-width:420px){.daily-missions{padding:17px 13px}.daily-task{gap:8px;padding:11px 9px}.daily-task-icon{width:33px;height:33px;font-size:19px}.daily-task-checkin{min-width:75px;font-size:10px;padding:6px 7px}.daily-task-right{max-width:95px}}
 @media(prefers-reduced-motion:reduce){.daily-track>span{transition:none}}
+/* APK-only overrides; web, PWA and Staff keep their original layout. */
+.manager-apk-profile #staff-daily-card{display:none!important}
+.manager-apk-profile .quick-actions{grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+.manager-apk-profile .quick-actions button{min-height:78px;justify-content:flex-start;padding:16px}
+.manager-apk-profile .manager-personal-heading{font-size:15px;margin:24px 0 12px}
+.manager-apk-profile .manager-action-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.manager-apk-profile .manager-action-grid button{min-height:62px;white-space:normal;text-align:left;padding:14px}
+.manager-apk-profile .manager-action-grid button:first-child{grid-column:1/-1}
+.manager-apk-profile .manager-directory-list{max-height:55vh;overflow:auto}
+.manager-apk-profile .manager-directory-person{border-bottom:1px solid var(--line);padding:12px 0;overflow-wrap:anywhere}
+.manager-owner-verified #crew-profile-banner{border:1px solid #d7b65a;box-shadow:0 0 24px #d7b65a35;animation:manager-crown-glow 5s ease-in-out infinite}
+.manager-owner-verified #profile-name{color:#f5d58b;text-shadow:0 0 14px #d7b65a66}
+@keyframes manager-crown-glow{50%{box-shadow:0 0 38px #d7b65a66}}
+@media(prefers-reduced-motion:reduce){.manager-owner-verified #crew-profile-banner{animation:none}}

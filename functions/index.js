@@ -190,8 +190,9 @@ exports.tacticsLeaderboard=onCall(opts,async req=>{
  requireUid(req);
  const limit=Math.max(1,Math.min(30,Number(req.data?.limit)||30));
  const snap=await rankRef().once('value');
+ const registry=(await staffRoot().once('value')).val()||{};
  const rows=Object.entries(snap.val()||{}).map(([uid,x])=>({
-   uid,player:String(x.player||'').slice(0,64),totalScore:Number(x.totalScore)||0,
+   uid,player:String(registry[x.employeeId]?.name||x.player||'').slice(0,64),totalScore:Number(x.totalScore)||0,
    totalGames:Number(x.totalGames)||0,wins:Number(x.wins)||0,
    totalPlacement:Number(x.totalPlacement)||0,lastPlayed:Number(x.lastPlayed)||0
  })).filter(x=>x.totalGames>0)
@@ -271,6 +272,7 @@ exports.staffClaimLinkCode=onCall(opts,async req=>{
   // An uncached transaction starts with null even when the token exists.
   // Submit the null proposal so RTDB can retry against the server value.
   if(v===null)return null;
+  if(req.data?.managerSession===true&&v.employeeId!=='DOL-0001')return;
   if(v.usedAt||!Number.isFinite(v.expiresAt)||v.expiresAt<=Date.now())return;
   return {...v,usedAt:Date.now(),claimedUid:uid};
  },undefined,false);

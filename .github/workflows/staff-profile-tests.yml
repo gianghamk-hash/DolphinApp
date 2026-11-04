@@ -16,6 +16,8 @@ jobs:
         with:
           node-version: '22'
       - run: |
+          node --test functions/manager-apk.test.cjs
+          node --check manager-apk-profile.js
           node --check staff-profile.js
           node --check staff-id.js
           node --check staff-access.js
@@ -40,6 +42,7 @@ jobs:
       - run: npm install --no-save --package-lock=false playwright
       - run: npx playwright install --with-deps chromium
       - run: node scripts/staff-access-browser.cjs
+      - run: node scripts/manager-apk-browser.cjs
       - run: node scripts/staff-approval-browser.cjs
       - run: node scripts/landing-level-podium-browser.cjs
       - run: node scripts/avatar-sync-browser.cjs

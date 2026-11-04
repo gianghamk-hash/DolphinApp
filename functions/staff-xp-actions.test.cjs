@@ -44,6 +44,20 @@ test('unapproved self registration remains blocked with or without a verified de
   data:{leader:'Guest',dining:'A2',guests:3,payment:'Tiền mặt'}};
  await assert.rejects(()=>h.call('self',input),e=>e.code==='permission-denied');
 });
+test('Restaurant table is opened with verified Staff ID, with no revenue XP',async()=>{
+ const h=harness();
+ const action={kind:'res_tables',id:'A1',action:'booking',data:{customerName:'Anh Long'}};
+ const saved=await h.call('approvedSelf',action);
+ assert.equal(saved.saved,true);
+ assert.equal(saved.xpAwarded,0);
+ assert.equal(saved.missionXP,0);
+ assert.equal(h.docs.get('res_tables/A1').customerName,'Anh Long');
+ assert.equal(h.docs.get('res_tables/A1').updatedBy,'Nguyễn Tiến Nam');
+ assert.equal(h.docs.get('res_tables/A1').updatedByStaffId,'DOL-0006');
+ assert.equal(h.awards.length,0);
+ await assert.rejects(()=>h.call('self',{...action,id:'A2'}),e=>e.code==='permission-denied');
+ assert.equal(h.docs.get('res_tables/A2'),undefined);
+});
 test('Show needs verified booking; same combo is not counted twice',async()=>{
  const h=harness(),combo={kind:'show_tables',id:'S1',action:'combo',data:{combo:'combo2',foods:{set:1}}};
  await assert.rejects(()=>h.call('owner',combo),e=>e.code==='not-found');

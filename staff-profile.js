@@ -15,6 +15,9 @@ for(const button of document.querySelectorAll('[data-close-dialog]'))button.addE
 function setBusy(value){busy=value;for(const id of ['save-profile','choose-avatar','profile-name-input','claim-link','issue-link'])$(id).disabled=value||(id==='issue-link'&&!profile)||(id==='profile-name-input'&&!!profile);}
 function render(fill=true){
  profile=api.get();
+ const managerApk=/DolphinManager/.test(navigator.userAgent)||window.DOLPHIN_APP_TYPE==='manager';
+ if(managerApk)document.documentElement.dataset.app='manager';
+ document.documentElement.dataset.verifiedManager=String(managerApk&&profile?.employeeId==='DOL-0001'&&profile.verified===true);
  if(fill){
   dirty=false;
   $('profile-name-input').value=profile?.name||(window.getSyncedStaffName?.()||'');

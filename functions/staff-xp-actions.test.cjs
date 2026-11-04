@@ -284,7 +284,8 @@ test('Lounge update of nonexistent table fails instead of booking/awarding new X
 
 test('Lounge form edits occupied tables through no-XP server-side update while master PIN stays UI-only',()=>{
  const html=fs.readFileSync(__dirname+'/../dolphin-lounge.html','utf8');
- assert.match(html,/const editExisting=!!\(String\(current\.openedByStaff/);
+ assert.match(html,/const editExisting=hasOpener&&sameTourDay/);
+ assert.match(html,/timeZone:'Asia\/Ho_Chi_Minh'/);
  assert.match(html,/action:editExisting\?'update':'booking'/);
  assert.match(html,/if\(origPax>0 && pax!==origPax\)/);
  assert.match(html,/window\.promptManagerAuth\('save'/);

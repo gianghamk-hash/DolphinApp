@@ -66,7 +66,7 @@ async function onceSale(kind,id,who,amount,day=vnDay()){
 }
 // This collection is server-only. The business write and its XP obligation
 // commit in ONE Firestore transaction; retries never infer trust from an order.
-const OUTBOX='staff_xp_outbox';
+const OUTBOX='dolphin_push_crew_xp_outbox';
 function obligationKey(kind,id,action,who,day=vnDay()){
  return hash(kind,id,action,who.id,action==='sale'?day:'');
 }

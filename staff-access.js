@@ -3,6 +3,8 @@
 'use strict';
 if(!root.document||root.parent!==root||root.DolphinStaffAccess)return;
 const base=new URL('./',document.currentScript?.src||location.href);
+const managerApk=/DolphinManager(?:\/|\b)/.test(navigator.userAgent);
+const ownerId='DOL-0001';
 const $=id=>document.getElementById(id);
 const state={allowed:false,busy:false,mode:'register',avatar:'🐬',initialized:false,pending:false,needsRename:false};
 const starters=['🐬','🐳','🐠','🐢','🦊','🐯','🦁','👨‍🍳','👩‍🍳','⭐','🌊','🔥'];
@@ -18,6 +20,9 @@ function panel(name){
 }
 function unlock(identity){
  if(identity?.requiresNameChange||identity?.verified!==true)return lock(identity);
+ // The Manager APK's existing Firebase UID must already be linked to DOL-0001.
+ // App type is NEVER sufficient authorization or a reason to assign this ID.
+ if(managerApk&&identity.employeeId!==ownerId){lock(null);panel('link');status('Manager APK chỉ dùng hồ sơ DOL-0001. Hãy liên kết thiết bị bằng mã hợp lệ.',true);return;}
  state.pending=false;state.needsRename=false;state.allowed=true;
  document.documentElement.classList.remove('dolphin-access-pending');
  document.documentElement.classList.add('dolphin-access-allowed');
@@ -147,7 +152,17 @@ async function check(force=false){
  try{
   const api=await getApi();await api.ready();
   const identity=force?await api.refresh():api.get();
-  if(identity?.verified===true&&identity?.employeeId&&!identity?.requiresNameChange){unlock(identity);return;}
+  if(identity?.verified===true&&identity?.employeeId&&!identity?.requiresNameChange&&(!managerApk||identity.employeeId===ownerId)){unlock(identity);return;}
+  if(managerApk){
+   lock(null);panel('link');
+   const linked=api.get();
+   const switchLabel=$('dag-switch-label');
+   if(switchLabel)switchLabel.hidden=!linked?.employeeId;
+   status(linked?.employeeId&&linked.employeeId!==ownerId
+    ?'Manager APK đang liên kết '+linked.employeeId+'. Cần mã liên kết DOL-0001 hợp lệ; không được tự chuyển quyền.'
+    :'Manager APK cần liên kết và xác minh DOL-0001. Staff APK và web không bị ảnh hưởng.',true);
+   return;
+  }
   lock(identity);
   status(identity?.requiresNameChange?'Hãy cập nhật tên hợp lệ để tiếp tục sử dụng ứng dụng.':identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
    api.wasRejected?.()?'Hồ sơ trước đã bị từ chối. Hãy đăng ký lại để nhận Staff ID mới; hồ sơ cũ không còn quyền truy cập.':
@@ -222,6 +237,13 @@ async function openManager(){
 }
 function init(){
  if(state.initialized)return;state.initialized=true;makeUI();
+ if(managerApk){
+  document.documentElement.classList.add('dolphin-manager-apk');
+  for(const tab of document.querySelectorAll('.dag-tab')){
+   if(tab.dataset.tab==='register'||tab.dataset.tab==='recovery')tab.hidden=true;
+  }
+  panel('link');
+ }
  const original=root.openApp;
  if(typeof original==='function')root.openApp=function(area){
   if(!state.allowed){$('dolphinAccessGate').hidden=false;return;}
@@ -230,7 +252,10 @@ function init(){
  root.addEventListener('dolphin-staff-id-changed',event=>{
   const id=event.detail;
   if(id?.verified===true&&id.employeeId&&!id?.requiresNameChange)unlock(id);
-  else if(!state.busy&&state.mode!=='manager')lock(id);
+  else if(!state.busy&&state.mode!=='manager'){
+   if(managerApk){lock(null);panel('link');}
+   else lock(id);
+  }
  });
  setInterval(()=>{if(!document.hidden&&!state.allowed)void check(true);},15000);
  document.addEventListener('visibilitychange',()=>{if(!document.hidden)void check(true);});

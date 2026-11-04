@@ -9,6 +9,44 @@ function verifiedOwner(){
  const i=window.DolphinStaffId?.get?.();
  return i?.employeeId==='DOL-0001'&&i.verified===true;
 }
+const isManagerApk=()=>/DolphinManager(?:\/|\b)/.test(navigator.userAgent);
+const ownerInManagerApk=()=>isManagerApk()&&verifiedOwner();
+function renderManagerExclusive(){
+ const enabled=ownerInManagerApk();
+ document.documentElement.classList.toggle('manager-owner-mode',enabled);
+ for(const id of ['manager-owner-intro','manager-owner-actions','crew-recovery-open','crew-owner-name-open']){
+  const el=$(id);if(el)el.hidden=!enabled;
+ }
+ if(enabled){
+  const daily=$('staff-daily-card');if(daily)daily.hidden=true;
+ }else{
+  const daily=$('staff-daily-card');if(daily)daily.hidden=false;
+ }
+}
+function openOwnerRename(){
+ if(!ownerInManagerApk())return;
+ $('owner-rename-value').value=window.DolphinStaffId?.get?.()?.name||'';
+ $('owner-rename-feedback').textContent='';
+ $('owner-rename-dialog').showModal();
+}
+async function submitOwnerRename(event){
+ event.preventDefault();
+ const button=$('owner-rename-save'),output=$('owner-rename-feedback');
+ if(!ownerInManagerApk())return;
+ const name=$('owner-rename-value').value.trim().replace(/\s+/g,' ');
+ if(name.length<7){output.textContent='Vui lòng nhập tên từ 7 ký tự.';return;}
+ if(button.disabled)return;
+ button.disabled=true;output.textContent='Đang đồng bộ tên với Staff ID DOL-0001…';
+ try{
+  const result=await window.DolphinStaffId.renameOwner(name);
+  if(result?.employeeId!=='DOL-0001'||result.name!==name)throw Error('Máy chủ trả về hồ sơ không hợp lệ.');
+  output.textContent='Đã đổi tên và đồng bộ các UID DOL-0001. Staff ID và XP không thay đổi.';
+  await window.DolphinPrestige?.refresh?.();
+  feedback('Đã đổi tên DOL-0001 thành '+name+'.');
+ }catch(error){
+  output.textContent='Không đổi được tên: '+String(error?.message||error);
+ }finally{button.disabled=false;}
+}
 function displayPeople(people){
  const list=$('crew-approval-list');list.replaceChildren();
  if(!people.length){const p=document.createElement('p');p.className='hint';p.textContent='Không có nhân viên đang chờ duyệt.';list.append(p);}
@@ -128,6 +166,7 @@ async function applyVisibility(){
 }
 function syncManager(){
  manager=verifiedOwner();
+ renderManagerExclusive();
  $('crew-manager-approvals').hidden=!manager;
  if(!manager){lastPending.clear();lastProfiles=[];fetched=false;return;}
  const mine=window.DolphinPrestige?.getMine?.();
@@ -136,6 +175,13 @@ function syncManager(){
 }
 function init(){
  $('crew-approval-open').addEventListener('click',()=>{$('crew-approval-dialog').showModal();void refresh(true);});
+ $('manager-owner-approve')?.addEventListener('click',()=>{if(ownerInManagerApk())$('crew-approval-open').click();});
+ $('crew-recovery-open')?.addEventListener('click',()=>{if(!ownerInManagerApk())return;$('crew-approval-open').click();$('crew-recovery-list')?.scrollIntoView({behavior:'smooth',block:'center'});});
+ $('manager-owner-rename')?.addEventListener('click',openOwnerRename);
+ $('crew-owner-name-open')?.addEventListener('click',openOwnerRename);
+ $('owner-rename-close')?.addEventListener('click',()=>$('owner-rename-dialog').close());
+ $('owner-rename-form')?.addEventListener('submit',submitOwnerRename);
+ $('manager-owner-xp')?.addEventListener('click',()=>{if(ownerInManagerApk())$('crew-admin-sandbox')?.scrollIntoView({behavior:'smooth',block:'start'});});
  $('crew-approval-close').addEventListener('click',()=>$('crew-approval-dialog').close());
  $('crew-approval-refresh').addEventListener('click',()=>void refresh(true));
  $('crew-recovery-copy')?.addEventListener('click',async()=>{

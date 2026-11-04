@@ -15,7 +15,7 @@ const namePolicy=require('./staff-name-policy.cjs');
 const daily=require('./staff-daily-missions');
 const dayCore=require('./staff-daily-core.cjs');
 const opts={region:'asia-southeast1',maxInstances:8,timeoutSeconds:60};
-const KINDS=new Set(['lounge_tables','bun_tables','show_tables','lounge_orders','bun_orders','res_orders']);
+const KINDS=new Set(['lounge_tables','bun_tables','show_tables','res_tables','lounge_orders','bun_orders','res_orders']);
 const SHOW=new Set(['combo1','combo2','combo3','singer1','singer2','singer3']);
 const EXCLUDED=new Set(['FOC','TA_UNPAID','KTOUR']);
 function fail(msg){throw new HttpsError('invalid-argument',msg);}
@@ -132,6 +132,18 @@ async function booking(kind,id,data,who,{editOnly=false}={}){
   ?await dailyBonus(who.id,kind==='bun_tables'?'bungalow_opened':'lounge_opened'):0;
  return {saved:true,xpAwarded:grant.amount,missionXP,duplicate:grant.duplicate};
 }
+async function restaurantTable(id,data,who){
+ // Restaurant tables carry no revenue XP under the current Crew Club rules.
+ // The verified UID still owns the operational mutation and audit fields.
+ const name=str(data.customerName,100);
+ if(!name)fail('Thiếu tên khách của bàn Restaurant');
+ const ref=getFirestore().collection('res_tables').doc(id);
+ await getFirestore().runTransaction(async tx=>{
+  const old=await tx.get(ref);
+  tx.set(ref,{customerName:name,updatedBy:who.name,updatedByStaffId:who.id,updatedAt:Date.now()},{merge:true});
+ });
+ return {saved:true,xpAwarded:0,missionXP:0};
+}
 async function combo(id,data,who){
  const code=str(data.combo,24);
  if(!SHOW.has(code))fail('Combo không được hỗ trợ');
@@ -201,6 +213,10 @@ exports.staffRecordLiveAction=onCall(opts,async req=>{
  const who=await staff(req),data=req.data||{},kind=str(data.kind,32),id=idOf(data.id);
  if(!KINDS.has(kind))fail('Phân hệ không hợp lệ');
  if(kind.endsWith('_orders'))return work(kind,id,str(data.action,24),who);
+ if(kind==='res_tables'){
+  if(data.action!=='booking')fail('Thao tác Restaurant không hợp lệ');
+  return restaurantTable(id,data.data||{},who);
+ }
  if(kind==='show_tables'&&data.action==='combo')return combo(id,data.data||{},who);
  const editOnly=kind==='lounge_tables'&&data.action==='update';
  if(data.action!=='booking'&&!editOnly)fail('Thao tác không hợp lệ');

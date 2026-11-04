@@ -41,7 +41,7 @@ async function award(employeeId,taskId,eventTime){
   if(business&&day<core.vietnamDay()){
    if(!current.active||(current.registrationSource==='self'&&current.approved!==true))return;
    const amount=core.TASKS.find(t=>t.id===taskId).xp,xp=(Number(current.xp)||0)+amount;
-   next={changed:true,profile:{...current,xp,levelPeak:Math.max(Number(current.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(xp))}};
+   next={changed:true,profile:require('./staff-xp-engine.cjs').equipOnLevelUp(current,{...current,xp,levelPeak:Math.max(Number(current.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(xp))})};
   }else next=core.apply(current,taskId,timestamp,receipt);
   if(!next.changed)return;
   if(business)next.profile.businessMissionReceipts={...current.businessMissionReceipts,[day]:{...current.businessMissionReceipts?.[day],[taskId]:{receipt,xp:core.TASKS.find(t=>t.id===taskId).xp,at:timestamp}}};

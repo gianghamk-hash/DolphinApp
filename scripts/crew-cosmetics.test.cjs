@@ -123,7 +123,8 @@ test('new collectible themes, frames, motions and avatar sets have validated unl
   assert.ok(css.includes('data-frame="'+id+'"'));
  }
  for(const id of ['abyss','aurora','coral','neon','cosmic','royal','obsidian']){
-  assert.ok(backend.includes(id+':'),id+' server approval missing');
+  assert.match(backend,/const themeLevels=engine\.THEME_LEVELS/);
+  assert.ok(engine.THEME_LEVELS[id]>1,id+' server approval missing');
   assert.ok(themes.includes('"'+id+'"'),id+' theme definition missing');
   assert.ok(ui.includes(id+':'),id+' UI level missing');
  }

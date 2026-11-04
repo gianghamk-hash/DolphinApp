@@ -289,6 +289,22 @@ console.log('PASS: 7 click-to-equip preview galleries, locked preview, all categ
 
 await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
 
+const automatic=require('../functions/staff-xp-engine.cjs').automaticStyle(36);
+await b.page.evaluate(style=>{
+ window.ThemeSystem?.setTheme(style.personalTheme);
+ dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:{...style,employeeId:document.getElementById('employee-id').textContent,name:'Avatar Demo',level:36,autoStyleLevel:36,rank:'Diamond',xp:3001250}}));
+},automatic);
+await b.page.getByRole('heading',{name:'🎉 Chúc mừng lên cấp 36!',exact:true}).waitFor();
+assert.equal(await b.page.locator('#profile-avatar').getAttribute('data-frame'),'sapphire');
+assert.equal(await b.page.locator('#profile-avatar').getAttribute('data-avatar-motion'),'phoenix');
+assert.equal(await b.page.locator('#profile-name').getAttribute('data-name-fx'),'nova');
+assert.equal(await b.page.locator('body').getAttribute('data-theme'),'cosmic');
+await b.page.getByRole('button',{name:'Đến cài đặt giao diện',exact:true}).click();
+await b.page.locator('[data-crew-tab="avatar"]').click();await (await pick('frame','bronze')).click();
+assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze','automatic preset remains editable');
+await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
+console.log('PASS: automatic level preset renders new frame, avatar motion, name FX and theme, then remains customizable.');
+
 assert.equal(await b.page.locator('#prestige-admin-launch').isVisible(),false);
 const c=await device('unlinked');await c.page.goto(origin+'/dolphin-profile.html');await c.page.locator('#staff-xp-summary').filter({hasText:'Đăng ký hoặc liên kết'}).waitFor();assert.equal(await c.page.locator('#staff-save-style').isEnabled(),false);await c.context.close();
 console.log('PASS: compact dashboard, independently opened settings, level-gated perks, rewards and hidden manager controls.');

@@ -83,3 +83,14 @@ test('new game mission rewards are not multiplied by another factor',()=>{
  assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,500);
  assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,1000);
 });
+
+test('daily rewards and same-day legacy top-ups auto-equip only when they raise the permanent level',()=>{
+ const engine=require('./staff-xp-engine.cjs'),now=Date.now();
+ const base={...person(),xp:engine.xpForLevel(3)-200,levelPeak:2};
+ const level=core.apply(base,'checkin',now,'checkin');
+ assert.equal(level.profile.selectedNameFx,'ember');assert.equal(level.profile.selectedAvatarMotion,'pulse');
+ const custom={...level.profile,selectedNameFx:'none',nameFlame:false};
+ const same=core.apply(custom,'order_received',now,'received');assert.equal(same.profile.selectedNameFx,'none');
+ const old={...person(),xp:engine.xpForLevel(3)-360,levelPeak:2,dailyMissions:{date:core.vietnamDay(now),completed:{order_completed:{xp:40,at:now,receipt:'legacy'}}}};
+ const repaired=core.reconcileLegacyDaily(old,now);assert.equal(repaired.profile.selectedNameFx,'ember');
+});

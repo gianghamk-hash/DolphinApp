@@ -82,7 +82,7 @@ function apply(profile,taskId,time=Date.now(),receipt=''){
   },
   updatedAt:time
  };
- return {changed:true,profile:nextProfile,addedXP};
+ return {changed:true,profile:engine.equipOnLevelUp(profile,nextProfile),addedXP};
 }
 /**
  * Correct only today's authenticated receipt, never re-claim a task.
@@ -115,10 +115,10 @@ function reconcileLegacyDaily(profile,time=Date.now()){
  if(!changed)return unchanged;
  const xp=Number(Math.max(0,Number(profile.xp||0)+adjustment).toFixed(2));
  if(!Number.isFinite(xp)||xp>Number.MAX_SAFE_INTEGER)return unchanged;
- return {changed:true,addedXP:adjustment,profile:{
+ return {changed:true,addedXP:adjustment,profile:engine.equipOnLevelUp(profile,{
   ...profile,xp,levelPeak:Math.max(Number(profile.levelPeak)||1,engine.levelForXP(xp)),
   dailyMissions:{...record,completed:entries},updatedAt:time
- }};
+ })};
 }
 function reconcileLegacyCheckin(profile,time=Date.now()){
  return reconcileLegacyDaily(profile,time);

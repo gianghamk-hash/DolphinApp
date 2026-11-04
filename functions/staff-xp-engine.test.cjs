@@ -43,3 +43,34 @@ test('perks activate only after meeting corresponding level threshold',()=>{
  assert(e.progress(e.xpForLevel(8)).unlocked.includes('theme-default'));
  assert.equal(e.progress(0).rank,'Bronze');
 });
+
+test('automatic presets select only unlocked effects for every level, including all Mythic slots',()=>{
+ for(let level=1;level<=60;level++){
+  const style=e.automaticStyle(level);
+  for(const [kind,choices] of Object.entries(e.COSMETIC_CHOICES)){
+   const field='selected'+kind[0].toUpperCase()+kind.slice(1),value=style[field];
+   assert.ok(Object.hasOwn(choices,value));assert.ok(choices[value]<=level);
+   assert.equal(choices[value],Math.max(...Object.values(choices).filter(required=>required<=level)));
+  }
+  assert.ok((e.THEME_LEVELS[style.personalTheme]||1)<=level);
+ }
+ assert.equal(e.automaticStyle(2).selectedNameFx,'none');
+ assert.equal(e.automaticStyle(3).selectedNameFx,'ember');
+ assert.equal(e.automaticStyle(12).selectedFrame,'emerald');
+ const top=e.automaticStyle(60);
+ assert.equal(top.selectedFrame,'mythic');assert.equal(top.selectedAvatarMotion,'ascension');
+ assert.equal(top.selectedNameFx,'celestial');assert.equal(top.selectedAura,'celestial');
+ assert.equal(top.selectedTrail,'nova');assert.equal(top.selectedCardFx,'mythic');
+ assert.equal(top.selectedTitle,'emperor');assert.equal(top.selectedBanner,'mythic');
+ assert.equal(top.nameGradient,true);assert.equal(top.personalTheme,'obsidian');
+});
+test('automatic equip is atomic with a real level gain, idempotent, and preserves identity and manual styles otherwise',()=>{
+ const old={employeeId:'DOL-0002',name:'Existing Person',active:true,avatar:'🐯',xp:e.xpForLevel(2),levelPeak:2,profileVersion:8};
+ const promoted=e.equipOnLevelUp(old,{...old,xp:e.xpForLevel(12),levelPeak:12});
+ assert.equal(promoted.selectedFrame,'emerald');assert.equal(promoted.autoStyleLevel,12);assert.equal(promoted.profileVersion,9);
+ for(const field of ['employeeId','name','avatar'])assert.equal(promoted[field],old[field]);
+ assert.deepEqual(e.equipOnLevelUp(old,promoted),promoted,'speculative retry never changes the version twice');
+ const custom={...promoted,selectedFrame:'none',selectedNameFx:'none',nameFlame:false,personalTheme:'gray'};
+ assert.deepEqual(e.equipOnLevelUp(custom,{...custom,xp:custom.xp+1}),{...custom,xp:custom.xp+1});
+ assert.deepEqual(e.equipOnLevelUp(custom,{...custom,xp:0}),{...custom,xp:0},'permanent level peak prevents correction from overwriting customization');
+});

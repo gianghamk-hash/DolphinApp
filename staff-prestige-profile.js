@@ -392,7 +392,7 @@ function celebrateLevel(next){
  if(document.querySelector('dialog[open]'))return;
  const dialog=document.createElement('dialog');dialog.setAttribute('aria-labelledby','crew-levelup-title');
  const title=document.createElement('h2');title.id='crew-levelup-title';title.textContent='🎉 Chúc mừng lên cấp '+next.level+'!';
- const text=document.createElement('p');text.textContent='Bạn đã đạt Lv.'+next.level+'.';
+ const text=document.createElement('p');text.textContent='Bạn đã đạt Lv.'+next.level+'. '+(next.autoStyleLevel===next.level?'Bộ hiệu ứng theo cấp đã tự động bật. ':'')+'Bạn có thể tùy chỉnh trong Giao diện.';
  const rewards=[...(next.rewardCatalog||[]),...(next.perkCatalog||[]).filter(r=>r.id.startsWith('avatar-')).map(r=>({...r,label:r.name}))].filter(r=>r.level>previous&&r.level<=next.level);
  const list=document.createElement('ul');
  for(const reward of rewards){const li=document.createElement('li');li.textContent=reward.label;list.append(li);}

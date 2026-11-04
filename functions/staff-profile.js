@@ -156,6 +156,50 @@ exports.staffRepairMyName=onCall(opts,async req=>{
  try{await require('./staff-prestige')._rebuildPrestige();}catch(e){console.warn('[Staff Name] Ranking refresh deferred:',e.message);}
  return {...response(updated),requiresNameChange:false};
 });
+/* DOL-0001 may rename their own verified owner profile repeatedly. The
+ * Staff ID, UID mappings, XP ledger, rank and historical seller IDs remain.
+ * No APK detection, client Master PIN or claimed employeeId grants this right.
+ */
+exports.staffRenameOwnerProfile=onCall(opts,async req=>{
+ const uid=await requireAccessManager(req);
+ const name=names.normalize(req.data?.name);
+ if(!names.valid(name))
+  throw new HttpsError('invalid-argument','Tên phải từ 7–64 ký tự hợp lệ.');
+ const db=getDatabase(),root=db.ref('staffRegistry'),snapshot=(await root.once('value')).val()||{};
+ const original=snapshot['DOL-0001'];
+ if(!original?.active||original.registrationSource==='self')
+  throw new HttpsError('permission-denied','Tài khoản quản lý chưa được xác minh.');
+ if(names.nameConflict(snapshot,name,'DOL-0001'))
+  throw new HttpsError('already-exists','Tên này đang thuộc tài khoản nhân viên khác.');
+ const ref=root.child('DOL-0001');
+ const changed=await ref.transaction(current=>{
+  const p=current===null?original:current;
+  if(!p?.active||p.registrationSource==='self')return;
+  if(names.key(p.name)===names.key(name))return p;
+  // A concurrently renamed profile must be refreshed before retry.
+  if(names.key(p.name)!==names.key(original.name))return;
+  const previous=names.normalize(p.name);
+  const aliases=Array.isArray(p.nameAliases)?p.nameAliases.filter(x=>typeof x==='string'):[];
+  if(previous&&!aliases.some(x=>names.key(x)===names.key(previous)))aliases.push(previous);
+  return {...p,name,nameAliases:aliases.slice(-20),
+   profileVersion:(Number(p.profileVersion)||0)+1,
+   updatedAt:Date.now(),updatedBy:uid,ownerRenamedAt:Date.now()};
+ },undefined,false);
+ const updated=(await ref.once('value')).val();
+ if(!updated?.active||names.key(updated.name)!==names.key(name)){
+  if(!changed.committed)throw new HttpsError('unavailable','Tên đã thay đổi trong phiên khác. Vui lòng thử lại.');
+  throw new HttpsError('failed-precondition','Không thể đổi tên quản lý.');
+ }
+ const identities=(await db.ref('staffIdentity').once('value')).val()||{};
+ await Promise.all(Object.entries(identities)
+  .filter(([,value])=>value?.employeeId==='DOL-0001')
+  .map(async ([device])=>db.ref('staffIdentity/'+device).transaction(value=>
+   value?.employeeId==='DOL-0001'?{...value,name:updated.name,updatedAt:Date.now()}:undefined,
+   undefined,false)));
+ try{await require('./staff-prestige')._rebuildPrestige();}
+ catch(e){console.warn('[Owner Rename] Ranking refresh deferred:',e?.message||e);}
+ return {...response(updated),requiresNameChange:false};
+});
 exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
  const uid=uidOf(req);await throttle(uid);const profile=await ownProfile(uid);
  if(profile.registrationSource==='self'&&profile.approved!==true)

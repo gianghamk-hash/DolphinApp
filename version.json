@@ -1,7 +1,7 @@
 {
-  "version": "1.1.70",
-  "buildDate": "2026-11-04T00:48:32.927Z",
-  "commit": "fd7db42",
-  "notes": "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)",
+  "version": "1.1.71",
+  "buildDate": "2026-11-04T02:08:58.316Z",
+  "commit": "087c332",
+  "notes": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)",
   "forceUpdate": false
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.70",
+      "releaseDate": "2026-11-04T00:48:32.927Z",
+      "summary": "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)",
+      "details": [
+        "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)"
+      ]
+    },
+    {
       "version": "1.1.69",
       "releaseDate": "2026-11-03T14:14:10.953Z",
       "summary": "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)",
@@ -390,14 +398,6 @@
       "summary": "Fix Firebase production preflight JSON parsing (#177)",
       "details": [
         "Fix Firebase production preflight JSON parsing (#177)"
-      ]
-    },
-    {
-      "version": "1.1.20",
-      "releaseDate": "2026-11-01T04:38:33.185Z",
-      "summary": "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel",
-      "details": [
-        "ci(deploy): guarded Firebase production deploy for staff prestige without Vercel"
       ]
     }
   ]

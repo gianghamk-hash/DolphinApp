@@ -21,8 +21,8 @@ test('verified Lounge and Bungalow bookings are routed to authoritative backend'
   assert.match(src,/DolphinStaffId\.performLiveAction\(\{/);
   if(file==='dolphin-lounge.html')assert.match(src,/action:editExisting\?'update':'booking'/);
   else assert.match(src,/action:'booking'/);
-  assert.match(src,/identity\?\.verified===true/);
-  assert.match(src,/if\(!verified\)await setDoc/);
+  assert.match(src,/DolphinStaffId\?\.performLiveAction/);
+  assert.doesNotMatch(src,/if\(!verified\)await setDoc/);
  }
 });
 test('verified Lounge, Bungalow and Restaurant order statuses are server-authoritative',()=>{
@@ -30,7 +30,7 @@ test('verified Lounge, Bungalow and Restaurant order statuses are server-authori
   const src=read(file);
   assert.match(src,/DolphinStaffId\.performLiveAction\(\{kind:(?:'lounge_orders'|COL_ORDERS)/);
   assert.match(src,/missionXP/);
-  assert.match(src,/identity\?\.verified===true/);
+  assert.doesNotMatch(src,/identity\?\.verified===true&&typeof window\.DolphinStaffId\?\.performLiveAction/);
  }
 });
 test('daily quest cards are keyboard/phone accessible and have no overlay',()=>{

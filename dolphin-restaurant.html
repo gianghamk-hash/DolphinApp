@@ -512,7 +512,23 @@ window.confirmStaffAction=async function(){const n=document.getElementById('staf
 
 window.openCustomerNameModal=function(t){document.getElementById('reception-target-table').value=t;document.getElementById('lbl-reception-table').innerText=`Bàn ${t}`;const a=state.tableAssignments[t]||{};document.getElementById('customer-name-input').value=a.customerName||'';document.getElementById('modal-customer-name').classList.remove('hidden');document.getElementById('customer-name-input').focus();};
 window.closeCustomerNameModal=()=>document.getElementById('modal-customer-name').classList.add('hidden');
-window.saveCustomerName=async function(){const t=document.getElementById('reception-target-table').value;const n=document.getElementById('customer-name-input').value.trim();if(!n){window.showToast('Nhập tên khách!','⚠️');return;}try{if(db)await setDoc(doc(db,COL_TABLES,t),{customerName:n,updatedBy:window.getStaffName()||'N/A',updatedAt:Date.now()});window.showToast(`Đã lưu bàn ${t}`,'✅');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi lưu!','❌');}};
+window.saveCustomerName=async function(){
+ const t=document.getElementById('reception-target-table').value;
+ const n=document.getElementById('customer-name-input').value.trim();
+ if(!n){window.showToast('Nhập tên khách!','⚠️');return;}
+ try{
+  if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+   throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
+  await window.DolphinStaffId.performLiveAction({
+   kind:'res_tables',id:t,action:'booking',data:{customerName:n}
+  });
+  window.showToast(`Đã lưu bàn ${t}`,'✅');
+  window.closeCustomerNameModal();
+ }catch(e){
+  console.error('[Restaurant table]',t,e);
+  window.showToast('Không lưu được bàn: '+(e?.message||e?.code||'Lỗi xác minh Staff ID'),'❌');
+ }
+};
 window.clearCustomerName=async function(){const t=document.getElementById('reception-target-table').value;try{if(db)await deleteDoc(doc(db,COL_TABLES,t));window.showToast(`Đã xóa bàn ${t}`,'🧹');window.closeCustomerNameModal();}catch(e){window.showToast('Lỗi xóa!','❌');}};
 window.promptClearAllCustomers=()=>{document.getElementById('modal-clear-all').classList.remove('hidden');document.getElementById('clear-all-pin').value='';document.getElementById('clear-all-error').classList.add('hidden');document.getElementById('clear-all-pin').focus();};
 window.closeClearAllModal=()=>document.getElementById('modal-clear-all').classList.add('hidden');

@@ -176,7 +176,7 @@ test('verified new employee can reopen a prior-day Bungalow without stealing sam
  assert.equal(now.xpAwarded,2000);
  assert.equal(h.docs.get('bun_tables/BGL 301').openedByStaffId,'DOL-0004');
  assert.equal((await h.call('owner',action)).xpAwarded,0);
- await assert.rejects(()=>h.call('verified',action),e=>e.code==='permission-denied');
+ await assert.rejects(()=>h.call('intruder',action),e=>e.code==='permission-denied');
 });
 test('reopening a Bungalow saved on a previous VN day qualifies for a new daily mission',async()=>{
  const h=harness();

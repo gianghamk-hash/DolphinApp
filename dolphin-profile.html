@@ -2,11 +2,11 @@
 <html lang="vi">
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
-<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-wow-v8">
+<title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=manager-console-v1">
 <link rel="stylesheet" href="./staff-access.css?v=crew-name-policy-v1"><script src="./staff-access.js?v=crew-name-policy-v1" defer></script>
-<script src="./dolphin-navigation.js?v=1.1.70" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-operational-auth-v1" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=crew-global-v9" defer></script><script src="./staff-prestige-client.js?v=1.1.70" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./staff-prestige-profile.js?v=crew-wow-v8" defer></script><script src="./staff-admin-profile.js?v=crew-recovery-v7" defer></script><script src="./staff-xp-manager.js?v=1.1.70" defer></script>
+<script src="./dolphin-navigation.js?v=1.1.70" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-operational-auth-v1" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=crew-global-v9" defer></script><script src="./staff-prestige-client.js?v=1.1.70" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./staff-prestige-profile.js?v=crew-wow-v8" defer></script><script src="./staff-admin-profile.js?v=manager-console-v1" defer></script><script src="./staff-xp-manager.js?v=1.1.70" defer></script>
 </head>
-<body>
+<body><script>if(/DolphinManager/.test(navigator.userAgent)||window.DOLPHIN_APP_TYPE==="manager")document.documentElement.dataset.app="manager";</script>
 <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
 <symbol id="i-user" viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21v-2a8 8 0 0 1 16 0v2"/></symbol>
 <symbol id="i-spark" viewBox="0 0 24 24"><path d="m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5Z"/></symbol>
@@ -21,12 +21,42 @@
  <div class="identity"><span id="profile-avatar" class="hero-avatar" aria-hidden="true">🐬</span><div class="identity-copy"><h2 id="profile-name" class="name">Hồ sơ của bạn</h2><p id="profile-title" class="profile-title" hidden></p><div class="identity-meta"><span id="employee-id" class="id">Chưa đăng ký</span><span id="profile-state" class="pill">Đang kết nối…</span></div></div><button type="button" class="icon-button" data-open-dialog="profile-edit-dialog" aria-label="Chỉnh sửa hồ sơ"><svg class="icon"><use href="#i-user"/></svg></button></div>
  <div id="staff-progress-card" class="progress-summary"><div class="section-line"><span class="eyebrow">Hành trình của bạn</span><span id="staff-level-tag" class="level-tag">LEVEL —</span></div><div id="staff-xp-summary" aria-live="polite">Đang tải cấp độ…</div><div id="staff-xp-track" role="progressbar" aria-label="Tiến độ cấp độ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="staff-xp-fill"></div></div><div class="progress-foot"><span id="staff-next-level">XP được lưu theo Staff ID</span><button type="button" class="text-button" data-open-dialog="rewards-dialog">Mốc thưởng ↗</button></div><div class="next-reward" id="staff-next-reward" aria-live="polite">🎁 Phần thưởng tiếp theo đang tải…</div></div>
 </section>
+<section id="crew-manager-approvals" class="card crew-manager-panel" hidden aria-label="Trung tâm quản lý nhân viên DOL-0001">
+ <div class="section-line"><div><p class="eyebrow">DOL-0001 · QUẢN LÝ</p><h2>👑 Trung tâm nhân sự</h2></div><span id="crew-approval-count" class="level-tag">Đang kiểm tra</span></div>
+ <p class="hint">Duyệt hồ sơ, khôi phục thiết bị và quản lý XP. Các quyền được xác minh trực tiếp trên Firebase.</p>
+ <p id="crew-manager-status" class="hint" role="status"></p>
+ <div class="manager-action-grid">
+  <button type="button" class="manager-action" id="crew-approval-open"><span class="manager-action-icon">✅</span><strong id="crew-approval-open-label">Duyệt nhân viên</strong><small>Hồ sơ đang chờ <span id="crew-approval-badge" hidden>●</span></small></button>
+  <button type="button" class="manager-action" id="crew-recovery-open"><span class="manager-action-icon">🔑</span><strong>Khôi phục thiết bị</strong><small>Cấp mã liên kết cho nhân viên</small></button>
+ </div>
+ <details class="manager-settings"><summary>⚙️ Tùy chọn quản lý</summary>
+  <label class="effect-setting" for="crew-manager-ranking-toggle"><span><strong>Hiện trên bảng xếp hạng</strong><small>Cho phép DOL-0001 xuất hiện công khai</small></span><input type="checkbox" id="crew-manager-ranking-toggle"></label>
+ </details>
+ <div class="manager-xp-action"><button id="prestige-admin-launch" type="button" class="settings-row" data-open-dialog="admin-dialog" hidden><span class="action-icon"><svg class="icon"><use href="#i-shield"/></svg></span><span><strong>Duyệt XP nhân viên</strong><small>Dành cho quản lý được cấp quyền</small></span><span aria-hidden="true">↗</span></button></div>
+<div class="manager-lab-slot"><section id="crew-admin-sandbox" class="card crew-admin-sandbox" hidden aria-labelledby="crew-admin-title">
+ <div class="section-line"><span class="eyebrow">🧪 Admin · DOL-0001</span><span class="level-tag">CHẾ ĐỘ TEST</span></div>
+ <h2 id="crew-admin-title">Phòng thử XP</h2>
+ <p class="hint">Cộng hoặc đặt lại XP của riêng bạn để khám phá Level, avatar và hiệu ứng. XP của Admin không tham gia bảng xếp hạng Level/XP hay danh hiệu Dolphin Emperor.</p>
+ <div class="test-xp-presets">
+  <button type="button" class="secondary" data-admin-test-add="1000">+1.000 XP</button>
+  <button type="button" class="secondary" data-admin-test-add="5000">+5.000 XP</button>
+  <button type="button" class="secondary" data-admin-test-add="50000">+50.000 XP</button>
+ </div>
+ <label for="admin-test-xp-amount">Hoặc nhập số XP muốn cộng</label>
+ <div class="test-xp-custom"><input type="number" id="admin-test-xp-amount" min="1" max="1000000" step="1" inputmode="numeric" placeholder="Ví dụ: 80000"><button type="button" class="secondary" id="admin-test-xp-add">Cộng XP</button></div>
+ <button type="button" class="secondary test-xp-reset" id="admin-test-xp-reset">Đặt lại XP & Level về 0 / 1</button>
+ <p id="admin-test-xp-result" class="hint" role="status" aria-live="polite"></p>
+</section></div>
+ <p id="crew-manager-feedback" class="hint" role="status"></p>
+</section>
+<h2 class="manager-section-title">Cài đặt cá nhân</h2>
 <nav class="quick-actions" aria-label="Cài đặt hồ sơ">
  <button type="button" data-open-dialog="profile-edit-dialog"><span class="action-icon"><svg class="icon"><use href="#i-user"/></svg></span><span>Hồ sơ</span></button>
  <button type="button" data-open-dialog="style-dialog"><span class="action-icon"><svg class="icon"><use href="#i-spark"/></svg></span><span>Giao diện</span></button>
  <button type="button" data-open-dialog="rewards-dialog"><span class="action-icon"><svg class="icon"><use href="#i-gift"/></svg></span><span>Phần thưởng</span></button>
  <button type="button" data-open-dialog="devices-dialog"><span class="action-icon"><svg class="icon"><use href="#i-device"/></svg></span><span>Thiết bị</span></button>
 </nav>
+<div class="manager-secondary-row"><a class="settings-row ranking-shortcut" href="./ranking/index.html#level" aria-label="Mở bảng xếp hạng Level và XP trong app Bảng Xếp Hạng"><span class="action-icon"><svg class="icon" aria-hidden="true"><use href="#i-crown"/></svg></span><span><strong>Bảng xếp hạng Level · XP</strong><small>Xem Dolphin Emperor, thứ hạng nhân viên và Legendary Wall tại app Bảng Xếp Hạng.</small></span><span aria-hidden="true">↗</span></a></div>
 <section class="card daily-missions" id="staff-daily-card" aria-labelledby="staff-daily-title">
  <div class="section-line"><div><p class="eyebrow">Dolphin Crew Club · 00:00 reset</p><h2 id="staff-daily-title">🎯 Nhiệm vụ hằng ngày</h2></div><span id="staff-daily-counter" class="level-tag">0/8</span></div>
  <p class="hint">Mỗi nhiệm vụ chỉ nhận XP một lần trong ngày (giờ Việt Nam). Nhiệm vụ công việc tự hoàn thành qua Staff ID đã duyệt. Nhiệm vụ game cộng XP khi điểm số được máy chủ xác thực.</p>
@@ -42,29 +72,9 @@
  <div id="staff-reward-highlights" class="reward-highlights" aria-live="polite"></div>
 </section>
 <div class="status-strip"><p id="profile-message" role="status" aria-live="polite">Đang kết nối hồ sơ nhân viên…</p><p id="staff-xp-status" role="status"></p><button type="button" class="text-button" id="staff-xp-reconcile">Làm mới XP ↻</button><button type="button" class="text-button" id="staff-xp-retry" hidden>Thử tải lại</button></div>
-<section id="crew-admin-sandbox" class="card crew-admin-sandbox" hidden aria-labelledby="crew-admin-title">
- <div class="section-line"><span class="eyebrow">🧪 Admin · DOL-0001</span><span class="level-tag">CHẾ ĐỘ TEST</span></div>
- <h2 id="crew-admin-title">Phòng thử XP</h2>
- <p class="hint">Cộng hoặc đặt lại XP của riêng bạn để khám phá Level, avatar và hiệu ứng. XP của Admin không tham gia bảng xếp hạng Level/XP hay danh hiệu Dolphin Emperor.</p>
- <div class="test-xp-presets">
-  <button type="button" class="secondary" data-admin-test-add="1000">+1.000 XP</button>
-  <button type="button" class="secondary" data-admin-test-add="5000">+5.000 XP</button>
-  <button type="button" class="secondary" data-admin-test-add="50000">+50.000 XP</button>
- </div>
- <label for="admin-test-xp-amount">Hoặc nhập số XP muốn cộng</label>
- <div class="test-xp-custom"><input type="number" id="admin-test-xp-amount" min="1" max="1000000" step="1" inputmode="numeric" placeholder="Ví dụ: 80000"><button type="button" class="secondary" id="admin-test-xp-add">Cộng XP</button></div>
- <button type="button" class="secondary test-xp-reset" id="admin-test-xp-reset">Đặt lại XP & Level về 0 / 1</button>
- <p id="admin-test-xp-result" class="hint" role="status" aria-live="polite"></p>
-</section>
-<section id="crew-manager-approvals" class="card crew-manager-panel" hidden aria-label="Quản lý nhân viên DOL-0001">
- <div class="section-line"><h2>👑 Quản lý nhân viên</h2><span id="crew-approval-count" class="level-tag">0 hồ sơ</span></div>
- <p class="hint">Chỉ tài khoản DOL-0001 đã xác minh có thể phê duyệt nhân viên.</p>
- <button type="button" class="primary full" id="crew-approval-open"><span id="crew-approval-open-label">Duyệt nhân viên</span> <span id="crew-approval-badge" hidden aria-label="Có nhân viên chờ duyệt">🔴</span></button>
- <label class="effect-setting" for="crew-manager-ranking-toggle"><span><strong>Hiện trên bảng xếp hạng</strong><small>Bật để DOL-0001 tham gia xếp hạng; tắt để ẩn khỏi bảng công khai.</small></span><input type="checkbox" id="crew-manager-ranking-toggle"></label>
- <p id="crew-manager-feedback" class="hint" role="status"></p>
-</section>
-<a class="settings-row ranking-shortcut" href="./ranking/index.html#level" aria-label="Mở bảng xếp hạng Level và XP trong app Bảng Xếp Hạng"><span class="action-icon"><svg class="icon" aria-hidden="true"><use href="#i-crown"/></svg></span><span><strong>Bảng xếp hạng Level · XP</strong><small>Xem Dolphin Emperor, thứ hạng nhân viên và Legendary Wall tại app Bảng Xếp Hạng.</small></span><span aria-hidden="true">↗</span></a>
-<button id="prestige-admin-launch" type="button" class="settings-row" data-open-dialog="admin-dialog" hidden><span class="action-icon"><svg class="icon"><use href="#i-shield"/></svg></span><span><strong>Duyệt XP nhân viên</strong><small>Dành cho quản lý được cấp quyền</small></span><span aria-hidden="true">↗</span></button>
+
+
+
 <p class="page-note">Dolphin Crew Club chỉ để vui chơi và mở khóa trải nghiệm. Không liên quan đến lương, thưởng hoặc đánh giá công việc.</p>
 </main>
 <dialog id="profile-edit-dialog" aria-labelledby="edit-title"><div class="dialog-head"><div><p class="eyebrow">Cá nhân</p><h2 id="edit-title">Chỉnh sửa hồ sơ</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng chỉnh sửa hồ sơ">✕</button></div>
@@ -119,7 +129,7 @@
 <dialog id="crew-approval-dialog" aria-labelledby="crew-approval-dialog-title">
  <div class="dialog-head"><h2 id="crew-approval-dialog-title">👑 Nhân viên chờ phê duyệt</h2>
  <button type="button" class="icon-button" id="crew-approval-close" aria-label="Đóng duyệt nhân viên">✕</button></div>
- <div id="crew-approval-list"></div><div class="panel-section"><h3>🔑 Yêu cầu quên tài khoản</h3><p class="hint">Chỉ cấp mã sau khi xác nhận danh tính nhân viên. Mã một lần hiệu lực 10 phút.</p><div id="crew-recovery-list"></div><div id="crew-recovery-code" class="link-code" hidden></div><button type="button" class="secondary" id="crew-recovery-copy" hidden>Sao chép mã khôi phục</button></div><p id="crew-approval-dialog-status" role="status" class="hint"></p>
+ <div id="crew-approval-list"></div><div class="panel-section" id="crew-recovery-section"><h3>🔑 Yêu cầu quên tài khoản</h3><p class="hint">Chỉ cấp mã sau khi xác nhận danh tính nhân viên. Mã một lần hiệu lực 10 phút.</p><div id="crew-recovery-list"></div><div id="crew-recovery-code" class="link-code" hidden></div><button type="button" class="secondary" id="crew-recovery-copy" hidden>Sao chép mã khôi phục</button></div><p id="crew-approval-dialog-status" role="status" class="hint"></p>
  <button type="button" class="secondary full" id="crew-approval-refresh">Làm mới danh sách</button>
 </dialog>
 <dialog id="avatar-dialog" aria-labelledby="avatar-title"><div class="dialog-head"><h2 id="avatar-title">Chọn avatar</h2><button id="close-avatars" class="icon-button" type="button" aria-label="Đóng bộ chọn avatar">✕</button></div><label for="avatar-category">Bộ sưu tập</label><select id="avatar-category"></select><div id="avatar-grid" class="avatar-grid"></div><p class="hint">Chọn avatar, rồi lưu hồ sơ để áp dụng.</p></dialog>

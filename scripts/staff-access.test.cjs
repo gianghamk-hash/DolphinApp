@@ -16,7 +16,7 @@ const staffProfilePage=read('dolphin-profile.html');
 const sw=read('service-worker.js');
 test('home access is closed by default and linked verification is checked on startup',()=>{
  assert.match(home,/document\.documentElement\.classList\.add\('dolphin-access-pending'\)/);
- assert.match(home,/staff-access\.js\?v=crew-name-policy-v1/);
+ assert.match(home,/staff-access\.js\?v=manager-owner-v2/);
  assert.match(home,/staff-access\.css\?v=crew-name-policy-v1/);
  assert.match(gate,/identity\?\.verified===true&&identity\?\.employeeId/);
  assert.match(gate,/await api\.ready\(\)/);
@@ -47,7 +47,7 @@ test('manager DOL-0001 approval uses trusted server-side identity',()=>{
  assert.match(identity,/profile\.approved===true/);
 });
 test('direct staff-entry navigation and linked devices cannot bypass approval',()=>{
- assert.match(nav,/staff-access\.js\?v=crew-name-policy-v1/);
+ assert.match(nav,/staff-access\.js\?v=manager-owner-v2/);
  assert.match(gate,/root\.parent!==root/);
  assert.match(gate,/panel\('pending'\)/);
  assert.match(gate,/api\.link\(\$\('dag-code'\)\.value\.trim\(\)/);
@@ -73,7 +73,7 @@ test('production Staff ID client exposes repairName and all entry points load ma
  assert.match(staffClient,/repairName:name=>call\('staffRepairMyName',\{name\}\)/);
  assert.match(gate,/api\.repairName\(name\)/);
  assert.match(home,/staff-id\.js\?v=crew-operational-auth-v1/);
- assert.match(staffProfilePage,/staff-id\.js\?v=crew-operational-auth-v1/);
+ assert.match(staffProfilePage,/staff-id\.js\?v=manager-owner-v2/);
  assert.match(gate,/staff-id\.js\?v=crew-operational-auth-v1/);
  assert.match(sw,/staff-id\.js\?v=crew-operational-auth-v1/);
 });

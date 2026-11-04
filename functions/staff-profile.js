@@ -391,3 +391,32 @@ exports.staffApproveNameRecovery=onCall(opts,async req=>{
  });
  return {code,employeeId:checked.employeeId,name:staff.name,expiresInMinutes:10};
 });
+
+/* Account removal retains accounting evidence and never recycles a Staff ID. */
+exports.staffDeleteEmployee=onCall(opts,async req=>{
+ const manager=await requireAccessManager(req),id=String(req.data?.employeeId||'').trim().toUpperCase();
+ if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(id)||id==='DOL-0001')
+  throw new HttpsError('invalid-argument','Không thể xóa Staff ID này.');
+ if(req.data?.confirmEmployeeId!==id)throw new HttpsError('invalid-argument','Nhập đúng Staff ID để xác nhận xóa.');
+ const ref=getDatabase().ref('staffRegistry/'+id);
+ const tx=await ref.transaction(p=>{
+  if(p===null)return null;
+  if(p.deleted===true)return p;
+  return {...p,active:false,deleted:true,deletedAt:Date.now(),deletedBy:manager,updatedAt:Date.now()};
+ },undefined,false);
+ if(!tx.committed||tx.snapshot.val()?.deleted!==true)throw new HttpsError('not-found','Không tìm thấy hồ sơ.');
+ // Every identity/claim API checks active; leaving mappings prevents old devices
+ // bypassing removal by silently registering or claiming this ID again.
+ await require('./staff-prestige')._rebuildPrestige();
+ return {employeeId:id,deleted:true};
+});
+exports.staffIssueEmployeeRecoveryCode=onCall(opts,async req=>{
+ const manager=await requireAccessManager(req),id=String(req.data?.employeeId||'').trim().toUpperCase();
+ if(!/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(id)||id==='DOL-0001')throw new HttpsError('invalid-argument','Staff ID không hợp lệ.');
+ const db=getDatabase(),p=(await db.ref('staffRegistry/'+id).once('value')).val();
+ if(!p?.active||(p.registrationSource==='self'&&p.approved!==true))throw new HttpsError('permission-denied','Hồ sơ không còn hoạt động hoặc chưa được duyệt.');
+ await throttle(manager);
+ const code=crypto.randomBytes(18).toString('hex').toUpperCase(),hash=crypto.createHash('sha256').update(code).digest('hex');
+ await db.ref('staffEnrollmentCodes/'+hash).set({employeeId:id,issuedAt:Date.now(),expiresAt:Date.now()+600000,issuedBy:manager});
+ return {employeeId:id,name:p.name,code,expiresInMinutes:10};
+});

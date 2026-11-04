@@ -21,7 +21,7 @@ async function init(){
  mount();
  try{
   const role=await window.DolphinPrestige.call('staffIsPrestigeAdmin');
-  if($('prestige-admin-launch'))$('prestige-admin-launch').hidden=!role?.admin||!!role?.autoXP;
+  if($('prestige-admin-launch'))$('prestige-admin-launch').hidden=!role?.admin;
  }catch(e){console.warn('[Prestige admin] unavailable',e);}
 }
 function selections(){return [...document.querySelectorAll('#prestige-admin-events input[type=checkbox]:checked')].map(x=>x.value).slice(0,50);}
@@ -33,14 +33,14 @@ async function preview(){
   pending=data.pending||[];$('prestige-admin-events').replaceChildren();
   for(const ev of pending){
    const label=document.createElement('label');label.style.cssText='display:flex;align-items:flex-start;gap:10px;padding:8px 2px;border-bottom:1px solid #ffffff20;font-size:12px';
-   const input=document.createElement('input');input.type='checkbox';input.value=ev.eventId;input.checked=true;
+   const input=document.createElement('input');input.type='checkbox';input.value=ev.eventId;input.checked=!ev.needsReview;input.disabled=!!ev.needsReview;
    input.style.marginTop='4px';input.onchange=()=>{$('prestige-approve').disabled=!selections().length;};
    const span=document.createElement('span');
-   span.textContent=ev.date+' · '+ev.staffName+' · '+ev.outlet+' · '+ev.description+' · '+f(ev.amount)+' XP ('+(ev.source==='revenue'?'doanh thu':'công việc')+')';
+   span.textContent=ev.date+' · '+ev.staffName+' · '+ev.outlet+' · '+ev.description+' · '+f(ev.amount)+' XP '+(ev.needsReview?'[Thiếu ID nguồn — cần đối chiếu thủ công] ':'')+'('+(ev.source==='revenue'?'doanh thu':'công việc')+')';
    label.append(input,span);$('prestige-admin-events').appendChild(label);
   }
-  $('prestige-admin-status').textContent='Chưa duyệt: '+pending.length+' sự kiện (trong phạm vi quét '+data.scanned+'); doanh thu '+f(data.totals?.revenueXP)+' XP, công việc '+f(data.totals?.workXP)+' XP. Hãy kiểm tra số liệu trước khi duyệt.';
-  $('prestige-approve').disabled=!pending.length;
+  $('prestige-admin-status').textContent='Chưa duyệt: '+data.pendingCount+' (đang hiển thị '+pending.length+')'+' sự kiện (trong phạm vi quét '+data.scanned+'); doanh thu '+f(data.totals?.revenueXP)+' XP, công việc '+f(data.totals?.workXP)+' XP. Hãy kiểm tra số liệu trước khi duyệt.';
+  $('prestige-approve').disabled=!selections().length;
  }catch(e){$('prestige-admin-status').textContent='Lỗi tải: '+e.message;}
  finally{btn.disabled=false;}
 }

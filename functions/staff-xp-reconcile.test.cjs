@@ -74,3 +74,52 @@ test('approved renamed employee retains historical work attribution by name alia
  assert.equal(events.find(x=>x.source==='work').amount,1000);
  assert.ok(events.every(x=>x.employeeId==='DOL-0010'));
 });
+
+function auditFixture(sessions,initialLedger={}){
+ const data=new Map(Object.entries(initialLedger));
+ const registry={'DOL-0002':{employeeId:'DOL-0002',name:'Minh',active:true,registrationSource:'manager'}};
+ const read=p=>p==='staffRegistry'?registry:p.startsWith('staffXpLedger/')&&p.split('/').length===2?
+  Object.fromEntries([...data].filter(([k])=>k.startsWith(p+'/')).map(([k,v])=>[k.slice(p.length+1),v])):data.get(p)||null;
+ const ref=p=>({once:async()=>({val:()=>read(p),exists:()=>!!read(p)}),set:async v=>data.set(p,v),transaction:async fn=>{const next=fn(read(p));if(next===undefined)return {committed:false};data.set(p,next);return {committed:true};}});
+ const collection=c=>({orderBy:()=>({limit:()=>({get:async()=>({docs:(sessions[c]||[]).map((v,i)=>({id:'session-'+i,data:()=>v}))})})})});
+ const exp={},ctx={exports:exp,module:{exports:exp},process:{env:{STAFF_ADMIN_UIDS:'manager',STAFF_SECURE_AUTO_XP_ENABLED:'true'}},console,Date,Math,Number,String,Set,Map,Object,Array};
+ ctx.require=n=>{
+  if(n==='node:crypto')return crypto;
+  if(n==='firebase-admin/database')return {getDatabase:()=>({ref})};
+  if(n==='firebase-admin/firestore')return {getFirestore:()=>({collection})};
+  if(n==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError:class extends Error{}};
+  if(n==='./staff-xp-engine.cjs')return engine;
+  if(n==='./staff-prestige')return {_awardTrustedLiveXP:async e=>{const path='staffXpLedger/'+e.employeeId+'/'+e.eventId;if(data.has(path))return {duplicate:true};data.set(path,e);return {duplicate:false};},_rebuildPrestige:async()=>{}};
+  throw Error(n);
+ };
+ vm.runInNewContext(file,ctx);
+ const req={auth:{uid:'manager'}};
+ return {preview:()=>exp.staffPreviewArchiveXP(req),approve:ids=>exp.staffApproveArchiveXP({...req,data:{eventIds:ids}}),data};
+}
+const liveId=(...parts)=>'live:'+crypto.createHash('sha256').update(parts.join('|')).digest('hex').slice(0,40);
+test('archive audit stays available with automatic XP and excludes already paid live sales and duplicate archives',async()=>{
+ const date=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}),session={date,tables:{'LOUNGE 1':{openedByStaff:'Minh',openedByStaffId:'DOL-0002',pax:2}}};
+ const h=auditFixture({lounge_history_sessions:[session,session]});
+ let result=await h.preview();assert.equal(result.pendingCount,1);assert.equal(result.pending[0].amount,500);
+ await h.approve(result.pending.map(e=>e.eventId));
+ result=await h.preview();assert.equal(result.pendingCount,0);
+ const awards=[...h.data].filter(([k])=>k.startsWith('staffXpLedger/'));assert.equal(awards.length,1);
+ assert.ok(awards[0][0].endsWith(liveId('sale','lounge_tables','LOUNGE 1',date,'DOL-0002')));
+});
+test('work repair shares canonical live action receipts, subtracting partial XP and ignoring archive copies',async()=>{
+ const date=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}),session={date,orders:[{id:'order1',status:'completed',preparedBy:'Minh',completedBy:'Minh'}]};
+ const prep=liveId('work','lounge_orders','order1','preparing','DOL-0002');
+ const h=auditFixture({lounge_history_sessions:[session,session]},{['staffXpLedger/DOL-0002/'+prep]:{amount:100}});
+ const result=await h.preview();assert.equal(result.pendingCount,1);assert.equal(result.pending[0].amount,150);
+ await h.approve(result.pending.map(e=>e.eventId));assert.equal((await h.preview()).pendingCount,0);
+ const complete=liveId('work','lounge_orders','order1','completed','DOL-0002');
+ assert.equal(h.data.get('staffXpLedger/DOL-0002/'+complete).amount,150);
+});
+test('old archive manager receipt is not paid again and old work retains its historical rate',async()=>{
+ const date=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}),session={date,orders:[{id:'o1',status:'completed',completedBy:'Minh'}]};
+ const legacy='arc:'+crypto.createHash('sha256').update(['lounge_history_sessions','session-0','work','0','DOL-0002'].join('|')).digest('hex').slice(0,40);
+ const h=auditFixture({lounge_history_sessions:[session]},{['staffXpLedger/DOL-0002/'+legacy]:{amount:250}});
+ assert.equal((await h.preview()).pendingCount,0);
+ const old=api._fromSession('bun_history','old',{date:'2026-10-30',orders:[{id:'old',status:'completed',completedBy:'Minh'}]},directory());
+ assert.equal(old[0].amount,10);
+});

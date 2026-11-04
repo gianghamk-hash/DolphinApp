@@ -31,7 +31,7 @@ function expose(p){
  return {employeeId:p.employeeId,name:p.name,avatar:p.avatar||'🐬',
   level,rank:engine.rankForLevel(level),xp,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
   unlocked:[...engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>level>=x.level).map(x=>x.id)],
-  rewardCatalog:engine.COSMETIC_REWARDS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
+  rewardCatalog:engine.COSMETIC_REWARDS,perkCatalog:engine.PERKS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
   selectedFrame:cosmeticChoice('frame',p.selectedFrame,level),
   selectedAvatarMotion:cosmeticChoice('avatarMotion',p.selectedAvatarMotion,level),
   selectedTitle:cosmeticChoice('title',p.selectedTitle,level),
@@ -269,11 +269,16 @@ async function awardVerifiedXP(req,data,options={}){
  const recipient=(await db.ref('staffRegistry/'+employeeId).once('value')).val();
  if(!isApprovedProfile(recipient))throw new HttpsError('permission-denied','Chỉ hồ sơ đã duyệt mới được nhận XP.');
  const ref=db.ref('staffXpLedger/'+employeeId+'/'+eventId);
- const record={employeeId,eventId,source,amount,approvedBy:options.trusted?'automatic-firestore-trigger':uid(req),at:Date.now()};
+ const record={employeeId,eventId,source,amount,approvedBy:options.trusted?'automatic-firestore-trigger':uid(req),at:Date.now(),state:'pending'};
  const written=await ref.transaction(v=>v?undefined:record);
- if(!written.committed)return {duplicate:true,employeeId,eventId};
+ const receipt=(await ref.once('value')).val();
+ // Legacy receipts have no state and are already accounted for. New pending
+ // receipts can be retried after a process crash at any point.
+ if(!written.committed&&receipt?.state!=='pending')return {duplicate:true,employeeId,eventId};
+ if(receipt.employeeId!==employeeId||receipt.source!==source||receipt.amount!==amount)
+  throw new HttpsError('failed-precondition','Sự kiện XP không khớp biên nhận.');
  const profileRef=db.ref('staffRegistry/'+employeeId);
- let progress,credited=false;
+ let progress,applied=false;
  try{
   // RTDB transaction updater can receive an initial null even when this
   // profile exists in the server. Aborting on that transient cold-cache null
@@ -282,20 +287,24 @@ async function awardVerifiedXP(req,data,options={}){
   if(!prefetched?.active)throw Error('Hồ sơ không còn hoạt động');
   let firstUpdate=true;
   const tx=await profileRef.transaction(v=>{
+   applied=false;
    const initial=firstUpdate;
    firstUpdate=false;
    // Only the first speculative callback may use the just-read server state.
    // If a subsequent server update sees null (real deletion), abort safely.
    const current=v===null&&initial?prefetched:v;
    if(!current?.active)return;
+   if(current.appliedXPEvents?.[eventId])return current;
+   applied=true;
    const xp=Math.max(0,Number(((Number(current.xp)||0)+amount).toFixed(2)));
-   return {...current,xp,levelPeak:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp)),updatedAt:Date.now()};
+   return {...current,xp,appliedXPEvents:{...current.appliedXPEvents,[eventId]:true},levelPeak:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp)),updatedAt:Date.now()};
   },undefined,false);
   if(!tx.committed){
    const latest=(await profileRef.once('value')).val();
    throw Error(latest?.active?'Không thể ghi XP do giao dịch dữ liệu bị gián đoạn':'Hồ sơ không còn hoạt động');
   }
-  credited=true;progress=expose(tx.snapshot.val());
+  progress=expose(tx.snapshot.val());
+  await ref.set({...receipt,state:'credited'});
   if(amount>0){
    const prev=engine.levelForXP(Math.max(0,Number((progress.xp-amount).toFixed(2))));
    if(Math.floor(progress.level/10)>Math.floor(prev/10)&&progress.level>=10){
@@ -304,10 +313,10 @@ async function awardVerifiedXP(req,data,options={}){
       type:'level',name:progress.name,level:milestone,text:'🌟 '+progress.name+' đã đạt Level '+milestone+'!',at:Date.now()});
    }
   }
- }catch(e){if(!credited)await ref.remove();throw new HttpsError('internal','Không thể cấp XP: '+e.message);}
+ }catch(e){throw new HttpsError('internal','Không thể cấp XP: '+e.message);}
  // Do not undo an already committed XP award if the public board refresh fails.
  if(!options.skipRebuild)try{await rebuild();}catch(e){console.error('[StaffPrestige] leaderboard refresh failed',e);}
- return {duplicate:false,...progress};
+ return {duplicate:!applied,...progress};
 }
 exports.staffGrantVerifiedXP=onCall(opts,req=>awardVerifiedXP(req,req.data));
 exports.staffRebuildPrestige=onCall(opts,async req=>{

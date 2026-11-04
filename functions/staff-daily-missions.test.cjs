@@ -28,6 +28,7 @@ function fixture(options={}){
   if(name==='node:crypto')return require('node:crypto');
   if(name==='firebase-admin/database')return {getDatabase:()=>({ref})};
   if(name==='firebase-functions/v2/https')return {onCall:(_,callback)=>callback,HttpsError};
+  if(name==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
   if(name==='./staff-daily-core.cjs')return core;
   if(name==='./crew-arcade-proof.cjs')return require('../crew-arcade-proof.js');
   if(name==='./staff-prestige')return {_rebuildPrestige:async()=>{rebuilds++}};
@@ -67,4 +68,17 @@ test('business missions are internal-only, idempotent and update profile level',
  assert.equal(h.data.get('staffRegistry/DOL-0002').xp,3890);
  assert.equal(h.data.get('staffRegistry/DOL-0002').levelPeak,2);
  await assert.rejects(()=>h.api._award(h.employeeId,'unknown_mission'),e=>e.code==='invalid-argument');
+});
+
+test('delayed business mission credits its original VN day once without resetting today',async()=>{
+ const h=fixture(),path='staffRegistry/'+h.employeeId;
+ const old=Date.now()-86400000;
+ await h.api._award(h.employeeId,'order_completed',old);
+ assert.equal(h.data.get(path).xp,400);
+ await h.api.staffCheckInDaily(req('worker'));
+ await h.api._award(h.employeeId,'order_completed',old);
+ assert.equal(h.data.get(path).xp,600);
+ assert.equal(h.data.get(path).dailyMissions.date,core.vietnamDay());
+ const today=await h.api._award(h.employeeId,'order_completed');
+ assert.equal(today.addedXP,400);assert.equal(h.data.get(path).xp,1000);
 });

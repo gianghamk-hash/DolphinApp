@@ -22,22 +22,33 @@ async function verifiedStaff(req){
  if(namePolicy.needsRename(registry,id))throw new HttpsError('permission-denied','Cần đổi họ tên hợp lệ trước khi nhận XP.');
  return {employeeId:id};
 }
-async function award(employeeId,taskId){
+async function award(employeeId,taskId,eventTime){
  if(!core.TASKS.some(task=>task.id===taskId))
   throw new HttpsError('invalid-argument','Nhiệm vụ không hợp lệ.');
  if(!idPattern.test(String(employeeId||'')))
   throw new HttpsError('invalid-argument','Staff ID không hợp lệ.');
  const ref=getDatabase().ref('staffRegistry/'+employeeId);
- const timestamp=Date.now(),receipt=crypto.randomBytes(12).toString('hex');
+ const timestamp=Number.isFinite(eventTime)?eventTime:Date.now(),receipt=crypto.randomBytes(12).toString('hex');
  const result=await ref.transaction(current=>{
   // Firebase RTDB cold cache can initially invoke the callback with null.
   // Proposing null forces a retry against the existing server record.
   if(current===null)return null;
-  const next=core.apply(current,taskId,timestamp,receipt);
-  return next.changed?next.profile:undefined;
+  const day=core.vietnamDay(timestamp),business=['order_completed','order_received','bungalow_opened','lounge_opened'].includes(taskId);
+  if(business&&current.businessMissionReceipts?.[day]?.[taskId])return;
+  const prior=current.dailyMissions?.date===day&&current.dailyMissions?.completed?.[taskId];
+  if(business&&prior)return;
+  let next;
+  if(business&&day<core.vietnamDay()){
+   if(!current.active||(current.registrationSource==='self'&&current.approved!==true))return;
+   const amount=core.TASKS.find(t=>t.id===taskId).xp,xp=(Number(current.xp)||0)+amount;
+   next={changed:true,profile:{...current,xp,levelPeak:Math.max(Number(current.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(xp))}};
+  }else next=core.apply(current,taskId,timestamp,receipt);
+  if(!next.changed)return;
+  if(business)next.profile.businessMissionReceipts={...current.businessMissionReceipts,[day]:{...current.businessMissionReceipts?.[day],[taskId]:{receipt,xp:core.TASKS.find(t=>t.id===taskId).xp,at:timestamp}}};
+  return next.profile;
  },undefined,false);
  const updated=result.snapshot?.val();
- const record=updated?.dailyMissions?.completed?.[taskId];
+ const record=updated?.businessMissionReceipts?.[core.vietnamDay(timestamp)]?.[taskId]||updated?.dailyMissions?.completed?.[taskId];
  const awarded=!!result.committed&&record?.receipt===receipt;
  const addedXP=awarded?Number(record.xp)||0:0;
  if(awarded){

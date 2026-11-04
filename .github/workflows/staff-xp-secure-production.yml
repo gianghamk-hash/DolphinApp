@@ -4,10 +4,13 @@ on:
     branches: [main, feat/staff-xp-secure-production-20261101]
     paths:
       - '.github/workflows/staff-xp-secure-production.yml'
+      - 'functions/staff-prestige.js'
+      - 'functions/staff-daily-missions.js'
       - 'functions/staff-xp-actions.js'
       - 'functions/staff-xp-engine.cjs'
       - 'functions/staff-xp-engine.test.cjs'
       - 'functions/staff-xp-reconcile.js'
+      - 'firestore.rules'
       - 'functions/index.js'
       - 'functions/staff-xp-actions.test.cjs'
       - 'scripts/staff-operational-auth.test.cjs'
@@ -64,7 +67,8 @@ jobs:
       - name: Deploy verified staff callable only (do not create untrusted triggers)
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffRecordLiveAction,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
+          firebase deploy --project dolphin-f6d67 --non-interactive --only firestore:rules
+          firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffDeliverPendingXP,functions:staffRetryPendingXP,functions:staffGrantVerifiedXP,functions:staffRecordLiveAction,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
       - name: Remove temporary environment
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

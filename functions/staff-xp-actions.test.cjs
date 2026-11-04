@@ -3,7 +3,7 @@ const {test}=require('node:test'),assert=require('node:assert/strict');
 const vm=require('node:vm'),fs=require('node:fs');
 function harness(){
  const data=new Map([['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager'}],['staffIdentity/self',{verified:false,employeeId:'DOL-0002'}],['staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Self Pending',active:true,registrationSource:'self',approved:false}],['staffIdentity/approvedSelf',{verified:false,employeeId:'DOL-0006'}],['staffRegistry/DOL-0006',{employeeId:'DOL-0006',name:'Nguyễn Tiến Nam',active:true,registrationSource:'self',approved:true}],['staffIdentity/manager',{verified:true,employeeId:'DOL-0003'}],['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Manager',active:true,registrationSource:'manager'}],['staffIdentity/owner',{verified:true,employeeId:'DOL-0004'}],['staffRegistry/DOL-0004',{employeeId:'DOL-0004',name:'Đỗ Thành Đạt',nameAliases:['Dat G'],active:true,registrationSource:'manager'}],['staffIdentity/intruder',{verified:true,employeeId:'DOL-0005'}],['staffRegistry/DOL-0005',{employeeId:'DOL-0005',name:'Another Employee',active:true,registrationSource:'manager'}]]);
- const docs=new Map(),awards=[],missionAwards=[];
+ const docs=new Map(),awards=[],missionAwards=[];let failAward=false;
  const ref=p=>({once:async()=>({val:()=>data.get(p)||null,exists:()=>data.has(p)}),set:async v=>{data.set(p,v)},transaction:async fn=>{const v=fn(data.get(p)||null);if(v===undefined)return {committed:false};data.set(p,v);return {committed:true,snapshot:{val:()=>v}};}});
  const db={collection:k=>({doc:id=>({key:k+'/'+id})}),runTransaction:async fn=>fn({get:async r=>({exists:docs.has(r.key),data:()=>docs.get(r.key)}),set:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v}),update:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v})})};
  class HttpsError extends Error{constructor(code,msg){super(msg);this.code=code}}
@@ -11,17 +11,19 @@ function harness(){
   if(n==='node:crypto')return require(n);
   if(n==='firebase-admin/database')return {getDatabase:()=>({ref})};
   if(n==='firebase-admin/firestore')return {getFirestore:()=>db};
+  if(n==='firebase-functions/v2/firestore')return {onDocumentCreated:(_,f)=>f};
+  if(n==='firebase-functions/v2/scheduler')return {onSchedule:(_,f)=>f};
   if(n==='firebase-functions/v2/https')return {onCall:(_,f)=>f,HttpsError};
   if(n==='./staff-xp-live-engine.cjs')return require('./staff-xp-live-engine.cjs');
   if(n==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
   if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>{missionAwards.push({employeeId,taskId});return {addedXP:{lounge_opened:250,bungalow_opened:300,order_received:150,order_completed:400}[taskId]||0,awarded:true};}};
-  if(n==='./staff-prestige')return {_awardTrustedLiveXP:async d=>{const k='staffXpLedger/'+d.employeeId+'/'+d.eventId;if(data.has(k))return {duplicate:true};data.set(k,d);awards.push(d);return {duplicate:false}}};
+  if(n==='./staff-prestige')return {_awardTrustedLiveXP:async d=>{if(failAward)throw Error('credit offline');const k='staffXpLedger/'+d.employeeId+'/'+d.eventId;if(data.has(k))return {duplicate:true};data.set(k,d);awards.push(d);return {duplicate:false}}};
   if(n==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
   throw Error(n);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-xp-actions.js','utf8'),ctx);
- return {call:(u,d)=>exp.staffRecordLiveAction({auth:u?{uid:u}:null,data:d}),docs,awards,missionAwards};
+ return {call:(u,d)=>exp.staffRecordLiveAction({auth:u?{uid:u}:null,data:d}),docs,awards,missionAwards,failAward:value=>{failAward=value},deliver:ref=>exp.staffDeliverPendingXP({data:{ref}})};
 }
 test('only manager verified staff can open revenue sessions, no duplicate XP',async()=>{
  const h=harness(),input={kind:'lounge_tables',id:'LOUNGE 1',action:'booking',data:{customerName:'Guest',pax:3,paymentMethod:'TM',openedByStaff:'spoof'}};
@@ -304,4 +306,21 @@ test('Lounge form edits occupied tables through no-XP server-side update while m
  assert.match(html,/if\(origPax>0 && pax!==origPax\)/);
  assert.match(html,/window\.promptManagerAuth\('save'/);
  assert.match(html,/performLiveAction/);
+});
+
+test('work saved before an XP outage is retried from a trusted obligation exactly once',async()=>{
+ const h=harness();h.docs.set('lounge_orders/retry-order',{status:'pending'});h.failAward(true);
+ const input={kind:'lounge_orders',id:'retry-order',action:'completed'};
+ await assert.rejects(()=>h.call('owner',input),/credit offline/);
+ assert.equal(h.docs.get('lounge_orders/retry-order').status,'completed');
+ h.failAward(false);
+ assert.equal((await h.call('owner',input)).xpAwarded,250);
+ assert.equal((await h.call('owner',input)).xpAwarded,0);assert.equal(h.awards.length,1);
+});
+test('trusted outbox delivery survives deletion of the client-writable live order',async()=>{
+ const h=harness();h.docs.set('bun_orders/archived',{status:'pending'});h.failAward(true);
+ await assert.rejects(()=>h.call('owner',{kind:'bun_orders',id:'archived',action:'completed'}));
+ h.docs.delete('bun_orders/archived');h.failAward(false);
+ const key=[...h.docs.keys()].find(k=>k.startsWith('staff_xp_outbox/'));
+ await h.deliver({key});await h.deliver({key});assert.equal(h.awards.length,1);assert.equal(h.awards[0].amount,1000);
 });

@@ -380,7 +380,32 @@ function init(){
  renderMine();showStatus();
  setInterval(()=>{if(!document.hidden&&mine?.dailyMissions?.date&&mine.dailyMissions.date!==vietnamToday())void window.DolphinPrestige?.refresh();},30000);
 }
-window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;renderMine();showStatus();});
+function celebrateLevel(next){
+ if(!next?.employeeId||!Number.isInteger(next.level))return;
+ const key='dolphin_level_seen:'+next.employeeId;
+ let previous;
+ try{previous=Number(localStorage.getItem(key))||1;}catch(_){previous=1;}
+ if(next.testAdmin&&next.level<previous){try{localStorage.setItem(key,String(next.level));}catch(_){}return;}
+ if(next.level<=previous)return;
+ // Persist only after showing; never consume an unseen notification while
+ // another modal is open. Retry on the next profile update.
+ if(document.querySelector('dialog[open]'))return;
+ const dialog=document.createElement('dialog');dialog.setAttribute('aria-labelledby','crew-levelup-title');
+ const title=document.createElement('h2');title.id='crew-levelup-title';title.textContent='🎉 Chúc mừng lên cấp '+next.level+'!';
+ const text=document.createElement('p');text.textContent='Bạn đã đạt Lv.'+next.level+'.';
+ const rewards=[...(next.rewardCatalog||[]),...(next.perkCatalog||[]).filter(r=>r.id.startsWith('avatar-')).map(r=>({...r,label:r.name}))].filter(r=>r.level>previous&&r.level<=next.level);
+ const list=document.createElement('ul');
+ for(const reward of rewards){const li=document.createElement('li');li.textContent=reward.label;list.append(li);}
+ if(!rewards.length){text.textContent+=' Tiếp tục tích lũy XP để mở thêm phần thưởng.';}
+ const open=document.createElement('button');open.type='button';open.className='primary';open.textContent='Đến cài đặt giao diện';
+ open.onclick=()=>{dialog.close();$('style-dialog')?.showModal();};
+ const close=document.createElement('button');close.type='button';close.className='secondary';close.textContent='Để sau';close.onclick=()=>dialog.close();
+ dialog.append(title,text,list,open,close);document.body.append(dialog);
+ dialog.addEventListener('close',()=>dialog.remove(),{once:true});dialog.showModal();
+ try{localStorage.setItem(key,String(next.level));}catch(_){}
+}
+window.addEventListener('dolphin-my-progress-updated',e=>{mine=e.detail;renderMine();showStatus();celebrateLevel(mine);});
 window.addEventListener('dolphin-prestige-status',showStatus);
+document.addEventListener('close',()=>setTimeout(()=>celebrateLevel(mine),0),true);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();

@@ -178,3 +178,53 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 .daily-message[data-error="true"]{color:#ffb3a1}
 @media(max-width:420px){.daily-missions{padding:17px 13px}.daily-task{gap:8px;padding:11px 9px}.daily-task-icon{width:33px;height:33px;font-size:19px}.daily-task-checkin{min-width:75px;font-size:10px;padding:6px 7px}.daily-task-right{max-width:95px}}
 @media(prefers-reduced-motion:reduce){.daily-track>span{transition:none}}
+
+/* Manager APK-only profile layout. Role presentation never grants Firebase access. */
+html[data-app="manager"] #staff-daily-card{display:none!important}
+.manager-section-title{font-size:13px;letter-spacing:.05em;text-transform:uppercase;color:var(--muted);margin:19px 0 8px}
+.manager-action-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:16px 0}
+.manager-action{display:flex;flex-direction:column;align-items:flex-start;gap:7px;text-align:left;min-height:120px;
+ padding:15px;border:1px solid var(--line);border-radius:16px;background:var(--surface);color:var(--ink);font:inherit}
+.manager-action-icon{font-size:25px}
+.manager-action strong{font-size:13px}
+.manager-action small{color:var(--muted);font-size:11px;line-height:1.5}
+.manager-action:disabled{opacity:.55;cursor:not-allowed}
+.manager-action:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+.manager-settings{border-top:1px solid var(--line);padding-top:13px}
+.manager-settings summary{font-size:12px;font-weight:850;cursor:pointer}
+.manager-settings .effect-setting{margin-top:12px}
+.manager-xp-action{margin-top:12px}
+.manager-lab-slot .crew-admin-sandbox{margin-top:15px}
+.manager-secondary-row{margin:10px 0 16px}
+html[data-app="manager"] .quick-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+html[data-app="manager"] .quick-actions button{min-width:0;min-height:74px}
+html[data-app="manager"] .manager-section-title{margin-top:24px}
+html[data-app="manager"] .crew-manager-panel{order:0}
+html[data-app="manager"][data-verified-manager="true"] .profile-hero{
+ position:relative;isolation:isolate;overflow:hidden;
+ border-color:#e8c777!important;
+ box-shadow:0 0 0 1px #e7c77b77,0 14px 48px #d4a94a27,inset 0 0 28px #f7d88914;
+}
+html[data-app="manager"][data-verified-manager="true"] .profile-hero::after{
+ content:"";position:absolute;inset:-80%;pointer-events:none;z-index:-1;
+ background:conic-gradient(from 0deg,transparent 0 36%,#f2cf7540 48%,transparent 59% 100%);
+ animation:dolphinManagerHalo 11s linear infinite;
+}
+html[data-app="manager"][data-verified-manager="true"] #profile-name{
+ background:linear-gradient(100deg,#f7d992,#fff8d9,#d9b25a,#fff1c0);
+ background-size:250% 100%;-webkit-background-clip:text;background-clip:text;
+ -webkit-text-fill-color:transparent;
+ animation:dolphinManagerShine 7s ease-in-out infinite;
+}
+html[data-app="manager"][data-verified-manager="true"] .crew-manager-panel{
+ border:1px solid #f4cf817a;
+ box-shadow:0 0 23px #efc77a24,inset 0 0 16px #efc77a0c;
+}
+html[data-app="manager"][data-verified-manager="true"] #profile-state::before{content:"👑 ";font-weight:900}
+@keyframes dolphinManagerHalo{to{transform:rotate(360deg)}}
+@keyframes dolphinManagerShine{0%,100%{background-position:0 50%}50%{background-position:100% 50%}}
+@media(max-width:390px){.manager-action{padding:12px;min-height:112px}}
+@media(prefers-reduced-motion:reduce){
+ html[data-app="manager"][data-verified-manager="true"] .profile-hero::after,
+ html[data-app="manager"][data-verified-manager="true"] #profile-name{animation:none}
+}

@@ -10,6 +10,11 @@ on:
       - 'functions/staff-xp-reconcile.js'
       - 'functions/index.js'
       - 'functions/staff-xp-actions.test.cjs'
+      - 'scripts/staff-operational-auth.test.cjs'
+      - 'dolphin-bungalow.html'
+      - 'dolphin-lounge.html'
+      - 'dolphin-show.html'
+      - 'dolphin-restaurant.html'
 permissions:
   contents: read
 concurrency:
@@ -43,6 +48,7 @@ jobs:
         run: |
           npm ci --prefix functions || npm install --prefix functions --no-audit --no-fund
           node --check functions/staff-xp-actions.js
+          node --test scripts/staff-operational-auth.test.cjs
           node --check functions/index.js
           node --test functions/staff-id.test.js functions/staff-xp-actions.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-live-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs
       - name: Deactivate insecure legacy triggers

@@ -8,9 +8,9 @@ const names=require('./staff-name-policy.cjs');
 function fixture({coldAborts=0}={}){
  const registry={
   'DOL-0006':{employeeId:'DOL-0006',name:'Đạt G',active:true,createdAt:2,xp:16302.5,levelPeak:4,revenue:900000},
-  'DOL-0001':{employeeId:'DOL-0001',name:'Nguyễn Văn An',active:true,createdAt:1}
+  'DOL-0001':{employeeId:'DOL-0001',name:'Nguyễn Văn An',active:true,createdAt:1,registrationSource:'manager',xp:50800,revenue:1500000,levelPeak:5}
  };
- const identities={uid6:{employeeId:'DOL-0006',name:'Đạt G'}};
+ const identities={uid6:{employeeId:'DOL-0006',name:'Đạt G'},uidOwner:{employeeId:'DOL-0001',name:'Nguyễn Văn An',verified:true},uidSecondOwner:{employeeId:'DOL-0001',name:'Nguyễn Văn An',verified:true}};
  const snap=v=>({val:()=>structuredClone(v)});
  let rateAccess=0,transactionAttempts=0,rootTransactions=0;
  const db={ref(path){
@@ -32,6 +32,7 @@ function fixture({coldAborts=0}={}){
     }
    })
   };
+  if(path==='staffRegistry/DOL-0001')return {once:async()=>snap(registry['DOL-0001'])};
   if(path==='staffIdentity')return {once:async()=>snap(identities)};
   if(path.startsWith('staffIdentity/')){
    const id=path.slice('staffIdentity/'.length);
@@ -55,7 +56,7 @@ function fixture({coldAborts=0}={}){
   throw Error('Unexpected import: '+id);
  };
  vm.runInNewContext(code,{module:{exports:exported},exports:exported,require:fakeRequire,console,Date,Buffer,setTimeout,clearTimeout});
- return {repair:exported.staffRepairMyName,registry,identities,getRateAccess:()=>rateAccess,getTransactionAttempts:()=>transactionAttempts,getRootTransactions:()=>rootTransactions};
+ return {repair:exported.staffRepairMyName,renameOwner:exported.staffRenameOwnerProfile,registry,identities,getRateAccess:()=>rateAccess,getTransactionAttempts:()=>transactionAttempts,getRootTransactions:()=>rootTransactions};
 }
 
 test('mandatory repair bypasses unrelated 1.5-second profile throttle and retains Staff ID and XP',async()=>{
@@ -100,4 +101,33 @@ test('aborted employee transaction reports retry instead of false success',async
  const f=fixture({coldAborts:1});
  await assert.rejects(()=>f.repair({auth:{uid:'uid6'},data:{name:'Đỗ Thành Đạt'}}),e=>e.code==='unavailable');
  assert.equal(f.registry['DOL-0006'].name,'Đạt G');
+});
+
+test('DOL-0001 can rename repeatedly, preserving Staff ID, XP, revenue and linked UID names',async()=>{
+ const f=fixture();
+ const req=name=>({auth:{uid:'uidOwner'},data:{name}});
+ const first=await f.renameOwner(req('Giang Dolphin'));
+ const second=await f.renameOwner(req('Hoàng Thượng Dolphin'));
+ assert.equal(first.employeeId,'DOL-0001');
+ assert.equal(second.name,'Hoàng Thượng Dolphin');
+ assert.equal(f.registry['DOL-0001'].xp,50800);
+ assert.equal(f.registry['DOL-0001'].revenue,1500000);
+ assert.equal(f.registry['DOL-0001'].levelPeak,5);
+ assert.equal(f.identities.uidOwner.name,'Hoàng Thượng Dolphin');
+ assert.equal(f.identities.uidSecondOwner.name,'Hoàng Thượng Dolphin');
+ assert.deepEqual(Array.from(f.registry['DOL-0001'].nameAliases),['Nguyễn Văn An','Giang Dolphin']);
+ assert.equal(f.getRootTransactions(),0);
+});
+test('owner rename rejects unverified, ordinary employees and duplicate names',async()=>{
+ const f=fixture();
+ await assert.rejects(()=>f.renameOwner({auth:{uid:'uid6'},data:{name:'Giang Dolphin'}}),e=>e.code==='permission-denied');
+ await assert.rejects(()=>f.renameOwner({auth:{uid:'uidOwner'},data:{name:'Đạt G'}}),e=>e.code==='invalid-argument'||e.code==='already-exists');
+ assert.equal(f.registry['DOL-0001'].name,'Nguyễn Văn An');
+});
+test('repeat identical owner rename is idempotent and does not reset XP',async()=>{
+ const f=fixture(),req={auth:{uid:'uidOwner'},data:{name:'Nguyễn Văn An'}};
+ const value=await f.renameOwner(req);
+ assert.equal(value.employeeId,'DOL-0001');
+ assert.equal(f.registry['DOL-0001'].profileVersion||0,0);
+ assert.equal(f.registry['DOL-0001'].xp,50800);
 });

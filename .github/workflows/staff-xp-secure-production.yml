@@ -67,7 +67,7 @@ jobs:
       - name: Deploy verified callables and protected XP workers
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --force --only functions:staffDeliverPendingXP,functions:staffRetryPendingXP,functions:staffGrantVerifiedXP,functions:staffRecordLiveAction,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
+          firebase deploy --project dolphin-f6d67 --non-interactive --force --only functions:staffDeliverPendingXP,functions:staffGetMyProgress,functions:staffGrantVerifiedXP,functions:staffRecordLiveAction,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
       - name: Remove temporary environment
         if: always()
         run: rm -f functions/.env.dolphin-f6d67

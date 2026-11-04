@@ -5,7 +5,13 @@ function harness(){
  const data=new Map([['staffIdentity/verified',{verified:true,employeeId:'DOL-0001'}],['staffRegistry/DOL-0001',{employeeId:'DOL-0001',name:'Lan',active:true,registrationSource:'manager'}],['staffIdentity/self',{verified:false,employeeId:'DOL-0002'}],['staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Self Pending',active:true,registrationSource:'self',approved:false}],['staffIdentity/approvedSelf',{verified:false,employeeId:'DOL-0006'}],['staffRegistry/DOL-0006',{employeeId:'DOL-0006',name:'Nguyễn Tiến Nam',active:true,registrationSource:'self',approved:true}],['staffIdentity/manager',{verified:true,employeeId:'DOL-0003'}],['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Manager',active:true,registrationSource:'manager'}],['staffIdentity/owner',{verified:true,employeeId:'DOL-0004'}],['staffRegistry/DOL-0004',{employeeId:'DOL-0004',name:'Đỗ Thành Đạt',nameAliases:['Dat G'],active:true,registrationSource:'manager'}],['staffIdentity/intruder',{verified:true,employeeId:'DOL-0005'}],['staffRegistry/DOL-0005',{employeeId:'DOL-0005',name:'Another Employee',active:true,registrationSource:'manager'}]]);
  const docs=new Map(),awards=[],missionAwards=[];let failAward=false;
  const ref=p=>({once:async()=>({val:()=>data.get(p)||null,exists:()=>data.has(p)}),set:async v=>{data.set(p,v)},transaction:async fn=>{const v=fn(data.get(p)||null);if(v===undefined)return {committed:false};data.set(p,v);return {committed:true,snapshot:{val:()=>v}};}});
- const db={collection:k=>({doc:id=>({key:k+'/'+id})}),runTransaction:async fn=>fn({get:async r=>({exists:docs.has(r.key),data:()=>docs.get(r.key)}),set:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v}),update:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v})})};
+ const query=(kind,filters=[])=>({
+  where:(key,op,value)=>query(kind,[...filters,[key,value]]),
+  limit:count=>({get:async()=>({docs:[...docs]
+   .filter(([key,row])=>key.startsWith(kind+'/')&&filters.every(([field,value])=>row[field]===value))
+   .slice(0,count).map(([key,row])=>({ref:{key},data:()=>row}))})})
+ });
+ const db={collection:k=>({...query(k),doc:id=>({key:k+'/'+id})}),runTransaction:async fn=>fn({get:async r=>({exists:docs.has(r.key),data:()=>docs.get(r.key)}),set:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v}),update:(r,v)=>docs.set(r.key,{...(docs.get(r.key)||{}),...v})})};
  class HttpsError extends Error{constructor(code,msg){super(msg);this.code=code}}
  const exp={},ctx={exports:exp,process:{env:{STAFF_ADMIN_UIDS:'manager'}},console,Date,Set,Map};ctx.require=n=>{
   if(n==='node:crypto')return require(n);
@@ -23,7 +29,7 @@ function harness(){
   throw Error(n);
  };
  vm.runInNewContext(fs.readFileSync(__dirname+'/staff-xp-actions.js','utf8'),ctx);
- return {call:(u,d)=>exp.staffRecordLiveAction({auth:u?{uid:u}:null,data:d}),docs,awards,missionAwards,failAward:value=>{failAward=value},deliver:ref=>exp.staffDeliverPendingXP({data:{ref}})};
+ return {call:(u,d)=>exp.staffRecordLiveAction({auth:u?{uid:u}:null,data:d}),docs,awards,missionAwards,failAward:value=>{failAward=value},deliver:ref=>exp.staffDeliverPendingXP({data:{ref}}),retryEmployee:id=>exp._retryPendingForEmployee(id)};
 }
 test('only manager verified staff can open revenue sessions, no duplicate XP',async()=>{
  const h=harness(),input={kind:'lounge_tables',id:'LOUNGE 1',action:'booking',data:{customerName:'Guest',pax:3,paymentMethod:'TM',openedByStaff:'spoof'}};
@@ -323,4 +329,17 @@ test('trusted outbox delivery survives deletion of the client-writable live orde
  h.docs.delete('bun_orders/archived');h.failAward(false);
  const key=[...h.docs.keys()].find(k=>k.startsWith('dolphin_push_crew_xp_outbox/'));
  await h.deliver({key});await h.deliver({key});assert.equal(h.awards.length,1);assert.equal(h.awards[0].amount,1000);
+});
+
+test('profile fallback drains only the linked employee obligations and leaves another employee pending',async()=>{
+ const h=harness();h.failAward(true);
+ for(const [user,id] of [['owner','own'],['intruder','other']]){
+  h.docs.set('bun_orders/'+id,{status:'pending'});
+  await assert.rejects(()=>h.call(user,{kind:'bun_orders',id,action:'completed'}));
+ }
+ h.failAward(false);
+ const result=await h.retryEmployee('DOL-0004');assert.equal(result.processed,1);assert.equal(result.failed,0);
+ assert.equal(h.awards.length,1);assert.equal(h.awards[0].employeeId,'DOL-0004');
+ assert.equal((await h.retryEmployee('DOL-0004')).processed,0);
+ assert.equal([...h.docs.values()].filter(row=>row.state==='pending').length,1);
 });

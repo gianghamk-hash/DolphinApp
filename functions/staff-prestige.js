@@ -123,7 +123,12 @@ exports.staffGetPrestige=onCall(opts,async req=>{
    .map(([id,p])=>({...p,name:registry[id]?.name||p.name})).sort((a,b)=>b.firstAt-a.firstAt)};
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
- const {id,profile,testAdmin}=await currentStaff(req);
+ const {id,profile:initialProfile,testAdmin}=await currentStaff(req);
+ let profile=initialProfile;
+ try{
+  const repaired=await require('./staff-xp-actions')._retryPendingForEmployee(id);
+  if(repaired.processed)profile=(await getDatabase().ref('staffRegistry/'+id).once('value')).val()||profile;
+ }catch(error){console.warn('[Crew XP] Personal pending retry deferred:',error?.message||error);}
  const now=Date.now();
  let actual=profile,dailyXPAdjustment=0;
  // Update only verified receipts claimed TODAY at old reward rates.

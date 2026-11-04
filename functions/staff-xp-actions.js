@@ -89,11 +89,17 @@ async function booking(kind,id,data,who,{editOnly=false}={}){
   const sameOwner=ownerId?ownerId===who.id
    :!!owner&&[who.name,...who.nameAliases].some(n=>namePolicy.key(n)===namePolicy.key(owner));
   const differentOwner=!!(ownerId||owner)&&!sameOwner;
-  if(differentOwner&&!who.admin)throw new HttpsError('permission-denied','Bàn do nhân viên khác mở. Chỉ người mở bàn hoặc quản lý đã xác minh mới được cập nhật.');
-  // Manager correction updates customer/PAX/payment without taking seller XP.
+  const previousAt=Number(v?.updatedAt);
+  const previousTour=Number.isFinite(previousAt)&&previousAt>0&&
+   dayCore.vietnamDay(previousAt)!==dayCore.vietnamDay(Date.now());
+  // Bungalow/Lounge tables are reused by different staff on a new tour day.
+  // Never let a new user take over an occupied table within the same day.
+  const newTourOpening=!editOnly&&previousTour&&
+   (kind==='bun_tables'||kind==='lounge_tables');
+  if(differentOwner&&!who.admin&&!newTourOpening)throw new HttpsError('permission-denied','Bàn do nhân viên khác mở. Chỉ người mở bàn hoặc quản lý đã xác minh mới được cập nhật.');
+  // Manager correction updates current-day customer/PAX/payment without stealing seller XP.
   if(editOnly&&!owner&&!ownerId&&!who.admin)throw new HttpsError('permission-denied','Bàn chưa có nhân viên mở. Cần quản lý xác minh để chỉnh sửa.');
-  // All edits preserve the original opener and existing Staff ID.
-  const preserveOwner=editOnly||(differentOwner&&who.admin);
+  const preserveOwner=editOnly||(differentOwner&&who.admin&&!newTourOpening);
   let update;
   if(kind==='lounge_tables'){
    const pax=Number(data.pax);

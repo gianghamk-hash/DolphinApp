@@ -39,7 +39,7 @@ const CACHE_URLS = [
   BASE + '/ranking/staff-prestige-ranking.js?v=crew-global-v9',
   BASE + '/ranking/index.html',
   BASE + '/caro/index.html',
-  BASE + '/staff-access.js?v=crew-name-policy-v1',
+  BASE + '/staff-access.js?v=manager-owner-v2',
   BASE + '/staff-access.css?v=approval-20261102',
   BASE + '/staff-sync.js',
   BASE + '/dolphin-alerts.js?v=1',

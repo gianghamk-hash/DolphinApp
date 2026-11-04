@@ -1,5 +1,5 @@
 'use strict';
-/* Manager-approved XP accrual from archived order sessions.
+/* Manager-approved XP accrual from current orders and archived sessions.
  * Firestore currently contains legacy client-writable order records: a human
  * manager must review proposed values before they become permanent rewards.
  */
@@ -16,6 +16,26 @@ const sources={
  res_history:{outlet:'restaurant',sales:0},
  show_history:{outlet:'show',sales:0}
 };
+const liveSources={lounge_orders:'lounge_history_sessions',bun_orders:'bun_history',res_orders:'res_history',lounge_tables:'lounge_history_sessions',bun_tables:'bun_history',show_tables:'show_history'};
+function timestampMillis(value){
+ if(typeof value==='number'&&Number.isFinite(value)&&value>0)return value;
+ if(value&&typeof value.toMillis==='function')return value.toMillis();
+ if(value&&Number.isFinite(value.seconds))return value.seconds*1000+Math.floor((value.nanoseconds||0)/1e6);
+ return 0;
+}
+function actionDay(row,kind){
+ const at=kind.endsWith('_orders')?timestampMillis(row.status==='completed'?row.completedAt:row.preparedAt):timestampMillis(row.updatedAt);
+ return at?new Date(at).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}):null;
+}
+// Verified production rollout: secure XP run 41557307380. The parallel
+// style deployment may have switched the callable during this interval.
+const WORK_RATE_ROLLOUT_START=Date.parse('2026-11-03T01:04:41Z');
+const WORK_RATE_ROLLOUT_END=Date.parse('2026-11-03T01:08:19Z');
+function workRate(at,date){
+ const time=timestampMillis(at);
+ if(time)return {factor:time<WORK_RATE_ROLLOUT_START?0.01:1,uncertain:time>=WORK_RATE_ROLLOUT_START&&time<WORK_RATE_ROLLOUT_END};
+ return {factor:date<'2026-11-03'?0.01:1,uncertain:date==='2026-11-03'};
+}
 const showPrices=Object.freeze({combo1:1390000,combo2:790000,combo3:2000000,singer1:2290000,singer2:2290000,singer3:3290000});
 async function assertManager(req){
  const uid=req.auth?.uid;
@@ -118,44 +138,72 @@ function fromSession(source,docId,session,map){
      ev.orderId=order.id||null;ev.legacyIndex=String(i);
      const prepared=names(order.preparedBy).some(n=>key(n)===key(item.name));
      const completed=order.status==='completed'&&names(order.completedBy).some(n=>key(n)===key(item.name));
-     const rate=date<'2026-11-03'?0.01:1;
+     const prepRate=workRate(order.preparedAt,date),doneRate=workRate(order.completedAt,date);
      ev.workParts=[];
-     if(prepared)ev.workParts.push({action:'preparing',amount:engine.workXP(outlet==='lounge'?0.1:0.5)*rate});
-     if(completed)ev.workParts.push({action:'completed',amount:engine.workXP(prepared?(outlet==='lounge'?0.15:0.5):(outlet==='lounge'?0.25:1))*rate});
+     if(prepared)ev.workParts.push({action:'preparing',amount:engine.workXP(outlet==='lounge'?0.1:0.5)*prepRate.factor});
+     if(completed)ev.workParts.push({action:'completed',amount:engine.workXP(prepared?(outlet==='lounge'?0.15:0.5):(outlet==='lounge'?0.25:1))*doneRate.factor});
+     ev.amount=Number(ev.workParts.reduce((sum,part)=>sum+part.amount,0).toFixed(2));
+     ev.rateUncertain=!!((prepared&&prepRate.uncertain)||(completed&&doneRate.uncertain));
     }
    }
   });
  }
  return events;
 }
+async function readAll(collection,orderField){
+ const docs=[];let cursor;
+ for(;;){
+  let q=getFirestore().collection(collection).orderBy(orderField).limit(200);
+  if(cursor)q=q.startAfter(cursor);
+  const page=await q.get();docs.push(...page.docs);
+  if(page.docs.length<200)break;
+  cursor=page.docs[page.docs.length-1];
+ }
+ return {docs};
+}
 async function proposals(){
  const [registry, ...snapshots]=await Promise.all([
   getDatabase().ref('staffRegistry').once('value'),
-  ...Object.keys(sources).map(async c=>{
-   const docs=[];let cursor;
-   for(;;){let q=getFirestore().collection(c).orderBy('date','desc').limit(200);if(cursor)q=q.startAfter(cursor);const page=await q.get();docs.push(...page.docs);if(page.docs.length<200)break;cursor=page.docs[page.docs.length-1];}
-   return {docs};
-  })
+  ...Object.keys(sources).map(c=>readAll(c,'date')),
+  ...Object.keys(liveSources).map(c=>readAll(c,'__name__'))
  ]);
  const directory=nameDirectory(registry.val());
  const all=[];
  for(const [i,source] of Object.keys(sources).entries()){
   for(const doc of snapshots[i].docs)all.push(...fromSession(source,doc.id,doc.data(),directory));
  }
- return all.sort((a,b)=>b.date.localeCompare(a.date));
+const liveOffset=Object.keys(sources).length;
+ for(const [i,kind] of Object.keys(liveSources).entries()){
+  for(const doc of snapshots[liveOffset+i].docs){
+   const row={...doc.data(),id:doc.id},date=actionDay(row,kind);
+   if(!date)continue; // Do not invent a day for undated legacy live records.
+   const session={date};
+   if(kind.endsWith('_orders'))session.orders=[row];
+   else if(kind==='show_tables')session.bookings=[row];
+   else session.tables={[doc.id]:row};
+   const events=fromSession(liveSources[kind],'live-source:'+kind+':'+doc.id,session,directory);
+   for(const e of events)e.origin='current';
+   all.push(...events);
+  }
+ }
+ return {events:all.sort((a,b)=>b.date.localeCompare(a.date)),registry:registry.val()||{}};
 }
 function autoXP(){return process.env.STAFF_AUTO_XP_ENABLED==='true'||process.env.STAFF_SECURE_AUTO_XP_ENABLED==='true';}
 function hash(...a){return crypto.createHash('sha256').update(a.join('|')).digest('hex').slice(0,40);}
 function liveKind(e){return ({lounge:'lounge',bungalow:'bun',restaurant:'res',show:'show'})[e.outlet]+(e.source==='work'?'_orders':'_tables');}
 function canonical(e){return [liveKind(e),e.date,e.index,e.employeeId,e.source].join('|');}
-async function pendingProposals(){
+async function pendingProposals(scope){
  if(process.env.STAFF_AUTO_XP_ENABLED==='true')throw new HttpsError('failed-precondition','Cần tắt trigger XP cũ trước khi đối chiếu lịch sử.');
- const events=await proposals(),db=getDatabase(),groups=new Map(),ledgers=new Map();
- for(const e of events){const k=canonical(e);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(e);}
+ const {events,registry}=await proposals(),db=getDatabase(),groups=new Map(),ledgers=new Map(),staffTotals=new Map();
+ const today=new Date().toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'}),monday=new Date(today+'T00:00:00Z');
+ monday.setUTCDate(monday.getUTCDate()-(monday.getUTCDay()+6)%7);
+ const fromDate=scope==='week'?monday.toISOString().slice(0,10):null;
+ for(const e of events){if(fromDate&&e.date<fromDate)continue;const k=canonical(e);if(!groups.has(k))groups.set(k,[]);groups.get(k).push(e);}
  await Promise.all([...new Set(events.map(e=>e.employeeId))].map(async id=>ledgers.set(id,(await db.ref('staffXpLedger/'+id).once('value')).val()||{})));
  const pending=[];
  for(const copies of groups.values()){
-  const e=copies.reduce((a,b)=>a.amount>=b.amount?a:b),ledger=ledgers.get(e.employeeId);
+  const certain=copies.filter(c=>!c.rateUncertain);
+  const e=(certain.length?certain:copies).reduce((a,b)=>a.amount>=b.amount?a:b),ledger=ledgers.get(e.employeeId);
   const kind=liveKind(e);
   const liveIds=e.source==='revenue'?['live:'+hash('sale',kind,e.index,e.date,e.employeeId)]:
    e.orderId?['preparing','completed'].map(a=>'live:'+hash('work',kind,e.orderId,a,e.employeeId)):[];
@@ -168,6 +216,12 @@ async function pendingProposals(){
   const recoveryId='repair:'+hash(canonical(e));
   const already=liveIds.reduce((n,id)=>n+(Number(ledger[id]?.amount)||0),0)+(Number(ledger[recoveryId]?.amount)||0)+legacy;
   const amount=Number(Math.max(0,e.amount-already).toFixed(2));
+const summary=staffTotals.get(e.employeeId)||{employeeId:e.employeeId,name:registry[e.employeeId]?.name||e.staffName,totalXP:Number(registry[e.employeeId]?.xp)||0,
+   workPoints:0,expectedWorkXP:0,creditedWorkXP:0,missingWorkXP:0,expectedRevenueXP:0,creditedRevenueXP:0,missingRevenueXP:0};
+  if(e.source==='work'){
+   summary.workPoints=Number((summary.workPoints+e.originalValue).toFixed(2));summary.expectedWorkXP+=e.amount;summary.creditedWorkXP+=Math.min(e.amount,already);summary.missingWorkXP+=amount;
+  }else{summary.expectedRevenueXP+=e.amount;summary.creditedRevenueXP+=Math.min(e.amount,already);summary.missingRevenueXP+=amount;}
+  staffTotals.set(e.employeeId,summary);
   if(!amount)continue;
   // If there is no original order ID, a manager must review the legacy entry;
   // archive IDs still make retrying the same proposal idempotent.
@@ -178,9 +232,9 @@ async function pendingProposals(){
    const value=Math.min(remaining,part.amount);remaining-=value;
    return [{eventId:id,amount:value}];
   }):null;
-  pending.push({...e,eventId:recoveryId,amount,expectedXP:e.amount,creditedXP:already,liveIds,kind,workAwards,needsReview:e.source==='work'&&!e.orderId});
+  pending.push({...e,eventId:recoveryId,amount,expectedXP:e.amount,creditedXP:already,liveIds,kind,workAwards,needsReview:e.source==='work'&&(!e.orderId||e.rateUncertain||remaining>0)});
  }
- return {pending,scanned:events.length};
+ return {pending,scanned:events.length,staffTotals:[...staffTotals.values()].sort((a,b)=>a.name.localeCompare(b.name,'vi')),fromDate,toDate:today};
 }
 exports.staffIsPrestigeAdmin=onCall(opts,async req=>{
  let admin=false;try{await assertManager(req);admin=true;}catch(_){}
@@ -188,11 +242,11 @@ exports.staffIsPrestigeAdmin=onCall(opts,async req=>{
 });
 exports.staffPreviewArchiveXP=onCall(opts,async req=>{
  await assertManager(req);
- const {pending,scanned}=await pendingProposals(),totals={revenueXP:0,workXP:0};
+ const {pending,scanned,staffTotals,fromDate,toDate}=await pendingProposals(req.data?.scope),totals={revenueXP:0,workXP:0};
  for(const e of pending)totals[e.source==='revenue'?'revenueXP':'workXP']+=e.amount;
  // UI pages through pending entries by approving batches; always re-evaluate
  // the entire history so already-paid first pages cannot starve later staff.
- return {pending:pending.slice(0,100),pendingCount:pending.length,scanned,totals,autoXP:autoXP()};
+ return {pending:pending.slice(0,100),pendingCount:pending.length,scanned,totals,staffTotals,fromDate,toDate,autoXP:autoXP()};
 });
 exports.staffApproveArchiveXP=onCall(opts,async req=>{
  const manager=await assertManager(req),ids=req.data?.eventIds;
@@ -202,7 +256,7 @@ exports.staffApproveArchiveXP=onCall(opts,async req=>{
  for(const id of ids){
   const e=approved.get(id);
   if(!e){result.push({duplicate:true});continue;}
-  if(e.needsReview)throw new HttpsError('failed-precondition','Order lịch sử thiếu ID nguồn; cần đối chiếu thủ công trước khi cấp XP.');
+  if(e.needsReview)throw new HttpsError('failed-precondition','Sự kiện chưa đủ ID nguồn hoặc bằng chứng mức XP; cần đối chiếu thủ công trước khi cấp XP.');
   if(e.source==='revenue'){
    const claim=getDatabase().ref('staffXpSaleClaims/'+e.kind+'/'+e.date+'/'+hash(e.kind,e.index));
    const tx=await claim.transaction(v=>v&&v.employeeId!==e.employeeId?undefined:v||{employeeId:e.employeeId,table:e.index,createdAt:Date.now()},undefined,false);

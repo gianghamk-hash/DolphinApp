@@ -77,7 +77,7 @@ test('approved renamed employee retains historical work attribution by name alia
 
 function auditFixture(sessions,initialLedger={}){
  const data=new Map(Object.entries(initialLedger));
- const registry={'DOL-0002':{employeeId:'DOL-0002',name:'Minh',active:true,registrationSource:'manager'}};
+ const registry={'DOL-0002':{employeeId:'DOL-0002',name:'Minh',nameAliases:['Louis Đặng'],active:true,registrationSource:'manager',xp:230}};
  const read=p=>p==='staffRegistry'?registry:p.startsWith('staffXpLedger/')&&p.split('/').length===2?
   Object.fromEntries([...data].filter(([k])=>k.startsWith(p+'/')).map(([k,v])=>[k.slice(p.length+1),v])):data.get(p)||null;
  const ref=p=>({once:async()=>({val:()=>read(p),exists:()=>!!read(p)}),set:async v=>data.set(p,v),transaction:async fn=>{const next=fn(read(p));if(next===undefined)return {committed:false};data.set(p,next);return {committed:true};}});
@@ -122,4 +122,37 @@ test('old archive manager receipt is not paid again and old work retains its his
  assert.equal((await h.preview()).pendingCount,0);
  const old=api._fromSession('bun_history','old',{date:'2026-10-30',orders:[{id:'old',status:'completed',completedBy:'Minh'}]},directory());
  assert.equal(old[0].amount,10);
+});
+
+test('Louis example: mixed-era 12 work points do not equal 12000 XP, and 230 total is not subtracted from work',async()=>{
+ const older={date:'2026-11-02',orders:Array.from({length:3},(_,i)=>({id:'b'+i,status:'completed',preparedBy:'Louis Đặng',completedBy:'Louis Đặng'}))};
+ const newer={date:'2026-11-03',orders:Array.from({length:9},(_,i)=>({id:'r'+i,status:'completed',preparedBy:'Louis Đặng',completedBy:'Louis Đặng',preparedAt:Date.parse('2026-11-03T11:00:00Z'),completedAt:Date.parse('2026-11-03T11:05:00Z')}))};
+ const paid={};
+ for(let i=0;i<3;i++)paid['staffXpLedger/DOL-0002/'+liveId('work','bun_orders','b'+i,'completed','DOL-0002')]={amount:10};
+ const h=auditFixture({bun_history:[older],res_history:[newer]},paid);
+ const result=await h.preview(),person=result.staffTotals[0];
+ assert.equal(person.workPoints,12);assert.equal(person.expectedWorkXP,9030);
+ assert.equal(person.creditedWorkXP,30);assert.equal(person.missingWorkXP,9000);assert.equal(person.totalXP,230);
+ await h.approve(result.pending.map(e=>e.eventId));assert.equal((await h.preview()).pendingCount,0);
+});
+test('current completed Restaurant orders participate in audit and dedupe against archived copies',async()=>{
+ const completedAt=Date.now(),date=new Date(completedAt).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'});
+ const order={id:'session-0',status:'completed',completedAt,completedBy:'Minh'};
+ const h=auditFixture({res_orders:[order],res_history:[{date,orders:[order]}]});
+ const preview=await h.preview();assert.equal(preview.pendingCount,1);assert.equal(preview.staffTotals[0].workPoints,1);
+ await h.approve(preview.pending.map(e=>e.eventId));assert.equal((await h.preview()).pendingCount,0);
+});
+
+test('rollout-day work uses actual action time and never multiplies old paid work retroactively',()=>{
+ const map=directory();
+ const session={date:'2026-11-03',orders:[
+  {id:'before',status:'completed',preparedBy:'Minh',completedBy:'Minh',preparedAt:Date.parse('2026-11-03T00:00:00Z'),completedAt:Date.parse('2026-11-03T00:10:00Z')},
+  {id:'after',status:'completed',completedBy:'Minh',completedAt:Date.parse('2026-11-03T11:00:00Z')},
+  {id:'unknown',status:'completed',completedBy:'Minh'},
+  {id:'during',status:'completed',completedBy:'Minh',completedAt:Date.parse('2026-11-03T01:06:00Z')}
+ ]};
+ const events=api._fromSession('res_history','cutover',session,map);
+ assert.equal(events[0].amount,10);assert.equal(events[0].rateUncertain,false);
+ assert.equal(events[1].amount,1000);assert.equal(events[1].rateUncertain,false);
+ assert.equal(events[2].rateUncertain,true);assert.equal(events[3].rateUncertain,true);
 });

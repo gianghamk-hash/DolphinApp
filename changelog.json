@@ -1,46 +1,22 @@
 {
-  "version": "1.1.73",
-  "previousVersion": "1.1.72",
-  "commit": "e8c4bba",
-  "previousCommit": "c9b5ee9",
-  "buildDate": "2026-11-04T03:06:44.269Z",
-  "summary": "Use existing protected namespace for XP delivery without Rules deployment (#235)",
+  "version": "1.1.74",
+  "previousVersion": "1.1.73",
+  "commit": "c236696",
+  "previousCommit": "e8c4bba",
+  "buildDate": "2026-11-04T03:10:33.525Z",
+  "summary": "Acknowledge retry policy for explicit XP function deployment (#236)",
   "changes": {
-    "totalCommits": 297,
-    "filesChanged": 7,
+    "totalCommits": 298,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Use existing protected namespace for XP delivery without Rules deployment (#235)"
+    "Acknowledge retry policy for explicit XP function deployment (#236)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-style-unlock-production.yml",
-      "type": "update"
-    },
-    {
       "file": ".github/workflows/staff-xp-secure-production.yml",
-      "type": "update"
-    },
-    {
-      "file": "docs/STAFF_XP_RECOVERY_ROLLOUT.md",
-      "type": "update"
-    },
-    {
-      "file": "firestore.rules",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-actions.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-actions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/push-rules-test.cjs",
       "type": "update"
     }
   ]

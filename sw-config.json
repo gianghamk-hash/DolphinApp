@@ -1,5 +1,5 @@
 {
-  "version": "1.1.73",
+  "version": "1.1.74",
   "releaseDate": "2026-11-04",
-  "notes": "Use existing protected namespace for XP delivery without Rules deployment (#235)"
+  "notes": "Acknowledge retry policy for explicit XP function deployment (#236)"
 }

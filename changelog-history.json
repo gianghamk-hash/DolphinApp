@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.73",
+      "releaseDate": "2026-11-04T03:06:44.269Z",
+      "summary": "Use existing protected namespace for XP delivery without Rules deployment (#235)",
+      "details": [
+        "Use existing protected namespace for XP delivery without Rules deployment (#235)"
+      ]
+    },
+    {
       "version": "1.1.72",
       "releaseDate": "2026-11-04T03:01:34.411Z",
       "summary": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)",
@@ -390,14 +398,6 @@
       "summary": "feat(staff-xp): authenticated automatic awards on live staff actions",
       "details": [
         "feat(staff-xp): authenticated automatic awards on live staff actions"
-      ]
-    },
-    {
-      "version": "1.1.23",
-      "releaseDate": "2026-11-01T11:55:54.894Z",
-      "summary": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP",
-      "details": [
-        "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP"
       ]
     }
   ]

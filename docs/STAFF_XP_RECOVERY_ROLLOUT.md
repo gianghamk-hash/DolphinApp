@@ -2,7 +2,7 @@
 
 ## Changes
 
-- Business mutations commit an XP obligation to `staff_xp_outbox` in the same Firestore transaction. This collection denies every client read/write, including nested paths. Only Admin SDK writes it.
+- Business mutations commit an XP obligation to `dolphin_push_crew_xp_outbox` in the same Firestore transaction. This collection uses the existing server-only `dolphin_push_.*` namespace, which already denies every client read/write, including nested paths. Only Admin SDK writes it; deployment needs no new Firestore Rules permissions.
 - A retrying Firestore creation handler, immediate callable delivery and a 15-minute scheduled sweep deliver pending XP even after the operational order is archived/deleted. Only verified business actions create obligations; client-written legacy orders do not create proof.
 - New RTDB ledger records are pending until acknowledged. A permanent `appliedXPEvents` receipt is committed atomically with each employee's XP, so a crash before or after the ledger acknowledgement neither loses nor duplicates the award. Old receipts without a state retain their previous semantics; this cannot infer whether an old interrupted deployment credited their profile.
 - Internal business daily missions retain permanent per-day receipts. Delayed delivery uses the original action day and does not overwrite today's missions. No revenue or work rate has been changed.
@@ -12,7 +12,7 @@
 
 ## Deployment and data reconciliation
 
-Merge alone is not proof of deployment or historical compensation. Check successful production Staff Access, secure XP, style-unlock and APK build runs for this revision. Both automatic workflows that deploy `staffRecordLiveAction` deploy Firestore deny rules first. Secure XP also deploys the two queue consumers and ledger grant callable. Other profile endpoints use their existing deployment workflows. Keep legacy XP triggers disabled.
+Merge alone is not proof of deployment or historical compensation. Check successful production Staff Access, secure XP, style-unlock and APK build runs for this revision. Both automatic workflows deploy the callable using the already protected namespace; neither needs to change live Firestore Rules. Secure XP also deploys the two queue consumers and ledger grant callable. Other profile endpoints use their existing deployment workflows. Keep legacy XP triggers disabled.
 
 On Manager APK, open the XP archive audit, review names/dates/outlet/amounts against accounting and approve batches of at most 50. Each refresh re-evaluates all retained history rather than permanently hiding later pages behind already-approved rows. The per-employee table separates total profile XP, work points, expected/credited/missing work XP and missing revenue XP; choose this week or all retained data. Do not subtract total profile XP from work XP because it also contains daily missions and other sources. Complete the audit until all eligible pending rows are cleared, investigate missing/ambiguous IDs, and retain the repair audit. The proposal is based on legacy client-writable archive records and therefore remains manager-reviewed, not automatic financial truth. Data already deleted by archive retention cannot be reconstructed from the Git repository.
 

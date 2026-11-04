@@ -321,6 +321,6 @@ test('trusted outbox delivery survives deletion of the client-writable live orde
  const h=harness();h.docs.set('bun_orders/archived',{status:'pending'});h.failAward(true);
  await assert.rejects(()=>h.call('owner',{kind:'bun_orders',id:'archived',action:'completed'}));
  h.docs.delete('bun_orders/archived');h.failAward(false);
- const key=[...h.docs.keys()].find(k=>k.startsWith('staff_xp_outbox/'));
+ const key=[...h.docs.keys()].find(k=>k.startsWith('dolphin_push_crew_xp_outbox/'));
  await h.deliver({key});await h.deliver({key});assert.equal(h.awards.length,1);assert.equal(h.awards[0].amount,1000);
 });

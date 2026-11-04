@@ -77,7 +77,6 @@ jobs:
       - name: Deploy authenticated profile cosmetics and XP ranking callables
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only firestore:rules
           firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffCheckInDaily,functions:staffUpdateMyProfile,functions:staffSetPersonalStyle,functions:staffSetOwnRankingVisibility,functions:staffGetMyProgress,functions:staffGetPrestige,functions:staffGetAvatarDirectory,functions:staffAdjustOwnTestXP,functions:staffSyncSavedActivityXP,functions:staffSyncMyRecentXP,functions:staffRecordLiveAction,functions:staffStartArcadeMission,functions:staffFinishArcadeMission
       - name: Remove temporary environment
         if: always()

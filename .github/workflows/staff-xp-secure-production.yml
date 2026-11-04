@@ -64,10 +64,9 @@ jobs:
           if(!/^[a-zA-Z0-9,_-]+$/.test(admins))throw Error('Invalid admin allowlist');
           fs.writeFileSync('functions/.env.dolphin-f6d67','STAFF_ADMIN_UIDS='+admins+'\nSTAFF_AUTO_XP_ENABLED=false\nSTAFF_SECURE_AUTO_XP_ENABLED=true\n',{mode:0o600});
           NODE
-      - name: Deploy verified staff callable only (do not create untrusted triggers)
+      - name: Deploy verified callables and protected XP workers
         run: |
           npm install -g firebase-tools
-          firebase deploy --project dolphin-f6d67 --non-interactive --only firestore:rules
           firebase deploy --project dolphin-f6d67 --non-interactive --only functions:staffDeliverPendingXP,functions:staffRetryPendingXP,functions:staffGrantVerifiedXP,functions:staffRecordLiveAction,functions:staffIsPrestigeAdmin,functions:staffPreviewArchiveXP,functions:staffApproveArchiveXP
       - name: Remove temporary environment
         if: always()

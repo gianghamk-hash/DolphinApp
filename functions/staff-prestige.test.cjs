@@ -37,6 +37,7 @@ function harness(options={}){
   if(n==='firebase-admin/database')return {getDatabase:()=>({ref})};
   if(n==='firebase-admin/firestore')return {getFirestore:()=>({doc:()=>({set:async value=>data.set('staff_xp_updates/public',value)})})};
   if(n==='firebase-functions/v2/https')return {onCall:(_,fn)=>fn,HttpsError};
+  if(n==='./staff-xp-actions')return {_retryPendingForEmployee:async id=>{if(options.pendingCredit){const path='staffRegistry/'+id,p=data.get(path);data.set(path,{...p,xp:p.xp+options.pendingCredit});options.pendingCredit=0;return {processed:1,failed:0};}return {processed:0,failed:0};}};
   if(n==='./staff-xp-engine.cjs')return engine;
   if(n==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
   if(n==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
@@ -368,4 +369,11 @@ test('a lost ledger acknowledgement retries without losing or doubling committed
  options.failReceiptAck=false;await h.api._awardTrustedLiveXP(event);await h.api._awardTrustedLiveXP(event);
  assert.equal(h.data.get('staffRegistry/DOL-0001').xp,250);
  assert.equal(h.data.get('staffXpLedger/DOL-0001/'+event.eventId).state,'credited');
+});
+
+test('personal XP refresh repairs pending obligations only for the linked employee and returns fresh XP',async()=>{
+ const h=harness({pendingCredit:250});
+ const result=await h.api.staffGetMyProgress(req('lanDevice',{employeeId:'DOL-9999'}));
+ assert.equal(result.employeeId,'DOL-0001');assert.equal(result.xp,250);
+ assert.equal((await h.api.staffGetMyProgress(req('lanDevice'))).xp,250);
 });

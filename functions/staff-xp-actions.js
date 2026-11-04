@@ -6,7 +6,6 @@
  */
 const crypto=require('node:crypto');
 const {onDocumentCreated}=require('firebase-functions/v2/firestore');
-const {onSchedule}=require('firebase-functions/v2/scheduler');
 const {onCall,HttpsError}=require('firebase-functions/v2/https');
 const {getFirestore}=require('firebase-admin/firestore');
 const {getDatabase}=require('firebase-admin/database');
@@ -91,11 +90,17 @@ function obligation(tx,ref,old,data){
  if(!old.exists||(!old.data().amount&&data.amount>0))tx.set(ref,{...data,state:'pending',createdAt:Date.now()});
 }
 exports.staffDeliverPendingXP=onDocumentCreated({region:opts.region,document:OUTBOX+'/{event}',retry:true},event=>deliver(event.data.ref));
-exports.staffRetryPendingXP=onSchedule({region:opts.region,schedule:'every 15 minutes',timeoutSeconds:120},async()=>{
- const page=await getFirestore().collection(OUTBOX).where('state','==','pending').limit(100).get();
+// Internal, scoped to the identity resolved by staffGetMyProgress. Eventarc
+// retries remain active while the app is closed; profile refresh also repairs
+// obligations that predate worker creation or outlive the event retry window.
+exports._retryPendingForEmployee=async employeeId=>{
+ const page=await getFirestore().collection(OUTBOX).where('employeeId','==',employeeId).where('state','==','pending').limit(20).get();
  const results=await Promise.allSettled(page.docs.map(doc=>deliver(doc.ref)));
- for(const result of results)if(result.status==='rejected')console.error('[Crew XP] Pending delivery:',result.reason);
-});
+ const failed=results.filter(result=>result.status==='rejected').length;
+ if(failed)console.warn('[Crew XP] Some personal obligations remain pending:',failed);
+ return {processed:page.docs.length,failed};
+};
+
 function payment(v){const s=str(v,40);if(!s)fail('Thiếu phương thức thanh toán');return s;}
 function stringMap(m){
  if(!m||typeof m!=='object'||Array.isArray(m))return {};

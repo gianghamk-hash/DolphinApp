@@ -82,3 +82,10 @@ test('delayed business mission credits its original VN day once without resettin
  const today=await h.api._award(h.employeeId,'order_completed');
  assert.equal(today.addedXP,400);assert.equal(h.data.get(path).xp,1000);
 });
+
+test('delayed business XP automatically equips the new level even though its original day has ended',async()=>{
+ const h=fixture(),path='staffRegistry/'+h.employeeId,engine=require('./staff-xp-engine.cjs');
+ h.data.set(path,{...h.data.get(path),xp:engine.xpForLevel(3)-400,levelPeak:2});
+ await h.api._award(h.employeeId,'order_completed',Date.now()-86400000);
+ assert.equal(h.data.get(path).selectedNameFx,'ember');assert.equal(h.data.get(path).autoStyleLevel,3);
+});

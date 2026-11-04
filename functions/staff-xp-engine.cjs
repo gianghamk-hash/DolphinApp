@@ -142,6 +142,38 @@ const COSMETIC_CHOICES=Object.freeze({
  trail:Object.freeze({"none":1,"wave":3,"comet":25,"nova":60,"stardust":12,"meteor":36,"starfall":55}),
  cardFx:Object.freeze({"none":1,"soft":3,"energy":25,"mythic":60,"ocean":12,"prism":36,"aurora":52})
 });
+// Validation and automatic presets share the authoritative unlock catalog.
+const THEME_LEVELS=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30,abyss:4,aurora:12,coral:18,neon:28,cosmic:36,royal:48,obsidian:55});
+// Neutral themes give each level a deterministic default; seasonal alternatives
+// remain available in personal settings.
+const AUTO_THEMES=Object.freeze({dark:1,abyss:4,default:8,aurora:12,coral:18,neon:28,cosmic:36,royal:48,obsidian:55});
+function effectiveLevel(profile){
+ return Math.min(MAX_LEVEL,Math.max(levelForXP(Math.max(0,Number(profile?.xp)||0)),Number(profile?.levelPeak)||1));
+}
+function highestUnlocked(choices,level,fallback){
+ let selected=fallback,threshold=choices[fallback]||1;
+ for(const [id,required] of Object.entries(choices))if(required<=level&&required>threshold){selected=id;threshold=required;}
+ return selected;
+}
+function automaticStyle(level){
+ if(!Number.isInteger(level)||level<MIN_LEVEL||level>MAX_LEVEL)throw Error('Cấp độ không hợp lệ');
+ const style={personalTheme:highestUnlocked(AUTO_THEMES,level,'dark')};
+ for(const [type,choices] of Object.entries(COSMETIC_CHOICES)){
+  style['selected'+type[0].toUpperCase()+type.slice(1)]=highestUnlocked(choices,level,type==='banner'?'default':'none');
+ }
+ style.nameFlame=style.selectedNameFx!=='none';
+ style.nameGradient=['prism','celestial'].includes(style.selectedNameFx);
+ return style;
+}
+function equipOnLevelUp(previous,current){
+ if(!current?.active||(current.registrationSource==='self'&&current.approved!==true))return current;
+ const level=effectiveLevel(current);
+ if(level<=effectiveLevel(previous)||Number(current.autoStyleLevel)>=level)return current;
+ // Apply atomically with XP. A later manual save wins until the next actual
+ // level gain; reads, retries and same-level rewards never reapply the preset.
+ return {...current,...automaticStyle(level),autoStyleLevel:level,autoStyleVersion:1,
+  profileVersion:(Number(current.profileVersion)||0)+1};
+}
 function asNonnegativeInteger(x,label){
  if(typeof x!=='number'||!Number.isFinite(x)||x<0||!Number.isSafeInteger(x))throw Error(label+' phải là số nguyên không âm');
  return x;
@@ -175,4 +207,4 @@ function progress(xp){
  return {xp,level,rank:rankForLevel(level),xpIntoLevel:xp-floor,xpNeeded:ceil===null?0:ceil-floor,
   nextLevelAt:ceil,unlocked:PERKS.filter(p=>level>=p.level).map(p=>p.id)};
 }
-module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,LEVEL_COEFFICIENT,LEVEL_RULES_VERSION,PERKS,COSMETIC_REWARDS,COSMETIC_CHOICES,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};
+module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,LEVEL_COEFFICIENT,LEVEL_RULES_VERSION,PERKS,COSMETIC_REWARDS,COSMETIC_CHOICES,THEME_LEVELS,automaticStyle,equipOnLevelUp,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};

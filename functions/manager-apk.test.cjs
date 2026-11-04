@@ -87,3 +87,10 @@ test('manager can issue a hashed single-use recovery code preserving the same St
  assert.equal(records[0].expiresAt-records[0].issuedAt,600000);
  assert.equal(JSON.stringify(records).includes(code.code),false);
 });
+
+test('shared directory publishes all newly auto-equipped tiers across linked apps',async()=>{
+ const f=fixture(),style=require('./staff-xp-engine.cjs').automaticStyle(55);
+ Object.assign(f.data.staffRegistry['DOL-0002'],style,{levelPeak:55});
+ const result=await f.api.staffGetAvatarDirectory(req('owner')),person=result.profiles.find(p=>p.employeeId==='DOL-0002');
+ for(const field of ['selectedFrame','selectedAvatarMotion','selectedTitle','selectedBanner','selectedNameFx','selectedAura','selectedTrail','selectedCardFx','personalTheme'])assert.equal(person[field],style[field]);
+});

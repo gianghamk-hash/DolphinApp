@@ -29,7 +29,7 @@ function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
  const level=Math.min(60,Math.max(progress.level,Number(p?.levelPeak)||1));
  return {employeeId:p.employeeId,name:p.name,avatar:p.avatar||'🐬',
-  level,rank:engine.rankForLevel(level),xp,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
+  level,rank:engine.rankForLevel(level),xp,autoStyleLevel:Number(p.autoStyleLevel)||0,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
   unlocked:[...engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>level>=x.level).map(x=>x.id)],
   rewardCatalog:engine.COSMETIC_REWARDS,perkCatalog:engine.PERKS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
   selectedFrame:cosmeticChoice('frame',p.selectedFrame,level),
@@ -165,7 +165,7 @@ exports.staffSetShowcase=onCall(opts,async req=>{
  if(!result.committed)throw new HttpsError('failed-precondition','Hồ sơ không hợp lệ');
  return expose(result.snapshot.val());
 });
-const themeLevels=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30,abyss:4,aurora:12,coral:18,neon:28,cosmic:36,royal:48,obsidian:55});
+const themeLevels=engine.THEME_LEVELS;
 exports.staffSetPersonalStyle=onCall(opts,async req=>{
  const {id}=await currentStaff(req);
  const theme=String(req.data?.theme||'dark');
@@ -242,9 +242,10 @@ exports.staffAdjustOwnTestXP=onCall(opts,async req=>{
   const xp=action==='reset'?0:before+amount;
   if(!Number.isSafeInteger(xp)||xp>engine.xpForLevel(60))return;
   const peak=action==='reset'?1:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp));
-  return {...current,xp,levelPeak:peak,
-    ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedAvatarMotion:'none',selectedTitle:'none',selectedBanner:'default',selectedNameFx:'none',selectedAura:'none',selectedTrail:'none',selectedCardFx:'none',personalTheme:'dark',showcase:[]}:{}),
+  const next={...current,xp,levelPeak:peak,
+    ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedAvatarMotion:'none',selectedTitle:'none',selectedBanner:'default',selectedNameFx:'none',selectedAura:'none',selectedTrail:'none',selectedCardFx:'none',personalTheme:'dark',showcase:[],autoStyleLevel:1,autoStyleVersion:1}:{}),
     testXPUpdatedAt:now,updatedAt:now};
+  return action==='reset'?next:engine.equipOnLevelUp(current,next);
  },undefined,false);
  if(!result.committed){
   const latest=(await ref.once('value')).val();
@@ -302,7 +303,7 @@ async function awardVerifiedXP(req,data,options={}){
    if(current.appliedXPEvents?.[eventId])return current;
    applied=true;
    const xp=Math.max(0,Number(((Number(current.xp)||0)+amount).toFixed(2)));
-   return {...current,xp,appliedXPEvents:{...current.appliedXPEvents,[eventId]:true},levelPeak:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp)),updatedAt:Date.now()};
+   return engine.equipOnLevelUp(current,{...current,xp,appliedXPEvents:{...current.appliedXPEvents,[eventId]:true},levelPeak:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp)),updatedAt:Date.now()});
   },undefined,false);
   if(!tx.committed){
    const latest=(await profileRef.once('value')).val();

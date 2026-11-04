@@ -167,19 +167,21 @@ exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
 exports.staffGetAvatarDirectory=onCall(opts,async req=>{
  uidOf(req);
  const profiles=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
- return {profiles:Object.values(profiles).filter(p=>p?.active&&(p.registrationSource!=='self'||p.approved===true)&&p.employeeId&&p.name).map(p=>({
+ return {profiles:Object.values(profiles).filter(p=>p?.active&&(p.registrationSource!=='self'||p.approved===true)&&p.employeeId&&p.name).map(p=>{
+  const choices=require('./staff-xp-engine.cjs').COSMETIC_CHOICES;
+  return {
   employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
-  selectedFrame:['bronze','silver','gold','mythic'].includes(p.selectedFrame)?p.selectedFrame:'none',
-  selectedAvatarMotion:['none','pulse','float','wave','orbit','prism','ascension'].includes(p.selectedAvatarMotion)?p.selectedAvatarMotion:'none',
-  selectedTitle:['rookie','wave','legend'].includes(p.selectedTitle)?p.selectedTitle:'none',
-  selectedBanner:['default','wave','gold','mythic'].includes(p.selectedBanner)?p.selectedBanner:'default',
+  selectedFrame:Object.hasOwn(choices.frame,p.selectedFrame)?p.selectedFrame:'none',
+  selectedAvatarMotion:Object.hasOwn(choices.avatarMotion,p.selectedAvatarMotion)?p.selectedAvatarMotion:'none',
+  selectedTitle:Object.hasOwn(choices.title,p.selectedTitle)?p.selectedTitle:'none',
+  selectedBanner:Object.hasOwn(choices.banner,p.selectedBanner)?p.selectedBanner:'default',
   personalTheme:typeof p.personalTheme==='string'&&p.personalTheme.length<=32?p.personalTheme:'dark',
-  selectedNameFx:['none','ember','inferno','prism','celestial'].includes(p.selectedNameFx)?p.selectedNameFx:'none',
-  selectedAura:['none','spark','dual','celestial'].includes(p.selectedAura)?p.selectedAura:'none',
-  selectedTrail:['none','wave','comet','nova'].includes(p.selectedTrail)?p.selectedTrail:'none',
-  selectedCardFx:['none','soft','energy','mythic'].includes(p.selectedCardFx)?p.selectedCardFx:'none',
+  selectedNameFx:Object.hasOwn(choices.nameFx,p.selectedNameFx)?p.selectedNameFx:'none',
+  selectedAura:Object.hasOwn(choices.aura,p.selectedAura)?p.selectedAura:'none',
+  selectedTrail:Object.hasOwn(choices.trail,p.selectedTrail)?p.selectedTrail:'none',
+  selectedCardFx:Object.hasOwn(choices.cardFx,p.selectedCardFx)?p.selectedCardFx:'none',
   nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(p.employeeId==='DOL-0001'?0:-10):[]
- }))};
+ };})};
 });
 
 /* Only the backend-verified owner of DOL-0001 may approve registrations.

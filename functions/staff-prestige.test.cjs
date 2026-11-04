@@ -377,3 +377,26 @@ test('personal XP refresh repairs pending obligations only for the linked employ
  assert.equal(result.employeeId,'DOL-0001');assert.equal(result.xp,250);
  assert.equal((await h.api.staffGetMyProgress(req('lanDevice'))).xp,250);
 });
+
+test('verified XP equips automatically; customization survives refresh, duplicate awards and same-level XP until the next level',async()=>{
+ const {api,data}=harness();
+ const payload={employeeId:'DOL-0001',eventId:'live:auto-style:level6',source:'work',amount:engine.xpForLevel(6)};
+ const leveled=await api.staffGrantVerifiedXP(req('manager',payload));
+ assert.equal(leveled.level,6);assert.equal(leveled.selectedFrame,'bronze');assert.equal(leveled.selectedAvatarMotion,'comet');assert.equal(leveled.selectedAura,'ripple');
+ assert.equal(leveled.nameFlame,true);assert.equal(leveled.personalTheme,'abyss');
+ await api.staffSetPersonalStyle(req('lanDevice',{theme:'gray',nameFlame:false,selectedNameFx:'none',selectedFrame:'none'}));
+ await api.staffGrantVerifiedXP(req('manager',payload));
+ await api.staffGrantVerifiedXP(req('manager',{...payload,eventId:'live:auto-style:small',amount:1}));
+ const custom=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(custom.selectedFrame,'none');assert.equal(custom.selectedNameFx,'none');assert.equal(custom.personalTheme,'gray');
+ const next=await api.staffGrantVerifiedXP(req('manager',{...payload,eventId:'live:auto-style:level7',amount:engine.xpForLevel(7)-custom.xp}));
+ assert.equal(next.level,7);assert.equal(next.selectedTitle,'navigator');assert.equal(next.selectedFrame,'bronze');assert.equal(next.nameFlame,true);
+ assert.equal(data.get('staffRegistry/DOL-0001').autoStyleLevel,7);
+});
+test('DOL-0001 XP sandbox uses the same automatic effects and reset allows testing them again',async()=>{
+ const {api}=harness();
+ const first=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:engine.xpForLevel(3)}));
+ assert.equal(first.selectedNameFx,'ember');assert.equal(first.selectedAvatarMotion,'pulse');assert.equal(first.nameFlame,true);
+ const reset=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'reset'}));assert.equal(reset.selectedNameFx,'none');
+ const again=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:engine.xpForLevel(3)}));assert.equal(again.nameFlame,true);
+});

@@ -1098,14 +1098,16 @@ window.saveCustomerName = async function(){
 window.executeSaveCustomerName = async function({table,dataToSave}){
   try{
     if(!db)throw Error('Chưa kết nối Firestore');
-    const identity=window.DolphinStaffId?.get?.();
-    const verified=identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function';
+    // The entry gate verified the staff session. Every operational mutation
+    // must be authorized again by Firebase using the current UID, not a
+    // locally remembered employee name or an out-of-date client flag.
+    if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+      throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
     const current=state.tableAssignments[table]||{};
     const editExisting=!!(String(current.openedByStaff||'').trim()||String(current.openedByStaffId||'').trim());
-    const reward=verified?await window.DolphinStaffId.performLiveAction({
+    const reward=await window.DolphinStaffId.performLiveAction({
       kind:'lounge_tables',id:table,action:editExisting?'update':'booking',data:dataToSave
-    }):null;
-    if(!verified)await setDoc(doc(db,'lounge_tables',table),dataToSave,{merge:true});
+    });
     window.showToast(`Đã lưu bàn ${table}`,'✅');
     if(reward&&(reward.xpAwarded||reward.missionXP))window.showToast('+'+((reward.xpAwarded||0)+(reward.missionXP||0))+' XP đã xác minh','⭐');
     window.closeCustomerNameModal(); 
@@ -1237,9 +1239,9 @@ window.executeStaffAction = async function(name){
     const {orderId,nextStatus} = pa;
     const ref = doc(db,'lounge_orders',orderId);
     try{
-      const identity=window.DolphinStaffId?.get?.();
-      if(identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
-         String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN')){
+      if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+        throw Error('Chưa tải Staff ID. Vui lòng mở lại ứng dụng.');
+      {
         const reward=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
         window.showToast('Đã ghi nhận: '+name,'📝');
         const points=(reward.xpAwarded||0)+(reward.missionXP||0);

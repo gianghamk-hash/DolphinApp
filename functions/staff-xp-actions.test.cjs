@@ -44,6 +44,20 @@ test('unapproved self registration remains blocked with or without a verified de
   data:{leader:'Guest',dining:'A2',guests:3,payment:'Tiền mặt'}};
  await assert.rejects(()=>h.call('self',input),e=>e.code==='permission-denied');
 });
+test('Restaurant table is opened with verified Staff ID, with no revenue XP',async()=>{
+ const h=harness();
+ const action={kind:'res_tables',id:'A1',action:'booking',data:{customerName:'Anh Long'}};
+ const saved=await h.call('approvedSelf',action);
+ assert.equal(saved.saved,true);
+ assert.equal(saved.xpAwarded,0);
+ assert.equal(saved.missionXP,0);
+ assert.equal(h.docs.get('res_tables/A1').customerName,'Anh Long');
+ assert.equal(h.docs.get('res_tables/A1').updatedBy,'Nguyễn Tiến Nam');
+ assert.equal(h.docs.get('res_tables/A1').updatedByStaffId,'DOL-0006');
+ assert.equal(h.awards.length,0);
+ await assert.rejects(()=>h.call('self',{...action,id:'A2'}),e=>e.code==='permission-denied');
+ assert.equal(h.docs.get('res_tables/A2'),undefined);
+});
 test('Show needs verified booking; same combo is not counted twice',async()=>{
  const h=harness(),combo={kind:'show_tables',id:'S1',action:'combo',data:{combo:'combo2',foods:{set:1}}};
  await assert.rejects(()=>h.call('owner',combo),e=>e.code==='not-found');
@@ -133,6 +147,36 @@ test('DOL-0001 verified Bungalow booking receives revenue XP and first-open miss
  assert.equal(again.xpAwarded,0);
  assert.equal(again.missionXP,0);
  assert.equal(h.awards.filter(x=>x.employeeId==='DOL-0001'&&x.amount===2000).length,1);
+});
+test('Lounge booking retained from a previous day awards new tour revenue and mission once',async()=>{
+ const h=harness();
+ h.docs.set('lounge_tables/LOUNGE 15',{
+  customerName:'Yesterday',pax:2,paymentMethod:'TM',
+  openedByStaff:'Lan',openedByStaffId:'DOL-0001',updatedAt:Date.now()-2*86400000
+ });
+ const input={kind:'lounge_tables',id:'LOUNGE 15',action:'booking',
+  data:{customerName:'Today',pax:3,paymentMethod:'TM'}};
+ const first=await h.call('verified',input);
+ assert.equal(first.saved,true);
+ assert.equal(first.xpAwarded,750);
+ assert.equal(first.missionXP,250);
+ const second=await h.call('verified',input);
+ assert.equal(second.xpAwarded,0);
+ assert.equal(second.missionXP,0);
+});
+test('verified new employee can reopen a prior-day Bungalow without stealing same-day revenue',async()=>{
+ const h=harness();
+ const prior={customerName:'Yesterday',restaurantTable:'A1',paymentMethod:'TM',
+  openedByStaff:'Lan',openedByStaffId:'DOL-0001',updatedAt:Date.now()-2*86400000};
+ h.docs.set('bun_tables/BGL 301',prior);
+ const action={kind:'bun_tables',id:'BGL 301',action:'booking',
+  data:{customerName:'Today',restaurantTable:'A2',paymentMethod:'TM'}};
+ const now=await h.call('owner',action);
+ assert.equal(now.saved,true);
+ assert.equal(now.xpAwarded,2000);
+ assert.equal(h.docs.get('bun_tables/BGL 301').openedByStaffId,'DOL-0004');
+ assert.equal((await h.call('owner',action)).xpAwarded,0);
+ await assert.rejects(()=>h.call('intruder',action),e=>e.code==='permission-denied');
 });
 test('reopening a Bungalow saved on a previous VN day qualifies for a new daily mission',async()=>{
  const h=harness();
@@ -254,7 +298,8 @@ test('Lounge update of nonexistent table fails instead of booking/awarding new X
 
 test('Lounge form edits occupied tables through no-XP server-side update while master PIN stays UI-only',()=>{
  const html=fs.readFileSync(__dirname+'/../dolphin-lounge.html','utf8');
- assert.match(html,/const editExisting=!!\(String\(current\.openedByStaff/);
+ assert.match(html,/const editExisting=hasOpener&&sameTourDay/);
+ assert.match(html,/timeZone:'Asia\/Ho_Chi_Minh'/);
  assert.match(html,/action:editExisting\?'update':'booking'/);
  assert.match(html,/if\(origPax>0 && pax!==origPax\)/);
  assert.match(html,/window\.promptManagerAuth\('save'/);

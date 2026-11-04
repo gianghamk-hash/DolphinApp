@@ -125,7 +125,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <link rel="icon" type="image/png" sizes="192x192" href="./pwa-icons/icon-192.png.png">
 <link rel="icon" type="image/png" sizes="384x384" href="./pwa-icons/icon-384.png.png">
 <link rel="icon" type="image/png" sizes="512x512" href="./pwa-icons/icon-512.png.png">
-<script src="./staff-id.js?v=1.1.69" defer></script>
+<script src="./staff-id.js?v=crew-operational-auth-v1" defer></script>
 <script src="./dolphin-avatars.js?v=crew-global-v9" defer></script>
 <script src="./staff-prestige-client.js?v=1.1.69" defer></script>
 </head>
@@ -511,20 +511,25 @@ window.requireStaffName=function(r){state.pendingAction={type:'gate',roleToEnter
 window.verifyPin=function(){const pin=document.getElementById('pin-input').value;let ok=false,k='';if(pendingRoleRequest==='bungalow'&&pin===ADMIN_PIN){ok=true;k='dolphinBunAdminAuth';}if(pendingRoleRequest==='admin'&&pin===ADMIN_PIN){ok=true;k='dolphinBunAdminAuth';}if(pendingRoleRequest==='reception'&&pin===RECEPTION_PIN){ok=true;k='dolphinBunReceptionAuth';}if(ok){sessionStorage.setItem(k,'true');window.closePinModal();const r=pendingRoleRequest;if(r){if(!window.hasStaffName())window.requireStaffName(r);else window.changeRole(r);}}else document.getElementById('pin-error').classList.remove('hidden');};
 window.closePinModal=()=>{document.getElementById('modal-pin').classList.add('hidden');pendingRoleRequest=null;};
 window.promptStaffName=function(){state.pendingAction={type:'changeName'};document.getElementById('staff-name-modal-title').innerText='ĐỔI TÊN NHÂN VIÊN';document.getElementById('staff-name-modal-subtitle').innerHTML='Nhập tên NV mới.';document.getElementById('staff-name-confirm-label').innerText='LƯU TÊN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value=window.getStaffName();document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();};
-window.openStaffNameModal=async(id,ns)=>{const n=window.getStaffName();if(!n||!n.trim()){state.pendingAction={type:'orderGate',orderId:id,nextStatus:ns};document.getElementById('staff-name-modal-title').innerText='⚠️ CẦN NHẬP TÊN';document.getElementById('staff-name-modal-subtitle').innerText='Nhập tên để tiếp tục.';document.getElementById('staff-name-confirm-label').innerText='XÁC NHẬN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value='';document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();return;}await window.executeStaffOrderAction(id,ns,n);};
-window.executeStaffOrderAction=async(id,ns,name)=>{if(!db)return;const r=doc(db,COL_ORDERS,id);try{
-const identity=window.DolphinStaffId?.get?.();
-if(identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
- String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN')){
- const reward=await window.DolphinStaffId.performLiveAction({kind:COL_ORDERS,id,action:ns});
- const points=(reward.xpAwarded||0)+(reward.missionXP||0);
- if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
- window.showToast(`${name} ${ns==='preparing'?'nhận đơn':'hoàn thành'}!`,'✅');
- playNotificationAlert('complete');
- return;
-}
-await runTransaction(db,async(tr)=>{const d=await tr.get(r);if(!d.exists())throw 0;const c=d.data();const u={status:ns};if(ns==='preparing'){if(c.status==='preparing'&&c.preparedBy&&!c.preparedBy.includes(name)){u.preparedBy=c.preparedBy+' & '+name;state.lastTransactionWarning=`⚠️ TRÙNG: ${c.preparedBy} cũng vừa nhận!`;}else{u.preparedBy=name;state.lastTransactionWarning=null;}u.preparedAt=Date.now();}else if(ns==='completed'){const linked=window.DolphinStaffId?.get?.();if(linked?.employeeId&&String(linked.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN'))u.completedByStaffId=linked.employeeId;u.completedBy=name;u.completedAt=Date.now();u.completedTime=window.getVNTime().timeString;}tr.update(r,u);});
-if(state.lastTransactionWarning){window.showToast(state.lastTransactionWarning,'⚠️');playNotificationAlert('delayed');}else{window.showToast(`${name} ${ns==='preparing'?'nhận đơn':'hoàn thành'}!`,'✅');playNotificationAlert('complete');}}catch(e){console.error('[Order status]',COL_ORDERS,id,ns,e);window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'kiểm tra mạng/quyền Firestore'),'❌');}};
+window.openStaffNameModal=async(id,ns)=>{const n=window.DolphinStaffId?.get?.()?.name||window.getStaffName();if(!n||!n.trim()){state.pendingAction={type:'orderGate',orderId:id,nextStatus:ns};document.getElementById('staff-name-modal-title').innerText='⚠️ CẦN NHẬP TÊN';document.getElementById('staff-name-modal-subtitle').innerText='Nhập tên để tiếp tục.';document.getElementById('staff-name-confirm-label').innerText='XÁC NHẬN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value='';document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();return;}await window.executeStaffOrderAction(id,ns,n);};
+window.executeStaffOrderAction=async(id,ns,name)=>{
+ if(!db)return;
+ try{
+  // The access gate already verified the UID. The callable checks that
+  // same UID against the live staff registry and attributes XP to Staff ID.
+  if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+   throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
+  const reward=await window.DolphinStaffId.performLiveAction({kind:COL_ORDERS,id,action:ns});
+  const staffName=window.DolphinStaffId?.get?.()?.name||name;
+  const points=(reward.xpAwarded||0)+(reward.missionXP||0);
+  if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
+  window.showToast(`${staffName} ${ns==='preparing'?'nhận đơn':'hoàn thành'}!`,'✅');
+  playNotificationAlert('complete');
+ }catch(e){
+  console.error('[Order status]',COL_ORDERS,id,ns,e);
+  window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra kết nối Staff ID'),'❌');
+ }
+};
 window.closeStaffNameModal=()=>{document.getElementById('modal-staff-name').classList.add('hidden');state.pendingAction=null;};
 window.confirmStaffAction=async function(){const n=document.getElementById('staff-name-input').value.trim();if(!n){window.showToast('Vui lòng nhập tên!','⚠️');return;}window.setStaffName(n);const pa=state.pendingAction;document.getElementById('modal-staff-name').classList.add('hidden');state.pendingAction=null;if(pa&&pa.type==='gate'){window.showToast(`Xin chào ${n}!`,'👋');if(pa.roleToEnter)window.changeRole(pa.roleToEnter);renderAll();return;}if(pa&&pa.type==='changeName'){window.showToast(`Đổi tên: ${n}`,'📝');renderAll();return;}if(pa&&pa.type==='orderGate'){window.showToast(`Xin chào ${n}!`,'👋');await window.executeStaffOrderAction(pa.orderId,pa.nextStatus,n);renderAll();return;}renderAll();};
 
@@ -592,12 +597,12 @@ window.saveCustomerName=async function(){
     if(inp)inp.focus();
     return;
   }
-  if(!sn&&!(window.DolphinStaffId?.get?.()?.verified===true&&window.DolphinStaffId.get().name)){
+  if(!sn&&!window.DolphinStaffId?.get?.()?.name){
     window.showToast('Nhập tên NV mở phòng hoặc liên kết Staff ID đã xác minh!','⚠️');return;
   }
   const existing=state.tableAssignments[t]||{};
   const identity=window.DolphinStaffId?.get?.();
-  const verifiedStaff=identity?.verified===true&&!!identity.employeeId&&!!String(identity.name||'').trim();
+  const verifiedStaff=!!identity?.employeeId&&!!String(identity.name||'').trim();
   const finalOpener=(existing.openedByStaff&&existing.openedByStaff.trim())
     ?existing.openedByStaff:(verifiedStaff?identity.name:sn);
   try{
@@ -613,23 +618,22 @@ window.saveCustomerName=async function(){
       updatedBy:window.getStaffName()||'N/A',
       updatedAt:Date.now()
     };
-    const verified=verifiedStaff&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
-      String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(finalOpener).trim().toLocaleLowerCase('vi-VN');
-    const reward=verified?await window.DolphinStaffId.performLiveAction({
+    // Staff ID is verified by the entry gate and reauthorized on the server.
+    // A cached opener name must not divert an approved employee to a
+    // non-XP legacy Firestore write.
+    if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+      throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
+    const reward=await window.DolphinStaffId.performLiveAction({
       kind:COL_TABLES,id:t,action:'booking',data:toSave
-    }):null;
-    if(!verified)await setDoc(doc(db,COL_TABLES,t),toSave,{merge:true});
+    });
     window.showToast(`Đã lưu P.${t}`,'✅');
     if(reward&&(reward.xpAwarded||reward.missionXP)){
       const gained=(reward.xpAwarded||0)+(reward.missionXP||0);
       window.showToast('+'+gained.toLocaleString('vi-VN')+' XP · '+identity.employeeId,'⭐');
       window.dispatchEvent(new CustomEvent('dolphin-xp-synced',{detail:{addedXP:gained,source:'bungalow'}}));
-    }else if(verified&&reward?.duplicate){
+    }else if(reward?.duplicate){
       window.showToast('Bungalow đã được cộng XP doanh thu hôm nay, không cộng trùng.','ℹ️');
-    }else if(!verified&&verifiedStaff){
-      window.showToast('Đã lưu bàn; không cộng XP vì Bungalow đang ghi nhận người mở khác ('+finalOpener+').','⚠️');
-    }else if(!verified&&identity?.employeeId&&!identity?.verified){
-      window.showToast('Đã lưu bàn; Staff ID chưa xác minh nên XP chưa được cộng.','⚠️');
+
     }
     window.closeCustomerNameModal();
   }catch(e){

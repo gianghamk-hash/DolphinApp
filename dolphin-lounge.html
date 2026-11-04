@@ -62,7 +62,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script src="staff-online.js?v=crew-global-v9" defer></script>
 <script src="dolphin-ui.js?v=1.1.69" defer></script>
 
-<script src="./staff-id.js?v=1.1.69" defer></script>
+<script src="./staff-id.js?v=crew-operational-auth-v1" defer></script>
 <script src="./dolphin-avatars.js?v=crew-global-v9" defer></script>
 <script src="./staff-prestige-client.js?v=1.1.69" defer></script>
 </head>
@@ -1098,14 +1098,21 @@ window.saveCustomerName = async function(){
 window.executeSaveCustomerName = async function({table,dataToSave}){
   try{
     if(!db)throw Error('Chưa kết nối Firestore');
-    const identity=window.DolphinStaffId?.get?.();
-    const verified=identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function';
+    // The entry gate verified the staff session. Every operational mutation
+    // must be authorized again by Firebase using the current UID, not a
+    // locally remembered employee name or an out-of-date client flag.
+    if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+      throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
     const current=state.tableAssignments[table]||{};
-    const editExisting=!!(String(current.openedByStaff||'').trim()||String(current.openedByStaffId||'').trim());
-    const reward=verified?await window.DolphinStaffId.performLiveAction({
+    const hasOpener=!!(String(current.openedByStaff||'').trim()||String(current.openedByStaffId||'').trim());
+    const vnDay=timestamp=>new Date(timestamp).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'});
+    // A table retained from an earlier tour is a new daily booking, not an
+    // edit of yesterday's revenue session. Backend still checks ownership.
+    const sameTourDay=Number(current.updatedAt)>0&&vnDay(current.updatedAt)===vnDay(Date.now());
+    const editExisting=hasOpener&&sameTourDay;
+    const reward=await window.DolphinStaffId.performLiveAction({
       kind:'lounge_tables',id:table,action:editExisting?'update':'booking',data:dataToSave
-    }):null;
-    if(!verified)await setDoc(doc(db,'lounge_tables',table),dataToSave,{merge:true});
+    });
     window.showToast(`Đã lưu bàn ${table}`,'✅');
     if(reward&&(reward.xpAwarded||reward.missionXP))window.showToast('+'+((reward.xpAwarded||0)+(reward.missionXP||0))+' XP đã xác minh','⭐');
     window.closeCustomerNameModal(); 
@@ -1213,7 +1220,7 @@ window.promptStaffName = function(){
   document.getElementById('staff-name-input').focus();
 };
 window.openStaffNameModal = function(orderId,nextStatus){
-  const s = (localStorage.getItem('dolphinStaffName')||'').trim();
+  const s = (window.DolphinStaffId?.get?.()?.name||localStorage.getItem('dolphinStaffName')||'').trim();
   state.pendingAction = {orderId,nextStatus};
   if(s){ window.executeStaffAction(s); return; }
   document.getElementById('modal-staff-name').classList.remove('hidden');
@@ -1232,47 +1239,30 @@ window.confirmStaffAction = async function(){
   await window.executeStaffAction(name);
 };
 window.executeStaffAction = async function(name){
-  const pa = state.pendingAction;
-  if(pa && pa.orderId && db){
-    const {orderId,nextStatus} = pa;
-    const ref = doc(db,'lounge_orders',orderId);
-    try{
-      const identity=window.DolphinStaffId?.get?.();
-      if(identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
-         String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN')){
-        const reward=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
-        window.showToast('Đã ghi nhận: '+name,'📝');
-        const points=(reward.xpAwarded||0)+(reward.missionXP||0);
-        if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
-        if(nextStatus==='completed')Confetti.spawn(innerWidth/2,innerHeight/2,100);
-        state.pendingAction=null;
-        return;
-      }
-      await runTransaction(db, async tx=>{
-        const d = await tx.get(ref);
-        if(!d.exists()) throw "Đơn không tồn tại!";
-        const cur = d.data();
-        const upd = { status: nextStatus };
-        if(nextStatus==='preparing'){
-          if(cur.status==='preparing' && cur.preparedBy && !cur.preparedBy.includes(name)){
-            upd.preparedBy = cur.preparedBy+' & '+name;
-            state.lastTransactionWarning = `CẢNH BÁO TRÙNG: ${cur.preparedBy} cũng nhận đơn này!`;
-          } else { upd.preparedBy = name; state.lastTransactionWarning=null; }
-        } else if(nextStatus==='completed'){
-          const linked=window.DolphinStaffId?.get?.();
-          if(linked?.employeeId&&String(linked.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN'))upd.completedByStaffId=linked.employeeId;
-          upd.completedBy = name;
-          upd.completedAt = Date.now();
-          upd.completedTime = window.getVNTime().timeString;
-          state.lastTransactionWarning=null;
-        }
-        tx.update(ref, upd);
-      });
-      if(state.lastTransactionWarning){ window.showToast(state.lastTransactionWarning,"⚠️"); playNotificationAlert(); }
-      else { window.showToast(`Đã ghi nhận: ${name}`,'📝'); if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100); }
-      } catch(e){ console.error('[Lounge order status]',orderId,nextStatus,e); window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra quyền Firestore'),"❌"); }
-  } else { window.showToast(`Đã lưu tên: ${name}`,'📝'); renderAll(); }
-  state.pendingAction=null;
+ const pa=state.pendingAction;
+ if(pa&&pa.orderId){
+  const {orderId,nextStatus}=pa;
+  try{
+   if(!db)throw Error('Chưa kết nối Firestore');
+   // Always use Firebase UID for authorization and XP attribution;
+   // locally stored names cannot select a non-XP fallback.
+   if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+    throw Error('Chưa tải Staff ID. Vui lòng mở lại ứng dụng.');
+   const reward=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
+   const staffName=window.DolphinStaffId?.get?.()?.name||name;
+   window.showToast('Đã ghi nhận: '+staffName,'📝');
+   const points=(reward.xpAwarded||0)+(reward.missionXP||0);
+   if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
+   if(nextStatus==='completed')Confetti.spawn(innerWidth/2,innerHeight/2,100);
+  }catch(e){
+   console.error('[Lounge order status]',orderId,nextStatus,e);
+   window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra kết nối Staff ID'),'❌');
+  }
+ }else{
+  window.showToast('Đã lưu tên: '+name,'📝');
+  renderAll();
+ }
+ state.pendingAction=null;
 };
 
 let cancelContext = {orderId:null,itemIndex:null,maxQty:0};

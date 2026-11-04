@@ -41,7 +41,7 @@ body{background:#240509;color:#fff;font-family:'Plus Jakarta Sans',sans-serif;-w
 <link rel="icon" type="image/png" sizes="192x192" href="./pwa-icons/icon-192.png.png">
 <link rel="icon" type="image/png" sizes="512x512" href="./pwa-icons/icon-512.png.png">
 <script src="staff-sync.js" defer></script>
-<script src="./staff-id.js?v=1.1.69" defer></script>
+<script src="./staff-id.js?v=crew-operational-auth-v1" defer></script>
 <script src="./dolphin-avatars.js?v=crew-global-v9" defer></script>
 <script src="./staff-prestige-client.js?v=1.1.69" defer></script>
 </head>
@@ -491,29 +491,22 @@ window.saveBooking = async () => {
   const label = $('b-id').value, mgr = isManager();
   const data = { label, leader: $('b-leader').value.trim(), dining: $('b-dining').value.trim(),
     guests: parseInt($('b-guests').value), payment: $('b-pay').value,
-    focNote: $('b-pay').value === 'FOC' ? $('b-foc').value.trim() : '', seller: me(), updatedAt: Date.now() };
+    focNote: $('b-pay').value === 'FOC' ? $('b-foc').value.trim() : '',
+    seller: window.DolphinStaffId?.get?.()?.name||me(), updatedAt: Date.now() };
   if (!data.leader || !data.dining || !data.guests || data.guests < 1 || !data.payment)
     return toast('Vui lòng nhập đủ thông tin khách!', '⚠️');
   if (data.payment === 'FOC' && !data.focNote) return toast('Thanh toán FOC cần ghi chú lý do!', '⚠️');
-  if (!me()) return toast('Hãy nhập tên người bán ở thanh phía trên trước!', '⚠️');
+  if (!data.seller) return toast('Chưa có hồ sơ Staff ID để mở bàn!', '⚠️');
   const linked=window.DolphinStaffId?.get?.();
   if(linked?.employeeId&&norm(linked.name)===norm(data.seller))data.sellerStaffId=linked.employeeId;
   const ref = doc(db, COL_LIVE, key(label));
   try {
-    const verified=linked?.verified===true&&norm(linked.name)===norm(data.seller)&&
-      typeof window.DolphinStaffId?.performLiveAction==='function';
-    if(verified){
-      await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'booking',data});
-    }else{
-      // Legacy operation is preserved, but client-writable bookings never award XP.
-      await runTransaction(db, async tx => {
-        const snap = await tx.get(ref);
-        if (snap.exists() && !mgr && norm(snap.data().seller) !== norm(data.seller)) throw new Error('LOCKED:' + snap.data().seller);
-        if (snap.exists() && !mgr) data.seller = snap.data().seller;
-        tx.set(ref, data, { merge: true });
-      });
-      toast('Bàn đã lưu; Staff ID chưa xác minh nên không cấp XP.','⚠️');
-    }
+    // The Staff ID gate already checked the account. Always perform the
+    // actual mutation with Firebase Auth; the server derives the seller and
+    // verifies ownership, instead of relying on a locally cached name.
+    if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+      throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
+    await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'booking',data});
     toast('Đã lưu bàn ' + label,'✅'); closeM('m-book'); fireworkBurst();
   } catch (e) {
     if (String(e.message).startsWith('LOCKED')) { toast('Bàn đã có khách đặt trước bởi ' + e.message.split(':')[1] + '!', '🔒'); closeM('m-book'); }
@@ -733,9 +726,9 @@ window.saveService = async () => {
   const ref=doc(db,COL_LIVE,key(label));
   try {
     const identity=window.DolphinStaffId?.get?.();
-    const verified=identity?.verified===true&&norm(identity.name)===norm(me())&&
-      typeof window.DolphinStaffId?.performLiveAction==='function';
-    if(verified){
+    if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+      throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
+    {
       // Backend validates the seller's server-recorded booking and claims XP once.
       let reward=await window.DolphinStaffId.performLiveAction({kind:COL_LIVE,id:key(label),action:'combo',data:service});
       if(reward.requiresVerifiedBooking&&!reward.managerOverride){
@@ -762,14 +755,6 @@ window.saveService = async () => {
       if(reward.requiresVerifiedBooking){
         toast('Combo đã lưu. Chưa ghi XP: mở Thông tin đặt bàn và lưu lại bằng Staff ID xác minh.','⚠️');
       }else if(reward.xpAwarded>0)toast('+'+reward.xpAwarded+' XP doanh thu Show','⭐');
-    }else{
-      await runTransaction(db, async tx => {
-        const snap=await tx.get(ref);
-        if(!snap.exists())throw new Error('NOBOOK');
-        if(snap.data().service&&norm(snap.data().seller)!==norm(me())&&!isManager())throw new Error('LOCKED');
-        tx.update(ref,{service});
-      });
-      toast('Combo đã lưu; Staff ID chưa xác minh nên không cấp XP.','⚠️');
     }
     toast('Đã lưu Combo bàn '+label,'✅');closeM('m-service');
   }catch(e){

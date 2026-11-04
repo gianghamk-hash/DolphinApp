@@ -27,6 +27,7 @@ on:
       - 'functions/staff-xp-live-engine.cjs'
       - 'functions/staff-xp-live-engine.test.cjs functions/staff-xp-actions.test.cjs'
       - 'staff-prestige-client.js'
+      - 'scripts/staff-levelup.test.cjs'
       - 'staff-prestige-profile.js'
       - 'scripts/staff-prestige-client.test.cjs'
       - 'staff-xp-manager.js'
@@ -60,4 +61,4 @@ jobs:
           node --check staff-xp-manager.js
           node --check theme-system.js
       - name: Staff XP and archival reconciliation tests
-        run: node --test functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs
+        run: node --test scripts/staff-levelup.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs

@@ -7,7 +7,7 @@ service cloud.firestore {
     // No client (including the allowlisted Manager) can create/update these
     // documents directly; schema/authorization checks live in Push callables.
     function isLegacyClientPath(collection) {
-      return !collection.matches('dolphin_push_.*') && collection != 'staff_xp_updates';
+      return !collection.matches('dolphin_push_.*') && collection != 'staff_xp_updates' && collection != 'staff_xp_outbox';
     }
     match /staff_xp_updates/{document} {
       allow read: if request.auth != null;

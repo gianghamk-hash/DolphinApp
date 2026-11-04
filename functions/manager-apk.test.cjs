@@ -11,7 +11,7 @@ function fixture(){
  const get=p=>p.split('/').reduce((v,k)=>v?.[k],data);
  const set=(p,v)=>{const keys=p.split('/'),last=keys.pop();let node=data;for(const k of keys)node=node[k]??={};node[last]=clone(v);};
  const snap=v=>({val:()=>clone(v)});
- const ref=p=>({once:async()=>snap(get(p)),transaction:async fn=>{
+ const ref=p=>({set:async v=>set(p,v),once:async()=>snap(get(p)),transaction:async fn=>{
   if(failProjection&&p==='staffIdentity/second')throw Error('projection unavailable');
   let proposed=fn(null);if(proposed===undefined)return {committed:false,snapshot:snap(get(p))};
   proposed=fn(clone(get(p)));if(proposed===undefined)return {committed:false,snapshot:snap(get(p))};
@@ -65,4 +65,25 @@ test('stale name synchronization cannot overwrite newer device projection',async
  const f=fixture();f.data.staffIdentity.second.profileVersion=99;f.data.staffIdentity.second.name='Tên Mới Hơn';
  await f.api.staffRenameManager(req('owner',{name:'Nguyễn Tên Mới'}));
  assert.equal(f.data.staffIdentity.second.name,'Tên Mới Hơn');
+});
+
+test('only verified DOL-0001 removes another ID; history and XP remain and recovery is denied',async()=>{
+ const f=fixture();f.data.staffRegistry['DOL-0002'].xp=9876;
+ for(const uid of ['staff','forged',null])await assert.rejects(()=>f.api.staffDeleteEmployee(req(uid,{employeeId:'DOL-0002',confirmEmployeeId:'DOL-0002'})));
+ await assert.rejects(()=>f.api.staffDeleteEmployee(req('owner',{employeeId:'DOL-0001',confirmEmployeeId:'DOL-0001'})));
+ await assert.rejects(()=>f.api.staffDeleteEmployee(req('owner',{employeeId:'DOL-0002',confirmEmployeeId:'wrong'})));
+ await f.api.staffDeleteEmployee(req('owner',{employeeId:'DOL-0002',confirmEmployeeId:'DOL-0002'}));
+ assert.equal(f.data.staffRegistry['DOL-0002'].active,false);
+ assert.equal(f.data.staffRegistry['DOL-0002'].xp,9876);
+ await assert.rejects(()=>f.api.staffIssueEmployeeRecoveryCode(req('owner',{employeeId:'DOL-0002'})));
+});
+test('manager can issue a hashed single-use recovery code preserving the same Staff ID',async()=>{
+ const f=fixture();
+ for(const uid of ['staff','forged',null])await assert.rejects(()=>f.api.staffIssueEmployeeRecoveryCode(req(uid,{employeeId:'DOL-0002'})));
+ const code=await f.api.staffIssueEmployeeRecoveryCode(req('owner',{employeeId:'DOL-0002'}));
+ assert.equal(code.employeeId,'DOL-0002');assert.equal(code.code.length,36);
+ const records=Object.values(f.data.staffEnrollmentCodes);
+ assert.equal(records.length,1);assert.equal(records[0].employeeId,'DOL-0002');
+ assert.equal(records[0].expiresAt-records[0].issuedAt,600000);
+ assert.equal(JSON.stringify(records).includes(code.code),false);
 });

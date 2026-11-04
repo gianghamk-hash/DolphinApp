@@ -23,7 +23,31 @@ function render(){
  const term=$('manager-directory-search').value.toLocaleLowerCase('vi');
  const rows=people.filter(p=>(p.name+' '+p.employeeId).toLocaleLowerCase('vi').includes(term));
  const list=dialog.querySelector('.manager-directory-list');list.replaceChildren();
- for(const p of rows){const row=document.createElement('p');row.className='manager-directory-person';row.textContent=(p.avatar||'🐬')+' '+p.name+' · '+p.employeeId;list.append(row);}
+ for(const p of rows){
+  const row=document.createElement('div');row.className='manager-directory-person';
+  const label=document.createElement('p');label.textContent=(p.avatar||'🐬')+' '+p.name+' · '+p.employeeId;row.append(label);
+  if(p.employeeId!=='DOL-0001')for(const [title,endpoint] of [['Cấp lại mã liên kết','staffIssueEmployeeRecoveryCode'],['Xóa tài khoản','staffDeleteEmployee']]){
+   const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=title;
+   button.onclick=async()=>{
+    const payload={employeeId:p.employeeId};
+    if(endpoint==='staffDeleteEmployee'){
+     const typed=window.prompt('Xóa quyền truy cập của '+p.name+' trên mọi thiết bị. Lịch sử doanh thu và XP được giữ lại. Nhập '+p.employeeId+' để xác nhận:');
+     if(typed!==p.employeeId)return;payload.confirmEmployeeId=typed;
+    }else if(!window.confirm('Đã xác minh đúng nhân viên '+p.name+' ('+p.employeeId+')? Mã sẽ liên kết thiết bị mới và giữ nguyên ID, XP, lịch sử.'))return;
+    button.disabled=true;
+    try{
+     const result=await window.DolphinPrestige.call(endpoint,payload);
+     if(result.code){
+      const output=document.createElement('p');output.textContent='Mã cho '+result.name+' (10 phút, dùng một lần): '+result.code;output.style.overflowWrap='anywhere';row.append(output);
+      const copy=document.createElement('button');copy.type='button';copy.className='secondary';copy.textContent='Sao chép mã';
+      copy.onclick=async()=>{try{await navigator.clipboard.writeText(result.code);copy.textContent='Đã sao chép';}catch(_){dialog.querySelector('[role=status]').textContent='Nhấn giữ mã để sao chép.';}};row.append(copy);
+     }else{people=people.filter(x=>x.employeeId!==p.employeeId);render();}
+    }catch(e){dialog.querySelector('[role=status]').textContent='Không thực hiện được: '+e.message;}
+    finally{button.disabled=false;}
+   };row.append(button);
+  }
+  list.append(row);
+ }
  dialog.querySelector('[role=status]').textContent=rows.length+' hồ sơ';
 }
 $('manager-directory-search').oninput=render;

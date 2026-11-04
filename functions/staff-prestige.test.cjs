@@ -14,7 +14,7 @@ function harness(options={}){
  };
  const ref=path=>({
   once:async()=>({val:()=>read(path),exists:()=>read(path)!=null}),
-  set:async value=>{data.set(path,value);},
+  set:async value=>{if(options.failReceiptAck&&path.startsWith('staffXpLedger/')&&value.state==='credited')throw Error('ack offline');data.set(path,value);},
   remove:async()=>{data.delete(path);},
   transaction:async fn=>{
    const isProfile=path==='staffRegistry/DOL-0001';
@@ -91,12 +91,12 @@ test('cold-cache RTDB transaction still credits active profile exactly once',asy
  assert.equal(again.duplicate,true);
  assert.equal(data.get('staffRegistry/DOL-0001').xp,2500);
 });
-test('if active profile is deleted during transaction do not recreate it or leave XP ledger',async()=>{
+test('if active profile is deleted during transaction do not recreate it; retain a retryable pending XP receipt',async()=>{
  const {api,data}=harness({coldCacheProfile:true,removeBeforeServerRetry:true});
  const payload={employeeId:'DOL-0001',eventId:'live:revenue:removed01',source:'revenue',amount:1000};
  await assert.rejects(()=>api._awardTrustedLiveXP(payload),e=>e.code==='internal');
  assert.equal(data.has('staffRegistry/DOL-0001'),false);
- assert.equal(data.has('staffXpLedger/DOL-0001/'+payload.eventId),false);
+ assert.equal(data.get('staffXpLedger/DOL-0001/'+payload.eventId).state,'pending');
 });
 
 test('Level 6 may save name flame and Light theme after RTDB cold-cache null',async()=>{
@@ -358,4 +358,14 @@ test('manager and trusted live grants cannot credit unapproved registrations',as
  await assert.rejects(()=>api._awardTrustedLiveXP(event),e=>e.code==='permission-denied');
  await assert.rejects(()=>api.staffGrantVerifiedXP(req('manager',event)),e=>e.code==='permission-denied');
  assert.equal(data.has('staffXpLedger/DOL-0003/test:pending:001'),false);
+});
+
+test('a lost ledger acknowledgement retries without losing or doubling committed profile XP',async()=>{
+ const options={failReceiptAck:true},h=harness(options),event={employeeId:'DOL-0001',eventId:'live:crash:receipt01',source:'revenue',amount:250};
+ await assert.rejects(()=>h.api._awardTrustedLiveXP(event),/ack offline/);
+ assert.equal(h.data.get('staffRegistry/DOL-0001').xp,250);
+ assert.equal(h.data.get('staffXpLedger/DOL-0001/'+event.eventId).state,'pending');
+ options.failReceiptAck=false;await h.api._awardTrustedLiveXP(event);await h.api._awardTrustedLiveXP(event);
+ assert.equal(h.data.get('staffRegistry/DOL-0001').xp,250);
+ assert.equal(h.data.get('staffXpLedger/DOL-0001/'+event.eventId).state,'credited');
 });

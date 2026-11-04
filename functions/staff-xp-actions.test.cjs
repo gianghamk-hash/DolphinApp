@@ -164,6 +164,20 @@ test('Lounge booking retained from a previous day awards new tour revenue and mi
  assert.equal(second.xpAwarded,0);
  assert.equal(second.missionXP,0);
 });
+test('verified new employee can reopen a prior-day Bungalow without stealing same-day revenue',async()=>{
+ const h=harness();
+ const prior={customerName:'Yesterday',restaurantTable:'A1',paymentMethod:'TM',
+  openedByStaff:'Lan',openedByStaffId:'DOL-0001',updatedAt:Date.now()-2*86400000};
+ h.docs.set('bun_tables/BGL 301',prior);
+ const action={kind:'bun_tables',id:'BGL 301',action:'booking',
+  data:{customerName:'Today',restaurantTable:'A2',paymentMethod:'TM'}};
+ const now=await h.call('owner',action);
+ assert.equal(now.saved,true);
+ assert.equal(now.xpAwarded,2000);
+ assert.equal(h.docs.get('bun_tables/BGL 301').openedByStaffId,'DOL-0004');
+ assert.equal((await h.call('owner',action)).xpAwarded,0);
+ await assert.rejects(()=>h.call('verified',action),e=>e.code==='permission-denied');
+});
 test('reopening a Bungalow saved on a previous VN day qualifies for a new daily mission',async()=>{
  const h=harness();
  h.docs.set('bun_tables/BGL 202',{

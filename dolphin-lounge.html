@@ -1215,7 +1215,7 @@ window.promptStaffName = function(){
   document.getElementById('staff-name-input').focus();
 };
 window.openStaffNameModal = function(orderId,nextStatus){
-  const s = (localStorage.getItem('dolphinStaffName')||'').trim();
+  const s = (window.DolphinStaffId?.get?.()?.name||localStorage.getItem('dolphinStaffName')||'').trim();
   state.pendingAction = {orderId,nextStatus};
   if(s){ window.executeStaffAction(s); return; }
   document.getElementById('modal-staff-name').classList.remove('hidden');
@@ -1234,47 +1234,30 @@ window.confirmStaffAction = async function(){
   await window.executeStaffAction(name);
 };
 window.executeStaffAction = async function(name){
-  const pa = state.pendingAction;
-  if(pa && pa.orderId && db){
-    const {orderId,nextStatus} = pa;
-    const ref = doc(db,'lounge_orders',orderId);
-    try{
-      if(typeof window.DolphinStaffId?.performLiveAction!=='function')
-        throw Error('Chưa tải Staff ID. Vui lòng mở lại ứng dụng.');
-      {
-        const reward=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
-        window.showToast('Đã ghi nhận: '+name,'📝');
-        const points=(reward.xpAwarded||0)+(reward.missionXP||0);
-        if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
-        if(nextStatus==='completed')Confetti.spawn(innerWidth/2,innerHeight/2,100);
-        state.pendingAction=null;
-        return;
-      }
-      await runTransaction(db, async tx=>{
-        const d = await tx.get(ref);
-        if(!d.exists()) throw "Đơn không tồn tại!";
-        const cur = d.data();
-        const upd = { status: nextStatus };
-        if(nextStatus==='preparing'){
-          if(cur.status==='preparing' && cur.preparedBy && !cur.preparedBy.includes(name)){
-            upd.preparedBy = cur.preparedBy+' & '+name;
-            state.lastTransactionWarning = `CẢNH BÁO TRÙNG: ${cur.preparedBy} cũng nhận đơn này!`;
-          } else { upd.preparedBy = name; state.lastTransactionWarning=null; }
-        } else if(nextStatus==='completed'){
-          const linked=window.DolphinStaffId?.get?.();
-          if(linked?.employeeId&&String(linked.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN'))upd.completedByStaffId=linked.employeeId;
-          upd.completedBy = name;
-          upd.completedAt = Date.now();
-          upd.completedTime = window.getVNTime().timeString;
-          state.lastTransactionWarning=null;
-        }
-        tx.update(ref, upd);
-      });
-      if(state.lastTransactionWarning){ window.showToast(state.lastTransactionWarning,"⚠️"); playNotificationAlert(); }
-      else { window.showToast(`Đã ghi nhận: ${name}`,'📝'); if(nextStatus==='completed') Confetti.spawn(innerWidth/2,innerHeight/2,100); }
-      } catch(e){ console.error('[Lounge order status]',orderId,nextStatus,e); window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra quyền Firestore'),"❌"); }
-  } else { window.showToast(`Đã lưu tên: ${name}`,'📝'); renderAll(); }
-  state.pendingAction=null;
+ const pa=state.pendingAction;
+ if(pa&&pa.orderId){
+  const {orderId,nextStatus}=pa;
+  try{
+   if(!db)throw Error('Chưa kết nối Firestore');
+   // Always use Firebase UID for authorization and XP attribution;
+   // locally stored names cannot select a non-XP fallback.
+   if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+    throw Error('Chưa tải Staff ID. Vui lòng mở lại ứng dụng.');
+   const reward=await window.DolphinStaffId.performLiveAction({kind:'lounge_orders',id:orderId,action:nextStatus});
+   const staffName=window.DolphinStaffId?.get?.()?.name||name;
+   window.showToast('Đã ghi nhận: '+staffName,'📝');
+   const points=(reward.xpAwarded||0)+(reward.missionXP||0);
+   if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
+   if(nextStatus==='completed')Confetti.spawn(innerWidth/2,innerHeight/2,100);
+  }catch(e){
+   console.error('[Lounge order status]',orderId,nextStatus,e);
+   window.showToast('Không cập nhật được đơn: '+(e?.message||e?.code||'Kiểm tra kết nối Staff ID'),'❌');
+  }
+ }else{
+  window.showToast('Đã lưu tên: '+name,'📝');
+  renderAll();
+ }
+ state.pendingAction=null;
 };
 
 let cancelContext = {orderId:null,itemIndex:null,maxQty:0};

@@ -1,26 +1,42 @@
 {
-  "version": "1.1.75",
-  "previousVersion": "1.1.74",
-  "commit": "f60128c",
-  "previousCommit": "c236696",
-  "buildDate": "2026-11-04T03:19:01.805Z",
-  "summary": "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)",
+  "version": "1.1.76",
+  "previousVersion": "1.1.75",
+  "commit": "333e874",
+  "previousCommit": "f60128c",
+  "buildDate": "2026-11-04T09:29:07.232Z",
+  "summary": "Automatically equip level cosmetics and preserve later personal customization (#238)",
   "changes": {
-    "totalCommits": 299,
-    "filesChanged": 6,
+    "totalCommits": 300,
+    "filesChanged": 15,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)"
+    "Automatically equip level cosmetics and preserve later personal customization (#238)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-xp-secure-production.yml",
+      "file": "docs/AUTO_LEVEL_STYLE.md",
       "type": "update"
     },
     {
-      "file": "docs/STAFF_XP_RECOVERY_ROLLOUT.md",
+      "file": "functions/manager-apk.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-core.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-core.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.test.cjs",
       "type": "update"
     },
     {
@@ -32,11 +48,31 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.js",
+      "file": "functions/staff-profile.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.test.cjs",
+      "file": "functions/staff-xp-engine.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-engine.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/avatar-sync-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-cosmetics.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/landing-level-podium.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

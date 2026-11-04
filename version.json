@@ -1,7 +1,7 @@
 {
-  "version": "1.1.75",
-  "buildDate": "2026-11-04T03:19:01.805Z",
-  "commit": "f60128c",
-  "notes": "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)",
+  "version": "1.1.76",
+  "buildDate": "2026-11-04T09:29:07.232Z",
+  "commit": "333e874",
+  "notes": "Automatically equip level cosmetics and preserve later personal customization (#238)",
   "forceUpdate": false
 }

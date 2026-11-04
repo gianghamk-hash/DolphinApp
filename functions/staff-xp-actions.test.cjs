@@ -148,6 +148,22 @@ test('DOL-0001 verified Bungalow booking receives revenue XP and first-open miss
  assert.equal(again.missionXP,0);
  assert.equal(h.awards.filter(x=>x.employeeId==='DOL-0001'&&x.amount===2000).length,1);
 });
+test('Lounge booking retained from a previous day awards new tour revenue and mission once',async()=>{
+ const h=harness();
+ h.docs.set('lounge_tables/LOUNGE 15',{
+  customerName:'Yesterday',pax:2,paymentMethod:'TM',
+  openedByStaff:'Lan',openedByStaffId:'DOL-0001',updatedAt:Date.now()-2*86400000
+ });
+ const input={kind:'lounge_tables',id:'LOUNGE 15',action:'booking',
+  data:{customerName:'Today',pax:3,paymentMethod:'TM'}};
+ const first=await h.call('verified',input);
+ assert.equal(first.saved,true);
+ assert.equal(first.xpAwarded,750);
+ assert.equal(first.missionXP,250);
+ const second=await h.call('verified',input);
+ assert.equal(second.xpAwarded,0);
+ assert.equal(second.missionXP,0);
+});
 test('reopening a Bungalow saved on a previous VN day qualifies for a new daily mission',async()=>{
  const h=harness();
  h.docs.set('bun_tables/BGL 202',{

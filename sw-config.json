@@ -1,5 +1,5 @@
 {
-  "version": "1.1.71",
+  "version": "1.1.72",
   "releaseDate": "2026-11-04",
-  "notes": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)"
+  "notes": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)"
 }

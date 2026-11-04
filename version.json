@@ -1,7 +1,7 @@
 {
-  "version": "1.1.71",
-  "buildDate": "2026-11-04T02:08:58.316Z",
-  "commit": "087c332",
-  "notes": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)",
+  "version": "1.1.72",
+  "buildDate": "2026-11-04T03:01:34.411Z",
+  "commit": "c9b5ee9",
+  "notes": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)",
   "forceUpdate": false
 }

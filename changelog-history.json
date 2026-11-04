@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.71",
+      "releaseDate": "2026-11-04T02:08:58.316Z",
+      "summary": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)",
+      "details": [
+        "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)"
+      ]
+    },
+    {
       "version": "1.1.70",
       "releaseDate": "2026-11-04T00:48:32.927Z",
       "summary": "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)",
@@ -390,14 +398,6 @@
       "summary": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)",
       "details": [
         "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)"
-      ]
-    },
-    {
-      "version": "1.1.21",
-      "releaseDate": "2026-11-01T08:38:26.874Z",
-      "summary": "Fix Firebase production preflight JSON parsing (#177)",
-      "details": [
-        "Fix Firebase production preflight JSON parsing (#177)"
       ]
     }
   ]

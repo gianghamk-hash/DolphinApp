@@ -1,46 +1,42 @@
 {
-  "version": "1.1.71",
-  "previousVersion": "1.1.70",
-  "commit": "087c332",
-  "previousCommit": "fd7db42",
-  "buildDate": "2026-11-04T02:08:58.316Z",
-  "summary": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)",
+  "version": "1.1.72",
+  "previousVersion": "1.1.71",
+  "commit": "c9b5ee9",
+  "previousCommit": "087c332",
+  "buildDate": "2026-11-04T03:01:34.411Z",
+  "summary": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)",
   "changes": {
-    "totalCommits": 295,
-    "filesChanged": 18,
+    "totalCommits": 296,
+    "filesChanged": 22,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)"
+    "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/build.yml",
-      "type": "update"
-    },
     {
       "file": ".github/workflows/staff-access-production.yml",
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-profile-tests.yml",
+      "file": ".github/workflows/staff-prestige-tests.yml",
       "type": "update"
     },
     {
-      "file": "docs/MANAGER_APK_PROFILE_ROLLOUT.md",
+      "file": ".github/workflows/staff-style-unlock-production.yml",
       "type": "update"
     },
     {
-      "file": "dolphin-avatars.js",
+      "file": ".github/workflows/staff-xp-secure-production.yml",
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "docs/STAFF_XP_RECOVERY_ROLLOUT.md",
       "type": "update"
     },
     {
-      "file": "functions/index.js",
+      "file": "firestore.rules",
       "type": "update"
     },
     {
@@ -48,7 +44,11 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-id.test.js",
+      "file": "functions/staff-daily-missions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.test.cjs",
       "type": "update"
     },
     {
@@ -56,7 +56,27 @@
       "type": "update"
     },
     {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
       "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-reconcile.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-reconcile.test.cjs",
       "type": "update"
     },
     {
@@ -68,23 +88,19 @@
       "type": "update"
     },
     {
-      "file": "scripts/manager-apk-browser.cjs",
+      "file": "scripts/push-rules-test.cjs",
       "type": "update"
     },
     {
-      "file": "staff-access.js",
+      "file": "scripts/staff-levelup.test.cjs",
       "type": "update"
     },
     {
-      "file": "staff-id.js",
+      "file": "staff-prestige-profile.js",
       "type": "update"
     },
     {
-      "file": "staff-profile.css",
-      "type": "update"
-    },
-    {
-      "file": "staff-profile.js",
+      "file": "staff-xp-manager.js",
       "type": "update"
     }
   ]

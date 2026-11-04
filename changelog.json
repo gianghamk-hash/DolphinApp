@@ -1,22 +1,42 @@
 {
-  "version": "1.1.74",
-  "previousVersion": "1.1.73",
-  "commit": "c236696",
-  "previousCommit": "e8c4bba",
-  "buildDate": "2026-11-04T03:10:33.525Z",
-  "summary": "Acknowledge retry policy for explicit XP function deployment (#236)",
+  "version": "1.1.75",
+  "previousVersion": "1.1.74",
+  "commit": "f60128c",
+  "previousCommit": "c236696",
+  "buildDate": "2026-11-04T03:19:01.805Z",
+  "summary": "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)",
   "changes": {
-    "totalCommits": 298,
-    "filesChanged": 1,
+    "totalCommits": 299,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Acknowledge retry policy for explicit XP function deployment (#236)"
+    "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)"
   ],
   "fileChanges": [
     {
       "file": ".github/workflows/staff-xp-secure-production.yml",
+      "type": "update"
+    },
+    {
+      "file": "docs/STAFF_XP_RECOVERY_ROLLOUT.md",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.74",
+      "releaseDate": "2026-11-04T03:10:33.525Z",
+      "summary": "Acknowledge retry policy for explicit XP function deployment (#236)",
+      "details": [
+        "Acknowledge retry policy for explicit XP function deployment (#236)"
+      ]
+    },
+    {
       "version": "1.1.73",
       "releaseDate": "2026-11-04T03:06:44.269Z",
       "summary": "Use existing protected namespace for XP delivery without Rules deployment (#235)",
@@ -390,14 +398,6 @@
       "summary": "fix(staff-xp): preserve manager overrides without reallocating XP",
       "details": [
         "fix(staff-xp): preserve manager overrides without reallocating XP"
-      ]
-    },
-    {
-      "version": "1.1.24",
-      "releaseDate": "2026-11-01T12:19:20.839Z",
-      "summary": "feat(staff-xp): authenticated automatic awards on live staff actions",
-      "details": [
-        "feat(staff-xp): authenticated automatic awards on live staff actions"
       ]
     }
   ]

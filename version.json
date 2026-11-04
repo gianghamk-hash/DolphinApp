@@ -1,7 +1,7 @@
 {
-  "version": "1.1.74",
-  "buildDate": "2026-11-04T03:10:33.525Z",
-  "commit": "c236696",
-  "notes": "Acknowledge retry policy for explicit XP function deployment (#236)",
+  "version": "1.1.75",
+  "buildDate": "2026-11-04T03:19:01.805Z",
+  "commit": "f60128c",
+  "notes": "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)",
   "forceUpdate": false
 }

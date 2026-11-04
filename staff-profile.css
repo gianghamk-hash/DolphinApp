@@ -178,3 +178,36 @@ dialog{color:var(--ink);background:var(--surface);border:1px solid var(--line);b
 .daily-message[data-error="true"]{color:#ffb3a1}
 @media(max-width:420px){.daily-missions{padding:17px 13px}.daily-task{gap:8px;padding:11px 9px}.daily-task-icon{width:33px;height:33px;font-size:19px}.daily-task-checkin{min-width:75px;font-size:10px;padding:6px 7px}.daily-task-right{max-width:95px}}
 @media(prefers-reduced-motion:reduce){.daily-track>span{transition:none}}
+
+
+/* Owner profile controls: shown ONLY for verified DOL-0001 in Manager APK. */
+.manager-owner-intro{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;gap:16px;margin:16px 0;padding:18px 20px;border-radius:21px;border:1px solid #eac26a77;background:linear-gradient(125deg,#3b2413,#102a27 62%,#3b2312);box-shadow:0 12px 34px #0005}
+.manager-owner-intro::after{content:"";position:absolute;inset:-90% -40%;z-index:-1;pointer-events:none;background:linear-gradient(115deg,transparent 42%,#ffe7a222 50%,transparent 58%);animation:manager-royal-sweep 9s linear infinite}
+.manager-owner-intro h2{font-size:17px;letter-spacing:.2px;color:#ffe3a0}
+.manager-owner-intro p:not(.eyebrow){font-size:11px;color:#d3c6a8;margin-top:3px}
+.manager-owner-seal{font-size:38px;line-height:1;color:#ffe3a0;filter:drop-shadow(0 0 13px #f5ba67bb)}
+.manager-action-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin:14px 0}
+.manager-action-grid>button{display:flex;min-width:0;min-height:102px;flex-direction:column;justify-content:center;align-items:center;gap:5px;text-align:center;padding:12px 5px;border:1px solid #eac26a42;border-radius:17px;background:linear-gradient(160deg,#152b27,#231f19);color:#f9efce;transition:transform .18s,border-color .18s,background .18s}
+.manager-action-grid>button>span{font-size:23px}
+.manager-action-grid>button strong{font-size:12px}
+.manager-action-grid>button small{font-size:9px;color:#bba883}
+.manager-action-grid>button:active{transform:scale(.97)}
+.manager-action-grid>button:focus-visible{outline:2px solid #ffe3a0;outline-offset:3px}
+.manager-panel-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin:14px 0}
+.manager-panel-actions button:first-child{grid-column:1/-1}
+.manager-panel-actions button{min-height:48px}
+.manager-owner-mode .quick-actions{display:none}
+.manager-owner-mode #staff-daily-card{display:none!important}
+.manager-owner-mode #crew-profile-banner{position:relative;isolation:isolate;border-color:#f2ce78b0;box-shadow:inset 0 0 28px #dfad3c11,0 0 25px #f0b33a13}
+.manager-owner-mode #crew-profile-banner::after{content:"♛";position:absolute;top:6px;right:18px;pointer-events:none;font-size:52px;color:#eac26a15}
+.manager-owner-mode #profile-avatar{box-shadow:0 0 0 2px #e9ca7555,0 0 22px #eac26a4a;animation:manager-crown-aura 4.5s ease-in-out infinite}
+.manager-owner-mode #profile-name{color:#ffdfa0;text-shadow:0 0 16px #e9bc6f5a}
+.manager-owner-mode #employee-id{color:#ffe8ae;font-weight:850}
+.manager-owner-mode .crew-manager-panel{background:linear-gradient(135deg,#202a24,#2b2218);border-color:#e7bf744f}
+.manager-owner-mode .crew-manager-panel h2{color:#ffdea0}
+#owner-rename-dialog form{display:grid;gap:11px}
+#owner-rename-value{width:100%;padding:12px;border:1px solid #dbc07755;border-radius:11px;background:#090f0e;color:#fff}
+@keyframes manager-crown-aura{0%,100%{box-shadow:0 0 0 2px #e9ca7555,0 0 14px #eac26a35}50%{box-shadow:0 0 0 3px #e9ca7588,0 0 28px #eac26a80}}
+@keyframes manager-royal-sweep{from{transform:translateX(-40%)}to{transform:translateX(40%)}}
+@media(max-width:540px){.manager-action-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.manager-action-grid>button{min-height:91px}.manager-owner-intro{padding:16px;gap:10px}.manager-owner-seal{font-size:32px}}
+@media(prefers-reduced-motion:reduce){.manager-owner-intro::after,.manager-owner-mode #profile-avatar{animation:none!important}}

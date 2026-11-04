@@ -1,7 +1,7 @@
 {
-  "version": "1.1.69",
-  "buildDate": "2026-11-03T14:14:10.953Z",
-  "commit": "75ea1a9",
-  "notes": "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)",
+  "version": "1.1.70",
+  "buildDate": "2026-11-04T00:48:32.927Z",
+  "commit": "fd7db42",
+  "notes": "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)",
   "forceUpdate": false
 }

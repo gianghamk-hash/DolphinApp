@@ -511,11 +511,10 @@ window.requireStaffName=function(r){state.pendingAction={type:'gate',roleToEnter
 window.verifyPin=function(){const pin=document.getElementById('pin-input').value;let ok=false,k='';if(pendingRoleRequest==='bungalow'&&pin===ADMIN_PIN){ok=true;k='dolphinBunAdminAuth';}if(pendingRoleRequest==='admin'&&pin===ADMIN_PIN){ok=true;k='dolphinBunAdminAuth';}if(pendingRoleRequest==='reception'&&pin===RECEPTION_PIN){ok=true;k='dolphinBunReceptionAuth';}if(ok){sessionStorage.setItem(k,'true');window.closePinModal();const r=pendingRoleRequest;if(r){if(!window.hasStaffName())window.requireStaffName(r);else window.changeRole(r);}}else document.getElementById('pin-error').classList.remove('hidden');};
 window.closePinModal=()=>{document.getElementById('modal-pin').classList.add('hidden');pendingRoleRequest=null;};
 window.promptStaffName=function(){state.pendingAction={type:'changeName'};document.getElementById('staff-name-modal-title').innerText='ĐỔI TÊN NHÂN VIÊN';document.getElementById('staff-name-modal-subtitle').innerHTML='Nhập tên NV mới.';document.getElementById('staff-name-confirm-label').innerText='LƯU TÊN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value=window.getStaffName();document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();};
-window.openStaffNameModal=async(id,ns)=>{const n=window.getStaffName();if(!n||!n.trim()){state.pendingAction={type:'orderGate',orderId:id,nextStatus:ns};document.getElementById('staff-name-modal-title').innerText='⚠️ CẦN NHẬP TÊN';document.getElementById('staff-name-modal-subtitle').innerText='Nhập tên để tiếp tục.';document.getElementById('staff-name-confirm-label').innerText='XÁC NHẬN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value='';document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();return;}await window.executeStaffOrderAction(id,ns,n);};
+window.openStaffNameModal=async(id,ns)=>{const n=window.DolphinStaffId?.get?.()?.name||window.getStaffName();if(!n||!n.trim()){state.pendingAction={type:'orderGate',orderId:id,nextStatus:ns};document.getElementById('staff-name-modal-title').innerText='⚠️ CẦN NHẬP TÊN';document.getElementById('staff-name-modal-subtitle').innerText='Nhập tên để tiếp tục.';document.getElementById('staff-name-confirm-label').innerText='XÁC NHẬN';document.getElementById('staff-name-cancel-btn').classList.remove('hidden');document.getElementById('staff-name-input').value='';document.getElementById('modal-staff-name').classList.remove('hidden');document.getElementById('staff-name-input').focus();return;}await window.executeStaffOrderAction(id,ns,n);};
 window.executeStaffOrderAction=async(id,ns,name)=>{if(!db)return;const r=doc(db,COL_ORDERS,id);try{
 const identity=window.DolphinStaffId?.get?.();
-if(identity?.verified===true&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
- String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(name).trim().toLocaleLowerCase('vi-VN')){
+if(typeof window.DolphinStaffId?.performLiveAction==='function'){
  const reward=await window.DolphinStaffId.performLiveAction({kind:COL_ORDERS,id,action:ns});
  const points=(reward.xpAwarded||0)+(reward.missionXP||0);
  if(points>0)window.showToast('+'+points+' XP đã xác minh','⭐');
@@ -592,12 +591,12 @@ window.saveCustomerName=async function(){
     if(inp)inp.focus();
     return;
   }
-  if(!sn&&!(window.DolphinStaffId?.get?.()?.verified===true&&window.DolphinStaffId.get().name)){
+  if(!sn&&!window.DolphinStaffId?.get?.()?.name){
     window.showToast('Nhập tên NV mở phòng hoặc liên kết Staff ID đã xác minh!','⚠️');return;
   }
   const existing=state.tableAssignments[t]||{};
   const identity=window.DolphinStaffId?.get?.();
-  const verifiedStaff=identity?.verified===true&&!!identity.employeeId&&!!String(identity.name||'').trim();
+  const verifiedStaff=!!identity?.employeeId&&!!String(identity.name||'').trim();
   const finalOpener=(existing.openedByStaff&&existing.openedByStaff.trim())
     ?existing.openedByStaff:(verifiedStaff?identity.name:sn);
   try{
@@ -613,23 +612,22 @@ window.saveCustomerName=async function(){
       updatedBy:window.getStaffName()||'N/A',
       updatedAt:Date.now()
     };
-    const verified=verifiedStaff&&typeof window.DolphinStaffId?.performLiveAction==='function'&&
-      String(identity.name||'').trim().toLocaleLowerCase('vi-VN')===String(finalOpener).trim().toLocaleLowerCase('vi-VN');
-    const reward=verified?await window.DolphinStaffId.performLiveAction({
+    // Staff ID is verified by the entry gate and reauthorized on the server.
+    // A cached opener name must not divert an approved employee to a
+    // non-XP legacy Firestore write.
+    if(typeof window.DolphinStaffId?.performLiveAction!=='function')
+      throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
+    const reward=await window.DolphinStaffId.performLiveAction({
       kind:COL_TABLES,id:t,action:'booking',data:toSave
-    }):null;
-    if(!verified)await setDoc(doc(db,COL_TABLES,t),toSave,{merge:true});
+    });
     window.showToast(`Đã lưu P.${t}`,'✅');
     if(reward&&(reward.xpAwarded||reward.missionXP)){
       const gained=(reward.xpAwarded||0)+(reward.missionXP||0);
       window.showToast('+'+gained.toLocaleString('vi-VN')+' XP · '+identity.employeeId,'⭐');
       window.dispatchEvent(new CustomEvent('dolphin-xp-synced',{detail:{addedXP:gained,source:'bungalow'}}));
-    }else if(verified&&reward?.duplicate){
+    }else if(reward?.duplicate){
       window.showToast('Bungalow đã được cộng XP doanh thu hôm nay, không cộng trùng.','ℹ️');
-    }else if(!verified&&verifiedStaff){
-      window.showToast('Đã lưu bàn; không cộng XP vì Bungalow đang ghi nhận người mở khác ('+finalOpener+').','⚠️');
-    }else if(!verified&&identity?.employeeId&&!identity?.verified){
-      window.showToast('Đã lưu bàn; Staff ID chưa xác minh nên XP chưa được cộng.','⚠️');
+
     }
     window.closeCustomerNameModal();
   }catch(e){

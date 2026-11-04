@@ -1104,7 +1104,12 @@ window.executeSaveCustomerName = async function({table,dataToSave}){
     if(typeof window.DolphinStaffId?.performLiveAction!=='function')
       throw Error('Chưa tải Staff ID. Mở lại ứng dụng để xác minh.');
     const current=state.tableAssignments[table]||{};
-    const editExisting=!!(String(current.openedByStaff||'').trim()||String(current.openedByStaffId||'').trim());
+    const hasOpener=!!(String(current.openedByStaff||'').trim()||String(current.openedByStaffId||'').trim());
+    const vnDay=timestamp=>new Date(timestamp).toLocaleDateString('en-CA',{timeZone:'Asia/Ho_Chi_Minh'});
+    // A table retained from an earlier tour is a new daily booking, not an
+    // edit of yesterday's revenue session. Backend still checks ownership.
+    const sameTourDay=Number(current.updatedAt)>0&&vnDay(current.updatedAt)===vnDay(Date.now());
+    const editExisting=hasOpener&&sameTourDay;
     const reward=await window.DolphinStaffId.performLiveAction({
       kind:'lounge_tables',id:table,action:editExisting?'update':'booking',data:dataToSave
     });

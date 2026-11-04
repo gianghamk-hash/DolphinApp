@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.72",
+      "releaseDate": "2026-11-04T03:01:34.411Z",
+      "summary": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)",
+      "details": [
+        "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)"
+      ]
+    },
+    {
       "version": "1.1.71",
       "releaseDate": "2026-11-04T02:08:58.316Z",
       "summary": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)",
@@ -390,14 +398,6 @@
       "summary": "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP",
       "details": [
         "fix(staff-profile): activation codes, ranking avatar sync and guarded auto XP"
-      ]
-    },
-    {
-      "version": "1.1.22",
-      "releaseDate": "2026-11-01T10:01:09.068Z",
-      "summary": "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)",
-      "details": [
-        "Làm gọn Hồ sơ Nhân viên và sửa auto bump tài nguyên (#178)"
       ]
     }
   ]

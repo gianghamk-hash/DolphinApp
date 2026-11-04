@@ -1,28 +1,20 @@
 {
-  "version": "1.1.72",
-  "previousVersion": "1.1.71",
-  "commit": "c9b5ee9",
-  "previousCommit": "087c332",
-  "buildDate": "2026-11-04T03:01:34.411Z",
-  "summary": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)",
+  "version": "1.1.73",
+  "previousVersion": "1.1.72",
+  "commit": "e8c4bba",
+  "previousCommit": "c9b5ee9",
+  "buildDate": "2026-11-04T03:06:44.269Z",
+  "summary": "Use existing protected namespace for XP delivery without Rules deployment (#235)",
   "changes": {
-    "totalCommits": 296,
-    "filesChanged": 22,
+    "totalCommits": 297,
+    "filesChanged": 7,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)"
+    "Use existing protected namespace for XP delivery without Rules deployment (#235)"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/staff-access-production.yml",
-      "type": "update"
-    },
-    {
-      "file": ".github/workflows/staff-prestige-tests.yml",
-      "type": "update"
-    },
     {
       "file": ".github/workflows/staff-style-unlock-production.yml",
       "type": "update"
@@ -40,30 +32,6 @@
       "type": "update"
     },
     {
-      "file": "functions/manager-apk.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-missions.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-missions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
       "file": "functions/staff-xp-actions.js",
       "type": "update"
     },
@@ -72,35 +40,7 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-reconcile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-reconcile.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "manager-apk-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "scripts/avatar-sync-browser.cjs",
-      "type": "update"
-    },
-    {
       "file": "scripts/push-rules-test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-levelup.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-xp-manager.js",
       "type": "update"
     }
   ]

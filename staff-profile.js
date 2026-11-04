@@ -2,6 +2,7 @@
 (function(){
 'use strict';
 const $=id=>document.getElementById(id),api=window.DolphinStaffId;
+const managerOwner=()=>(/DolphinManager/.test(navigator.userAgent)||window.DOLPHIN_APP_TYPE==='manager')&&api.get()?.managerSession===true;
 let profile=null,avatar='🐬',catalog={},busy=false,dirty=false,expiresAt=0;
 function message(text,error=false){
  for(const id of ['profile-message','profile-edit-message','device-message']){
@@ -12,7 +13,7 @@ for(const button of document.querySelectorAll('[data-open-dialog]'))button.addEv
  const dialog=$(button.dataset.openDialog);if(dialog&&!dialog.open)dialog.showModal();
 });
 for(const button of document.querySelectorAll('[data-close-dialog]'))button.addEventListener('click',()=>button.closest('dialog').close());
-function setBusy(value){busy=value;for(const id of ['save-profile','choose-avatar','profile-name-input','claim-link','issue-link'])$(id).disabled=value||(id==='issue-link'&&!profile)||(id==='profile-name-input'&&!!profile);}
+function setBusy(value){busy=value;for(const id of ['save-profile','choose-avatar','profile-name-input','claim-link','issue-link'])$(id).disabled=value||(id==='issue-link'&&!profile)||(id==='profile-name-input'&&!!profile&&!managerOwner());}
 function render(fill=true){
  profile=api.get();
  if(fill){
@@ -27,7 +28,7 @@ function render(fill=true){
  $('profile-state').textContent=profile?(profile.verified?'Đã xác minh':'Đang chờ quản lý duyệt'):'Sẵn sàng đăng ký';
  $('device-status').textContent=profile?'Đã liên kết':'Chưa liên kết';
  $('created-at').textContent=profile?.createdAt?new Date(profile.createdAt).toLocaleDateString('vi-VN',{timeZone:'Asia/Ho_Chi_Minh'}):'—';
- $('save-profile').textContent=profile?'Lưu avatar':'Đăng ký hồ sơ & thiết bị';
+ $('save-profile').textContent=profile?(managerOwner()?'Lưu tên & avatar':'Lưu avatar'):'Đăng ký hồ sơ & thiết bị';
  $('registration-note').hidden=!!profile;
  $('switch-confirm').hidden=!profile;
  $('confirm-switch').checked=false;
@@ -44,7 +45,12 @@ $('profile-form').addEventListener('submit',async e=>{
  e.preventDefault();if(busy)return;
  const data={name:$('profile-name-input').value.trim(),avatar};
  setBusy(true);message(profile?'Đang lưu thay đổi…':'Đang đăng ký hồ sơ và thiết bị…');
- try{const wasRegistered=!!profile;await (profile?api.update({avatar}):api.register(data));render();message(wasRegistered?'Đã lưu hồ sơ và avatar. Họ tên đã được khóa.':'Đã lưu hồ sơ. Vui lòng chờ DOL-0001 xác minh.');$('profile-edit-dialog')?.close();}
+ try{
+  const wasRegistered=!!profile;
+  if(managerOwner()&&data.name!==profile.name)await api.renameManager(data.name,avatar);
+  else await (profile?api.update({avatar}):api.register(data));
+  render();message(wasRegistered?(managerOwner()?'Đã lưu tên và avatar của DOL-0001.':'Đã lưu hồ sơ và avatar. Họ tên đã được khóa.'):'Đã lưu hồ sơ. Vui lòng chờ DOL-0001 xác minh.');$('profile-edit-dialog')?.close();
+ }
  catch(err){message(errorText(err),true);setBusy(false);}
 });
 function renderAvatars(){

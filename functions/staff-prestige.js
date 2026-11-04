@@ -109,7 +109,7 @@ exports.staffGetPrestige=onCall(opts,async req=>{
  }
  const admin=registry[TEST_ADMIN_ID];
  const showAdmin=isApprovedProfile(admin)&&admin.rankingVisible===true;
- const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>eligibleIds.has(p.employeeId)&&(p.employeeId!==TEST_ADMIN_ID||showAdmin));
+ const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>eligibleIds.has(p.employeeId)&&(p.employeeId!==TEST_ADMIN_ID||showAdmin)).map(p=>({...p,name:registry[p.employeeId]?.name||p.name}));
  // Hydrate legacy snapshots created before public personalTheme was introduced.
  // One extra read only while the old snapshot lacks the new public cosmetic field.
  if(employees[0]&&!employees[0].personalTheme&&staffPattern.test(employees[0].employeeId)){
@@ -120,7 +120,7 @@ exports.staffGetPrestige=onCall(opts,async req=>{
   tiedWith:employees.filter(p=>p.xp===employees[0].xp).map(p=>p.employeeId)}:null;
  return {...pub,showAdminRanking:!!showAdmin,champion,leaderboard:employees,
   legends:Object.entries(legends.val()||{}).filter(([id])=>isApprovedProfile(registry[id])&&(id!==TEST_ADMIN_ID||showAdmin))
-   .map(([,p])=>p).sort((a,b)=>b.firstAt-a.firstAt)};
+   .map(([id,p])=>({...p,name:registry[id]?.name||p.name})).sort((a,b)=>b.firstAt-a.firstAt)};
 });
 exports.staffGetMyProgress=onCall(opts,async req=>{
  const {id,profile,testAdmin}=await currentStaff(req);

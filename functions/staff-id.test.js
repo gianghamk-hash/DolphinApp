@@ -54,6 +54,23 @@ function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
 }
 const req=(uid,data={})=>({...(uid?{auth:{uid}}:{}),data});
 const rejects=(fn,code)=>assert.rejects(fn,e=>e.code===code);
+
+test('Manager code claim rejects another Staff ID without consuming its code; Staff keeps normal linking',async()=>{
+ const {api,state}=harness('manager',{cold:true});
+ await api.staffCreateProfile(req('manager',{employeeId:'DOL-0002',name:'Nguyễn Nhân Viên'}));
+ const issued=await api.staffIssueLinkCode(req('manager',{employeeId:'DOL-0002'}));
+ await rejects(()=>api.staffClaimLinkCode(req('manager-device',{code:issued.code,managerSession:true})),'failed-precondition');
+ assert.ok(!state.has('staffIdentity/manager-device'));
+ assert.equal((await api.staffClaimLinkCode(req('staff-device',{code:issued.code}))).employeeId,'DOL-0002');
+});
+test('Manager code creates a verified UID binding; the session endpoint rechecks the protected mapping',async()=>{
+ const {api}=harness('manager',{cold:true});
+ await api.staffCreateProfile(req('manager',{employeeId:'DOL-0001',name:'Nguyễn Quản Lý'}));
+ const issued=await api.staffIssueLinkCode(req('manager',{employeeId:'DOL-0001'}));
+ await api.staffClaimLinkCode(req('owner-device',{code:issued.code,managerSession:true}));
+ assert.equal((await api.staffGetManagerIdentity(req('owner-device'))).managerSession,true);
+ await rejects(()=>api.staffClaimLinkCode(req('second-device',{code:issued.code,managerSession:true})),'failed-precondition');
+});
 test('all four Staff callable endpoints reject unauthenticated requests',async()=>{
  const {api,state}=harness();
  for(const name of ['staffCreateProfile','staffIssueLinkCode','staffClaimLinkCode','staffGetIdentity'])await rejects(()=>api[name](req(null)),'unauthenticated');

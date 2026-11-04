@@ -30,6 +30,7 @@ async function init(){
   const user=a.currentUser|| (await auth.signInAnonymously(a)).user;
   uid=user.uid;const functions=func.getFunctions(app,'asia-southeast1');
   api=name=>func.httpsCallable(functions,name);
+  auth.onAuthStateChanged(a,next=>{if((next?.uid||'')!==uid){uid=next?.uid||'';identity=null;emit();if(next)void refresh();}});
   await refresh();
   void retryXP();
  }catch(e){initialized=false;api=null;console.warn('[StaffID] Chưa thể kết nối chức năng xác minh:',e);}
@@ -37,11 +38,26 @@ async function init(){
 function connect(){if(!connection||!initialized)connection=init();return connection;}
 async function refresh(){
  if(!api)return null;
+ const requestedUid=uid;
  try{
-  const r=await api('staffGetIdentity')({});
+  const r=await api(manager()?'staffGetManagerIdentity':'staffGetIdentity')({});
+  if(uid!==requestedUid)return null;
   rejection=r.data?.rejected===true;
   identity=r.data&&(r.data.linked||r.data.verified)?{...r.data,linked:true}:null;emit();return identity;
- }catch(e){console.warn('[StaffID] Backend chưa sẵn sàng:',e);return identity;}
+ }catch(e){
+  console.warn('[StaffID] Backend chưa sẵn sàng:',e);
+  if(manager()){
+   identity=null;
+   // Show an existing wrong binding only to obtain explicit switch consent.
+   // This response can never unlock a Manager session.
+   if(String(e?.code||'').includes('permission-denied'))try{
+    const current=(await api('staffGetIdentity')({})).data;
+    if(uid===requestedUid&&current?.linked)identity={...current,verified:false,managerSession:false,requiresNameChange:false};
+   }catch(_){}
+   if(uid===requestedUid)emit();
+  }
+  return identity;
+ }
 }
 function ui(){
  if(document.getElementById('dolphinStaffIdPanel'))return;
@@ -52,7 +68,7 @@ function ui(){
  const $=id=>document.getElementById(id),msg=t=>{$('sidMessage').textContent=t;};
  $('sidClose').onclick=()=>wrapper.style.display='none';
  wrapper.onclick=e=>{if(e.target===wrapper)wrapper.style.display='none';};
- $('sidClaimBtn').onclick=async()=>{try{if(!api)throw Error('Chưa kết nối máy chủ');const r=await api('staffClaimLinkCode')({code:$('sidCode').value.trim()});identity=r.data;emit();msg('Đã liên kết '+identity.employeeId+' — '+identity.name);render();}catch(e){msg('Không thể xác minh: '+e.message);}};
+ $('sidClaimBtn').onclick=async()=>{try{await call('staffClaimLinkCode',{code:$('sidCode').value.trim()});msg('Đã xác minh liên kết thiết bị.');render();}catch(e){msg('Không thể xác minh: '+e.message);}};
  $('sidCreate').onclick=async()=>{try{if(!api)throw Error('Chưa kết nối máy chủ');const r=await api('staffCreateProfile')({employeeId:$('sidNewId').value.trim(),name:$('sidNewName').value.trim()});msg('Đã tạo hồ sơ '+r.data.employeeId+' — '+r.data.name);}catch(e){msg('Không thể tạo: '+e.message);}};
  $('sidIssue').onclick=async()=>{try{if(!api)throw Error('Chưa kết nối máy chủ');const r=await api('staffIssueLinkCode')({employeeId:$('sidExisting').value.trim()});$('sidOutput').textContent=r.data.code;msg('Mã một lần, hiệu lực 10 phút. Chuyển riêng cho nhân viên.');}catch(e){msg('Không thể cấp mã: '+e.message);}};
 }
@@ -65,9 +81,11 @@ function render(){
 }
 async function call(name,data){
  await connect();if(!api)throw Error('Chưa kết nối máy chủ. Vui lòng thử lại.');
+ if(manager()&&name==='staffRegisterSelfProfile')throw Error('Manager APK chỉ liên kết DOL-0001 đã xác minh.');
+ if(manager()&&name==='staffClaimLinkCode')data={...data,managerSession:true};
  const result=await api(name)(data||{});
- if(!['staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration','staffRejectRegistration','staffRequestNameRecovery','staffListRecoveryRequests','staffApproveNameRecovery'].includes(name)){
-  if(name==='staffClaimLinkCode'||name==='staffRepairMyName')await refresh();
+ if(!['staffListApprovedProfiles','staffIssueOwnLinkCode','staffGetAvatarDirectory','staffListPendingApprovals','staffApproveRegistration','staffRejectRegistration','staffRequestNameRecovery','staffListRecoveryRequests','staffApproveNameRecovery'].includes(name)){
+  if(name==='staffClaimLinkCode'||name==='staffRepairMyName'||name==='staffRenameManager'||(manager()&&name==='staffUpdateMyProfile'))await refresh();
   else{rejection=false;identity={...result.data,linked:true};emit();}
  }
  return result.data;
@@ -115,8 +133,8 @@ async function retryXP(){
 }
 
 window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:connect,register:data=>call('staffRegisterSelfProfile',data),
- update:data=>call('staffUpdateMyProfile',data),repairName:name=>call('staffRepairMyName',{name}),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
- avatarDirectory:()=>call('staffGetAvatarDirectory'),
+ renameManager:(name,avatar)=>call('staffRenameManager',{name,...(avatar?{avatar}:{})}),update:data=>call('staffUpdateMyProfile',data),repairName:name=>call('staffRepairMyName',{name}),link:(code,options={})=>call('staffClaimLinkCode',{code,replaceCurrent:options.replaceCurrent===true,expectedEmployeeId:identity?.employeeId||''}),
+ listApproved:()=>call('staffListApprovedProfiles'),avatarDirectory:()=>call('staffGetAvatarDirectory'),
  issueLink:()=>call('staffIssueOwnLinkCode'),
  listPending:()=>call('staffListPendingApprovals'),
  requestNameRecovery:name=>call('staffRequestNameRecovery',{name}),

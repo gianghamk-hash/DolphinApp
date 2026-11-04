@@ -178,7 +178,7 @@ exports.staffGetAvatarDirectory=onCall(opts,async req=>{
   selectedAura:['none','spark','dual','celestial'].includes(p.selectedAura)?p.selectedAura:'none',
   selectedTrail:['none','wave','comet','nova'].includes(p.selectedTrail)?p.selectedTrail:'none',
   selectedCardFx:['none','soft','energy','mythic'].includes(p.selectedCardFx)?p.selectedCardFx:'none',
-  nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(-10):[]
+  nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(p.employeeId==='DOL-0001'?0:-10):[]
  }))};
 });
 
@@ -194,6 +194,76 @@ async function requireAccessManager(req){
   throw new HttpsError('permission-denied','Chưa xác thực quản lý DOL-0001.');
  return uid;
 }
+// APK detection is presentation only. Authority always comes from the callable
+// Auth token and the protected UID -> Staff ID mapping; never a submitted ID.
+exports.staffGetManagerIdentity=onCall(opts,async req=>{
+ const uid=await requireAccessManager(req),db=getDatabase();
+ const registry=(await db.ref('staffRegistry').once('value')).val()||{};
+ const profile=registry['DOL-0001'];
+ const requiresNameChange=names.needsRename(registry,'DOL-0001');
+ return {...response(profile),verified:!requiresNameChange,requiresNameChange,managerSession:true};
+});
+exports.staffListApprovedProfiles=onCall(opts,async req=>{
+ await requireAccessManager(req);
+ const registry=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
+ return {profiles:Object.values(registry).filter(p=>p?.employeeId&&p.active&&(p.registrationSource!=='self'||p.approved===true))
+  .map(p=>({employeeId:p.employeeId,name:p.name||'',avatar:p.avatar||'🐬'}))
+  .sort((a,b)=>a.name.localeCompare(b.name,'vi'))};
+});
+exports.staffRenameManager=onCall(opts,async req=>{
+ const uid=await requireAccessManager(req),name=names.normalize(req.data?.name);
+ if(!names.valid(name))throw new HttpsError('invalid-argument','Tên phải dài 7–64 ký tự và hợp lệ.');
+ const avatar=req.data?.avatar===undefined?null:validate({name,avatar:req.data.avatar}).avatar;
+ await throttle(uid);
+ const db=getDatabase(),id='DOL-0001';
+ let duplicate=false,avatarDenied=false,avatarChanged=false;
+ // Serialize name uniqueness with registration. A failed projection can be
+ // retried with the same name without incrementing the profile version again.
+ const result=await db.ref('staffRegistry').transaction(registry=>{
+  duplicate=false;avatarDenied=false;avatarChanged=false;
+  if(!registry)return registry;
+  const profile=registry[id];
+  if(!profile?.active||profile.registrationSource==='self')return;
+  if(names.nameConflict(registry,name,id)){duplicate=true;return;}
+  if(avatar&&avatar!==profile.avatar&&(avatarThreshold.get(avatar)||1)>Math.max(Number(profile.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(Number(profile.xp)||0))){avatarDenied=true;return;}
+  avatarChanged=!!avatar&&avatar!==profile.avatar;
+  if(profile.name===name&&!avatarChanged)return registry;
+  const aliases=new Set(profile.nameAliases||[]);aliases.add(profile.name);
+  return {...registry,[id]:{...profile,name,...(avatar?{avatar}:{}),nameAliases:[...aliases].filter(Boolean),
+   profileVersion:(Number(profile.profileVersion)||0)+1,updatedAt:Date.now(),updatedBy:uid}};
+ },undefined,false);
+ if(avatarDenied)throw new HttpsError('permission-denied','Avatar này chưa được mở khóa.');
+ if(!result.committed||!result.snapshot.val()?.[id]?.active)
+  throw new HttpsError(duplicate?'already-exists':'aborted',duplicate?'Tên đã được sử dụng.':'Hồ sơ vừa thay đổi. Hãy thử lại.');
+ const updated=result.snapshot.val()[id],version=Number(updated.profileVersion)||0;
+ const identities=(await db.ref('staffIdentity').once('value')).val()||{};
+ const ranks=(await db.ref('tacticsRankVerified').once('value')).val()||{};
+ const jobs=[];
+ for(const [device,value] of Object.entries(identities))if(value?.employeeId===id){
+  jobs.push(db.ref('staffIdentity/'+device).transaction(v=>{
+   if(v===null)return null;
+   if(v.employeeId!==id||Number(v.profileVersion||0)>version)return;
+   return {...v,name:updated.name,profileVersion:version,updatedAt:Date.now()};
+  },undefined,false));
+ }
+ for(const [device,value] of Object.entries(ranks))if(value?.employeeId===id){
+  jobs.push(db.ref('tacticsRankVerified/'+device).transaction(v=>{
+   if(v===null)return null;
+   if(v.employeeId!==id||Number(v.profileVersion||0)>version)return;
+   return {...v,player:updated.name,profileVersion:version};
+  },undefined,false));
+ }
+ jobs.push(db.ref('staffPrestige/legends/'+id).transaction(v=>{
+  if(v===null)return null;
+  if(Number(v.profileVersion||0)>version)return;
+  return {...v,name:updated.name,profileVersion:version};
+ },undefined,false));
+ await Promise.all(jobs);
+ await require('./staff-prestige')._rebuildPrestige();
+ if(avatarChanged)try{await require('./staff-daily-missions')._award(id,'avatar_changed');}
+ catch(e){console.warn('[Crew Daily] Manager avatar saved; mission award unavailable:',e?.message||e);}
+ return {...response(updated),managerSession:true};
+});
 exports.staffListPendingApprovals=onCall(opts,async req=>{
  await requireAccessManager(req);
  const entries=(await getDatabase().ref('staffRegistry').once('value')).val()||{};

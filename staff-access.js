@@ -5,6 +5,8 @@ if(!root.document||root.parent!==root||root.DolphinStaffAccess)return;
 const base=new URL('./',document.currentScript?.src||location.href);
 const $=id=>document.getElementById(id);
 const state={allowed:false,busy:false,mode:'register',avatar:'🐬',initialized:false,pending:false,needsRename:false};
+const managerApk=/DolphinManager/.test(navigator.userAgent)||root.DOLPHIN_APP_TYPE==='manager';
+
 const starters=['🐬','🐳','🐠','🐢','🦊','🐯','🦁','👨‍🍳','👩‍🍳','⭐','🌊','🔥'];
 document.documentElement.classList.add('dolphin-access-pending');
 function status(message,error=false){const el=$('dag-status');if(el){el.textContent=message;el.dataset.error=String(error);}}
@@ -17,7 +19,7 @@ function panel(name){
  for(const b of document.querySelectorAll('.dag-tab'))b.setAttribute('aria-selected',String(b.dataset.tab===name));
 }
 function unlock(identity){
- if(identity?.requiresNameChange||identity?.verified!==true)return lock(identity);
+ if(identity?.requiresNameChange||identity?.verified!==true||(managerApk&&identity?.employeeId!=='DOL-0001'))return lock(identity);
  state.pending=false;state.needsRename=false;state.allowed=true;
  document.documentElement.classList.remove('dolphin-access-pending');
  document.documentElement.classList.add('dolphin-access-allowed');
@@ -27,6 +29,7 @@ function unlock(identity){
 function lock(identity){
  state.allowed=false;
  state.pending=!!(identity?.employeeId&&identity?.approved===false);
+ if(managerApk&&identity?.employeeId&&identity.employeeId!=='DOL-0001')state.pending=false;
  state.needsRename=!!identity?.requiresNameChange;
  for(const tab of document.querySelectorAll('.dag-tab')){tab.hidden=state.pending||state.needsRename;tab.disabled=state.pending||state.needsRename;}
  document.documentElement.classList.remove('dolphin-access-allowed');
@@ -36,6 +39,8 @@ function lock(identity){
  if(state.needsRename){
   state.mode='rename';panel('rename');
   $('dag-rename-current').textContent=identity?.name||'';
+ }else if(managerApk&&identity?.employeeId&&identity.employeeId!=='DOL-0001'){
+  state.mode='link';panel('link');
  }else if(identity?.employeeId){
   state.mode='pending';panel('pending');
   $('dag-pending-id').textContent=identity.employeeId;
@@ -147,9 +152,9 @@ async function check(force=false){
  try{
   const api=await getApi();await api.ready();
   const identity=force?await api.refresh():api.get();
-  if(identity?.verified===true&&identity?.employeeId&&!identity?.requiresNameChange){unlock(identity);return;}
+  if(identity?.verified===true&&identity?.employeeId&&!identity?.requiresNameChange&&(!managerApk||identity.employeeId==='DOL-0001')){unlock(identity);return;}
   lock(identity);
-  status(identity?.requiresNameChange?'Hãy cập nhật tên hợp lệ để tiếp tục sử dụng ứng dụng.':identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
+  status(managerApk&&identity?.employeeId&&identity.employeeId!=='DOL-0001'?'APK Manager chỉ dành cho DOL-0001. Hãy liên kết lại đúng Staff ID.':identity?.requiresNameChange?'Hãy cập nhật tên hợp lệ để tiếp tục sử dụng ứng dụng.':identity?.employeeId?'Hồ sơ đang chờ DOL-0001 phê duyệt.':
    api.wasRejected?.()?'Hồ sơ trước đã bị từ chối. Hãy đăng ký lại để nhận Staff ID mới; hồ sơ cũ không còn quyền truy cập.':
    'Chọn đăng ký mới hoặc liên kết Staff ID đã có.');
  }catch(e){lock(root.DolphinStaffId?.get?.()||null);status('Không thể kết nối Firebase: '+(e.message||'Hãy thử lại.'),true);}
@@ -222,6 +227,15 @@ async function openManager(){
 }
 function init(){
  if(state.initialized)return;state.initialized=true;makeUI();
+ if(managerApk){
+  document.documentElement.dataset.app='manager';
+  const register=$('dolphinAccessGate').querySelector('[data-tab="register"]');
+  if(register)register.hidden=true;
+  const help=document.createElement('p');help.className='dag-help';
+  help.textContent='👑 Dolphin Manager dành riêng cho Staff ID DOL-0001. Mỗi thiết bị cần được Firebase xác minh hoặc liên kết bằng mã bảo mật một lần; cài APK không tự cấp quyền quản lý.';
+  $('dolphinAccessGate').querySelector('.dag-sub')?.after(help);
+  state.mode='link';panel('link');
+ }
  const original=root.openApp;
  if(typeof original==='function')root.openApp=function(area){
   if(!state.allowed){$('dolphinAccessGate').hidden=false;return;}
@@ -229,7 +243,7 @@ function init(){
  };
  root.addEventListener('dolphin-staff-id-changed',event=>{
   const id=event.detail;
-  if(id?.verified===true&&id.employeeId&&!id?.requiresNameChange)unlock(id);
+  if(id?.verified===true&&id.employeeId&&!id?.requiresNameChange&&(!managerApk||id.employeeId==='DOL-0001'))unlock(id);
   else if(!state.busy&&state.mode!=='manager')lock(id);
  });
  setInterval(()=>{if(!document.hidden&&!state.allowed)void check(true);},15000);

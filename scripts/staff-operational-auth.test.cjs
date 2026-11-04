@@ -56,5 +56,6 @@ test('restaurant opening a table does not invent revenue XP; staff order transit
  const rules=read('docs/STAFF_XP_RULES_CURRENT_VI.md');
  assert.match(rules,/Restaurant không có XP doanh thu/);
  assert.match(backend,/res_orders/);
- assert.doesNotMatch(backend,/'res_tables'/);
+ assert.match(backend,/'res_tables'/);
+ assert.match(read('dolphin-restaurant.html'),/kind:'res_tables',id:t,action:'booking'/);
 });

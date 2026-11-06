@@ -103,10 +103,10 @@ test('legacy Show combo cannot be saved by a different verified employee',async(
 test('Work credits verified prepare and remaining completion XP once',async()=>{
  const h=harness();h.docs.set('lounge_orders/o1',{status:'pending'});
  const a={kind:'lounge_orders',id:'o1',action:'preparing'},b={...a,action:'completed'};
- assert.equal((await h.call('verified',a)).xpAwarded,100);
- assert.equal((await h.call('verified',b)).xpAwarded,150);
+ assert.equal((await h.call('verified',a)).xpAwarded,200);
+ assert.equal((await h.call('verified',b)).xpAwarded,300);
  assert.equal((await h.call('verified',b)).xpAwarded,0);
- assert.equal(h.awards.reduce((n,x)=>n+x.amount,0),250);
+ assert.equal(h.awards.reduce((n,x)=>n+x.amount,0),500);
 });
 test('completed client-writable legacy source cannot retroactively grant XP',async()=>{
  const h=harness();h.docs.set('res_orders/o2',{status:'completed',completedBy:'Guest'});
@@ -240,10 +240,10 @@ test('Bungalow completed without preparing receives 1000 work XP; daily reward r
  assert.equal(done.missionXP,400);
  assert.equal((await h.call('verified',{kind:'bun_orders',id:'bglTest',action:'completed'})).xpAwarded,0);
 });
-test('Lounge completed directly receives 250 work XP plus unchanged daily mission XP',async()=>{
+test('Lounge completed directly receives 500 work XP plus unchanged daily mission XP',async()=>{
  const h=harness();h.docs.set('lounge_orders/lnTest',{status:'pending'});
  const done=await h.call('verified',{kind:'lounge_orders',id:'lnTest',action:'completed'});
- assert.equal(done.xpAwarded,250);
+ assert.equal(done.xpAwarded,500);
  assert.equal(done.missionXP,400);
 });
 

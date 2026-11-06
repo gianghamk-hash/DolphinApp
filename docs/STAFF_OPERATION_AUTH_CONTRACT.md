@@ -13,7 +13,7 @@
 | Khu vực | Mở / lưu bàn | Nhận và hoàn thành order | XP |
 |---|---|---|---|
 | Bungalow | `bun_tables/booking` | `bun_orders/preparing,completed` | Doanh thu 2.000 XP/bàn đủ điều kiện, nhiệm vụ mở bàn 300 XP/ngày lần đầu; XP nghiệp vụ 500 + 500 hoặc 1.000 trực tiếp |
-| Lounge | `lounge_tables/booking,update` | `lounge_orders/preparing,completed` | Doanh thu 250 XP/khách đủ điều kiện, nhiệm vụ mở bàn 250 XP/ngày lần đầu; XP nghiệp vụ 100 + 150 hoặc 250 trực tiếp |
+| Lounge | `lounge_tables/booking,update` | `lounge_orders/preparing,completed` | Doanh thu 250 XP/khách đủ điều kiện, nhiệm vụ mở bàn 250 XP/ngày lần đầu; XP nghiệp vụ 200 + 300 hoặc 500 trực tiếp |
 | Show | `show_tables/booking,combo` | Không có XP nghiệp vụ order trong quy tắc này | Combo được cấp doanh thu theo bảng giá và bằng chứng đặt bàn do server xác minh; không cấp XP khi thiếu bằng chứng |
 | Restaurant | `res_tables/booking` | `res_orders/preparing,completed` | Mở bàn: 0 XP doanh thu; XP nghiệp vụ 500 + 500 hoặc 1.000 trực tiếp |
 

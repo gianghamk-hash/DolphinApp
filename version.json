@@ -1,7 +1,7 @@
 {
-  "version": "1.1.77",
-  "buildDate": "2026-11-06T00:40:23.105Z",
-  "commit": "0574a58",
-  "notes": "fix(guests): include Indian Food notes in special dietary list",
+  "version": "1.1.78",
+  "buildDate": "2026-11-06T09:31:05.576Z",
+  "commit": "bb1a8b0",
+  "notes": "feat(lounge): feature Cold Brew Classic with glowing gold menu border",
   "forceUpdate": false
 }

@@ -1,22 +1,22 @@
 {
-  "version": "1.1.77",
-  "previousVersion": "1.1.76",
-  "commit": "0574a58",
-  "previousCommit": "333e874",
-  "buildDate": "2026-11-06T00:40:23.105Z",
-  "summary": "fix(guests): include Indian Food notes in special dietary list",
+  "version": "1.1.78",
+  "previousVersion": "1.1.77",
+  "commit": "bb1a8b0",
+  "previousCommit": "0574a58",
+  "buildDate": "2026-11-06T09:31:05.576Z",
+  "summary": "feat(lounge): feature Cold Brew Classic with glowing gold menu border",
   "changes": {
-    "totalCommits": 301,
+    "totalCommits": 302,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(guests): include Indian Food notes in special dietary list"
+    "feat(lounge): feature Cold Brew Classic with glowing gold menu border"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "dolphin-lounge.html",
       "type": "update"
     }
   ]

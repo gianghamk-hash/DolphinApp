@@ -1,5 +1,5 @@
 {
-  "version": "1.1.77",
+  "version": "1.1.78",
   "releaseDate": "2026-11-06",
-  "notes": "fix(guests): include Indian Food notes in special dietary list"
+  "notes": "feat(lounge): feature Cold Brew Classic with glowing gold menu border"
 }

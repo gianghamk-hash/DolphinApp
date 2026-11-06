@@ -16,7 +16,7 @@ test('Show only credits paid known combos after selection',()=>{
 test('completed work is credited once per person, with role precedence',()=>{
  const done={status:'completed',preparedBy:'Mai & Lan',completedBy:'Mai & Binh'};
  assert.deepEqual(live.workTransition('lounge_orders',{status:'preparing'},done),[
-  {name:'Mai',source:'work',amount:250},{name:'Lan',source:'work',amount:100},{name:'Binh',source:'work',amount:250}
+  {name:'Mai',source:'work',amount:500},{name:'Lan',source:'work',amount:200},{name:'Binh',source:'work',amount:500}
  ]);
  assert.deepEqual(live.workTransition('lounge_orders',done,{...done,notes:'changed'}),[]);
  assert.deepEqual(live.workTransition('res_orders',null,done),[

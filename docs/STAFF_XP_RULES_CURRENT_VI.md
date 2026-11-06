@@ -1,4 +1,4 @@
-# Quy tắc XP Dolphin Crew Club — hiện hành (03/11/2026)
+# Quy tắc XP Dolphin Crew Club — hiện hành (06/11/2026)
 
 Quy tắc máy chủ xác thực: `functions/staff-xp-engine.cjs`, `functions/staff-xp-actions.js`, `functions/staff-daily-core.cjs`.
 
@@ -17,14 +17,15 @@ Công thức: **XP nghiệp vụ = điểm công việc × 1.000** (trước đ�
 
 | Thao tác nghiệp vụ hợp lệ | Lounge | Bungalow / Restaurant |
 |---|---:|---:|
-| Nhận/đang chuẩn bị order | +100 XP | +500 XP |
-| Hoàn thành sau khi chính mình đã nhận | +150 XP | +500 XP |
-| Hoàn thành trực tiếp chưa nhận | +250 XP | +1.000 XP |
-| Tổng nếu chính mình nhận rồi hoàn thành | **250 XP** | **1.000 XP** |
+| Nhận/đang chuẩn bị order | +200 XP | +500 XP |
+| Hoàn thành sau khi chính mình đã nhận | +300 XP | +500 XP |
+| Hoàn thành trực tiếp chưa nhận | +500 XP | +1.000 XP |
+| Tổng nếu chính mình nhận rồi hoàn thành | **500 XP** | **1.000 XP** |
 
 - XP chỉ cấp khi thao tác chuyển trạng thái được thực hiện qua Cloud Function `staffRecordLiveAction` với Staff ID đã xác minh.
 - Nhận và hoàn thành bởi hai người khác nhau thì mỗi người có XP ứng với thao tác đã thực hiện.
 - Một hành động có ID sự kiện đã ghi trong `staffXpLedger` sẽ không được cộng lần nữa.
+- Từ 06/11/2026, riêng Lounge tăng gấp đôi XP nghiệp vụ nhận/hoàn thành order (điểm công việc tương ứng 0,2 / 0,3 / 0,5); Bungalow và Restaurant giữ nguyên.
 - XP nghiệp vụ được tăng **chỉ đối với sự kiện mới** sau khi deploy; không tự nhân lại XP đã cấp trong quá khứ.
 
 ## 3. Nhiệm vụ hằng ngày — KHÔNG thay đổi

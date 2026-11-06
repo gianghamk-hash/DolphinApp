@@ -1,7 +1,7 @@
 {
-  "version": "1.1.79",
-  "buildDate": "2026-11-06T09:41:26.301Z",
-  "commit": "e481129",
-  "notes": "fix(landing): animate avatar orbit rings on three Top 1 podium cards",
+  "version": "1.1.80",
+  "buildDate": "2026-11-06T10:06:05.219Z",
+  "commit": "bb74907",
+  "notes": "feat(lounge): double verified order processing XP",
   "forceUpdate": false
 }

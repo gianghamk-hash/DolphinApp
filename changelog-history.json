@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.79",
+      "releaseDate": "2026-11-06T09:41:26.301Z",
+      "summary": "fix(landing): animate avatar orbit rings on three Top 1 podium cards",
+      "details": [
+        "fix(landing): animate avatar orbit rings on three Top 1 podium cards"
+      ]
+    },
+    {
       "version": "1.1.78",
       "releaseDate": "2026-11-06T09:31:05.576Z",
       "summary": "feat(lounge): feature Cold Brew Classic with glowing gold menu border",
@@ -390,14 +398,6 @@
       "summary": "fix(ci): handle quotation marks in release bump messages",
       "details": [
         "fix(ci): handle quotation marks in release bump messages"
-      ]
-    },
-    {
-      "version": "1.1.29",
-      "releaseDate": "2026-11-01T13:29:28.303Z",
-      "summary": "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors",
-      "details": [
-        "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors"
       ]
     }
   ]

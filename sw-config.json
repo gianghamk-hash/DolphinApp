@@ -1,5 +1,5 @@
 {
-  "version": "1.1.79",
+  "version": "1.1.80",
   "releaseDate": "2026-11-06",
-  "notes": "fix(landing): animate avatar orbit rings on three Top 1 podium cards"
+  "notes": "feat(lounge): double verified order processing XP"
 }

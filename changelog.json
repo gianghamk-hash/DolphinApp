@@ -1,22 +1,22 @@
 {
-  "version": "1.1.79",
-  "previousVersion": "1.1.78",
-  "commit": "e481129",
-  "previousCommit": "bb1a8b0",
-  "buildDate": "2026-11-06T09:41:26.301Z",
-  "summary": "fix(landing): animate avatar orbit rings on three Top 1 podium cards",
+  "version": "1.1.80",
+  "previousVersion": "1.1.79",
+  "commit": "bb74907",
+  "previousCommit": "e481129",
+  "buildDate": "2026-11-06T10:06:05.219Z",
+  "summary": "feat(lounge): double verified order processing XP",
   "changes": {
-    "totalCommits": 303,
+    "totalCommits": 304,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(landing): animate avatar orbit rings on three Top 1 podium cards"
+    "feat(lounge): double verified order processing XP"
   ],
   "fileChanges": [
     {
-      "file": "crew-cosmetics.css",
+      "file": "functions/staff-xp-live-engine.test.cjs",
       "type": "update"
     }
   ]

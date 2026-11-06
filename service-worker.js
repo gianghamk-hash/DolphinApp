@@ -1,4 +1,4 @@
-/* BUILD: 2026-11-06-0941 */
+/* BUILD: 2026-11-06-1006 */
 /* ============================================================
    🚀 DOLPHIN SERVICE WORKER v5 — Network-First cho code
    - HTML/JS/CSS/JSON: Network First → luôn lấy bản mới

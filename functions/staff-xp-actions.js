@@ -240,7 +240,7 @@ async function work(kind,id,action,who){
    tx.update(ref,{status:'preparing',preparedBy:names.join(' & '),...(old.status==='pending'?{preparedByStaffId:who.id}:{}),preparedAt:now});
   }
   const lounge=kind==='lounge_orders',prepared=oldPrepared||preparation.exists;
-  const points=action==='preparing'?(lounge?0.1:0.5):prepared?(lounge?0.15:0.5):(lounge?0.25:1);
+  const points=action==='preparing'?(lounge?0.2:0.5):prepared?(lounge?0.3:0.5):(lounge?0.5:1);
   obligation(tx,queue,queued,{kind,id,action,employeeId:who.id,eventId:evt,amount:xp.workXP(points),
    mission:action==='completed'?'order_completed':old.status==='pending'?'order_received':null});
   return {accepted:action==='preparing'&&old.status==='pending',prepared:action==='preparing',finished:action==='completed'};

@@ -30,7 +30,7 @@ function avatarHTML(name,id='',avatar='👤'){
 }
 if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
 if(!root.document)return;
-const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-global-v9',document.currentScript?.src||location.href).href;
+const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-global-v10',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
 try{if(root.parent!==root)shared=root.parent.DolphinAvatars||null;}catch(e){}
 function staffName(){try{return root.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'';}catch(e){return '';}}

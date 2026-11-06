@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.76",
+      "releaseDate": "2026-11-04T09:29:07.232Z",
+      "summary": "Automatically equip level cosmetics and preserve later personal customization (#238)",
+      "details": [
+        "Automatically equip level cosmetics and preserve later personal customization (#238)"
+      ]
+    },
+    {
       "version": "1.1.75",
       "releaseDate": "2026-11-04T03:19:01.805Z",
       "summary": "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)",
@@ -390,14 +398,6 @@
       "summary": "hotfix(orders): do not block saving when Staff XP service fails",
       "details": [
         "hotfix(orders): do not block saving when Staff XP service fails"
-      ]
-    },
-    {
-      "version": "1.1.26",
-      "releaseDate": "2026-11-01T12:27:18.204Z",
-      "summary": "fix(staff-xp): disable legacy archive approvals with verified automatic awards",
-      "details": [
-        "fix(staff-xp): disable legacy archive approvals with verified automatic awards"
       ]
     }
   ]

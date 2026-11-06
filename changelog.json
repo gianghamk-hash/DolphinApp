@@ -1,78 +1,22 @@
 {
-  "version": "1.1.76",
-  "previousVersion": "1.1.75",
-  "commit": "333e874",
-  "previousCommit": "f60128c",
-  "buildDate": "2026-11-04T09:29:07.232Z",
-  "summary": "Automatically equip level cosmetics and preserve later personal customization (#238)",
+  "version": "1.1.77",
+  "previousVersion": "1.1.76",
+  "commit": "0574a58",
+  "previousCommit": "333e874",
+  "buildDate": "2026-11-06T00:40:23.105Z",
+  "summary": "fix(guests): include Indian Food notes in special dietary list",
   "changes": {
-    "totalCommits": 300,
-    "filesChanged": 15,
+    "totalCommits": 301,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Automatically equip level cosmetics and preserve later personal customization (#238)"
+    "fix(guests): include Indian Food notes in special dietary list"
   ],
   "fileChanges": [
     {
-      "file": "docs/AUTO_LEVEL_STYLE.md",
-      "type": "update"
-    },
-    {
-      "file": "functions/manager-apk.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-core.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-core.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-missions.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-missions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/avatar-sync-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-cosmetics.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/landing-level-podium.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
+      "file": "dolphin-guests.html",
       "type": "update"
     }
   ]

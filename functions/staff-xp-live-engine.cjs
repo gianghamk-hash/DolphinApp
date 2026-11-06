@@ -34,7 +34,7 @@ function workTransition(kind,before,after){
  const people=new Map([...prepare,...complete]);
  const lounge=kind==='lounge_orders';
  return [...people].map(([key,name])=>({
-  name,source:'work',amount:xp.workXP(complete.has(key)?(lounge?0.25:1):(lounge?0.1:0.5))
+  name,source:'work',amount:xp.workXP(complete.has(key)?(lounge?0.5:1):(lounge?0.2:0.5))
  })).filter(e=>e.amount>0);
 }
 function eventId(kind,documentId,createdAt,employeeId,source){

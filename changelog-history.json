@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.78",
+      "releaseDate": "2026-11-06T09:31:05.576Z",
+      "summary": "feat(lounge): feature Cold Brew Classic with glowing gold menu border",
+      "details": [
+        "feat(lounge): feature Cold Brew Classic with glowing gold menu border"
+      ]
+    },
+    {
       "version": "1.1.77",
       "releaseDate": "2026-11-06T00:40:23.105Z",
       "summary": "fix(guests): include Indian Food notes in special dietary list",
@@ -390,14 +398,6 @@
       "summary": "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors",
       "details": [
         "fix(xp): match authenticated Staff ID, retry missing XP and show sync errors"
-      ]
-    },
-    {
-      "version": "1.1.28",
-      "releaseDate": "2026-11-01T13:08:09.259Z",
-      "summary": "fix(xp): derive realtime staff XP from saved revenue and completed order records",
-      "details": [
-        "fix(xp): derive realtime staff XP from saved revenue and completed order records"
       ]
     }
   ]

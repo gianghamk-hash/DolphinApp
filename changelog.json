@@ -1,22 +1,22 @@
 {
-  "version": "1.1.78",
-  "previousVersion": "1.1.77",
-  "commit": "bb1a8b0",
-  "previousCommit": "0574a58",
-  "buildDate": "2026-11-06T09:31:05.576Z",
-  "summary": "feat(lounge): feature Cold Brew Classic with glowing gold menu border",
+  "version": "1.1.79",
+  "previousVersion": "1.1.78",
+  "commit": "e481129",
+  "previousCommit": "bb1a8b0",
+  "buildDate": "2026-11-06T09:41:26.301Z",
+  "summary": "fix(landing): animate avatar orbit rings on three Top 1 podium cards",
   "changes": {
-    "totalCommits": 302,
+    "totalCommits": 303,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(lounge): feature Cold Brew Classic with glowing gold menu border"
+    "fix(landing): animate avatar orbit rings on three Top 1 podium cards"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-lounge.html",
+      "file": "crew-cosmetics.css",
       "type": "update"
     }
   ]

@@ -739,13 +739,14 @@ function tables(s){
 function areaName(letter){if(letter==='L')return 'Lounge';return letter}
 function seg(s){return (s||'').split(/\n+|\s{3,}|\s\+\s(?=-)/).map(function(x){return x.replace(/^[\s\-–=>+]+/,'').trim()}).filter(Boolean)}
 var BUNG=/bungalow/i,LOB=/tôm hùm|lobster/i;
-var DIET=/\b(?:chay|veg(?:an|etarian)?|non[\s-]*veg|halal|jain)\b/i;
+var DIET=/(?:\b(?:chay|veg(?:an|etarian)?|non[\s-]*veg|halal|jain)\b|\bindian\s*(?:food|meal|menu|set\s*menu|set)\b)/i;
 function dietType(s){
   if(/\bnon[\s-]*veg\b/i.test(s))return 'Non-veg';
   if(/chay/i.test(s))return 'Chay Việt';
   if(/\bhalal\b/i.test(s))return 'Halal';
   if(/\bjain\b/i.test(s))return 'Jain';
-  if(/veg/i.test(s))return 'Veg';
+  if(/\bveg/i.test(s))return 'Veg';
+  if(/\bindian\s*(?:food|meal|menu|set\s*menu|set)\b/i.test(s))return 'Indian Food';
   return '';
 }
 
@@ -1093,12 +1094,13 @@ function viewOverview(L){
 }
 function viewSpecial(L){
   var S=L.filter(function(b){return b.diet.length||b.lob.length});
-  var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Halal':0,'Jain':0},lob=0;
+  var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Halal':0,'Jain':0,'Indian Food':0},lob=0;
   S.forEach(function(b){b.diet.forEach(function(d){cnt[d.t]++});lob+=b.lob.length});
   var h='<div class="stats">'+
     statBox('<i class="ic ic-leaf"></i>',cnt['Chay Việt'],'Chay Việt')+
     statBox('<i class="ic ic-sprout"></i>',cnt['Veg'],'Veg')+
     statBox('<i class="ic ic-drumstick"></i>',cnt['Non-veg'],'Non-veg')+
+     statBox('<i class="ic ic-utensils"></i>',cnt['Indian Food'],'Indian Food')+
     statBox('<i class="ic ic-utensils"></i>',cnt['Halal'],'Halal')+
     statBox('<i class="ic ic-leaf"></i>',cnt['Jain'],'Jain')+
     statBox('<i class="ic ic-fish"></i>',lob,'Tôm hùm')+'</div>';

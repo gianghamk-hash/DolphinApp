@@ -1,4 +1,4 @@
-# Quy tắc XP Dolphin Crew Club — hiện hành (06/11/2026)
+# Quy tắc XP Dolphin Crew Club — hiện hành (07/11/2026)
 
 Quy tắc máy chủ xác thực: `functions/staff-xp-engine.cjs`, `functions/staff-xp-actions.js`, `functions/staff-daily-core.cjs`.
 
@@ -28,18 +28,20 @@ Công thức: **XP nghiệp vụ = điểm công việc × 1.000** (trước đ�
 - Từ 06/11/2026, riêng Lounge tăng gấp đôi XP nghiệp vụ nhận/hoàn thành order (điểm công việc tương ứng 0,2 / 0,3 / 0,5); Bungalow và Restaurant giữ nguyên.
 - XP nghiệp vụ được tăng **chỉ đối với sự kiện mới** sau khi deploy; không tự nhân lại XP đã cấp trong quá khứ.
 
-## 3. Nhiệm vụ hằng ngày — KHÔNG thay đổi
+## 3. Nhiệm vụ hằng ngày — THƯỞNG XP GẤP 3 (từ 07/11/2026)
 
 | Nhiệm vụ | XP một lần/ngày |
 |---|---:|
-| Điểm danh | 200 XP ngày đầu, +50/ngày liên tiếp, tối đa 500 XP từ ngày 7 |
-| Hoàn thành một order | 400 |
-| Mở một Bungalow | 300 |
-| Mở một Lounge | 250 |
-| Nhận một order | 150 |
-| Đổi avatar | 100 |
-| Rắn offline đạt 100 điểm hợp lệ | 500 |
-| 2048 đạt 1.000 điểm hợp lệ | 1.000 |
+| Điểm danh | 600 XP ngày đầu, +150/ngày liên tiếp, tối đa 1.500 XP từ ngày 7 |
+| Hoàn thành một order | 1.200 |
+| Mở một Bungalow | 900 |
+| Mở một Lounge | 750 |
+| Nhận một order | 450 |
+| Đổi avatar | 300 |
+| Rắn offline đạt 100 điểm hợp lệ | 1.500 |
+| 2048 đạt 1.000 điểm hợp lệ | 3.000 |
+
+Tổng XP thưởng khi hoàn thành cả 8 nhiệm vụ: 8.700–9.600 XP/ngày tùy chuỗi điểm danh. Chỉ các lượt nhận thưởng mới sau khi triển khai áp dụng mức gấp 3; không cộng lại XP đã nhận trước đó. XP nghiệp vụ và doanh thu giữ nguyên.
 
 Daily Missions reset lúc 00:00 Asia/Ho_Chi_Minh. XP nghiệp vụ và thưởng nhiệm vụ hằng ngày **cộng dồn**, nhưng số lần nhận thưởng nhiệm vụ không tăng theo số order sau lần đầu tiên.
 

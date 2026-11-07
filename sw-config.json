@@ -1,5 +1,5 @@
 {
-  "version": "1.1.85",
+  "version": "1.1.86",
   "releaseDate": "2026-11-07",
-  "notes": "docs(crew): update all daily mission rewards to 3x"
+  "notes": "test(crew): prevent retroactive mission multiplier on prior receipts"
 }

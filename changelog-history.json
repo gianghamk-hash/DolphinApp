@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.85",
+      "releaseDate": "2026-11-07T07:50:35.619Z",
+      "summary": "docs(crew): update all daily mission rewards to 3x",
+      "details": [
+        "docs(crew): update all daily mission rewards to 3x"
+      ]
+    },
+    {
       "version": "1.1.84",
       "releaseDate": "2026-11-07T07:50:09.514Z",
       "summary": "test(crew): correct daily check-in assertions at triple reward",
@@ -390,14 +398,6 @@
       "summary": "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone",
       "details": [
         "feat(crew-club): level rewards with avatar frames, titles, banners and next milestone"
-      ]
-    },
-    {
-      "version": "1.1.35",
-      "releaseDate": "2026-11-01T15:25:09.557Z",
-      "summary": "feat(profile): add DOL-0001 personal XP testing controls",
-      "details": [
-        "feat(profile): add DOL-0001 personal XP testing controls"
       ]
     }
   ]

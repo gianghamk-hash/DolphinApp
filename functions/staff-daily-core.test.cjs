@@ -8,31 +8,31 @@ test('eight fixed tasks have precisely the requested rewards',()=>{
   'checkin','order_completed','bungalow_opened','lounge_opened',
   'order_received','avatar_changed','snake_100','game2048_1000'
  ]);
- assert.deepEqual(core.TASKS.map(x=>x.xp),[200,400,300,250,150,100,500,1000]);
- assert.equal(core.checkinXP(1),200);
- assert.equal(core.checkinXP(7),500);
- assert.equal(core.checkinXP(999),500);
+ assert.deepEqual(core.TASKS.map(x=>x.xp),[600,1200,900,750,450,300,1500,3000]);
+ assert.equal(core.checkinXP(1),600);
+ assert.equal(core.checkinXP(7),1500);
+ assert.equal(core.checkinXP(999),1500);
  assert.throws(()=>core.apply(person(),'arbitrary_task',vn('2026-11-03')));
 });
 test('VN midnight resets eight daily missions but preserves streak',()=>{
  const a=Date.parse('2026-11-02T16:59:59Z'),b=a+1000;
  const claimed=core.apply(person(),'snake_100',a,'snake-proof');
- assert.equal(claimed.addedXP,500);
+ assert.equal(claimed.addedXP,1500);
  assert.equal(core.view(claimed.profile,a).completedCount,1);
  assert.equal(core.view(claimed.profile,b).completedCount,0);
  assert.equal(core.view(claimed.profile,b).resetAt,Date.parse('2026-11-03T17:00:00Z'));
 });
-test('check-in remains 200–500 XP independent of 10x work quests',()=>{
+test('check-in is tripled to 600–1500 XP independent of order work XP',()=>{
  let p=person(),total=0;
  for(let i=1;i<=9;i++){
   const result=core.apply(p,'checkin',vn('2026-11-'+String(i).padStart(2,'0')),String(i));
   assert.equal(result.addedXP,core.checkinXP(i));
   total+=result.addedXP;p=result.profile;assert.equal(p.xp,total);
  }
- assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,200);
+ assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,600);
 });
 test('each verified task is claimed once per day per Staff ID',()=>{
- const time=vn('2026-11-03'),amounts={checkin:200,order_completed:400,bungalow_opened:300,lounge_opened:250,order_received:150,avatar_changed:100,snake_100:500,game2048_1000:1000};
+ const time=vn('2026-11-03'),amounts={checkin:600,order_completed:1200,bungalow_opened:900,lounge_opened:750,order_received:450,avatar_changed:300,snake_100:1500,game2048_1000:3000};
  let p=person(),total=0;
  for(const [task,xp] of Object.entries(amounts)){
   const first=core.apply(p,task,time,task);total+=xp;
@@ -40,7 +40,7 @@ test('each verified task is claimed once per day per Staff ID',()=>{
   assert.equal(core.apply(first.profile,task,time+1000,'retry').addedXP,0);
   p=first.profile;
  }
- assert.equal(total,2900);assert.equal(p.xp,total);
+ assert.equal(total,8700);assert.equal(p.xp,total);
  assert.equal(core.view(p,time).completedCount,8);
  assert.equal(core.view(p,time).todayXP,total);
 });
@@ -78,10 +78,10 @@ test('legacy business mission receipts top up only TODAY; unverified receipts do
  const untrusted={...base,dailyMissions:{...base.dailyMissions,completed:{order_completed:{xp:40,at:time}}}};
  assert.equal(core.reconcileLegacyDaily(untrusted,time).changed,false);
 });
-test('new game mission rewards are not multiplied by another factor',()=>{
+test('game mission rewards use the single new triple multiplier',()=>{
  const t=vn('2026-11-03');
- assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,500);
- assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,1000);
+ assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,1500);
+ assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,3000);
 });
 
 test('daily rewards and same-day legacy top-ups auto-equip only when they raise the permanent level',()=>{

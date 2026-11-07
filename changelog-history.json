@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.84",
+      "releaseDate": "2026-11-07T07:50:09.514Z",
+      "summary": "test(crew): correct daily check-in assertions at triple reward",
+      "details": [
+        "test(crew): correct daily check-in assertions at triple reward"
+      ]
+    },
+    {
       "version": "1.1.83",
       "releaseDate": "2026-11-07T07:49:45.447Z",
       "summary": "test/docs: reflect 3x daily mission rewards",
@@ -390,14 +398,6 @@
       "summary": "feat(profile): add DOL-0001 personal XP testing controls",
       "details": [
         "feat(profile): add DOL-0001 personal XP testing controls"
-      ]
-    },
-    {
-      "version": "1.1.34",
-      "releaseDate": "2026-11-01T15:00:08.434Z",
-      "summary": "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions",
-      "details": [
-        "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions"
       ]
     }
   ]

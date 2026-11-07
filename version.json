@@ -1,7 +1,7 @@
 {
-  "version": "1.1.84",
-  "buildDate": "2026-11-07T07:50:09.514Z",
-  "commit": "930a897",
-  "notes": "test(crew): correct daily check-in assertions at triple reward",
+  "version": "1.1.85",
+  "buildDate": "2026-11-07T07:50:35.619Z",
+  "commit": "f89f8e0",
+  "notes": "docs(crew): update all daily mission rewards to 3x",
   "forceUpdate": false
 }

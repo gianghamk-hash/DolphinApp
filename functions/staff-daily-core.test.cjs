@@ -78,6 +78,16 @@ test('legacy business mission receipts top up only TODAY; unverified receipts do
  const untrusted={...base,dailyMissions:{...base.dailyMissions,completed:{order_completed:{xp:40,at:time}}}};
  assert.equal(core.reconcileLegacyDaily(untrusted,time).changed,false);
 });
+test('new triple rewards do not top up previously completed missions',()=>{
+ const t=vn('2026-11-07');
+ const prior={...person(),xp:400,dailyMissions:{date:'2026-11-07',completed:{
+  order_completed:{xp:400,at:t,receipt:'verified-pre-upgrade'}
+ }}};
+ assert.equal(core.view(prior,t).tasks.find(task=>task.id==='order_completed').xp,400);
+ assert.equal(core.apply(prior,'order_completed',t+1000,'retry').addedXP,0);
+ assert.equal(core.reconcileLegacyDaily(prior,t+1000).changed,false);
+ assert.equal(core.apply(person(),'order_completed',t+1000,'new').addedXP,1200);
+});
 test('game mission rewards use the single new triple multiplier',()=>{
  const t=vn('2026-11-03');
  assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,1500);

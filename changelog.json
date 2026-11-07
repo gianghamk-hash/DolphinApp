@@ -1,22 +1,22 @@
 {
-  "version": "1.1.80",
-  "previousVersion": "1.1.79",
-  "commit": "bb74907",
-  "previousCommit": "e481129",
-  "buildDate": "2026-11-06T10:06:05.219Z",
-  "summary": "feat(lounge): double verified order processing XP",
+  "version": "1.1.81",
+  "previousVersion": "1.1.80",
+  "commit": "9ca338e",
+  "previousCommit": "bb74907",
+  "buildDate": "2026-11-07T07:48:31.464Z",
+  "summary": "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards",
   "changes": {
-    "totalCommits": 304,
+    "totalCommits": 305,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(lounge): double verified order processing XP"
+    "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-xp-live-engine.test.cjs",
+      "file": "functions/staff-daily-core.cjs",
       "type": "update"
     }
   ]

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.80",
-  "buildDate": "2026-11-06T10:06:05.219Z",
-  "commit": "bb74907",
-  "notes": "feat(lounge): double verified order processing XP",
+  "version": "1.1.81",
+  "buildDate": "2026-11-07T07:48:31.464Z",
+  "commit": "9ca338e",
+  "notes": "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards",
   "forceUpdate": false
 }

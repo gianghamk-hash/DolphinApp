@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.80",
+      "releaseDate": "2026-11-06T10:06:05.219Z",
+      "summary": "feat(lounge): double verified order processing XP",
+      "details": [
+        "feat(lounge): double verified order processing XP"
+      ]
+    },
+    {
       "version": "1.1.79",
       "releaseDate": "2026-11-06T09:41:26.301Z",
       "summary": "fix(landing): animate avatar orbit rings on three Top 1 podium cards",
@@ -390,14 +398,6 @@
       "summary": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions",
       "details": [
         "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions"
-      ]
-    },
-    {
-      "version": "1.1.30",
-      "releaseDate": "2026-11-01T13:47:14.331Z",
-      "summary": "fix(ci): handle quotation marks in release bump messages",
-      "details": [
-        "fix(ci): handle quotation marks in release bump messages"
       ]
     }
   ]

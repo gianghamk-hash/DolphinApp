@@ -1,5 +1,5 @@
 {
-  "version": "1.1.80",
-  "releaseDate": "2026-11-06",
-  "notes": "feat(lounge): double verified order processing XP"
+  "version": "1.1.81",
+  "releaseDate": "2026-11-07",
+  "notes": "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards"
 }

@@ -3,14 +3,14 @@
 const engine=require('./staff-xp-engine.cjs');
 const ZONE='Asia/Ho_Chi_Minh';
 const TASKS=Object.freeze([
- Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Ngày 1: 200 XP · tăng 50 XP/ngày · tối đa 500 XP',xp:200}),
- Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:400}),
- Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:300}),
- Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:250}),
- Object.freeze({id:'order_received',icon:'📥',title:'Nhận 1 order',description:'Nhận và bắt đầu xử lý một đơn mới',xp:150}),
- Object.freeze({id:'avatar_changed',icon:'🎭',title:'Đổi avatar 1 lần',description:'Lưu một avatar khác với avatar hiện tại',xp:100}),
- Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 100 điểm',description:'Đạt ít nhất 100 điểm trong một ván Rắn Săn Mồi Offline',xp:500}),
- Object.freeze({id:'game2048_1000',icon:'🔢',title:'2048 đạt 1.000 điểm',description:'Đạt ít nhất 1.000 điểm trong một ván 2048',xp:1000})
+ Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Ngày 1: 600 XP · tăng 150 XP/ngày · tối đa 1.500 XP',xp:600}),
+ Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:1200}),
+ Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:900}),
+ Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:750}),
+ Object.freeze({id:'order_received',icon:'📥',title:'Nhận 1 order',description:'Nhận và bắt đầu xử lý một đơn mới',xp:450}),
+ Object.freeze({id:'avatar_changed',icon:'🎭',title:'Đổi avatar 1 lần',description:'Lưu một avatar khác với avatar hiện tại',xp:300}),
+ Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 100 điểm',description:'Đạt ít nhất 100 điểm trong một ván Rắn Săn Mồi Offline',xp:1500}),
+ Object.freeze({id:'game2048_1000',icon:'🔢',title:'2048 đạt 1.000 điểm',description:'Đạt ít nhất 1.000 điểm trong một ván 2048',xp:3000})
 ]);
 const ids=new Set(TASKS.map(task=>task.id));
 function vietnamDay(time=Date.now()){
@@ -30,7 +30,7 @@ function nextMidnight(day){
  return utcDate(day)+86400000-7*3600000;
 }
 function checkinXP(streak){
- return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*10;
+ return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*30;
 }
 function todayCompleted(record,day){
  return record?.date===day&&record.completed&&typeof record.completed==='object'
@@ -86,11 +86,12 @@ function apply(profile,taskId,time=Date.now(),receipt=''){
 }
 /**
  * Correct only today's authenticated receipt, never re-claim a task.
- * Check-in is NOT a x10 business mission: 200→500 XP for streak days 1→7.
- * Prior releases mistakenly paid 2,000→5,000; reverse that exact receipt
- * once, alongside topping up older 1x business tasks.
+ * Legacy receipts are normalized to their HISTORICAL rates, not the new triple rewards.
+ * Preserve existing same-day receipts and the old correction behavior;
+ * new 3x rewards only apply to missions claimed after rollout.
  * Past days are not available in the daily record and are left untouched.
  */
+const PRE_TRIPLE_TASK_XP=Object.freeze({order_completed:400,bungalow_opened:300,lounge_opened:250,order_received:150,avatar_changed:100,snake_100:500,game2048_1000:1000});
 function reconcileLegacyDaily(profile,time=Date.now()){
  const unchanged={changed:false,profile,addedXP:0};
  if(!profile?.active||(profile.registrationSource==='self'&&profile.approved!==true))
@@ -104,9 +105,9 @@ function reconcileLegacyDaily(profile,time=Date.now()){
   if(!entry||typeof entry.receipt!=='string'||!entry.receipt.length||
     !Number.isFinite(at)||at<=0||vietnamDay(at)!==day)continue;
   const base=task.id==='checkin'?
-    15+Math.min(7,Math.max(1,Number(record.streak)||1))*5:task.xp/10;
+    15+Math.min(7,Math.max(1,Number(record.streak)||1))*5:PRE_TRIPLE_TASK_XP[task.id]/10;
   const allowed=task.id==='checkin'?[base,base*100]:[base];
-  const target=task.id==='checkin'?checkinXP(record.streak):task.xp;
+  const target=task.id==='checkin'?checkinXP(record.streak)/3:PRE_TRIPLE_TASK_XP[task.id];
   if(!allowed.includes(Number(entry.xp))||Number(entry.xp)===target)continue;
   adjustment+=target-Number(entry.xp);
   entries[task.id]={...entry,xp:target,rateVersion:4,backfilledAt:time};

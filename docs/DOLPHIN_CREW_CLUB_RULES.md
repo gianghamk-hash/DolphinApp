@@ -35,17 +35,20 @@ Mở khóa tự động theo levelPeak; trang Hồ Sơ cho chọn khung, danh hi
 
 ## Nhiệm vụ hằng ngày — reset 00:00 (Việt Nam)
 
-- Múi giờ cố định: `Asia/Ho_Chi_Minh`. Không cần job xóa dữ liệu: tiến độ được tách theo ngày Việt Nam tại máy chủ. Bước sang 00:00, 6 nhiệm vụ sẽ trở về chưa hoàn thành, còn chuỗi điểm danh và kỷ lục vẫn được giữ.
-- Điểm danh: ngày thứ 1 = **200 XP**, mỗi ngày liên tiếp tăng **50 XP** tới mức trần **500 XP/ngày** từ ngày thứ 7 (hệ số x10 từ ngày 02/11/2026). Nếu đã điểm danh trước khi cập nhật x10 trong **cùng ngày giờ Việt Nam**, hệ thống tự bù phần chênh lệch một lần khi mở Hồ sơ (ví dụ từ 20 lên 200 XP: cộng thêm 180 XP). Không cộng bù những ngày cũ đã qua 00:00. Bản ghi thưởng được cập nhật để hiển thị đúng x10, không cho nhận trùng. Bỏ qua một ngày thì chuỗi bắt đầu lại từ 1, kỷ lục không mất.
-- Hoàn thành một order: **40 XP** (chuyển trạng thái đơn sang hoàn thành trên máy chủ).
-- Mở một Bungalow: **30 XP** (tạo lượt mới bằng Staff ID đã xác minh).
-- Mở một bàn Lounge: **25 XP** (tạo bàn mới bằng Staff ID đã xác minh).
-- Nhận một order: **15 XP** (chuyển đơn từ pending sang preparing bằng Staff ID).
-- Đổi avatar: **10 XP** (thực sự lưu avatar khác với avatar hiện tại).
-- Mỗi nhiệm vụ chỉ thưởng tối đa **một lần/ngày** theo Staff ID (tối đa **320–620 XP/ngày**, tùy chuỗi). XP cộng vào `staffRegistry/{employeeId}.xp`, dùng lại công thức Level và `levelPeak` hiện có.
-- Chỉ `staffCheckInDaily` là thao tác do nhân viên gọi trực tiếp. Các nhiệm vụ công việc/đổi avatar được ghi nhận từ callable nghiệp vụ có kiểm tra Staff ID và thao tác thực tế. Không có callable để client tự gửi task/XP tùy ý; dữ liệu Firestore viết trực tiếp theo luồng cũ không phải bằng chứng nhận XP nhiệm vụ.
-- Nút **Điểm danh** và danh sách nhiệm vụ xuất hiện tại Hồ sơ; kết quả đồng bộ giữa thiết bị. Mốc công việc nhận thưởng ngay sau khi thao tác đủ điều kiện, không phải nhấn nhận thủ công.
-- Giữ nguyên quy ước Dolphin Crew Club chỉ để giải trí, **không** dùng làm căn cứ lương hay đánh giá.
+- Múi giờ cố định: `Asia/Ho_Chi_Minh`. Hệ thống có **8 nhiệm vụ**, chỉ nhận thưởng một lần mỗi ngày theo Staff ID đã duyệt.
+- Từ **07/11/2026**, XP nhiệm vụ tăng **gấp 3** so với mức trước đó. Đây là XP Daily Missions, hoàn toàn độc lập với XP doanh thu và XP nghiệp vụ theo order.
+- Điểm danh: ngày thứ 1 = **600 XP**, tăng **150 XP/ngày liên tiếp**, tối đa **1.500 XP/ngày** từ ngày thứ 7. Bỏ lỡ một ngày thì chuỗi trở về ngày 1.
+- Hoàn thành một order: **1.200 XP** (chuyển trạng thái đơn sang hoàn thành qua máy chủ).
+- Mở một Bungalow: **900 XP** (mở lượt phục vụ được xác minh).
+- Mở một bàn Lounge: **750 XP** (mở lượt phục vụ được xác minh).
+- Nhận một order: **450 XP** (nhận và bắt đầu chuẩn bị).
+- Đổi avatar: **300 XP** (thực sự lưu avatar khác).
+- Rắn Offline đạt 100 điểm hợp lệ: **1.500 XP**.
+- Game 2048 đạt 1.000 điểm hợp lệ: **3.000 XP**.
+- Tổng cộng **8.700–9.600 XP/ngày** nếu hoàn thành cả 8 nhiệm vụ, tùy chuỗi điểm danh. Bước sang 00:00, tiến độ hoàn thành làm mới, nhưng XP tích lũy và chuỗi điểm danh vẫn được giữ.
+- Phần thưởng đã nhận trước khi triển khai phiên bản mới không được nhân lại hoặc cấp trùng. Việc sửa biên nhận lỗi của các phiên bản cũ vẫn tính theo định mức lịch sử đã phát hành.
+- Chỉ `staffCheckInDaily` là thao tác do nhân viên gọi trực tiếp; các nhiệm vụ khác được cấp từ sự kiện đủ điều kiện trên máy chủ và bằng chứng trò chơi, không tin số XP do client gửi.
+- Nút điểm danh và tiến độ nhiệm vụ nằm trong Hồ sơ, đồng bộ qua các thiết bị.
 
 ## Điều chỉnh ngưỡng Level tháng 11/2026
 

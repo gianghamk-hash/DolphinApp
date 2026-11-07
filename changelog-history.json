@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.83",
+      "releaseDate": "2026-11-07T07:49:45.447Z",
+      "summary": "test/docs: reflect 3x daily mission rewards",
+      "details": [
+        "test/docs: reflect 3x daily mission rewards"
+      ]
+    },
+    {
       "version": "1.1.82",
       "releaseDate": "2026-11-07T07:49:16.492Z",
       "summary": "test/docs(crew): verify triple daily quest XP and preserve work and revenue rates",
@@ -390,14 +398,6 @@
       "summary": "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions",
       "details": [
         "fix(staff-style): unlock Level 3 OnFlame on cold-cache Firebase transactions"
-      ]
-    },
-    {
-      "version": "1.1.33",
-      "releaseDate": "2026-11-01T14:36:03.146Z",
-      "summary": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars",
-      "details": [
-        "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars"
       ]
     }
   ]

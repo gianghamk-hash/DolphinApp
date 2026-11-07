@@ -1,18 +1,18 @@
 {
-  "version": "1.1.83",
-  "previousVersion": "1.1.82",
-  "commit": "9595ba0",
-  "previousCommit": "b56963c",
-  "buildDate": "2026-11-07T07:49:45.447Z",
-  "summary": "test/docs: reflect 3x daily mission rewards",
+  "version": "1.1.84",
+  "previousVersion": "1.1.83",
+  "commit": "930a897",
+  "previousCommit": "9595ba0",
+  "buildDate": "2026-11-07T07:50:09.514Z",
+  "summary": "test(crew): correct daily check-in assertions at triple reward",
   "changes": {
-    "totalCommits": 307,
+    "totalCommits": 308,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "test/docs: reflect 3x daily mission rewards"
+    "test(crew): correct daily check-in assertions at triple reward"
   ],
   "fileChanges": [
     {

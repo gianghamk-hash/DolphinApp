@@ -1,22 +1,22 @@
 {
-  "version": "1.1.81",
-  "previousVersion": "1.1.80",
-  "commit": "9ca338e",
-  "previousCommit": "bb74907",
-  "buildDate": "2026-11-07T07:48:31.464Z",
-  "summary": "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards",
+  "version": "1.1.82",
+  "previousVersion": "1.1.81",
+  "commit": "b56963c",
+  "previousCommit": "9ca338e",
+  "buildDate": "2026-11-07T07:49:16.492Z",
+  "summary": "test/docs(crew): verify triple daily quest XP and preserve work and revenue rates",
   "changes": {
-    "totalCommits": 305,
+    "totalCommits": 306,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards"
+    "test/docs(crew): verify triple daily quest XP and preserve work and revenue rates"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-daily-core.cjs",
+      "file": "functions/staff-xp-actions.test.cjs",
       "type": "update"
     }
   ]

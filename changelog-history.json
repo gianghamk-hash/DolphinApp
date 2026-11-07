@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.81",
+      "releaseDate": "2026-11-07T07:48:31.464Z",
+      "summary": "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards",
+      "details": [
+        "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards"
+      ]
+    },
+    {
       "version": "1.1.80",
       "releaseDate": "2026-11-06T10:06:05.219Z",
       "summary": "feat(lounge): double verified order processing XP",
@@ -390,14 +398,6 @@
       "summary": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile",
       "details": [
         "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile"
-      ]
-    },
-    {
-      "version": "1.1.31",
-      "releaseDate": "2026-11-01T13:58:27.855Z",
-      "summary": "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions",
-      "details": [
-        "fix(xp): prevent false inactive-profile errors on Firebase RTDB transactions"
       ]
     }
   ]

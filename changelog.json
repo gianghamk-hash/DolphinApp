@@ -1,22 +1,22 @@
 {
-  "version": "1.1.82",
-  "previousVersion": "1.1.81",
-  "commit": "b56963c",
-  "previousCommit": "9ca338e",
-  "buildDate": "2026-11-07T07:49:16.492Z",
-  "summary": "test/docs(crew): verify triple daily quest XP and preserve work and revenue rates",
+  "version": "1.1.83",
+  "previousVersion": "1.1.82",
+  "commit": "9595ba0",
+  "previousCommit": "b56963c",
+  "buildDate": "2026-11-07T07:49:45.447Z",
+  "summary": "test/docs: reflect 3x daily mission rewards",
   "changes": {
-    "totalCommits": 306,
+    "totalCommits": 307,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "test/docs(crew): verify triple daily quest XP and preserve work and revenue rates"
+    "test/docs: reflect 3x daily mission rewards"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-xp-actions.test.cjs",
+      "file": "functions/staff-daily-missions.test.cjs",
       "type": "update"
     }
   ]

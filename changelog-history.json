@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.82",
+      "releaseDate": "2026-11-07T07:49:16.492Z",
+      "summary": "test/docs(crew): verify triple daily quest XP and preserve work and revenue rates",
+      "details": [
+        "test/docs(crew): verify triple daily quest XP and preserve work and revenue rates"
+      ]
+    },
+    {
       "version": "1.1.81",
       "releaseDate": "2026-11-07T07:48:31.464Z",
       "summary": "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards",
@@ -390,14 +398,6 @@
       "summary": "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars",
       "details": [
         "fix(ranking): fit mobile tabs, restore Level names, sync employee avatars"
-      ]
-    },
-    {
-      "version": "1.1.32",
-      "releaseDate": "2026-11-01T14:21:42.363Z",
-      "summary": "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile",
-      "details": [
-        "feat(ranking): show Emperor beside weekly leaders and move XP ranking from Profile"
       ]
     }
   ]

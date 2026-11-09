@@ -1,19 +1,19 @@
 /* Dolphin Crew Club 2.0 — 2D icon sprite atlas.
- * Source: two user-approved 2D ocean icon sheets, 4 columns × 2 rows.
+ * Source: newly approved bright 2D ocean icon artwork, 4 columns × 2 rows.
  * Individual images are mapped by semantic data-icon, no font dependency.
  */
 .crew-2d-icon{
  --icon-size:42px;
  display:inline-block;flex:none;
  width:var(--icon-size);height:var(--icon-size);
- background-image:url('./assets/crew-profile-icons.webp');
+ background-image:url('./assets/crew-profile-icons-v2.webp');
  background-repeat:no-repeat;background-size:400% 200%;
  background-position:var(--icon-x,0%) var(--icon-y,0%);
  background-color:transparent;
  vertical-align:middle;
  color:transparent;font-size:0;line-height:0;
 }
-.crew-2d-icon[data-set="journey"]{background-image:url('./assets/crew-journey-icons.webp')}
+.crew-2d-icon[data-set="journey"]{background-image:url('./assets/crew-cosmetic-icons-v2.webp')}
 .crew-2d-icon[data-icon="profile"]{--icon-x:0%;--icon-y:0%}
 .crew-2d-icon[data-icon="style"]{--icon-x:33.333333%;--icon-y:0%}
 .crew-2d-icon[data-icon="reward"]{--icon-x:66.666667%;--icon-y:0%}
@@ -37,14 +37,14 @@
 .daily-task-icon.crew-2d-icon,
 .settings-row .action-icon.crew-2d-icon{
  background-color:transparent!important;
- background-image:url('./assets/crew-profile-icons.webp')!important;
+ background-image:url('./assets/crew-profile-icons-v2.webp')!important;
  background-position:var(--icon-x,0%) var(--icon-y,0%)!important;
  background-size:400% 200%!important;
  background-repeat:no-repeat!important;
  border:0!important;box-shadow:none!important;
 }
 #crew-profile-banner .crew-card-slot-icon.crew-2d-icon[data-set="journey"]{
- background-image:url('./assets/crew-journey-icons.webp')!important;
+ background-image:url('./assets/crew-cosmetic-icons-v2.webp')!important;
 }
 #crew-profile-banner .crew-card-brand-mark.crew-2d-icon{
  --icon-size:41px;width:41px;height:41px;border-radius:0;
@@ -76,3 +76,8 @@
 @media(prefers-reduced-motion:reduce){
  .crew-2d-icon{animation:none!important;transition:none!important}
 }
+
+/* Bright edition: refined glow on dark surfaces, without the old oversized icon panels. */
+.crew-2d-icon{filter:drop-shadow(0 0 4px rgba(68,189,235,.18))}
+#crew-profile-banner .crew-card-slot-icon.crew-2d-icon{filter:drop-shadow(0 0 5px rgba(63,202,244,.24))}
+.crew-profile-utilities .crew-2d-icon{border:0;background-color:transparent}

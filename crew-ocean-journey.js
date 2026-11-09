@@ -166,6 +166,7 @@
   const host=$('crew-journey-regions');
   if(!host)return;
   const state=model(profile);
+  const previousRegion=last?.regionIndex;
   last=state;
   $('crew-journey-level').textContent=state.ready?'LEVEL '+state.current+' / 60':'LEVEL — / 60';
   $('crew-journey-completed').textContent=state.ready?state.highest+' / 60 mốc đã chinh phục':'Đăng ký hoặc liên kết Staff ID để xem tiến trình';
@@ -174,6 +175,8 @@
   if(track)track.setAttribute('aria-valuenow',String(state.ready?state.highest:1));
   $('crew-journey-progress-fill').style.width=done+'%';
   if(!rememberOpen)rememberOpen=new Set([regions[state.regionIndex].id]);
+  if(state.ready&&previousRegion!==undefined&&previousRegion!==state.regionIndex)
+   rememberOpen.add(regions[state.regionIndex].id);
   const wasOpen=new Set(rememberOpen);
   host.replaceChildren();
   for(const region of regions){

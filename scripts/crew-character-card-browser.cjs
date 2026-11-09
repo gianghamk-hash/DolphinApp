@@ -19,7 +19,7 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
    const filepath=path.resolve(root,'.'+u.pathname);
    if(!filepath.startsWith(root+path.sep)||!fs.existsSync(filepath))
     return route.fulfill({status:404,body:'Not found'});
-   const type=filepath.endsWith('.css')?'text/css':filepath.endsWith('.js')?'application/javascript':'text/plain';
+   const type=filepath.endsWith('.css')?'text/css':filepath.endsWith('.js')?'application/javascript':filepath.endsWith('.webp')?'image/webp':'text/plain';
    return route.fulfill({contentType:type,body:fs.readFileSync(filepath)});
   });
   const page=await context.newPage(),errors=[];
@@ -41,6 +41,19 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
     visual:getComputedStyle($('crew-profile-banner'),'::before').backgroundImage,
     slotColumns:getComputedStyle(document.querySelector('.crew-card-equipment')).gridTemplateColumns.split(' ').length};
   });
+  assert.equal(await page.locator('.crew-profile-utility').count(),2,'Only two account utilities remain');
+  assert.equal(await page.locator('#crew-ocean-journey').count(),0,'The cluttered Ocean Journey map is gone');
+  assert.equal(await page.locator('.crew-card-footer-action').count(),0,'No duplicated style/reward footer buttons');
+  const assets=await page.evaluate(async()=>{
+   const files=['assets/crew-profile-icons-v2.webp','assets/crew-cosmetic-icons-v2.webp'];
+   return Promise.all(files.map(src=>new Promise(resolve=>{
+    const img=new Image();img.onload=()=>resolve({src,loaded:true,w:img.naturalWidth,h:img.naturalHeight});
+    img.onerror=()=>resolve({src,loaded:false});img.src=src;
+   })));
+  });
+  assert(assets.every(x=>x.loaded&&x.w===384&&x.h===192),'Both approved bright icon atlases decode at full size');
+  const icon=await page.locator('.crew-profile-utility .crew-2d-icon').first().evaluate(el=>getComputedStyle(el).backgroundImage);
+  assert(icon.includes('crew-profile-icons-v2.webp'),'Account buttons display the bright atlas');
   const mobile=await sample();
   assert(mobile.width<=mobile.viewport+2,'Character Card must not cause horizontal scrolling on phones');
   assert(mobile.card.width<=mobile.viewport,'Card must fit within viewport');

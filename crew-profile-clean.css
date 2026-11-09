@@ -1,0 +1,67 @@
+/* Dolphin Crew Club 2.0 — clean profile.
+   Keeps Character Card, all staff controls, and the daily missions, without
+   duplicate shortcut cards or the retired Ocean Journey map. */
+.crew-profile-utilities{
+ display:grid;grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:11px;margin:13px 0 20px;
+}
+.crew-profile-utility{
+ min-width:0;min-height:79px;padding:10px 13px;
+ display:flex;align-items:center;gap:10px;text-align:left;
+ border:1px solid rgba(100,210,223,.27);border-radius:17px;
+ background:linear-gradient(145deg,rgba(18,61,76,.80),rgba(7,29,40,.93));
+ color:#f1f8f7;text-decoration:none;
+ box-shadow:inset 0 1px rgba(255,255,255,.07);
+ transition:background .18s,border-color .18s,transform .18s;
+}
+.crew-profile-utility:hover{
+ background:linear-gradient(145deg,rgba(27,90,104,.85),rgba(10,43,58,.95));
+ border-color:rgba(247,212,139,.65);transform:translateY(-2px);
+}
+.crew-profile-utility:focus-visible{outline:2px solid #f6d489;outline-offset:3px}
+.crew-profile-utility>.crew-2d-icon{
+ --icon-size:51px;width:51px;height:51px;flex-shrink:0;
+ filter:drop-shadow(0 1px 6px rgba(30,181,226,.25));
+}
+.crew-profile-utility>span:last-child{display:block;min-width:0}
+.crew-profile-utility strong{display:block;color:#f6e4b3;font-size:12px;line-height:1.4;font-weight:850}
+.crew-profile-utility small{display:block;color:#b1d6d6;font-size:10px;line-height:1.35;margin-top:3px}
+#crew-profile-banner .crew-card-footer{justify-content:center;padding-top:12px}
+#crew-profile-banner .crew-card-footer span:last-child{color:#9ccfca;font-size:8px}
+#crew-profile-banner .crew-card-edit{
+ display:inline-flex;align-items:center;justify-content:center;
+ width:37px;height:37px;padding:2px;
+}
+#crew-profile-banner .crew-card-edit>.crew-2d-icon{
+ --icon-size:32px;width:32px;height:32px;border:0;
+}
+#crew-profile-banner .crew-card-reward-open{
+ display:inline-flex;align-items:center;gap:4px;white-space:nowrap;line-height:1.1;
+}
+#crew-profile-banner .crew-card-reward-open>.crew-2d-icon{
+ --icon-size:28px;width:28px;height:28px;
+}
+#staff-daily-title{display:flex;align-items:center;gap:9px;line-height:1.35}
+#staff-daily-title .crew-2d-icon{
+ --icon-size:38px;width:38px;height:38px;flex-shrink:0;
+}
+#staff-reward-highlights[hidden]{display:none!important}
+@media(max-width:450px){
+ .crew-profile-utilities{gap:9px;margin:11px 0 17px}
+ .crew-profile-utility{padding:9px;min-height:70px;gap:6px;border-radius:14px}
+ .crew-profile-utility>.crew-2d-icon{--icon-size:43px;width:43px;height:43px}
+ .crew-profile-utility strong{font-size:10px}
+ .crew-profile-utility small{font-size:9px}
+ #crew-profile-banner .crew-card-edit>.crew-2d-icon{--icon-size:29px;width:29px;height:29px}
+ #staff-daily-title .crew-2d-icon{--icon-size:32px;width:32px;height:32px}
+}
+@media(max-width:355px){
+ .crew-profile-utilities{grid-template-columns:1fr;gap:8px}
+ .crew-profile-utility{min-height:61px;padding:8px 12px}
+ .crew-profile-utility strong{font-size:12px}
+ .crew-profile-utility small{font-size:10px}
+ #crew-profile-banner .crew-card-footer span:last-child{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ .crew-profile-utility{transition:none!important;transform:none!important}
+}

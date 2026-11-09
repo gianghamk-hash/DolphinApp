@@ -93,7 +93,7 @@
      const completed=!!result?.missions?.tasks?.some(t=>t.id===taskId&&t.done);
      if(!result?.awarded&&!completed)throw Error('Máy chủ chưa ghi nhận nhiệm vụ.');
      run.claimed=true;
-     status(result.awarded?'🎉 Hoàn thành nhiệm vụ! +'+result.addedXP+' XP':
+     status(result.awarded?'🎉 Hoàn thành nhiệm vụ! +'+Number(result.addedXP).toLocaleString('vi-VN')+' XP':
       '✅ Nhiệm vụ game đã hoàn thành hôm nay. Không cộng XP hai lần.');
      try{root.dispatchEvent(new CustomEvent('dolphin-arcade-mission-earned',{detail:result}));}catch(_){}
      try{if(root.parent&&root.parent!==root)root.parent.dispatchEvent(new CustomEvent('dolphin-arcade-mission-earned',{detail:result}));}catch(_){}

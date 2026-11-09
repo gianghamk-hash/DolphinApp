@@ -3,9 +3,11 @@
 <head>
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
 <title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-wow-v8">
+<link rel="stylesheet" href="./crew-character-card.css?v=character-v1">
 <link rel="stylesheet" href="./staff-access.css?v=crew-name-policy-v1"><script src="./staff-access.js?v=crew-name-policy-v1" defer></script>
 <script src="./dolphin-navigation.js?v=1.1.88" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-operational-auth-v1" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=crew-global-v9" defer></script><script src="./staff-prestige-client.js?v=1.1.88" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./staff-prestige-profile.js?v=crew-wow-v8" defer></script><script src="./staff-admin-profile.js?v=crew-recovery-v7" defer></script><script src="./staff-xp-manager.js?v=1.1.88" defer></script>
 <script src="./manager-apk-profile.js?v=manager-corrections-v1" defer></script>
+<script src="./crew-character-card.js?v=character-v1" defer></script>
 </head>
 <body>
 <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -18,9 +20,55 @@
 </defs></svg>
 <main>
 <header class="page-heading"><div><p class="eyebrow">Dolphin · Crew club</p><h1>Hồ sơ nhân viên</h1></div><span class="page-monogram" aria-hidden="true">D.</span></header>
-<section class="profile-hero card" id="crew-profile-banner" data-banner="default" aria-label="Hồ sơ và cấp độ">
- <div class="identity"><span id="profile-avatar" class="hero-avatar" aria-hidden="true">🐬</span><div class="identity-copy"><h2 id="profile-name" class="name">Hồ sơ của bạn</h2><p id="profile-title" class="profile-title" hidden></p><div class="identity-meta"><span id="employee-id" class="id">Chưa đăng ký</span><span id="profile-state" class="pill">Đang kết nối…</span></div></div><button type="button" class="icon-button" data-open-dialog="profile-edit-dialog" aria-label="Chỉnh sửa hồ sơ"><svg class="icon"><use href="#i-user"/></svg></button></div>
- <div id="staff-progress-card" class="progress-summary"><div class="section-line"><span class="eyebrow">Hành trình của bạn</span><span id="staff-level-tag" class="level-tag">LEVEL —</span></div><div id="staff-xp-summary" aria-live="polite">Đang tải cấp độ…</div><div id="staff-xp-track" role="progressbar" aria-label="Tiến độ cấp độ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="staff-xp-fill"></div></div><div class="progress-foot"><span id="staff-next-level">XP được lưu theo Staff ID</span><button type="button" class="text-button" data-open-dialog="rewards-dialog">Mốc thưởng ↗</button></div><div class="next-reward" id="staff-next-reward" aria-live="polite">🎁 Phần thưởng tiếp theo đang tải…</div></div>
+<section class="profile-hero card crew-character-card" id="crew-profile-banner" data-banner="default" data-crew-rank="bronze" aria-label="Thẻ nhân vật Dolphin Crew Club">
+ <div class="crew-card-seascape" aria-hidden="true">
+  <svg viewBox="0 0 800 320" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+   <defs><linearGradient id="crew-sea-line" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#52b8c5" stop-opacity="0"/><stop offset=".45" stop-color="#8de4e3" stop-opacity=".6"/><stop offset="1" stop-color="#e6c887" stop-opacity=".2"/></linearGradient></defs>
+   <path d="M-30 196C110 143 209 249 336 188S612 154 830 211M-30 218C115 173 249 267 378 209S637 173 830 245M-30 241C129 203 272 290 410 233S682 207 830 267" stroke="url(#crew-sea-line)" stroke-width="1.5" fill="none"/>
+   <path d="M535 35c45 20 91 43 140 76M552 57c32 13 65 30 96 50" stroke="#d6c28a" stroke-width="1" opacity=".35" fill="none"/>
+   <circle cx="687" cy="56" r="32" stroke="#f4d895" stroke-opacity=".22" fill="none"/><circle cx="687" cy="56" r="54" stroke="#f4d895" stroke-opacity=".09" fill="none"/>
+   <g fill="#f4daa2"><circle cx="520" cy="39" r="1.8" opacity=".8"/><circle cx="750" cy="89" r="1.5" opacity=".65"/><circle cx="596" cy="112" r="1.5" opacity=".65"/></g>
+  </svg>
+ </div>
+ <header class="crew-card-topline">
+  <span class="crew-card-brand"><span class="crew-card-brand-mark" aria-hidden="true">✦</span><span>DOLPHIN <strong>CREW CLUB</strong><small>OCEAN IDENTITY · PERSONAL EDITION</small></span></span>
+  <span class="crew-card-header-right"><span class="crew-card-rank-tag" id="crew-card-rank-badge">BRONZE RANK</span><button type="button" class="icon-button crew-card-edit" data-open-dialog="profile-edit-dialog" aria-label="Chỉnh sửa hồ sơ"><svg class="icon"><use href="#i-user"/></svg></button></span>
+ </header>
+ <div class="identity crew-card-identity">
+  <div class="crew-card-portrait">
+   <div class="crew-card-portrait-halo" aria-hidden="true"></div>
+   <div class="crew-card-dial" id="crew-card-xp-dial" aria-hidden="true"><span class="crew-card-dial-track"></span></div>
+   <span id="profile-avatar" class="hero-avatar" aria-hidden="true">🐬</span>
+   <span class="crew-card-portrait-bottom" id="crew-card-portrait-bottom">CREW MEMBER</span>
+  </div>
+  <div class="identity-copy crew-card-copy">
+   <p class="crew-card-copy-eyebrow">✦ YOUR OCEAN LEGACY</p>
+   <h2 id="profile-name" class="name">Hồ sơ của bạn</h2>
+   <p id="profile-title" class="profile-title" hidden></p>
+   <div class="identity-meta"><span id="employee-id" class="id">Chưa đăng ký</span><span id="profile-state" class="pill">Đang kết nối…</span></div>
+   <div class="crew-card-level" aria-label="Cấp độ nhân viên">
+    <span class="crew-card-level-name">LEVEL</span>
+    <strong id="crew-card-level-number">—</strong>
+    <span class="crew-card-level-cap">/ 60</span>
+    <span class="crew-card-level-rule" aria-hidden="true"></span>
+    <span id="crew-card-rank-name" class="crew-card-level-rank">BRONZE</span>
+   </div>
+  </div>
+ </div>
+ <div class="crew-card-equipment" aria-label="Các hiệu ứng nhân vật đang trang bị">
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">◈</span><span class="crew-card-slot-copy"><small>FRAME</small><strong id="crew-card-equipped-frame">Chưa trang bị</strong></span></button>
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">✧</span><span class="crew-card-slot-copy"><small>AURA</small><strong id="crew-card-equipped-aura">Chưa trang bị</strong></span></button>
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">↝</span><span class="crew-card-slot-copy"><small>MOTION</small><strong id="crew-card-equipped-motion">Chưa trang bị</strong></span></button>
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">♛</span><span class="crew-card-slot-copy"><small>TITLE</small><strong id="crew-card-equipped-title">Chưa trang bị</strong></span></button>
+ </div>
+ <div id="staff-progress-card" class="progress-summary crew-card-progress">
+  <div class="section-line"><span class="eyebrow">✦ HÀNH TRÌNH CỦA BẠN</span><span id="staff-level-tag" class="level-tag">LEVEL —</span></div>
+  <div class="crew-card-progress-stats"><div id="staff-xp-summary" aria-live="polite">Đang tải cấp độ…</div><span id="crew-card-xp-percent" class="crew-card-xp-percent">0%</span></div>
+  <div id="staff-xp-track" role="progressbar" aria-label="Tiến độ cấp độ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="staff-xp-fill"></div></div>
+  <div class="progress-foot"><span id="staff-next-level">XP được lưu theo Staff ID</span><button type="button" class="text-button" data-open-dialog="rewards-dialog">Mốc thưởng ↗</button></div>
+  <div class="next-reward" id="staff-next-reward" aria-live="polite">🎁 Phần thưởng tiếp theo đang tải…</div>
+ </div>
+ <footer class="crew-card-footer"><span>◈ DOLPHIN CRUISE · CREW IDENTITY</span><span>EXPLORE · GROW · SHINE</span></footer>
 </section>
 <nav class="quick-actions" aria-label="Cài đặt hồ sơ">
  <button type="button" data-open-dialog="profile-edit-dialog"><span class="action-icon"><svg class="icon"><use href="#i-user"/></svg></span><span>Hồ sơ</span></button>

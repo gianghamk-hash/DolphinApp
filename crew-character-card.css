@@ -1,0 +1,286 @@
+/* DOLPHIN CREW CLUB 2.0 — Character Card.
+ * Pure presentation: the verified XP, Rank, equipped cosmetics and avatar
+ * remain owned by existing Staff/Profile + Prestige modules.
+ * The player's chosen banner remains the underlying card background.
+ */
+#crew-profile-banner.crew-character-card{
+ --crew-rank-color:#d7a16e;
+ --crew-rank-soft:rgba(215,161,110,.26);
+ --crew-rank-glow:rgba(215,161,110,.18);
+ --crew-progress:0%;
+ position:relative;isolation:isolate;overflow:hidden;
+ width:100%;padding:0;min-width:0;
+ border:1px solid rgba(225,197,137,.53);border-radius:29px;
+ color:#f1f7f4;
+ box-shadow:0 18px 45px rgba(0,9,17,.32),inset 0 1px rgba(255,255,255,.1);
+ background-color:#071d29;
+}
+#crew-profile-banner.crew-character-card[data-crew-rank="silver"]{--crew-rank-color:#a7d5ef;--crew-rank-soft:rgba(167,213,239,.24);--crew-rank-glow:rgba(167,213,239,.16)}
+#crew-profile-banner.crew-character-card[data-crew-rank="gold"]{--crew-rank-color:#f0c875;--crew-rank-soft:rgba(240,200,117,.28);--crew-rank-glow:rgba(240,200,117,.19)}
+#crew-profile-banner.crew-character-card[data-crew-rank="platinum"]{--crew-rank-color:#7ee6dc;--crew-rank-soft:rgba(126,230,220,.23);--crew-rank-glow:rgba(126,230,220,.18)}
+#crew-profile-banner.crew-character-card[data-crew-rank="diamond"]{--crew-rank-color:#aea8ff;--crew-rank-soft:rgba(174,168,255,.28);--crew-rank-glow:rgba(174,168,255,.19)}
+#crew-profile-banner.crew-character-card[data-crew-rank="legend"]{--crew-rank-color:#ffdfa0;--crew-rank-soft:rgba(255,223,160,.31);--crew-rank-glow:rgba(255,217,128,.27)}
+#crew-profile-banner.crew-character-card::before{
+ content:"";position:absolute;inset:0;z-index:0;pointer-events:none;
+ background:radial-gradient(ellipse at 20% 19%,var(--crew-rank-glow),transparent 53%),
+ radial-gradient(ellipse at 90% 15%,rgba(105,228,222,.14),transparent 48%),
+ linear-gradient(140deg,rgba(2,23,33,.4),rgba(2,19,32,.75) 62%,rgba(4,31,40,.75));
+}
+#crew-profile-banner.crew-character-card::after{
+ content:"";position:absolute;inset:6px;z-index:0;pointer-events:none;
+ border:1px solid rgba(255,230,175,.13);border-radius:24px;
+}
+#crew-profile-banner.crew-character-card> :not(.crew-card-seascape){position:relative;z-index:2}
+#crew-profile-banner .crew-card-seascape{
+ position:absolute;z-index:1;inset:0 0 auto;pointer-events:none;
+ height:min(59%,335px);opacity:.78;overflow:hidden;
+}
+#crew-profile-banner .crew-card-seascape svg{display:block;width:100%;height:100%}
+#crew-profile-banner .crew-card-topline{
+ display:flex;align-items:center;justify-content:space-between;gap:14px;
+ min-height:80px;padding:19px 24px 15px;
+ border-bottom:1px solid rgba(245,216,159,.13);
+}
+#crew-profile-banner .crew-card-brand{display:flex;align-items:center;gap:11px;min-width:0;white-space:normal;
+ font-size:12px;line-height:1.1;letter-spacing:.17em;font-weight:750;color:#f8e1ab}
+#crew-profile-banner .crew-card-brand strong{font-weight:900}
+#crew-profile-banner .crew-card-brand small{
+ display:block;margin-top:6px;letter-spacing:.16em;font-size:8px;font-weight:700;color:#a5d1d4
+}
+#crew-profile-banner .crew-card-brand-mark{
+ display:grid;place-items:center;width:37px;height:37px;flex-shrink:0;
+ border:1px solid rgba(236,207,143,.6);border-radius:12px;
+ background:linear-gradient(135deg,rgba(237,197,121,.24),rgba(10,71,89,.38));
+ color:#ffe4a5;font-size:20px;box-shadow:0 0 15px var(--crew-rank-glow)
+}
+#crew-profile-banner .crew-card-header-right{display:flex;align-items:center;gap:10px}
+#crew-profile-banner .crew-card-rank-tag{
+ border:1px solid var(--crew-rank-soft);background:var(--crew-rank-soft);
+ color:var(--crew-rank-color);padding:7px 10px;border-radius:999px;
+ font-size:9px;letter-spacing:.12em;font-weight:900;white-space:nowrap;
+ text-shadow:0 0 13px var(--crew-rank-glow);
+}
+#crew-profile-banner .crew-card-edit{
+ width:35px;height:35px;border-radius:12px;border-color:rgba(217,231,230,.2);
+ color:#dceeea;background:rgba(5,30,42,.55);
+}
+#crew-profile-banner .crew-card-edit:hover{border-color:var(--crew-rank-color)}
+#crew-profile-banner .crew-card-identity{
+ display:grid;grid-template-columns:minmax(166px,205px) minmax(0,1fr);
+ gap:18px;align-items:center;padding:24px 27px 25px;min-height:245px;
+}
+#crew-profile-banner .crew-card-portrait{
+ height:183px;display:grid;place-items:center;position:relative;
+ isolation:isolate;min-width:0;
+}
+#crew-profile-banner .crew-card-portrait-halo{
+ position:absolute;z-index:0;left:50%;top:46%;width:145px;height:145px;
+ transform:translate(-50%,-50%);border-radius:50%;
+ background:radial-gradient(circle,var(--crew-rank-soft),rgba(65,209,211,.13) 46%,transparent 70%);
+ filter:blur(10px);
+ animation:crew-card-halo-breathe 5s ease-in-out infinite;
+}
+#crew-profile-banner .crew-card-dial{
+ position:absolute;top:46%;left:50%;z-index:1;width:158px;height:158px;
+ transform:translate(-50%,-50%);border-radius:50%;padding:5px;
+ background:conic-gradient(from -90deg,var(--crew-rank-color) 0 var(--crew-progress),rgba(206,230,229,.16) var(--crew-progress) 100%);
+ box-shadow:0 0 0 1px rgba(238,211,153,.15),0 0 30px var(--crew-rank-glow);
+}
+#crew-profile-banner .crew-card-dial::before{
+ content:"";position:absolute;inset:5px;border-radius:50%;
+ background:linear-gradient(140deg,rgba(7,35,47,.98),rgba(5,21,31,.97));
+ box-shadow:inset 0 0 0 1px rgba(230,212,173,.13);
+}
+#crew-profile-banner .crew-card-dial-track{
+ position:absolute;inset:-8px;pointer-events:none;border:1px dashed rgba(229,207,157,.39);
+ border-radius:50%;animation:crew-card-orbit 38s linear infinite;
+}
+#crew-profile-banner #profile-avatar{
+ position:relative;z-index:4;display:grid;place-items:center;
+ width:108px;height:108px;flex-shrink:0;font-size:61px;line-height:1;
+ border-radius:32px;overflow:visible;isolation:isolate;
+ background:radial-gradient(circle at 25% 20%,rgba(171,238,234,.18),transparent 50%),
+ linear-gradient(145deg,rgba(11,71,86,.94),rgba(6,27,39,.98));
+ filter:drop-shadow(0 0 11px var(--crew-rank-glow));
+}
+#crew-profile-banner .crew-card-portrait-bottom{
+ position:absolute;z-index:6;bottom:-3px;left:50%;transform:translateX(-50%);
+ width:max-content;max-width:100%;padding:5px 13px;
+ border:1px solid var(--crew-rank-soft);border-radius:20px;
+ background:linear-gradient(120deg,rgba(10,41,49,.98),rgba(12,28,44,.98));
+ color:var(--crew-rank-color);font-size:9px;letter-spacing:.16em;font-weight:850;
+ text-align:center;white-space:nowrap;box-shadow:0 4px 14px #00141c88;
+}
+#crew-profile-banner .crew-card-copy{position:relative;min-width:0;flex:initial}
+#crew-profile-banner .crew-card-copy-eyebrow{
+ color:#aad8d6;font-size:9px;letter-spacing:.24em;font-weight:750;margin:0 0 10px;
+}
+#crew-profile-banner #profile-name{
+ font-size:clamp(22px,3vw,31px);font-weight:880;letter-spacing:-.045em;
+ line-height:1.22;color:#fff7e9;overflow-wrap:anywhere;
+ text-shadow:0 2px 12px rgba(2,8,15,.4);
+}
+#crew-profile-banner #profile-title{
+ color:var(--crew-rank-color);font-size:12px;line-height:1.45;letter-spacing:.07em;
+ margin-top:7px;
+}
+#crew-profile-banner .identity-meta{margin-top:13px;gap:8px}
+#crew-profile-banner .identity-meta .id{
+ font-size:11px;letter-spacing:.07em;color:#aee5df;
+ padding:6px 9px;background:rgba(14,53,63,.6);
+ border:1px solid rgba(104,195,203,.23);border-radius:8px;
+}
+#crew-profile-banner .identity-meta .pill{
+ font-size:10px;color:#d3e5df;border-color:rgba(219,233,231,.2);
+ background:rgba(6,24,37,.35);padding:5px 10px;
+}
+#crew-profile-banner .crew-card-level{
+ display:flex;align-items:baseline;gap:8px;margin-top:17px;
+ color:#f6ebcf;min-width:0;
+}
+#crew-profile-banner .crew-card-level-name{
+ font-size:10px;color:#a7cfcc;letter-spacing:.18em;font-weight:800;
+}
+#crew-profile-banner .crew-card-level strong{
+ font:800 42px/1 Georgia,"Times New Roman",serif;letter-spacing:-.03em;
+ color:var(--crew-rank-color);text-shadow:0 0 17px var(--crew-rank-glow);
+}
+#crew-profile-banner .crew-card-level-cap{font-size:12px;color:#b7cece;font-weight:650}
+#crew-profile-banner .crew-card-level-rule{
+ height:1px;background:linear-gradient(90deg,var(--crew-rank-soft),transparent);
+ flex:1;max-width:55px;align-self:center;
+}
+#crew-profile-banner .crew-card-level-rank{
+ font-size:11px;font-weight:900;letter-spacing:.13em;color:var(--crew-rank-color);
+}
+#crew-profile-banner .crew-card-equipment{
+ display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;
+ margin:0 23px 20px;
+}
+#crew-profile-banner .crew-card-slot{
+ display:flex;align-items:center;gap:8px;min-width:0;
+ background:linear-gradient(145deg,rgba(9,47,59,.8),rgba(8,30,43,.8));
+ border:1px solid rgba(172,224,219,.16);border-radius:13px;
+ padding:10px 9px;color:#e7f7ef;text-align:left;
+ transition:transform .18s ease,border-color .18s ease,box-shadow .18s ease;
+}
+#crew-profile-banner .crew-card-slot:hover{
+ border-color:var(--crew-rank-color);transform:translateY(-2px);
+ box-shadow:0 5px 15px rgba(0,10,19,.25);
+}
+#crew-profile-banner .crew-card-slot:focus-visible{outline:2px solid var(--crew-rank-color);outline-offset:2px}
+#crew-profile-banner .crew-card-slot-icon{
+ display:grid;place-items:center;flex-shrink:0;width:31px;height:31px;
+ border-radius:10px;background:var(--crew-rank-soft);color:var(--crew-rank-color);
+ font-size:19px;
+}
+#crew-profile-banner .crew-card-slot-copy{display:block;min-width:0;max-width:100%}
+#crew-profile-banner .crew-card-slot-copy small{
+ display:block;font-size:8px;line-height:1.1;letter-spacing:.13em;color:#a9cbc8;font-weight:850
+}
+#crew-profile-banner .crew-card-slot-copy strong{
+ display:block;margin-top:5px;font-size:10px;font-weight:850;color:#f7e9ca;
+ overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#crew-profile-banner .crew-card-progress{
+ padding:17px 22px 17px;margin:0 23px;
+ border:1px solid rgba(223,200,150,.22);border-radius:18px;
+ background:linear-gradient(135deg,rgba(5,26,37,.76),rgba(10,48,57,.58));
+ box-shadow:inset 0 1px rgba(249,238,198,.05);
+}
+#crew-profile-banner .crew-card-progress .eyebrow{
+ color:#c5dfd6;font-size:9px;letter-spacing:.12em;
+}
+#crew-profile-banner .crew-card-progress .level-tag{
+ color:var(--crew-rank-color);letter-spacing:.08em;font-size:10px;
+}
+#crew-profile-banner .crew-card-progress-stats{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-top:7px}
+#crew-profile-banner #staff-xp-summary{
+ font-size:13px;line-height:1.45;font-weight:750;color:#e2f3eb;
+ min-width:0;overflow-wrap:anywhere;margin-top:0;
+}
+#crew-profile-banner .crew-card-xp-percent{
+ font-size:14px;font-weight:900;color:var(--crew-rank-color);white-space:nowrap;
+ font-variant-numeric:tabular-nums;
+}
+#crew-profile-banner #staff-xp-track{
+ height:10px;margin:12px 0 11px;border-radius:30px;
+ background:rgba(182,214,216,.15);border:1px solid rgba(216,234,231,.08);
+ overflow:hidden;
+}
+#crew-profile-banner #staff-xp-fill{
+ background:linear-gradient(90deg,#4fbab5,var(--crew-rank-color) 75%,#ffecc2);
+ box-shadow:0 0 14px var(--crew-rank-glow);transition:width .55s cubic-bezier(.2,.75,.3,1);
+}
+#crew-profile-banner .progress-foot{align-items:center;gap:10px;font-size:11px;color:#b6d1cf;flex-wrap:wrap}
+#crew-profile-banner .progress-foot .text-button{color:var(--crew-rank-color);font-weight:850}
+#crew-profile-banner #staff-next-reward{
+ margin-top:11px;padding:10px 12px;line-height:1.5;
+ border:1px solid var(--crew-rank-soft);border-radius:11px;
+ color:#f4dc9f;background:var(--crew-rank-soft);font-weight:650;
+}
+#crew-profile-banner .crew-card-footer{
+ display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;
+ padding:18px 25px 21px;
+ font-size:8px;letter-spacing:.13em;font-weight:750;color:#9bbdbd;
+}
+#crew-profile-banner .crew-card-footer span:last-child{color:var(--crew-rank-color)}
+@keyframes crew-card-orbit{to{transform:rotate(360deg)}}
+@keyframes crew-card-halo-breathe{
+ 0%,100%{opacity:.65;filter:blur(10px)}
+ 50%{opacity:1;filter:blur(16px)}
+}
+/* Tablet portrait */
+@media(max-width:650px){
+ #crew-profile-banner .crew-card-topline{padding:17px 17px 13px;min-height:69px}
+ #crew-profile-banner .crew-card-identity{grid-template-columns:minmax(135px,170px) minmax(0,1fr);gap:10px;padding:18px 15px 20px}
+ #crew-profile-banner .crew-card-portrait{height:169px}
+ #crew-profile-banner .crew-card-dial{width:144px;height:144px}
+ #crew-profile-banner #profile-avatar{width:101px;height:101px;font-size:56px}
+ #crew-profile-banner .crew-card-equipment{margin-inline:14px}
+ #crew-profile-banner .crew-card-progress{margin-inline:14px}
+ #crew-profile-banner .crew-card-footer{padding:14px 16px 17px}
+}
+/* Phone — portrait remains the visual focal point, metadata stays readable. */
+@media(max-width:450px){
+ #crew-profile-banner.crew-character-card{border-radius:24px}
+ #crew-profile-banner.crew-character-card::after{inset:5px;border-radius:20px}
+ #crew-profile-banner .crew-card-topline{padding:15px 13px 13px;gap:6px}
+ #crew-profile-banner .crew-card-brand{font-size:10px;letter-spacing:.07em;gap:7px}
+ #crew-profile-banner .crew-card-brand small{font-size:7px;letter-spacing:.07em}
+ #crew-profile-banner .crew-card-brand-mark{width:30px;height:30px;font-size:17px;border-radius:9px}
+ #crew-profile-banner .crew-card-header-right{gap:6px}
+ #crew-profile-banner .crew-card-rank-tag{font-size:8px;padding:6px 8px;letter-spacing:.04em}
+ #crew-profile-banner .crew-card-edit{width:31px;height:31px}
+ #crew-profile-banner .crew-card-identity{display:flex;flex-direction:column;text-align:center;gap:4px;padding:15px 13px 13px}
+ #crew-profile-banner .crew-card-portrait{height:166px;width:100%;max-width:220px}
+ #crew-profile-banner .crew-card-portrait-bottom{bottom:0}
+ #crew-profile-banner .crew-card-copy{width:100%;text-align:center}
+ #crew-profile-banner .crew-card-copy-eyebrow{font-size:8px;margin:7px 0}
+ #crew-profile-banner #profile-name{font-size:25px;line-height:1.2}
+ #crew-profile-banner #profile-title{margin-top:5px}
+ #crew-profile-banner .identity-meta{justify-content:center;margin-top:12px}
+ #crew-profile-banner .crew-card-level{justify-content:center;margin-top:14px}
+ #crew-profile-banner .crew-card-level strong{font-size:37px}
+ #crew-profile-banner .crew-card-level-rule{flex:0 0 19px}
+ #crew-profile-banner .crew-card-equipment{grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;margin:4px 11px 14px}
+ #crew-profile-banner .crew-card-slot{padding:9px 10px}
+ #crew-profile-banner .crew-card-slot-copy strong{font-size:10px}
+ #crew-profile-banner .crew-card-progress{padding:14px 12px;margin:0 11px;border-radius:14px}
+ #crew-profile-banner #staff-xp-summary{font-size:11px}
+ #crew-profile-banner .crew-card-progress-stats{align-items:flex-start}
+ #crew-profile-banner .crew-card-xp-percent{font-size:12px}
+ #crew-profile-banner .crew-card-footer{padding:14px 13px 16px;font-size:7px;letter-spacing:.07em}
+}
+@media(max-width:355px){
+ #crew-profile-banner .crew-card-brand small{display:none}
+ #crew-profile-banner .crew-card-rank-tag{font-size:7px}
+ #crew-profile-banner .crew-card-slot-icon{width:25px;height:25px;font-size:16px}
+ #crew-profile-banner .crew-card-slot{gap:6px;padding:8px 7px}
+ #crew-profile-banner .crew-card-footer span:last-child{display:none}
+}
+@media(prefers-reduced-motion:reduce){
+ #crew-profile-banner .crew-card-dial-track,#crew-profile-banner .crew-card-portrait-halo{animation:none!important}
+ #crew-profile-banner .crew-card-slot{transition:none!important;transform:none!important}
+ #crew-profile-banner #staff-xp-fill{transition:none!important}
+}

@@ -8,7 +8,7 @@
  const sessionSeen=new Map(),sessionMoments=new Map();
  const rankBands=[{min:41,name:'Legend'},{min:31,name:'Diamond'},{min:21,name:'Platinum'},
   {min:11,name:'Gold'},{min:6,name:'Silver'},{min:1,name:'Bronze'}];
- const rankAt=lv=>rankBands.find(x=>lv>=lv.min).name;
+ const rankAt=lv=>rankBands.find(x=>lv>=x.min).name;
  const validStaff=id=>typeof id==='string'&&/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(id);
  const between=(n,a,b)=>Number.isInteger(n)&&n>=a&&n<=b;
  function getItem(k){try{return root.localStorage?.getItem(k)??sessionSeen.get(k)??null;}catch(_){return sessionSeen.get(k)??null;}}

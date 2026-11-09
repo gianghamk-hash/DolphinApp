@@ -198,7 +198,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 </div>
 
 <!-- GAME AREA -->
-<div id="dailyQuestStatus" role="status" aria-live="polite" style="text-align:center;padding:2px 7px;font-size:10px;color:#fbd77a">🐍 Đạt 100 điểm trong một ván: +500 XP/ngày</div>
+<div id="dailyQuestStatus" role="status" aria-live="polite" style="text-align:center;padding:2px 7px;font-size:10px;color:#fbd77a">🐍 Đạt 200 điểm trong một ván: +1.500 XP/ngày</div>
 <div class="game-area" id="gameArea">
   <div class="board-wrap" id="boardWrap">
     <div id="board"></div>
@@ -266,7 +266,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 <script src="../../dolphin-leaderboard.js?v=2"></script>
 <script src="../../staff-id.js?v=crew-daily-game-v1"></script>
 <script src="../../crew-arcade-proof.js?v=1"></script>
-<script src="../../crew-arcade-missions.js?v=1"></script>
+<script src="../../crew-arcade-missions.js?v=2"></script>
 <script>
 'use strict';
 const SIZE = 20;
@@ -367,7 +367,7 @@ function step(){
   snake.unshift(head);
   if (food && head.x === food.x && head.y === food.y){
     score += 10; playEat(); showFloatAt(head.x, head.y); spawnFood();
-    if(score>=100)void window.DolphinCrewArcade?.claim(arcadeRun,score);
+    if(score>=200)void window.DolphinCrewArcade?.claim(arcadeRun,score);
     speed = Math.max(MIN_SPEED, speed - SPEED_STEP);
   } else snake.pop();
   render(); updateHUD(); scheduleNext();

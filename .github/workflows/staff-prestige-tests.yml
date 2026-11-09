@@ -12,6 +12,7 @@ on:
       - 'functions/crew-arcade-proof.cjs'
       - 'scripts/verify-firebase-source-boundary.cjs'
       - 'crew-arcade-missions.js'
+      - 'scripts/crew-arcade-missions.test.cjs'
       - 'giaitri/games/snake.html'
       - 'giaitri/games/game2048.html'
       - 'functions/staff-xp-reconcile.js'
@@ -61,4 +62,4 @@ jobs:
           node --check staff-xp-manager.js
           node --check theme-system.js
       - name: Staff XP and archival reconciliation tests
-        run: node --test scripts/staff-levelup.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs
+        run: node --test scripts/staff-levelup.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs scripts/crew-arcade-missions.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs

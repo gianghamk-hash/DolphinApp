@@ -38,7 +38,7 @@ Công thức: **XP nghiệp vụ = điểm công việc × 1.000** (trước đ�
 | Mở một Lounge | 750 |
 | Nhận một order | 450 |
 | Đổi avatar | 300 |
-| Rắn offline đạt 100 điểm hợp lệ | 1.500 |
+| Rắn offline đạt 200 điểm hợp lệ | 1.500 |
 | 2048 đạt 1.000 điểm hợp lệ | 3.000 |
 
 Tổng XP thưởng khi hoàn thành cả 8 nhiệm vụ: 8.700–9.600 XP/ngày tùy chuỗi điểm danh. Chỉ các lượt nhận thưởng mới sau khi triển khai áp dụng mức gấp 3; không cộng lại XP đã nhận trước đó. XP nghiệp vụ và doanh thu giữ nguyên.

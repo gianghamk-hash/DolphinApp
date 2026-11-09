@@ -74,7 +74,7 @@ exports.staffCheckInDaily=onCall(opts,async req=>{
  */
 const arcade=require('./crew-arcade-proof.cjs');
 const arcadeRules=Object.freeze({
- snake:{task:'snake_100',threshold:100,minMs:9000},
+ snake:{task:'snake_100',threshold:200,minMs:9000},
  '2048':{task:'game2048_1000',threshold:1000,minMs:15000}
 });
 exports.staffStartArcadeMission=onCall(opts,async req=>{
@@ -102,19 +102,27 @@ exports.staffFinishArcadeMission=onCall(opts,async req=>{
  const challenge=(await ref.once('value')).val();
  const now=Date.now();
  if(!challenge||challenge.employeeId!==employeeId||challenge.challengeId!==id||
-    challenge.used||challenge.expiresAt<now||now-challenge.startedAt<rule.minMs)
+    challenge.expiresAt<now||(!challenge.used&&now-challenge.startedAt<rule.minMs))
   throw new HttpsError('failed-precondition','Ván chơi chưa hợp lệ hoặc đã kết thúc.');
+ // A network timeout may happen AFTER the challenge was consumed but BEFORE
+ // XP was saved. Replays of exactly the same verified result must be retryable.
+ // Changed moves, score or challenge ID must never reuse that receipt.
+ const proofHash=crypto.createHash('sha256').update(JSON.stringify([game,id,moves,score])).digest('hex');
+ if(challenge.used&&challenge.proofHash!==proofHash)
+  throw new HttpsError('failed-precondition','Ván đã sử dụng cho kết quả khác.');
  const result=arcade.replay(game,challenge.seed,moves);
  if(!result.valid||result.score!==score||score<rule.threshold)
   throw new HttpsError('permission-denied','Điểm số không khớp diễn biến ván chơi.');
- const claimed=await ref.transaction(v=>{
+ const consumed=await ref.transaction(v=>{
   if(v===null)return null; // Retry on cold-cache snapshot before validating challenge.
-  return v.challengeId===id&&v.employeeId===employeeId&&!v.used&&v.expiresAt>=now
-   ?{...v,used:true,usedAt:now}:undefined;
+  if(v.challengeId!==id||v.employeeId!==employeeId||v.expiresAt<now||v.used)return;
+  return {...v,used:true,usedAt:now,proofHash,score};
  },undefined,false);
- if(!claimed.committed||claimed.snapshot?.val()?.challengeId!==id||
-    claimed.snapshot?.val()?.used!==true)
-  throw new HttpsError('already-exists','Ván chơi đã được gửi.');
+ const saved=consumed.snapshot?.val();
+ if(!saved?.used||saved.challengeId!==id||saved.proofHash!==proofHash)
+  throw new HttpsError('failed-precondition','Ván chơi đã thay đổi, hết hạn hoặc dùng cho kết quả khác.');
+ // award() is itself transactional and once-per-task-per-Vietnam-day.
+ // If the first request crashed here, retry safely completes the missing XP.
  const bonus=await award(employeeId,rule.task);
  return {...bonus,game,score,verified:true};
 });

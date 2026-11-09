@@ -14,6 +14,7 @@ on:
       - 'functions/crew-arcade-proof.cjs'
       - 'scripts/verify-firebase-source-boundary.cjs'
       - 'crew-arcade-missions.js'
+      - 'scripts/crew-arcade-missions.test.cjs'
       - 'giaitri/games/snake.html'
       - 'giaitri/games/game2048.html'
       - 'functions/staff-xp-rank-sync.js'
@@ -59,12 +60,13 @@ jobs:
           node scripts/verify-firebase-source-boundary.cjs
           node --check functions/crew-arcade-proof.cjs
           node --check functions/staff-daily-missions.js
+          node --check crew-arcade-missions.js
           node -e "const api=require('./functions/index.js');if(typeof api.staffStartArcadeMission!=='function'||typeof api.staffFinishArcadeMission!=='function')throw Error('Missing Cloud Functions arcade exports')"
           node --check functions/staff-daily-core.cjs
           node --check staff-prestige-profile.js
           node --check dolphin-avatars.js
           node scripts/check-service-pages.cjs
-          node --test functions/staff-xp-rank-sync.test.cjs scripts/crew-v5.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-engine.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs functions/staff-xp-actions.test.cjs
+          node --test functions/staff-xp-rank-sync.test.cjs scripts/crew-v5.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-engine.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs scripts/crew-arcade-missions.test.cjs functions/staff-xp-actions.test.cjs
       - name: Keep legacy XP triggers disabled
         env:
           STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}

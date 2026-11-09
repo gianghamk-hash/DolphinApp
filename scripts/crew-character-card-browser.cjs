@@ -50,6 +50,10 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert.equal(mobile.frame,'Silver');assert.equal(mobile.rank,'PLATINUM RANK');
   assert.match(mobile.visual,/gradient/,'Card should preserve rich ocean ambient light');
   assert(mobile.portrait.width>=95,'Hero avatar must remain large enough for animated rings');
+  await page.setViewportSize({width:320,height:700});
+  const compact=await sample();
+  assert(compact.width<=compact.viewport+2,'320px screen must not scroll horizontally');
+  assert(compact.card.width<=compact.viewport,'320px card should fit within viewport');
   await page.setViewportSize({width:1040,height:900});
   const desktop=await sample();
   assert(desktop.width<=desktop.viewport+2,'Desktop should not overflow');

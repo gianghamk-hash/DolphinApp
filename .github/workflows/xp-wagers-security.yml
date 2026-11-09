@@ -1,0 +1,33 @@
+name: Verified XP Wager Core — Safe Math
+on:
+  pull_request:
+    paths:
+      - 'functions/wagers/**'
+      - 'docs/VERIFIED_XP_WAGERS_SECURITY_PLAN.md'
+      - '.github/workflows/xp-wagers-security.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'functions/wagers/**'
+      - '.github/workflows/xp-wagers-security.yml'
+permissions:
+  contents: read
+jobs:
+  validate-inert-core:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: functions
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify JavaScript syntax
+        run: node --check wagers/rules.cjs && node --check wagers/rules.test.cjs
+      - name: Exercise zero-sum and level transition rules
+        run: node --test wagers/rules.test.cjs
+      - name: Refuse accidental production callable exports
+        run: |
+          ! grep -Fq "wagers/rules.cjs" index.js
+          ! grep -Fq "wagers/rules.cjs" staff-profile.js

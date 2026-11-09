@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.89",
+      "releaseDate": "2026-11-09T05:42:12.829Z",
+      "summary": "feat(crew): ship premium Dolphin Crew Club Character Card",
+      "details": [
+        "feat(crew): ship premium Dolphin Crew Club Character Card"
+      ]
+    },
+    {
       "version": "1.1.88",
       "releaseDate": "2026-11-09T04:46:16.284Z",
       "summary": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission",
@@ -390,14 +398,6 @@
       "summary": "feat(staff): mandatory approved access with locked names and avatar registration",
       "details": [
         "feat(staff): mandatory approved access with locked names and avatar registration"
-      ]
-    },
-    {
-      "version": "1.1.39",
-      "releaseDate": "2026-11-02T06:03:41.292Z",
-      "summary": "feat(crew-club): animated V4 rarity orbits and Mythic twin stars",
-      "details": [
-        "feat(crew-club): animated V4 rarity orbits and Mythic twin stars"
       ]
     }
   ]

@@ -1,18 +1,18 @@
 {
-  "version": "1.1.89",
-  "previousVersion": "1.1.88",
-  "commit": "2b39cb3",
-  "previousCommit": "366b258",
-  "buildDate": "2026-11-09T05:42:12.829Z",
-  "summary": "feat(crew): ship premium Dolphin Crew Club Character Card",
+  "version": "1.1.90",
+  "previousVersion": "1.1.89",
+  "commit": "14931d6",
+  "previousCommit": "2b39cb3",
+  "buildDate": "2026-11-09T06:11:05.858Z",
+  "summary": "feat(crew): Ocean Ascension Level Up Cinematic with safe replay",
   "changes": {
-    "totalCommits": 313,
-    "filesChanged": 8,
+    "totalCommits": 314,
+    "filesChanged": 10,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): ship premium Dolphin Crew Club Character Card"
+    "feat(crew): Ocean Ascension Level Up Cinematic with safe replay"
   ],
   "fileChanges": [
     {
@@ -24,11 +24,11 @@
       "type": "update"
     },
     {
-      "file": "crew-character-card.css",
+      "file": "crew-levelup-cinematic.css",
       "type": "update"
     },
     {
-      "file": "crew-character-card.js",
+      "file": "crew-levelup-cinematic.js",
       "type": "update"
     },
     {
@@ -36,15 +36,23 @@
       "type": "update"
     },
     {
-      "file": "scripts/crew-character-card-browser.cjs",
+      "file": "scripts/avatar-sync-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/crew-character-card.test.cjs",
+      "file": "scripts/crew-levelup-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/staff-levelup.test.cjs",
       "type": "update"
     },
     {
       "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

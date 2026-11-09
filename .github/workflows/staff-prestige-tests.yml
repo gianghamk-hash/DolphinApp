@@ -7,7 +7,7 @@ on:
       - 'functions/staff-daily-missions.js'
       - 'functions/staff-daily-core.test.cjs'
       - 'functions/staff-daily-missions.test.cjs'
-      - 'functions/staff-daily-arcade.test.cjs scripts/crew-arcade-missions.test.cjs'
+      - 'functions/staff-daily-arcade.test.cjs'
       - 'crew-arcade-proof.js'
       - 'functions/crew-arcade-proof.cjs'
       - 'scripts/verify-firebase-source-boundary.cjs'

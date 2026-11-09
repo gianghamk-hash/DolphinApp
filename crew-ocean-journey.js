@@ -67,8 +67,7 @@
     return {level,xp:xpAt(level),rank:rankBands.find(x=>level>=x.min).label,
      state:!current?'locked':level===current?'current':level<=highest?'complete':'locked',
      rewards:map.get(level)||[],isMilestone:level%5===0||level===1};
-   })}
-  };
+   })};
  }
  function rewardIcon(label){
   if(/khung|frame|viền/i.test(label))return 'frame';

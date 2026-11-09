@@ -198,6 +198,7 @@ async function requireAccessManager(req){
 }
 // APK detection is presentation only. Authority always comes from the callable
 // Auth token and the protected UID -> Staff ID mapping; never a submitted ID.
+module.exports._requireAccessManager=requireAccessManager;
 exports.staffGetManagerIdentity=onCall(opts,async req=>{
  const uid=await requireAccessManager(req),db=getDatabase();
  const registry=(await db.ref('staffRegistry').once('value')).val()||{};

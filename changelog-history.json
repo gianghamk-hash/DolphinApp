@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.92",
+      "releaseDate": "2026-11-09T08:08:43.861Z",
+      "summary": "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey",
+      "details": [
+        "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey"
+      ]
+    },
+    {
       "version": "1.1.91",
       "releaseDate": "2026-11-09T06:53:26.971Z",
       "summary": "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI",
@@ -390,14 +398,6 @@
       "summary": "feat(crew-club): grouped live effect previews with tap-to-equip selection",
       "details": [
         "feat(crew-club): grouped live effect previews with tap-to-equip selection"
-      ]
-    },
-    {
-      "version": "1.1.42",
-      "releaseDate": "2026-11-02T10:40:18.797Z",
-      "summary": "fix(staff): restore approval list and require fresh registration after rejection",
-      "details": [
-        "fix(staff): restore approval list and require fresh registration after rejection"
       ]
     }
   ]

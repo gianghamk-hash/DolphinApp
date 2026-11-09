@@ -1,7 +1,7 @@
 {
-  "version": "1.1.92",
-  "buildDate": "2026-11-09T08:08:43.861Z",
-  "commit": "d77da71",
-  "notes": "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey",
+  "version": "1.1.93",
+  "buildDate": "2026-11-09T10:22:52.357Z",
+  "commit": "5178b95",
+  "notes": "WIP (disabled): verified XP wagering core and security gates for online games (#245)",
   "forceUpdate": false
 }

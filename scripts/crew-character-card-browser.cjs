@@ -53,7 +53,7 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   });
   assert(assets.every(x=>x.loaded&&x.w===384&&x.h===192),'Both approved bright icon atlases decode at full size');
   const icon=await page.locator('.crew-profile-utility .crew-2d-icon').first().evaluate(el=>getComputedStyle(el).backgroundImage);
-  assert.match(icon,/crew-profile-icons-v2\\.webp/,'Account buttons display the bright atlas');
+  assert(icon.includes('crew-profile-icons-v2.webp'),'Account buttons display the bright atlas');
   const mobile=await sample();
   assert(mobile.width<=mobile.viewport+2,'Character Card must not cause horizontal scrolling on phones');
   assert(mobile.card.width<=mobile.viewport,'Card must fit within viewport');

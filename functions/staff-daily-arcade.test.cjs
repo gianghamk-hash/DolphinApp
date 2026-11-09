@@ -96,7 +96,7 @@ test('server failure after consuming a verified run is recoverable with identica
  saved.startedAt-=20000;
  const request=h.req('worker',{game:'snake',challengeId:run.challengeId,score:200,moves:'LRUD'});
  await assert.rejects(()=>h.api.staffFinishArcadeMission(request),/simulated XP write outage/);
- assert.equal(saved.used,true);
+ assert.equal(h.data.get('staffDailyGameChallenges/worker/snake').used,true);
  assert.equal(h.data.get('staffRegistry/DOL-0002').xp,0);
  const retry=await h.api.staffFinishArcadeMission(request);
  assert.equal(retry.awarded,true);assert.equal(retry.addedXP,1500);

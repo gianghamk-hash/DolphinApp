@@ -74,7 +74,7 @@ exports.staffCheckInDaily=onCall(opts,async req=>{
  */
 const arcade=require('./crew-arcade-proof.cjs');
 const arcadeRules=Object.freeze({
- snake:{task:'snake_100',threshold:100,minMs:9000},
+ snake:{task:'snake_100',threshold:200,minMs:9000},
  '2048':{task:'game2048_1000',threshold:1000,minMs:15000}
 });
 exports.staffStartArcadeMission=onCall(opts,async req=>{

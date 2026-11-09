@@ -120,8 +120,8 @@ for(const {file,frame} of frames)await frame.waitForFunction(()=>[...document.qu
 assert.equal(await rankFrame.locator('#revenue-list [data-staff-avatar]').textContent(),'🐯');assert.equal(await rankFrame.locator('#points-list [data-staff-avatar]').textContent(),'🐯');assert.equal(await gameFrame.locator('#lbContent [data-staff-avatar]').textContent(),'🐯');console.log('PASS: actual revenue/work/game row renderers and four outlet headers synchronize after profile avatar save.');
 backend.state.set('staffRegistry/'+id,{...backend.state.get('staffRegistry/'+id),approved:true});
 backend.state.set('staffIdentity/first',{...backend.state.get('staffIdentity/first'),verified:true});
-await a.page.waitForTimeout(1700);await profile.getByRole('button',{name:'Thiết bị',exact:true}).click();await profile.locator('#issue-link').click();await profile.locator('#code-panel:not([hidden])').waitFor();const code=await profile.locator('#link-code').textContent();
-const b=await device('second');await b.page.goto(origin+'/dolphin-profile.html');await b.page.getByRole('button',{name:'Chỉnh sửa hồ sơ',exact:true}).click();await b.page.locator('#save-profile:not([disabled])').waitFor();await b.page.fill('#profile-name-input','Existing device profile');await b.page.click('#save-profile');await b.page.locator('#profile-state').filter({hasText:'Đang chờ quản lý duyệt'}).waitFor();const oldId=await b.page.locator('#employee-id').textContent();assert.notEqual(oldId,id);await b.page.getByRole('button',{name:'Thiết bị',exact:true}).click();assert.equal(await b.page.locator('#claim-code').isVisible(),true);
+await a.page.waitForTimeout(1700);await profile.locator('.crew-profile-utility[data-open-dialog="devices-dialog"]').click();await profile.locator('#issue-link').click();await profile.locator('#code-panel:not([hidden])').waitFor();const code=await profile.locator('#link-code').textContent();
+const b=await device('second');await b.page.goto(origin+'/dolphin-profile.html');await b.page.getByRole('button',{name:'Chỉnh sửa hồ sơ',exact:true}).click();await b.page.locator('#save-profile:not([disabled])').waitFor();await b.page.fill('#profile-name-input','Existing device profile');await b.page.click('#save-profile');await b.page.locator('#profile-state').filter({hasText:'Đang chờ quản lý duyệt'}).waitFor();const oldId=await b.page.locator('#employee-id').textContent();assert.notEqual(oldId,id);await b.page.locator('.crew-profile-utility[data-open-dialog="devices-dialog"]').click();assert.equal(await b.page.locator('#claim-code').isVisible(),true);
 assert.equal(await b.page.locator('#claim-code').isVisible(),true);await b.page.fill('#claim-code',code);await b.page.click('#claim-link');await b.page.locator('#profile-message[data-error=true]').waitFor();assert.equal(await b.page.locator('#employee-id').textContent(),oldId);
 backend.state.set('staffRegistry/'+oldId,{...backend.state.get('staffRegistry/'+oldId),approved:true});
 backend.state.set('staffIdentity/second',{...backend.state.get('staffIdentity/second'),verified:true});
@@ -174,7 +174,7 @@ assert.equal(await rankFrame.locator('#section-revenue').isVisible(),false);
 assert.equal(await b.page.locator('.dolphin-prestige').count(),0,'Profile no longer shows floating Emperor banner');
 
 assert.equal(await b.page.locator('dialog[open]').count(),0);
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();assert.equal(await b.page.locator('#style-dialog').isVisible(),true);assert.equal(await b.page.locator('input[name=staff-theme][value=halloween]').isDisabled(),true);assert.equal(await b.page.locator('#staff-flame-check').isDisabled(),true);assert.equal(await b.page.locator('#staff-save-style').isEnabled(),true);
+await b.page.locator('.crew-card-slot[data-open-dialog="style-dialog"]').first().click();assert.equal(await b.page.locator('#style-dialog').isVisible(),true);assert.equal(await b.page.locator('input[name=staff-theme][value=halloween]').isDisabled(),true);assert.equal(await b.page.locator('#staff-flame-check').isDisabled(),true);assert.equal(await b.page.locator('#staff-save-style').isEnabled(),true);
 await b.page.screenshot({path:path.join(output,'profile-style-mobile.png'),fullPage:true});
 // Exercise the exact shared renderer used in Profile, Ranking, Online and Landing.
 const globalFX=await b.page.evaluate(()=>{
@@ -213,9 +213,9 @@ assert.equal(globalFX[6].text,'🐉');
 console.log('PASS: six global avatar surfaces share Mythic/Sovereign rank, five-layer FX and idempotent render; frame-none keeps rare animation.');
 
 await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=light]');await b.page.click('#staff-save-style');await b.page.locator('#staff-style-info').filter({hasText:'Đã lưu'}).waitFor();assert.equal(await b.page.locator('body').getAttribute('data-theme'),'light');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-light-mobile.png'),fullPage:true});
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=gray]');await b.page.click('#staff-save-style');await b.page.waitForFunction(()=>document.body.dataset.theme==='gray');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-gray-mobile.png'),fullPage:true});
-await b.page.getByRole('button',{name:'Phần thưởng',exact:true}).click();assert.equal(await b.page.locator('.reward-row').count(),16);await b.page.keyboard.press('Escape');assert.equal(await b.page.locator('dialog[open]').count(),0);
+await b.page.locator('.crew-card-slot[data-open-dialog="style-dialog"]').first().click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=light]');await b.page.click('#staff-save-style');await b.page.locator('#staff-style-info').filter({hasText:'Đã lưu'}).waitFor();assert.equal(await b.page.locator('body').getAttribute('data-theme'),'light');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-light-mobile.png'),fullPage:true});
+await b.page.locator('.crew-card-slot[data-open-dialog="style-dialog"]').first().click();await b.page.locator('[data-crew-tab="theme"]').click();await b.page.check('input[name=staff-theme][value=gray]');await b.page.click('#staff-save-style');await b.page.waitForFunction(()=>document.body.dataset.theme==='gray');await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();await b.page.screenshot({path:path.join(output,'profile-gray-mobile.png'),fullPage:true});
+await b.page.locator('.crew-card-reward-open').click();assert.equal(await b.page.locator('.reward-row').count(),16);await b.page.keyboard.press('Escape');assert.equal(await b.page.locator('dialog[open]').count(),0);
 
 await b.page.evaluate(()=>{
  const catalog=[
@@ -243,7 +243,7 @@ assert.equal(await b.page.locator('#crew-levelup-cinematic .crew-lc-award').coun
 await b.page.getByRole('button',{name:'Xem phần thưởng',exact:true}).click();
 assert.equal(await b.page.locator('#rewards-dialog').isVisible(),true,'cinematic action opens reward gallery');
 await b.page.getByRole('button',{name:'Đóng phần thưởng',exact:true}).click();
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();
+await b.page.locator('.crew-card-slot[data-open-dialog="style-dialog"]').first().click();
 assert.equal(await b.page.locator('#style-dialog').isVisible(),true,'existing style customization remains accessible after cinematic');
 assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze');
 assert.equal(await b.page.locator('#staff-title-select').inputValue(),'rookie');
@@ -305,7 +305,7 @@ assert.equal(await b.page.locator('#profile-avatar').getAttribute('data-avatar-m
 assert.equal(await b.page.locator('#profile-name').getAttribute('data-name-fx'),'nova');
 assert.equal(await b.page.locator('body').getAttribute('data-theme'),'cosmic');
 await b.page.getByRole('button',{name:'Để sau · Bỏ qua',exact:true}).click();
-await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();
+await b.page.locator('.crew-card-slot[data-open-dialog="style-dialog"]').first().click();
 await b.page.locator('[data-crew-tab="avatar"]').click();await (await pick('frame','bronze')).click();
 assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze','automatic preset remains editable');
 await b.page.getByRole('button',{name:'Đóng giao diện',exact:true}).click();

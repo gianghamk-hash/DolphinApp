@@ -55,7 +55,7 @@ test('fake client score without matching replay cannot create XP',async()=>{
 });
 test('replayed and correctly verified game run awards once per task and per day',async()=>{
  const h=fixture({validReplay:true});
- for(const [game,score,xp] of [['snake',100,500],['2048',1000,1000]]){
+ for(const [game,score,xp] of [['snake',100,1500],['2048',1000,3000]]){
   const run=await h.api.staffStartArcadeMission(h.req('worker',{game}));
   h.data.get('staffDailyGameChallenges/worker/'+game).startedAt-=20000;
   const request=h.req('worker',{game,challengeId:run.challengeId,score,moves:'LRUD'});
@@ -70,7 +70,7 @@ test('replayed and correctly verified game run awards once per task and per day'
   }));
   assert.equal(second.addedXP,0);
  }
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,1500);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,4500);
  assert.equal(h.rebuilds(),2);
 });
 test('shared pure replay engine rejects tampered and impossible inputs',()=>{

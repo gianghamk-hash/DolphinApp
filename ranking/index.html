@@ -183,6 +183,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
 import { getAuth, signInAnonymously } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-auth.js";
 import { getFirestore, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+import { getFunctions, httpsCallable } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-functions.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyAtBNp9WBnyIkCiVjXfUpjH2d7-9dbg-JQ",
@@ -213,7 +214,8 @@ const state = {
   showHistory: [],
   mainTab: 'revenue',
   weekStart: 0,
-  weekEnd: 0
+  weekEnd: 0,
+  revenueDeductions: {}
 };
 
 function $(id){ return document.getElementById(id); }
@@ -321,13 +323,31 @@ function rankingTitle(name,employeeId){
  return ({rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'})[title]||'';
 }
 
+/* Only published aggregate corrections affect the weekly competition score.
+ * Source orders/history and accounting turnover remain unchanged. */
+async function refreshRevenueDeductions(functions){
+ try{
+  const result=await httpsCallable(functions,'staffGetPublicRevenueDeductions')({weekStart:state.weekStart});
+  if(Number(result.data?.weekStart)!==state.weekStart)return;
+  const verified={};
+  for(const [id,value] of Object.entries(result.data?.deductions||{}))
+   if(/^DOL-(?:[0-9]{4,6}|[A-F0-9]{10})$/.test(id)&&
+      Number.isSafeInteger(value)&&value>=0)verified[id]=value;
+  state.revenueDeductions=verified;
+  renderRevenue();
+ }catch(error){console.warn('[Ranking] Revenue corrections unavailable:',error?.code||error?.message);}
+}
 /* ════════ FIREBASE ════════ */
 try {
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
   const db = getFirestore(app);
+  const functions=getFunctions(app,'asia-southeast1');
 
   signInAnonymously(auth).then(() => {
+    void refreshRevenueDeductions(functions);
+    setInterval(()=>{if(!document.hidden)void refreshRevenueDeductions(functions);},45000);
+    document.addEventListener('visibilitychange',()=>{if(!document.hidden)void refreshRevenueDeductions(functions);});
     onSnapshot(collection(db, 'lounge_tables'), snap => {
       const obj = {};
       snap.forEach(d => obj[d.id] = d.data());
@@ -501,6 +521,10 @@ function calcRevenue(){
   });
 
   return Array.from(emp.values())
+    .map(e=>{
+      const deduction=e.employeeId ? Number(state.revenueDeductions[e.employeeId])||0 : 0;
+      return {...e,rawRevenue:e.rev,revenueDeduction:deduction,rev:Math.max(0,e.rev-deduction)};
+    })
     .filter(e => e.rev > 0 && rankingAllowed(e.name,e.employeeId))
     .sort((a, b) => b.rev - a.rev)
     .slice(0, TOP_N);
@@ -521,7 +545,7 @@ function renderRevenue(){
   list.innerHTML = data.map((e, i) => {
     const r = i + 1;
     const m = r <= 3 ? medals[r - 1] : r;
-    const lbl = e.details.slice(0, 3).join(' · ') + (e.details.length > 3 ? ' · +' + (e.details.length - 3) : '');
+    const lbl = e.details.slice(0, 3).join(' · ') + (e.details.length > 3 ? ' · +' + (e.details.length - 3) : '') + (e.revenueDeduction?' · Điều chỉnh -'+formatMoney(e.revenueDeduction)+'đ':'');
     return `<div class="row r${r <= 3 ? r : ''}">
       <div class="rank">${m}</div>
       <div class="name">

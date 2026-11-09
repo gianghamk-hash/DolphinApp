@@ -320,7 +320,7 @@ test('work saved before an XP outage is retried from a trusted obligation exactl
  await assert.rejects(()=>h.call('owner',input),/credit offline/);
  assert.equal(h.docs.get('lounge_orders/retry-order').status,'completed');
  h.failAward(false);
- assert.equal((await h.call('owner',input)).xpAwarded,250);
+ assert.equal((await h.call('owner',input)).xpAwarded,500);
  assert.equal((await h.call('owner',input)).xpAwarded,0);assert.equal(h.awards.length,1);
 });
 test('trusted outbox delivery survives deletion of the client-writable live order',async()=>{

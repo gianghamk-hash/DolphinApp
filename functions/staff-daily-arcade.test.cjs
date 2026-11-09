@@ -9,11 +9,12 @@ function fixture(options={}){
   ['staffIdentity/pending',{verified:false,employeeId:'DOL-0003'}],
   ['staffRegistry/DOL-0003',{employeeId:'DOL-0003',name:'Pending',active:true,registrationSource:'self',approved:false,xp:0}]
  ]);
- let rebuilds=0;
+ let rebuilds=0,failAwardOnce=options.failAwardOnce===true;
  const ref=path=>({
   set:async value=>{data.set(path,value);},
   once:async()=>({val:()=>data.get(path)||null}),
-  transaction:async fn=>{const old=data.get(path)||null,next=fn(old);
+  transaction:async fn=>{if(path==='staffRegistry/DOL-0002'&&failAwardOnce){failAwardOnce=false;throw Error('simulated XP write outage');}
+   const old=data.get(path)||null,next=fn(old);
    if(next===undefined)return {committed:false,snapshot:{val:()=>old}};
    if(next===null)data.delete(path);else data.set(path,next);
    return {committed:true,snapshot:{val:()=>next}};
@@ -27,7 +28,7 @@ function fixture(options={}){
   if(name==='firebase-functions/v2/https')return {onCall:(_,callback)=>callback,HttpsError};
   if(name==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
   if(name==='./crew-arcade-proof.cjs')return options.validReplay
-   ?{replay:(game)=>({valid:true,score:game==='snake'?100:1000,steps:100})}:engine;
+   ?{replay:(game)=>({valid:true,score:game==='snake'?200:1000,steps:100})}:engine;
   if(name==='./staff-prestige')return {_rebuildPrestige:async()=>{rebuilds++;}};
   if(name==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
   throw Error(name);
@@ -55,13 +56,14 @@ test('fake client score without matching replay cannot create XP',async()=>{
 });
 test('replayed and correctly verified game run awards once per task and per day',async()=>{
  const h=fixture({validReplay:true});
- for(const [game,score,xp] of [['snake',100,1500],['2048',1000,3000]]){
+ for(const [game,score,xp] of [['snake',200,1500],['2048',1000,3000]]){
   const run=await h.api.staffStartArcadeMission(h.req('worker',{game}));
   h.data.get('staffDailyGameChallenges/worker/'+game).startedAt-=20000;
   const request=h.req('worker',{game,challengeId:run.challengeId,score,moves:'LRUD'});
   const first=await h.api.staffFinishArcadeMission(request);
   assert.equal(first.awarded,true);assert.equal(first.addedXP,xp);
-  await assert.rejects(()=>h.api.staffFinishArcadeMission(request),e=>e.code==='failed-precondition');
+  const repeated=await h.api.staffFinishArcadeMission(request);
+  assert.equal(repeated.awarded,false);assert.equal(repeated.addedXP,0);
   // A new seeded run on the same day does not credit the task again.
   const fresh=await h.api.staffStartArcadeMission(h.req('worker',{game}));
   h.data.get('staffDailyGameChallenges/worker/'+game).startedAt-=20000;
@@ -72,6 +74,37 @@ test('replayed and correctly verified game run awards once per task and per day'
  }
  assert.equal(h.data.get('staffRegistry/DOL-0002').xp,4500);
  assert.equal(h.rebuilds(),2);
+});
+test('Snake needs 200 points, not the former 100-point threshold',async()=>{
+ const h=fixture({validReplay:true});
+ const run=await h.api.staffStartArcadeMission(h.req('worker',{game:'snake'}));
+ h.data.get('staffDailyGameChallenges/worker/snake').startedAt-=20000;
+ await assert.rejects(()=>h.api.staffFinishArcadeMission(h.req('worker',{
+  game:'snake',challengeId:run.challengeId,score:100,moves:'LRUD'
+ })),e=>e.code==='invalid-argument');
+ const result=await h.api.staffFinishArcadeMission(h.req('worker',{
+  game:'snake',challengeId:run.challengeId,score:200,moves:'LRUD'
+ }));
+ assert.equal(result.awarded,true);assert.equal(result.addedXP,1500);
+ const task=result.missions.tasks.find(t=>t.id==='snake_100');
+ assert.equal(task.done,true);assert.match(task.title,/200/);
+});
+test('server failure after consuming a verified run is recoverable with identical replay',async()=>{
+ const h=fixture({validReplay:true,failAwardOnce:true});
+ const run=await h.api.staffStartArcadeMission(h.req('worker',{game:'snake'}));
+ const saved=h.data.get('staffDailyGameChallenges/worker/snake');
+ saved.startedAt-=20000;
+ const request=h.req('worker',{game:'snake',challengeId:run.challengeId,score:200,moves:'LRUD'});
+ await assert.rejects(()=>h.api.staffFinishArcadeMission(request),/simulated XP write outage/);
+ assert.equal(saved.used,true);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,0);
+ const retry=await h.api.staffFinishArcadeMission(request);
+ assert.equal(retry.awarded,true);assert.equal(retry.addedXP,1500);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,1500);
+ assert.equal((await h.api.staffFinishArcadeMission(request)).addedXP,0);
+ await assert.rejects(()=>h.api.staffFinishArcadeMission(h.req('worker',{
+  game:'snake',challengeId:run.challengeId,score:200,moves:'LRRU'
+ })),e=>['failed-precondition','permission-denied'].includes(e.code));
 });
 test('shared pure replay engine rejects tampered and impossible inputs',()=>{
  for(const game of ['snake','2048']){

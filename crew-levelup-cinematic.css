@@ -1,0 +1,135 @@
+/* Dolphin Crew Club 2.0 — Ocean Ascension.
+   Decorative cinematic only. Avoid canvas, expensive blur-heavy video or autoplay sound. */
+dialog.crew-lc-dialog{
+ --lc-gold:#ecd29b;--lc-glow:rgba(234,192,104,.38);
+ padding:0;width:min(94vw,560px);max-width:560px;max-height:min(90dvh,900px);
+ overflow:auto;overscroll-behavior:contain;isolation:isolate;
+ border:1px solid rgba(239,203,136,.72);border-radius:28px;
+ background:#061b27;color:#f5f2e8;text-align:center;
+ box-shadow:0 40px 100px #000b,0 0 55px var(--lc-glow),inset 0 0 2px #fff8;
+}
+dialog.crew-lc-dialog[data-tier="normal"]{--lc-gold:#a7e2d9;--lc-glow:rgba(88,221,212,.24)}
+dialog.crew-lc-dialog[data-tier="milestone"]{--lc-gold:#f4d48b;--lc-glow:rgba(229,187,96,.34)}
+dialog.crew-lc-dialog[data-tier="rank"]{--lc-gold:#f5d48e;--lc-glow:rgba(242,169,74,.42)}
+dialog.crew-lc-dialog[data-tier="mythic"]{--lc-gold:#ebc6ff;--lc-glow:rgba(176,116,255,.48)}
+dialog.crew-lc-dialog::backdrop{background:rgba(0,9,18,.85);backdrop-filter:blur(11px)}
+.crew-lc-scene{
+ position:relative;overflow:hidden;isolation:isolate;
+ display:flex;flex-direction:column;align-items:center;
+ padding:25px 29px 29px;
+ background:radial-gradient(ellipse at 50% 22%,var(--lc-glow),transparent 58%),
+  radial-gradient(ellipse at 5% 65%,rgba(51,167,189,.16),transparent 53%),
+  linear-gradient(153deg,#082a3a 1%,#071a29 56%,#101b2c 100%);
+}
+.crew-lc-scene::before{
+ content:"";position:absolute;z-index:-1;inset:9px;pointer-events:none;
+ border:1px solid rgba(242,215,157,.16);border-radius:19px;
+}
+.crew-lc-scene::after{
+ content:"";position:absolute;z-index:-1;left:-20%;right:-20%;bottom:13%;height:26%;
+ pointer-events:none;opacity:.45;transform:rotate(-5deg);
+ background:repeating-radial-gradient(ellipse at 50% 120%,transparent 0 35px,rgba(106,215,235,.18) 36px 37px,transparent 38px 59px);
+}
+.crew-lc-ambient{position:absolute;pointer-events:none;inset:-65px;z-index:-1;
+ background:conic-gradient(from 30deg at 50% 37%,transparent,rgba(255,236,166,.09),transparent,rgba(94,215,250,.1),transparent);
+ animation:crew-lc-ambient 15s linear infinite;}
+.crew-lc-stars{pointer-events:none;position:absolute;z-index:1;inset:0;overflow:hidden}
+.crew-lc-star{position:absolute;left:8%;top:20%;color:var(--lc-gold);
+ font-size:clamp(9px,1.9vw,16px);opacity:0;filter:drop-shadow(0 0 5px var(--lc-gold));
+ animation:crew-lc-spark 3.6s ease-in-out infinite;}
+.crew-lc-star:nth-child(1){left:8%;top:16%;animation-delay:0.00s}
+.crew-lc-star:nth-child(2){left:18%;top:42%;animation-delay:-0.35s}
+.crew-lc-star:nth-child(3){left:32%;top:10%;animation-delay:-0.70s}
+.crew-lc-star:nth-child(4){left:42%;top:65%;animation-delay:-1.05s}
+.crew-lc-star:nth-child(5){left:55%;top:20%;animation-delay:-1.40s}
+.crew-lc-star:nth-child(6){left:68%;top:51%;animation-delay:-1.75s}
+.crew-lc-star:nth-child(7){left:77%;top:13%;animation-delay:-2.10s}
+.crew-lc-star:nth-child(8){left:87%;top:43%;animation-delay:-2.45s}
+.crew-lc-star:nth-child(9){left:93%;top:72%;animation-delay:-2.80s}
+.crew-lc-header{display:flex;align-items:center;justify-content:space-between;gap:9px;
+ width:100%;position:relative;z-index:2}
+.crew-lc-brand{font-size:9px;font-weight:900;letter-spacing:.13em;color:#a7d4d6;text-align:left}
+.crew-lc-flag{font-size:9px;font-weight:900;letter-spacing:.14em;
+ color:var(--lc-gold);border:1px solid var(--lc-glow);border-radius:99px;
+ background:rgba(1,27,38,.8);padding:7px 10px;white-space:nowrap}
+.crew-lc-portal{position:relative;display:grid;place-items:center;width:206px;height:206px;
+ margin:7px auto 4px;flex-shrink:0}
+.crew-lc-portal::before{content:"";position:absolute;inset:9px;border-radius:50%;border:1px dashed var(--lc-gold);
+ opacity:.65;animation:crew-lc-orbit 16s linear infinite}
+.crew-lc-portal::after{content:"";position:absolute;inset:29px;border-radius:50%;border:3px solid transparent;
+ border-top-color:var(--lc-gold);border-bottom-color:var(--lc-gold);
+ filter:drop-shadow(0 0 12px var(--lc-gold));animation:crew-lc-orbit 5.8s linear infinite reverse}
+.crew-lc-halo{position:absolute;inset:19px;border-radius:50%;
+ box-shadow:0 0 23px var(--lc-glow),inset 0 0 25px var(--lc-glow);
+ background:radial-gradient(circle,rgba(11,65,76,.42),rgba(3,28,38,.36) 60%,transparent 74%);
+ animation:crew-lc-pulse 3.4s ease-in-out infinite}
+.crew-lc-avatar{position:relative;z-index:2;font-size:87px;line-height:1;
+ filter:drop-shadow(0 0 22px var(--lc-glow));animation:crew-lc-arrive 1s cubic-bezier(.18,.9,.2,1) both}
+.crew-lc-overline{color:var(--lc-gold);font-size:10px;font-weight:900;letter-spacing:.25em;
+ text-shadow:0 0 17px var(--lc-glow)}
+.crew-lc-level{display:flex;align-items:baseline;justify-content:center;gap:14px;
+ margin:7px 0 3px;font-variant-numeric:tabular-nums}
+.crew-lc-from{font-size:16px;color:#a3c2ca;font-weight:750}
+.crew-lc-arrow{color:var(--lc-gold);font-size:23px}
+.crew-lc-to{font:900 clamp(73px,17vw,112px)/.95 Georgia,serif;
+ color:var(--lc-gold);text-shadow:0 0 12px var(--lc-glow),0 0 35px var(--lc-glow);
+ animation:crew-lc-number 1.2s cubic-bezier(.16,.9,.25,1) both}
+.crew-lc-title{margin-top:12px;font-size:clamp(18px,5vw,25px);letter-spacing:.045em;
+ font-weight:950;line-height:1.25;color:#fff2d0;text-shadow:0 0 16px var(--lc-glow)}
+.crew-lc-message{margin:12px 0 0;font-size:12px;line-height:1.65;
+ color:#c5dcd9;max-width:415px}
+.crew-lc-awards{position:relative;z-index:2;margin-top:22px;width:100%;max-width:440px;
+ padding:15px;border:1px solid rgba(190,218,218,.19);border-radius:18px;
+ background:linear-gradient(155deg,rgba(4,28,40,.87),rgba(14,48,59,.72))}
+.crew-lc-awards-title{font-size:10px;font-weight:900;letter-spacing:.16em;color:var(--lc-gold);margin:0 0 13px}
+.crew-lc-awards-list{margin:0;padding:0;list-style:none;display:grid;gap:8px;text-align:left}
+.crew-lc-award{display:flex;align-items:flex-start;gap:11px;
+ border:1px solid rgba(205,222,217,.13);border-radius:11px;
+ background:rgba(100,174,177,.09);padding:10px 11px;
+ color:#f2e4c9;font-weight:750;font-size:11px;line-height:1.45;
+ animation:crew-lc-reveal .5s ease-out both}
+.crew-lc-award:nth-child(2){animation-delay:.09s}
+.crew-lc-award:nth-child(3){animation-delay:.18s}
+.crew-lc-award:nth-child(n+4){animation-delay:.26s}
+.crew-lc-award-icon{color:var(--lc-gold);font-size:14px;flex-shrink:0}
+.crew-lc-more{font-size:11px;line-height:1.6;color:#a8cbc7;padding:6px 2px}
+.crew-lc-actions{width:100%;max-width:440px;display:grid;
+ grid-template-columns:1fr 1fr;gap:10px;margin-top:20px;position:relative;z-index:3}
+.crew-lc-action{min-width:0;padding:13px 8px;border-radius:12px;font-size:11px;font-weight:900;
+ border:1px solid var(--lc-gold);transition:transform .2s,box-shadow .2s}
+.crew-lc-action:hover{transform:translateY(-2px)}
+.crew-lc-primary{background:linear-gradient(125deg,var(--lc-gold),#fff5d2);color:#102734;
+ box-shadow:0 3px 23px var(--lc-glow)}
+.crew-lc-secondary{color:#e2efee;background:rgba(4,25,37,.75);border-color:rgba(197,221,220,.24)}
+.crew-lc-action:focus-visible{outline:2px solid #fff;outline-offset:3px}
+#crew-levelup-replay:not([hidden]){font-size:11px;line-height:1.2}
+@keyframes crew-lc-ambient{to{transform:rotate(360deg)}}
+@keyframes crew-lc-orbit{to{transform:rotate(360deg)}}
+@keyframes crew-lc-pulse{0%,100%{opacity:.58;transform:scale(.97)}50%{opacity:1;transform:scale(1.07)}}
+@keyframes crew-lc-spark{0%,100%{opacity:0;transform:translateY(18px) scale(.55)}
+ 35%,65%{opacity:.8;transform:translateY(-8px) scale(1.1)}}
+@keyframes crew-lc-arrive{from{opacity:0;transform:translateY(18px) scale(.6)}to{opacity:1;transform:none}}
+@keyframes crew-lc-number{from{opacity:0;transform:scale(1.5);filter:blur(7px)}
+ to{opacity:1;transform:scale(1);filter:blur(0)}}
+@keyframes crew-lc-reveal{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+/* Compact action placement inside the existing Character Card. */
+#crew-profile-banner .crew-card-progress-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
+@media(max-width:420px){
+ dialog.crew-lc-dialog{border-radius:22px;width:min(96vw,560px)}
+ .crew-lc-scene{padding:19px 15px 21px}
+ .crew-lc-brand{font-size:8px;letter-spacing:.06em}
+ .crew-lc-flag{font-size:8px;padding:6px}
+ .crew-lc-portal{width:168px;height:168px;margin:5px auto 1px}
+ .crew-lc-avatar{font-size:70px}
+ .crew-lc-overline{font-size:8px;letter-spacing:.15em}
+ .crew-lc-from{font-size:13px}.crew-lc-arrow{font-size:19px}
+ .crew-lc-message{font-size:11px;margin-top:8px}
+ .crew-lc-awards{margin-top:15px;padding:12px}
+ .crew-lc-actions{gap:7px;margin-top:15px}
+ .crew-lc-action{padding:12px 6px;font-size:10px}
+}
+@media(prefers-reduced-motion:reduce){
+ .crew-lc-dialog *, .crew-lc-dialog *::before,.crew-lc-dialog *::after{
+ animation:none!important;transition:none!important}
+ .crew-lc-ambient{display:none}
+}

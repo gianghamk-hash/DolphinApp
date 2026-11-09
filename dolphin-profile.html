@@ -4,8 +4,10 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
 <title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-wow-v8">
 <link rel="stylesheet" href="./crew-character-card.css?v=character-v1">
+<link rel="stylesheet" href="./crew-levelup-cinematic.css?v=levelup-v1">
 <link rel="stylesheet" href="./staff-access.css?v=crew-name-policy-v1"><script src="./staff-access.js?v=crew-name-policy-v1" defer></script>
-<script src="./dolphin-navigation.js?v=1.1.89" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-operational-auth-v1" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=crew-global-v9" defer></script><script src="./staff-prestige-client.js?v=1.1.89" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./staff-prestige-profile.js?v=crew-wow-v8" defer></script><script src="./staff-admin-profile.js?v=crew-recovery-v7" defer></script><script src="./staff-xp-manager.js?v=1.1.89" defer></script>
+<script src="./dolphin-navigation.js?v=1.1.89" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-operational-auth-v1" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=crew-global-v9" defer></script><script src="./staff-prestige-client.js?v=1.1.89" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./crew-levelup-cinematic.js?v=levelup-v1" defer></script>
+<script src="./staff-prestige-profile.js?v=levelup-v1" defer></script><script src="./staff-admin-profile.js?v=crew-recovery-v7" defer></script><script src="./staff-xp-manager.js?v=1.1.89" defer></script>
 <script src="./manager-apk-profile.js?v=manager-corrections-v1" defer></script>
 <script src="./crew-character-card.js?v=character-v1" defer></script>
 </head>
@@ -65,7 +67,7 @@
   <div class="section-line"><span class="eyebrow">✦ HÀNH TRÌNH CỦA BẠN</span><span id="staff-level-tag" class="level-tag">LEVEL —</span></div>
   <div class="crew-card-progress-stats"><div id="staff-xp-summary" aria-live="polite">Đang tải cấp độ…</div><span id="crew-card-xp-percent" class="crew-card-xp-percent">0%</span></div>
   <div id="staff-xp-track" role="progressbar" aria-label="Tiến độ cấp độ" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><div id="staff-xp-fill"></div></div>
-  <div class="progress-foot"><span id="staff-next-level">XP được lưu theo Staff ID</span><button type="button" class="text-button" data-open-dialog="rewards-dialog">Mốc thưởng ↗</button></div>
+  <div class="progress-foot"><span id="staff-next-level">XP được lưu theo Staff ID</span><span class="crew-card-progress-actions"><button type="button" class="text-button" id="crew-levelup-replay" hidden>✦ Xem lại Level Up</button><button type="button" class="text-button" data-open-dialog="rewards-dialog">Mốc thưởng ↗</button></span></div>
   <div class="next-reward" id="staff-next-reward" aria-live="polite">🎁 Phần thưởng tiếp theo đang tải…</div>
  </div>
  <footer class="crew-card-footer"><span>◈ DOLPHIN CRUISE · CREW IDENTITY</span><span>EXPLORE · GROW · SHINE</span></footer>

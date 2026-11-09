@@ -29,5 +29,5 @@ jobs:
         run: node --test wagers/rules.test.cjs
       - name: Refuse accidental production callable exports
         run: |
-          ! grep -Fq "require(\x27./wagers/" index.js
-          ! grep -Fq "require(\x27./wagers/" staff-profile.js
+          ! grep -Fq "wagers/rules.cjs" index.js
+          ! grep -Fq "wagers/rules.cjs" staff-profile.js

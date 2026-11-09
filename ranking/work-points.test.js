@@ -155,3 +155,34 @@ test('excluded Lounge payments remain zero revenue even when valid Staff ID exis
  try{assert.equal(context.calcRevenue().length,0);}
  finally{delete context.window;}
 });
+
+
+test('verified weekly revenue deduction changes competition score without changing raw sales',()=>{
+ const original={
+  loungeTables:state.loungeTables,bunTables:state.bunTables,showTables:state.showTables,
+  loungeHistory:state.loungeHistory,bunHistory:state.bunHistory,showHistory:state.showHistory,
+  deductions:state.revenueDeductions
+ };
+ const profile={employeeId:'DOL-0006',name:'Đặng Văn Đạt',avatar:'🐬'};
+ context.window={DolphinAvatars:{profile:(name,id)=>id==='DOL-0006'?profile:null},
+  DolphinStaffId:{get:()=>({employeeId:'DOL-0003',verified:true})}};
+ state.loungeTables={one:{openedByStaff:'Đặng Văn Đạt',openedByStaffId:'DOL-0006',pax:5,paymentMethod:'TM'}};
+ state.loungeHistory=[];state.bunTables={};state.bunHistory=[];state.showTables={};state.showHistory=[];
+ state.revenueDeductions={'DOL-0006':750000};
+ const unchanged=JSON.stringify(state.loungeTables);
+ try{
+  const rows=context.calcRevenue();
+  assert.equal(rows.length,1);
+  assert.equal(rows[0].rawRevenue,1250000);
+  assert.equal(rows[0].revenueDeduction,750000);
+  assert.equal(rows[0].rev,500000);
+  assert.equal(JSON.stringify(state.loungeTables),unchanged);
+  state.revenueDeductions={'DOL-0006':2000000};
+  assert.equal(context.calcRevenue().length,0,'A deduction never produces negative ranking revenue');
+ }finally{
+  delete context.window;
+  state.loungeTables=original.loungeTables;state.bunTables=original.bunTables;state.showTables=original.showTables;
+  state.loungeHistory=original.loungeHistory;state.bunHistory=original.bunHistory;state.showHistory=original.showHistory;
+  state.revenueDeductions=original.deductions;
+ }
+});

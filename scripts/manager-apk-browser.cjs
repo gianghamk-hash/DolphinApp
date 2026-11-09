@@ -12,7 +12,14 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
    await page.addStyleTag({content:read('staff-profile.css')});
    await page.evaluate(()=>{
     window.__me={employeeId:'DOL-0001',name:'Nguyễn Quản Lý',verified:true,linked:true,managerSession:/DolphinManager/.test(navigator.userAgent),avatar:'🐬'};
-    window.__renames=[];window.__updates=0;
+    window.__renames=[];window.__updates=0;window.__managerScoreCalls=[];
+     window.confirm=()=>true;
+     window.DolphinPrestige={call:async(name,data)=>{
+      window.__managerScoreCalls.push({name,data});
+      if(name==='staffManagerGetEmployeeAdjustments')return {xp:4000,xpHistory:[],revenueHistory:[]};
+      if(name==='staffManagerAdjustEmployee')return {saved:true,after:4100};
+      return {};
+     },refresh:async()=>{}};
     window.DolphinStaffId={get:()=>window.__me,ready:async()=>{},listPending:async()=>({profiles:[]}),listRecoveryRequests:async()=>({requests:[]}),
      listApproved:async()=>({profiles:[{employeeId:'DOL-0002',name:'Nguyễn Nhân Viên'}]}),
      renameManager:async name=>{window.__renames.push(name);window.__me.name=name;},update:async()=>{window.__updates++;},
@@ -28,6 +35,18 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
     assert.deepEqual(await page.evaluate(()=>window.__renames),['Nguyễn Quản Lý Mới']);
     assert.equal(await page.evaluate(()=>window.__updates),0,'rename and avatar use one request, avoiding the profile throttle');
     await page.getByText('Danh bạ đã phê duyệt',{exact:true}).click();await page.getByText('🐬 Nguyễn Nhân Viên · DOL-0002',{exact:true}).waitFor();
+     await page.locator('.manager-directory-person button').filter({hasText:'Cộng XP'}).click();
+     assert.equal(await page.locator('#manager-score-dialog').isVisible(),true);
+     await page.locator('#manager-score-amount').fill('100');
+     await page.locator('#manager-score-reason').fill('Điều chỉnh khi đối soát XP');
+     await page.locator('#manager-score-submit').click();
+     await page.locator('#manager-score-feedback').filter({hasText:'Đã lưu điều chỉnh thành công'}).waitFor();
+     const correction=await page.evaluate(()=>window.__managerScoreCalls.find(x=>x.name==='staffManagerAdjustEmployee'));
+     assert.equal(correction.data.employeeId,'DOL-0002');
+     assert.equal(correction.data.kind,'xp_add');
+     assert.equal(correction.data.amount,100);
+     assert.match(correction.data.requestId,/^m[0-9a-f]{32}$/);
+     await page.getByRole('button',{name:'Đóng điều chỉnh'}).click();
     await page.locator('#manager-directory-search').fill('không có');assert.equal(await page.locator('.manager-directory-person').count(),0);
     await page.getByRole('button',{name:'Đóng danh bạ',exact:true}).click();
     await page.getByText('Khôi phục tài khoản / thiết bị',{exact:true}).click();assert.equal(await page.locator('#crew-approval-dialog').isVisible(),true);

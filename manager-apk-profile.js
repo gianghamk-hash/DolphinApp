@@ -18,6 +18,88 @@ panel.querySelector('.hint').after(actions);
 const dialog=document.createElement('dialog');dialog.id='manager-approved-dialog';
 dialog.innerHTML='<div class="dialog-head"><h2>Nhân viên đã phê duyệt</h2><button type="button" class="icon-button" aria-label="Đóng danh bạ">✕</button></div><label for="manager-directory-search">Tìm tên hoặc Staff ID</label><input id="manager-directory-search" type="search"><p role="status"></p><div class="manager-directory-list"></div>';
 document.body.append(dialog);dialog.querySelector('button').onclick=()=>dialog.close();
+// These controls are presentation only. The callable re-verifies the actual DOL-0001 UID.
+const correction=document.createElement('dialog');correction.id='manager-score-dialog';
+correction.innerHTML='<div class="dialog-head"><h2>Điều chỉnh điểm nhân viên</h2><button type="button" class="icon-button" aria-label="Đóng điều chỉnh">✕</button></div>'
+ +'<p id="manager-score-person" class="hint"></p><p id="manager-score-type" class="hint"></p>'
+ +'<label for="manager-score-amount">Số điểm cần điều chỉnh</label><input id="manager-score-amount" type="number" min="1" step="1" inputmode="numeric" required>'
+ +'<label for="manager-score-reason">Lý do điều chỉnh (bắt buộc)</label><textarea id="manager-score-reason" rows="3" minlength="5" maxlength="240" placeholder="Ví dụ: Điều chỉnh sau đối soát..."></textarea>'
+ +'<button type="button" class="primary full" id="manager-score-submit">Xác nhận điều chỉnh</button>'
+ +'<p id="manager-score-feedback" role="status" aria-live="polite"></p>'
+ +'<h3>Lịch sử điều chỉnh gần đây</h3><div id="manager-score-history"></div>';
+document.body.append(correction);
+correction.querySelector('.dialog-head button').onclick=()=>correction.close();
+const correctionCss=document.createElement('style');correctionCss.textContent=
+ '#manager-score-dialog{width:min(94vw,510px);max-height:87vh;overflow:auto;border:1px solid #c49b5a;border-radius:20px;padding:22px;color:inherit;background:#102e32;box-shadow:0 22px 70px #000b}'
+ +'#manager-score-dialog::backdrop{background:#000a}'
+ +'#manager-score-dialog label{display:block;font-size:12px;font-weight:800;margin:12px 0 5px}'
+ +'#manager-score-dialog input,#manager-score-dialog textarea{display:block;width:100%;padding:12px;color:#fff;background:#0b2225;border:1px solid #b5c9bc66;border-radius:10px;box-sizing:border-box;font:inherit}'
+ +'#manager-score-dialog #manager-score-submit{margin-top:16px}'
+ +'#manager-score-dialog #manager-score-history{font-size:12px;max-height:180px;overflow:auto;display:grid;gap:6px}'
+ +'#manager-score-dialog .manager-score-entry{padding:8px;border:1px solid #ffffff2b;border-radius:9px;overflow-wrap:anywhere}';
+document.head.append(correctionCss);
+let chosenCorrection=null;
+const scoreActions={xp_add:'Cộng XP',xp_deduct:'Trừ XP',revenue_deduct:'Trừ điểm doanh thu tuần'};
+const money=value=>Number(value||0).toLocaleString('vi-VN');
+function correctionId(){
+ if(!window.crypto?.getRandomValues)throw Error('Thiết bị không hỗ trợ mã giao dịch an toàn.');
+ return 'm'+Array.from(window.crypto.getRandomValues(new Uint8Array(16)),x=>x.toString(16).padStart(2,'0')).join('');
+}
+async function readCorrectionHistory(){
+ if(!chosenCorrection)return;
+ const selected=chosenCorrection;
+ const history=$('manager-score-history');history.replaceChildren();
+ try{
+  const result=await window.DolphinPrestige.call('staffManagerGetEmployeeAdjustments',{employeeId:selected.employeeId});
+  if(chosenCorrection!==selected)return;
+  $('manager-score-person').textContent=selected.name+' · '+selected.employeeId+' · XP hiện tại: '+money(result.xp);
+  const items=[...(result.xpHistory||[]),...(result.revenueHistory||[])].sort((a,b)=>b.at-a.at).slice(0,12);
+  if(!items.length){history.textContent='Chưa có lịch sử điều chỉnh.';return;}
+  for(const entry of items){
+   const e=document.createElement('div');e.className='manager-score-entry';
+   e.textContent=new Date(entry.at).toLocaleString('vi-VN')+' · '+(scoreActions[entry.kind]||entry.kind)
+    +' '+money(entry.amount)+(entry.kind==='revenue_deduct'?' đ':' XP')+' · '+entry.reason;
+   history.append(e);
+  }
+ }catch(error){if(chosenCorrection===selected)history.textContent='Không tải được lịch sử: '+error.message;}
+}
+function openCorrection(person,kind){
+ const mine=window.DolphinStaffId?.get?.();
+ if(!(mine?.managerSession===true&&mine.verified===true&&mine.employeeId==='DOL-0001'))return;
+ chosenCorrection={employeeId:person.employeeId,name:person.name,kind,requestId:null};
+ $('manager-score-person').textContent=person.name+' · '+person.employeeId;
+ $('manager-score-type').textContent=scoreActions[kind]+(kind==='revenue_deduct'?' (VNĐ, chỉ ảnh hưởng BXH tuần hiện tại)':' (không thay đổi điểm công việc)');
+ $('manager-score-amount').value='';
+ $('manager-score-amount').max=kind==='revenue_deduct'?'100000000':'1000000';
+ $('manager-score-reason').value='';
+ $('manager-score-feedback').textContent='';
+ correction.showModal();void readCorrectionHistory();
+}
+$('manager-score-submit').onclick=async()=>{
+ if(!chosenCorrection)return;
+ const current=chosenCorrection,amountText=$('manager-score-amount').value.trim();
+ const reason=$('manager-score-reason').value.trim();
+ const amount=Number(amountText),max=current.kind==='revenue_deduct'?100000000:1000000;
+ if(!/^[1-9]\d*$/.test(amountText)||!Number.isSafeInteger(amount)||amount>max){
+  $('manager-score-feedback').textContent='Nhập số nguyên dương không quá '+money(max)+'.';return;
+ }
+ if(reason.length<5||reason.length>240){$('manager-score-feedback').textContent='Nhập lý do từ 5 đến 240 ký tự.';return;}
+ if(!window.confirm(scoreActions[current.kind]+' '+money(amount)+(current.kind==='revenue_deduct'?' đ':' XP')
+  +' cho '+current.name+' ('+current.employeeId+')?\nLý do: '+reason))return;
+ const button=$('manager-score-submit');button.disabled=true;
+ try{
+  if(!current.requestId)current.requestId=correctionId();
+  const result=await window.DolphinPrestige.call('staffManagerAdjustEmployee',{
+   employeeId:current.employeeId,kind:current.kind,requestId:current.requestId,amount,reason
+  });
+  $('manager-score-feedback').textContent=(result.duplicate?'Giao dịch đã được ghi trước đó; không cộng/trừ trùng.':'Đã lưu điều chỉnh thành công.')
+   +(result.after!==undefined?' XP còn '+money(result.after):'');
+  current.requestId=null;
+  await readCorrectionHistory();void window.DolphinPrestige.refresh?.();
+ }catch(error){$('manager-score-feedback').textContent='Chưa xác nhận lưu: '+error.message+'. Thử lại sẽ dùng cùng mã giao dịch.';}
+ finally{button.disabled=false;}
+};
+
 let people=[];
 function render(){
  const term=$('manager-directory-search').value.toLocaleLowerCase('vi');
@@ -26,6 +108,12 @@ function render(){
  for(const p of rows){
   const row=document.createElement('div');row.className='manager-directory-person';
   const label=document.createElement('p');label.textContent=(p.avatar||'🐬')+' '+p.name+' · '+p.employeeId;row.append(label);
+  if(p.employeeId!=='DOL-0001'){
+   for(const [kind,title] of [['xp_add','Cộng XP'],['xp_deduct','Trừ XP'],['revenue_deduct','Trừ doanh thu']]){
+    const change=document.createElement('button');change.type='button';change.className='secondary';change.textContent=title;
+    change.onclick=()=>openCorrection(p,kind);row.append(change);
+   }
+  }
   if(p.employeeId!=='DOL-0001')for(const [title,endpoint] of [['Cấp lại mã liên kết','staffIssueEmployeeRecoveryCode'],['Xóa tài khoản','staffDeleteEmployee']]){
    const button=document.createElement('button');button.type='button';button.className='secondary';button.textContent=title;
    button.onclick=async()=>{
@@ -60,7 +148,7 @@ function sync(){
  const me=window.DolphinStaffId?.get?.(),owner=me?.managerSession===true&&me.verified===true&&me.employeeId==='DOL-0001';
  document.documentElement.classList.toggle('manager-owner-verified',owner);
  $('staff-daily-card').hidden=true;
- if(!owner){people=[];dialog.close();return;}
+ if(!owner){people=[];chosenCorrection=null;dialog.close();correction.close();return;}
  const hint=$('profile-name-input')?.nextElementSibling;
  if(hint)hint.textContent='DOL-0001 có thể đổi tên nhiều lần. Tên vẫn phải hợp lệ và không trùng hồ sơ khác.';
 }

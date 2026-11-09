@@ -26,7 +26,7 @@ const CACHE_URLS = [
   BASE + '/giaitri/games/snake.html',
   BASE + '/giaitri/games/game2048.html',
   BASE + '/crew-arcade-proof.js?v=1',
-  BASE + '/crew-arcade-missions.js?v=1',
+  BASE + '/crew-arcade-missions.js?v=2',
   BASE + '/staff-profile.css?v=crew-wow-v8',
   BASE + '/staff-prestige-profile.js?v=crew-wow-v8',
   BASE + '/crew-cosmetics.css?v=crew-global-v10',

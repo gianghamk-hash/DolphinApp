@@ -50,7 +50,7 @@ const html=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   await page.emulateMedia({reducedMotion:'reduce'});
   a=await get();assert.equal(a.animation,'none','Reduced Motion should disable animation');
   await page.locator('.crew-lc-secondary').click();
-  assert.equal(await page.locator('#crew-levelup-cinematic').count(),0);
+  await page.locator('#crew-levelup-cinematic').waitFor({state:'detached'});
   assert.equal(await page.evaluate(()=>localStorage.getItem('dolphin_level_seen:DOL-0002')),'21');
   assert.equal(await page.locator('#crew-levelup-replay').isHidden(),false);
   await page.locator('#crew-levelup-replay').click();

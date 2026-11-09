@@ -237,10 +237,14 @@ assert.equal(await b.page.locator('#crew-profile-banner').getAttribute('data-ban
 assert.equal(await b.page.locator('#profile-title').textContent(),'⭐ Rookie Star','unlocked title shows under name');
 assert.equal(await b.page.locator('#staff-reward-highlights .reward-highlight').count(),2,'inline reward milestones show unlocked and next reward');
 assert.ok((await b.page.locator('#staff-next-reward').textContent()).includes('Silver'),'next reward is visible without opening a dialog');
-await b.page.getByRole('heading',{name:'🎉 Chúc mừng lên cấp 15!',exact:true}).waitFor();
-assert.equal(await b.page.locator('dialog[aria-labelledby="crew-levelup-title"] li').count(),4,'all crossed reward milestones appear in the congratulations');
-await b.page.getByRole('button',{name:'Đến cài đặt giao diện',exact:true}).click();
-assert.equal(await b.page.locator('#style-dialog').isVisible(),true,'congratulations action opens actual interface settings');
+await b.page.locator('#crew-levelup-cinematic[open]').waitFor();
+assert.equal(await b.page.locator('#crew-levelup-cinematic').getAttribute('data-tier'),'rank','crossing Bronze to Gold triggers a rank cinematic');
+assert.equal(await b.page.locator('#crew-levelup-cinematic .crew-lc-award').count(),4,'all crossed reward milestones appear in the cinematic');
+await b.page.getByRole('button',{name:'Xem phần thưởng',exact:true}).click();
+assert.equal(await b.page.locator('#rewards-dialog').isVisible(),true,'cinematic action opens reward gallery');
+await b.page.getByRole('button',{name:'Đóng phần thưởng',exact:true}).click();
+await b.page.getByRole('button',{name:'Giao diện',exact:true}).click();
+assert.equal(await b.page.locator('#style-dialog').isVisible(),true,'existing style customization remains accessible after cinematic');
 assert.equal(await b.page.locator('#staff-frame-select').inputValue(),'bronze');
 assert.equal(await b.page.locator('#staff-title-select').inputValue(),'rookie');
 assert.equal(await b.page.locator('#staff-banner-select').inputValue(),'wave');

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.86",
-  "buildDate": "2026-11-07T07:51:47.246Z",
-  "commit": "ea5d803",
-  "notes": "test(crew): prevent retroactive mission multiplier on prior receipts",
+  "version": "1.1.87",
+  "buildDate": "2026-11-09T03:49:02.031Z",
+  "commit": "f9069da",
+  "notes": "feat(manager): secure employee XP and revenue leaderboard corrections",
   "forceUpdate": false
 }

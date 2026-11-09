@@ -1,22 +1,86 @@
 {
-  "version": "1.1.86",
-  "previousVersion": "1.1.85",
-  "commit": "ea5d803",
-  "previousCommit": "f89f8e0",
-  "buildDate": "2026-11-07T07:51:47.246Z",
-  "summary": "test(crew): prevent retroactive mission multiplier on prior receipts",
+  "version": "1.1.87",
+  "previousVersion": "1.1.86",
+  "commit": "f9069da",
+  "previousCommit": "ea5d803",
+  "buildDate": "2026-11-09T03:49:02.031Z",
+  "summary": "feat(manager): secure employee XP and revenue leaderboard corrections",
   "changes": {
-    "totalCommits": 310,
-    "filesChanged": 1,
+    "totalCommits": 311,
+    "filesChanged": 17,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "test(crew): prevent retroactive mission multiplier on prior receipts"
+    "feat(manager): secure employee XP and revenue leaderboard corrections"
   ],
   "fileChanges": [
     {
-      "file": "functions/staff-daily-core.test.cjs",
+      "file": ".github/workflows/staff-access-production.yml",
+      "type": "update"
+    },
+    {
+      "file": ".github/workflows/staff-profile-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": "docs/MANAGER_SCORE_CORRECTIONS.md",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-arcade.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-manager-adjustments.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-manager-adjustments.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "manager-apk-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "ranking/work-points.test.js",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-cosmetics.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/manager-apk-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

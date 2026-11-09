@@ -1,5 +1,5 @@
 {
-  "version": "1.1.86",
-  "releaseDate": "2026-11-07",
-  "notes": "test(crew): prevent retroactive mission multiplier on prior receipts"
+  "version": "1.1.87",
+  "releaseDate": "2026-11-09",
+  "notes": "feat(manager): secure employee XP and revenue leaderboard corrections"
 }

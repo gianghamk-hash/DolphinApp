@@ -274,7 +274,8 @@
 }
 @media(max-width:355px){
  #crew-profile-banner .crew-card-brand small{display:none}
- #crew-profile-banner .crew-card-rank-tag{font-size:7px}
+ /* Rank is still displayed beside the Level, so the compact header never clips. */
+ #crew-profile-banner .crew-card-rank-tag{display:none}
  #crew-profile-banner .crew-card-slot-icon{width:25px;height:25px;font-size:16px}
  #crew-profile-banner .crew-card-slot{gap:6px;padding:8px 7px}
  #crew-profile-banner .crew-card-footer span:last-child{display:none}

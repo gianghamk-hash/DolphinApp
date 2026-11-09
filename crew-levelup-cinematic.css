@@ -104,6 +104,8 @@ dialog.crew-lc-dialog::backdrop{background:rgba(0,9,18,.85);backdrop-filter:blur
 @keyframes crew-lc-number{from{opacity:0;transform:scale(1.5);filter:blur(7px)}
  to{opacity:1;transform:scale(1);filter:blur(0)}}
 @keyframes crew-lc-reveal{from{opacity:0;transform:translateY(9px)}to{opacity:1;transform:none}}
+/* Compact action placement inside the existing Character Card. */
+#crew-profile-banner .crew-card-progress-actions{display:flex;align-items:center;justify-content:flex-end;gap:12px;flex-wrap:wrap}
 @media(max-width:420px){
  dialog.crew-lc-dialog{border-radius:22px;width:min(96vw,560px)}
  .crew-lc-scene{padding:19px 15px 21px}

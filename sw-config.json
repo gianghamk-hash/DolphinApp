@@ -1,5 +1,5 @@
 {
-  "version": "1.1.87",
+  "version": "1.1.88",
   "releaseDate": "2026-11-09",
-  "notes": "feat(manager): secure employee XP and revenue leaderboard corrections"
+  "notes": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission"
 }

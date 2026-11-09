@@ -1,7 +1,7 @@
 {
-  "version": "1.1.87",
-  "buildDate": "2026-11-09T03:49:02.031Z",
-  "commit": "f9069da",
-  "notes": "feat(manager): secure employee XP and revenue leaderboard corrections",
+  "version": "1.1.88",
+  "buildDate": "2026-11-09T04:46:16.284Z",
+  "commit": "366b258",
+  "notes": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission",
   "forceUpdate": false
 }

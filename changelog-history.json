@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.87",
+      "releaseDate": "2026-11-09T03:49:02.031Z",
+      "summary": "feat(manager): secure employee XP and revenue leaderboard corrections",
+      "details": [
+        "feat(manager): secure employee XP and revenue leaderboard corrections"
+      ]
+    },
+    {
       "version": "1.1.86",
       "releaseDate": "2026-11-07T07:51:47.246Z",
       "summary": "test(crew): prevent retroactive mission multiplier on prior receipts",
@@ -390,14 +398,6 @@
       "summary": "feat(crew-club): legendary V3 avatar frames across ranking and online staff",
       "details": [
         "feat(crew-club): legendary V3 avatar frames across ranking and online staff"
-      ]
-    },
-    {
-      "version": "1.1.37",
-      "releaseDate": "2026-11-02T00:19:01.389Z",
-      "summary": "feat(crew-club): epic name glow and avatar frame tiers",
-      "details": [
-        "feat(crew-club): epic name glow and avatar frame tiers"
       ]
     }
   ]

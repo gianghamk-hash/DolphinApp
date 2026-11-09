@@ -1,38 +1,38 @@
 {
-  "version": "1.1.87",
-  "previousVersion": "1.1.86",
-  "commit": "f9069da",
-  "previousCommit": "ea5d803",
-  "buildDate": "2026-11-09T03:49:02.031Z",
-  "summary": "feat(manager): secure employee XP and revenue leaderboard corrections",
+  "version": "1.1.88",
+  "previousVersion": "1.1.87",
+  "commit": "366b258",
+  "previousCommit": "f9069da",
+  "buildDate": "2026-11-09T04:46:16.284Z",
+  "summary": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission",
   "changes": {
-    "totalCommits": 311,
-    "filesChanged": 17,
+    "totalCommits": 312,
+    "filesChanged": 12,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(manager): secure employee XP and revenue leaderboard corrections"
+    "fix(crew arcade): reliable daily XP claims and 200-point Snake mission"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/staff-access-production.yml",
+      "file": ".github/workflows/staff-prestige-tests.yml",
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-profile-tests.yml",
+      "file": ".github/workflows/staff-style-unlock-production.yml",
       "type": "update"
     },
     {
-      "file": "docs/MANAGER_SCORE_CORRECTIONS.md",
+      "file": "crew-arcade-missions.js",
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "docs/DOLPHIN_CREW_CLUB_RULES.md",
       "type": "update"
     },
     {
-      "file": "functions/index.js",
+      "file": "docs/STAFF_XP_RULES_CURRENT_VI.md",
       "type": "update"
     },
     {
@@ -40,43 +40,23 @@
       "type": "update"
     },
     {
-      "file": "functions/staff-id.test.js",
+      "file": "functions/staff-daily-core.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-manager-adjustments.js",
+      "file": "functions/staff-daily-missions.js",
       "type": "update"
     },
     {
-      "file": "functions/staff-manager-adjustments.test.cjs",
+      "file": "giaitri/games/game2048.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-profile.js",
+      "file": "giaitri/games/snake.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-xp-actions.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "manager-apk-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/work-points.test.js",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-cosmetics.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/manager-apk-browser.cjs",
+      "file": "scripts/crew-arcade-missions.test.cjs",
       "type": "update"
     },
     {

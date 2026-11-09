@@ -4,12 +4,15 @@
 <meta charset="UTF-8"><meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover"><meta name="theme-color" content="#071f20">
 <title>Hồ sơ nhân viên · Dolphin</title><link rel="manifest" href="./manifest.json"><link rel="stylesheet" href="./staff-profile.css?v=crew-wow-v8">
 <link rel="stylesheet" href="./crew-character-card.css?v=character-v1">
+<link rel="stylesheet" href="./crew-2d-icons.css?v=journey-v1">
+<link rel="stylesheet" href="./crew-ocean-journey.css?v=journey-v1">
 <link rel="stylesheet" href="./crew-levelup-cinematic.css?v=levelup-v1">
 <link rel="stylesheet" href="./staff-access.css?v=crew-name-policy-v1"><script src="./staff-access.js?v=crew-name-policy-v1" defer></script>
 <script src="./dolphin-navigation.js?v=1.1.90" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-operational-auth-v1" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=crew-global-v9" defer></script><script src="./staff-prestige-client.js?v=1.1.90" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./crew-levelup-cinematic.js?v=levelup-v1" defer></script>
 <script src="./staff-prestige-profile.js?v=levelup-v1" defer></script><script src="./staff-admin-profile.js?v=crew-recovery-v7" defer></script><script src="./staff-xp-manager.js?v=1.1.90" defer></script>
 <script src="./manager-apk-profile.js?v=manager-corrections-v1" defer></script>
 <script src="./crew-character-card.js?v=character-v1" defer></script>
+<script src="./crew-ocean-journey.js?v=journey-v1" defer></script>
 </head>
 <body>
 <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -33,7 +36,7 @@
   </svg>
  </div>
  <header class="crew-card-topline">
-  <span class="crew-card-brand"><span class="crew-card-brand-mark" aria-hidden="true">✦</span><span>DOLPHIN <strong>CREW CLUB</strong><small>OCEAN IDENTITY · PERSONAL EDITION</small></span></span>
+  <span class="crew-card-brand"><span class="crew-card-brand-mark crew-2d-icon" data-icon="rank" aria-hidden="true"></span><span>DOLPHIN <strong>CREW CLUB</strong><small>OCEAN IDENTITY · PERSONAL EDITION</small></span></span>
   <span class="crew-card-header-right"><span class="crew-card-rank-tag" id="crew-card-rank-badge">BRONZE RANK</span><button type="button" class="icon-button crew-card-edit" data-open-dialog="profile-edit-dialog" aria-label="Chỉnh sửa hồ sơ"><svg class="icon"><use href="#i-user"/></svg></button></span>
  </header>
  <div class="identity crew-card-identity">
@@ -58,10 +61,10 @@
   </div>
  </div>
  <div class="crew-card-equipment" aria-label="Các hiệu ứng nhân vật đang trang bị">
-  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">◈</span><span class="crew-card-slot-copy"><small>FRAME</small><strong id="crew-card-equipped-frame">Chưa trang bị</strong></span></button>
-  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">✧</span><span class="crew-card-slot-copy"><small>AURA</small><strong id="crew-card-equipped-aura">Chưa trang bị</strong></span></button>
-  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">↝</span><span class="crew-card-slot-copy"><small>MOTION</small><strong id="crew-card-equipped-motion">Chưa trang bị</strong></span></button>
-  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon" aria-hidden="true">♛</span><span class="crew-card-slot-copy"><small>TITLE</small><strong id="crew-card-equipped-title">Chưa trang bị</strong></span></button>
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon crew-2d-icon" data-set="journey" data-icon="frame" aria-hidden="true"></span><span class="crew-card-slot-copy"><small>FRAME</small><strong id="crew-card-equipped-frame">Chưa trang bị</strong></span></button>
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon crew-2d-icon" data-set="journey" data-icon="aura" aria-hidden="true"></span><span class="crew-card-slot-copy"><small>AURA</small><strong id="crew-card-equipped-aura">Chưa trang bị</strong></span></button>
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon crew-2d-icon" data-icon="style" aria-hidden="true"></span><span class="crew-card-slot-copy"><small>MOTION</small><strong id="crew-card-equipped-motion">Chưa trang bị</strong></span></button>
+  <button type="button" class="crew-card-slot" data-open-dialog="style-dialog"><span class="crew-card-slot-icon crew-2d-icon" data-set="journey" data-icon="title" aria-hidden="true"></span><span class="crew-card-slot-copy"><small>TITLE</small><strong id="crew-card-equipped-title">Chưa trang bị</strong></span></button>
  </div>
  <div id="staff-progress-card" class="progress-summary crew-card-progress">
   <div class="section-line"><span class="eyebrow">✦ HÀNH TRÌNH CỦA BẠN</span><span id="staff-level-tag" class="level-tag">LEVEL —</span></div>
@@ -70,14 +73,36 @@
   <div class="progress-foot"><span id="staff-next-level">XP được lưu theo Staff ID</span><span class="crew-card-progress-actions"><button type="button" class="text-button" id="crew-levelup-replay" hidden>✦ Xem lại Level Up</button><button type="button" class="text-button" data-open-dialog="rewards-dialog">Mốc thưởng ↗</button></span></div>
   <div class="next-reward" id="staff-next-reward" aria-live="polite">🎁 Phần thưởng tiếp theo đang tải…</div>
  </div>
- <footer class="crew-card-footer"><span>◈ DOLPHIN CRUISE · CREW IDENTITY</span><span>EXPLORE · GROW · SHINE</span></footer>
+ <footer class="crew-card-footer">
+  <span>◈ DOLPHIN CRUISE · CREW IDENTITY</span>
+  <span class="crew-card-footer-actions">
+   <button type="button" data-open-dialog="style-dialog" class="crew-card-footer-action"><span class="crew-2d-icon" data-icon="style" aria-hidden="true"></span>Giao diện</button>
+   <button type="button" data-open-dialog="rewards-dialog" class="crew-card-footer-action"><span class="crew-2d-icon" data-icon="reward" aria-hidden="true"></span>Phần thưởng</button>
+  </span>
+ </footer>
 </section>
-<nav class="quick-actions" aria-label="Cài đặt hồ sơ">
- <button type="button" data-open-dialog="profile-edit-dialog"><span class="action-icon"><svg class="icon"><use href="#i-user"/></svg></span><span>Hồ sơ</span></button>
- <button type="button" data-open-dialog="style-dialog"><span class="action-icon"><svg class="icon"><use href="#i-spark"/></svg></span><span>Giao diện</span></button>
- <button type="button" data-open-dialog="rewards-dialog"><span class="action-icon"><svg class="icon"><use href="#i-gift"/></svg></span><span>Phần thưởng</span></button>
- <button type="button" data-open-dialog="devices-dialog"><span class="action-icon"><svg class="icon"><use href="#i-device"/></svg></span><span>Thiết bị</span></button>
-</nav>
+<section class="crew-ocean-journey card" id="crew-ocean-journey" aria-labelledby="crew-journey-title">
+  <div class="crew-journey-head">
+   <span class="crew-2d-icon crew-journey-heading-icon" data-set="journey" data-icon="journey" aria-hidden="true"></span>
+   <div class="crew-journey-intro"><p class="eyebrow">DOLPHIN CREW CLUB · OCEAN JOURNEY</p><h2 id="crew-journey-title">Hành trình Đại Dương</h2><p class="hint">60 Level · 6 vùng khám phá · Mỗi mốc là một dấu ấn.</p></div>
+  </div>
+  <div class="crew-journey-overview" aria-live="polite">
+   <span id="crew-journey-level" class="crew-journey-level-label">LEVEL — / 60</span>
+   <span id="crew-journey-completed" class="crew-journey-completed-label">Đang tải hành trình…</span>
+  </div>
+  <div class="crew-journey-progress" role="progressbar" aria-label="Tiến độ 60 Level" aria-valuemin="1" aria-valuemax="60" aria-valuenow="1"><span id="crew-journey-progress-fill"></span></div>
+  <div class="crew-journey-toolbar"><button type="button" id="crew-journey-focus" class="crew-journey-tool">◉ Đến chặng hiện tại</button><button type="button" id="crew-journey-expand" class="crew-journey-tool" aria-expanded="false">Mở toàn bộ bản đồ</button></div>
+  <div id="crew-journey-regions" class="crew-journey-regions" aria-live="polite"><p class="hint">Đang tải 60 mốc Level…</p></div>
+  <div class="crew-journey-foot"><span>✦ Chọn một Level để xem điều kiện mở khóa và phần thưởng.</span>
+  <button class="crew-device-link" type="button" data-open-dialog="devices-dialog" aria-label="Thiết bị"><span class="crew-2d-icon" data-icon="device" aria-hidden="true"></span>Thiết bị & tài khoản</button></div>
+  <div id="staff-reward-highlights" class="reward-highlights" hidden aria-hidden="true"></div>
+ </section>
+ <dialog id="crew-journey-dialog" class="crew-journey-dialog" aria-labelledby="crew-journey-dialog-title">
+  <div class="crew-journey-dialog-top"><span class="crew-2d-icon" id="crew-journey-dialog-icon" data-set="journey" data-icon="current" aria-hidden="true"></span><div><p class="eyebrow" id="crew-journey-dialog-region">OCEAN JOURNEY</p><h2 id="crew-journey-dialog-title">Level</h2></div><button type="button" id="crew-journey-dialog-close" class="crew-journey-close" aria-label="Đóng chi tiết Level">✕</button></div>
+  <p id="crew-journey-dialog-status" class="crew-journey-dialog-status"></p><p id="crew-journey-dialog-xp" class="hint"></p>
+  <h3>Phần thưởng tại mốc này</h3><div id="crew-journey-dialog-rewards" class="crew-journey-reward-list"></div>
+  <button type="button" id="crew-journey-open-rewards" class="crew-journey-primary">Xem bộ sưu tập phần thưởng</button>
+ </dialog>
 <section class="card daily-missions" id="staff-daily-card" aria-labelledby="staff-daily-title">
  <div class="section-line"><div><p class="eyebrow">Dolphin Crew Club · 00:00 reset</p><h2 id="staff-daily-title">🎯 Nhiệm vụ hằng ngày</h2></div><span id="staff-daily-counter" class="level-tag">0/8</span></div>
  <p class="hint">Mỗi nhiệm vụ chỉ nhận XP một lần trong ngày (giờ Việt Nam). Nhiệm vụ công việc tự hoàn thành qua Staff ID đã duyệt. Nhiệm vụ game cộng XP khi điểm số được máy chủ xác thực.</p>
@@ -86,12 +111,7 @@
  <div id="staff-daily-list" class="daily-list" aria-live="polite"><p class="hint">Đang tải nhiệm vụ…</p></div>
  <p id="staff-daily-message" class="hint daily-message" role="status" aria-live="polite"></p>
 </section>
-<section class="card reward-preview" aria-labelledby="crew-reward-preview-title">
- <div class="section-line"><div><p class="eyebrow">Mở khóa tự động</p><h2 id="crew-reward-preview-title">🎁 Mốc phần thưởng</h2></div>
- <button type="button" class="text-button" data-open-dialog="rewards-dialog">Xem tất cả ↗</button></div>
- <p class="hint">Mỗi Level mở thêm đồ trang trí nhân vật để sưu tầm và khoe.</p>
- <div id="staff-reward-highlights" class="reward-highlights" aria-live="polite"></div>
-</section>
+
 <div class="status-strip"><p id="profile-message" role="status" aria-live="polite">Đang kết nối hồ sơ nhân viên…</p><p id="staff-xp-status" role="status"></p><button type="button" class="text-button" id="staff-xp-reconcile">Làm mới XP ↻</button><button type="button" class="text-button" id="staff-xp-retry" hidden>Thử tải lại</button></div>
 <section id="crew-admin-sandbox" class="card crew-admin-sandbox" hidden aria-labelledby="crew-admin-title">
  <div class="section-line"><span class="eyebrow">🧪 Admin · DOL-0001</span><span class="level-tag">CHẾ ĐỘ TEST</span></div>
@@ -114,8 +134,8 @@
  <label class="effect-setting" for="crew-manager-ranking-toggle"><span><strong>Hiện trên bảng xếp hạng</strong><small>Bật để DOL-0001 tham gia xếp hạng; tắt để ẩn khỏi bảng công khai.</small></span><input type="checkbox" id="crew-manager-ranking-toggle"></label>
  <p id="crew-manager-feedback" class="hint" role="status"></p>
 </section>
-<a class="settings-row ranking-shortcut" href="./ranking/index.html#level" aria-label="Mở bảng xếp hạng Level và XP trong app Bảng Xếp Hạng"><span class="action-icon"><svg class="icon" aria-hidden="true"><use href="#i-crown"/></svg></span><span><strong>Bảng xếp hạng Level · XP</strong><small>Xem Dolphin Emperor, thứ hạng nhân viên và Legendary Wall tại app Bảng Xếp Hạng.</small></span><span aria-hidden="true">↗</span></a>
-<button id="prestige-admin-launch" type="button" class="settings-row" data-open-dialog="admin-dialog" hidden><span class="action-icon"><svg class="icon"><use href="#i-shield"/></svg></span><span><strong>Duyệt XP nhân viên</strong><small>Dành cho quản lý được cấp quyền</small></span><span aria-hidden="true">↗</span></button>
+<a class="settings-row ranking-shortcut" href="./ranking/index.html#level" aria-label="Mở bảng xếp hạng Level và XP trong app Bảng Xếp Hạng"><span class="action-icon crew-2d-icon" data-icon="rank" aria-hidden="true"></span><span><strong>Bảng xếp hạng Level · XP</strong><small>Xem Dolphin Emperor, thứ hạng nhân viên và Legendary Wall tại app Bảng Xếp Hạng.</small></span><span aria-hidden="true">↗</span></a>
+<button id="prestige-admin-launch" type="button" class="settings-row" data-open-dialog="admin-dialog" hidden><span class="action-icon crew-2d-icon" data-icon="identity" aria-hidden="true"></span><span><strong>Duyệt XP nhân viên</strong><small>Dành cho quản lý được cấp quyền</small></span><span aria-hidden="true">↗</span></button>
 <p class="page-note">Dolphin Crew Club chỉ để vui chơi và mở khóa trải nghiệm. Không liên quan đến lương, thưởng hoặc đánh giá công việc.</p>
 </main>
 <dialog id="profile-edit-dialog" aria-labelledby="edit-title"><div class="dialog-head"><div><p class="eyebrow">Cá nhân</p><h2 id="edit-title">Chỉnh sửa hồ sơ</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng chỉnh sửa hồ sơ">✕</button></div>

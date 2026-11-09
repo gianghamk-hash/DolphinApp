@@ -1,0 +1,78 @@
+/* Dolphin Crew Club 2.0 — 2D icon sprite atlas.
+ * Source: two user-approved 2D ocean icon sheets, 4 columns × 2 rows.
+ * Individual images are mapped by semantic data-icon, no font dependency.
+ */
+.crew-2d-icon{
+ --icon-size:42px;
+ display:inline-block;flex:none;
+ width:var(--icon-size);height:var(--icon-size);
+ background-image:url('./assets/crew-profile-icons.webp');
+ background-repeat:no-repeat;background-size:400% 200%;
+ background-position:var(--icon-x,0%) var(--icon-y,0%);
+ background-color:transparent;
+ vertical-align:middle;
+ color:transparent;font-size:0;line-height:0;
+}
+.crew-2d-icon[data-set="journey"]{background-image:url('./assets/crew-journey-icons.webp')}
+.crew-2d-icon[data-icon="profile"]{--icon-x:0%;--icon-y:0%}
+.crew-2d-icon[data-icon="style"]{--icon-x:33.333333%;--icon-y:0%}
+.crew-2d-icon[data-icon="reward"]{--icon-x:66.666667%;--icon-y:0%}
+.crew-2d-icon[data-icon="device"]{--icon-x:100%;--icon-y:0%}
+.crew-2d-icon[data-icon="xp"]{--icon-x:0%;--icon-y:100%}
+.crew-2d-icon[data-icon="level"]{--icon-x:33.333333%;--icon-y:100%}
+.crew-2d-icon[data-icon="rank"]{--icon-x:66.666667%;--icon-y:100%}
+.crew-2d-icon[data-icon="identity"]{--icon-x:100%;--icon-y:100%}
+.crew-2d-icon[data-icon="journey"]{--icon-x:0%;--icon-y:0%}
+.crew-2d-icon[data-icon="current"]{--icon-x:33.333333%;--icon-y:0%}
+.crew-2d-icon[data-icon="completed"]{--icon-x:66.666667%;--icon-y:0%}
+.crew-2d-icon[data-icon="locked"]{--icon-x:100%;--icon-y:0%}
+.crew-2d-icon[data-icon="treasure"]{--icon-x:0%;--icon-y:100%}
+.crew-2d-icon[data-icon="aura"]{--icon-x:33.333333%;--icon-y:100%}
+.crew-2d-icon[data-icon="frame"]{--icon-x:66.666667%;--icon-y:100%}
+.crew-2d-icon[data-icon="title"]{--icon-x:100%;--icon-y:100%}
+/* Prevent older decorative backgrounds from painting over the illustrated atlas. */
+#crew-profile-banner .crew-card-brand-mark.crew-2d-icon,
+#crew-profile-banner .crew-card-slot-icon.crew-2d-icon,
+#crew-profile-banner .crew-card-footer-action .crew-2d-icon,
+.daily-task-icon.crew-2d-icon,
+.settings-row .action-icon.crew-2d-icon{
+ background-color:transparent!important;
+ background-image:url('./assets/crew-profile-icons.webp')!important;
+ background-position:var(--icon-x,0%) var(--icon-y,0%)!important;
+ background-size:400% 200%!important;
+ background-repeat:no-repeat!important;
+ border:0!important;box-shadow:none!important;
+}
+#crew-profile-banner .crew-card-slot-icon.crew-2d-icon[data-set="journey"]{
+ background-image:url('./assets/crew-journey-icons.webp')!important;
+}
+#crew-profile-banner .crew-card-brand-mark.crew-2d-icon{
+ --icon-size:41px;width:41px;height:41px;border-radius:0;
+}
+#crew-profile-banner .crew-card-slot-icon.crew-2d-icon{
+ --icon-size:38px;width:38px;height:38px;
+}
+#crew-profile-banner .crew-card-footer-action .crew-2d-icon{--icon-size:29px}
+.daily-task-icon.crew-2d-icon{--icon-size:43px;width:43px;height:43px}
+.settings-row .action-icon.crew-2d-icon{--icon-size:38px;width:38px;height:38px}
+.crew-card-footer-actions{display:flex;align-items:center;justify-content:flex-end;gap:9px;flex-wrap:wrap}
+#crew-profile-banner .crew-card-footer-action{
+ display:inline-flex;align-items:center;gap:4px;
+ border:1px solid rgba(234,204,143,.29);border-radius:12px;
+ background:rgba(12,43,51,.78);color:#f4dcaa;
+ padding:5px 10px 5px 5px;font:800 10px/1.2 system-ui,sans-serif;
+ letter-spacing:.02em;white-space:nowrap;
+}
+#crew-profile-banner .crew-card-footer-action:hover{border-color:#f6da9b;background:#17434a}
+#crew-profile-banner .crew-card-footer-action:focus-visible{outline:2px solid #ffdf9f;outline-offset:3px}
+@media(max-width:450px){
+ #crew-profile-banner .crew-card-footer{gap:8px;flex-wrap:wrap}
+ #crew-profile-banner .crew-card-footer-actions{width:100%;justify-content:center}
+ #crew-profile-banner .crew-card-footer>span:first-child{width:100%;text-align:center}
+ #crew-profile-banner .crew-card-brand-mark.crew-2d-icon{--icon-size:34px;width:34px;height:34px}
+ #crew-profile-banner .crew-card-slot-icon.crew-2d-icon{--icon-size:36px;width:36px;height:36px}
+ .daily-task-icon.crew-2d-icon{--icon-size:37px;width:37px;height:37px}
+}
+@media(prefers-reduced-motion:reduce){
+ .crew-2d-icon{animation:none!important;transition:none!important}
+}

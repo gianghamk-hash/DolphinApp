@@ -1,0 +1,183 @@
+/* Dolphin Crew Club 2.0 / Ocean Journey — 60 Level illustrated map.
+   Read-only progression, mobile-first; does not alter backend rewards. */
+#crew-ocean-journey.crew-ocean-journey{
+ --sea-gold:#e7c886;--sea-cyan:#87d8d3;
+ position:relative;margin:17px 0 19px;padding:20px 19px 22px;overflow:hidden;
+ isolation:isolate;border:1px solid #c6ab6b70;border-radius:25px;
+ background:radial-gradient(ellipse at 83% 0%,rgba(66,158,160,.2),transparent 39%),
+ linear-gradient(145deg,#0b2936,#071922 70%,#091e2d);
+ color:#f6ead2;box-shadow:0 15px 42px #0004,inset 0 1px #fff1;
+}
+#crew-ocean-journey::before{
+ content:"";position:absolute;inset:0;pointer-events:none;opacity:.14;
+ background:repeating-radial-gradient(ellipse at 50% -15%,transparent 0 37px,#79d1ce 38px,#79d1ce 39px,transparent 40px 60px);
+}
+#crew-ocean-journey > *{position:relative;z-index:1}
+.crew-journey-head{display:flex;align-items:center;gap:12px}
+.crew-journey-heading-icon{--icon-size:76px;width:76px;height:76px}
+.crew-journey-intro{min-width:0;flex:1}
+.crew-journey-intro .eyebrow{color:#b8e0d8;font-size:8px;letter-spacing:.12em}
+#crew-journey-title{font-size:clamp(19px,3.8vw,26px);margin:4px 0 5px;line-height:1.2;color:#f4dfb0;letter-spacing:-.035em}
+.crew-journey-intro .hint{color:#a9d0cb;font-size:11px;line-height:1.5}
+.crew-journey-overview{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:14px 0 8px;font-size:11px;font-weight:800}
+.crew-journey-level-label{color:#f5dfaa}
+.crew-journey-completed-label{color:#aed8d7;text-align:right;font-size:10px}
+.crew-journey-progress{height:9px;overflow:hidden;border-radius:99px;background:#517c8350;border:1px solid #c0e7df2d}
+#crew-journey-progress-fill{display:block;width:0%;height:100%;border-radius:99px;
+ background:linear-gradient(90deg,#40b9b8,#99e5df 48%,#f1c66b);box-shadow:0 0 18px #e4bf6c70;transition:width .4s}
+.crew-journey-toolbar{display:flex;align-items:center;justify-content:space-between;gap:9px;margin:12px 0 16px;flex-wrap:wrap}
+.crew-journey-tool{
+ border:1px solid #9fd5d155;border-radius:10px;background:#12424d88;
+ color:#d9f2e9;font-size:10px;font-weight:800;padding:9px 12px;line-height:1.25;
+}
+.crew-journey-tool:hover{background:#1a5563;border-color:#dfc78b}
+.crew-journey-tool:focus-visible{outline:2px solid #f8d687;outline-offset:3px}
+.crew-journey-regions{display:grid;gap:13px}
+.crew-journey-region{
+ --zone-hue:rgba(103,207,206,.18);
+ border:1px solid #a4c9c639;border-radius:18px;overflow:hidden;
+ background:linear-gradient(155deg,var(--zone-hue),rgba(5,28,41,.87) 55%,rgba(6,22,34,.9));
+}
+.crew-journey-region[data-zone="departure"]{--zone-hue:rgba(62,192,180,.19)}
+.crew-journey-region[data-zone="silver"]{--zone-hue:rgba(138,198,220,.18)}
+.crew-journey-region[data-zone="coral"]{--zone-hue:rgba(219,134,104,.16)}
+.crew-journey-region[data-zone="current"]{--zone-hue:rgba(70,157,189,.2)}
+.crew-journey-region[data-zone="stars"]{--zone-hue:rgba(133,108,203,.2)}
+.crew-journey-region[data-zone="mythic"]{--zone-hue:rgba(205,160,91,.22)}
+.crew-journey-region[open]{border-color:#e2c37e8f;box-shadow:0 0 22px #d7bf6640}
+.crew-journey-region-head{
+ display:flex;align-items:center;gap:11px;cursor:pointer;padding:10px 12px;min-height:81px;
+ list-style:none;user-select:none;position:relative;
+}
+.crew-journey-region-head::-webkit-details-marker{display:none}
+.crew-journey-region-head>.crew-2d-icon{--icon-size:58px;width:58px;height:58px}
+.crew-journey-zone-title{min-width:0;flex:1}
+.crew-journey-zone-title strong{display:block;font-size:14px;line-height:1.3;color:#f8e5bc;overflow-wrap:anywhere}
+.crew-journey-zone-title small{display:block;font-size:9px;margin-top:4px;color:#a6dbd7;font-weight:700;letter-spacing:.025em}
+.crew-journey-zone-stats{text-align:right;flex:none;font-variant-numeric:tabular-nums}
+.crew-journey-zone-stats strong{display:block;font-size:11px;color:#e4c78f}
+.crew-journey-zone-stats small{display:block;font-size:9px;margin-top:6px;color:#a6c3c3}
+.crew-journey-region-body{padding:0 10px 12px}
+.crew-journey-zone-note{font-size:10px;line-height:1.55;color:#b3d7d4;padding:1px 5px 9px;text-align:center}
+.crew-journey-grid{
+ position:relative;isolation:isolate;display:grid;
+ grid-template-columns:repeat(5,minmax(0,1fr));grid-template-rows:repeat(2,minmax(78px,auto));
+ column-gap:3px;row-gap:15px;align-items:stretch;
+ background:radial-gradient(ellipse at 50% 52%,#24858b22,transparent 65%);
+ border:1px solid #b1dbc321;border-radius:15px;padding:11px 3px 5px;
+ min-width:0;
+}
+.crew-journey-path{position:absolute;inset:0;z-index:0;width:100%;height:100%;overflow:visible}
+.crew-journey-path path{stroke:#5ac6c9aa;filter:drop-shadow(0 0 4px #8ef2e17a)}
+.crew-journey-node{
+ position:relative;z-index:1;min-width:0;display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+ gap:0;align-self:center;padding:0 0 5px;background:transparent;border:0;color:#dcf1e7;
+ cursor:pointer;border-radius:14px;
+}
+.crew-journey-node .crew-2d-icon{
+ --icon-size:clamp(37px,8.2vw,60px);
+ width:var(--icon-size);height:var(--icon-size);max-width:100%;
+ filter:drop-shadow(0 4px 8px #00101899);
+ transition:transform .2s ease,filter .2s ease;
+}
+.crew-journey-node[data-state="locked"] .crew-2d-icon{filter:grayscale(.35) brightness(.64)}
+.crew-journey-node[data-state="current"] .crew-2d-icon{
+ filter:drop-shadow(0 0 7px #f7cd7ac4) drop-shadow(0 0 13px #83eee999);
+ animation:crew-journey-glow 2.7s ease-in-out infinite;
+}
+.crew-journey-node:hover .crew-2d-icon{transform:translateY(-2px) scale(1.08)}
+.crew-journey-node:focus-visible{outline:2px solid #f1db9c;outline-offset:3px}
+.crew-journey-node-number{
+ display:block;background:#082d3cdb;border:1px solid #729e9a80;border-radius:7px;
+ color:#d3eeeb;font:800 10px/1.1 system-ui,sans-serif;
+ padding:3px 4px;margin-top:-4px;z-index:2;min-width:36px;
+}
+.crew-journey-node[data-milestone="true"] .crew-journey-node-number{border-color:#e9bd79;color:#f4d78d}
+.crew-journey-node[data-state="current"] .crew-journey-node-number{background:#8b6a3488;border-color:#f8da90;color:#fff0c6}
+.crew-journey-node[data-state="locked"] .crew-journey-node-number{color:#7f9f9e;border-color:#456c70}
+.crew-journey-reward-mark{
+ position:absolute;right:0;top:3px;display:grid;place-items:center;
+ width:14px;height:14px;border-radius:50%;color:#ffe2a1;background:#214d56;
+ box-shadow:0 0 7px #f5ce7799;font-size:11px;pointer-events:none;
+}
+.crew-journey-here{
+ font-size:7px;line-height:1.1;letter-spacing:.06em;white-space:nowrap;font-weight:900;
+ margin-top:5px;color:#ffdc92;
+}
+.crew-journey-foot{
+ display:flex;align-items:center;justify-content:space-between;gap:14px;
+ margin-top:17px;padding-top:12px;border-top:1px solid #a1dbd027;
+ font-size:10px;color:#a8c7c1;
+}
+.crew-device-link{
+ display:flex;align-items:center;flex-shrink:0;gap:5px;border:1px solid #e8cc7a62;
+ color:#f1d59e;background:#0d3940b3;border-radius:11px;padding:5px 9px 5px 4px;
+ font-weight:800;font-size:10px;text-align:left;
+}
+.crew-device-link .crew-2d-icon{--icon-size:28px;width:28px;height:28px}
+.crew-device-link:hover{border-color:#f2d893}
+#staff-reward-highlights[hidden]{display:none!important}
+.crew-journey-dialog{
+ max-width:520px;width:min(94vw,520px);max-height:90dvh;overflow-y:auto;
+ border:1px solid #d9b870;border-radius:20px;padding:20px;
+ color:#f5eacb;background:radial-gradient(ellipse at 80% 0%,#3c888548,transparent 59%),
+ linear-gradient(140deg,#072a38,#091922 75%);
+ box-shadow:0 20px 70px #000b;
+}
+.crew-journey-dialog::backdrop{background:#000b;backdrop-filter:blur(5px)}
+.crew-journey-dialog-top{display:flex;align-items:center;gap:10px}
+.crew-journey-dialog-top>.crew-2d-icon{--icon-size:64px;width:64px;height:64px}
+.crew-journey-dialog-top>div{flex:1;min-width:0}
+.crew-journey-dialog-top h2{font-size:23px;margin-top:5px;color:#f8d996}
+.crew-journey-close{align-self:flex-start;border:1px solid #b8d2c954;border-radius:9px;
+ background:#10354199;color:#d6eae8;padding:6px 10px;font-size:17px}
+.crew-journey-dialog-status{margin:14px 0 7px;font-size:12px;font-weight:800;color:#edcd88}
+.crew-journey-dialog .hint{font-size:11px;color:#b1cbc7;line-height:1.55}
+.crew-journey-dialog h3{margin:18px 0 10px;color:#e5cf9b}
+.crew-journey-reward-list{display:grid;gap:8px}
+.crew-journey-dialog-reward{
+ display:flex;gap:11px;align-items:center;
+ padding:7px 11px;border-radius:12px;
+ background:#17445172;border:1px solid #accfbc38;font-size:11px;line-height:1.45;
+ font-weight:750;
+}
+.crew-journey-primary{
+ display:block;margin-top:20px;width:100%;padding:12px;border-radius:12px;
+ background:linear-gradient(120deg,#e1b86d,#f8e5b2);color:#092e3a;
+ border:0;font-weight:900;font-size:12px;
+}
+@keyframes crew-journey-glow{
+ 0%,100%{filter:drop-shadow(0 0 5px #f7cd7aa0) drop-shadow(0 0 9px #83eee988)}
+ 50%{filter:drop-shadow(0 0 11px #ffe0a6ef) drop-shadow(0 0 19px #83eee9ba)}
+}
+@media(max-width:420px){
+ #crew-ocean-journey.crew-ocean-journey{margin:14px 0;padding:15px 10px 17px;border-radius:20px}
+ .crew-journey-heading-icon{--icon-size:61px;width:61px;height:61px}
+ #crew-journey-title{font-size:19px}
+ .crew-journey-intro .hint{font-size:10px}
+ .crew-journey-toolbar{gap:6px}
+ .crew-journey-tool{font-size:9px;padding:8px 9px}
+ .crew-journey-region-head{padding:9px 7px;gap:6px}
+ .crew-journey-region-head>.crew-2d-icon{--icon-size:48px;width:48px;height:48px}
+ .crew-journey-zone-title strong{font-size:12px}
+ .crew-journey-zone-title small{font-size:8px}
+ .crew-journey-zone-stats strong{font-size:9px}
+ .crew-journey-zone-stats small{font-size:8px}
+ .crew-journey-region-body{padding:0 6px 10px}
+ .crew-journey-grid{padding:8px 1px 5px;grid-template-rows:repeat(2,minmax(72px,auto));row-gap:11px;column-gap:0}
+ .crew-journey-node-number{font-size:9px;padding:3px 2px;min-width:30px}
+ .crew-journey-foot{flex-wrap:wrap;gap:9px;justify-content:center}
+ .crew-device-link{width:100%;justify-content:center}
+ .crew-journey-dialog{width:96vw;padding:14px;border-radius:17px}
+}
+@media(max-width:355px){
+ .crew-journey-level-label,.crew-journey-completed-label{font-size:9px}
+ .crew-journey-tool{font-size:8px}
+ .crew-journey-region-head>.crew-2d-icon{--icon-size:42px;width:42px;height:42px}
+ .crew-journey-zone-title strong{font-size:11px}
+ .crew-journey-zone-stats small{font-size:7px}
+}
+@media(prefers-reduced-motion:reduce){
+ .crew-journey-node[data-state="current"] .crew-2d-icon{animation:none!important}
+ .crew-journey-node .crew-2d-icon,#crew-journey-progress-fill{transition:none!important}
+}

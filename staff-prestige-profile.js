@@ -41,7 +41,12 @@ function renderRewards(){
  for(const reward of all){
   const open=!!mine&&mine.level>=reward.level,row=element('div',undefined,'reward-row'+(open?' unlocked':'')+(next?.id===reward.id?' is-next':''));
   const body=element('div');body.append(element('strong',reward.label),element('small',fmt(xpAt(reward.level))+' XP để mở khóa'));
-  row.append(element('span','Lv.'+reward.level,'reward-level'),element('span',reward.icon||'🎁','reward-icon'),body,
+  const rewardIcon=element('span',undefined,'reward-icon crew-2d-icon');
+   rewardIcon.dataset.icon=/khung|frame|viền/i.test(reward.label)?'frame':
+    /hào quang|aura|vệt|trail/i.test(reward.label)?'aura':
+    /danh hiệu|title|banner|tên/i.test(reward.label)?'title':'treasure';
+   rewardIcon.dataset.set='journey';
+   row.append(element('span','Lv.'+reward.level,'reward-level'),rewardIcon,body,
    element('span',open?'✓ Đã mở':mine?'🔒':'—','reward-state'));
   list.appendChild(row);
  }
@@ -253,7 +258,10 @@ function renderDailyMissions(){
  $('staff-daily-earned').textContent='⭐ +'+fmt(daily.todayXP)+' XP hôm nay';
  for(const task of daily.tasks){
   const item=dailyElement('div',undefined,'daily-task');item.dataset.done=String(task.done);
-  const icon=dailyElement('span',task.icon,'daily-task-icon');
+  const icon=dailyElement('span',undefined,'daily-task-icon crew-2d-icon');
+   icon.dataset.icon=({checkin:'rank',order_completed:'level',bungalow_opened:'identity',
+    lounge_opened:'device',order_received:'xp',avatar_changed:'profile',
+    snake_100:'xp',game2048_1000:'reward'})[task.id]||'xp';
   icon.setAttribute('aria-hidden','true');
   const body=dailyElement('div',undefined,'daily-task-body');
   body.append(dailyElement('strong',task.title),dailyElement('small',task.description));

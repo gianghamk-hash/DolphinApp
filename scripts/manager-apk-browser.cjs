@@ -28,7 +28,7 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
    for(const f of ['staff-profile.js','staff-admin-profile.js','manager-apk-profile.js'])await page.addScriptTag({content:read(f)});
    const manager=ua.includes('DolphinManager');
    assert.equal(await page.locator('#staff-daily-card').isVisible(),!manager);
-   await page.locator('.quick-actions [data-open-dialog="profile-edit-dialog"]').click();
+   await page.locator('#crew-profile-banner [data-open-dialog="profile-edit-dialog"]').click();
    assert.equal(await page.locator('#profile-name-input').isEnabled(),manager);
    if(manager){
     await page.locator('#profile-name-input').fill('Nguyễn Quản Lý Mới');await page.locator('#save-profile').click();

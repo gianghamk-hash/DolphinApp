@@ -77,6 +77,9 @@ test('dialog/hidden screen defers without consuming, staff switch is isolated',(
  const modal=h.dialogs()[0];assert.equal(modal.dataset.tier,'rank');
  modal.close();
  h.setOwner('DOL-0003');assert.equal(h.api.notify(staff(11,'DOL-0002')),false);
+ h.window.DolphinPrestige.getMine=()=>({employeeId:'DOL-0002'});
+ assert.equal(h.api.replay(),false,'A stale prior profile cannot be replayed under a new Staff ID');
+ h.window.DolphinPrestige.getMine=()=>({employeeId:'DOL-0003'});
  assert.equal(h.api.notify(staff(11,'DOL-0003')),true);
  assert.equal(h.storage.get('dolphin_level_seen:DOL-0002'),'22');
  assert.equal(h.storage.get('dolphin_level_seen:DOL-0003'),'11');

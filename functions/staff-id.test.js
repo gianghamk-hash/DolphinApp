@@ -43,6 +43,7 @@ function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
   if(n==='./staff-xp-live')return {};
   if(n==='./staff-xp-actions')return {};
   if(n==='./staff-xp-rank-sync')return {}; // Cloud triggers are independently tested.
+  if(n==='./staff-manager-adjustments')return {}; // Independently tested.
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs'); // Independently tested staff progression callables. // Ignore independent push exports while unit-testing legacy Staff ID.
   if(n==='./staff-profile'){const sub={...context,exports:{}};vm.runInNewContext(fs.readFileSync(__dirname+'/staff-profile.js','utf8'),sub);return sub.exports;}
   if(n==='./staff-avatar-catalog.json')return require('./staff-avatar-catalog.json');

@@ -43,7 +43,7 @@ Mở khóa tự động theo levelPeak; trang Hồ Sơ cho chọn khung, danh hi
 - Mở một bàn Lounge: **750 XP** (mở lượt phục vụ được xác minh).
 - Nhận một order: **450 XP** (nhận và bắt đầu chuẩn bị).
 - Đổi avatar: **300 XP** (thực sự lưu avatar khác).
-- Rắn Offline đạt 100 điểm hợp lệ: **1.500 XP**.
+- Rắn Offline đạt 200 điểm hợp lệ: **1.500 XP**.
 - Game 2048 đạt 1.000 điểm hợp lệ: **3.000 XP**.
 - Tổng cộng **8.700–9.600 XP/ngày** nếu hoàn thành cả 8 nhiệm vụ, tùy chuỗi điểm danh. Bước sang 00:00, tiến độ hoàn thành làm mới, nhưng XP tích lũy và chuỗi điểm danh vẫn được giữ.
 - Phần thưởng đã nhận trước khi triển khai phiên bản mới không được nhân lại hoặc cấp trùng. Việc sửa biên nhận lỗi của các phiên bản cũ vẫn tính theo định mức lịch sử đã phát hành.

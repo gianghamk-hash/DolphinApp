@@ -522,7 +522,7 @@ function calcRevenue(){
 
   return Array.from(emp.values())
     .map(e=>{
-      const deduction=e.employeeId ? Number(state.revenueDeductions[e.employeeId])||0 : 0;
+      const deduction=e.employeeId ? Number(state.revenueDeductions?.[e.employeeId])||0 : 0;
       return {...e,rawRevenue:e.rev,revenueDeduction:deduction,rev:Math.max(0,e.rev-deduction)};
     })
     .filter(e => e.rev > 0 && rankingAllowed(e.name,e.employeeId))

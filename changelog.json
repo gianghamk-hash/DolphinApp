@@ -1,34 +1,42 @@
 {
-  "version": "1.1.90",
-  "previousVersion": "1.1.89",
-  "commit": "14931d6",
-  "previousCommit": "2b39cb3",
-  "buildDate": "2026-11-09T06:11:05.858Z",
-  "summary": "feat(crew): Ocean Ascension Level Up Cinematic with safe replay",
+  "version": "1.1.91",
+  "previousVersion": "1.1.90",
+  "commit": "62349f0",
+  "previousCommit": "14931d6",
+  "buildDate": "2026-11-09T06:53:26.971Z",
+  "summary": "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI",
   "changes": {
-    "totalCommits": 314,
-    "filesChanged": 10,
+    "totalCommits": 315,
+    "filesChanged": 13,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): Ocean Ascension Level Up Cinematic with safe replay"
+    "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/staff-prestige-tests.yml",
-      "type": "update"
-    },
     {
       "file": ".github/workflows/staff-profile-tests.yml",
       "type": "update"
     },
     {
-      "file": "crew-levelup-cinematic.css",
+      "file": "assets/crew-journey-icons.webp",
       "type": "update"
     },
     {
-      "file": "crew-levelup-cinematic.js",
+      "file": "assets/crew-profile-icons.webp",
+      "type": "update"
+    },
+    {
+      "file": "crew-2d-icons.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-ocean-journey.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-ocean-journey.js",
       "type": "update"
     },
     {
@@ -36,15 +44,19 @@
       "type": "update"
     },
     {
-      "file": "scripts/avatar-sync-browser.cjs",
+      "file": "manager-apk-profile.js",
       "type": "update"
     },
     {
-      "file": "scripts/crew-levelup-browser.cjs",
+      "file": "scripts/crew-ocean-journey-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/staff-levelup.test.cjs",
+      "file": "scripts/crew-ocean-journey.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/manager-apk-browser.cjs",
       "type": "update"
     },
     {

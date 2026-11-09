@@ -1,7 +1,7 @@
 {
-  "version": "1.1.90",
-  "buildDate": "2026-11-09T06:11:05.858Z",
-  "commit": "14931d6",
-  "notes": "feat(crew): Ocean Ascension Level Up Cinematic with safe replay",
+  "version": "1.1.91",
+  "buildDate": "2026-11-09T06:53:26.971Z",
+  "commit": "62349f0",
+  "notes": "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI",
   "forceUpdate": false
 }

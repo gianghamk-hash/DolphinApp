@@ -9,7 +9,7 @@ const TASKS=Object.freeze([
  Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:750}),
  Object.freeze({id:'order_received',icon:'📥',title:'Nhận 1 order',description:'Nhận và bắt đầu xử lý một đơn mới',xp:450}),
  Object.freeze({id:'avatar_changed',icon:'🎭',title:'Đổi avatar 1 lần',description:'Lưu một avatar khác với avatar hiện tại',xp:300}),
- Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 100 điểm',description:'Đạt ít nhất 100 điểm trong một ván Rắn Săn Mồi Offline',xp:1500}),
+ Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 200 điểm',description:'Đạt ít nhất 200 điểm trong một ván Rắn Săn Mồi Offline',xp:1500}),
  Object.freeze({id:'game2048_1000',icon:'🔢',title:'2048 đạt 1.000 điểm',description:'Đạt ít nhất 1.000 điểm trong một ván 2048',xp:3000})
 ]);
 const ids=new Set(TASKS.map(task=>task.id));

@@ -64,7 +64,8 @@
   const btn=document.getElementById('crew-levelup-replay');
   if(!btn)return;
   const id=root.DolphinPrestige?.getMine?.()?.employeeId;
-  btn.hidden=!validStaff(id)||!readMoment(id);
+  const owner=root.DolphinStaffId?.get?.();
+  btn.hidden=!validStaff(id)||(owner?.employeeId&&owner.employeeId!==id)||!readMoment(id);
  }
  function display(moment,preview=false){
   if(document.hidden||document.querySelector('dialog[open]'))return false;
@@ -154,6 +155,8 @@
  function replay(){
   const staff=root.DolphinPrestige?.getMine?.();
   if(!validStaff(staff?.employeeId))return false;
+  const owner=root.DolphinStaffId?.get?.();
+  if(owner?.employeeId&&owner.employeeId!==staff.employeeId)return false;
   const m=readMoment(staff.employeeId);
   return !!m&&display(m,true);
  }

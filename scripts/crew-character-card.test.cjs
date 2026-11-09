@@ -83,10 +83,15 @@ test('Card is HTML/CSS only, and retains every existing business/profile handler
  }
  assert.match(html,/crew-character-card\.css\?v=character-v1/);
  assert.match(html,/crew-character-card\.js\?v=character-v1/);
- assert.equal((html.match(/data-open-dialog="style-dialog"/g)||[]).length>=5,true);
+ assert.equal((html.match(/data-open-dialog="style-dialog"/g)||[]).length>=4,true);
  assert.match(css,/#crew-profile-banner #profile-avatar/);
  assert.match(css,/@media\(max-width:450px\)/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
+ assert.doesNotMatch(html,/id="crew-ocean-journey"|crew-ocean-journey\\.(?:js|css)|id="crew-journey-dialog"/);
+ assert.equal((html.match(/class="crew-profile-utility"/g)||[]).length,2,'Keep two account utilities only');
+ assert.equal((html.match(/href="\\.\/ranking\/index\\.html#level"/g)||[]).length,1,'No duplicate ranking shortcut');
+ assert.match(html,/data-open-dialog="devices-dialog"/);
+ assert.match(html,/id="staff-reward-highlights"/);
  assert.doesNotMatch(source,/\.set\(|\.update\(|localStorage\.setItem|httpsCallable|fetch\(/,
   'Card must not write employee fields');
 });

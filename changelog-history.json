@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.88",
+      "releaseDate": "2026-11-09T04:46:16.284Z",
+      "summary": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission",
+      "details": [
+        "fix(crew arcade): reliable daily XP claims and 200-point Snake mission"
+      ]
+    },
+    {
       "version": "1.1.87",
       "releaseDate": "2026-11-09T03:49:02.031Z",
       "summary": "feat(manager): secure employee XP and revenue leaderboard corrections",
@@ -390,14 +398,6 @@
       "summary": "feat(crew-club): animated V4 rarity orbits and Mythic twin stars",
       "details": [
         "feat(crew-club): animated V4 rarity orbits and Mythic twin stars"
-      ]
-    },
-    {
-      "version": "1.1.38",
-      "releaseDate": "2026-11-02T04:36:33.301Z",
-      "summary": "feat(crew-club): legendary V3 avatar frames across ranking and online staff",
-      "details": [
-        "feat(crew-club): legendary V3 avatar frames across ranking and online staff"
       ]
     }
   ]

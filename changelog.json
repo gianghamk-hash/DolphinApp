@@ -1,18 +1,18 @@
 {
-  "version": "1.1.88",
-  "previousVersion": "1.1.87",
-  "commit": "366b258",
-  "previousCommit": "f9069da",
-  "buildDate": "2026-11-09T04:46:16.284Z",
-  "summary": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission",
+  "version": "1.1.89",
+  "previousVersion": "1.1.88",
+  "commit": "2b39cb3",
+  "previousCommit": "366b258",
+  "buildDate": "2026-11-09T05:42:12.829Z",
+  "summary": "feat(crew): ship premium Dolphin Crew Club Character Card",
   "changes": {
-    "totalCommits": 312,
-    "filesChanged": 12,
+    "totalCommits": 313,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(crew arcade): reliable daily XP claims and 200-point Snake mission"
+    "feat(crew): ship premium Dolphin Crew Club Character Card"
   ],
   "fileChanges": [
     {
@@ -20,43 +20,27 @@
       "type": "update"
     },
     {
-      "file": ".github/workflows/staff-style-unlock-production.yml",
+      "file": ".github/workflows/staff-profile-tests.yml",
       "type": "update"
     },
     {
-      "file": "crew-arcade-missions.js",
+      "file": "crew-character-card.css",
       "type": "update"
     },
     {
-      "file": "docs/DOLPHIN_CREW_CLUB_RULES.md",
+      "file": "crew-character-card.js",
       "type": "update"
     },
     {
-      "file": "docs/STAFF_XP_RULES_CURRENT_VI.md",
+      "file": "dolphin-profile.html",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-arcade.test.cjs",
+      "file": "scripts/crew-character-card-browser.cjs",
       "type": "update"
     },
     {
-      "file": "functions/staff-daily-core.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-daily-missions.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/game2048.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-arcade-missions.test.cjs",
+      "file": "scripts/crew-character-card.test.cjs",
       "type": "update"
     },
     {

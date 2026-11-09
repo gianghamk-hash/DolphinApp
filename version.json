@@ -1,7 +1,7 @@
 {
-  "version": "1.1.88",
-  "buildDate": "2026-11-09T04:46:16.284Z",
-  "commit": "366b258",
-  "notes": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission",
+  "version": "1.1.89",
+  "buildDate": "2026-11-09T05:42:12.829Z",
+  "commit": "2b39cb3",
+  "notes": "feat(crew): ship premium Dolphin Crew Club Character Card",
   "forceUpdate": false
 }

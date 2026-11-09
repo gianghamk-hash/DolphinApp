@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.91",
+      "releaseDate": "2026-11-09T06:53:26.971Z",
+      "summary": "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI",
+      "details": [
+        "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI"
+      ]
+    },
+    {
       "version": "1.1.90",
       "releaseDate": "2026-11-09T06:11:05.858Z",
       "summary": "feat(crew): Ocean Ascension Level Up Cinematic with safe replay",
@@ -390,14 +398,6 @@
       "summary": "fix(staff): restore approval list and require fresh registration after rejection",
       "details": [
         "fix(staff): restore approval list and require fresh registration after rejection"
-      ]
-    },
-    {
-      "version": "1.1.41",
-      "releaseDate": "2026-11-02T10:13:09.169Z",
-      "summary": "feat(crew-club): owner approvals, 70% XP progression and epic V5 cosmetics",
-      "details": [
-        "feat(crew-club): owner approvals, 70% XP progression and epic V5 cosmetics"
       ]
     }
   ]

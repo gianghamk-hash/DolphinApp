@@ -1,7 +1,7 @@
 {
-  "version": "1.1.91",
-  "buildDate": "2026-11-09T06:53:26.971Z",
-  "commit": "62349f0",
-  "notes": "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI",
+  "version": "1.1.92",
+  "buildDate": "2026-11-09T08:08:43.861Z",
+  "commit": "d77da71",
+  "notes": "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey",
   "forceUpdate": false
 }

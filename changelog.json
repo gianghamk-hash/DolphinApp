@@ -1,18 +1,18 @@
 {
-  "version": "1.1.91",
-  "previousVersion": "1.1.90",
-  "commit": "62349f0",
-  "previousCommit": "14931d6",
-  "buildDate": "2026-11-09T06:53:26.971Z",
-  "summary": "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI",
+  "version": "1.1.92",
+  "previousVersion": "1.1.91",
+  "commit": "d77da71",
+  "previousCommit": "62349f0",
+  "buildDate": "2026-11-09T08:08:43.861Z",
+  "summary": "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey",
   "changes": {
-    "totalCommits": 315,
-    "filesChanged": 13,
+    "totalCommits": 316,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI"
+    "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,11 @@
       "type": "update"
     },
     {
-      "file": "assets/crew-journey-icons.webp",
+      "file": "assets/crew-cosmetic-icons-v2.webp",
       "type": "update"
     },
     {
-      "file": "assets/crew-profile-icons.webp",
+      "file": "assets/crew-profile-icons-v2.webp",
       "type": "update"
     },
     {
@@ -32,11 +32,7 @@
       "type": "update"
     },
     {
-      "file": "crew-ocean-journey.css",
-      "type": "update"
-    },
-    {
-      "file": "crew-ocean-journey.js",
+      "file": "crew-profile-clean.css",
       "type": "update"
     },
     {
@@ -44,27 +40,23 @@
       "type": "update"
     },
     {
-      "file": "manager-apk-profile.js",
+      "file": "scripts/avatar-sync-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/crew-ocean-journey-browser.cjs",
+      "file": "scripts/crew-character-card-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/crew-ocean-journey.test.cjs",
+      "file": "scripts/crew-character-card.test.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/manager-apk-browser.cjs",
+      "file": "scripts/crew-profile-clean.test.cjs",
       "type": "update"
     },
     {
       "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

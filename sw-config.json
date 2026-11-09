@@ -1,5 +1,5 @@
 {
-  "version": "1.1.91",
+  "version": "1.1.92",
   "releaseDate": "2026-11-09",
-  "notes": "feat(crew): 60-Level Ocean Journey and 16 premium 2D icons with cleaner profile UI"
+  "notes": "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey"
 }

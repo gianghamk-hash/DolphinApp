@@ -28,7 +28,7 @@ function prepare(game,participants){
   check(STAFF_ID.test(p?.employeeId),'Staff ID không hợp lệ');
   check(!used.has(p.employeeId),'Trùng người chơi');
   used.add(p.employeeId);
-  check(p.verified===true&&p.active===true&&p.approved===true,'Chỉ tài khoản đã duyệt được tham gia');
+  check(p.verified===true&&p.active===true&&(p.registrationSource!=='self'||p.approved===true),'Chỉ tài khoản đã duyệt được tham gia');
   const stake=p.stake;
   check(Number.isSafeInteger(stake)&&stake>=1,'Tiền cược phải là số XP nguyên dương');
   const max=available(p);

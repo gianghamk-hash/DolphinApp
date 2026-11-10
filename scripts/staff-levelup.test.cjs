@@ -112,3 +112,15 @@ test('cinematic stays read-only and old profile delegates to it',()=>{
  assert.match(html,/crew-levelup-cinematic\.js\?v=levelup-v1/);
  assert.match(html,/id="crew-levelup-replay"/);
 });
+
+test('verified staff Level decrease updates celebration baseline without a fake Level Up',()=>{
+ const h=fixture({'dolphin_level_seen:DOL-0002':'54'});
+ const down=staff(1,'DOL-0002',{levelPeak:54,xp:0});
+ assert.equal(h.api.notify(down),false);
+ assert.equal(h.storage.get('dolphin_level_seen:DOL-0002'),'1');
+ assert.equal(h.dialogs().length,0);
+ const up=staff(2,'DOL-0002',{levelPeak:54,xp:2450});
+ assert.equal(h.api.notify(up),true);
+ assert.equal(h.dialogs()[0].dataset.tier,'normal');
+ assert.equal(h.storage.get('dolphin_level_seen:DOL-0002'),'2');
+});

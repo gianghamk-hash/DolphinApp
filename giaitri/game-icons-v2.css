@@ -58,3 +58,35 @@
 @media(prefers-reduced-motion:reduce) {
   #tab-game .game-art { transition:none!important; }
 }
+
+/* Same approved illustrations in leaderboard tabs, game headings and results. */
+#tab-leaderboard .lb-game-icon {
+  --game-pos:0%;
+  display:inline-block;
+  width:1.2em;
+  height:1.2em;
+  flex:0 0 auto;
+  vertical-align:-.18em;
+  border-radius:21%;
+  background-color:#041622;
+  background-image:url('../assets/game-icons-approved-20261110.webp');
+  background-repeat:no-repeat;
+  background-size:700% 100%;
+  background-position:var(--game-pos) center;
+  border:1px solid rgba(139,218,226,.45);
+  box-shadow:0 1px 5px rgba(0,0,0,.22);
+}
+#tab-leaderboard .lb-game-icon.art-battleship {--game-pos:0%;}
+#tab-leaderboard .lb-game-icon.art-caro {--game-pos:16.666667%;}
+#tab-leaderboard .lb-game-icon.art-xiangqi {--game-pos:33.333333%;}
+#tab-leaderboard .lb-game-icon.art-tactics {--game-pos:50%;}
+#tab-leaderboard .lb-game-icon.art-snake {--game-pos:66.666667%;}
+#tab-leaderboard .lb-game-icon.art-snake-coop {--game-pos:83.333333%;}
+#tab-leaderboard .lb-game-icon.art-2048 {--game-pos:100%;}
+#tab-leaderboard .lb-game-icon.art-chess {
+  background-image:url('../assets/game-chess-2d.svg');
+  background-size:cover;
+  background-position:center;
+}
+#tab-leaderboard .tab-btn .lb-game-icon {width:22px;height:22px;}
+#lbGameIcon .lb-game-icon {width:40px;height:40px;}

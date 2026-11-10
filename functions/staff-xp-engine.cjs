@@ -205,7 +205,7 @@ function equipOnLevelUp(previous,current){
    profileVersion:(Number(current.profileVersion)||0)+1};
  }
  if(level>before){
-  if(Number(current.autoStyleLevel)>=level)return current; // speculative transaction retry
+  if(Number(current.autoStyleLevel)===level)return current; // speculative retry; older higher-tier presets must be repaired
   // Readjust on a true Level gain even if the user once had a higher Level.
   return {...current,...automaticStyle(level),autoStyleLevel:level,autoStyleVersion:1,
    profileVersion:(Number(current.profileVersion)||0)+1};

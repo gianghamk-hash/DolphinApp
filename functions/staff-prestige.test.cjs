@@ -62,7 +62,7 @@ test('manager-only grants reject client spoofing and persist idempotent XP',asyn
  const board=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(board.champion,null,'Sandbox admin cannot become Dolphin Emperor');
 });
-test('level peak and unlocked rewards survive a correction',async()=>{
+test('XP correction locks premium effects even though historical levelPeak remains',async()=>{
  const {api,data}=harness();
  await api.staffGrantVerifiedXP(req('manager',{employeeId:'DOL-0001',eventId:'revenue:verified:high',source:'revenue',amount:20000}));
  assert.equal((await api.staffGetMyProgress(req('lanDevice'))).level,3);
@@ -72,7 +72,9 @@ test('level peak and unlocked rewards survive a correction',async()=>{
  assert.equal(mine.xp,500);
  assert.equal(mine.level,1);
  assert.equal(mine.highestLevel,3);
- assert(mine.unlocked.includes('name-onflame'));
+ assert(!mine.unlocked.includes('name-onflame'));
+ assert.equal(mine.selectedNameFx,'none');
+ assert.equal(mine.nameFlame,false);
  assert.equal(data.get('staffRegistry/DOL-0001').levelPeak,3);
 });
 test('personal premium theme requires server-side level and cannot be forged',async()=>{
@@ -327,11 +329,11 @@ test('public Level board is rebuilt on demand for the new 2450 threshold',async(
  data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Visible Crew',avatar:'🐬',active:true,xp:2450,levelPeak:1});
  data.set('staffPrestige/public',{leaderboard:[{employeeId:'DOL-0002',name:'Visible Crew',xp:2450,level:1}],updatedAt:123});
  const first=await api.staffGetPrestige(req('lanDevice'));
- assert.equal(first.levelRulesVersion,3);
+ assert.equal(first.levelRulesVersion,4);
  assert.equal(first.leaderboard[0].level,2);
  const second=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(second.leaderboard[0].level,2);
- assert.equal(data.get('staffPrestige/public').levelRulesVersion,3);
+ assert.equal(data.get('staffPrestige/public').levelRulesVersion,4);
 });
 
 test('pending registrations never enter Level rankings, Emperor or legends, even with stale cache',async()=>{
@@ -412,13 +414,15 @@ test('Linh hihi zero XP falls to Level 1 but retains unlocked Level 54 cosmetics
  const profile=api._leaderboard({'DOL-0010':data.get('staffRegistry/DOL-0010')})[0];
  assert.equal(profile.xp,0);assert.equal(profile.level,1);
  assert.equal(profile.rank,'Bronze');assert.equal(profile.highestLevel,54);
- assert.equal(profile.selectedFrame,'gold');assert.equal(profile.selectedTitle,'legend');
- assert.equal(profile.selectedAvatarMotion,'supernova');
+ assert.equal(profile.selectedFrame,'none');assert.equal(profile.selectedTitle,'none');
+ assert.equal(profile.selectedAvatarMotion,'none');
  await api._rebuildPrestige();
  const board=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(board.leaderboard[0].level,1);
  assert.equal(board.leaderboard[0].xp,0);
  assert.equal(board.leaderboard[0].highestLevel,54);
+ assert.equal(board.leaderboard[0].selectedFrame,'none');
+ assert.equal(board.leaderboard[0].selectedTitle,'none');
 });
 test('duplicate name aliases are not separate Level entries; keep stored Staff IDs for review',async()=>{
  const {api,data}=harness();
@@ -450,4 +454,34 @@ test('public Level response reflects current XP even when cached snapshot has sa
  assert.equal(updated.leaderboard.find(x=>x.employeeId==='DOL-0010').level,1);
  assert.equal(updated.champion.level,1);
  assert.equal(data.get('staffPrestige/public').leaderboard.find(x=>x.employeeId==='DOL-0010').level,1);
+});
+
+test('Linh hihi Level 2 cannot show Guardian or high-tier effects on public leaderboard',async()=>{
+ const {api,data}=harness();
+ const p={employeeId:'DOL-0003',name:'Linh hihi',active:true,xp:4102.5,levelPeak:54,
+  selectedTitle:'guardian',selectedFrame:'gold',selectedAura:'celestial',
+  selectedAvatarMotion:'supernova',selectedCardFx:'mythic',selectedNameFx:'royal',
+  personalTheme:'cosmic',nameFlame:true,nameGradient:true};
+ data.set('staffRegistry/DOL-0003',p);
+ await api._rebuildPrestige();
+ const board=await api.staffGetPrestige(req('lanDevice'));
+ const lin=board.leaderboard.find(x=>x.employeeId==='DOL-0003');
+ assert.equal(lin.level,2);assert.equal(lin.xp,4102.5);
+ assert.equal(lin.rank,'Bronze');
+ for(const field of ['selectedTitle','selectedFrame','selectedAura','selectedAvatarMotion','selectedCardFx','selectedNameFx'])assert.equal(lin[field],'none');
+ assert.equal(lin.personalTheme,'dark');assert.equal(lin.nameFlame,false);assert.equal(lin.nameGradient,false);
+ assert(!lin.unlocked?.includes('title_guardian'));
+ const card=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(card.level,1);
+});
+test('Premium personal style cannot be re-equipped based on historical levelPeak',async()=>{
+ const {api,data}=harness();
+ const old=data.get('staffRegistry/DOL-0001');
+ data.set('staffRegistry/DOL-0001',{...old,xp:4102.5,levelPeak:54,
+  selectedTitle:'guardian',selectedFrame:'gold',personalTheme:'cosmic',nameFlame:true});
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'dark',selectedTitle:'guardian'})),e=>e.code==='permission-denied');
+ await assert.rejects(()=>api.staffSetPersonalStyle(req('lanDevice',{theme:'cosmic',selectedTitle:'none'})),e=>e.code==='permission-denied');
+ const mine=await api.staffGetMyProgress(req('lanDevice'));
+ assert.equal(mine.level,2);assert.equal(mine.highestLevel,54);
+ assert.equal(mine.selectedTitle,'none');assert.equal(mine.selectedFrame,'none');assert.equal(mine.personalTheme,'dark');
 });

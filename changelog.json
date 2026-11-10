@@ -1,98 +1,22 @@
 {
-  "version": "1.1.95",
-  "previousVersion": "1.1.94",
-  "commit": "0c1c2fe",
-  "previousCommit": "f905342",
-  "buildDate": "2026-11-10T00:53:19.756Z",
-  "summary": "fix(crew): lock avatar, titles and cosmetic FX to current XP Level",
+  "version": "1.1.96",
+  "previousVersion": "1.1.95",
+  "commit": "35bdd88",
+  "previousCommit": "0c1c2fe",
+  "buildDate": "2026-11-10T03:27:38.103Z",
+  "summary": "fix(multiplayer): fix 2-player seats assignment and throttle sendState",
   "changes": {
-    "totalCommits": 319,
-    "filesChanged": 20,
+    "totalCommits": 320,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(crew): lock avatar, titles and cosmetic FX to current XP Level"
+    "fix(multiplayer): fix 2-player seats assignment and throttle sendState"
   ],
   "fileChanges": [
     {
-      "file": "crew-character-card.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-avatars.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
-      "file": "functions/manager-apk.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-manager-adjustments.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-manager-adjustments.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-name-repair.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-prestige.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-profile.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-xp-engine.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "ranking/index.html",
-      "type": "update"
-    },
-    {
-      "file": "ranking/staff-prestige-ranking.js",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-character-card-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-character-card.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/landing-level-podium.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-recovery.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-prestige-profile.js",
+      "file": "dolphin-multiplayer.js",
       "type": "update"
     }
   ]

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.95",
-  "buildDate": "2026-11-10T00:53:19.756Z",
-  "commit": "0c1c2fe",
-  "notes": "fix(crew): lock avatar, titles and cosmetic FX to current XP Level",
+  "version": "1.1.96",
+  "buildDate": "2026-11-10T03:27:38.103Z",
+  "commit": "35bdd88",
+  "notes": "fix(multiplayer): fix 2-player seats assignment and throttle sendState",
   "forceUpdate": false
 }

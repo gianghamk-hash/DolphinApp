@@ -1,7 +1,7 @@
 {
-  "version": "1.1.99",
-  "buildDate": "2026-11-10T04:46:20.652Z",
-  "commit": "bd3738e",
-  "notes": "Fix adapter registration and update room creation logic",
+  "version": "1.1.100",
+  "buildDate": "2026-11-10T04:51:20.541Z",
+  "commit": "24863f8",
+  "notes": "fix(tactics): restore authority-adapter interface and polling lock",
   "forceUpdate": false
 }

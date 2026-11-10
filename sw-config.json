@@ -1,5 +1,5 @@
 {
-  "version": "1.1.99",
+  "version": "1.1.100",
   "releaseDate": "2026-11-10",
-  "notes": "Fix adapter registration and update room creation logic"
+  "notes": "fix(tactics): restore authority-adapter interface and polling lock"
 }

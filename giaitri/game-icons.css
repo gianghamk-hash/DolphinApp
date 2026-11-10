@@ -1,0 +1,64 @@
+/* Dolphin Arcade — approved 2D illustrations, visually applied only to game icons.
+ * Sprite is 4 columns × 2 rows in the following order:
+ * Tactics, Caro, Chess, Xiangqi / Battleship, Co-op Snake, Snake, 2048.
+ * Do not change game URLs, rooms, XP, or leaderboard mechanics.
+ */
+.game-art{
+ --game-art-x:0%;
+ --game-art-y:0%;
+ display:inline-block;
+ background-image:url("./assets/dolphin-game-icons-v1.webp");
+ background-repeat:no-repeat;
+ background-position:var(--game-art-x) var(--game-art-y);
+ background-size:400% 200%;
+ background-color:rgba(9,43,65,.92);
+ vertical-align:middle;
+}
+.game-art--tactics{--game-art-x:0%;--game-art-y:0%}
+.game-art--caro{--game-art-x:33.333333%;--game-art-y:0%}
+.game-art--chess{--game-art-x:66.666667%;--game-art-y:0%}
+.game-art--xiangqi{--game-art-x:100%;--game-art-y:0%}
+.game-art--battleship{--game-art-x:0%;--game-art-y:100%}
+.game-art--snake-coop{--game-art-x:33.333333%;--game-art-y:100%}
+.game-art--snake{--game-art-x:66.666667%;--game-art-y:100%}
+.game-art--2048{--game-art-x:100%;--game-art-y:100%}
+.arcade-app .arcade-icon.game-art{
+ color:transparent;
+ font-size:0;
+ border:1px solid rgba(247,218,142,.6);
+ border-radius:21px;
+ filter:drop-shadow(0 6px 11px rgba(16,155,185,.23));
+ box-shadow:0 8px 23px rgba(0,8,16,.38),inset 0 0 9px rgba(255,224,144,.12);
+ transition:transform .17s ease,box-shadow .17s ease,border-color .17s ease;
+}
+.arcade-app:hover .arcade-icon.game-art,
+.arcade-app:focus-visible .arcade-icon.game-art{
+ border-color:#f8d989;
+ box-shadow:0 9px 25px rgba(0,8,16,.4),0 0 20px rgba(72,215,229,.25);
+}
+.arcade-featured .featured-art.game-art{
+ background-color:rgba(9,43,65,.7);
+ border:1px solid rgba(248,218,137,.72);
+ border-radius:19px;
+ box-shadow:0 0 16px rgba(243,199,103,.22),inset 0 0 9px rgba(255,224,144,.1);
+ color:transparent;
+ font-size:0;
+}
+.game-tab-art{
+ width:24px;
+ height:24px;
+ border-radius:7px;
+ border:1px solid rgba(249,215,146,.35);
+ flex:0 0 24px;
+ box-shadow:0 1px 7px rgba(0,0,0,.3);
+}
+#lbGameIcon .game-tab-art{width:30px;height:30px;flex-basis:30px;border-radius:9px}
+#lbGameIcon{display:inline-flex;align-items:center;justify-content:center}
+#lbGameTabs .tab-btn>span{display:inline-flex;align-items:center;justify-content:center}
+@media(max-width:345px){
+ .arcade-app .arcade-icon.game-art{border-radius:16px}
+ .game-tab-art{width:20px;height:20px;flex-basis:20px;border-radius:6px}
+}
+@media(prefers-reduced-motion:reduce){
+ .arcade-app .arcade-icon.game-art{transition:none!important}
+}

@@ -1,0 +1,34 @@
+name: Dolphin Games 2D Icons
+on:
+  pull_request:
+    paths:
+      - 'giaitri/index.html'
+      - 'giaitri/game-icons.css'
+      - 'giaitri/assets/dolphin-game-icons-v1.webp'
+      - 'scripts/game-icons.test.cjs'
+      - 'service-worker.js'
+      - '.github/workflows/game-icons-ui.yml'
+  push:
+    branches: [main]
+    paths:
+      - 'giaitri/index.html'
+      - 'giaitri/game-icons.css'
+      - 'giaitri/assets/dolphin-game-icons-v1.webp'
+      - 'scripts/game-icons.test.cjs'
+      - '.github/workflows/game-icons-ui.yml'
+permissions:
+  contents: read
+jobs:
+  image-art-check:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Check game icon UI, asset and cache integrity
+        run: node --test scripts/game-icons.test.cjs
+      - name: Verify no changes to game engine files or server-side XP
+        run: |
+          test -s giaitri/assets/dolphin-game-icons-v1.webp
+          test -s giaitri/game-icons.css

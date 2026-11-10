@@ -90,7 +90,18 @@ test('manager can issue a hashed single-use recovery code preserving the same St
 
 test('shared directory publishes all newly auto-equipped tiers across linked apps',async()=>{
  const f=fixture(),style=require('./staff-xp-engine.cjs').automaticStyle(55);
- Object.assign(f.data.staffRegistry['DOL-0002'],style,{levelPeak:55});
+ Object.assign(f.data.staffRegistry['DOL-0002'],style,{levelPeak:55,xp:require('./staff-xp-engine.cjs').xpForLevel(55)});
  const result=await f.api.staffGetAvatarDirectory(req('owner')),person=result.profiles.find(p=>p.employeeId==='DOL-0002');
  for(const field of ['selectedFrame','selectedAvatarMotion','selectedTitle','selectedBanner','selectedNameFx','selectedAura','selectedTrail','selectedCardFx','personalTheme'])assert.equal(person[field],style[field]);
+});
+
+test('shared avatar directory hides high-tier avatar and FX when XP is reduced but levelPeak remains',async()=>{
+ const f=fixture(),catalog=require('./staff-avatar-catalog.json'),e=require('./staff-xp-engine.cjs');
+ const elite=Object.entries(catalog).find(([name])=>/Lv\.40/.test(name))?.[1]?.[0]||'🐬';
+ Object.assign(f.data.staffRegistry['DOL-0002'],e.automaticStyle(54),{avatar:elite,xp:4102.5,levelPeak:54});
+ const directory=await f.api.staffGetAvatarDirectory(req('owner'));
+ const person=directory.profiles.find(p=>p.employeeId==='DOL-0002');
+ assert.equal(person.selectedTitle,'none');assert.equal(person.selectedFrame,'none');
+ assert.equal(person.selectedAura,'none');assert.equal(person.personalTheme,'dark');
+ assert.equal(person.avatar,'🐬');
 });

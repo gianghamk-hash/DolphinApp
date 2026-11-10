@@ -1130,17 +1130,11 @@ function setupMyDpad(){
 
 document.addEventListener('keydown', function(e){
   var k = e.key.toLowerCase();
-  if (mySide === 'p1'){
-    if (k === 'w'){ e.preventDefault(); sendMyDir('up'); }
-    else if (k === 's'){ e.preventDefault(); sendMyDir('down'); }
-    else if (k === 'a'){ e.preventDefault(); sendMyDir('left'); }
-    else if (k === 'd'){ e.preventDefault(); sendMyDir('right'); }
-  } else if (mySide === 'p2'){
-    if (k === 'arrowup'){ e.preventDefault(); sendMyDir('up'); }
-    else if (k === 'arrowdown'){ e.preventDefault(); sendMyDir('down'); }
-    else if (k === 'arrowleft'){ e.preventDefault(); sendMyDir('left'); }
-    else if (k === 'arrowright'){ e.preventDefault(); sendMyDir('right'); }
-  }
+     if (k === 'w' || k === 'arrowup')    { e.preventDefault(); sendMyDir('up'); }
+      if (k === 's' || k === 'arrowdown')  { e.preventDefault(); sendMyDir('down'); }
+      if (k === 'a' || k === 'arrowleft')  { e.preventDefault(); sendMyDir('left'); }
+      if (k === 'd' || k === 'arrowright') { e.preventDefault(); sendMyDir('right'); }
+  
   if (k === ' ' || k === 'p'){ e.preventDefault(); if (running) togglePause(); }
 });
 

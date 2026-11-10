@@ -29,7 +29,7 @@ async function ownProfile(uid){
  return profile;
 }
 function response(profile){return {linked:true,verified:profile.registrationSource!=='self'||profile.approved===true,approved:profile.registrationSource!=='self'||profile.approved===true,employeeId:profile.employeeId,name:profile.name,
- avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
+ avatar:require('./staff-xp-engine.cjs').currentCosmetics(profile).avatar,profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
 exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  const uid=uidOf(req),data=validate(req.data);await throttle(uid);
   if((avatarThreshold.get(data.avatar)||1)>1)throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');

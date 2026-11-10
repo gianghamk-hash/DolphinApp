@@ -5,7 +5,7 @@ const fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..'),origin='http://127.0.0.1:8879';
 const html=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
  .replace(/<script\b[^>]*\bsrc="[^"]+"[^>]*><\/script>/gi,'')
- .replace('</head>','<script src="./crew-levelup-cinematic.js?v=levelup-v1" defer></script></head>');
+ .replace('</head>','<script src="./crew-levelup-cinematic.js?v=xp-level-v3" defer></script></head>');
 (async()=>{
  const browser=await chromium.launch({headless:true});
  try{

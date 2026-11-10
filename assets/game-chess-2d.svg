@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-label="Cờ vua - Chess">
+ <defs>
+  <radialGradient id="sea" cx=".5" cy=".28" r=".85"><stop stop-color="#125f7c"/><stop offset=".58" stop-color="#0a294a"/><stop offset="1" stop-color="#071528"/></radialGradient>
+  <linearGradient id="gold" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#fff3bd"/><stop offset=".42" stop-color="#ffcb56"/><stop offset=".8" stop-color="#bc6920"/><stop offset="1" stop-color="#ffeb9d"/></linearGradient>
+  <linearGradient id="shine" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#bffaff"/><stop offset="1" stop-color="#1ac5ed"/></linearGradient>
+ </defs>
+ <rect width="128" height="128" rx="27" fill="url(#sea)"/>
+ <path d="M0 104Q30 88 59 108T128 99V128H0Z" fill="#089ec2" opacity=".4"/>
+ <path d="M5 112Q35 99 68 114T130 112" fill="none" stroke="#55e0f1" stroke-width="4" stroke-linecap="round"/>
+ <circle cx="64" cy="58" r="44" fill="#28bade" opacity=".09" stroke="#69e3e6" stroke-width="1.5"/>
+ <g fill="url(#gold)" stroke="#915525" stroke-width="2.2" stroke-linejoin="round">
+  <path d="M51 30h26l-4 16H55Z"/>
+  <path d="M63 22h4v13h-4z"/>
+  <path d="M60 27h12v4H60z"/>
+  <path d="m48 48 16 9 16-9-6 26-6 13H58l-6-13Z"/>
+  <path d="M54 85h20l7 9H47Z"/>
+  <rect x="44" y="94" width="40" height="9" rx="4"/>
+ </g>
+ <g fill="#fff0af"><circle cx="47" cy="49" r="4"/><circle cx="64" cy="44" r="4"/><circle cx="81" cy="49" r="4"/></g>
+ <path d="M26 51v-9m-5 4h10M95 35v-9m-5 4h10M96 82v-8m-4 4h8" stroke="url(#shine)" stroke-width="3" stroke-linecap="round"/>
+ <path d="M28 87q7-10 15-4M82 83q11-7 19-1" fill="none" stroke="#85e6e8" stroke-width="2" opacity=".75"/>
+ </svg>

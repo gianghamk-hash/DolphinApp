@@ -4,7 +4,7 @@ const XP_PER_1000_VND=1;
 const XP_PER_POINT_TENTH=100; // 100x verified work XP: 0.1 point = 100 XP
 const MIN_LEVEL=1;
 const LEVEL_COEFFICIENT=2450; // 30% less than the immediately preceding 3,500 XP coefficient
-const LEVEL_RULES_VERSION=3; // Current Level now follows XP; levelPeak remains unlock history.
+const LEVEL_RULES_VERSION=4; // Only current XP determines Level and usable rewards.
 const MAX_LEVEL=60;
 const PERKS=Object.freeze([
  {
@@ -148,7 +148,7 @@ const THEME_LEVELS=Object.freeze({default:8,spring:10,summer:10,autumn:10,winter
 // remain available in personal settings.
 const AUTO_THEMES=Object.freeze({dark:1,abyss:4,default:8,aurora:12,coral:18,neon:28,cosmic:36,royal:48,obsidian:55});
 function effectiveLevel(profile){
- return Math.min(MAX_LEVEL,Math.max(levelForXP(Math.max(0,Number(profile?.xp)||0)),Number(profile?.levelPeak)||1));
+ return levelForXP(Math.max(0,Number(profile?.xp)||0));
 }
 function highestUnlocked(choices,level,fallback){
  let selected=fallback,threshold=choices[fallback]||1;
@@ -165,14 +165,50 @@ function automaticStyle(level){
  style.nameGradient=['prism','celestial'].includes(style.selectedNameFx);
  return style;
 }
+const AVATAR_LEVELS=new Map();
+for(const [group,avatars] of Object.entries(require('./staff-avatar-catalog.json'))){
+ const required=Math.max(1,Number((group.match(/Lv\\.(\\d+)/)||[])[1])||1);
+ for(const avatar of avatars)AVATAR_LEVELS.set(avatar,Math.min(required,AVATAR_LEVELS.get(avatar)||Infinity));
+}
+const STYLE_FIELDS=Object.freeze(Object.keys(COSMETIC_CHOICES).map(type=>({type,key:'selected'+type[0].toUpperCase()+type.slice(1)})));
+function currentCosmetics(profile){
+ const level=effectiveLevel(profile),out={};
+ for(const {type,key} of STYLE_FIELDS){
+  const options=COSMETIC_CHOICES[type],fallback=type==='banner'?'default':'none';
+  const selected=profile?.[key];
+  out[key]=typeof selected==='string'&&Object.hasOwn(options,selected)&&options[selected]<=level?selected:fallback;
+ }
+ const theme=profile?.personalTheme||'dark';
+ const themeMinimum=THEME_LEVELS[theme]??({dark:1,light:1,gray:1})[theme];
+ out.personalTheme=themeMinimum!==undefined&&themeMinimum<=level?theme:'dark';
+ out.nameFlame=!!profile?.nameFlame&&level>=3;
+ out.nameGradient=!!profile?.nameGradient&&level>=45;
+ const chosenAvatar=profile?.avatar||'🐬';
+ out.avatar=(AVATAR_LEVELS.get(chosenAvatar)||1)<=level?chosenAvatar:'🐬';
+ return out;
+}
+function restrictLevelEffects(profile){
+ const equipped=currentCosmetics(profile),next={...profile,...equipped};
+ // A read-only projection can mask old effects; persisted records must also
+ // lose their illegal selections after XP decreases. No deletion of XP ledger.
+ return next;
+}
 function equipOnLevelUp(previous,current){
  if(!current?.active||(current.registrationSource==='self'&&current.approved!==true))return current;
- const level=effectiveLevel(current);
- if(level<=effectiveLevel(previous)||Number(current.autoStyleLevel)>=level)return current;
- // Apply atomically with XP. A later manual save wins until the next actual
- // level gain; reads, retries and same-level rewards never reapply the preset.
- return {...current,...automaticStyle(level),autoStyleLevel:level,autoStyleVersion:1,
-  profileVersion:(Number(current.profileVersion)||0)+1};
+ const level=effectiveLevel(current),before=effectiveLevel(previous);
+ if(level<before){
+  // Regression unlocks are locked again, not permanently granted by levelPeak.
+  // Allow a future real Level increase to automatically equip the new tier.
+  const restricted=restrictLevelEffects(current);
+  return {...restricted,autoStyleLevel:Math.min(level,Number(current.autoStyleLevel)||level),
+   profileVersion:(Number(current.profileVersion)||0)+1};
+ }
+ if(level>before){
+  // Readjust on a true Level gain even if the user once had a higher Level.
+  return {...current,...automaticStyle(level),autoStyleLevel:level,autoStyleVersion:1,
+   profileVersion:(Number(current.profileVersion)||0)+1};
+ }
+ return current;
 }
 function asNonnegativeInteger(x,label){
  if(typeof x!=='number'||!Number.isFinite(x)||x<0||!Number.isSafeInteger(x))throw Error(label+' phải là số nguyên không âm');
@@ -207,4 +243,4 @@ function progress(xp){
  return {xp,level,rank:rankForLevel(level),xpIntoLevel:xp-floor,xpNeeded:ceil===null?0:ceil-floor,
   nextLevelAt:ceil,unlocked:PERKS.filter(p=>level>=p.level).map(p=>p.id)};
 }
-module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,LEVEL_COEFFICIENT,LEVEL_RULES_VERSION,PERKS,COSMETIC_REWARDS,COSMETIC_CHOICES,THEME_LEVELS,automaticStyle,equipOnLevelUp,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};
+module.exports={XP_PER_1000_VND,XP_PER_POINT_TENTH,LEVEL_COEFFICIENT,LEVEL_RULES_VERSION,PERKS,COSMETIC_REWARDS,COSMETIC_CHOICES,THEME_LEVELS,AVATAR_LEVELS,effectiveLevel,currentCosmetics,restrictLevelEffects,automaticStyle,equipOnLevelUp,revenueXP,workXP,totalXP,xpForLevel,levelForXP,rankForLevel,progress};

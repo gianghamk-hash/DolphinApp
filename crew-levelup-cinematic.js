@@ -141,8 +141,10 @@
   if(!between(previous,1,MAX_LEVEL)){
    setItem(key,String(next.level));return false;
   }
-  if(next.testAdmin&&next.level<previous){
-   setItem(key,String(next.level));clearMoment(next.employeeId);updateReplay();return false;
+  if(next.level<previous){
+   setItem(key,String(next.level));
+    // Never show old celebrations as current progress after a Level decrease.
+    clearMoment(next.employeeId);updateReplay();return false;
   }
   if(next.level<=previous)return false;
   const moment=createMoment(next,previous);

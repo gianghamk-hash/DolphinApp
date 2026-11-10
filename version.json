@@ -1,7 +1,7 @@
 {
-  "version": "1.1.101",
-  "buildDate": "2026-11-10T05:25:32.536Z",
-  "commit": "6020dae",
-  "notes": "fix(multiplayer): restore room creation across online games",
+  "version": "1.1.102",
+  "buildDate": "2026-11-10T07:48:08.172Z",
+  "commit": "cb1320e",
+  "notes": "feat(arcade): adopt approved glossy 2D icons for all games",
   "forceUpdate": false
 }

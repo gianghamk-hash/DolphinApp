@@ -1,26 +1,42 @@
 {
-  "version": "1.1.101",
-  "previousVersion": "1.1.100",
-  "commit": "6020dae",
-  "previousCommit": "24863f8",
-  "buildDate": "2026-11-10T05:25:32.536Z",
-  "summary": "fix(multiplayer): restore room creation across online games",
+  "version": "1.1.102",
+  "previousVersion": "1.1.101",
+  "commit": "cb1320e",
+  "previousCommit": "6020dae",
+  "buildDate": "2026-11-10T07:48:08.172Z",
+  "summary": "feat(arcade): adopt approved glossy 2D icons for all games",
   "changes": {
-    "totalCommits": 325,
-    "filesChanged": 2,
+    "totalCommits": 326,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(multiplayer): restore room creation across online games"
+    "feat(arcade): adopt approved glossy 2D icons for all games"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-multiplayer.js",
+      "file": ".github/workflows/game-icons-ui.yml",
       "type": "update"
     },
     {
-      "file": "functions/tactics/shared-mp.test.js",
+      "file": "giaitri/assets/dolphin-game-icons-v1.webp",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/game-icons.css",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/game-icons.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

@@ -4,7 +4,7 @@ const XP_PER_1000_VND=1;
 const XP_PER_POINT_TENTH=100; // 100x verified work XP: 0.1 point = 100 XP
 const MIN_LEVEL=1;
 const LEVEL_COEFFICIENT=2450; // 30% less than the immediately preceding 3,500 XP coefficient
-const LEVEL_RULES_VERSION=2;
+const LEVEL_RULES_VERSION=3; // Current Level now follows XP; levelPeak remains unlock history.
 const MAX_LEVEL=60;
 const PERKS=Object.freeze([
  {

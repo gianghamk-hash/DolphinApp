@@ -167,7 +167,7 @@ function automaticStyle(level){
 }
 const AVATAR_LEVELS=new Map();
 for(const [group,avatars] of Object.entries(require('./staff-avatar-catalog.json'))){
- const required=Math.max(1,Number((group.match(/Lv\\.(\\d+)/)||[])[1])||1);
+ const required=Math.max(1,Number((group.match(/Lv\.(\d+)/)||[])[1])||1);
  for(const avatar of avatars)AVATAR_LEVELS.set(avatar,Math.min(required,AVATAR_LEVELS.get(avatar)||Infinity));
 }
 const STYLE_FIELDS=Object.freeze(Object.keys(COSMETIC_CHOICES).map(type=>({type,key:'selected'+type[0].toUpperCase()+type.slice(1)})));

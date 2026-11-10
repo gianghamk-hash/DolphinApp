@@ -155,7 +155,7 @@ function subscribe(){
 // Games using a trusted backend can reuse the common room/player event API.
 function registerAdapter(game, adapter){
   if (typeof game !== 'string' || !game || !adapter ||
-      typeof adapter.createRoom !== 'function'
+      typeof adapter.createRoom !== 'function' ||
       typeof adapter.joinRoom !== 'function' ||
       typeof adapter.subscribe !== 'function'){
     throw new Error('Multiplayer adapter phải có createRoom, joinRoom và subscribe');

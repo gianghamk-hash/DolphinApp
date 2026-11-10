@@ -126,12 +126,12 @@ test('Manager -XP locks Guardian and FX and subsequent +XP restores eligible aut
  const f=fixture(),employee=f.data.staffRegistry['DOL-0002'];
  const e=require('./staff-xp-engine.cjs');
  Object.assign(employee,{
-  xp:e.xpForLevel(20),levelPeak:54,
+  xp:e.xpForLevel(20)+0.5,levelPeak:54,
   selectedTitle:'guardian',selectedFrame:'emerald',selectedAura:'ripple',
   selectedNameFx:'tide',nameFlame:true,selectedBanner:'abyss',personalTheme:'aurora',
   autoStyleLevel:54
  });
- const deduction=e.xpForLevel(20)-4102.5;
+ const deduction=e.xpForLevel(20)-4102; // Manager amounts are integers; fractional XP balance remains
  const debit=await f.api.staffManagerAdjustEmployee(request('manager',input('xp_deduct',deduction,'manager-downcase-01')));
  assert.equal(debit.after,4102.5);assert.equal(debit.currentLevel,2);
  let updated=f.data.staffRegistry['DOL-0002'];

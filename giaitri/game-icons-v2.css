@@ -1,0 +1,60 @@
+/* Approved Dolphin 2D game art — preserves all existing game actions.
+ * Sprite index (left -> right): Battleship, Caro, Xiangqi, Tactics,
+ * Snake, Snake Co-op, 2048. Chess uses a matching vector illustration.
+ * Each icon stays inside its original launcher button for accessibility. */
+#tab-game .game-art {
+  --game-pos: 0%;
+  display: inline-block;
+  flex-shrink: 0;
+  background-color: #041622;
+  background-image: url('../assets/game-icons-approved-20261110.webp');
+  background-repeat: no-repeat;
+  background-size: 700% 100%;
+  background-position: var(--game-pos) center;
+  border-radius: 22%;
+  border: 1px solid rgba(144,231,237,.38);
+  box-shadow: 0 8px 18px rgba(0,0,0,.38), inset 0 0 0 1px rgba(237,194,105,.20);
+  overflow: hidden;
+  color: transparent;
+  font-size: 0;
+}
+#tab-game .game-art.art-battleship { --game-pos: 0%; }
+#tab-game .game-art.art-caro { --game-pos: 16.666667%; }
+#tab-game .game-art.art-xiangqi { --game-pos: 33.333333%; }
+#tab-game .game-art.art-tactics { --game-pos: 50%; }
+#tab-game .game-art.art-snake { --game-pos: 66.666667%; }
+#tab-game .game-art.art-snake-coop { --game-pos: 83.333333%; }
+#tab-game .game-art.art-2048 { --game-pos: 100%; }
+#tab-game .game-art.art-chess {
+  background-image: url('../assets/game-chess-2d.svg');
+  background-size: cover;
+  background-position: center;
+}
+#tab-game .arcade-featured .featured-art.game-art {
+  width: 84px;
+  height: 84px;
+  flex: 0 0 84px;
+  border: 1px solid rgba(245,207,136,.56);
+  box-shadow: 0 8px 25px rgba(0,0,0,.42), 0 0 20px rgba(70,200,224,.12);
+}
+#tab-game .arcade-icon.game-art {
+  min-width: 58px;
+  min-height: 58px;
+  max-width: 82px;
+  max-height: 82px;
+  width: min(21vw,82px);
+  height: min(21vw,82px);
+  padding: 0;
+  filter: none;
+}
+#tab-game .arcade-app:hover .game-art {
+  box-shadow: 0 8px 23px rgba(0,0,0,.46), 0 0 22px rgba(255,199,99,.24);
+}
+@media(max-width:345px) {
+  #tab-game .arcade-featured .featured-art.game-art {
+    width: 64px; height: 64px; flex-basis: 64px;
+  }
+}
+@media(prefers-reduced-motion:reduce) {
+  #tab-game .game-art { transition:none!important; }
+}

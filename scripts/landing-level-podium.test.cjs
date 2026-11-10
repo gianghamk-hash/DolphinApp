@@ -35,9 +35,9 @@ test('Revenue/Work get personal avatar/effects from verified unique Staff ID dir
  assert.match(landing,/dataset\.crewTrail=safe\('trail'/);
  assert.match(landing,/surface\.dataset\.personalTheme=theme/);
  assert.match(landing,/DolphinFrameFX\?\.decorate\?\.\(avatar\)/);
- assert.match(directory,/selectedBanner:Object\.hasOwn\(choices\.banner,p\.selectedBanner\)/);
- assert.match(directory,/require\('\.\/staff-xp-engine\.cjs'\)\.COSMETIC_CHOICES/);
- assert.match(directory,/personalTheme:typeof p\.personalTheme/);
+ assert.match(directory,/selectedBanner:safe\.selectedBanner/);
+ assert.match(directory,/engine\.currentCosmetics\(p\)/);
+ assert.match(directory,/personalTheme:safe\.personalTheme/);
  assert.match(avatars,/selectedBanner:p\.selectedBanner/);
  assert.match(avatars,/personalTheme:p\.personalTheme/);
 });

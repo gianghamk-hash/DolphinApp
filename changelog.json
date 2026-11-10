@@ -1,22 +1,22 @@
 {
-  "version": "1.1.96",
-  "previousVersion": "1.1.95",
-  "commit": "35bdd88",
-  "previousCommit": "0c1c2fe",
-  "buildDate": "2026-11-10T03:27:38.103Z",
-  "summary": "fix(multiplayer): fix 2-player seats assignment and throttle sendState",
+  "version": "1.1.97",
+  "previousVersion": "1.1.96",
+  "commit": "c4c2dd9",
+  "previousCommit": "35bdd88",
+  "buildDate": "2026-11-10T03:32:50.464Z",
+  "summary": "fix(snake): allow both players to use WASD and arrow keys",
   "changes": {
-    "totalCommits": 320,
+    "totalCommits": 321,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(multiplayer): fix 2-player seats assignment and throttle sendState"
+    "fix(snake): allow both players to use WASD and arrow keys"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-multiplayer.js",
+      "file": "giaitri/games/snake-coop-online.html",
       "type": "update"
     }
   ]

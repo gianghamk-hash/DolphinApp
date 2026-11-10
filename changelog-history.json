@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.96",
+      "releaseDate": "2026-11-10T03:27:38.103Z",
+      "summary": "fix(multiplayer): fix 2-player seats assignment and throttle sendState",
+      "details": [
+        "fix(multiplayer): fix 2-player seats assignment and throttle sendState"
+      ]
+    },
+    {
       "version": "1.1.95",
       "releaseDate": "2026-11-10T00:53:19.756Z",
       "summary": "fix(crew): lock avatar, titles and cosmetic FX to current XP Level",
@@ -390,14 +398,6 @@
       "summary": "test(crew): validate four celestial Mythic orbit animations in browser",
       "details": [
         "test(crew): validate four celestial Mythic orbit animations in browser"
-      ]
-    },
-    {
-      "version": "1.1.46",
-      "releaseDate": "2026-11-02T12:53:10.892Z",
-      "summary": "ci(crew): run profile regression checks when PWA cosmetic cache changes",
-      "details": [
-        "ci(crew): run profile regression checks when PWA cosmetic cache changes"
       ]
     }
   ]

@@ -16,6 +16,7 @@
 <script src="../dolphin-tactics-results.js?v=1"></script>
 <script src="../dolphin-leaderboard.js?v=2"></script>
 <script src="../dolphin-multiplayer.js?v=2.1" defer></script>
+<link rel="stylesheet" href="./game-icons-v2.css?v=approved-20261110" />
 <style>
 .lb-table.tftRanks td:nth-child(2){white-space:normal!important;max-width:none!important;min-width:120px;overflow-wrap:anywhere}
 *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
@@ -374,18 +375,18 @@ body>.sticky button:first-child:active{transform:scale(.86)}
   <div id="tab-game" class="tab-content hidden">
     <div id="gameMenuView" class="arcade-menu">
       <button class="arcade-featured" onclick="openGame('dolphin-tactics-online')" aria-label="Chơi Dolphin Tactics 3D">
-        <span class="featured-art" aria-hidden="true">🐉</span>
+        <span class="featured-art game-art art-tactics" aria-hidden="true"></span>
         <span class="featured-info"><span class="featured-kicker">GAME NỔI BẬT · ONLINE</span><span class="featured-title">DOLPHIN TACTICS 3D</span><span class="featured-sub">4 người online · 30 tướng</span></span>
         <span class="featured-arrow" aria-hidden="true">›</span>
       </button>
       <div class="arcade-grid" aria-label="Danh sách trò chơi">
-        <button class="arcade-app" onclick="openGame('caro')"><span class="arcade-icon icon-caro">✕<span>◯</span></span><span class="arcade-label">Cờ Caro</span></button>
-        <button class="arcade-app" onclick="openGame('chess')"><span class="arcade-icon icon-chess">♛</span><span class="arcade-label">Cờ Vua</span></button>
-        <button class="arcade-app" onclick="openGame('xiangqi')"><span class="arcade-icon icon-xiangqi">將</span><span class="arcade-label">Cờ Tướng</span></button>
-        <button class="arcade-app" onclick="openGame('battleship')"><span class="arcade-icon icon-ship"><i class="ic ic-ship"></i></span><span class="arcade-label">Battleship</span></button>
-        <button class="arcade-app" onclick="openGame('snake-coop-online')"><span class="arcade-icon icon-snake-coop">🐍</span><span class="arcade-label">Rắn Đôi</span></button>
-        <button class="arcade-app" onclick="openGame('snake')"><span class="arcade-icon icon-snake"><i class="ic ic-snake"></i></span><span class="arcade-label">Rắn Offline</span></button>
-        <button class="arcade-app" onclick="openGame('game2048')"><span class="arcade-icon icon-2048">2048</span><span class="arcade-label">2048</span></button>
+        <button class="arcade-app" onclick="openGame('caro')"><span class="arcade-icon game-art art-caro" aria-hidden="true"></span><span class="arcade-label">Cờ Caro</span></button>
+        <button class="arcade-app" onclick="openGame('chess')"><span class="arcade-icon game-art art-chess" aria-hidden="true"></span><span class="arcade-label">Cờ Vua</span></button>
+        <button class="arcade-app" onclick="openGame('xiangqi')"><span class="arcade-icon game-art art-xiangqi" aria-hidden="true"></span><span class="arcade-label">Cờ Tướng</span></button>
+        <button class="arcade-app" onclick="openGame('battleship')"><span class="arcade-icon game-art art-battleship" aria-hidden="true"></span><span class="arcade-label">Battleship</span></button>
+        <button class="arcade-app" onclick="openGame('snake-coop-online')"><span class="arcade-icon game-art art-snake-coop" aria-hidden="true"></span><span class="arcade-label">Rắn Đôi</span></button>
+        <button class="arcade-app" onclick="openGame('snake')"><span class="arcade-icon game-art art-snake" aria-hidden="true"></span><span class="arcade-label">Rắn Offline</span></button>
+        <button class="arcade-app" onclick="openGame('game2048')"><span class="arcade-icon game-art art-2048" aria-hidden="true"></span><span class="arcade-label">2048</span></button>
       </div>
     </div>
     <div id="gameIframeView" class="hidden">

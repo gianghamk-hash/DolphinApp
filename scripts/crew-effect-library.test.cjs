@@ -30,7 +30,7 @@ test('every option including locked and none tiers gets a real preview surface',
  assert.doesNotMatch(js,/tile\.disabled=!unlocked/);
 });
 test('click equips only unlocked effects, past unlocks remain selected until Save',()=>{
- assert.match(js,/const unlocked=!!mine&&mine.level>=level/);
+ assert.match(js,/const unlocked=!!mine&&unlockedLevel\(\)>=level/);
  assert.match(js,/if\(!unlocked\)\{/);
  assert.match(js,/select\.value=id/);
  assert.match(js,/renderFxGallery\(\)/);

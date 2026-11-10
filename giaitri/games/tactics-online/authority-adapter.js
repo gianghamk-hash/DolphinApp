@@ -8,27 +8,30 @@ function createAdapter(config){
  const app=fb.apps.find(x=>x.name===appName)||fb.initializeApp(config,appName);
  const auth=app.auth(),functions=app.functions('asia-southeast1');
  const call=(name,data)=>functions.httpsCallable(name)(data).then(x=>x.data);
- let roomId='',uid='',last='',onStop=null,polling=false,timer=null;
+   let roomId='',uid='',last='',lastSnapshot='',onStop=null,polling=false,timer=null;
  async function identity(){
   if(!auth.currentUser){try{await auth.signInAnonymously();}catch(err){if(err?.code==='auth/operation-not-allowed')throw Error('Firebase Authentication chưa bật Anonymous sign-in; cần bật tại Authentication → Sign-in method.');throw err;}}
   uid=auth.currentUser.uid;
   return uid;
  }
- async function fetchState(){
-  if(!roomId||polling)return;
-  polling=true;
-  try{
-   const {state}=await call('tacticsGetRoom',{roomId});
-   const snapshot=JSON.stringify(state);
-   if(snapshot!==last){
-    last=snapshot;
-    const order=state.playerOrder||[];
-    onStop?.emit('room',{id:roomId,hostId:state.hostId,isHost:state.hostId===uid,status:state.status});
-    onStop?.emit('players',{players:order.map((id,i)=>({id,name:state.players[id]?.displayName||'Người chơi',side:'p'+(i+1)}))});
-    onStop?.emit('state',state);
-   }
-  }catch(err){onStop?.emit('error',{type:'server',err});}
-  finally{polling=false;}
+ let isFetching = false;
+ async function fetchState() {
+    if (isFetching || !roomId) return;
+    isFetching = true;
+    try {
+      const { state } = await call('tacticsGetRoom', { roomId });
+      if (state) {
+        const snapshot = JSON.stringify(state);
+        if (snapshot !== lastSnapshot) {
+          lastSnapshot = snapshot;
+          if (onStop && onStop.emit) onStop.emit(state);
+        }
+      }
+    } catch (err) {
+      console.warn('[authority-adapter] fetchState error:', err);
+    } finally {
+      isFetching = false;
+    }
  }
  return {
   async createRoom(options={}){await identity();const result=await call('tacticsCreateRoom',{name:options.name});roomId=result.roomId;last='';return {...result,playerId:uid,isHost:true};},
@@ -36,7 +39,15 @@ function createAdapter(config){
   subscribe({roomId:id,emit}){roomId=id;onStop={emit};void fetchState();timer=setInterval(()=>{if(!document.hidden&&navigator.onLine)void fetchState();},1200);return ()=>{clearInterval(timer);timer=null;onStop=null;last='';roomId='';};},
   async leaveRoom(id){const leaving=id||roomId;if(leaving)await call('tacticsLeaveRoom',{roomId:leaving});},
   async startRoom(){const res=await call('tacticsStartRoom',{roomId});await fetchState();return res;},
-  async action(action){const res=await call('tacticsAction',{roomId,action});await fetchState();return res;},
+   async dispatch(action) {
+      const res = await call('tacticsAction', { roomId, ...action });
+      if (res && res.state) {
+        lastSnapshot = JSON.stringify(res.state);
+          if (onStop && onStop.emit) onStop.emit(res.state);
+      }
+      return res;
+    },
+    async action(action) { return this.dispatch(action); },
   async advance(){const res=await call('tacticsAdvanceRoom',{roomId});await fetchState();return res;},
   async submitVerifiedResult(){return call('tacticsSubmitVerifiedResult',{roomId});},
   getUid:()=>uid,refresh:fetchState

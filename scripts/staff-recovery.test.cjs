@@ -34,7 +34,7 @@ test('avatar motion is server-validated, level-gated, persistent and previewable
  assert.deepEqual(engine.COSMETIC_CHOICES.avatarMotion,{
   none:1,pulse:3,float:10,wave:20,orbit:30,prism:45,ascension:60,comet:6,tide:14,vortex:24,phoenix:36,supernova:52
  });
- assert.match(prestige,/selectedAvatarMotion:cosmeticChoice\('avatarMotion'/);
+ assert.match(prestige,/const cosmetics=engine\.currentCosmetics\(p\)/);
  assert.match(prestige,/selectedAvatarMotion:selected\.avatarMotion===undefined/);
  assert.match(prestige,/\['frame','avatarMotion','title'/);
  assert.match(profile,/data-crew-gallery="avatarMotion"/);

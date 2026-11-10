@@ -139,10 +139,12 @@ function paint(){
   const profile=mine?source.getMine():null;
   const name=mine?(profile?.name||staffName()):el.getAttribute('data-staff-name');
   const id=mine?profile?.employeeId:el.getAttribute('data-staff-id');
-  const avatar=source.get(name,id)||el.dataset.avatarGlyph||el.textContent.trim()||fallback(name);
+  const verifiedBoard=el.dataset.verifiedLevelBoard==='true'&&!!id;
+   const avatar=verifiedBoard?(el.dataset.verifiedAvatar||'🐬'):
+    source.get(name,id)||el.dataset.avatarGlyph||el.textContent.trim()||fallback(name);
   if(el.textContent!==avatar)el.textContent=avatar;
   el.dataset.avatarGlyph=avatar;
-  const chosen=source.profile?.(name,id);
+  const chosen=verifiedBoard?null:source.profile?.(name,id);
   // Keep already-rendered, server-backed board cosmetics while the directory
   // is loading, instead of silently wiping premium styles to "none".
   const allowed=['bronze','silver','gold','mythic','emerald','sapphire','nebula'];

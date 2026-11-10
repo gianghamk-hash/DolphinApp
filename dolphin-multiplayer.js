@@ -155,10 +155,10 @@ function subscribe(){
 // Games using a trusted backend can reuse the common room/player event API.
 function registerAdapter(game, adapter){
   if (typeof game !== 'string' || !game || !adapter ||
-      typeof adapter. !== 'function' ||
+      typeof adapter.createRoom !== 'function'
       typeof adapter.joinRoom !== 'function' ||
       typeof adapter.subscribe !== 'function'){
-    throw new Error('Multiplayer adapter phải có , joinRoom và subscribe');
+    throw new Error('Multiplayer adapter phải có createRoom, joinRoom và subscribe');
   }
   if (_adapters[game] && _adapters[game] !== adapter) throw new Error('Adapter đã đăng ký: ' + game);
   _adapters[game] = adapter;
@@ -170,7 +170,7 @@ async function connectAdapter(game, code, opts){
   if (_roomId) throw new Error('Đã tham gia phòng, hãy rời phòng trước khi mở phòng mới');
   const result = code
     ? await adapter.joinRoom(code, opts)
-    : await adapter.(opts);
+    : await adapter.createRoom(opts);
   if (!result || !result.roomId) throw new Error('Adapter không trả về mã phòng');
   _roomId = String(result.roomId);
   _game = game;
@@ -199,7 +199,7 @@ async function connectAdapter(game, code, opts){
 
 // ═══ PUBLIC API ═══
 
-async function sendState(game, opts = {}){
+async function createRoom(game, opts = {}){
   if (_adapters[game]) return connectAdapter(game, null, opts);
   const db = getDB();
   if (!db) throw new Error('Chưa kết nối Firebase');
@@ -430,7 +430,7 @@ async function setReady(ready){
 
 window.DolphinMP = {
   registerAdapter,
-  (Number(opts.maxPlayers)||2)>2 ? { p1: _deviceId } : null, joinRoom, leaveRoom,
+  createRoom, joinRoom, leaveRoom,
   sendInput, sendState, sendInputStrict, sendStateStrict, sendConfig, updateRoomStatus, setReady,
   onRoom:    cb => on('room', cb),
   onPlayers: cb => on('players', cb),

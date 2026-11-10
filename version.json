@@ -1,7 +1,7 @@
 {
-  "version": "1.1.100",
-  "buildDate": "2026-11-10T04:51:20.541Z",
-  "commit": "24863f8",
-  "notes": "fix(tactics): restore authority-adapter interface and polling lock",
+  "version": "1.1.101",
+  "buildDate": "2026-11-10T05:25:32.536Z",
+  "commit": "6020dae",
+  "notes": "fix(multiplayer): restore room creation across online games",
   "forceUpdate": false
 }

@@ -101,13 +101,30 @@ $('manager-score-submit').onclick=async()=>{
 };
 
 let people=[];
+function directoryNameKey(name){
+ return String(name||'').normalize('NFKC').trim().replace(/\s+/g,' ')
+  .normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/[đĐ]/g,'d').toLowerCase();
+}
 function render(){
  const term=$('manager-directory-search').value.toLocaleLowerCase('vi');
  const rows=people.filter(p=>(p.name+' '+p.employeeId).toLocaleLowerCase('vi').includes(term));
+ const collisions=new Map();
+ for(const person of people){
+  const key=directoryNameKey(person.name);
+  if(!collisions.has(key))collisions.set(key,[]);
+  collisions.get(key).push(person.employeeId);
+ }
  const list=dialog.querySelector('.manager-directory-list');list.replaceChildren();
  for(const p of rows){
   const row=document.createElement('div');row.className='manager-directory-person';
   const label=document.createElement('p');label.textContent=(p.avatar||'🐬')+' '+p.name+' · '+p.employeeId;row.append(label);
+  const twins=collisions.get(directoryNameKey(p.name))||[];
+  if(twins.length>1){
+   const notice=document.createElement('p');notice.className='manager-directory-collision';
+   notice.style.cssText='color:#f3c979;font-size:11px;margin:6px 0;overflow-wrap:anywhere';
+   notice.textContent='⚠ Trùng tên: '+twins.join(', ')+'. Đối chiếu Staff ID trước khi đổi tên hoặc ngừng tài khoản.';
+   row.append(notice);
+  }
   if(p.employeeId!=='DOL-0001'){
    for(const [kind,title] of [['xp_add','Cộng XP'],['xp_deduct','Trừ XP'],['revenue_deduct','Trừ doanh thu']]){
     const change=document.createElement('button');change.type='button';change.className='secondary';change.textContent=title;
@@ -136,7 +153,8 @@ function render(){
   }
   list.append(row);
  }
- dialog.querySelector('[role=status]').textContent=rows.length+' hồ sơ';
+ const duplicates=[...collisions.values()].filter(ids=>ids.length>1).length;
+ dialog.querySelector('[role=status]').textContent=rows.length+' hồ sơ'+(duplicates?' · ⚠ '+duplicates+' nhóm trùng tên cần kiểm tra':'');
 }
 $('manager-directory-search').oninput=render;
 approved.onclick=async()=>{

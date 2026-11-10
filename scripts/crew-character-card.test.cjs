@@ -55,13 +55,14 @@ test('Prestige Lv60 is capped and LevelPeak preserves unlocked styles when XP ha
  const max=h.api.model({employeeId:'DOL-0002',xp:xpAt(60),level:60,rank:'Legend'});
  assert.equal(max.level,60);assert.equal(max.percent,100);
  assert.equal(h.api.model({employeeId:'DOL-0002',xp:xpAt(60)+500,level:70}).level,60);
- const preserved=h.api.model({employeeId:'DOL-0002',xp:3200,level:40,levelPeak:40,
+ const preserved=h.api.model({employeeId:'DOL-0002',xp:3200,level:2,highestLevel:40,levelPeak:40,
   selectedFrame:'gold',selectedAura:'nebula',selectedTitle:'titan'});
- assert.equal(preserved.level,40);assert.equal(preserved.preserved,true);
- assert.equal(preserved.percent,0);assert.equal(preserved.equipped.frame,'Gold');
- h.api.render({employeeId:'DOL-0002',xp:3200,level:40,levelPeak:40,selectedFrame:'gold'});
- assert.equal(h.nodes.get('crew-card-xp-percent').textContent,'Đã giữ cấp');
- assert.match(h.nodes.get('crew-card-xp-dial').title,/Level cao nhất/);
+ assert.equal(preserved.level,2);assert.equal(preserved.highestLevel,40);assert.equal(preserved.preserved,true);
+ assert(preserved.percent>0);assert.equal(preserved.equipped.frame,'Gold');
+ h.api.render({employeeId:'DOL-0002',xp:3200,level:2,highestLevel:40,levelPeak:40,selectedFrame:'gold'});
+ assert.match(h.nodes.get('crew-card-xp-percent').textContent,/^\d+%$/);
+ assert.equal(h.nodes.get('crew-card-level-number').textContent,'2');
+ assert.match(h.nodes.get('crew-card-xp-dial').title,/Mốc cao nhất từng đạt/);
 });
 test('Rank reflects the existing backend rank and defaults to verified Level band only when omitted',()=>{
  const h=harness();
@@ -82,7 +83,7 @@ test('Card is HTML/CSS only, and retains every existing business/profile handler
   assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'Unique binding: '+id);
  }
  assert.match(html,/crew-character-card\.css\?v=character-v1/);
- assert.match(html,/crew-character-card\.js\?v=character-v1/);
+ assert.match(html,/crew-character-card\.js\?v=xp-level-v3/);
  assert.equal((html.match(/data-open-dialog="style-dialog"/g)||[]).length>=4,true);
  assert.match(css,/#crew-profile-banner #profile-avatar/);
  assert.match(css,/@media\(max-width:450px\)/);
@@ -94,4 +95,15 @@ test('Card is HTML/CSS only, and retains every existing business/profile handler
  assert.match(html,/id="staff-reward-highlights"/);
  assert.doesNotMatch(source,/\.set\(|\.update\(|localStorage\.setItem|httpsCallable|fetch\(/,
   'Card must not write employee fields');
+});
+
+test('XP zero displays Level 1 despite old Level 54 unlock, without removing cosmetics',()=>{
+ const h=harness(),view=h.api.model({employeeId:'DOL-0002',xp:0,level:1,highestLevel:54,rank:'Bronze',selectedFrame:'gold',selectedAvatarMotion:'phoenix'});
+ assert.equal(view.level,1);assert.equal(view.highestLevel,54);
+ assert.equal(view.percent,0);assert.equal(view.rank,'bronze');
+ assert.equal(view.equipped.frame,'Gold');assert.equal(view.equipped.motion,'Phoenix');
+ h.api.render({employeeId:'DOL-0002',xp:0,level:1,highestLevel:54,rank:'Bronze',selectedFrame:'gold'});
+ assert.equal(h.nodes.get('crew-card-level-number').textContent,'1');
+ assert.equal(h.nodes.get('crew-card-xp-percent').textContent,'0%');
+ assert.match(h.nodes.get('crew-card-xp-dial').title,/Mốc cao nhất từng đạt: Level 54/);
 });

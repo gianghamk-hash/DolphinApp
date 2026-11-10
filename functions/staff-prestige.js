@@ -27,29 +27,40 @@ function cosmeticChoice(type,selected,level){
 }
 function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
- const level=Math.min(60,Math.max(progress.level,Number(p?.levelPeak)||1));
+ const level=progress.level,highestLevel=Math.min(60,Math.max(level,Number(p?.levelPeak)||1));
+ // Current Level is never artificially held at historical levelPeak.
  return {employeeId:p.employeeId,name:p.name,avatar:p.avatar||'🐬',
-  level,rank:engine.rankForLevel(level),xp,autoStyleLevel:Number(p.autoStyleLevel)||0,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
-  unlocked:[...engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>level>=x.level).map(x=>x.id)],
-  rewardCatalog:engine.COSMETIC_REWARDS,perkCatalog:engine.PERKS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
-  selectedFrame:cosmeticChoice('frame',p.selectedFrame,level),
-  selectedAvatarMotion:cosmeticChoice('avatarMotion',p.selectedAvatarMotion,level),
-  selectedTitle:cosmeticChoice('title',p.selectedTitle,level),
-  selectedBanner:cosmeticChoice('banner',p.selectedBanner,level),
-  selectedNameFx:cosmeticChoice('nameFx',p.selectedNameFx||((p.nameGradient&&level>=45)?'prism':p.nameFlame&&level>=3?'ember':'none'),level),
-  selectedAura:cosmeticChoice('aura',p.selectedAura,level),
-  selectedTrail:cosmeticChoice('trail',p.selectedTrail,level),
-  selectedCardFx:cosmeticChoice('cardFx',p.selectedCardFx,level),
+  level,highestLevel,levelPeak:highestLevel,rank:engine.rankForLevel(level),xp,
+  autoStyleLevel:Number(p.autoStyleLevel)||0,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
+  unlocked:[...engine.PERKS.filter(x=>highestLevel>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>highestLevel>=x.level).map(x=>x.id)],
+  rewardCatalog:engine.COSMETIC_REWARDS,perkCatalog:engine.PERKS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>highestLevel)||null,
+  selectedFrame:cosmeticChoice('frame',p.selectedFrame,highestLevel),
+  selectedAvatarMotion:cosmeticChoice('avatarMotion',p.selectedAvatarMotion,highestLevel),
+  selectedTitle:cosmeticChoice('title',p.selectedTitle,highestLevel),
+  selectedBanner:cosmeticChoice('banner',p.selectedBanner,highestLevel),
+  selectedNameFx:cosmeticChoice('nameFx',p.selectedNameFx||((p.nameGradient&&highestLevel>=45)?'prism':p.nameFlame&&highestLevel>=3?'ember':'none'),highestLevel),
+  selectedAura:cosmeticChoice('aura',p.selectedAura,highestLevel),
+  selectedTrail:cosmeticChoice('trail',p.selectedTrail,highestLevel),
+  selectedCardFx:cosmeticChoice('cardFx',p.selectedCardFx,highestLevel),
   rankingVisible:p.employeeId===TEST_ADMIN_ID?p.rankingVisible===true:true,
-  nameGradient:!!p.nameGradient&&level>=45,
+  nameGradient:!!p.nameGradient&&highestLevel>=45,
   showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
 }
 function isApprovedProfile(p){
  return !!p?.active&&(p.registrationSource!=='self'||p.approved===true);
 }
 function leaderboard(registry){
- return Object.values(registry||{}).filter(p=>isApprovedProfile(p)&&(p.employeeId!==TEST_ADMIN_ID||p.rankingVisible===true)&&staffPattern.test(p.employeeId)&&p.name)
- .map(expose).sort((a,b)=>b.level-a.level||b.xp-a.xp||a.employeeId.localeCompare(b.employeeId)).slice(0,25);
+ const entries=Object.entries(registry||{});
+ const canonical=entries.filter(([key,p])=>staffPattern.test(key)&&p?.employeeId===key);
+ const source=canonical.length?canonical:entries,used=new Set();
+ return source.map(([,p])=>p).filter(p=>{
+  if(!isApprovedProfile(p)||!staffPattern.test(p.employeeId)||!p.name||
+     (p.employeeId===TEST_ADMIN_ID&&p.rankingVisible!==true)||used.has(p.employeeId))return false;
+  // Keep legacy duplicate records intact for Manager review, never rank
+  // multiple rows with a colliding active display name.
+  if(namePolicy.needsRename(registry,p.employeeId))return false;
+  used.add(p.employeeId);return true;
+ }).map(expose).sort((a,b)=>b.level-a.level||b.xp-a.xp||a.employeeId.localeCompare(b.employeeId)).slice(0,25);
 }
 async function rebuild(){
  const db=getDatabase(),registry=(await db.ref('staffRegistry').once('value')).val()||{};
@@ -62,7 +73,7 @@ async function rebuild(){
  const milestone=(await db.ref('staffPrestige/events/last').once('value')).val();
  const current={levelRulesVersion:engine.LEVEL_RULES_VERSION,champion:newChampion,
   announcement:announcement||milestone||((await db.ref('staffPrestige/public/announcement').once('value')).val()||null),
-  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,personalTheme:x.personalTheme,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
+  leaderboard:board.map(x=>({employeeId:x.employeeId,name:x.name,avatar:x.avatar,level:x.level,highestLevel:x.highestLevel,levelPeak:x.levelPeak,rank:x.rank,xp:x.xp,selectedFrame:x.selectedFrame,selectedAvatarMotion:x.selectedAvatarMotion,selectedTitle:x.selectedTitle,selectedBanner:x.selectedBanner,selectedNameFx:x.selectedNameFx,selectedAura:x.selectedAura,selectedTrail:x.selectedTrail,selectedCardFx:x.selectedCardFx,personalTheme:x.personalTheme,nameFlame:x.nameFlame,nameGradient:x.nameGradient})),updatedAt:Date.now()};
  await db.ref('staffPrestige/public').set(current);
  if(top)await db.ref('staffPrestige/legends/'+top.employeeId).transaction(v=>v||{name:top.name,avatar:top.avatar,level:top.level,firstAt:Date.now()});
  // Small Firestore signal for instant profile refresh, not an XP authority.
@@ -103,13 +114,16 @@ exports.staffGetPrestige=onCall(opts,async req=>{
  // Filter server-side, including cached boards built before approval checks.
  const registry=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
  const eligible=leaderboard(registry),eligibleIds=new Set(eligible.map(p=>p.employeeId));
- const cachedIds=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).map(p=>p.employeeId);
- if(JSON.stringify(cachedIds)!==JSON.stringify(eligible.map(p=>p.employeeId))){
-  try{pub=await rebuild();}catch(error){console.warn('[Prestige] Approval ranking rebuild pending:',error?.message||error);}
+ const signature=p=>[p.employeeId,p.name,p.xp,p.level,p.rank,p.highestLevel,p.avatar,
+  p.selectedFrame,p.selectedAvatarMotion,p.selectedTitle,p.selectedAura,p.selectedCardFx];
+ const cached=Array.isArray(pub.leaderboard)?pub.leaderboard:[];
+ if(JSON.stringify(cached.map(signature))!==JSON.stringify(eligible.map(signature))){
+  try{pub=await rebuild();}catch(error){console.warn('[Prestige] Public ranking refresh pending:',error?.message||error);}
  }
  const admin=registry[TEST_ADMIN_ID];
  const showAdmin=isApprovedProfile(admin)&&admin.rankingVisible===true;
- const employees=(Array.isArray(pub.leaderboard)?pub.leaderboard:[]).filter(p=>eligibleIds.has(p.employeeId)&&(p.employeeId!==TEST_ADMIN_ID||showAdmin)).map(p=>({...p,name:registry[p.employeeId]?.name||p.name}));
+ // Registry wins over a stale public board even if publishing fails.
+ const employees=eligible.filter(p=>eligibleIds.has(p.employeeId)&&(p.employeeId!==TEST_ADMIN_ID||showAdmin));
  // Hydrate legacy snapshots created before public personalTheme was introduced.
  // One extra read only while the old snapshot lacks the new public cosmetic field.
  if(employees[0]&&!employees[0].personalTheme&&staffPattern.test(employees[0].employeeId)){

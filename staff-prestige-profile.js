@@ -12,6 +12,8 @@ const cosmeticOptions={avatarMotion:[['none','Tắt chuyển động',1],['pulse
 for(const options of Object.values(cosmeticOptions))options.sort((a,b)=>a[2]-b[2]);
 const titleNames={rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'};
 let mine=null;
+// Level follows XP; historical unlocks remain available after a deduction.
+const unlockedLevel=()=>Math.max(Number(mine?.level)||1,Number(mine?.highestLevel||mine?.levelPeak)||1);
 function element(tag,text,className){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;}
 function rewardCatalog(){
  return Array.isArray(mine?.rewardCatalog)&&mine.rewardCatalog.length?
@@ -21,11 +23,11 @@ function renderRewardHighlights(){
  const box=$('staff-reward-highlights');if(!box)return;
  box.replaceChildren();
  if(!mine){box.append(element('p','Đang tải phần thưởng…','hint'));return;}
- const all=rewardCatalog(),unlocked=all.filter(x=>mine.level>=x.level);
- const next=all.filter(x=>x.level>mine.level).slice(0,3);
+ const all=rewardCatalog(),unlocked=all.filter(x=>unlockedLevel()>=x.level);
+ const next=all.filter(x=>x.level>unlockedLevel()).slice(0,3);
  const last=unlocked.slice(-1),items=[...last,...next].slice(0,4);
  for(const r of items){
-  const got=mine.level>=r.level;
+  const got=unlockedLevel()>=r.level;
   const cell=element('div',undefined,'reward-highlight'+(got?' is-open':''));
   cell.append(element('span',r.icon||'🎁','reward-highlight-icon'),
    element('strong',r.label),element('small','Lv.'+r.level+' · '+(got?'Đã mở':'Còn '+fmt(Math.max(0,xpAt(r.level)-mine.xp))+' XP')));
@@ -34,12 +36,12 @@ function renderRewardHighlights(){
 }
 function renderRewards(){
  const list=$('staff-reward-list');list.replaceChildren();
- const all=rewardCatalog(),next=all.find(x=>mine&&x.level>mine.level);
+ const all=rewardCatalog(),next=all.find(x=>mine&&x.level>unlockedLevel());
  $('reward-next-callout').textContent=next?
    '🎁 Tiếp theo Lv.'+next.level+': '+next.label+' · còn '+fmt(Math.max(0,xpAt(next.level)-mine.xp))+' XP'
    :mine?'🏆 Đã mở toàn bộ mốc phần thưởng!':'Đang kết nối XP…';
  for(const reward of all){
-  const open=!!mine&&mine.level>=reward.level,row=element('div',undefined,'reward-row'+(open?' unlocked':'')+(next?.id===reward.id?' is-next':''));
+  const open=!!mine&&unlockedLevel()>=reward.level,row=element('div',undefined,'reward-row'+(open?' unlocked':'')+(next?.id===reward.id?' is-next':''));
   const body=element('div');body.append(element('strong',reward.label),element('small',fmt(xpAt(reward.level))+' XP để mở khóa'));
   const rewardIcon=element('span',undefined,'reward-icon crew-2d-icon');
    rewardIcon.dataset.icon=/khung|frame|viền/i.test(reward.label)?'frame':
@@ -60,18 +62,18 @@ function renderCosmetics(){
   select.replaceChildren();
   for(const [id,label,level] of choices){
    const option=document.createElement('option');option.value=id;option.textContent=label+(level>1?' · Lv.'+level:'');
-   option.disabled=!mine||mine.level<level;select.append(option);
+   option.disabled=!mine||unlockedLevel()<level;select.append(option);
   }
   select.value=old&&[...select.options].some(o=>o.value===old&&!o.disabled)?old:current||choices[0][0];
   select.disabled=!mine;
  }
- if(!editing)$('staff-gradient-check').checked=!!mine?.nameGradient&&mine.level>=45;
- $('staff-gradient-check').disabled=!mine||mine.level<45;
+ if(!editing)$('staff-gradient-check').checked=!!mine?.nameGradient&&unlockedLevel()>=45;
+ $('staff-gradient-check').disabled=!mine||unlockedLevel()<45;
 }
 function activeNameTier(){
  if(!mine)return 'none';
  if(typeof mine.selectedNameFx==='string')return mine.selectedNameFx;
- const level=Number(mine.level)||1;
+ const level=unlockedLevel();
  if(level>=60&&(mine.nameFlame||mine.nameGradient))return 'celestial';
  if(level>=45&&mine.nameGradient)return 'prism';
  if(level>=25&&mine.nameFlame)return 'inferno';
@@ -134,7 +136,7 @@ function initEffectLibrary(){
    tile.append(element('small',level>1?'Lv.'+level+' · Xem trước trực tiếp':'Mặc định · Xem trước trực tiếp','crew-fx-level'));
    tile.append(element('span','🔒 Lv.'+level,'crew-fx-status'));
    tile.addEventListener('click',()=>{
-    const unlocked=!!mine&&mine.level>=level;
+    const unlocked=!!mine&&unlockedLevel()>=level;
     if(!unlocked){
      $('crew-effect-selection-status').textContent=!mine?
       'Đăng ký hoặc liên kết Staff ID để trang bị hiệu ứng.':
@@ -178,7 +180,7 @@ function renderFxGallery(){
  for(const tile of document.querySelectorAll('.crew-fx-choice[data-unlock-level]')){
   const kind=tile.dataset.fxKind,id=tile.dataset.fxId;
   const level=Number(tile.dataset.unlockLevel)||1;
-  const unlocked=!!mine&&mine.level>=level;
+  const unlocked=!!mine&&unlockedLevel()>=level;
   const selected=$('staff-'+kind+'-select')?.value===id;
   const equipped=unlocked&&selected;
   tile.dataset.locked=String(!unlocked);
@@ -202,14 +204,14 @@ function previewCosmetics(){
  $('crew-profile-banner').dataset.banner=mine?.selectedBanner||'default';
  const label=$('profile-title'),title=mine?.selectedTitle||'none';
  label.textContent=titleNames[title]||'';label.hidden=!titleNames[title];
- $('profile-name').classList.toggle('name-gradient',!!mine?.nameGradient&&mine.level>=45);
+ $('profile-name').classList.toggle('name-gradient',!!mine?.nameGradient&&unlockedLevel()>=45);
 }
 function renderThemes(){
  const chosen=document.querySelector('input[name="staff-theme"]:checked')?.value;
  const preserve=$('style-dialog').open&&chosen;
  $('staff-theme-grid').replaceChildren();
  for(const [id,label] of Object.entries(themes)){
-  const level=themeLevels[id]||1,open=!!mine&&mine.level>=level;
+  const level=themeLevels[id]||1,open=!!mine&&unlockedLevel()>=level;
   const item=element('label',undefined,'theme-option'+(open?'':' is-locked'));
   const input=document.createElement('input');input.type='radio';input.name='staff-theme';input.value=id;input.disabled=!open;
   input.checked=(preserve?chosen:mine?.personalTheme||'dark')===id;
@@ -309,18 +311,19 @@ function renderMine(){
   $('staff-next-reward').textContent='🎁 Đang tải các mốc thưởng…';
  }else{
   $('staff-level-tag').textContent='LEVEL '+mine.level;
-  $('staff-xp-summary').textContent=mine.rank+' · '+fmt(mine.xp)+' XP tích lũy';
+  $('staff-xp-summary').textContent=mine.rank+' · '+fmt(mine.xp)+' XP hiện tại';
   const floor=xpAt(mine.level),ceil=xpAt(mine.level+1);
   const percent=mine.level>=60?100:Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)));
   $('staff-xp-fill').style.width=percent+'%';$('staff-xp-track').setAttribute('aria-valuenow',String(Math.round(percent)));
-  $('staff-next-level').textContent=mine.level>=60?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1);
-  const next=rewardCatalog().find(x=>x.level>mine.level);
+  $('staff-next-level').textContent=(mine.level>=60?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1))+
+   (unlockedLevel()>mine.level?' · Mốc cao nhất từng đạt Lv.'+unlockedLevel():'');
+  const next=rewardCatalog().find(x=>x.level>unlockedLevel());
   $('staff-next-reward').textContent=next?'🎁 Lv.'+next.level+' · '+next.label+' — còn '+fmt(Math.max(0,xpAt(next.level)-mine.xp))+' XP':'🏆 Đã mở toàn bộ phần thưởng!';
  }
- if(!$('style-dialog').open)$('staff-flame-check').checked=!!mine?.nameFlame&&mine.level>=3;
- $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||mine.level<3;
- $('profile-name').classList.toggle('onflame',!!mine?.nameFlame&&mine.level>=3);
- $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&mine.level>=25);
+ if(!$('style-dialog').open)$('staff-flame-check').checked=!!mine?.nameFlame&&unlockedLevel()>=3;
+ $('staff-save-style').disabled=!mine;$('staff-flame-check').disabled=!mine||unlockedLevel()<3;
+ $('profile-name').classList.toggle('onflame',!!mine?.nameFlame&&unlockedLevel()>=3);
+ $('profile-name').classList.toggle('advanced',!!mine?.nameFlame&&unlockedLevel()>=25);
  renderThemes();renderCosmetics();renderRewards();renderDailyMissions();previewCosmetics();renderFxGallery();renderAdminSandbox();
 }
 function renderAdminSandbox(){
@@ -356,7 +359,7 @@ function showStatus(){
  const personal=states.mine;
  if(personal?.state==='error'||personal?.state==='unlinked')$('staff-xp-summary').textContent=personal.message;
  $('staff-save-style').disabled=!mine||personal?.state!=='ready';
- $('staff-flame-check').disabled=!mine||mine.level<3||personal?.state!=='ready';
+ $('staff-flame-check').disabled=!mine||unlockedLevel()<3||personal?.state!=='ready';
 }
 async function save(){
  if(!mine)return;

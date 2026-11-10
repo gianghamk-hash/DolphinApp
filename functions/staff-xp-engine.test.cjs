@@ -72,5 +72,61 @@ test('automatic equip is atomic with a real level gain, idempotent, and preserve
  assert.deepEqual(e.equipOnLevelUp(old,promoted),promoted,'speculative retry never changes the version twice');
  const custom={...promoted,selectedFrame:'none',selectedNameFx:'none',nameFlame:false,personalTheme:'gray'};
  assert.deepEqual(e.equipOnLevelUp(custom,{...custom,xp:custom.xp+1}),{...custom,xp:custom.xp+1});
- assert.deepEqual(e.equipOnLevelUp(custom,{...custom,xp:0}),{...custom,xp:0},'permanent level peak prevents correction from overwriting customization');
+ const down=e.equipOnLevelUp(custom,{...custom,xp:0});
+ assert.equal(down.xp,0);assert.equal(e.effectiveLevel(down),1);
+ assert.equal(down.levelPeak,12,'Past maximum is audit-only');
+ assert.equal(down.selectedFrame,'none');assert.equal(down.personalTheme,'gray');
+ assert.equal(down.selectedAvatarMotion,'none');
+ assert.equal(down.autoStyleLevel,1);
+ assert.equal(down.profileVersion,10);
+ const regained=e.equipOnLevelUp(down,{...down,xp:e.xpForLevel(6)});
+ assert.equal(regained.selectedFrame,'bronze');
+ assert.equal(regained.selectedAvatarMotion,'comet');
+ assert.equal(regained.autoStyleLevel,6);
+});
+
+test('Linh hihi Level 2 / 4102.5 XP cannot equip Level 20 Guardian or high-end effects',()=>{
+ const p={
+  employeeId:'DOL-0003',name:'Linh hihi',active:true,xp:4102.5,levelPeak:54,
+  avatar:'👻',selectedTitle:'guardian',selectedFrame:'gold',selectedAura:'celestial',
+  selectedAvatarMotion:'supernova',selectedTrail:'nova',selectedCardFx:'mythic',
+  selectedNameFx:'royal',nameFlame:true,nameGradient:true,selectedBanner:'cosmic',
+  personalTheme:'cosmic'
+ };
+ assert.equal(e.effectiveLevel(p),2);
+ assert.equal(e.levelForXP(4102.5),2);
+ const visible=e.currentCosmetics(p);
+ for(const field of ['selectedTitle','selectedFrame','selectedAura','selectedAvatarMotion','selectedTrail','selectedCardFx','selectedNameFx'])assert.equal(visible[field],'none');
+ assert.equal(visible.selectedBanner,'default');
+ assert.equal(visible.personalTheme,'dark');
+ assert.equal(visible.nameFlame,false);assert.equal(visible.nameGradient,false);
+ assert.equal(visible.avatar,'🐬');
+ assert.equal(p.selectedTitle,'guardian','Pure projection never mutates stored history');
+});
+test('Avatar catalog is gated by current XP at Level 1, Level 2 and higher tiers',()=>{
+ const catalog=require('./staff-avatar-catalog.json');
+ const pet=catalog['Thú cưng Lv.2'][0];
+ const elite=catalog['Thần tốc Lv.30']?.[0]||Object.entries(catalog).find(([k])=>/Lv\.30/.test(k))?.[1]?.[0];
+ assert.equal(e.currentCosmetics({xp:0,avatar:pet}).avatar,'🐬');
+ assert.equal(e.currentCosmetics({xp:e.xpForLevel(2),avatar:pet}).avatar,pet);
+ if(elite){
+  assert.equal(e.currentCosmetics({xp:e.xpForLevel(2),avatar:elite}).avatar,'🐬');
+  assert.equal(e.currentCosmetics({xp:e.xpForLevel(30),avatar:elite}).avatar,elite);
+ }
+});
+test('XP loss across a threshold locks effects and later XP increases unlock them again',()=>{
+ const old={employeeId:'DOL-0003',active:true,xp:e.xpForLevel(54),levelPeak:54,
+  avatar:'🐬',autoStyleLevel:54,profileVersion:7,...e.automaticStyle(54)};
+ const low=e.equipOnLevelUp(old,{...old,xp:4102.5});
+ assert.equal(e.effectiveLevel(low),2);assert.equal(low.levelPeak,54);
+ assert.equal(low.selectedTitle,'none');assert.equal(low.selectedFrame,'none');
+ assert.equal(low.selectedAura,'none');assert.equal(low.selectedNameFx,'none');
+ assert.equal(low.nameFlame,false);assert.equal(low.personalTheme,'dark');
+ assert.equal(low.autoStyleLevel,2);
+ const regain=e.equipOnLevelUp(low,{...low,xp:e.xpForLevel(20)});
+ assert.equal(e.effectiveLevel(regain),20);
+ assert.equal(regain.selectedTitle,'guardian');assert.equal(regain.selectedFrame,'emerald');
+ assert.equal(regain.autoStyleLevel,20);
+ const untouched=e.equipOnLevelUp(regain,{...regain,xp:regain.xp+1});
+ assert.equal(untouched.selectedTitle,'guardian');
 });

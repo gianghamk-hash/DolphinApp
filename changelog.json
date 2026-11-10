@@ -1,18 +1,18 @@
 {
-  "version": "1.1.94",
-  "previousVersion": "1.1.93",
-  "commit": "f905342",
-  "previousCommit": "5178b95",
-  "buildDate": "2026-11-10T00:26:58.546Z",
-  "summary": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking",
+  "version": "1.1.95",
+  "previousVersion": "1.1.94",
+  "commit": "0c1c2fe",
+  "previousCommit": "f905342",
+  "buildDate": "2026-11-10T00:53:19.756Z",
+  "summary": "fix(crew): lock avatar, titles and cosmetic FX to current XP Level",
   "changes": {
-    "totalCommits": 318,
-    "filesChanged": 17,
+    "totalCommits": 319,
+    "filesChanged": 20,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking"
+    "fix(crew): lock avatar, titles and cosmetic FX to current XP Level"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,15 @@
       "type": "update"
     },
     {
-      "file": "crew-levelup-cinematic.js",
+      "file": "dolphin-avatars.js",
       "type": "update"
     },
     {
       "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/manager-apk.test.cjs",
       "type": "update"
     },
     {
@@ -36,6 +40,10 @@
       "type": "update"
     },
     {
+      "file": "functions/staff-name-repair.test.cjs",
+      "type": "update"
+    },
+    {
       "file": "functions/staff-prestige.js",
       "type": "update"
     },
@@ -44,15 +52,23 @@
       "type": "update"
     },
     {
+      "file": "functions/staff-profile.js",
+      "type": "update"
+    },
+    {
       "file": "functions/staff-xp-engine.cjs",
       "type": "update"
     },
     {
-      "file": "manager-apk-profile.js",
+      "file": "functions/staff-xp-engine.test.cjs",
       "type": "update"
     },
     {
       "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "ranking/staff-prestige-ranking.js",
       "type": "update"
     },
     {
@@ -64,15 +80,11 @@
       "type": "update"
     },
     {
-      "file": "scripts/crew-effect-library.test.cjs",
+      "file": "scripts/landing-level-podium.test.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/crew-levelup-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/staff-levelup.test.cjs",
+      "file": "scripts/staff-recovery.test.cjs",
       "type": "update"
     },
     {

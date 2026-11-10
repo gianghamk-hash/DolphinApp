@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.94",
+      "releaseDate": "2026-11-10T00:26:58.546Z",
+      "summary": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking",
+      "details": [
+        "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking"
+      ]
+    },
+    {
       "version": "1.1.93",
       "releaseDate": "2026-11-09T10:22:52.357Z",
       "summary": "WIP (disabled): verified XP wagering core and security gates for online games (#245)",
@@ -390,14 +398,6 @@
       "summary": "test(crew): align regression fixtures and PWA assets with Mythic V7",
       "details": [
         "test(crew): align regression fixtures and PWA assets with Mythic V7"
-      ]
-    },
-    {
-      "version": "1.1.44",
-      "releaseDate": "2026-11-02T12:51:22.344Z",
-      "summary": "feat(crew): upgrade Mythic, add avatar motion and name recovery",
-      "details": [
-        "feat(crew): upgrade Mythic, add avatar motion and name recovery"
       ]
     }
   ]

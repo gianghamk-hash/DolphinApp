@@ -1,7 +1,7 @@
 {
-  "version": "1.1.94",
-  "buildDate": "2026-11-10T00:26:58.546Z",
-  "commit": "f905342",
-  "notes": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking",
+  "version": "1.1.95",
+  "buildDate": "2026-11-10T00:53:19.756Z",
+  "commit": "0c1c2fe",
+  "notes": "fix(crew): lock avatar, titles and cosmetic FX to current XP Level",
   "forceUpdate": false
 }

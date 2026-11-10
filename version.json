@@ -1,7 +1,7 @@
 {
-  "version": "1.1.97",
-  "buildDate": "2026-11-10T03:32:50.464Z",
-  "commit": "c4c2dd9",
-  "notes": "fix(snake): allow both players to use WASD and arrow keys",
+  "version": "1.1.98",
+  "buildDate": "2026-11-10T03:37:04.504Z",
+  "commit": "4f5e5fe",
+  "notes": "perf(tactics): prevent fetchState pileup and add optimistic state update",
   "forceUpdate": false
 }

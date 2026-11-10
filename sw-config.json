@@ -1,5 +1,5 @@
 {
-  "version": "1.1.97",
+  "version": "1.1.98",
   "releaseDate": "2026-11-10",
-  "notes": "fix(snake): allow both players to use WASD and arrow keys"
+  "notes": "perf(tactics): prevent fetchState pileup and add optimistic state update"
 }

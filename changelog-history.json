@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.97",
+      "releaseDate": "2026-11-10T03:32:50.464Z",
+      "summary": "fix(snake): allow both players to use WASD and arrow keys",
+      "details": [
+        "fix(snake): allow both players to use WASD and arrow keys"
+      ]
+    },
+    {
       "version": "1.1.96",
       "releaseDate": "2026-11-10T03:27:38.103Z",
       "summary": "fix(multiplayer): fix 2-player seats assignment and throttle sendState",
@@ -390,14 +398,6 @@
       "summary": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
       "details": [
         "feat(crew): six daily missions, midnight reset and escalating check-in streak"
-      ]
-    },
-    {
-      "version": "1.1.47",
-      "releaseDate": "2026-11-02T12:54:23.044Z",
-      "summary": "test(crew): validate four celestial Mythic orbit animations in browser",
-      "details": [
-        "test(crew): validate four celestial Mythic orbit animations in browser"
       ]
     }
   ]

@@ -1,22 +1,22 @@
 {
-  "version": "1.1.97",
-  "previousVersion": "1.1.96",
-  "commit": "c4c2dd9",
-  "previousCommit": "35bdd88",
-  "buildDate": "2026-11-10T03:32:50.464Z",
-  "summary": "fix(snake): allow both players to use WASD and arrow keys",
+  "version": "1.1.98",
+  "previousVersion": "1.1.97",
+  "commit": "4f5e5fe",
+  "previousCommit": "c4c2dd9",
+  "buildDate": "2026-11-10T03:37:04.504Z",
+  "summary": "perf(tactics): prevent fetchState pileup and add optimistic state update",
   "changes": {
-    "totalCommits": 321,
+    "totalCommits": 322,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(snake): allow both players to use WASD and arrow keys"
+    "perf(tactics): prevent fetchState pileup and add optimistic state update"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/snake-coop-online.html",
+      "file": "giaitri/games/tactics-online/authority-adapter.js",
       "type": "update"
     }
   ]

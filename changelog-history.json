@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.98",
+      "releaseDate": "2026-11-10T03:37:04.504Z",
+      "summary": "perf(tactics): prevent fetchState pileup and add optimistic state update",
+      "details": [
+        "perf(tactics): prevent fetchState pileup and add optimistic state update"
+      ]
+    },
+    {
       "version": "1.1.97",
       "releaseDate": "2026-11-10T03:32:50.464Z",
       "summary": "fix(snake): allow both players to use WASD and arrow keys",
@@ -390,14 +398,6 @@
       "summary": "feat(crew): 10x daily check-in rewards, retain legacy XP records",
       "details": [
         "feat(crew): 10x daily check-in rewards, retain legacy XP records"
-      ]
-    },
-    {
-      "version": "1.1.48",
-      "releaseDate": "2026-11-02T13:23:42.432Z",
-      "summary": "feat(crew): six daily missions, midnight reset and escalating check-in streak",
-      "details": [
-        "feat(crew): six daily missions, midnight reset and escalating check-in streak"
       ]
     }
   ]

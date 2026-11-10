@@ -1,7 +1,7 @@
 {
-  "version": "1.1.98",
-  "buildDate": "2026-11-10T03:37:04.504Z",
-  "commit": "4f5e5fe",
-  "notes": "perf(tactics): prevent fetchState pileup and add optimistic state update",
+  "version": "1.1.99",
+  "buildDate": "2026-11-10T04:46:20.652Z",
+  "commit": "bd3738e",
+  "notes": "Fix adapter registration and update room creation logic",
   "forceUpdate": false
 }

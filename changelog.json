@@ -1,22 +1,22 @@
 {
-  "version": "1.1.98",
-  "previousVersion": "1.1.97",
-  "commit": "4f5e5fe",
-  "previousCommit": "c4c2dd9",
-  "buildDate": "2026-11-10T03:37:04.504Z",
-  "summary": "perf(tactics): prevent fetchState pileup and add optimistic state update",
+  "version": "1.1.99",
+  "previousVersion": "1.1.98",
+  "commit": "bd3738e",
+  "previousCommit": "4f5e5fe",
+  "buildDate": "2026-11-10T04:46:20.652Z",
+  "summary": "Fix adapter registration and update room creation logic",
   "changes": {
-    "totalCommits": 322,
+    "totalCommits": 323,
     "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "perf(tactics): prevent fetchState pileup and add optimistic state update"
+    "Fix adapter registration and update room creation logic"
   ],
   "fileChanges": [
     {
-      "file": "giaitri/games/tactics-online/authority-adapter.js",
+      "file": "dolphin-multiplayer.js",
       "type": "update"
     }
   ]

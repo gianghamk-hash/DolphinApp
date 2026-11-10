@@ -185,7 +185,7 @@ function currentCosmetics(profile){
  out.nameFlame=!!profile?.nameFlame&&level>=3;
  out.nameGradient=!!profile?.nameGradient&&level>=45;
  const chosenAvatar=profile?.avatar||'🐬';
- out.avatar=(AVATAR_LEVELS.get(chosenAvatar)||1)<=level?chosenAvatar:'🐬';
+ out.avatar=AVATAR_LEVELS.has(chosenAvatar)&&AVATAR_LEVELS.get(chosenAvatar)<=level?chosenAvatar:'🐬';
  return out;
 }
 function restrictLevelEffects(profile){
@@ -205,6 +205,7 @@ function equipOnLevelUp(previous,current){
    profileVersion:(Number(current.profileVersion)||0)+1};
  }
  if(level>before){
+  if(Number(current.autoStyleLevel)>=level)return current; // speculative transaction retry
   // Readjust on a true Level gain even if the user once had a higher Level.
   return {...current,...automaticStyle(level),autoStyleLevel:level,autoStyleVersion:1,
    profileVersion:(Number(current.profileVersion)||0)+1};

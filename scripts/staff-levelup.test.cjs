@@ -109,7 +109,7 @@ test('cinematic stays read-only and old profile delegates to it',()=>{
  const css=fs.readFileSync(path.resolve(__dirname,'../crew-levelup-cinematic.css'),'utf8');
  const html=fs.readFileSync(path.resolve(__dirname,'../dolphin-profile.html'),'utf8');
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
- assert.match(html,/crew-levelup-cinematic\.js\?v=levelup-v1/);
+ assert.match(html,/crew-levelup-cinematic\.js\?v=xp-level-v3/);
  assert.match(html,/id="crew-levelup-replay"/);
 });
 

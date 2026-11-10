@@ -44,3 +44,43 @@ test('existing 2-player games still select original Firestore path',async()=>{
  const mp=harness();
  await assert.rejects(()=>mp.createRoom('snake-coop',{name:'Guest'}),/Chưa kết nối Firebase/);
 });
+
+
+test('all three legacy 2-player games create a Firestore room after shared script loads',async()=>{
+ for(const game of ['dolphin-battleship','dolphin-caro','dolphin-xiangqi']){
+  const storage=new Map(),writes=[];
+  const localStorage={getItem:k=>storage.get(k)||null,setItem:(k,v)=>storage.set(k,String(v))};
+  const snapshot=()=>({exists:false,data:()=>null});
+  const doc=(path)=>({
+   get:async()=>snapshot(),set:async data=>{writes.push({path,data});},
+   update:async data=>{writes.push({path,update:data});},
+   onSnapshot:()=>()=>{},
+   collection:collectionPath=>collection(path+'/'+collectionPath),
+  });
+  const collection=path=>({
+   doc:id=>doc(path+'/'+id),
+   onSnapshot:()=>()=>{}
+  });
+  const window={localStorage,db:{collection}};
+  const ctx={window,localStorage,Date,Math,console,setInterval:()=>0,clearInterval:()=>{}};
+  vm.runInNewContext(source,ctx,{filename:'dolphin-multiplayer.js'});
+  const mp=window.DolphinMP;
+  assert.equal(typeof mp.createRoom,'function','shared script must parse and attach the multiplayer API');
+  const result=await mp.createRoom(game,{name:'Dolphin Tester',maxPlayers:2});
+  assert.match(result.roomId,/^[A-Z2-9]{6}$/);
+  assert.equal(result.isHost,true);assert.equal(result.side,'p1');
+  const created=writes.find(x=>x.path==='mp_rooms/'+result.roomId&&x.data);
+  assert.equal(created?.data.game,game);
+  assert.equal(created?.data.status,'waiting');
+  assert.equal(created?.data.seats.p1,mp.getDeviceId());
+  assert(writes.some(x=>x.path.includes('/players/')&&x.data?.side==='p1'));
+ }
+});
+test('adapter registration rejects missing create/join/subscribe and accepts a valid adapter',()=>{
+ const mp=harness();
+ assert.throws(()=>mp.registerAdapter('broken',{}),/Multiplayer adapter/);
+ assert.throws(()=>mp.registerAdapter('broken',{createRoom:()=>{}}),/Multiplayer adapter/);
+ assert.throws(()=>mp.registerAdapter('broken',{createRoom:()=>{},joinRoom:()=>{}}),/Multiplayer adapter/);
+ const unregister=mp.registerAdapter('tactics',{createRoom:async()=>({roomId:'ABC234'}),joinRoom:async()=>({roomId:'DEF456'}),subscribe:()=>()=>{}});
+ assert.equal(typeof unregister,'function');
+});

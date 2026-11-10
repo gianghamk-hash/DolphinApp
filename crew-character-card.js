@@ -26,7 +26,8 @@
   const level=Math.min(MAX_LEVEL,Math.max(1,Math.trunc(Number(profile.level)||1)));
   const official=String(profile.rank||'').toLowerCase();
   const rank=rankNames.includes(official)?official:rankBands.find(t=>level>=t.min).name;
-  const preserved=xp<xpAt(level);
+  const highestLevel=Math.min(MAX_LEVEL,Math.max(level,Number(profile.highestLevel||profile.levelPeak)||1));
+  const preserved=highestLevel>level;
   const progress=level===MAX_LEVEL?100:Math.max(0,Math.min(100,
    100*(xp-xpAt(level))/(xpAt(level+1)-xpAt(level))));
   const selected={frame:value(profile.selectedFrame,'none'),aura:value(profile.selectedAura,'none'),
@@ -34,7 +35,7 @@
   const equipped={};
   for(const type of Object.keys(selected))equipped[type]=equipment[type][selected[type]]||'Chưa chọn';
   return {ready:true,level,rank,rankName:rank.toUpperCase(),percent:Math.round(progress),
-   preserved,xp,employeeId:String(profile.employeeId),equipped};
+   preserved,highestLevel,xp,employeeId:String(profile.employeeId),equipped};
  }
  function set(id,text){const el=$(id);if(el)el.textContent=text;}
  function render(profile){
@@ -52,11 +53,11 @@
   const dial=$('crew-card-xp-dial');
   if(dial){
    dial.style.setProperty('--crew-progress',state.percent+'%');
-   dial.title=state.preserved?'Level cao nhất đã được giữ; XP hiện tại thấp hơn ngưỡng Level này.':
+   dial.title=state.preserved?'Level hiện tại theo XP. Mốc cao nhất từng đạt: Level '+state.highestLevel+'. Hiệu ứng đã mở vẫn được giữ.':
     state.ready?'Đã hoàn thành '+state.percent+'% tiến độ đến cấp kế tiếp.':'Đang tải XP đã xác minh.';
   }
   const percent=$('crew-card-xp-percent');
-  if(percent)percent.textContent=state.ready?(state.level===MAX_LEVEL?'MAX · 60':state.preserved?'Đã giữ cấp':state.percent+'%'):'0%';
+  if(percent)percent.textContent=state.ready?(state.level===MAX_LEVEL?'MAX · 60':state.percent+'%'):'0%';
   host.setAttribute('aria-label',state.ready?
    'Thẻ Dolphin Crew Club, '+state.rankName+', Level '+state.level+', '+state.employeeId:
    'Thẻ Dolphin Crew Club, chưa tải được hồ sơ đã xác minh');

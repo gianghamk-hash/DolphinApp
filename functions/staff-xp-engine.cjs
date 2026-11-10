@@ -175,7 +175,8 @@ function currentCosmetics(profile){
  const level=effectiveLevel(profile),out={};
  for(const {type,key} of STYLE_FIELDS){
   const options=COSMETIC_CHOICES[type],fallback=type==='banner'?'default':'none';
-  const selected=profile?.[key];
+  const selected=type==='nameFx'?(profile?.selectedNameFx||
+    (profile?.nameGradient&&level>=45?'prism':profile?.nameFlame&&level>=3?'ember':'none')):profile?.[key];
   out[key]=typeof selected==='string'&&Object.hasOwn(options,selected)&&options[selected]<=level?selected:fallback;
  }
  const theme=profile?.personalTheme||'dark';

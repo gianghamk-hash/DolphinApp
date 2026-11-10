@@ -70,7 +70,8 @@ test('level peak and unlocked rewards survive a correction',async()=>{
  await api.staffGrantVerifiedXP(req('manager',{employeeId:'DOL-0001',eventId:'correction:verified:001',source:'correction',amount:-19500}));
  const mine=await api.staffGetMyProgress(req('lanDevice'));
  assert.equal(mine.xp,500);
- assert.equal(mine.level,3);
+ assert.equal(mine.level,1);
+ assert.equal(mine.highestLevel,3);
  assert(mine.unlocked.includes('name-onflame'));
  assert.equal(data.get('staffRegistry/DOL-0001').levelPeak,3);
 });
@@ -326,11 +327,11 @@ test('public Level board is rebuilt on demand for the new 2450 threshold',async(
  data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Visible Crew',avatar:'🐬',active:true,xp:2450,levelPeak:1});
  data.set('staffPrestige/public',{leaderboard:[{employeeId:'DOL-0002',name:'Visible Crew',xp:2450,level:1}],updatedAt:123});
  const first=await api.staffGetPrestige(req('lanDevice'));
- assert.equal(first.levelRulesVersion,2);
+ assert.equal(first.levelRulesVersion,3);
  assert.equal(first.leaderboard[0].level,2);
  const second=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(second.leaderboard[0].level,2);
- assert.equal(data.get('staffPrestige/public').levelRulesVersion,2);
+ assert.equal(data.get('staffPrestige/public').levelRulesVersion,3);
 });
 
 test('pending registrations never enter Level rankings, Emperor or legends, even with stale cache',async()=>{
@@ -399,4 +400,54 @@ test('DOL-0001 XP sandbox uses the same automatic effects and reset allows testi
  assert.equal(first.selectedNameFx,'ember');assert.equal(first.selectedAvatarMotion,'pulse');assert.equal(first.nameFlame,true);
  const reset=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'reset'}));assert.equal(reset.selectedNameFx,'none');
  const again=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:engine.xpForLevel(3)}));assert.equal(again.nameFlame,true);
+});
+
+test('Linh hihi zero XP falls to Level 1 but retains unlocked Level 54 cosmetics and title',async()=>{
+ const {api,data}=harness();
+ data.set('staffRegistry/DOL-0010',{
+  employeeId:'DOL-0010',name:'Linh hihi',avatar:'🐬',active:true,createdAt:100,
+  registrationSource:'manager',xp:0,levelPeak:54,
+  selectedTitle:'legend',selectedFrame:'gold',selectedAvatarMotion:'supernova'
+ });
+ const profile=api._leaderboard({'DOL-0010':data.get('staffRegistry/DOL-0010')})[0];
+ assert.equal(profile.xp,0);assert.equal(profile.level,1);
+ assert.equal(profile.rank,'Bronze');assert.equal(profile.highestLevel,54);
+ assert.equal(profile.selectedFrame,'gold');assert.equal(profile.selectedTitle,'legend');
+ assert.equal(profile.selectedAvatarMotion,'supernova');
+ await api._rebuildPrestige();
+ const board=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(board.leaderboard[0].level,1);
+ assert.equal(board.leaderboard[0].xp,0);
+ assert.equal(board.leaderboard[0].highestLevel,54);
+});
+test('duplicate name aliases are not separate Level entries; keep stored Staff IDs for review',async()=>{
+ const {api,data}=harness();
+ const first={employeeId:'DOL-0010',name:'Linh hihi',active:true,
+  createdAt:100,registrationSource:'manager',xp:0,levelPeak:54};
+ const alias={employeeId:'DOL-0011',name:'  linh   hihi ',active:true,
+  createdAt:200,registrationSource:'manager',xp:4102.5,levelPeak:21};
+ data.set('staffRegistry/DOL-0010',first);data.set('staffRegistry/DOL-0011',alias);
+ const publicBoard=await api._rebuildPrestige();
+ assert.equal(publicBoard.leaderboard.filter(x=>x.name.trim().toLowerCase().includes('linh')).length,1);
+ assert.equal(publicBoard.leaderboard.find(x=>x.name==='Linh hihi').employeeId,'DOL-0010');
+ assert.equal(data.get('staffRegistry/DOL-0011').xp,4102.5,'No employee record is deleted or merged');
+});
+test('wrong registry key alias cannot create an extra Level row',()=>{
+ const {api}=harness();
+ const p={employeeId:'DOL-0010',name:'Visible Crew',active:true,xp:2450,levelPeak:2};
+ const board=api._leaderboard({'DOL-0010':p,legacyClone:{...p,xp:0,levelPeak:54}});
+ assert.equal(board.length,1);
+ assert.equal(board[0].level,2);
+});
+test('public Level response reflects current XP even when cached snapshot has same Staff IDs',async()=>{
+ const {api,data}=harness();
+ const original={employeeId:'DOL-0010',name:'Linh hihi',active:true,xp:2450*53*53,levelPeak:54};
+ data.set('staffRegistry/DOL-0010',original);
+ await api._rebuildPrestige();
+ data.set('staffRegistry/DOL-0010',{...original,xp:0,selectedFrame:'gold'});
+ const updated=await api.staffGetPrestige(req('lanDevice'));
+ assert.equal(updated.leaderboard.find(x=>x.employeeId==='DOL-0010').xp,0);
+ assert.equal(updated.leaderboard.find(x=>x.employeeId==='DOL-0010').level,1);
+ assert.equal(updated.champion.level,1);
+ assert.equal(data.get('staffPrestige/public').leaderboard.find(x=>x.employeeId==='DOL-0010').level,1);
 });

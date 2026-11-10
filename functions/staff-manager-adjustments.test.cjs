@@ -105,3 +105,18 @@ test('invalid employee, pending staff, invalid request or reason are rejected',a
  for(const variant of variants)await assert.rejects(()=>f.api.staffManagerAdjustEmployee(request('manager',variant)));
  assert.equal(f.data.staffRegistry['DOL-0002'].xp,4000);
 });
+
+test('Manager deduction to exactly zero produces Level 1 without creating a clone or losing levelPeak',async()=>{
+ const f=fixture();
+ f.data.staffRegistry['DOL-0002']={...f.data.staffRegistry['DOL-0002'],name:'Linh hihi',xp:750000,levelPeak:54,selectedFrame:'gold'};
+ const first=await f.api.staffManagerAdjustEmployee(request('manager',input('xp_deduct',750000,'deduction-full-0001')));
+ assert.equal(first.after,0);assert.equal(first.currentLevel,1);assert.equal(first.highestLevel,54);
+ assert.equal(f.data.staffRegistry['DOL-0002'].levelPeak,54);
+ assert.equal(f.data.staffRegistry['DOL-0002'].selectedFrame,'gold');
+ assert.equal(Object.keys(f.data.staffRegistry).length,4);
+ const copy=await f.api.staffManagerAdjustEmployee(request('manager',input('xp_deduct',750000,'deduction-full-0001')));
+ assert.equal(copy.duplicate,true);assert.equal(copy.currentLevel,1);
+ assert.equal(f.data.staffRegistry['DOL-0002'].xp,0);
+ const details=await f.api.staffManagerGetEmployeeAdjustments(request('manager',{employeeId:'DOL-0002'}));
+ assert.equal(details.currentLevel,1);assert.equal(details.highestLevel,54);
+});

@@ -101,6 +101,8 @@ exports.staffManagerAdjustEmployee=onCall(opts,async req=>{
  catch(e){console.warn('[Manager corrections] XP saved; public ranking refresh pending:',e.message);}
  return {saved:true,duplicate:!result.committed,employeeId:args.employeeId,
   kind:args.kind,amount:args.amount,before:existing.before,after:existing.after,
+  currentLevel:engine.levelForXP(existing.after),
+  highestLevel:Math.max(engine.levelForXP(existing.after),Number(saved.levelPeak)||1),
   requestId:args.requestId};
 });
 exports.staffManagerGetEmployeeAdjustments=onCall(opts,async req=>{
@@ -111,7 +113,9 @@ exports.staffManagerGetEmployeeAdjustments=onCall(opts,async req=>{
  const rev=(await db.ref('staffRevenueScoreAdjustments/'+week+'/'+employeeId).once('value')).val()||{};
  const entries=v=>Object.values(v||{}).sort((a,b)=>b.at-a.at).slice(0,25)
   .map(x=>({kind:x.kind,amount:x.amount,reason:x.reason,at:x.at,requestId:x.requestId,before:x.before,after:x.after}));
- return {employeeId,name:profile.name,xp:Number(profile.xp)||0,week,
+ return {employeeId,name:profile.name,xp:Number(profile.xp)||0,
+  currentLevel:engine.levelForXP(Math.max(0,Number(profile.xp)||0)),
+  highestLevel:Math.max(engine.levelForXP(Math.max(0,Number(profile.xp)||0)),Number(profile.levelPeak)||1),week,
   totalDeducted:Number(rev.totalDeducted)||0,
   xpHistory:entries(profile.managerScoreCorrections),revenueHistory:entries(rev.events)};
 });

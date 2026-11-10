@@ -1,34 +1,86 @@
 {
-  "version": "1.1.93",
-  "previousVersion": "1.1.92",
-  "commit": "5178b95",
-  "previousCommit": "d77da71",
-  "buildDate": "2026-11-09T10:22:52.357Z",
-  "summary": "WIP (disabled): verified XP wagering core and security gates for online games (#245)",
+  "version": "1.1.94",
+  "previousVersion": "1.1.93",
+  "commit": "f905342",
+  "previousCommit": "5178b95",
+  "buildDate": "2026-11-10T00:26:58.546Z",
+  "summary": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking",
   "changes": {
-    "totalCommits": 317,
-    "filesChanged": 4,
+    "totalCommits": 318,
+    "filesChanged": 17,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "WIP (disabled): verified XP wagering core and security gates for online games (#245)"
+    "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/xp-wagers-security.yml",
+      "file": "crew-character-card.js",
       "type": "update"
     },
     {
-      "file": "docs/VERIFIED_XP_WAGERS_SECURITY_PLAN.md",
+      "file": "crew-levelup-cinematic.js",
       "type": "update"
     },
     {
-      "file": "functions/wagers/rules.cjs",
+      "file": "dolphin-profile.html",
       "type": "update"
     },
     {
-      "file": "functions/wagers/rules.test.cjs",
+      "file": "functions/staff-manager-adjustments.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-manager-adjustments.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-engine.cjs",
+      "type": "update"
+    },
+    {
+      "file": "manager-apk-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "ranking/index.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-character-card-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-character-card.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-effect-library.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-levelup-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/staff-levelup.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

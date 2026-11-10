@@ -1,7 +1,7 @@
 {
-  "version": "1.1.93",
-  "buildDate": "2026-11-09T10:22:52.357Z",
-  "commit": "5178b95",
-  "notes": "WIP (disabled): verified XP wagering core and security gates for online games (#245)",
+  "version": "1.1.94",
+  "buildDate": "2026-11-10T00:26:58.546Z",
+  "commit": "f905342",
+  "notes": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking",
   "forceUpdate": false
 }

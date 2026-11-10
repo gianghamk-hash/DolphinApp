@@ -1,5 +1,5 @@
 {
-  "version": "1.1.93",
-  "releaseDate": "2026-11-09",
-  "notes": "WIP (disabled): verified XP wagering core and security gates for online games (#245)"
+  "version": "1.1.94",
+  "releaseDate": "2026-11-10",
+  "notes": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking"
 }

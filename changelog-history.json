@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.93",
+      "releaseDate": "2026-11-09T10:22:52.357Z",
+      "summary": "WIP (disabled): verified XP wagering core and security gates for online games (#245)",
+      "details": [
+        "WIP (disabled): verified XP wagering core and security gates for online games (#245)"
+      ]
+    },
+    {
       "version": "1.1.92",
       "releaseDate": "2026-11-09T08:08:43.861Z",
       "summary": "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey",
@@ -390,14 +398,6 @@
       "summary": "feat(crew): upgrade Mythic, add avatar motion and name recovery",
       "details": [
         "feat(crew): upgrade Mythic, add avatar motion and name recovery"
-      ]
-    },
-    {
-      "version": "1.1.43",
-      "releaseDate": "2026-11-02T11:30:12.637Z",
-      "summary": "feat(crew-club): grouped live effect previews with tap-to-equip selection",
-      "details": [
-        "feat(crew-club): grouped live effect previews with tap-to-equip selection"
       ]
     }
   ]

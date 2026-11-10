@@ -62,7 +62,7 @@ test('Prestige Lv60 is capped and LevelPeak preserves unlocked styles when XP ha
  h.api.render({employeeId:'DOL-0002',xp:3200,level:2,highestLevel:40,levelPeak:40,selectedFrame:'gold'});
  assert.match(h.nodes.get('crew-card-xp-percent').textContent,/^\d+%$/);
  assert.equal(h.nodes.get('crew-card-level-number').textContent,'2');
- assert.match(h.nodes.get('crew-card-xp-dial').title,/Level cao nhất/);
+ assert.match(h.nodes.get('crew-card-xp-dial').title,/Mốc cao nhất từng đạt/);
 });
 test('Rank reflects the existing backend rank and defaults to verified Level band only when omitted',()=>{
  const h=harness();

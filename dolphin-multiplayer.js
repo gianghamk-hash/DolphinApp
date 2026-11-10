@@ -155,10 +155,10 @@ function subscribe(){
 // Games using a trusted backend can reuse the common room/player event API.
 function registerAdapter(game, adapter){
   if (typeof game !== 'string' || !game || !adapter ||
-      typeof adapter.createRoom !== 'function' ||
+      typeof adapter. !== 'function' ||
       typeof adapter.joinRoom !== 'function' ||
       typeof adapter.subscribe !== 'function'){
-    throw new Error('Multiplayer adapter phải có createRoom, joinRoom và subscribe');
+    throw new Error('Multiplayer adapter phải có , joinRoom và subscribe');
   }
   if (_adapters[game] && _adapters[game] !== adapter) throw new Error('Adapter đã đăng ký: ' + game);
   _adapters[game] = adapter;
@@ -170,7 +170,7 @@ async function connectAdapter(game, code, opts){
   if (_roomId) throw new Error('Đã tham gia phòng, hãy rời phòng trước khi mở phòng mới');
   const result = code
     ? await adapter.joinRoom(code, opts)
-    : await adapter.createRoom(opts);
+    : await adapter.(opts);
   if (!result || !result.roomId) throw new Error('Adapter không trả về mã phòng');
   _roomId = String(result.roomId);
   _game = game;
@@ -199,7 +199,7 @@ async function connectAdapter(game, code, opts){
 
 // ═══ PUBLIC API ═══
 
-async function createRoom(game, opts = {}){
+async function sendState(game, opts = {}){
   if (_adapters[game]) return connectAdapter(game, null, opts);
   const db = getDB();
   if (!db) throw new Error('Chưa kết nối Firebase');
@@ -221,7 +221,7 @@ async function createRoom(game, opts = {}){
 
   await db.collection(COL).doc(code).set({
     game, hostId: _deviceId, status: 'waiting', maxPlayers: Math.min(4, Math.max(2, Number(opts.maxPlayers)||2)),
-    seats: (Number(opts.maxPlayers)||2)>2 ? { p1:_deviceId } : null,
+    seats: { p1: _deviceId },
     seed, createdAt: now, updatedAt: now,
   });
 
@@ -260,7 +260,7 @@ async function joinRoom(code, game, opts = {}){
 
   // Four-seat rooms reserve seats atomically to prevent simultaneous joins
   // claiming the same slot. Legacy 2P games retain their existing flow.
-  if ((Number(room.maxPlayers)||2)>2){
+  if ((Number(room.maxPlayers)||2)>=2){
     const roomRef=db.collection(COL).doc(code),playerRef=roomRef.collection('players').doc(_deviceId);
     const assigned=await db.runTransaction(async tx=>{
       const current=await tx.get(roomRef);
@@ -385,9 +385,10 @@ async function sendInput(payload){
     });
   } catch(e){}
 }
-
+let _lastSendStateTime = 0;
 async function sendState(state){
-  if (_activeAdapter) throw new Error('Không thể ghi trạng thái trận đấu từ client adapter');
+  const _now = Date.now(); if (_now - _lastSendStateTime < 100) return; _lastSendStateTime = _now;
+   if (_activeAdapter) throw new Error('Không thể ghi trạng thái trận đấu từ client adapter');
   if (!_roomId || !_isHost) return;
   const db = getDB(); if (!db) return;
   try {
@@ -429,7 +430,7 @@ async function setReady(ready){
 
 window.DolphinMP = {
   registerAdapter,
-  createRoom, joinRoom, leaveRoom,
+  (Number(opts.maxPlayers)||2)>2 ? { p1: _deviceId } : null, joinRoom, leaveRoom,
   sendInput, sendState, sendInputStrict, sendStateStrict, sendConfig, updateRoomStatus, setReady,
   onRoom:    cb => on('room', cb),
   onPlayers: cb => on('players', cb),

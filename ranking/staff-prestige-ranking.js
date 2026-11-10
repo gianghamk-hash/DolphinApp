@@ -13,7 +13,7 @@ function displayAvatar(name,id,fallback){return window.DolphinAvatars?.get(name,
 function equippedFrame(person){
  if(!person)return 'none';
  const profile=window.DolphinAvatars?.profile?.(person.name,person.employeeId);
- const frame=profile?.selectedFrame||person.selectedFrame;
+ const frame=person.selectedFrame??profile?.selectedFrame;
  return ['bronze','silver','gold','mythic','emerald','sapphire','nebula'].includes(frame)?frame:'none';
 }
 function nameFxTier(person){
@@ -48,7 +48,7 @@ function publishLandingLevel(){
  const leader=Array.isArray(board?.leaderboard)?board.leaderboard[0]||null:null;
  const current=leader?.employeeId?window.DolphinAvatars?.profile?.(leader.name,leader.employeeId):null;
  const view=leader?{
-  employeeId:leader.employeeId,name:leader.name,avatar:current?.avatar||leader.avatar||'🐬',
+  employeeId:leader.employeeId,name:leader.name,avatar:leader.avatar||current?.avatar||'🐬',
   level:leader.level,xp:leader.xp,rank:leader.rank,
   selectedFrame:leader.selectedFrame,selectedAvatarMotion:leader.selectedAvatarMotion,
   selectedAura:leader.selectedAura,selectedTrail:leader.selectedTrail,
@@ -64,9 +64,9 @@ function renderTiles(){
  topTile('revenue','leader-revenue-name','leader-revenue-value');
  topTile('work','leader-work-name','leader-work-value');
  const champion=board?.champion;
- text('leader-emperor-avatar',champion?displayAvatar(champion.name,champion.employeeId,champion.avatar):'👑');
- if(champion)$('leader-emperor-avatar').dataset.staffAvatar='';
- else delete $('leader-emperor-avatar').dataset.staffAvatar;
+ text('leader-emperor-avatar',champion?(champion.avatar||'🐬'):'👑');
+ if(champion){$('leader-emperor-avatar').dataset.staffAvatar='';$('leader-emperor-avatar').dataset.verifiedLevelBoard='true';$('leader-emperor-avatar').dataset.verifiedAvatar=champion.avatar||'🐬';}
+ else {delete $('leader-emperor-avatar').dataset.staffAvatar;delete $('leader-emperor-avatar').dataset.verifiedLevelBoard;delete $('leader-emperor-avatar').dataset.verifiedAvatar;}
  $('leader-emperor-avatar').dataset.staffName=champion?.name||'';
  $('leader-emperor-avatar').dataset.staffId=champion?.employeeId||'';
  $('leader-emperor-avatar').dataset.frame=equippedFrame(champion);
@@ -94,7 +94,7 @@ function renderLevel(){
   const own=p.employeeId===window.DolphinStaffId?.get?.()?.employeeId;
   const item=el('div','level-entry'+(own?' is-me':''));
   const rank=el('span','level-position',i===0?'♛':i+1);
-  const avatar=el('span','level-avatar',displayAvatar(p.name,p.employeeId,p.avatar));avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=equippedFrame(p);avatar.dataset.crewAura=p.selectedAura||'none';avatar.dataset.crewTrail=p.selectedTrail||'none';avatar.dataset.avatarMotion=p.selectedAvatarMotion||'none';avatar.dataset.crewCard=p.selectedCardFx||'none';
+  const avatar=el('span','level-avatar',p.avatar||'🐬');avatar.dataset.verifiedLevelBoard='true';avatar.dataset.verifiedAvatar=p.avatar||'🐬';avatar.setAttribute('aria-hidden','true');avatar.dataset.staffAvatar='';avatar.dataset.staffName=p.name||'';avatar.dataset.staffId=p.employeeId||'';avatar.dataset.frame=equippedFrame(p);avatar.dataset.crewAura=p.selectedAura||'none';avatar.dataset.crewTrail=p.selectedTrail||'none';avatar.dataset.avatarMotion=p.selectedAvatarMotion||'none';avatar.dataset.crewCard=p.selectedCardFx||'none';
   const person=el('span','level-person');
   const nameLabel=el('strong','level-person-name',String(p.name||'Nhân viên')+(own?' · Bạn':''));
   nameLabel.dataset.nameFx=nameFxTier(p);nameLabel.dataset.crewTrail=p.selectedTrail||'none';

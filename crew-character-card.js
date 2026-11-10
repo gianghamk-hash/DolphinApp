@@ -53,7 +53,7 @@
   const dial=$('crew-card-xp-dial');
   if(dial){
    dial.style.setProperty('--crew-progress',state.percent+'%');
-   dial.title=state.preserved?'Level hiện tại theo XP. Mốc cao nhất từng đạt: Level '+state.highestLevel+'. Hiệu ứng đã mở vẫn được giữ.':
+   dial.title=state.preserved?'Level hiện tại theo XP. Mốc cao nhất từng đạt: Level '+state.highestLevel+'. Hiệu ứng vượt cấp hiện bị khóa và sẽ mở lại khi đủ XP.':
     state.ready?'Đã hoàn thành '+state.percent+'% tiến độ đến cấp kế tiếp.':'Đang tải XP đã xác minh.';
   }
   const percent=$('crew-card-xp-percent');

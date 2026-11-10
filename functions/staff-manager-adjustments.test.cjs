@@ -112,11 +112,37 @@ test('Manager deduction to exactly zero produces Level 1 without creating a clon
  const first=await f.api.staffManagerAdjustEmployee(request('manager',input('xp_deduct',750000,'deduction-full-0001')));
  assert.equal(first.after,0);assert.equal(first.currentLevel,1);assert.equal(first.highestLevel,54);
  assert.equal(f.data.staffRegistry['DOL-0002'].levelPeak,54);
- assert.equal(f.data.staffRegistry['DOL-0002'].selectedFrame,'gold');
+ assert.equal(f.data.staffRegistry['DOL-0002'].selectedFrame,'none');
+ assert.equal(f.data.staffRegistry['DOL-0002'].autoStyleLevel,1);
  assert.equal(Object.keys(f.data.staffRegistry).length,4);
  const copy=await f.api.staffManagerAdjustEmployee(request('manager',input('xp_deduct',750000,'deduction-full-0001')));
  assert.equal(copy.duplicate,true);assert.equal(copy.currentLevel,1);
  assert.equal(f.data.staffRegistry['DOL-0002'].xp,0);
  const details=await f.api.staffManagerGetEmployeeAdjustments(request('manager',{employeeId:'DOL-0002'}));
  assert.equal(details.currentLevel,1);assert.equal(details.highestLevel,54);
+});
+
+test('Manager -XP locks Guardian and FX and subsequent +XP restores eligible automatic effects',async()=>{
+ const f=fixture(),employee=f.data.staffRegistry['DOL-0002'];
+ const e=require('./staff-xp-engine.cjs');
+ Object.assign(employee,{
+  xp:e.xpForLevel(20)+0.5,levelPeak:54,
+  selectedTitle:'guardian',selectedFrame:'emerald',selectedAura:'ripple',
+  selectedNameFx:'tide',nameFlame:true,selectedBanner:'abyss',personalTheme:'aurora',
+  autoStyleLevel:54
+ });
+ const deduction=e.xpForLevel(20)-4102; // Manager amounts are integers; fractional XP balance remains
+ const debit=await f.api.staffManagerAdjustEmployee(request('manager',input('xp_deduct',deduction,'manager-downcase-01')));
+ assert.equal(debit.after,4102.5);assert.equal(debit.currentLevel,2);
+ let updated=f.data.staffRegistry['DOL-0002'];
+ assert.equal(updated.selectedTitle,'none');assert.equal(updated.selectedFrame,'none');
+ assert.equal(updated.selectedAura,'none');assert.equal(updated.selectedNameFx,'none');
+ assert.equal(updated.personalTheme,'dark');assert.equal(updated.nameFlame,false);
+ assert.equal(updated.autoStyleLevel,2);
+ const restore=await f.api.staffManagerAdjustEmployee(request('manager',input('xp_add',deduction,'manager-relevel-02')));
+ assert.equal(restore.currentLevel,20);
+ updated=f.data.staffRegistry['DOL-0002'];
+ assert.equal(updated.selectedTitle,'guardian');
+ assert.equal(updated.selectedFrame,'emerald');
+ assert.equal(updated.autoStyleLevel,20);
 });

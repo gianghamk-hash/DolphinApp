@@ -86,12 +86,9 @@ exports.staffManagerAdjustEmployee=onCall(opts,async req=>{
   const next={...current,xp:after,updatedAt:now,
    managerScoreCorrections:{...current.managerScoreCorrections,
     [args.requestId]:{...event,before,after}}};
-  // Permanently unlocked effects/levelPeak do not regress when XP is deducted.
-  if(args.kind==='xp_add'){
-   next.levelPeak=Math.max(Number(current.levelPeak)||1,engine.levelForXP(after));
-   return engine.equipOnLevelUp(current,next);
-  }
-  return next;
+  // Retain historical levelPeak for audit only. Usable effects follow live XP.
+  next.levelPeak=Math.max(Number(current.levelPeak)||1,engine.levelForXP(after));
+  return engine.equipOnLevelUp(current,next);
  },undefined,false);
  const saved=result.committed?result.snapshot.val():(await ref.once('value')).val();
  const existing=saved?.managerScoreCorrections?.[args.requestId];

@@ -29,7 +29,7 @@ async function ownProfile(uid){
  return profile;
 }
 function response(profile){return {linked:true,verified:profile.registrationSource!=='self'||profile.approved===true,approved:profile.registrationSource!=='self'||profile.approved===true,employeeId:profile.employeeId,name:profile.name,
- avatar:profile.avatar||'🐬',profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
+ avatar:require('./staff-xp-engine.cjs').currentCosmetics(profile).avatar,profileVersion:profile.profileVersion||0,department:profile.department||'',createdAt:profile.createdAt||null,registrationSource:profile.registrationSource||'manager'};}
 exports.staffRegisterSelfProfile=onCall(opts,async req=>{
  const uid=uidOf(req),data=validate(req.data);await throttle(uid);
   if((avatarThreshold.get(data.avatar)||1)>1)throw new HttpsError('permission-denied','Avatar này cần đạt Level tương ứng');
@@ -88,7 +88,7 @@ exports.staffUpdateMyProfile=onCall(opts,async req=>{
  const result=await getDatabase().ref('staffRegistry/'+profile.employeeId).transaction(v=>{
   if(v===null)return null; // Allow RTDB cold-instance retry.
   if(!v.active)return;
-  if(data.avatar!==v.avatar&&(avatarThreshold.get(data.avatar)||1)>Math.max(Number(v.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(Number(v.xp)||0)))return;
+  if(data.avatar!==v.avatar&&(avatarThreshold.get(data.avatar)||1)>require('./staff-xp-engine.cjs').levelForXP(Math.max(0,Number(v.xp)||0)))return;
   avatarReallyChanged=data.avatar!==v.avatar;
   return {...v,avatar:data.avatar,profileVersion:(v.profileVersion||0)+1,updatedAt:Date.now(),updatedBy:uid};
  });
@@ -167,21 +167,18 @@ exports.staffIssueOwnLinkCode=onCall(opts,async req=>{
 exports.staffGetAvatarDirectory=onCall(opts,async req=>{
  uidOf(req);
  const profiles=(await getDatabase().ref('staffRegistry').once('value')).val()||{};
+ const engine=require('./staff-xp-engine.cjs');
  return {profiles:Object.values(profiles).filter(p=>p?.active&&(p.registrationSource!=='self'||p.approved===true)&&p.employeeId&&p.name).map(p=>{
-  const choices=require('./staff-xp-engine.cjs').COSMETIC_CHOICES;
+  const safe=engine.currentCosmetics(p);
   return {
-  employeeId:p.employeeId,name:p.name,avatar:avatars.has(p.avatar)?p.avatar:'🐬',profileVersion:p.profileVersion||0,
-  selectedFrame:Object.hasOwn(choices.frame,p.selectedFrame)?p.selectedFrame:'none',
-  selectedAvatarMotion:Object.hasOwn(choices.avatarMotion,p.selectedAvatarMotion)?p.selectedAvatarMotion:'none',
-  selectedTitle:Object.hasOwn(choices.title,p.selectedTitle)?p.selectedTitle:'none',
-  selectedBanner:Object.hasOwn(choices.banner,p.selectedBanner)?p.selectedBanner:'default',
-  personalTheme:typeof p.personalTheme==='string'&&p.personalTheme.length<=32?p.personalTheme:'dark',
-  selectedNameFx:Object.hasOwn(choices.nameFx,p.selectedNameFx)?p.selectedNameFx:'none',
-  selectedAura:Object.hasOwn(choices.aura,p.selectedAura)?p.selectedAura:'none',
-  selectedTrail:Object.hasOwn(choices.trail,p.selectedTrail)?p.selectedTrail:'none',
-  selectedCardFx:Object.hasOwn(choices.cardFx,p.selectedCardFx)?p.selectedCardFx:'none',
-  nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(p.employeeId==='DOL-0001'?0:-10):[]
- };})};
+   employeeId:p.employeeId,name:p.name,avatar:avatars.has(safe.avatar)?safe.avatar:'🐬',profileVersion:p.profileVersion||0,
+   selectedFrame:safe.selectedFrame,selectedAvatarMotion:safe.selectedAvatarMotion,
+   selectedTitle:safe.selectedTitle,selectedBanner:safe.selectedBanner,
+   personalTheme:safe.personalTheme,selectedNameFx:safe.selectedNameFx,
+   selectedAura:safe.selectedAura,selectedTrail:safe.selectedTrail,selectedCardFx:safe.selectedCardFx,
+   nameAliases:Array.isArray(p.nameAliases)?p.nameAliases.filter(n=>typeof n==='string').slice(p.employeeId==='DOL-0001'?0:-10):[]
+  };
+ })};
 });
 
 /* Only the backend-verified owner of DOL-0001 may approve registrations.
@@ -228,7 +225,7 @@ exports.staffRenameManager=onCall(opts,async req=>{
   const profile=registry[id];
   if(!profile?.active||profile.registrationSource==='self')return;
   if(names.nameConflict(registry,name,id)){duplicate=true;return;}
-  if(avatar&&avatar!==profile.avatar&&(avatarThreshold.get(avatar)||1)>Math.max(Number(profile.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(Number(profile.xp)||0))){avatarDenied=true;return;}
+  if(avatar&&avatar!==profile.avatar&&(avatarThreshold.get(avatar)||1)>require('./staff-xp-engine.cjs').levelForXP(Math.max(0,Number(profile.xp)||0))){avatarDenied=true;return;}
   avatarChanged=!!avatar&&avatar!==profile.avatar;
   if(profile.name===name&&!avatarChanged)return registry;
   const aliases=new Set(profile.nameAliases||[]);aliases.add(profile.name);

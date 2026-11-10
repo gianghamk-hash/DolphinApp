@@ -52,6 +52,7 @@ function fixture({coldAborts=0}={}){
   if(id==='firebase-functions/v2/https')return {onCall:(_opts,fn)=>fn,HttpsError:class HttpsError extends Error{constructor(code,message){super(message);this.code=code;}}};
   if(id==='./staff-avatar-catalog.json')return {'Lv.1':['🐬']};
   if(id==='./staff-prestige')return {_rebuildPrestige:async()=>{}};
+  if(id==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
   throw Error('Unexpected import: '+id);
  };
  vm.runInNewContext(code,{module:{exports:exported},exports:exported,require:fakeRequire,console,Date,Buffer,setTimeout,clearTimeout});

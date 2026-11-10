@@ -28,23 +28,14 @@ function cosmeticChoice(type,selected,level){
 function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
  const level=progress.level,highestLevel=Math.min(60,Math.max(level,Number(p?.levelPeak)||1));
- // Current Level is never artificially held at historical levelPeak.
- return {employeeId:p.employeeId,name:p.name,avatar:p.avatar||'🐬',
+ const cosmetics=engine.currentCosmetics(p);
+ return {employeeId:p.employeeId,name:p.name,avatar:cosmetics.avatar,
   level,highestLevel,levelPeak:highestLevel,rank:engine.rankForLevel(level),xp,
   autoStyleLevel:Number(p.autoStyleLevel)||0,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
-  unlocked:[...engine.PERKS.filter(x=>highestLevel>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>highestLevel>=x.level).map(x=>x.id)],
-  rewardCatalog:engine.COSMETIC_REWARDS,perkCatalog:engine.PERKS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>highestLevel)||null,
-  selectedFrame:cosmeticChoice('frame',p.selectedFrame,highestLevel),
-  selectedAvatarMotion:cosmeticChoice('avatarMotion',p.selectedAvatarMotion,highestLevel),
-  selectedTitle:cosmeticChoice('title',p.selectedTitle,highestLevel),
-  selectedBanner:cosmeticChoice('banner',p.selectedBanner,highestLevel),
-  selectedNameFx:cosmeticChoice('nameFx',p.selectedNameFx||((p.nameGradient&&highestLevel>=45)?'prism':p.nameFlame&&highestLevel>=3?'ember':'none'),highestLevel),
-  selectedAura:cosmeticChoice('aura',p.selectedAura,highestLevel),
-  selectedTrail:cosmeticChoice('trail',p.selectedTrail,highestLevel),
-  selectedCardFx:cosmeticChoice('cardFx',p.selectedCardFx,highestLevel),
-  rankingVisible:p.employeeId===TEST_ADMIN_ID?p.rankingVisible===true:true,
-  nameGradient:!!p.nameGradient&&highestLevel>=45,
-  showcase:Array.isArray(p.showcase)?p.showcase:[],nameFlame:!!p.nameFlame,personalTheme:p.personalTheme||'dark'};
+  unlocked:[...engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>level>=x.level).map(x=>x.id)],
+  rewardCatalog:engine.COSMETIC_REWARDS,perkCatalog:engine.PERKS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
+  ...cosmetics,rankingVisible:p.employeeId===TEST_ADMIN_ID?p.rankingVisible===true:true,
+  showcase:Array.isArray(p.showcase)?p.showcase:[]};
 }
 function isApprovedProfile(p){
  return !!p?.active&&(p.registrationSource!=='self'||p.approved===true);
@@ -203,11 +194,11 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
   const initial=firstUpdate;firstUpdate=false;
   const current=v===null&&initial?profile:v;
   if(!current?.active)return;
-  const level=Math.max(engine.progress(Math.max(0,Number(current.xp)||0)).level,Number(current.levelPeak)||1);
+  const level=engine.levelForXP(Math.max(0,Number(current.xp)||0));
   if((themeLevels[theme]||1)>level||(flame&&level<3)||
     (selected.gradient===true&&level<45)||
     ['frame','avatarMotion','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))return;
-  return {...current,personalTheme:theme,nameFlame:flame,
+  return {...engine.restrictLevelEffects(current),personalTheme:theme,nameFlame:flame,
     selectedFrame:selected.frame===undefined?cosmeticChoice('frame',current.selectedFrame,level):selected.frame,
     selectedAvatarMotion:selected.avatarMotion===undefined?cosmeticChoice('avatarMotion',current.selectedAvatarMotion,level):selected.avatarMotion,
     selectedTitle:selected.title===undefined?cosmeticChoice('title',current.selectedTitle,level):selected.title,
@@ -221,7 +212,7 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
  if(!result.committed){
   const latest=(await ref.once('value')).val();
   if(!latest?.active)throw new HttpsError('failed-precondition','Hồ sơ không còn hoạt động');
-  const level=Math.max(engine.progress(Math.max(0,Number(latest.xp)||0)).level,Number(latest.levelPeak)||1);
+  const level=engine.levelForXP(Math.max(0,Number(latest.xp)||0));
   if((themeLevels[theme]||1)>level||(flame&&level<3)||(selected.gradient===true&&level<45)||
     ['frame','avatarMotion','title','banner','nameFx','aura','trail','cardFx'].some(type=>selected[type]!==undefined&&engine.COSMETIC_CHOICES[type][selected[type]]>level))
    throw new HttpsError('permission-denied','Phần thưởng chưa mở khóa ở Level '+level);
@@ -229,7 +220,7 @@ exports.staffSetPersonalStyle=onCall(opts,async req=>{
  }
  // Cosmetic choices appear in the public Level board without a separate manual refresh.
  try{await rebuild();}catch(e){console.warn('[Crew Club] cosmetic board refresh unavailable:',e?.message||e);}
- return {...expose(result.snapshot.val()),personalTheme:result.snapshot.val().personalTheme||'dark'};
+ return expose(result.snapshot.val());
 });
 
 

@@ -83,7 +83,7 @@ test('Card is HTML/CSS only, and retains every existing business/profile handler
   assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'Unique binding: '+id);
  }
  assert.match(html,/crew-character-card\.css\?v=character-v1/);
- assert.match(html,/crew-character-card\.js\?v=character-v1/);
+ assert.match(html,/crew-character-card\.js\?v=xp-level-v3/);
  assert.equal((html.match(/data-open-dialog="style-dialog"/g)||[]).length>=4,true);
  assert.match(css,/#crew-profile-banner #profile-avatar/);
  assert.match(css,/@media\(max-width:450px\)/);

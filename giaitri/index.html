@@ -409,14 +409,14 @@ body>.sticky button:first-child:active{transform:scale(.86)}
     </div>
 
     <div class="tab-switcher" id="lbGameTabs" style="flex-wrap:wrap">
-      <button class="tab-btn active" data-lb="snake" onclick="showLB('snake')"><span><i class="ic ic-snake"></i></span> RẮN ĐƠN</button>
-      <button class="tab-btn" data-lb="snake-coop-online" onclick="showLB('snake-coop-online')"><span><i class="ic ic-snake2"></i></span> ONLINE</button>
-      <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')"><span><i class="ic ic-ship"></i></span> BS</button>
-      <button class="tab-btn" data-lb="caro" onclick="showLB('caro')"><span><i class="ic ic-gamepad"></i></span> CARO</button>
-      <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')"><span><i class="ic ic-shield"></i></span> TƯỚNG</button>
-      <button class="tab-btn" data-lb="chess" onclick="showLB('chess')"><span><i class="ic ic-crown"></i></span> VUA</button>
-      <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')"><span><i class="ic ic-hash"></i></span> 2048</button>
-      <button class="tab-btn" data-lb="dolphin-tactics" onclick="showLB('dolphin-tactics')"><span>⚔️</span> TFT</button>
+      <button class="tab-btn active" data-lb="snake" onclick="showLB('snake')"><span class="lb-game-icon art-snake" aria-hidden="true"></span> RẮN ĐƠN</button>
+      <button class="tab-btn" data-lb="snake-coop-online" onclick="showLB('snake-coop-online')"><span class="lb-game-icon art-snake-coop" aria-hidden="true"></span> ONLINE</button>
+      <button class="tab-btn" data-lb="battleship" onclick="showLB('battleship')"><span class="lb-game-icon art-battleship" aria-hidden="true"></span> BS</button>
+      <button class="tab-btn" data-lb="caro" onclick="showLB('caro')"><span class="lb-game-icon art-caro" aria-hidden="true"></span> CARO</button>
+      <button class="tab-btn" data-lb="xiangqi" onclick="showLB('xiangqi')"><span class="lb-game-icon art-xiangqi" aria-hidden="true"></span> TƯỚNG</button>
+      <button class="tab-btn" data-lb="chess" onclick="showLB('chess')"><span class="lb-game-icon art-chess" aria-hidden="true"></span> VUA</button>
+      <button class="tab-btn" data-lb="game2048" onclick="showLB('game2048')"><span class="lb-game-icon art-2048" aria-hidden="true"></span> 2048</button>
+      <button class="tab-btn" data-lb="dolphin-tactics" onclick="showLB('dolphin-tactics')"><span class="lb-game-icon art-tactics" aria-hidden="true"></span> TFT</button>
     </div>
 
     <div class="glass rounded-2xl p-4">
@@ -694,14 +694,14 @@ body>.sticky button:first-child:active{transform:scale(.86)}
   'use strict';
   var currentLBGame = 'snake', renderVersion = 0;
   var LB_META = {
-    snake:              { icon: '<i class="ic ic-snake"></i>',   title: 'RẮN SĂN MỒI',      type: 'score' },
-    'snake-coop-online':{ icon: '<i class="ic ic-snake2"></i>',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
-    battleship:         { icon: '<i class="ic ic-ship"></i>',   title: 'BATTLESHIP',        type: 'win' },
-    chess:              { icon: '<i class="ic ic-crown"></i>',    title: 'CỜ VUA',            type: 'win' },
-    game2048:           { icon: '<i class="ic ic-hash"></i>',   title: '2048',              type: 'score' },
-    xiangqi:            { icon: '<i class="ic ic-shield"></i>',   title: 'CỜ TƯỚNG',          type: 'win' },
-    caro:               { icon: '<i class="ic ic-gamepad"></i>',   title: 'CỜ CARO',           type: 'win' },
-    'dolphin-tactics':{ icon: '⚔️', title: 'DOLPHIN TACTICS · XẾP HẠNG ONLINE', type: 'tft' }
+    snake:              { icon: '<span class="lb-game-icon art-snake" aria-hidden="true"></span>',   title: 'RẮN SĂN MỒI',      type: 'score' },
+    'snake-coop-online':{ icon: '<span class="lb-game-icon art-snake-coop" aria-hidden="true"></span>',   title: 'RẮN ĐÔI ONLINE',   type: 'score' },
+    battleship:         { icon: '<span class="lb-game-icon art-battleship" aria-hidden="true"></span>',   title: 'BATTLESHIP',        type: 'win' },
+    chess:              { icon: '<span class="lb-game-icon art-chess" aria-hidden="true"></span>',    title: 'CỜ VUA',            type: 'win' },
+    game2048:           { icon: '<span class="lb-game-icon art-2048" aria-hidden="true"></span>',   title: '2048',              type: 'score' },
+    xiangqi:            { icon: '<span class="lb-game-icon art-xiangqi" aria-hidden="true"></span>',   title: 'CỜ TƯỚNG',          type: 'win' },
+    caro:               { icon: '<span class="lb-game-icon art-caro" aria-hidden="true"></span>',   title: 'CỜ CARO',           type: 'win' },
+    'dolphin-tactics':{ icon: '<span class="lb-game-icon art-tactics" aria-hidden="true"></span>', title: 'DOLPHIN TACTICS · XẾP HẠNG ONLINE', type: 'tft' }
   };
 
   function $(id){ return document.getElementById(id); }

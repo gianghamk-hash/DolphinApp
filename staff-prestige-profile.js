@@ -13,7 +13,7 @@ for(const options of Object.values(cosmeticOptions))options.sort((a,b)=>a[2]-b[2
 const titleNames={rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'};
 let mine=null;
 // Level follows XP; historical unlocks remain available after a deduction.
-const unlockedLevel=()=>Math.max(Number(mine?.level)||1,Number(mine?.highestLevel||mine?.levelPeak)||1);
+const unlockedLevel=()=>Math.max(1,Number(mine?.level)||1); // XP hiện tại quyết định hiệu ứng được sử dụng
 function element(tag,text,className){const node=document.createElement(tag);if(text!==undefined)node.textContent=text;if(className)node.className=className;return node;}
 function rewardCatalog(){
  return Array.isArray(mine?.rewardCatalog)&&mine.rewardCatalog.length?
@@ -316,7 +316,7 @@ function renderMine(){
   const percent=mine.level>=60?100:Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)));
   $('staff-xp-fill').style.width=percent+'%';$('staff-xp-track').setAttribute('aria-valuenow',String(Math.round(percent)));
   $('staff-next-level').textContent=(mine.level>=60?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1))+
-   (unlockedLevel()>mine.level?' · Mốc cao nhất từng đạt Lv.'+unlockedLevel():'');
+   (Number(mine.highestLevel||mine.levelPeak)>mine.level?' · Hiệu ứng cấp cao khóa đến khi đủ XP':'');
   const next=rewardCatalog().find(x=>x.level>unlockedLevel());
   $('staff-next-reward').textContent=next?'🎁 Lv.'+next.level+' · '+next.label+' — còn '+fmt(Math.max(0,xpAt(next.level)-mine.xp))+' XP':'🏆 Đã mở toàn bộ phần thưởng!';
  }

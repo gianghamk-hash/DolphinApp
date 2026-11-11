@@ -1,4 +1,4 @@
-/* BUILD: 2026-11-11-0806 */
+/* BUILD: 2026-11-11-1625 */
 /* ============================================================
    🚀 DOLPHIN SERVICE WORKER v5 — Network-First cho code
    - HTML/JS/CSS/JSON: Network First → luôn lấy bản mới
@@ -40,8 +40,11 @@ const CACHE_URLS = [
   BASE + '/crew-2d-icons.css?v=bright-v2',
   BASE + '/crew-profile-clean.css?v=clean-v2',
   BASE + '/crew-chibi-dashboard.css?v=chibi-cards-v3',
+  BASE + '/crew-profile-illustrated.css?v=hero-image-v2',
   BASE + '/crew-chibi-dashboard.js?v=chibi-v1',
   BASE + '/assets/dolphin-chibi-ship.svg',
+  BASE + '/assets/crew-profile-ship-banner-v2.webp',
+  BASE + '/assets/crew-profile-identity-frame-v2.webp',
   BASE + '/assets/crew-chibi-function-art.svg',
   BASE + '/assets/crew-card-profile.webp',
   BASE + '/assets/crew-card-daily.webp',

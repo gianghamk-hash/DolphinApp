@@ -119,7 +119,7 @@
  </dialog>
  <dialog id="crew-xp-dialog" class="crew-chibi-dialog" aria-labelledby="crew-xp-title">
   <div class="dialog-head"><h2 id="crew-xp-title">⭐ Điểm XP &amp; Cấp độ</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
-  <div class="crew-chibi-detail"><p id="crew-dashboard-xp-detail" aria-live="polite">Đang tải XP theo Staff ID…</p><p id="crew-dashboard-next-detail"></p><button class="secondary full" type="button" data-open-dialog="rewards-dialog" data-crew-dialog-switch="rewards-dialog">Xem mốc phần thưởng</button></div>
+  <div class="crew-chibi-detail"><p id="crew-dashboard-xp-detail" aria-live="polite">Đang tải XP theo Staff ID…</p><p id="crew-dashboard-next-detail"></p><button class="secondary full" type="button" data-crew-dialog-switch="rewards-dialog">Xem mốc phần thưởng</button></div>
  </dialog>
  <dialog id="crew-achievements-dialog" class="crew-chibi-dialog" aria-labelledby="crew-achievements-title">
   <div class="dialog-head"><h2 id="crew-achievements-title">🏆 Thành tích Crew Club</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
@@ -128,11 +128,11 @@
  </dialog>
  <dialog id="crew-work-dialog" class="crew-chibi-dialog" aria-labelledby="crew-work-title">
   <div class="dialog-head"><h2 id="crew-work-title">📋 Công việc đã ghi nhận</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
-  <div class="crew-chibi-detail"><p>Dữ liệu công việc và điểm nghiệp vụ được lấy từ hệ thống Staff ID, không dùng số liệu minh họa.</p><p>Để xem các công việc đã được tổng hợp trong tuần, mở bảng xếp hạng Điểm công việc.</p><a class="secondary full crew-chibi-modal-link" href="./ranking/index.html#points">Xem điểm công việc</a></div>
+  <div class="crew-chibi-detail"><p id="crew-dashboard-work-staff" class="crew-chibi-staff-label">Đang tải Staff ID…</p><p>Dữ liệu công việc và điểm nghiệp vụ được lấy từ hệ thống Staff ID, không dùng số liệu minh họa.</p><p>Để xem các công việc đã được tổng hợp trong tuần, mở bảng xếp hạng Điểm công việc.</p><a class="secondary full crew-chibi-modal-link" href="./ranking/index.html#points">Xem điểm công việc</a></div>
  </dialog>
  <dialog id="crew-revenue-dialog" class="crew-chibi-dialog" aria-labelledby="crew-revenue-title">
   <div class="dialog-head"><h2 id="crew-revenue-title">💰 Doanh thu nhân viên</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
-  <div class="crew-chibi-detail"><p>Chỉ hiển thị doanh thu đã ghi nhận và xác minh theo Staff ID. Không lấy số tiền mẫu trong hình thiết kế.</p><p>Mở bảng Doanh thu tuần để xem kết quả thực tế từ hệ thống order.</p><a class="secondary full crew-chibi-modal-link" href="./ranking/index.html#revenue">Xem doanh thu tuần</a></div>
+  <div class="crew-chibi-detail"><p id="crew-dashboard-revenue-staff" class="crew-chibi-staff-label">Đang tải Staff ID…</p><p>Chỉ hiển thị doanh thu đã ghi nhận và xác minh theo Staff ID. Không lấy số tiền mẫu trong hình thiết kế.</p><p>Mở bảng Doanh thu tuần để xem kết quả thực tế từ hệ thống order.</p><a class="secondary full crew-chibi-modal-link" href="./ranking/index.html#revenue">Xem doanh thu tuần</a></div>
  </dialog>
 
 <div class="status-strip"><p id="profile-message" role="status" aria-live="polite">Đang kết nối hồ sơ nhân viên…</p><p id="staff-xp-status" role="status"></p><button type="button" class="text-button" id="staff-xp-reconcile">Làm mới XP ↻</button><button type="button" class="text-button" id="staff-xp-retry" hidden>Thử tải lại</button></div>

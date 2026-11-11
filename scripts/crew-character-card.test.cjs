@@ -89,7 +89,7 @@ test('Card is HTML/CSS only, and retains every existing business/profile handler
  assert.match(css,/@media\(max-width:450px\)/);
  assert.match(css,/@media\(prefers-reduced-motion:reduce\)/);
  assert.doesNotMatch(html,/id="crew-ocean-journey"|crew-ocean-journey|id="crew-journey-dialog"/);
- assert.equal((html.match(/class="crew-profile-utility"/g)||[]).length,2,'Keep two account utilities only');
+ assert.equal((html.match(/data-crew-tile=/g)||[]).length,8,'Eight chibi functional cards must replace old utilities');
  assert.equal(html.split('href="./ranking/index.html#level"').length-1,1,'No duplicate ranking shortcut');
  assert.match(html,/data-open-dialog="devices-dialog"/);
  assert.match(html,/id="staff-reward-highlights"/);

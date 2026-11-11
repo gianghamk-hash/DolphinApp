@@ -38,7 +38,7 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
     percent:$('crew-card-xp-percent').textContent,rank:$('crew-card-rank-badge').textContent,
     frame:$('crew-card-equipped-frame').textContent,
     size:getComputedStyle($('profile-avatar')).width,
-    visual:getComputedStyle($('crew-profile-banner'),'::before').backgroundImage,
+    visual:getComputedStyle($('crew-profile-banner'),'::before').display,
     frameImg:(()=>{const im=document.querySelector('.crew-profile-frame-image');return {src:im?.getAttribute('src'),ready:im?.complete&&im?.naturalWidth===1200&&im?.naturalHeight===400,rect:im?.getBoundingClientRect().toJSON()}})(),
     level:r('crew-card-level-number').toJSON(),staffid:r('employee-id').toJSON(),rankName:r('crew-card-rank-name').toJSON(),
     tilesColumns:getComputedStyle(document.querySelector('.crew-chibi-grid')).gridTemplateColumns.split(' ').length,
@@ -70,7 +70,7 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert(mobile.tilesColumns===2,'Compact phones show two columns of chibi tiles');
   assert.equal(mobile.equipmentVisible,false,'Dashboard hides duplicated cosmetic equipment controls');
   assert.equal(mobile.frame,'Silver');assert.equal(mobile.rank,'PLATINUM RANK');
-  assert.equal(mobile.visual,'none','Rendered frame must not be covered by an extra CSS-generated seascape');
+  assert.equal(mobile.visual,'none','Decorative pseudo-background is hidden so the approved WebP remains visible');
   const mapped=(s,label)=>{
    assert(s.frameImg.ready,label+' uses the approved real 1200x400 WebP');
    assert(Math.abs(s.card.height/s.card.width-1/3)<0.025,label+' keeps the illustration aspect ratio');

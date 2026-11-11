@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.105",
+      "releaseDate": "2026-11-11T07:25:07.037Z",
+      "summary": "Feat/crew chibi profile dashboard (#252)",
+      "details": [
+        "Feat/crew chibi profile dashboard (#252)"
+      ]
+    },
+    {
       "version": "1.1.104",
       "releaseDate": "2026-11-11T01:08:08.367Z",
       "summary": "refactor(guest): compact special-meal categories and remove duplicate booking note cards",
@@ -390,14 +398,6 @@
       "summary": "fix(firebase): package arcade verifier so daily XP Functions can start",
       "details": [
         "fix(firebase): package arcade verifier so daily XP Functions can start"
-      ]
-    },
-    {
-      "version": "1.1.55",
-      "releaseDate": "2026-11-02T20:12:45.840Z",
-      "summary": "feat: 10x daily missions and verified Snake/2048 game XP",
-      "details": [
-        "feat: 10x daily missions and verified Snake/2048 game XP"
       ]
     }
   ]

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.105",
-  "buildDate": "2026-11-11T07:25:07.037Z",
-  "commit": "7e251ad",
-  "notes": "Feat/crew chibi profile dashboard (#252)",
+  "version": "1.1.106",
+  "buildDate": "2026-11-11T08:06:19.971Z",
+  "commit": "fe87e69",
+  "notes": "feat(profile): real illustrated 2D chibi cards for Dolphin Crew Club",
   "forceUpdate": false
 }

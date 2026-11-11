@@ -41,7 +41,7 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
     await page.locator('#crew-daily-dialog [data-close-dialog]').click();
     assert.equal(await page.locator('#crew-daily-dialog').isVisible(),false);
    }
-   await page.locator('#crew-profile-banner [data-open-dialog="profile-edit-dialog"]').click();
+   await page.locator('[data-crew-tile="profile"]').click();
    assert.equal(await page.locator('#profile-name-input').isEnabled(),manager);
    if(manager){
     await page.locator('#profile-name-input').fill('Nguyễn Quản Lý Mới');await page.locator('#save-profile').click();

@@ -29,7 +29,7 @@ body:has(.crew-chibi-heading) main{
 .crew-chibi-ship{
  min-height:clamp(115px,20vw,193px);border-radius:22px;margin-bottom:10px;
  border:2px solid #f5d78c;position:relative;overflow:hidden;
- background:#1685be url('./assets/dolphin-chibi-ship.webp') center/cover no-repeat;
+ background:#1685be url('./assets/dolphin-chibi-ship.svg') center/cover no-repeat;
  box-shadow:0 5px 21px #001d42a6,inset 0 1px 8px #ffffff44;
 }
 .crew-chibi-ship>span{
@@ -95,7 +95,7 @@ body:has(.crew-chibi-heading) main{
 .crew-chibi-tile:focus-visible{outline:3px solid white;outline-offset:3px}
 .crew-chibi-art{
  width:100%;aspect-ratio:220/140;border-radius:14px 14px 8px 8px;flex-shrink:0;
- background-image:url('./assets/crew-chibi-function-art.webp');
+ background-image:url('./assets/crew-chibi-function-art.svg');
  background-size:400% 200%;background-repeat:no-repeat;background-position:0 0;
 }
 .crew-chibi-tile[data-crew-tile="profile"] .crew-chibi-art{background-position:0% 0%}

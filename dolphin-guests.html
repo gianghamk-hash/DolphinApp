@@ -548,19 +548,40 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 .slot-row.slot-barview .slot-label::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 10V2'/%3E%3Cpath d='m4.93 10.93 1.41 1.41'/%3E%3Cpath d='M2 18h2'/%3E%3Cpath d='M20 18h2'/%3E%3Cpath d='m19.07 10.93-1.41 1.41'/%3E%3Cpath d='M22 22H2'/%3E%3Cpath d='m16 6-4 4-4-4'/%3E%3Cpath d='M16 18a4 4 0 0 0-8 0'/%3E%3C/svg%3E")}
 .slot-label{display:flex;align-items:center;justify-content:flex-end}
 
-/* Booking notes: pre-ordered F&B requires a full readable source, not a tiny pill. */
+/* Dolphin Guest: one compact F&B summary per booking, no repeated note cards. */
 .bk.pri-food::before{background:linear-gradient(180deg,#0ea5e9,#0284c7)}
 .bk.pri-food .h{padding-right:64px}
 .bk.pri-food .pri-badge{background:linear-gradient(135deg,#0284c7,#0f766e);color:#fff}
-.bk .tag.f{
- display:block;flex:1 1 100%;width:100%;border-radius:12px;
- padding:9px 11px;background:#e0f2fe;border:1px solid #7dd3fc;
- color:#075985;font-size:.75rem;line-height:1.5;text-align:left;
+.special-toolbar{padding:12px 13px 14px;margin:0 0 14px;background:rgba(15,46,48,.75);
+ border:1px solid rgba(127,216,207,.3);border-radius:16px}
+.special-toolbar-title{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap;
+ color:#f3e7bf;font-size:.83rem}
+.special-toolbar-title span{font-size:.73rem;color:#b2d9d4;font-weight:750}
+.special-filter-chips{display:flex;flex-wrap:wrap;gap:6px;margin-top:11px}
+.special-filter-chip{font-family:inherit;font-size:.71rem;font-weight:750;min-height:34px;
+ border-radius:999px;background:rgba(255,255,255,.07);border:1px solid rgba(157,210,209,.28);
+ color:#d6eeeb;padding:6px 11px;cursor:pointer;white-space:normal;text-align:center}
+.special-filter-chip.on{background:linear-gradient(135deg,#e9cf88,#ffe6a8);color:#173630;
+ border-color:#ffe6a8;box-shadow:0 2px 8px rgba(249,206,130,.18)}
+.special-filter-chip:focus-visible{outline:2px solid #ffe6a8;outline-offset:2px}
+.special-compact{display:flex;flex-wrap:wrap;gap:5px 9px;align-items:baseline;
+ padding:8px 10px;background:#e7f8f1;border-left:3px solid #0f9f81;
+ border-radius:9px;color:#135d4b;font-size:.77rem;line-height:1.5}
+.special-compact strong{font-weight:900;flex-shrink:0}
+.special-compact-values{font-weight:750;color:#075985;overflow-wrap:anywhere}
+.special-source{padding:2px 2px 0;color:#475569}
+.special-source summary{cursor:pointer;font-size:.71rem;font-weight:750;color:#0b7284;
+ padding:5px 0;list-style-position:inside}
+.special-source summary:focus-visible{outline:2px solid #0284c7;outline-offset:2px}
+.special-source-text{white-space:pre-wrap;overflow-wrap:anywhere;
+ font-size:.74rem;font-weight:600;line-height:1.6;
+ padding:9px 11px;border:1px solid #cbd5e1;border-radius:10px;
+ background:#f1f5f9;color:#334155;max-height:210px;overflow-y:auto}
+@media(max-width:420px){
+ .special-filter-chip{padding:6px 9px;font-size:.68rem}
+ .special-toolbar{padding:11px 9px}
+ .special-compact{padding:8px}
 }
-.tag.f .fnb-name{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
-.tag.f .fnb-name b{font-size:.77rem}
-.tag.f .fnb-details{color:#0f766e;font-weight:900}
-.tag.f .fnb-source{margin-top:4px;font-weight:600;color:#334155;white-space:pre-wrap;overflow-wrap:anywhere}
 </style>
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>

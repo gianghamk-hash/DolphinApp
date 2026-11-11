@@ -1,5 +1,5 @@
 {
-  "version": "1.1.102",
-  "releaseDate": "2026-11-10",
-  "notes": "feat(arcade): adopt approved glossy 2D icons for all games"
+  "version": "1.1.103",
+  "releaseDate": "2026-11-11",
+  "notes": "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes"
 }

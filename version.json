@@ -1,7 +1,7 @@
 {
-  "version": "1.1.102",
-  "buildDate": "2026-11-10T07:48:08.172Z",
-  "commit": "cb1320e",
-  "notes": "feat(arcade): adopt approved glossy 2D icons for all games",
+  "version": "1.1.103",
+  "buildDate": "2026-11-11T00:50:59.915Z",
+  "commit": "6158440",
+  "notes": "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes",
   "forceUpdate": false
 }

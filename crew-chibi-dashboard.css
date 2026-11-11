@@ -172,3 +172,74 @@ body:has(.crew-chibi-heading) #dolphinBackAction{display:none!important}
 @media(prefers-reduced-motion:reduce){
  .crew-chibi-tile{transition:none!important;transform:none!important}
 }
+
+
+/* Visual correction — card artwork should read like illustrated feature cards,
+   not 8 miniature app icons squeezed into four columns. Layout driven by the
+   actual dashboard width, including desktop windows and embedded APK webviews. */
+.crew-chibi-grid{
+ grid-template-columns:repeat(2,minmax(0,1fr));
+ gap:clamp(12px,2.2vw,18px);
+ margin:16px 0 20px;
+}
+.crew-chibi-tile{
+ padding:7px;
+ border:2px solid #f2d798;
+ border-radius:22px;
+ background:linear-gradient(150deg,#fff5d8 0%,#acdff1 100%);
+ box-shadow:0 8px 0 #082c53,0 15px 24px rgba(0,12,36,.35),inset 0 1px 1px #fff;
+ transition:transform .18s ease,box-shadow .18s ease;
+}
+.crew-chibi-tile:hover{
+ transform:translateY(-3px);
+ box-shadow:0 11px 0 #082c53,0 20px 28px rgba(0,12,36,.38);
+}
+.crew-chibi-art{
+ width:100%;
+ aspect-ratio:220 / 140;
+ border-radius:16px;
+ background-color:#9bd8ed;
+ background-size:400% 200%;
+ background-repeat:no-repeat;
+ image-rendering:auto;
+}
+.crew-chibi-tile:before{display:none}
+.crew-chibi-tile strong{
+ width:100%;margin:5px 0 0;
+ padding:11px 6px 2px;
+ color:#fff7df;
+ background:linear-gradient(180deg,#164e7d,#082c54);
+ border-radius:12px 12px 0 0;
+ font-size:clamp(13px,2.4vw,18px);
+ line-height:1.28;
+ letter-spacing:0;
+ text-shadow:0 1px 3px rgba(0,0,0,.5);
+ min-height:0;
+}
+.crew-chibi-tile small{
+ display:block;width:100%;margin:0;
+ padding:1px 5px 10px;
+ border-radius:0 0 12px 12px;
+ background:#082c54;
+ color:#d0ebfb;
+ font-size:clamp(10px,1.7vw,12px);
+ line-height:1.3;
+}
+.crew-chibi-pill{
+ top:13px;right:13px;padding:5px 9px;
+ border:2px solid #fff8d5;
+ box-shadow:0 3px 8px #001e4680;
+ font-size:11px;
+}
+@media(max-width:620px){
+ .crew-chibi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
+ .crew-chibi-tile{padding:5px;border-radius:17px}
+ .crew-chibi-art{border-radius:12px;aspect-ratio:220 / 140}
+ .crew-chibi-tile strong{font-size:clamp(12px,3.5vw,16px);padding:9px 3px 2px;min-height:0}
+ .crew-chibi-tile small{font-size:10px;padding:1px 3px 8px}
+}
+@media(max-width:355px){
+ .crew-chibi-grid{gap:8px}
+ .crew-chibi-tile strong{font-size:11px}
+ .crew-chibi-tile small{font-size:9px}
+}

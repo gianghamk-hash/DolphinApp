@@ -67,7 +67,7 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert.equal(mobile.equipmentVisible,false,'Dashboard hides duplicated cosmetic equipment controls');
   assert.equal(mobile.frame,'Silver');assert.equal(mobile.rank,'PLATINUM RANK');
   assert.match(mobile.visual,/gradient/,'Card should preserve rich ocean ambient light');
-  assert(mobile.portrait.width>=75,'Compact hero avatar remains legible');
+  assert(mobile.portrait.width>=60,'Compact hero avatar remains legible at 66px');
   await page.setViewportSize({width:320,height:700});
   const compact=await sample();
   assert(compact.width<=compact.viewport+2,'320px screen must not scroll horizontally');

@@ -547,8 +547,23 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 .slot-row.slot-vps .slot-label::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M2 6c.6.5 1.2 1 2.5 1C7 7 7 5 9.5 5c2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M2 12c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3Cpath d='M2 18c.6.5 1.2 1 2.5 1 2.5 0 2.5-2 5-2 2.6 0 2.4 2 5 2 2.5 0 2.5-2 5-2 1.3 0 1.9.5 2.5 1'/%3E%3C/svg%3E")}
 .slot-row.slot-barview .slot-label::before{--i:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M12 10V2'/%3E%3Cpath d='m4.93 10.93 1.41 1.41'/%3E%3Cpath d='M2 18h2'/%3E%3Cpath d='M20 18h2'/%3E%3Cpath d='m19.07 10.93-1.41 1.41'/%3E%3Cpath d='M22 22H2'/%3E%3Cpath d='m16 6-4 4-4-4'/%3E%3Cpath d='M16 18a4 4 0 0 0-8 0'/%3E%3C/svg%3E")}
 .slot-label{display:flex;align-items:center;justify-content:flex-end}
+
+/* Booking notes: pre-ordered F&B requires a full readable source, not a tiny pill. */
+.bk.pri-food::before{background:linear-gradient(180deg,#0ea5e9,#0284c7)}
+.bk.pri-food .h{padding-right:64px}
+.bk.pri-food .pri-badge{background:linear-gradient(135deg,#0284c7,#0f766e);color:#fff}
+.bk .tag.f{
+ display:block;flex:1 1 100%;width:100%;border-radius:12px;
+ padding:9px 11px;background:#e0f2fe;border:1px solid #7dd3fc;
+ color:#075985;font-size:.75rem;line-height:1.5;text-align:left;
+}
+.tag.f .fnb-name{display:flex;align-items:center;flex-wrap:wrap;gap:6px}
+.tag.f .fnb-name b{font-size:.77rem}
+.tag.f .fnb-details{color:#0f766e;font-weight:900}
+.tag.f .fnb-source{margin-top:4px;font-weight:600;color:#334155;white-space:pre-wrap;overflow-wrap:anywhere}
 </style>
 <script src="./staff-prestige-client.js?v=1" defer></script>
+<script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 </head>
 <body>
 
@@ -924,10 +939,11 @@ function parse(rows){
     var tb=tables(rawTbl);
     var b={stt:c[0],code:c[1],agent:c[2],name:c[3],pax:parseInt(c[4],10)||0,nat:c[5],tbl:c[6],tb:tb,
       areas:tb.map(function(t){return areaName(t[0])}).filter(function(v,i,a){return a.indexOf(v)===i}),
-      bung:[],lob:[],diet:[],showSlots:[],noteRaw:'',loungeTicket:null};
+      bung:[],lob:[],diet:[],specialFood:[],showSlots:[],noteRaw:'',loungeTicket:null};
 
     var allNotes = (c[7] || '') + '\n' + (c[8] || '');
     b.noteRaw = allNotes.trim();
+    b.specialFood = window.DolphinGuestSpecialRules.detect(b.noteRaw);
     b.loungeTicket = detectLoungeTicket(b.noteRaw);
 
     var segs=seg(c[7]).concat(seg(c[8]).filter(function(x){return BUNG.test(x)||LOB.test(x)||DIET.test(x)}));
@@ -978,6 +994,17 @@ function tagHtml(b){
   var h='';
   b.diet.forEach(function(d){h+='<span class="tag d"><i class="ic ic-leaf"></i> <b>'+esc(d.t)+'</b> '+esc(d.s)+'</span>'});
   b.lob.forEach(function(t){h+='<span class="tag m"><i class="ic ic-fish"></i> '+esc(t)+'</span>'});
+  b.specialFood.forEach(function(item){
+    var details=[];
+    if(item.quantity)details.push(item.quantity+' suất/set');
+    if(item.guests)details.push('cho '+item.guests+' khách');
+    if(item.price)details.push(item.price);
+    if(item.payment==='paid')details.push('ĐÃ THANH TOÁN');
+    else if(item.payment==='unpaid')details.push('CHƯA THANH TOÁN');
+    h+='<div class="tag f" title="'+esc(item.note)+'"><div class="fnb-name">'+esc(item.icon)+' <b>'+esc(item.label)+'</b>'+(
+      details.length?'<span class="fnb-details">'+esc(details.join(' · '))+'</span>':'')+
+      '</div><div class="fnb-source">'+esc(item.note)+'</div></div>';
+  });
   b.bung.forEach(function(x){h+='<span class="tag o"><i class="ic ic-tent"></i> '+esc(bungTxt(x))+'</span>'});
 
   if (tour === 'dn' && b.showSlots && b.showSlots.length){
@@ -993,6 +1020,7 @@ function getPriority(b){
   if (b.lob.length > 0) return 'pri-vip';
   if (/\bvip\b|\bvvip\b/.test(txt)) return 'pri-vip';
   if (b.diet.length > 0) return 'pri-diet';
+  if (b.specialFood && b.specialFood.length > 0) return 'pri-food';
   return 'pri-normal';
 }
 function card(b){
@@ -1003,7 +1031,8 @@ function card(b){
   var pri = getPriority(b);
   var badge = '';
   if (pri === 'pri-vip') badge = '<span class="pri-badge"><i class="ic ic-flame"></i> VIP</span>';
-  else if (pri === 'pri-diet') badge = '<span class="pri-badge"><i class="ic ic-leaf"></i> KIÊNG</span>';
+  else if (pri === 'pri-diet') badge = '<span class="pri-badge"><i class="ic ic-leaf"></i> ĂN ĐB</span>';
+  else if (pri === 'pri-food') badge = '<span class="pri-badge">🍽️ F&B</span>';
   return '<div class="bk '+pri+'">'+badge+
     '<div class="h"><span class="tb">'+esc(b.tbl||'Chưa xếp')+'</span><span class="pax">'+b.pax+' khách</span></div>'+
     '<div class="nm">'+esc(b.name)+'</div>'+
@@ -1093,10 +1122,18 @@ function viewOverview(L){
   return h;
 }
 function viewSpecial(L){
-  var S=L.filter(function(b){return b.diet.length||b.lob.length});
+  var S=L.filter(function(b){return b.diet.length||b.lob.length||(b.specialFood&&b.specialFood.length)});
   var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Halal':0,'Jain':0,'Indian Food':0},lob=0;
-  S.forEach(function(b){b.diet.forEach(function(d){cnt[d.t]++});lob+=b.lob.length});
+  var fnb={'pakora':0,'coconut-welcome':0,'indian-tea':0,'custom-order':0};
+  S.forEach(function(b){b.diet.forEach(function(d){cnt[d.t]++});lob+=b.lob.length;
+    (b.specialFood||[]).forEach(function(item){if(fnb[item.type]!==undefined)fnb[item.type]++});
+  });
   var h='<div class="stats">'+
+    statBox('🍽️',S.length,'BKK ăn/F&B đặc biệt')+
+    statBox('🥘',fnb['pakora'],'Pakora')+
+    statBox('🥥',fnb['coconut-welcome'],'Coconut Welcome')+
+    statBox('🫖',fnb['indian-tea'],'Trà Ấn')+
+    statBox('🍱',fnb['custom-order'],'Món đặt thêm khác')+
     statBox('<i class="ic ic-leaf"></i>',cnt['Chay Việt'],'Chay Việt')+
     statBox('<i class="ic ic-sprout"></i>',cnt['Veg'],'Veg')+
     statBox('<i class="ic ic-drumstick"></i>',cnt['Non-veg'],'Non-veg')+
@@ -1104,7 +1141,7 @@ function viewSpecial(L){
     statBox('<i class="ic ic-utensils"></i>',cnt['Halal'],'Halal')+
     statBox('<i class="ic ic-leaf"></i>',cnt['Jain'],'Jain')+
     statBox('<i class="ic ic-fish"></i>',lob,'Tôm hùm')+'</div>';
-  if(!S.length)return h+'<div class="empty">Không có khách nào có yêu cầu ăn đặc biệt hoặc tôm hùm.</div>';
+  if(!S.length)return h+'<div class="empty">Không có booking nào có yêu cầu ăn đặc biệt, đồ uống chào mừng, món đặt thêm hoặc tôm hùm.</div>';
   h+='<div class="grid">';
   S.forEach(function(b){h+=card(b)});
   return h+'</div>';
@@ -1526,7 +1563,7 @@ function render(){
   $('dToday').classList.toggle('on',curDate===vnToday());
   $('sheetName').textContent=(foundName?''+foundName:'')+(titlesKnown?'':'  Tab ẩn'+(titlesErr?' — '+titlesErr:''));
   var bgLabel = tour === 'am' ? '<i class="ic ic-tent"></i> Bungalow' : '<i class="ic ic-sparkles"></i> Bàn Show';
-  var T=[['ov','<i class="ic ic-dash"></i> Tổng quan'],['sp','<i class="ic ic-leaf"></i> Ăn đặc biệt · Tôm hùm'],['bg', bgLabel],['lg','🎟️ Vé Premium Lounge']];
+  var T=[['ov','<i class="ic ic-dash"></i> Tổng quan'],['sp','<i class="ic ic-leaf"></i> Ăn đặc biệt · F&B'],['bg', bgLabel],['lg','🎟️ Vé Premium Lounge']];
   $('tabs').innerHTML=T.map(function(t){return '<button class="tab'+(tab===t[0]?' on':'')+'" data-t="'+t[0]+'">'+t[1]+'</button>'}).join('');
   renderFilter();
   updateMiniStats();
@@ -1538,7 +1575,7 @@ function updateMiniStats(){
   B.forEach(function(b){
     var pri = getPriority(b);
     if (pri === 'pri-vip') vip++;
-    else if (pri === 'pri-diet') diet++;
+    if (b.diet.length||b.lob.length||(b.specialFood&&b.specialFood.length)) diet++;
   });
   var g = $('hdMiniGuests'), v = $('hdMiniVip'), d = $('hdMiniDiet');
   if (g) g.textContent = total;

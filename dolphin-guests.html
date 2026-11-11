@@ -1002,30 +1002,55 @@ function slotIcon(type){
   if (type === 'BAR VIEW') return '<i class="ic ic-sunset"></i>';
   return '<i class="ic ic-sparkles"></i>';
 }
-function tagHtml(b){
-  var h='';
-  b.diet.forEach(function(d){h+='<span class="tag d"><i class="ic ic-leaf"></i> <b>'+esc(d.t)+'</b> '+esc(d.s)+'</span>'});
-  b.lob.forEach(function(t){h+='<span class="tag m"><i class="ic ic-fish"></i> '+esc(t)+'</span>'});
-  b.specialFood.forEach(function(item){
-    var details=[];
-    if(item.quantity)details.push(item.quantity+' suất/set');
-    if(item.guests)details.push('cho '+item.guests+' khách');
-    if(item.price)details.push(item.price);
-    if(item.payment==='paid')details.push('ĐÃ THANH TOÁN');
-    else if(item.payment==='unpaid')details.push('CHƯA THANH TOÁN');
-    h+='<div class="tag f" title="'+esc(item.note)+'"><div class="fnb-name">'+esc(item.icon)+' <b>'+esc(item.label)+'</b>'+(
-      details.length?'<span class="fnb-details">'+esc(details.join(' · '))+'</span>':'')+
-      '</div><div class="fnb-source">'+esc(item.note)+'</div></div>';
-  });
-  b.bung.forEach(function(x){h+='<span class="tag o"><i class="ic ic-tent"></i> '+esc(bungTxt(x))+'</span>'});
-
-  if (tour === 'dn' && b.showSlots && b.showSlots.length){
-    b.showSlots.forEach(function(slot){
-      var noteDisplay = slot.note ? ' - ' + esc(slot.note) : '';
-      h += '<span class="tag s" title="' + esc(slot.note || '') + '">' + slotIcon(slot.type) + ' ' + esc(slotBadgeText(slot)) + noteDisplay + '</span>';
-    });
-  }
-  return h?'<div class="tags">'+h+'</div>':'';
+var SPECIAL_CATEGORIES=[
+ {key:'Veg',label:'Veg'}, {key:'Non-veg',label:'Non-veg'},
+ {key:'Jain',label:'Jain'},{key:'Halal',label:'Halal'},
+ {key:'Chay Việt',label:'Chay Việt'},{key:'Chay Âu',label:'Chay Âu'},
+ {key:'coconut-welcome',label:'Coconut Welcome'},
+ {key:'indian-tea',label:'Trà Ấn (Indian Tea)'},
+ {key:'lobster',label:'Tôm hùm'},
+ {key:'pakora',label:'Pakora'},
+ {key:'custom-order',label:'Món đặt thêm'},
+ {key:'Indian Food',label:'Indian Food'}
+];
+function specialCategoryKeys(b){
+ var keys=[];
+ (b.diet||[]).forEach(function(d){if(d.t&&keys.indexOf(d.t)<0)keys.push(d.t)});
+ if((b.lob||[]).length&&keys.indexOf('lobster')<0)keys.push('lobster');
+ (b.specialFood||[]).forEach(function(item){
+   if(item.type&&keys.indexOf(item.type)<0)keys.push(item.type);
+ });
+ return keys;
+}
+function specialCategoryName(key){
+ var match=SPECIAL_CATEGORIES.find(function(item){return item.key===key});
+ return match?match.label:key;
+}
+function specialSummaryHtml(b){
+ var keys=specialCategoryKeys(b);
+ if(!keys.length)return '';
+ var names=keys.map(specialCategoryName);
+ var h='<div class="special-compact"><strong>Ăn đặc biệt · F&B</strong>'+
+   '<span class="special-compact-values">'+names.map(esc).join(' · ')+'</span></div>';
+ if(b.noteRaw&&b.noteRaw.trim()){
+   h+='<details class="special-source"><summary>Xem ghi chú gốc / số suất / thanh toán</summary>'+
+     '<div class="special-source-text">'+esc(b.noteRaw)+'</div></details>';
+ }
+ return h;
+}
+function tagHtml(b,showSpecial){
+ if(showSpecial)return specialSummaryHtml(b);
+ // Các tab Tổng quan/Bungalow/Show không lặp lại thẻ món ăn và đồ uống.
+ // BKK có yêu cầu đặc biệt vẫn được đánh dấu bằng huy hiệu trên card.
+ var h='';
+ b.bung.forEach(function(x){h+='<span class="tag o"><i class="ic ic-tent"></i> '+esc(bungTxt(x))+'</span>'});
+ if(tour==='dn'&&b.showSlots&&b.showSlots.length){
+   b.showSlots.forEach(function(slot){
+     var noteDisplay=slot.note?' - '+esc(slot.note):'';
+     h+='<span class="tag s" title="'+esc(slot.note||'')+'">'+slotIcon(slot.type)+' '+esc(slotBadgeText(slot))+noteDisplay+'</span>';
+   });
+ }
+ return h?'<div class="tags">'+h+'</div>':'';
 }
 function getPriority(b){
   var txt = (b.name+' '+(b.code||'')+' '+(b.agent||'')).toLowerCase();
@@ -1035,7 +1060,7 @@ function getPriority(b){
   if (b.specialFood && b.specialFood.length > 0) return 'pri-food';
   return 'pri-normal';
 }
-function card(b){
+function card(b,showSpecial){
   var meta='';
   if(b.agent) meta+='<span><i class="ic ic-building"></i> '+esc(b.agent)+'</span>';
   if(b.nat) meta+='<span><i class="ic ic-globe"></i> '+esc(b.nat)+'</span>';
@@ -1049,7 +1074,7 @@ function card(b){
     '<div class="h"><span class="tb">'+esc(b.tbl||'Chưa xếp')+'</span><span class="pax">'+b.pax+' khách</span></div>'+
     '<div class="nm">'+esc(b.name)+'</div>'+
     '<div class="meta">'+meta+'</div>'+
-    tagHtml(b)+'</div>';
+    tagHtml(b,!!showSpecial)+'</div>';
 }
 function statBox(icon,num,lbl,warn){return '<div class="st'+(warn?' warn':'')+'"><div class="st-ic">'+icon+'</div><div class="st-body"><span class="st-num">'+num+'</span><span class="st-lbl">'+lbl+'</span></div></div>'}
 function nBung(L){return L.reduce(function(n,b){return n+b.bung.reduce(function(m,x){return m+x.n},0)},0)}
@@ -1133,30 +1158,37 @@ function viewOverview(L){
   }
   return h;
 }
+var specialCategoryFilter='all';
 function viewSpecial(L){
-  var S=L.filter(function(b){return b.diet.length||b.lob.length||(b.specialFood&&b.specialFood.length)});
-  var cnt={'Chay Việt':0,'Veg':0,'Non-veg':0,'Halal':0,'Jain':0,'Indian Food':0},lob=0;
-  var fnb={'pakora':0,'coconut-welcome':0,'indian-tea':0,'custom-order':0};
-  S.forEach(function(b){b.diet.forEach(function(d){cnt[d.t]++});lob+=b.lob.length;
-    (b.specialFood||[]).forEach(function(item){if(fnb[item.type]!==undefined)fnb[item.type]++});
-  });
-  var h='<div class="stats">'+
-    statBox('🍽️',S.length,'BKK ăn/F&B đặc biệt')+
-    statBox('🥘',fnb['pakora'],'Pakora')+
-    statBox('🥥',fnb['coconut-welcome'],'Coconut Welcome')+
-    statBox('🫖',fnb['indian-tea'],'Trà Ấn')+
-    statBox('🍱',fnb['custom-order'],'Món đặt thêm khác')+
-    statBox('<i class="ic ic-leaf"></i>',cnt['Chay Việt'],'Chay Việt')+
-    statBox('<i class="ic ic-sprout"></i>',cnt['Veg'],'Veg')+
-    statBox('<i class="ic ic-drumstick"></i>',cnt['Non-veg'],'Non-veg')+
-     statBox('<i class="ic ic-utensils"></i>',cnt['Indian Food'],'Indian Food')+
-    statBox('<i class="ic ic-utensils"></i>',cnt['Halal'],'Halal')+
-    statBox('<i class="ic ic-leaf"></i>',cnt['Jain'],'Jain')+
-    statBox('<i class="ic ic-fish"></i>',lob,'Tôm hùm')+'</div>';
-  if(!S.length)return h+'<div class="empty">Không có booking nào có yêu cầu ăn đặc biệt, đồ uống chào mừng, món đặt thêm hoặc tôm hùm.</div>';
-  h+='<div class="grid">';
-  S.forEach(function(b){h+=card(b)});
-  return h+'</div>';
+ var S=L.filter(function(b){return specialCategoryKeys(b).length>0});
+ var counts=Object.create(null);
+ S.forEach(function(b){specialCategoryKeys(b).forEach(function(key){
+   counts[key]=(counts[key]||0)+1;
+ })});
+ // Switching date or tour must not strand the user on an unavailable filter.
+ if(specialCategoryFilter!=='all'&&!counts[specialCategoryFilter])specialCategoryFilter='all';
+ var filtered=specialCategoryFilter==='all'?S:S.filter(function(b){
+   return specialCategoryKeys(b).indexOf(specialCategoryFilter)>=0;
+ });
+ var h='<section class="special-toolbar" aria-label="Lọc thông tin ăn đặc biệt">'+
+  '<div class="special-toolbar-title"><strong>Thông tin ăn đặc biệt</strong>'+
+  '<span>'+S.length+' BKK có yêu cầu</span></div>'+
+  '<div class="special-filter-chips" role="group" aria-label="Loại yêu cầu">'+
+  '<button type="button" class="special-filter-chip'+(specialCategoryFilter==='all'?' on':'')+
+  '" data-special-category="all" aria-pressed="'+(specialCategoryFilter==='all')+'">Tất cả · '+S.length+'</button>';
+ SPECIAL_CATEGORIES.forEach(function(cat){
+   if(!counts[cat.key])return;
+   var active=specialCategoryFilter===cat.key;
+   h+='<button type="button" class="special-filter-chip'+(active?' on':'')+
+      '" data-special-category="'+esc(cat.key)+'" aria-pressed="'+active+'">'+
+      esc(cat.label)+' · '+counts[cat.key]+'</button>';
+ });
+ h+='</div></section>';
+ if(!S.length)return h+'<div class="empty">Không có BKK có yêu cầu ăn đặc biệt hoặc F&B cần lưu ý.</div>';
+ if(!filtered.length)return h+'<div class="empty">Không có BKK phù hợp bộ lọc.</div>';
+ h+='<div class="grid special-booking-grid">';
+ filtered.forEach(function(b){h+=card(b,true)});
+ return h+'</div>';
 }
 
 function pushKey(b,i,j){return curDate+'|'+tour+'|'+b.stt+'|'+i+'|'+j}
@@ -1713,6 +1745,8 @@ $('subRow').onclick=function(e){
 $('out').onchange=function(e){var k=e.target.dataset&&e.target.dataset.pk;if(k){pick[k]=e.target.value;render()}};
 $('out').onclick=function(e){
   var lg=e.target.closest('[data-lounge-send]');if(lg){openLoungeSend(lg.dataset.loungeSend);return;}
+  var fnb=e.target.closest('[data-special-category]');
+  if(fnb){specialCategoryFilter=fnb.dataset.specialCategory;render();return;}
   var filter=e.target.closest('[data-lgfilter]');if(filter){loungeFilter=filter.dataset.lgfilter;render();return;}
   var t=e.target.closest('[data-push]');if(t)doPush(t.dataset.push)
 };

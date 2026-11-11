@@ -165,7 +165,11 @@ approved.onclick=async()=>{
 function sync(){
  const me=window.DolphinStaffId?.get?.(),owner=me?.managerSession===true&&me.verified===true&&me.employeeId==='DOL-0001';
  document.documentElement.classList.toggle('manager-owner-verified',owner);
+ // Manager APK has no daily mission module. Hide its new chibi shortcut too,
+ // otherwise it opens a dialog with the mission section hidden.
  $('staff-daily-card').hidden=true;
+ const dailyShortcut=document.querySelector('[data-crew-tile="daily"]');
+ if(dailyShortcut){dailyShortcut.hidden=true;dailyShortcut.style.display='none';}
  if(!owner){people=[];chosenCorrection=null;dialog.close();correction.close();return;}
  const hint=$('profile-name-input')?.nextElementSibling;
  if(hint)hint.textContent='DOL-0001 có thể đổi tên nhiều lần. Tên vẫn phải hợp lệ và không trùng hồ sơ khác.';

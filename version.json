@@ -1,7 +1,7 @@
 {
-  "version": "1.1.106",
-  "buildDate": "2026-11-11T08:06:19.971Z",
-  "commit": "fe87e69",
-  "notes": "feat(profile): real illustrated 2D chibi cards for Dolphin Crew Club",
+  "version": "1.1.108",
+  "buildDate": "2026-11-11T10:31:04.084Z",
+  "commit": "ab28918",
+  "notes": "feat(profile): approved WebP cruise banner and staff identity artwork (#254)",
   "forceUpdate": false
 }

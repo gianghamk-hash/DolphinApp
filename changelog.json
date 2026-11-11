@@ -1,66 +1,34 @@
 {
-  "version": "1.1.106",
-  "previousVersion": "1.1.105",
-  "commit": "fe87e69",
-  "previousCommit": "7e251ad",
-  "buildDate": "2026-11-11T08:06:19.971Z",
-  "summary": "feat(profile): real illustrated 2D chibi cards for Dolphin Crew Club",
+  "version": "1.1.108",
+  "previousVersion": "1.1.107",
+  "commit": "ab28918",
+  "previousCommit": "fe87e69",
+  "buildDate": "2026-11-11T10:31:04.084Z",
+  "summary": "feat(profile): approved WebP cruise banner and staff identity artwork (#254)",
   "changes": {
-    "totalCommits": 330,
-    "filesChanged": 15,
+    "totalCommits": 331,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(profile): real illustrated 2D chibi cards for Dolphin Crew Club"
+    "feat(profile): approved WebP cruise banner and staff identity artwork (#254)"
   ],
   "fileChanges": [
     {
-      "file": "assets/crew-card-achievements.webp",
+      "file": "assets/crew-profile-identity-frame-v2.webp",
       "type": "update"
     },
     {
-      "file": "assets/crew-card-daily.webp",
+      "file": "assets/crew-profile-ship-banner-v2.webp",
       "type": "update"
     },
     {
-      "file": "assets/crew-card-profile.webp",
-      "type": "update"
-    },
-    {
-      "file": "assets/crew-card-ranking.webp",
-      "type": "update"
-    },
-    {
-      "file": "assets/crew-card-revenue.webp",
-      "type": "update"
-    },
-    {
-      "file": "assets/crew-card-rewards.webp",
-      "type": "update"
-    },
-    {
-      "file": "assets/crew-card-work.webp",
-      "type": "update"
-    },
-    {
-      "file": "assets/crew-card-xp.webp",
-      "type": "update"
-    },
-    {
-      "file": "crew-chibi-dashboard.css",
+      "file": "crew-profile-illustrated.css",
       "type": "update"
     },
     {
       "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-character-card-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-chibi-dashboard.test.cjs",
       "type": "update"
     },
     {
@@ -73,6 +41,10 @@
     },
     {
       "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "sw-config.json",
       "type": "update"
     }
   ]

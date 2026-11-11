@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.107",
+      "releaseDate": "2026-11-11T08:06:19.971Z",
+      "summary": "feat(profile): real illustrated 2D chibi cards for Dolphin Crew Club",
+      "details": [
+        "feat(profile): real illustrated 2D chibi cards for Dolphin Crew Club"
+      ]
+    },
+    {
       "version": "1.1.105",
       "releaseDate": "2026-11-11T07:25:07.037Z",
       "summary": "Feat/crew chibi profile dashboard (#252)",
@@ -390,14 +398,6 @@
       "summary": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation",
       "details": [
         "feat(crew): restore check-in XP and unlock premium avatars, themes, animation"
-      ]
-    },
-    {
-      "version": "1.1.56",
-      "releaseDate": "2026-11-02T20:32:28.082Z",
-      "summary": "fix(firebase): package arcade verifier so daily XP Functions can start",
-      "details": [
-        "fix(firebase): package arcade verifier so daily XP Functions can start"
       ]
     }
   ]

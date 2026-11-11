@@ -95,8 +95,8 @@ test('the display illustration contains no literal personal identity or mockup r
  }
  assert.match(svg,/DOLPHIN/);
  assert.match(css,/assets\/dolphin-chibi-ship\.svg/);
- assert.doesNotMatch(css,/crew-chibi-function-art\\.svg/);
- assert.match(worker,/crew-chibi-dashboard\\.js/);
+ assert(!css.includes('crew-chibi-function-art.svg'),'Cards must not be rendered from the old CSS sprite');
+ assert(worker.includes('crew-chibi-dashboard.js'));
  for(const name of ['profile','daily','xp','achievements','work','revenue','ranking','rewards']){
   assert(html.includes('class="crew-chibi-image" src="./assets/crew-card-'+name+'.webp"'));
   assert(worker.includes('assets/crew-card-'+name+'.webp'));

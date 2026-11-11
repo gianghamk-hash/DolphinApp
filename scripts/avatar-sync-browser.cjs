@@ -22,7 +22,7 @@ else if(name==='staffSetPersonalStyle'){
 }
 else x=await backend.api[name]({auth:{uid},data});
 return route.fulfill({contentType:'application/json',body:JSON.stringify(x)});}catch(e){return route.fulfill({status:400,contentType:'application/json',body:JSON.stringify({message:e.message,code:e.code})});}}
-if(u.pathname==='/shell.html')return route.fulfill({contentType:'text/html',body:'<!doctype html><html><head><script src="/staff-sync.js" defer></script><script src="/staff-id.js" defer></script><script src="/dolphin-avatars.js" defer></script></head><body><iframe id="profile" src="/dolphin-profile.html" style="width:100%;height:1200px"></iframe></body></html>'});
+if(u.pathname==='/shell.html')return route.fulfill({contentType:'text/html',body:'<!doctype html><html><head><script src="/staff-sync.js" defer></script><script src="/staff-id.js" defer></script><script src="/dolphin-avatars.js" defer></script></head><body><iframe id="profile" src="/dolphin-profile.html" style="width:100%;height:100vh"></iframe></body></html>'});
 const target=path.resolve(root,'.'+u.pathname);if(!target.startsWith(root+path.sep)||!fs.existsSync(target))return route.fulfill({status:404,body:'missing'});
 let body=fs.readFileSync(target);if(target.endsWith('.html')&&!target.endsWith('dolphin-profile.html'))body=body.toString().replace(/<script\b[^>]*type="module"[^>]*>[\s\S]*?<\/script>/g,'');
 return route.fulfill({body,contentType:{'.html':'text/html; charset=utf-8','.js':'application/javascript','.css':'text/css','.json':'application/json'}[path.extname(target)]||'application/octet-stream'});

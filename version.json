@@ -1,7 +1,7 @@
 {
-  "version": "1.1.104",
-  "buildDate": "2026-11-11T01:08:08.367Z",
-  "commit": "b84f9b9",
-  "notes": "refactor(guest): compact special-meal categories and remove duplicate booking note cards",
+  "version": "1.1.105",
+  "buildDate": "2026-11-11T07:25:07.037Z",
+  "commit": "7e251ad",
+  "notes": "Feat/crew chibi profile dashboard (#252)",
   "forceUpdate": false
 }

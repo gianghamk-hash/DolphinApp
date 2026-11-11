@@ -1,5 +1,5 @@
 {
-  "version": "1.1.104",
+  "version": "1.1.105",
   "releaseDate": "2026-11-11",
-  "notes": "refactor(guest): compact special-meal categories and remove duplicate booking note cards"
+  "notes": "Feat/crew chibi profile dashboard (#252)"
 }

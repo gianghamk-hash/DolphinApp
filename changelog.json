@@ -1,26 +1,74 @@
 {
-  "version": "1.1.104",
-  "previousVersion": "1.1.103",
-  "commit": "b84f9b9",
-  "previousCommit": "6158440",
-  "buildDate": "2026-11-11T01:08:08.367Z",
-  "summary": "refactor(guest): compact special-meal categories and remove duplicate booking note cards",
+  "version": "1.1.105",
+  "previousVersion": "1.1.104",
+  "commit": "7e251ad",
+  "previousCommit": "b84f9b9",
+  "buildDate": "2026-11-11T07:25:07.037Z",
+  "summary": "Feat/crew chibi profile dashboard (#252)",
   "changes": {
-    "totalCommits": 328,
-    "filesChanged": 2,
+    "totalCommits": 329,
+    "filesChanged": 14,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "refactor(guest): compact special-meal categories and remove duplicate booking note cards"
+    "Feat/crew chibi profile dashboard (#252)"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": ".github/workflows/staff-profile-tests.yml",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-guest-special.test.cjs",
+      "file": "assets/crew-chibi-function-art.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-chibi-ship.svg",
+      "type": "update"
+    },
+    {
+      "file": "crew-chibi-dashboard.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-chibi-dashboard.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "manager-apk-profile.js",
+      "type": "update"
+    },
+    {
+      "file": "scripts/avatar-sync-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-character-card-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-character-card.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-chibi-dashboard.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-profile-clean.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/manager-apk-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

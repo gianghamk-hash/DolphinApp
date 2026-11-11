@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.104",
+      "releaseDate": "2026-11-11T01:08:08.367Z",
+      "summary": "refactor(guest): compact special-meal categories and remove duplicate booking note cards",
+      "details": [
+        "refactor(guest): compact special-meal categories and remove duplicate booking note cards"
+      ]
+    },
+    {
       "version": "1.1.103",
       "releaseDate": "2026-11-11T00:50:59.915Z",
       "summary": "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes",
@@ -390,14 +398,6 @@
       "summary": "feat: 10x daily missions and verified Snake/2048 game XP",
       "details": [
         "feat: 10x daily missions and verified Snake/2048 game XP"
-      ]
-    },
-    {
-      "version": "1.1.54",
-      "releaseDate": "2026-11-02T16:19:02.128Z",
-      "summary": "fix: verified-only rankings and secure staff XP across outlets",
-      "details": [
-        "fix: verified-only rankings and secure staff XP across outlets"
       ]
     }
   ]

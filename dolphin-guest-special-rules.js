@@ -22,14 +22,16 @@
  }
  function segments(note){
   return String(note||'').replace(/\r\n?/g,'\n')
-   .replace(/\s+[-–—]\s+(?=(?:đặt|mua|coconut|trà|tea|pakora|welcome|order)\b)/gi,'\n')
-   .split(/\n+|\s*;\s*(?=(?:đặt|mua|coconut|trà|tea|pakora|welcome|order)\b)/i)
+   .replace(/\s+[-–—]\s+(?=(?:đặt|mua|coconut|trà|tea|pakora|welcome|order)(?:\s|\b))/gi,'\n')
+   .split(/\n+|\s*;\s*(?=(?:đặt|mua|coconut|trà|tea|pakora|welcome|order)(?:\s|\b))/i)
    .map(function(line){return line.replace(/^[\s*•\-–—]+/,'').trim();})
    .filter(Boolean);
  }
  function cancelled(plain,keyword){
   var before=plain.slice(Math.max(0,keyword-42),keyword);
-  return /(?:khong\s+(?:dat|mua|lay|dung|can)|huy|cancel(?:led)?|bo\s+(?:mon|set))\s*(?:\d+\s*(?:set|suat|phan|mon)\s*)?$/.test(before);
+  var after=plain.slice(keyword).slice(0,65);
+  return /(?:khong\s+(?:dat|mua|lay|dung|can)|huy|cancel(?:led)?|bo\s+(?:mon|set))\s*(?:\d+\s*)?(?:(?:set|suat|phan|mon)\s*)?$/.test(before)||
+   /\b(?:huy\s+(?:dat|don|mon)?|cancel(?:led)?|khong\s+(?:dat|lay|dung))\b/.test(after);
  }
  function qty(plain,key){
   var dish=key==='pakora'?'pakor(?:a|e)?|pakoda':

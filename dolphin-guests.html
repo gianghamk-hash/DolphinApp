@@ -753,16 +753,22 @@ function tables(s){
 }
 function areaName(letter){if(letter==='L')return 'Lounge';return letter}
 function seg(s){return (s||'').split(/\n+|\s{3,}|\s\+\s(?=-)/).map(function(x){return x.replace(/^[\s\-–=>+]+/,'').trim()}).filter(Boolean)}
-var BUNG=/bungalow/i,LOB=/tôm hùm|lobster/i;
-var DIET=/(?:\b(?:chay|veg(?:an|etarian)?|non[\s-]*veg|halal|jain)\b|\bindian\s*(?:food|meal|menu|set\s*menu|set)\b)/i;
-function dietType(s){
-  if(/\bnon[\s-]*veg\b/i.test(s))return 'Non-veg';
-  if(/chay/i.test(s))return 'Chay Việt';
-  if(/\bhalal\b/i.test(s))return 'Halal';
-  if(/\bjain\b/i.test(s))return 'Jain';
-  if(/\bveg/i.test(s))return 'Veg';
-  if(/\bindian\s*(?:food|meal|menu|set\s*menu|set)\b/i.test(s))return 'Indian Food';
-  return '';
+var BUNG=/bungalow/i,LOB=/tôm\s*hùm|\btom\s*hum\b|\blobster\b/i;
+var DIET=/(?:\b(?:chay|veg(?:an|etarian)?|vegetarian|non[\s-]*(?:veg(?:etarian)?|vegetarian)|halal|jain)\b|\bindian\s*(?:food|meal|menu|set\s*menu|set)\b|\b(?:western|european|vietnamese)\s+(?:vegetarian|veg)\b)/i;
+function dietTypes(s){
+  var n=window.DolphinGuestSpecialRules.normalize(s),types=[];
+  var nonVeg=/\bnon[\s-]*(?:veg(?:etarian)?|vegetarian)\b/i;
+  if(nonVeg.test(n))types.push('Non-veg');
+  var west=/\b(?:chay\s*(?:au|tay)|(?:western|european)\s+(?:vegetarian|veg))\b/i;
+  var viet=/\b(?:chay\s*(?:viet|vn)|vietnamese\s+(?:vegetarian|veg))\b/i;
+  if(west.test(n))types.push('Chay Âu');
+  else if(viet.test(n)||/\bchay\b/.test(n))types.push('Chay Việt');
+  if(/\bjain\b/.test(n))types.push('Jain');
+  if(/\bhalal\b/.test(n))types.push('Halal');
+  var withoutNonVeg=n.replace(/\bnon[\s-]*(?:veg(?:etarian)?|vegetarian)\b/g,' ');
+  if(/\b(?:veg(?:an|etarian)?|vegetarian)\b/.test(withoutNonVeg)&&!west.test(n)&&!viet.test(n))types.push('Veg');
+  if(/\bindian\s*(?:food|meal|menu|set\s*menu|set)\b/.test(n))types.push('Indian Food');
+  return types;
 }
 
 /* ═══════════════════════════════════════════════════════════
@@ -947,6 +953,7 @@ function parse(rows){
     b.loungeTicket = detectLoungeTicket(b.noteRaw);
 
     var segs=seg(c[7]).concat(seg(c[8]).filter(function(x){return BUNG.test(x)||LOB.test(x)||DIET.test(x)}));
+    var seenDiet=Object.create(null),seenLob=Object.create(null);
     segs.forEach(function(s){
       if(BUNG.test(s)){
         var n=s.match(/(\d+)\s*bungalow/i),num=s.match(/bungalow\s*(deck\s*\d+|\d+)/i),cnt=n?+n[1]:1,room=num?num[1]:'';
@@ -954,8 +961,13 @@ function parse(rows){
         if(cnt<1||cnt>10)cnt=1;
         b.bung.push({s:s,n:cnt,num:room});
       }
-      if(LOB.test(s)){b.lob.push(s)}
-      else if(DIET.test(s)){b.diet.push({t:dietType(s),s:s})}
+      if(LOB.test(s)){
+        var lobKey=window.DolphinGuestSpecialRules.normalize(s);
+        if(!seenLob[lobKey]){b.lob.push(s);seenLob[lobKey]=true}
+      }
+      if(DIET.test(s))dietTypes(s).forEach(function(type){
+        if(!seenDiet[type]){b.diet.push({t:type,s:s});seenDiet[type]=true}
+      });
     });
 
     b.showSlots = detectShowSlots(allNotes, b.bung);

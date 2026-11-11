@@ -4,21 +4,22 @@ const fs=require('node:fs'),path=require('node:path');
 const root=path.resolve(__dirname,'..');
 const read=p=>fs.readFileSync(path.join(root,p),'utf8');
 
-test('Profile has one Character Card and two distinct account utilities, without Ocean Journey',()=>{
+test('Profile retains one Character Card, uses chibi tiles and removes Ocean Journey',()=>{
  const html=read('dolphin-profile.html');
  for(const id of ['crew-profile-banner','staff-progress-card','staff-reward-highlights',
   'staff-daily-card','devices-dialog','rewards-dialog','profile-edit-dialog',
-  'style-dialog','crew-admin-sandbox','crew-manager-approvals']){
+  'style-dialog','crew-admin-sandbox','crew-manager-approvals','crew-daily-dialog']){
    assert.equal((html.match(new RegExp('id="'+id+'"','g'))||[]).length,1,'Missing/duplicated '+id);
  }
- assert.equal((html.match(/class="crew-profile-utility"/g)||[]).length,2);
- assert.equal((html.match(/data-open-dialog="devices-dialog"/g)||[]).length,1);
- assert.equal((html.match(/href=".\/ranking\/index.html#level"/g)||[]).length,1);
- assert.equal((html.match(/data-open-dialog="rewards-dialog"/g)||[]).length,1);
- assert.equal((html.match(/data-open-dialog="style-dialog"/g)||[]).length,4);
+ assert.equal((html.match(/data-crew-tile=/g)||[]).length,8);
+ assert.match(html,/data-open-dialog="devices-dialog"/);
+ assert.match(html,/href=".\/ranking\/index\.html#level"/);
+ assert.match(html,/data-open-dialog="rewards-dialog"/);
+ assert.match(html,/data-open-dialog="style-dialog"/);
  assert.doesNotMatch(html,/crew-ocean-journey|crew-journey-dialog|crew-journey-regions|quick-actions|crew-card-footer-action/);
  assert.match(html,/crew-profile-clean\.css\?v=clean-v2/);
  assert.match(html,/crew-2d-icons\.css\?v=bright-v2/);
+ assert.match(html,/crew-chibi-dashboard\.css\?v=chibi-v1/);
 });
 test('Approved colorful sprite atlases load as compact WebP with transparency',()=>{
  const css=read('crew-2d-icons.css');

@@ -6,12 +6,14 @@
 <link rel="stylesheet" href="./crew-character-card.css?v=character-v1">
 <link rel="stylesheet" href="./crew-2d-icons.css?v=bright-v2">
 <link rel="stylesheet" href="./crew-profile-clean.css?v=clean-v2">
+<link rel="stylesheet" href="./crew-chibi-dashboard.css?v=chibi-v1">
 <link rel="stylesheet" href="./crew-levelup-cinematic.css?v=levelup-v1">
 <link rel="stylesheet" href="./staff-access.css?v=crew-name-policy-v1"><script src="./staff-access.js?v=crew-name-policy-v1" defer></script>
 <script src="./dolphin-navigation.js?v=1.1.104" defer></script><script src="./staff-sync.js" defer></script><script src="./staff-id.js?v=crew-operational-auth-v1" defer></script><script src="./staff-profile.js?v=crew-global-v9" defer></script><script src="./dolphin-avatars.js?v=xp-lock-v4" defer></script><script src="./staff-prestige-client.js?v=1.1.104" defer></script><script src="./theme-system.js?v=crew-wow-v8" defer></script><script src="./crew-levelup-cinematic.js?v=xp-level-v3" defer></script>
 <script src="./staff-prestige-profile.js?v=xp-lock-v4" defer></script><script src="./staff-admin-profile.js?v=crew-recovery-v7" defer></script><script src="./staff-xp-manager.js?v=1.1.104" defer></script>
 <script src="./manager-apk-profile.js?v=xp-level-v3" defer></script>
 <script src="./crew-character-card.js?v=xp-lock-v4" defer></script>
+<script src="./crew-chibi-dashboard.js?v=chibi-v1" defer></script>
 </head>
 <body>
 <svg class="icon-library" aria-hidden="true" xmlns="http://www.w3.org/2000/svg"><defs>
@@ -23,7 +25,14 @@
 <symbol id="i-shield" viewBox="0 0 24 24"><path d="m12 2 9 4v6c0 5-9 10-9 10S3 17 3 12V6Z"/><path d="m8 12 3 3 5-6"/></symbol>
 </defs></svg>
 <main>
-<header class="page-heading"><div><p class="eyebrow">Dolphin · Crew club</p><h1>Hồ sơ nhân viên</h1></div><span class="page-monogram" aria-hidden="true">D.</span></header>
+<header class="crew-chibi-heading" aria-label="Dolphin Crew Club">
+  <a href="./index.html" class="crew-chibi-back" aria-label="Về trang chủ">←</a>
+  <div class="crew-chibi-heading-copy"><span class="crew-chibi-heading-brand">DOLPHIN CRUISE</span><strong>HỒ SƠ NHÂN VIÊN</strong></div>
+  <button type="button" class="crew-chibi-settings" data-open-dialog="style-dialog" aria-label="Tùy chỉnh giao diện">⚙ <span>Giao diện</span></button>
+ </header>
+ <div class="crew-chibi-ship" role="img" aria-label="Minh họa chibi tàu Dolphin Cruise trên Vịnh Hạ Long">
+  <span>DOLPHIN · CREW CLUB</span>
+ </div>
 <section class="profile-hero card crew-character-card" id="crew-profile-banner" data-banner="default" data-crew-rank="bronze" aria-label="Thẻ nhân vật Dolphin Crew Club">
  <div class="crew-card-seascape" aria-hidden="true">
   <svg viewBox="0 0 800 320" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
@@ -74,12 +83,32 @@
  </div>
  <footer class="crew-card-footer"><span>◈ DOLPHIN CRUISE · CREW IDENTITY</span><span>YOUR CREW LEGACY</span></footer>
 </section>
-<nav class="crew-profile-utilities" aria-label="Tiện ích tài khoản">
-  <button class="crew-profile-utility" type="button" data-open-dialog="devices-dialog" aria-label="Quản lý thiết bị và liên kết tài khoản"><span class="crew-2d-icon" data-icon="device" aria-hidden="true"></span><span><strong>Thiết bị & tài khoản</strong><small>Quản lý liên kết</small></span></button>
-  <a class="crew-profile-utility" href="./ranking/index.html#level" aria-label="Xem bảng xếp hạng Level và XP"><span class="crew-2d-icon" data-icon="rank" aria-hidden="true"></span><span><strong>Bảng xếp hạng</strong><small>Level · XP · danh hiệu</small></span></a>
+<nav class="crew-chibi-grid" aria-label="Chức năng hồ sơ nhân viên">
+  <button type="button" class="crew-chibi-tile" data-crew-tile="profile" data-open-dialog="profile-edit-dialog"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Hồ sơ cá nhân</strong><small>My profile</small></button>
+  <button type="button" class="crew-chibi-tile" data-crew-tile="daily" data-open-dialog="crew-daily-dialog"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Nhiệm vụ hằng ngày</strong><small>Daily missions</small><span id="crew-chibi-daily-count" class="crew-chibi-pill" aria-label="Số nhiệm vụ hoàn thành">—</span></button>
+  <button type="button" class="crew-chibi-tile" data-crew-tile="xp" data-open-dialog="crew-xp-dialog"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Điểm XP &amp; Cấp độ</strong><small>XP &amp; Level</small></button>
+  <button type="button" class="crew-chibi-tile" data-crew-tile="achievements" data-open-dialog="crew-achievements-dialog"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Thành tích</strong><small>Achievements</small></button>
+  <button type="button" class="crew-chibi-tile" data-crew-tile="work" data-open-dialog="crew-work-dialog"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Lịch sử công việc</strong><small>Work history</small></button>
+  <button type="button" class="crew-chibi-tile" data-crew-tile="revenue" data-open-dialog="crew-revenue-dialog"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Doanh thu cá nhân</strong><small>My revenue</small></button>
+  <a class="crew-chibi-tile" data-crew-tile="ranking" href="./ranking/index.html#level"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Bảng xếp hạng</strong><small>Leaderboard</small></a>
+  <button type="button" class="crew-chibi-tile" data-crew-tile="rewards" data-open-dialog="rewards-dialog"><span class="crew-chibi-art" aria-hidden="true"></span><strong>Phần thưởng</strong><small>Rewards</small></button>
  </nav>
+ <nav class="crew-chibi-tools" aria-label="Cài đặt hồ sơ">
+  <button type="button" data-open-dialog="style-dialog">✨ Bộ sưu tập hiệu ứng</button>
+  <button type="button" data-open-dialog="devices-dialog">📱 Thiết bị &amp; tài khoản</button>
+ </nav>
+ <section class="crew-chibi-week" aria-label="Thông tin nhân viên được xác minh">
+  <div class="crew-chibi-week-title">DỮ LIỆU HỒ SƠ <small>LIVE · STAFF ID</small></div>
+  <div class="crew-chibi-week-stats">
+   <div><span>★ XP hiện tại</span><strong id="crew-chibi-current-xp">—</strong></div>
+   <div><span>◈ Cấp độ</span><strong id="crew-chibi-current-level">—</strong></div>
+   <div><span>✓ Nhiệm vụ hôm nay</span><strong id="crew-chibi-current-daily">—</strong></div>
+  </div>
+ </section>
  <div id="staff-reward-highlights" class="reward-highlights" hidden aria-hidden="true"></div>
-<section class="card daily-missions" id="staff-daily-card" aria-labelledby="staff-daily-title">
+<dialog id="crew-daily-dialog" class="crew-chibi-dialog" aria-labelledby="crew-daily-title">
+ <div class="dialog-head"><h2 id="crew-daily-title">📋 Nhiệm vụ hằng ngày</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng nhiệm vụ">✕</button></div>
+ <section class="card daily-missions" id="staff-daily-card" aria-labelledby="staff-daily-title">
  <div class="section-line"><div><p class="eyebrow">Dolphin Crew Club · 00:00 reset</p><h2 id="staff-daily-title"><span class="crew-2d-icon" data-icon="xp" aria-hidden="true"></span>Nhiệm vụ hằng ngày</h2></div><span id="staff-daily-counter" class="level-tag">0/8</span></div>
  <p class="hint">Mỗi nhiệm vụ chỉ nhận XP một lần trong ngày (giờ Việt Nam). Nhiệm vụ công việc tự hoàn thành qua Staff ID đã duyệt. Nhiệm vụ game cộng XP khi điểm số được máy chủ xác thực.</p>
  <div class="daily-stats"><span id="staff-daily-streak">🔥 Chuỗi điểm danh: —</span><span id="staff-daily-earned">⭐ +0 XP hôm nay</span></div>
@@ -87,6 +116,23 @@
  <div id="staff-daily-list" class="daily-list" aria-live="polite"><p class="hint">Đang tải nhiệm vụ…</p></div>
  <p id="staff-daily-message" class="hint daily-message" role="status" aria-live="polite"></p>
 </section>
+ </dialog>
+ <dialog id="crew-xp-dialog" class="crew-chibi-dialog" aria-labelledby="crew-xp-title">
+  <div class="dialog-head"><h2 id="crew-xp-title">⭐ Điểm XP &amp; Cấp độ</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
+  <div class="crew-chibi-detail"><p id="crew-dashboard-xp-detail" aria-live="polite">Đang tải XP theo Staff ID…</p><p id="crew-dashboard-next-detail"></p><button class="secondary full" type="button" data-crew-dialog-switch="rewards-dialog">Xem mốc phần thưởng</button></div>
+ </dialog>
+ <dialog id="crew-achievements-dialog" class="crew-chibi-dialog" aria-labelledby="crew-achievements-title">
+  <div class="dialog-head"><h2 id="crew-achievements-title">🏆 Thành tích Crew Club</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
+  <div class="crew-chibi-detail" id="crew-dashboard-achievements" aria-live="polite">Đang tải các thành tích được xác minh…</div>
+ </dialog>
+ <dialog id="crew-work-dialog" class="crew-chibi-dialog" aria-labelledby="crew-work-title">
+  <div class="dialog-head"><h2 id="crew-work-title">📋 Công việc đã ghi nhận</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
+  <div class="crew-chibi-detail"><p id="crew-dashboard-work-staff" class="crew-chibi-staff-label">Đang tải Staff ID…</p><p>Dữ liệu công việc và điểm nghiệp vụ được lấy từ hệ thống Staff ID, không dùng số liệu minh họa.</p><p>Để xem các công việc đã được tổng hợp trong tuần, mở bảng xếp hạng Điểm công việc.</p><a class="secondary full crew-chibi-modal-link" href="./ranking/index.html#points">Xem điểm công việc</a></div>
+ </dialog>
+ <dialog id="crew-revenue-dialog" class="crew-chibi-dialog" aria-labelledby="crew-revenue-title">
+  <div class="dialog-head"><h2 id="crew-revenue-title">💰 Doanh thu nhân viên</h2><button type="button" class="icon-button" data-close-dialog aria-label="Đóng">✕</button></div>
+  <div class="crew-chibi-detail"><p id="crew-dashboard-revenue-staff" class="crew-chibi-staff-label">Đang tải Staff ID…</p><p>Chỉ hiển thị doanh thu đã ghi nhận và xác minh theo Staff ID. Không lấy số tiền mẫu trong hình thiết kế.</p><p>Mở bảng Doanh thu tuần để xem kết quả thực tế từ hệ thống order.</p><a class="secondary full crew-chibi-modal-link" href="./ranking/index.html#revenue">Xem doanh thu tuần</a></div>
+ </dialog>
 
 <div class="status-strip"><p id="profile-message" role="status" aria-live="polite">Đang kết nối hồ sơ nhân viên…</p><p id="staff-xp-status" role="status"></p><button type="button" class="text-button" id="staff-xp-reconcile">Làm mới XP ↻</button><button type="button" class="text-button" id="staff-xp-retry" hidden>Thử tải lại</button></div>
 <section id="crew-admin-sandbox" class="card crew-admin-sandbox" hidden aria-labelledby="crew-admin-title">
@@ -112,6 +158,12 @@
 </section>
 
 <button id="prestige-admin-launch" type="button" class="settings-row" data-open-dialog="admin-dialog" hidden><span class="action-icon crew-2d-icon" data-icon="identity" aria-hidden="true"></span><span><strong>Duyệt XP nhân viên</strong><small>Dành cho quản lý được cấp quyền</small></span><span aria-hidden="true">↗</span></button>
+<nav class="crew-chibi-bottom" aria-label="Điều hướng">
+  <a href="./index.html">⌂<span>Trang chủ</span></a>
+  <a href="./dolphin-guests.html">♧<span>Khách hàng</span></a>
+  <a href="./dolphin-restaurant.html">♨<span>Order</span></a>
+  <a href="./giaitri/index.html">🎮<span>Giải trí</span></a>
+ </nav>
 <p class="page-note">Dolphin Crew Club chỉ để vui chơi và mở khóa trải nghiệm. Không liên quan đến lương, thưởng hoặc đánh giá công việc.</p>
 </main>
 <dialog id="profile-edit-dialog" aria-labelledby="edit-title"><div class="dialog-head"><div><p class="eyebrow">Cá nhân</p><h2 id="edit-title">Chỉnh sửa hồ sơ</h2></div><button class="icon-button" type="button" data-close-dialog aria-label="Đóng chỉnh sửa hồ sơ">✕</button></div>

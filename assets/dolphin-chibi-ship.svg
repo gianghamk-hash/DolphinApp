@@ -1,0 +1,53 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1080" height="183" viewBox="0 0 1080 183" role="img" aria-label="Minh họa du thuyền Dolphin Cruise tại Vịnh Hạ Long">
+<defs>
+ <linearGradient id="sky" x2="0" y2="1"><stop stop-color="#5fc5f3"/><stop offset=".75" stop-color="#a8e7fc"/><stop offset="1" stop-color="#e2f3e4"/></linearGradient>
+ <linearGradient id="sea" x2="0" y2="1"><stop stop-color="#31a7d7"/><stop offset="1" stop-color="#0a6bb4"/></linearGradient>
+ <linearGradient id="hull" x2="0" y2="1"><stop stop-color="#fff"/><stop offset=".67" stop-color="#f0fcff"/><stop offset="1" stop-color="#bddcf1"/></linearGradient>
+ <linearGradient id="glass" x2="0" y2="1"><stop stop-color="#8cddf2"/><stop offset="1" stop-color="#17375a"/></linearGradient>
+ <filter id="shadow"><feGaussianBlur stdDeviation="5"/></filter>
+</defs>
+<rect width="1080" height="183" fill="url(#sky)"/>
+<g opacity=".64" fill="#5aacae">
+ <path d="M0 109Q38 45 85 104Q135 34 190 109H0ZM795 103Q850 52 901 104Q948 27 1026 102L1080 100V132H795Z"/>
+ <path d="M180 120Q245 45 303 113Q341 65 387 113ZM688 115Q730 46 795 114Z" fill="#80c3b6"/>
+</g>
+<g fill="#fff" opacity=".83"><ellipse cx="300" cy="31" rx="47" ry="11"/><ellipse cx="338" cy="24" rx="32" ry="13"/><ellipse cx="845" cy="27" rx="48" ry="10"/><ellipse cx="887" cy="32" rx="38" ry="11"/></g>
+<path d="M0 125Q260 118 540 126Q825 113 1080 126V183H0Z" fill="url(#sea)"/>
+<g stroke="#a2eafc" stroke-width="2" opacity=".57" fill="none"><path d="M10 156Q95 145 192 158M290 164Q416 150 543 163M635 156Q785 145 930 157M936 167Q1003 162 1074 164"/></g>
+<ellipse cx="590" cy="158" rx="375" ry="13" fill="#013e77" opacity=".34" filter="url(#shadow)"/>
+<!-- Side view based on the user's Dolphin Cruise reference: sleek white hull, long window belt, bow-side glass dome, planted upper deck. -->
+<path d="M216 123Q239 118 255 104L354 91L809 83Q861 83 884 98L912 114L881 144Q760 153 590 158L333 158L250 151Q228 145 216 123Z" fill="url(#hull)" stroke="#0e466e" stroke-width="4"/>
+<path d="M262 126L360 113L818 106Q859 106 871 119L850 125L340 139L272 139Z" fill="#12365c"/>
+<path d="M278 140L360 143L851 132L878 130L850 141Q617 159 337 152Z" fill="#e7f8ff"/>
+<path d="M285 136L350 130L846 118" fill="none" stroke="#0da0c7" stroke-width="3"/>
+<path d="M580 143L825 135" fill="none" stroke="#ffce3e" stroke-width="3"/>
+<path d="M331 109L387 77L776 69L821 89L830 105Z" fill="#f3fbff" stroke="#164569" stroke-width="3"/>
+<path d="M373 98L403 81L773 75L804 94L800 100L374 105Z" fill="url(#glass)"/>
+<g stroke="#d6f6ff" stroke-width="3"><path d="M421 80V103M454 80V102M487 80V102M520 80V102M553 80V102M586 80V102M619 80V102M652 80V102M685 80V102M718 80V102M751 80V102"/></g>
+<!-- The front glass dome and sun deck -->
+<path d="M242 121Q255 75 318 52Q347 51 363 77L379 110L319 119Z" fill="url(#glass)" stroke="#155a7f" stroke-width="4"/>
+<g fill="none" stroke="#9de0f1" stroke-width="2.5"><path d="M253 114Q272 78 310 58M275 121Q294 81 332 56M302 118Q321 89 346 66M260 99L361 96"/></g>
+<path d="M382 72Q551 53 777 64" fill="none" stroke="#fff" stroke-width="9"/>
+<path d="M391 69H778" stroke="#114568" stroke-width="3"/>
+<g fill="#ffd35e"><circle cx="410" cy="65" r="3"/><circle cx="462" cy="65" r="3"/><circle cx="514" cy="65" r="3"/><circle cx="566" cy="65" r="3"/><circle cx="618" cy="65" r="3"/><circle cx="670" cy="65" r="3"/><circle cx="722" cy="65" r="3"/></g>
+<g stroke="#785a34" stroke-width="3"><path d="M458 64v-14M500 63v-16M543 63v-16M587 61V46M632 62V44M675 61V44M715 62V45"/></g>
+<g fill="#2bb878"><path d="M452 51q-14-13-24-8q16 1 26 14q-4-17 6-23q-4 14-2 21q12-16 24-9q-17 1-23 10Z"/><path d="M496 51q-16-15-23-8q18 4 25 13q-4-14 7-25q-4 15-2 20q13-14 27-8q-18 4-25 13Z"/><path d="M540 51q-14-13-24-8q16 1 26 14q-4-17 6-23q-4 14-2 21q12-16 24-9q-17 1-23 10Z"/><path d="M584 49q-14-13-24-8q16 1 26 14q-4-17 6-23q-4 14-2 21q12-16 24-9q-17 1-23 10Z"/><path d="M629 48q-14-13-24-8q16 1 26 14q-4-17 6-23q-4 14-2 21q12-16 24-9q-17 1-23 10Z"/><path d="M673 48q-14-13-24-8q16 1 26 14q-4-17 6-23q-4 14-2 21q12-16 24-9q-17 1-23 10Z"/><path d="M711 49q-14-13-24-8q16 1 26 14q-4-17 6-23q-4 14-2 21q12-16 24-9q-17 1-23 10Z"/></g>
+<rect x="777" y="53" width="34" height="15" rx="3" fill="#f3fafc" stroke="#376585" stroke-width="2"/>
+<path d="M795 52V28M795 29L819 35L795 41Z" fill="#fa5e44" stroke="#fa5e44" stroke-width="2"/>
+<text x="600" y="118" fill="#0c638a" font-size="14" font-family="Arial,sans-serif" font-weight="900">DOLPHIN</text>
+<!-- round chibi mascot on the left -->
+<g transform="translate(62 32)">
+ <ellipse cx="77" cy="129" rx="90" ry="20" fill="#0a5481" opacity=".15"/>
+ <path d="M22 91Q-7 68 22 35Q65-10 110 23Q157 52 126 99Q103 126 61 121Z" fill="#55cced" stroke="#0c78ac" stroke-width="5"/>
+ <ellipse cx="67" cy="89" rx="62" ry="31" fill="#e4fcff"/>
+ <path d="M95 25Q103-13 139 5L114 47Z" fill="#3bbce5"/>
+ <path d="M131 56Q164 50 174 65Q149 75 122 76Z" fill="#3bbce5" stroke="#0c78ac" stroke-width="4"/>
+ <path d="M19 94Q-2 113 9 129L37 111" fill="#49c8e9" stroke="#0c78ac" stroke-width="4"/>
+ <circle cx="51" cy="58" r="6" fill="#133c67"/>
+ <path d="M84 69Q102 91 122 65" fill="none" stroke="#123b65" stroke-width="5" stroke-linecap="round"/>
+ <ellipse cx="46" cy="82" rx="10" ry="7" fill="#ffabc4"/>
+ <path d="M50 25Q76 11 106 30" fill="none" stroke="#fff" stroke-width="6" stroke-linecap="round"/>
+ <path d="M44 21Q70 1 97 15L104 29L41 28Z" fill="#fff" stroke="#eec46c" stroke-width="3"/>
+ <circle cx="74" cy="18" r="10" fill="#fbd76f" stroke="#bb8b23" stroke-width="2"/>
+</g>
+</svg>

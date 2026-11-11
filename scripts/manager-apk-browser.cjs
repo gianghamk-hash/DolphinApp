@@ -27,7 +27,18 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
    });
    for(const f of ['staff-profile.js','staff-admin-profile.js','manager-apk-profile.js'])await page.addScriptTag({content:read(f)});
    const manager=ua.includes('DolphinManager');
-   assert.equal(await page.locator('#staff-daily-card').isVisible(),!manager);
+   // The mission panel lives inside a normally CLOSED <dialog>.
+   // Check its disabled state independently of visibility, then exercise the
+   // staff tile end-to-end; the Manager APK must not expose an empty shortcut.
+   assert.equal(await page.locator('#staff-daily-card').evaluate(el=>el.hidden),manager);
+   assert.equal(await page.locator('[data-crew-tile="daily"]').isVisible(),!manager);
+   if(!manager){
+    await page.locator('[data-crew-tile="daily"]').click();
+    assert.equal(await page.locator('#crew-daily-dialog').isVisible(),true);
+    assert.equal(await page.locator('#staff-daily-card').isVisible(),true);
+    await page.locator('#crew-daily-dialog [data-close-dialog]').click();
+    assert.equal(await page.locator('#crew-daily-dialog').isVisible(),false);
+   }
    await page.locator('#crew-profile-banner [data-open-dialog="profile-edit-dialog"]').click();
    assert.equal(await page.locator('#profile-name-input').isEnabled(),manager);
    if(manager){

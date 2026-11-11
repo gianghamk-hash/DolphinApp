@@ -1,7 +1,7 @@
 {
-  "version": "1.1.110",
-  "buildDate": "2026-11-11T10:54:41.965Z",
-  "commit": "3799b21",
-  "notes": "fix(profile): overlay staff identity, level and XP on illustrated card",
+  "version": "1.1.111",
+  "buildDate": "2026-11-11T16:32:00.727Z",
+  "commit": "47fc5d0",
+  "notes": "perf(games): smoother online sync + live Firebase ping HUD (#256)",
   "forceUpdate": false
 }

@@ -1,42 +1,62 @@
 {
-  "version": "1.1.110",
-  "previousVersion": "1.1.109",
-  "commit": "3799b21",
-  "previousCommit": "ab28918",
-  "buildDate": "2026-11-11T10:54:41.965Z",
-  "summary": "fix(profile): overlay staff identity, level and XP on illustrated card",
+  "version": "1.1.111",
+  "previousVersion": "1.1.110",
+  "commit": "47fc5d0",
+  "previousCommit": "3799b21",
+  "buildDate": "2026-11-11T16:32:00.727Z",
+  "summary": "perf(games): smoother online sync + live Firebase ping HUD (#256)",
   "changes": {
-    "totalCommits": 332,
-    "filesChanged": 6,
+    "totalCommits": 333,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(profile): overlay staff identity, level and XP on illustrated card"
+    "perf(games): smoother online sync + live Firebase ping HUD (#256)"
   ],
   "fileChanges": [
     {
-      "file": "crew-profile-illustrated.css",
+      "file": "caro/index.html",
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "dolphin-multiplayer.js",
       "type": "update"
     },
     {
-      "file": "scripts/crew-character-card-browser.cjs",
+      "file": "functions/tactics/online-latency.test.js",
       "type": "update"
     },
     {
-      "file": "scripts/crew-profile-clean.test.cjs",
+      "file": "giaitri/games/battleship.html",
       "type": "update"
     },
     {
-      "file": "service-worker.js",
+      "file": "giaitri/games/caro.html",
       "type": "update"
     },
     {
-      "file": "sw-config.json",
+      "file": "giaitri/games/chess.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/snake-coop-online.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/index.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/tactics-online/online-transport.js",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/games/xiangqi.html",
+      "type": "update"
+    },
+    {
+      "file": "giaitri/index.html",
       "type": "update"
     }
   ]

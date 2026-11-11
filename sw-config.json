@@ -1,5 +1,5 @@
 {
-  "version": "1.1.110",
+  "version": "1.1.111",
   "releaseDate": "2026-11-11",
-  "notes": "fix(profile): overlay staff identity, level and XP on illustrated card"
+  "notes": "perf(games): smoother online sync + live Firebase ping HUD (#256)"
 }

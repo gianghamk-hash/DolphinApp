@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.110",
+      "releaseDate": "2026-11-11T10:54:41.965Z",
+      "summary": "fix(profile): overlay staff identity, level and XP on illustrated card",
+      "details": [
+        "fix(profile): overlay staff identity, level and XP on illustrated card"
+      ]
+    },
+    {
       "version": "1.1.109",
       "releaseDate": "2026-11-11T10:31:04.084Z",
       "summary": "feat(profile): approved WebP cruise banner and staff identity artwork (#254)",
@@ -390,14 +398,6 @@
       "summary": "feat(crew): 100x verified order handling XP without changing sales or daily missions",
       "details": [
         "feat(crew): 100x verified order handling XP without changing sales or daily missions"
-      ]
-    },
-    {
-      "version": "1.1.58",
-      "releaseDate": "2026-11-03T00:46:16.355Z",
-      "summary": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars",
-      "details": [
-        "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars"
       ]
     }
   ]

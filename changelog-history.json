@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.109",
+      "releaseDate": "2026-11-11T10:31:04.084Z",
+      "summary": "feat(profile): approved WebP cruise banner and staff identity artwork (#254)",
+      "details": [
+        "feat(profile): approved WebP cruise banner and staff identity artwork (#254)"
+      ]
+    },
+    {
       "version": "1.1.107",
       "releaseDate": "2026-11-11T08:06:19.971Z",
       "summary": "feat(profile): real illustrated 2D chibi cards for Dolphin Crew Club",
@@ -390,14 +398,6 @@
       "summary": "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars",
       "details": [
         "fix(crew): synchronize cosmetics across apps and curate sovereign Mythic avatars"
-      ]
-    },
-    {
-      "version": "1.1.57",
-      "releaseDate": "2026-11-03T00:02:58.068Z",
-      "summary": "feat(crew): restore check-in XP and unlock premium avatars, themes, animation",
-      "details": [
-        "feat(crew): restore check-in XP and unlock premium avatars, themes, animation"
       ]
     }
   ]

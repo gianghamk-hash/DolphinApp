@@ -1,28 +1,20 @@
 {
-  "version": "1.1.108",
-  "previousVersion": "1.1.107",
-  "commit": "ab28918",
-  "previousCommit": "fe87e69",
-  "buildDate": "2026-11-11T10:31:04.084Z",
-  "summary": "feat(profile): approved WebP cruise banner and staff identity artwork (#254)",
+  "version": "1.1.110",
+  "previousVersion": "1.1.109",
+  "commit": "3799b21",
+  "previousCommit": "ab28918",
+  "buildDate": "2026-11-11T10:54:41.965Z",
+  "summary": "fix(profile): overlay staff identity, level and XP on illustrated card",
   "changes": {
-    "totalCommits": 331,
-    "filesChanged": 8,
+    "totalCommits": 332,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(profile): approved WebP cruise banner and staff identity artwork (#254)"
+    "fix(profile): overlay staff identity, level and XP on illustrated card"
   ],
   "fileChanges": [
-    {
-      "file": "assets/crew-profile-identity-frame-v2.webp",
-      "type": "update"
-    },
-    {
-      "file": "assets/crew-profile-ship-banner-v2.webp",
-      "type": "update"
-    },
     {
       "file": "crew-profile-illustrated.css",
       "type": "update"
@@ -32,11 +24,11 @@
       "type": "update"
     },
     {
-      "file": "scripts/crew-profile-clean.test.cjs",
+      "file": "scripts/crew-character-card-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/manager-apk-browser.cjs",
+      "file": "scripts/crew-profile-clean.test.cjs",
       "type": "update"
     },
     {

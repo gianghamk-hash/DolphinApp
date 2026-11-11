@@ -1,5 +1,5 @@
 {
-  "version": "1.1.109",
+  "version": "1.1.110",
   "releaseDate": "2026-11-11",
-  "notes": "fix(profile): align live staff identity, level and XP inside approved WebP card on phones"
+  "notes": "fix(profile): overlay staff identity, level and XP on illustrated card"
 }

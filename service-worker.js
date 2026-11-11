@@ -18,6 +18,8 @@ let configLoaded = false;
 const CACHE_URLS = [
   BASE + '/',
   BASE + '/index.html',
+  BASE + '/dolphin-guests.html',
+  BASE + '/dolphin-guest-special-rules.js?v=fnb-notes-v1',
   BASE + '/dolphin-bungalow.html',
   BASE + '/dolphin-lounge.html',
   BASE + '/dolphin-restaurant.html',

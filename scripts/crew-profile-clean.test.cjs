@@ -60,10 +60,13 @@ test('approved rendered image banners replace CSS-drawn header and identity fram
   assert(html.includes('src="./'+file+'"'),file+' must be rendered as an img');
   assert(sw.includes(file),file+' should be available in the PWA cache');
  }
- assert(html.includes('crew-profile-illustrated.css?v=hero-image-v2'));
+ assert(html.includes('crew-profile-illustrated.css?v=hero-image-v3'));
  assert(css.includes('.crew-profile-ship-image'));
  assert(css.includes('.crew-profile-frame-image'));
  assert.match(css,/#staff-xp-track/);
+ assert.match(css,/#crew-card-level-number/);
+ assert.match(css,/aspect-ratio:3\/1!important/);
+ assert.doesNotMatch(css,/aspect-ratio:auto/,'Mobile must keep the illustrated frame as the sole character card');
  for(const id of ['profile-avatar','profile-name','profile-title','employee-id','crew-card-level-number','crew-card-rank-name','staff-xp-fill','staff-next-level']){
   assert.match(html,new RegExp('id="'+id+'"'),id+' live data binding must remain');
  }

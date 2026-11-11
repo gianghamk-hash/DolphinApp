@@ -10,6 +10,8 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
    await page.route('**/*',r=>r.fulfill({status:200,contentType:'text/html',body:read('dolphin-profile.html').replace(/<script\b[^>]*>[\s\S]*?<\/script>/g,'').replace(/<link\b[^>]*>/g,'')}));
    await page.goto('https://manager.test/dolphin-profile.html');
    await page.addStyleTag({content:read('staff-profile.css')});
+    // Production profile includes both sheets; the eight <img> cards require the responsive layout.
+    await page.addStyleTag({content:read('crew-chibi-dashboard.css')});
    await page.evaluate(()=>{
     window.__me={employeeId:'DOL-0001',name:'Nguyễn Quản Lý',verified:true,linked:true,managerSession:/DolphinManager/.test(navigator.userAgent),avatar:'🐬'};
     window.__renames=[];window.__updates=0;window.__managerScoreCalls=[];
@@ -39,7 +41,7 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
     await page.locator('#crew-daily-dialog [data-close-dialog]').click();
     assert.equal(await page.locator('#crew-daily-dialog').isVisible(),false);
    }
-   await page.locator('#crew-profile-banner [data-open-dialog="profile-edit-dialog"]').click();
+   await page.locator('[data-crew-tile="profile"]').click();
    assert.equal(await page.locator('#profile-name-input').isEnabled(),manager);
    if(manager){
     await page.locator('#profile-name-input').fill('Nguyễn Quản Lý Mới');await page.locator('#save-profile').click();

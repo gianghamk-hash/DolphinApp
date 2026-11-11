@@ -49,15 +49,17 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert.equal(await page.locator('#crew-ocean-journey').count(),0,'The cluttered Ocean Journey map is gone');
   assert.equal(await page.locator('.crew-card-footer-action').count(),0,'No duplicated style/reward footer buttons');
   const assets=await page.evaluate(async()=>{
-   const files=['assets/crew-chibi-function-art.svg','assets/dolphin-chibi-ship.svg','assets/crew-profile-icons-v2.webp','assets/crew-cosmetic-icons-v2.webp'];
+   const files=['assets/dolphin-chibi-ship.svg','assets/crew-profile-icons-v2.webp','assets/crew-cosmetic-icons-v2.webp',
+    'assets/crew-card-profile.webp','assets/crew-card-daily.webp','assets/crew-card-xp.webp','assets/crew-card-achievements.webp','assets/crew-card-work.webp','assets/crew-card-revenue.webp','assets/crew-card-ranking.webp','assets/crew-card-rewards.webp'];
    return Promise.all(files.map(src=>new Promise(resolve=>{
     const img=new Image();img.onload=()=>resolve({src,loaded:true,w:img.naturalWidth,h:img.naturalHeight});
     img.onerror=()=>resolve({src,loaded:false});img.src=src;
    })));
   });
   assert(assets.every(x=>x.loaded&&x.w>0&&x.h>0),'Chibi artwork and bright legacy atlases must all decode');
-  const icon=await page.locator('.crew-chibi-tile .crew-chibi-art').first().evaluate(el=>getComputedStyle(el).backgroundImage);
-  assert(icon.includes('crew-chibi-function-art.svg'),'Chibi tiles display the illustrated sprite');
+  assert.equal(await page.locator('.crew-chibi-tile img.crew-chibi-image').count(),8,'Eight cards are real image elements');
+  const cardImages=await page.locator('.crew-chibi-tile .crew-chibi-image').evaluateAll(images=>images.map(im=>({src:im.getAttribute('src'),ready:im.complete&&im.naturalWidth===420&&im.naturalHeight===315})));
+  assert(cardImages.every(x=>x.ready&&x.src.endsWith('.webp')),'Eight illustrated WebP images decode independently');
   const mobile=await sample();
   assert(mobile.width<=mobile.viewport+2,'Character Card must not cause horizontal scrolling on phones');
   assert(mobile.card.width<=mobile.viewport,'Card must fit within viewport');

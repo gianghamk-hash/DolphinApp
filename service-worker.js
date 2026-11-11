@@ -40,7 +40,7 @@ const CACHE_URLS = [
   BASE + '/crew-2d-icons.css?v=bright-v2',
   BASE + '/crew-profile-clean.css?v=clean-v2',
   BASE + '/crew-chibi-dashboard.css?v=chibi-cards-v3',
-  BASE + '/crew-profile-illustrated.css?v=hero-image-v2',
+  BASE + '/crew-profile-illustrated.css?v=hero-image-v3',
   BASE + '/crew-chibi-dashboard.js?v=chibi-v1',
   BASE + '/assets/dolphin-chibi-ship.svg',
   BASE + '/assets/crew-profile-ship-banner-v2.webp',

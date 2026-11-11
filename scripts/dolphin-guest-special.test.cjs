@@ -117,3 +117,20 @@ test('special tab and booking cards expose full source notes without mutating or
  }});
  assert.doesNotMatch(tag,/<script>/);
 });
+
+
+test('special BKK tab includes a booking that only has Coconut Welcome and Trà Ấn',()=>{
+ const view=segment('function viewSpecial(L){','function pushKey(b,i,j){');
+ const booking={code:'DP-COCONUT-TEA',diet:[],lob:[],bung:[],
+  specialFood:rules.detect('Coconut Welcome + trà Ấn')};
+ const output=vm.runInNewContext(view+';viewSpecial([booking])',{
+  booking,statBox:(icon,count,label)=>'<span>'+label+': '+count+'</span>',
+  card:b=>'<article>'+b.code+'</article>'
+ });
+ assert.match(output,/DP-COCONUT-TEA/);
+ assert.match(output,/Coconut Welcome: 1/);
+ assert.match(output,/Trà Ấn: 1/);
+ assert.doesNotMatch(output,/Không có booking nào có yêu cầu/);
+ const priority=segment('function getPriority(b){','function card(b){');
+ assert.equal(vm.runInNewContext(priority+';getPriority(booking)',{booking}),'pri-food');
+});

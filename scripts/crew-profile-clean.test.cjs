@@ -60,12 +60,12 @@ test('approved rendered image banners replace CSS-drawn header and identity fram
   assert(html.includes('src="./'+file+'"'),file+' must be rendered as an img');
   assert(sw.includes(file),file+' should be available in the PWA cache');
  }
- assert.match(html,/crew-profile-illustrated\\.css\\?v=hero-image-v2/);
- assert.match(css,/\\.crew-profile-ship-image/);
- assert.match(css,/\\.crew-profile-frame-image/);
+ assert(html.includes('crew-profile-illustrated.css?v=hero-image-v2'));
+ assert(css.includes('.crew-profile-ship-image'));
+ assert(css.includes('.crew-profile-frame-image'));
  assert.match(css,/#staff-xp-track/);
  for(const id of ['profile-avatar','profile-name','profile-title','employee-id','crew-card-level-number','crew-card-rank-name','staff-xp-fill','staff-next-level']){
   assert.match(html,new RegExp('id="'+id+'"'),id+' live data binding must remain');
  }
- assert.doesNotMatch(html,/78,450\\s*\\/\\s*88,000|ST[A]FF NAME|ST[A]FF ID/);
+ assert(!html.includes('78,450 / 88,000')); assert(!html.includes('STAFF NAME'));
 });

@@ -611,6 +611,8 @@ function hostGameOver(){
   }, 400);
 }
 
+// Avoid rewriting hundreds of unchanged grid cells on every online Snake tick.
+function setCellClass(el, value){ if (el && el.className !== value) el.className = value; }
 function renderState(st){
   if (!st || !st.snakes) return;
   var children = $('board').children;
@@ -621,18 +623,18 @@ function renderState(st){
   var p2Present = oppPresent || mySide === 'p2';
 
   for (var i = 0; i < children.length; i++){
-    children[i].className = obs.has(i) ? 'cell obstacle' : 'cell';
+    setCellClass(children[i], obs.has(i) ? 'cell obstacle' : 'cell');
   }
   if (p2 && p2.alive){
     if (!p2Present){
       for (var i = 0; i < p2.body.length; i++){
         var el = children[p2.body[i].y * SIZE + p2.body[i].x];
-        if (el) el.className = 'cell ghost-p2';
+        setCellClass(el, 'cell ghost-p2');
       }
     } else {
       p2.body.forEach(function(seg, i){
         var el = children[seg.y * SIZE + seg.x];
-        if (el) el.className = 'cell ' + (i === 0 ? 'head-p2' : 'body-p2');
+        setCellClass(el, 'cell ' + (i === 0 ? 'head-p2' : 'body-p2'));
       });
     }
   }
@@ -640,19 +642,19 @@ function renderState(st){
     if (!p1Present){
       for (var i = 0; i < p1.body.length; i++){
         var el = children[p1.body[i].y * SIZE + p1.body[i].x];
-        if (el) el.className = 'cell ghost-p1';
+        setCellClass(el, 'cell ghost-p1');
       }
     } else {
       p1.body.forEach(function(seg, i){
         var el = children[seg.y * SIZE + seg.x];
-        if (el) el.className = 'cell ' + (i === 0 ? 'head-p1' : 'body-p1');
+        setCellClass(el, 'cell ' + (i === 0 ? 'head-p1' : 'body-p1'));
       });
     }
   }
   var foods = st.foods || [];
   for (var i = 0; i < foods.length; i++){
     var el = children[foods[i].y * SIZE + foods[i].x];
-    if (el) el.className = 'cell ' + (foods[i].type === 'golden' ? 'food-golden' : 'food-normal');
+    setCellClass(el, 'cell ' + (foods[i].type === 'golden' ? 'food-golden' : 'food-normal'));
   }
   if (p1){ $('score1').textContent = p1.score; $('lives1').textContent = heartsFor(p1); }
   if (p2){ $('score2').textContent = p2.score; $('lives2').textContent = heartsFor(p2); }

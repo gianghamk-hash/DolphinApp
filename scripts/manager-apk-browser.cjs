@@ -12,6 +12,7 @@ const root=path.resolve(__dirname,'..'),read=f=>fs.readFileSync(path.join(root,f
    await page.addStyleTag({content:read('staff-profile.css')});
     // Production profile includes both sheets; the eight <img> cards require the responsive layout.
     await page.addStyleTag({content:read('crew-chibi-dashboard.css')});
+    await page.addStyleTag({content:read('crew-profile-illustrated.css')});
    await page.evaluate(()=>{
     window.__me={employeeId:'DOL-0001',name:'Nguyễn Quản Lý',verified:true,linked:true,managerSession:/DolphinManager/.test(navigator.userAgent),avatar:'🐬'};
     window.__renames=[];window.__updates=0;window.__managerScoreCalls=[];

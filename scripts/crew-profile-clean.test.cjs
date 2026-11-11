@@ -48,3 +48,24 @@ test('Manager and staff XP logic are not rewritten by a profile-only UI update',
  assert.match(update,/staff-xp-summary/);
  assert.match(html,/id="crew-manager-ranking-toggle"/);
 });
+
+
+test('approved rendered image banners replace CSS-drawn header and identity frame while preserving live bindings',()=>{
+ const html=read('dolphin-profile.html'),css=read('crew-profile-illustrated.css'),sw=read('service-worker.js');
+ for(const asset of ['crew-profile-ship-banner-v2.webp','crew-profile-identity-frame-v2.webp']){
+  const file='assets/'+asset,b=fs.readFileSync(path.join(root,file));
+  assert.equal(b.toString('ascii',0,4),'RIFF',file);
+  assert.equal(b.toString('ascii',8,12),'WEBP',file);
+  assert(b.length>20000,file+' should contain real raster artwork');
+  assert(html.includes('src="./'+file+'"'),file+' must be rendered as an img');
+  assert(sw.includes(file),file+' should be available in the PWA cache');
+ }
+ assert(html.includes('crew-profile-illustrated.css?v=hero-image-v2'));
+ assert(css.includes('.crew-profile-ship-image'));
+ assert(css.includes('.crew-profile-frame-image'));
+ assert.match(css,/#staff-xp-track/);
+ for(const id of ['profile-avatar','profile-name','profile-title','employee-id','crew-card-level-number','crew-card-rank-name','staff-xp-fill','staff-next-level']){
+  assert.match(html,new RegExp('id="'+id+'"'),id+' live data binding must remain');
+ }
+ assert(!html.includes('78,450 / 88,000')); assert(!html.includes('STAFF NAME'));
+});

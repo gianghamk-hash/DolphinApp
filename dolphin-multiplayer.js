@@ -16,8 +16,9 @@
 
 const COL = 'mp_rooms';
 const DEVICE_KEY = 'dolphin_device_id';
-const HEARTBEAT_MS = 4000;
-const STALE_MS = 14000;
+// A longer presence window cuts shared Firestore fan-out without changing room semantics.
+const HEARTBEAT_MS = 10000;
+const STALE_MS = 35000;
 const MAX_ATTEMPTS = 10;
 
 function getDB(){
@@ -77,7 +78,58 @@ const _adapters = Object.create(null);
 let _hbTimer = null;
 let _unsubs = [];
 
-const _handlers = { room: [], players: [], state: [], input: [], error: [] };
+const _handlers = { room: [], players: [], state: [], input: [], error: [], network: [] };
+
+/* Passive server-ack latency: no extra Firebase requests or room writes.
+ * Shows the latest round-trip estimate (not device-to-device ICMP ping).
+ */
+const PING_BADGE_ID = 'dolphin-online-ping';
+const PING_STALE_MS = 35000;
+let _pingMs = null, _pingAt = 0, _pingTimer = null, _pingSamples = [];
+function onlineNow(){ return !window.navigator || window.navigator.onLine !== false; }
+function getPing(){
+  const fresh = _pingAt && Date.now() - _pingAt <= PING_STALE_MS;
+  return { rttMs: onlineNow() && fresh ? _pingMs : null, updatedAt: _pingAt, online: onlineNow() };
+}
+function showPing(){
+  if (typeof document === 'undefined' || !document.body) return;
+  let badge = document.getElementById(PING_BADGE_ID);
+  if (!_roomId){ if (badge) badge.style.display = 'none'; return; }
+  if (!badge){
+    badge = document.createElement('div');
+    badge.id = PING_BADGE_ID;
+    badge.style.cssText = 'position:fixed;top:calc(env(safe-area-inset-top,0px) + 58px);left:8px;z-index:2147483000;pointer-events:none;padding:4px 8px;border-radius:7px;font:700 11px/1.2 system-ui,sans-serif;letter-spacing:.02em;background:rgba(7,24,32,.83);box-shadow:0 2px 9px rgba(0,0,0,.24);white-space:nowrap;';
+    badge.setAttribute('role','status');
+    badge.setAttribute('aria-live','off');
+    document.body.appendChild(badge);
+  }
+  const stats = getPing(), ms = stats.rttMs;
+  const text = !stats.online ? '● OFFLINE' : ms === null ? '● PING --' : '● PING ' + ms + ' ms';
+  if (badge.textContent !== text) badge.textContent = text;
+  badge.style.color = !stats.online || ms !== null && ms >= 220 ? '#ff8585' : ms !== null && ms >= 110 ? '#ffe080' : '#70f3b0';
+  badge.style.display = 'block';
+}
+function notePing(ms, room){
+  if (!_roomId || room !== _roomId || !Number.isFinite(ms) || ms < 0) return;
+  _pingSamples.push(Math.round(ms));
+  if (_pingSamples.length > 3) _pingSamples.shift();
+  const values = _pingSamples.slice().sort((a,b) => a-b);
+  _pingMs = values[Math.floor(values.length/2)];
+  _pingAt = Date.now();
+  showPing();
+}
+function startPing(){
+  stopPing();
+  if (!_roomId) return;
+  showPing();
+  _pingTimer = setInterval(showPing, 1000);
+}
+function stopPing(){
+  if (_pingTimer !== null){ clearInterval(_pingTimer); _pingTimer = null; }
+  _pingSamples = []; _pingMs = null; _pingAt = 0;
+  showPing();
+}
+
 
 function fire(type, payload){
   (_handlers[type] || []).forEach(cb => {
@@ -100,9 +152,12 @@ function startHeartbeat(){
   const beat = () => {
     if (!_roomId) return;
     const db = getDB(); if (!db) return;
-    db.collection(COL).doc(_roomId).collection('players').doc(_deviceId)
-      .update({ lastSeen: Date.now() }).catch(() => {});
+    const room = _roomId, started = Date.now();
+    db.collection(COL).doc(room).collection('players').doc(_deviceId)
+      .update({ lastSeen: started })
+      .then(() => notePing(Date.now() - started, room)).catch(() => {});
   };
+  startPing();
   beat();
   _hbTimer = setInterval(beat, HEARTBEAT_MS);
 }
@@ -179,11 +234,13 @@ async function connectAdapter(game, code, opts){
   _isHost = !!result.isHost;
   _activeAdapter = adapter;
   _adapterPlayerId = result.playerId || result.uid || null;
+  startPing();
   try {
     const cleanup = adapter.subscribe({
       roomId: _roomId, playerId: _adapterPlayerId,
       emit: (type, payload) => {
         if (type === 'room' && payload) _isHost = !!payload.isHost;
+        if (type === 'network' && payload && Number.isFinite(payload.rttMs)) notePing(payload.rttMs, _roomId);
         fire(type, payload);
       }
     });
@@ -192,6 +249,7 @@ async function connectAdapter(game, code, opts){
   } catch(err){
     _roomId = null; _game = null; _side = null; _isHost = false;
     _activeAdapter = null; _adapterPlayerId = null;
+    stopPing();
     throw err;
   }
   return { ...result, roomId: _roomId, isHost: _isHost, side: _side };
@@ -322,6 +380,7 @@ async function leaveRoom(){
     _adapterCleanup = null;
     _activeAdapter = null;
     _roomId = null; _side = null; _isHost = false; _game = null; _adapterPlayerId = null;
+    stopPing();
     if (typeof adapter.leaveRoom === 'function') await adapter.leaveRoom(id);
     return;
   }
@@ -339,6 +398,7 @@ async function leaveRoom(){
       tx.delete(roomRef.collection('players').doc(_deviceId));
     });
     _roomId=null;_isHost=false;_side=null;_game=null;
+    stopPing();
     return;
   }
   if (db && _roomId){
@@ -355,6 +415,7 @@ async function leaveRoom(){
   _isHost = false;
   _side = null;
   _game = null;
+  stopPing();
 }
 
 // Strict variants surface permissions/network errors to the game rather than
@@ -362,14 +423,18 @@ async function leaveRoom(){
 async function sendInputStrict(payload){
   if(!_roomId)throw Error('Chưa vào phòng');
   const db=getDB();if(!db)throw Error('Chưa kết nối Firestore');
-  await db.collection(COL).doc(_roomId).collection('inputs').doc(_deviceId).set({
-    ...payload,at:Date.now(),
+  const room = _roomId, started = Date.now();
+  await db.collection(COL).doc(room).collection('inputs').doc(_deviceId).set({
+    ...payload,at:started,
   });
+  notePing(Date.now() - started, room);
 }
 async function sendStateStrict(snapshot){
   if(!_roomId||!_isHost)throw Error('Chỉ chủ phòng được ghi trạng thái');
   const db=getDB();if(!db)throw Error('Chưa kết nối Firestore');
-  await db.collection(COL).doc(_roomId).collection('data').doc('state').set(snapshot);
+  const room = _roomId, started = Date.now();
+  await db.collection(COL).doc(room).collection('data').doc('state').set(snapshot);
+  notePing(Date.now() - started, room);
 }
 
 async function sendInput(payload){
@@ -379,20 +444,27 @@ async function sendInput(payload){
   }
   if (!_roomId) return;
   const db = getDB(); if (!db) return;
+  const room = _roomId, started = Date.now();
   try {
-    await db.collection(COL).doc(_roomId).collection('inputs').doc(_deviceId).set({
-      ...payload, at: Date.now(),
+    await db.collection(COL).doc(room).collection('inputs').doc(_deviceId).set({
+      ...payload, at: started,
     });
+    notePing(Date.now() - started, room);
   } catch(e){}
 }
 let _lastSendStateTime = 0;
 async function sendState(state){
-  const _now = Date.now(); if (_now - _lastSendStateTime < 100) return; _lastSendStateTime = _now;
-   if (_activeAdapter) throw new Error('Không thể ghi trạng thái trận đấu từ client adapter');
+  if (_activeAdapter) throw new Error('Không thể ghi trạng thái trận đấu từ client adapter');
   if (!_roomId || !_isHost) return;
+  const now = Date.now();
+  // Never discard game events (Snake eat/death/respawn) with the normal frame throttle.
+  if (!state?.__event && now - _lastSendStateTime < 100) return;
+  _lastSendStateTime = now;
   const db = getDB(); if (!db) return;
+  const room = _roomId, started = Date.now();
   try {
-    await db.collection(COL).doc(_roomId).collection('data').doc('state').set(state);
+    await db.collection(COL).doc(room).collection('data').doc('state').set(state);
+    notePing(Date.now() - started, room);
   } catch(e){}
 }
 
@@ -444,6 +516,7 @@ window.DolphinMP = {
   getSide:     () => _side,
   isHost:      () => _isHost,
   getName:     () => _name,
+  getPing,
 };
 
 console.log('%c🎮 DolphinMP v1.0 ready', 'background:#F4B842;color:#123634;font-weight:900;padding:3px 10px;border-radius:5px');

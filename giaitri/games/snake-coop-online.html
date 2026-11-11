@@ -277,7 +277,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../staff-sync.js" defer></script>
 <script src="../../dolphin-leaderboard.js?v=2"></script>
-<script src="../../dolphin-multiplayer.js?v=1.0"></script>
+<script src="../../dolphin-multiplayer.js?v=ping-20261111"></script>
 <script>
 'use strict';
 
@@ -611,49 +611,38 @@ function hostGameOver(){
   }, 400);
 }
 
+// Avoid rewriting hundreds of unchanged grid cells on every online Snake tick.
+function setCellClass(el, value){ if (el && el.className !== value) el.className = value; }
 function renderState(st){
   if (!st || !st.snakes) return;
   var children = $('board').children;
-  var obs = new Set(st.obstacles || []);
+  // Compute one target grid, then mutate only cells that actually changed.
+  // This avoids clearing and repainting the same snake cells on each tick.
+  var classes = Array(children.length).fill('cell');
+  (st.obstacles || []).forEach(function(i){
+    if (i >= 0 && i < classes.length) classes[i] = 'cell obstacle';
+  });
   var p1 = st.snakes.find(function(s){ return s.id === 'p1'; });
   var p2 = st.snakes.find(function(s){ return s.id === 'p2'; });
-  var p1Present = oppPresent || mySide === 'p1';
-  var p2Present = oppPresent || mySide === 'p2';
-
-  for (var i = 0; i < children.length; i++){
-    children[i].className = obs.has(i) ? 'cell obstacle' : 'cell';
-  }
-  if (p2 && p2.alive){
-    if (!p2Present){
-      for (var i = 0; i < p2.body.length; i++){
-        var el = children[p2.body[i].y * SIZE + p2.body[i].x];
-        if (el) el.className = 'cell ghost-p2';
+  function paint(s, present){
+    if (!s || !s.alive) return;
+    s.body.forEach(function(seg, i){
+      var index = seg.y * SIZE + seg.x;
+      if (index >= 0 && index < classes.length){
+        classes[index] = 'cell ' + (!present ? 'ghost-' + s.id : i === 0 ? 'head-' + s.id : 'body-' + s.id);
       }
-    } else {
-      p2.body.forEach(function(seg, i){
-        var el = children[seg.y * SIZE + seg.x];
-        if (el) el.className = 'cell ' + (i === 0 ? 'head-p2' : 'body-p2');
-      });
+    });
+  }
+  // Preserve the existing drawing priority: obstacles, P2, P1, then food.
+  paint(p2, oppPresent || mySide === 'p2');
+  paint(p1, oppPresent || mySide === 'p1');
+  (st.foods || []).forEach(function(food){
+    var index = food.y * SIZE + food.x;
+    if (index >= 0 && index < classes.length){
+      classes[index] = 'cell ' + (food.type === 'golden' ? 'food-golden' : 'food-normal');
     }
-  }
-  if (p1 && p1.alive){
-    if (!p1Present){
-      for (var i = 0; i < p1.body.length; i++){
-        var el = children[p1.body[i].y * SIZE + p1.body[i].x];
-        if (el) el.className = 'cell ghost-p1';
-      }
-    } else {
-      p1.body.forEach(function(seg, i){
-        var el = children[seg.y * SIZE + seg.x];
-        if (el) el.className = 'cell ' + (i === 0 ? 'head-p1' : 'body-p1');
-      });
-    }
-  }
-  var foods = st.foods || [];
-  for (var i = 0; i < foods.length; i++){
-    var el = children[foods[i].y * SIZE + foods[i].x];
-    if (el) el.className = 'cell ' + (foods[i].type === 'golden' ? 'food-golden' : 'food-normal');
-  }
+  });
+  for (var i = 0; i < children.length; i++) setCellClass(children[i], classes[i]);
   if (p1){ $('score1').textContent = p1.score; $('lives1').textContent = heartsFor(p1); }
   if (p2){ $('score2').textContent = p2.score; $('lives2').textContent = heartsFor(p2); }
   if (st.speed) $('speedLabel').textContent = (BASE_SPEED / st.speed).toFixed(1) + 'x';

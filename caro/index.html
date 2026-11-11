@@ -277,6 +277,54 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
   };
 
   function $(id){ return document.getElementById(id); }
+
+  // Legacy modular Caro transport: passive HUD only, never changes room state.
+  var caroPingTimer = null, caroPingGeneration = 0, caroPingMs = null, caroPingAt = 0;
+  function paintCaroPing(){
+    var badge = document.getElementById('dolphin-online-ping');
+    if(!state.currentGameId){if(badge)badge.style.display='none';return;}
+    if(!badge){
+      badge=document.createElement('div');badge.id='dolphin-online-ping';
+      badge.style.cssText='position:fixed;top:calc(env(safe-area-inset-top,0px) + 58px);left:8px;z-index:2147483000;pointer-events:none;padding:4px 8px;border-radius:7px;font:700 11px/1.2 system-ui,sans-serif;background:rgba(7,24,32,.83);white-space:nowrap;';
+      document.body.appendChild(badge);
+    }
+    var online = navigator.onLine !== false;
+    var current = online && caroPingAt && Date.now()-caroPingAt<35000 ? caroPingMs : null;
+    badge.textContent = !online?'● OFFLINE':current===null?'● PING --':'● PING '+current+' ms';
+    badge.style.color = !online || current!==null&&current>=220?'#ff8585':current!==null&&current>=110?'#ffe080':'#70f3b0';
+    badge.style.display='block';
+  }
+  function stopCaroPing(){
+    ++caroPingGeneration;
+    if(caroPingTimer!==null){clearInterval(caroPingTimer);caroPingTimer=null;}
+    caroPingMs=null;caroPingAt=0;
+    var badge=document.getElementById('dolphin-online-ping');
+    if(badge)badge.style.display='none';
+  }
+  function startCaroPing(gameId){
+    stopCaroPing();
+    var gen=caroPingGeneration;
+    async function sample(){
+      if(gen!==caroPingGeneration||!state.db||document.hidden){paintCaroPing();return;}
+      if(navigator.onLine===false){paintCaroPing();return;}
+      var start=performance.now();
+      try {
+        var ref=state.modules.db.doc(state.db,COL_GAMES,gameId);
+        var snap=await state.modules.db.getDocFromServer(ref);
+        if(gen!==caroPingGeneration||state.currentGameId!==gameId)return;
+        if(!snap.exists())return;
+        caroPingMs=Math.max(0,Math.round(performance.now()-start));
+        caroPingAt=Date.now();
+      } catch(err){if(gen===caroPingGeneration){caroPingMs=null;caroPingAt=0;}}
+      paintCaroPing();
+    }
+    paintCaroPing();
+    void sample();
+    caroPingTimer=setInterval(sample,15000);
+  }
+  window.addEventListener('offline',paintCaroPing);
+  window.addEventListener('online',paintCaroPing);
+
   function esc(s){ return String(s).replace(/[&<>"']/g, function(c){ return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]; }); }
 
   function getStaffName(){
@@ -431,6 +479,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
       hideLoading();
       alert('Không thể vào ván: ' + err.message);
       state.currentGameId = null;
+      stopCaroPing();
     });
   };
 
@@ -441,6 +490,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
 
   function subscribeGame(gameId){
     if (state.unsubGame) state.unsubGame();
+    startCaroPing(gameId);
     var m = state.modules;
     var docRef = m.db.doc(state.db, COL_GAMES, gameId);
     state.unsubGame = m.db.onSnapshot(docRef, function(snap){
@@ -535,9 +585,8 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
         var isLast = lastMove && lastMove.r === r2 && lastMove.c === c2;
         var isWin = winningSet[cellKey(r2, c2)];
 
-        cell.className = 'cell';
-        if (isWin) cell.classList.add('win');
-        if (isLast && !isWin) cell.classList.add('last-move');
+        var targetClass = 'cell' + (isWin ? ' win' : (isLast ? ' last-move' : ''));
+        if (cell.className !== targetClass) cell.className = targetClass;
 
         var existing = cell.querySelector('.piece');
         if (val === 0){ if (existing) existing.remove(); }
@@ -546,11 +595,11 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
           var cls = val === 1 ? 'x' : 'o';
           var size = Math.round(cellSize * 0.75);
           if (existing){
-            existing.className = 'piece ' + cls;
-            existing.textContent = symbol;
-            existing.style.width = size + 'px';
-            existing.style.height = size + 'px';
-            existing.style.fontSize = Math.round(cellSize * 0.5) + 'px';
+            if (existing.className !== 'piece ' + cls) existing.className = 'piece ' + cls;
+            if (existing.textContent !== symbol) existing.textContent = symbol;
+            if (existing.style.width !== size + 'px') existing.style.width = size + 'px';
+            if (existing.style.height !== size + 'px') existing.style.height = size + 'px';
+            if (existing.style.fontSize !== Math.round(cellSize * 0.5) + 'px') existing.style.fontSize = Math.round(cellSize * 0.5) + 'px';
           } else {
             var p = document.createElement('div');
             p.className = 'piece ' + cls;
@@ -693,6 +742,7 @@ body{background:#0a1f1d;color:#fff;font-family:'Nunito',sans-serif;min-height:10
     state.lastViewKey = '';
   }
   function showLobby(){
+    stopCaroPing();
     $('gameView').style.display = 'none';
     $('lobbyView').style.display = 'block';
     state.currentGameId = null;

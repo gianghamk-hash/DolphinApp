@@ -34,7 +34,6 @@
 #crew-profile-banner .crew-card-level-name,
 #crew-profile-banner .crew-card-level-cap,
 #crew-profile-banner .crew-card-progress .section-line,
-#crew-profile-banner .crew-card-progress-stats,
 #crew-profile-banner #staff-next-reward { display:none!important; }
 #crew-profile-banner .crew-card-identity {
   position:static!important; display:block!important; min-height:0!important;
@@ -104,6 +103,21 @@
   position:static!important;margin:0!important;padding:0!important;
   background:transparent!important;border:0!important;box-shadow:none!important;
 }
+#crew-profile-banner .crew-card-progress-stats {
+  display:flex!important;position:absolute!important;z-index:5;
+  left:50%;top:82.5%;width:34%;
+  gap:5px!important;align-items:center;justify-content:space-between;
+  color:#e4faff!important;font-size:clamp(8px,1.15vw,11px)!important;
+  line-height:1.2!important;margin:0!important;
+}
+#crew-profile-banner #staff-xp-summary {
+  display:block!important;min-width:0;flex:1;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+#crew-profile-banner #crew-card-xp-percent {
+  display:block!important;flex:0 0 auto;
+  color:#fff0b5!important;font-size:inherit!important;
+}
 #crew-profile-banner #staff-xp-track {
   position:absolute!important;z-index:4;
   left:50.1%;top:74.0%;width:33.6%;height:7.4%!important;min-height:6px;
@@ -119,7 +133,7 @@
 }
 #crew-profile-banner .progress-foot { position:static!important;margin:0!important;padding:0!important; }
 #crew-profile-banner #staff-next-level {
-  position:absolute;z-index:3;left:51%;top:84%;width:34%;
+  position:absolute;z-index:3;left:51%;top:90%;width:34%;
   font-size:clamp(7px,1.15vw,12px)!important;color:#dcf9ff!important;
   overflow:hidden;white-space:nowrap;text-overflow:ellipsis;
 }

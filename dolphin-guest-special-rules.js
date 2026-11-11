@@ -31,7 +31,7 @@
   var before=plain.slice(Math.max(0,keyword-42),keyword);
   var after=plain.slice(keyword).slice(0,65);
   return /(?:khong\s+(?:dat|mua|lay|dung|can)|huy|cancel(?:led)?|bo\s+(?:mon|set))\s*(?:\d+\s*)?(?:(?:set|suat|phan|mon)\s*)?$/.test(before)||
-   /\b(?:huy\s+(?:dat|don|mon)?|cancel(?:led)?|khong\s+(?:dat|lay|dung))\b/.test(after);
+   /\b(?:huy|cancel(?:led)?|khong\s+(?:dat|lay|dung))\b/.test(after);
  }
  function qty(plain,key){
   var dish=key==='pakora'?'pakor(?:a|e)?|pakoda':

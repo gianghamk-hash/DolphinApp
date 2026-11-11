@@ -1,0 +1,28 @@
+name: Dolphin Guest F&B booking notes regression
+on:
+  pull_request:
+    paths:
+      - 'dolphin-guests.html'
+      - 'dolphin-guest-special-rules.js'
+      - 'scripts/dolphin-guest-special.test.cjs'
+      - '.github/workflows/dolphin-guest-special-tests.yml'
+      - 'service-worker.js'
+  push:
+    branches: [main]
+    paths:
+      - 'dolphin-guests.html'
+      - 'dolphin-guest-special-rules.js'
+      - 'scripts/dolphin-guest-special.test.cjs'
+      - '.github/workflows/dolphin-guest-special-tests.yml'
+jobs:
+  guest-special-fnb:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Validate booking-note parser syntax
+        run: node --check dolphin-guest-special-rules.js
+      - name: Verify Pakora, Coconut Welcome, Trà Ấn and special BKK display
+        run: node --test scripts/dolphin-guest-special.test.cjs

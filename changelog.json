@@ -1,38 +1,26 @@
 {
-  "version": "1.1.103",
-  "previousVersion": "1.1.102",
-  "commit": "6158440",
-  "previousCommit": "cb1320e",
-  "buildDate": "2026-11-11T00:50:59.915Z",
-  "summary": "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes",
+  "version": "1.1.104",
+  "previousVersion": "1.1.103",
+  "commit": "b84f9b9",
+  "previousCommit": "6158440",
+  "buildDate": "2026-11-11T01:08:08.367Z",
+  "summary": "refactor(guest): compact special-meal categories and remove duplicate booking note cards",
   "changes": {
-    "totalCommits": 327,
-    "filesChanged": 5,
+    "totalCommits": 328,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes"
+    "refactor(guest): compact special-meal categories and remove duplicate booking note cards"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/dolphin-guest-special-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-guest-special-rules.js",
-      "type": "update"
-    },
     {
       "file": "dolphin-guests.html",
       "type": "update"
     },
     {
       "file": "scripts/dolphin-guest-special.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
       "type": "update"
     }
   ]

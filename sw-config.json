@@ -1,5 +1,5 @@
 {
-  "version": "1.1.103",
+  "version": "1.1.104",
   "releaseDate": "2026-11-11",
-  "notes": "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes"
+  "notes": "refactor(guest): compact special-meal categories and remove duplicate booking note cards"
 }

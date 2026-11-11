@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.103",
+      "releaseDate": "2026-11-11T00:50:59.915Z",
+      "summary": "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes",
+      "details": [
+        "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes"
+      ]
+    },
+    {
       "version": "1.1.102",
       "releaseDate": "2026-11-10T07:48:08.172Z",
       "summary": "feat(arcade): adopt approved glossy 2D icons for all games",
@@ -390,14 +398,6 @@
       "summary": "fix: verified-only rankings and secure staff XP across outlets",
       "details": [
         "fix: verified-only rankings and secure staff XP across outlets"
-      ]
-    },
-    {
-      "version": "1.1.53",
-      "releaseDate": "2026-11-02T15:35:06.432Z",
-      "summary": "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview",
-      "details": [
-        "feat(landing): display equipped Staff ID cosmetics for all top performers; remove Manager overview"
       ]
     }
   ]

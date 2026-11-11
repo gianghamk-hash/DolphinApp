@@ -39,6 +39,8 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
     frame:$('crew-card-equipped-frame').textContent,
     size:getComputedStyle($('profile-avatar')).width,
     visual:getComputedStyle($('crew-profile-banner'),'::before').backgroundImage,
+    frameImg:(()=>{const im=document.querySelector('.crew-profile-frame-image');return {src:im?.getAttribute('src'),ready:im?.complete&&im?.naturalWidth===1200&&im?.naturalHeight===400,rect:im?.getBoundingClientRect().toJSON()}})(),
+    level:r('crew-card-level-number').toJSON(),staffid:r('employee-id').toJSON(),rankName:r('crew-card-rank-name').toJSON(),
     tilesColumns:getComputedStyle(document.querySelector('.crew-chibi-grid')).gridTemplateColumns.split(' ').length,
     equipmentVisible:getComputedStyle(document.querySelector('.crew-card-equipment')).display!=='none'};
   });
@@ -68,17 +70,33 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert(mobile.tilesColumns===2,'Compact phones show two columns of chibi tiles');
   assert.equal(mobile.equipmentVisible,false,'Dashboard hides duplicated cosmetic equipment controls');
   assert.equal(mobile.frame,'Silver');assert.equal(mobile.rank,'PLATINUM RANK');
-  assert.match(mobile.visual,/gradient/,'Card should preserve rich ocean ambient light');
+  assert.equal(mobile.visual,'none','Rendered frame must not be covered by an extra CSS-generated seascape');
+  const mapped=(s,label)=>{
+   assert(s.frameImg.ready,label+' uses the approved real 1200x400 WebP');
+   assert(Math.abs(s.card.height/s.card.width-1/3)<0.025,label+' keeps the illustration aspect ratio');
+   const pos=r=>({x:(r.x-s.card.x)/s.card.width,y:(r.y-s.card.y)/s.card.height,
+     centerX:(r.x+r.width/2-s.card.x)/s.card.width,centerY:(r.y+r.height/2-s.card.y)/s.card.height});
+   const avatar=pos(s.portrait),name=pos(s.name),level=pos(s.level),xp=pos(s.progress),id=pos(s.staffid),rank=pos(s.rankName);
+   assert(avatar.centerX>.11&&avatar.centerX<.19&&avatar.centerY>.40&&avatar.centerY<.60,label+' avatar inside pictured gold ring');
+   assert(name.x>.30&&name.x<.39&&name.y>.20&&name.y<.40,label+' live staff name inside illustration nameplate');
+   assert(level.centerX>.82&&level.centerX<.94&&level.centerY>.33&&level.centerY<.56,label+' live level in crown shield');
+   assert(id.centerX>.54&&id.centerX<.64&&id.y>.40&&id.y<.55,label+' staff ID in the card ID slot');
+   assert(rank.centerX>.33&&rank.centerX<.43&&rank.y>.70&&rank.y<.85,label+' live rank in bottom rank badge');
+   assert(xp.x>.47&&xp.x<.55&&xp.y>.68&&xp.y<.82,label+' XP progress track in illustrated XP bar');
+  };
+  mapped(mobile,'390px phone');
   assert(mobile.portrait.width>=60,'Compact hero avatar remains legible at 66px');
   await page.setViewportSize({width:320,height:700});
   const compact=await sample();
   assert(compact.width<=compact.viewport+2,'320px screen must not scroll horizontally');
   assert(compact.card.width<=compact.viewport,'320px card should fit within viewport');
+  mapped(compact,'320px phone');
   await page.setViewportSize({width:1040,height:900});
   const desktop=await sample();
   assert(desktop.width<=desktop.viewport+2,'Desktop should not overflow');
   assert(desktop.portrait.x<desktop.name.x,'Desktop portrait is next to the identity');
   assert(desktop.tilesColumns===4,'Desktop shows four columns of chibi tiles');
+  mapped(desktop,'Desktop');
   await page.emulateMedia({reducedMotion:'reduce'});
   const stopped=await page.evaluate(()=>getComputedStyle(document.querySelector('.crew-card-dial-track')).animationName);
   assert.equal(stopped,'none','Reduced Motion disables decorative orbit');

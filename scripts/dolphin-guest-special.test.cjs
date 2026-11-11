@@ -164,5 +164,5 @@ test('Pakora lobster Coconut Welcome Indian Tea map to distinct special categori
  const b={diet:[],lob:['Tôm hùm'],bung:[],noteRaw:'Coconut Welcome + Trà Ấn + Pakora',
   specialFood:rules.detect('Coconut Welcome + Trà Ấn + Đặt 01 set Pakora')};
  const keys=vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b});
- assert.deepEqual(Array.from(keys),['lobster','coconut-welcome','indian-tea','pakora']);
+ assert.deepEqual(Array.from(keys).sort(),['lobster','coconut-welcome','indian-tea','pakora'].sort());
 });

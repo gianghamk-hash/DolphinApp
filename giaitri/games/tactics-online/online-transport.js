@@ -21,7 +21,7 @@ function createTransport(E,db,options={}){
  const online=options.isOnline||(()=>!root.navigator||root.navigator.onLine!==false);
  const roomRef=id=>db.collection('mp_rooms').doc(id||roomId);
  const notify=(type,payload)=>{if(emit)emit(type,payload);};
- function network(){notify('network',{pending,lastServerAt,error:lastError,online:online()});}
+ function network(extra){notify('network',{pending,lastServerAt,error:lastError,online:online(),...(extra||{})});}
  function failure(err){lastError=String(err.message||err);network();notify('error',{type:'online',err});}
  function publishView(){
   if(!latest)return;
@@ -56,11 +56,12 @@ function createTransport(E,db,options={}){
   try{
    const stamp=options.serverTimestamp?options.serverTimestamp():root.firebase.firestore.FieldValue.serverTimestamp();
    await ref.update({lastSeen:stamp,online:true});
+   const readStarted=clock();
    const snap=await ref.get({source:'server'});
    if(gen!==generation)return;
    const received=clock(),server=snap.data()?.lastSeen;
    if(server&&typeof server.toMillis==='function'&&received-sent<5000)offset=server.toMillis()-(sent+received)/2;
-   lastServerAt=received;lastError='';network();
+   lastServerAt=received;lastError='';network({rttMs:Math.max(0,received-readStarted)});
   }catch(err){if(gen===generation)failure(err);}
   finally{if(gen===generation)beating=false;}
  }

@@ -19,7 +19,7 @@ test('Profile retains one Character Card, uses chibi tiles and removes Ocean Jou
  assert.doesNotMatch(html,/crew-ocean-journey|crew-journey-dialog|crew-journey-regions|quick-actions|crew-card-footer-action/);
  assert.match(html,/crew-profile-clean\.css\?v=clean-v2/);
  assert.match(html,/crew-2d-icons\.css\?v=bright-v2/);
- assert.match(html,/crew-chibi-dashboard\.css\?v=chibi-cards-v2/);
+ assert.match(html,/crew-chibi-dashboard\.css\?v=chibi-cards-v3/);
 });
 test('Approved colorful sprite atlases load as compact WebP with transparency',()=>{
  const css=read('crew-2d-icons.css');

@@ -93,20 +93,7 @@ body:has(.crew-chibi-heading) main{
 }
 .crew-chibi-tile:hover{transform:translateY(-3px);box-shadow:0 9px 24px #001c41b0}
 .crew-chibi-tile:focus-visible{outline:3px solid white;outline-offset:3px}
-.crew-chibi-art{
- width:100%;aspect-ratio:220/140;border-radius:14px 14px 8px 8px;flex-shrink:0;
- background-image:url('./assets/crew-chibi-function-art.svg');
- background-size:400% 200%;background-repeat:no-repeat;background-position:0 0;
-}
-.crew-chibi-tile[data-crew-tile="profile"] .crew-chibi-art{background-position:0% 0%}
-.crew-chibi-tile[data-crew-tile="daily"] .crew-chibi-art{background-position:33.333% 0%}
-.crew-chibi-tile[data-crew-tile="xp"] .crew-chibi-art{background-position:66.667% 0%}
-.crew-chibi-tile[data-crew-tile="achievements"] .crew-chibi-art{background-position:100% 0%}
-.crew-chibi-tile[data-crew-tile="work"] .crew-chibi-art{background-position:0% 100%}
-.crew-chibi-tile[data-crew-tile="revenue"] .crew-chibi-art{background-position:33.333% 100%}
-.crew-chibi-tile[data-crew-tile="ranking"] .crew-chibi-art{background-position:66.667% 100%}
-.crew-chibi-tile[data-crew-tile="rewards"] .crew-chibi-art{background-position:100% 100%}
-.crew-chibi-tile strong{
+.crew-chibi-tile[data-crew-tile="profile"] .crew-chibi-tile[data-crew-tile="daily"] .crew-chibi-tile[data-crew-tile="xp"] .crew-chibi-tile[data-crew-tile="achievements"] .crew-chibi-tile[data-crew-tile="work"] .crew-chibi-tile[data-crew-tile="revenue"] .crew-chibi-tile[data-crew-tile="ranking"] .crew-chibi-tile[data-crew-tile="rewards"] .crew-chibi-tile strong{
  display:block;padding:7px 3px 1px;margin-top:0;
  font-size:clamp(11px,1.8vw,14px);line-height:1.2;
  font-weight:900;letter-spacing:-.015em;text-shadow:0 1px 3px #00113d;
@@ -174,72 +161,30 @@ body:has(.crew-chibi-heading) #dolphinBackAction{display:none!important}
 }
 
 
-/* Visual correction — card artwork should read like illustrated feature cards,
-   not 8 miniature app icons squeezed into four columns. Layout driven by the
-   actual dashboard width, including desktop windows and embedded APK webviews. */
-.crew-chibi-grid{
- grid-template-columns:repeat(2,minmax(0,1fr));
- gap:clamp(12px,2.2vw,18px);
- margin:16px 0 20px;
+
+/* Chibi v3: each card is a directly embedded, illustrated WebP asset.
+ * CSS applies sizing and accessibility only. Never generate card artwork here. */
+.crew-chibi-grid{grid-template-columns:repeat(4,minmax(0,1fr));gap:clamp(9px,1.7vw,17px);margin:15px 0 21px}
+.crew-chibi-tile{display:block;position:relative;min-width:0;min-height:0;width:100%;padding:0;border:0;outline-offset:3px;border-radius:21px;overflow:visible;background:transparent;box-shadow:none;aspect-ratio:4/3;line-height:0}
+.crew-chibi-tile::before{display:none!important}
+.crew-chibi-tile:hover{transform:translateY(-3px);box-shadow:none}
+.crew-chibi-tile:active{transform:translateY(1px)}
+.crew-chibi-image{display:block;width:100%;height:auto;aspect-ratio:4/3;object-fit:contain;border-radius:20px;filter:drop-shadow(0 7px 7px rgba(0,12,40,.35));transition:filter .18s ease}
+.crew-chibi-tile:hover .crew-chibi-image{filter:drop-shadow(0 10px 10px rgba(0,12,40,.45))}
+.crew-chibi-tile:focus-visible{outline:3px solid #ffe4a2}
+.crew-chibi-tile strong,.crew-chibi-tile small{
+ position:absolute!important;overflow:hidden!important;width:1px!important;height:1px!important;min-height:0!important;
+ padding:0!important;margin:-1px!important;border:0!important;clip:rect(0,0,0,0)!important;
+ clip-path:inset(50%)!important;white-space:nowrap!important;background:none!important
 }
-.crew-chibi-tile{
- padding:7px;
- border:2px solid #f2d798;
- border-radius:22px;
- background:linear-gradient(150deg,#fff5d8 0%,#acdff1 100%);
- box-shadow:0 8px 0 #082c53,0 15px 24px rgba(0,12,36,.35),inset 0 1px 1px #fff;
- transition:transform .18s ease,box-shadow .18s ease;
+.crew-chibi-pill{position:absolute;z-index:4;top:3%;right:4%;padding:6px 8px;font-size:12px;border:2px solid #fff4be;border-radius:99px;background:#dc3a27;color:#fff;box-shadow:0 2px 6px #123a6377;pointer-events:none;line-height:1.1}
+@media(min-width:900px){
+ body:has(.crew-chibi-heading) main{width:min(100%,1180px);padding-left:19px;padding-right:19px}
+ .crew-chibi-tile{border-radius:25px}.crew-chibi-image{border-radius:24px}
 }
-.crew-chibi-tile:hover{
- transform:translateY(-3px);
- box-shadow:0 11px 0 #082c53,0 20px 28px rgba(0,12,36,.38);
+@media(max-width:899px){
+ .crew-chibi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+ .crew-chibi-tile{border-radius:16px}.crew-chibi-image{border-radius:15px}
 }
-.crew-chibi-art{
- width:100%;
- aspect-ratio:220 / 140;
- border-radius:16px;
- background-color:#9bd8ed;
- background-size:400% 200%;
- background-repeat:no-repeat;
- image-rendering:auto;
-}
-.crew-chibi-tile:before{display:none}
-.crew-chibi-tile strong{
- width:100%;margin:5px 0 0;
- padding:11px 6px 2px;
- color:#fff7df;
- background:linear-gradient(180deg,#164e7d,#082c54);
- border-radius:12px 12px 0 0;
- font-size:clamp(13px,2.4vw,18px);
- line-height:1.28;
- letter-spacing:0;
- text-shadow:0 1px 3px rgba(0,0,0,.5);
- min-height:0;
-}
-.crew-chibi-tile small{
- display:block;width:100%;margin:0;
- padding:1px 5px 10px;
- border-radius:0 0 12px 12px;
- background:#082c54;
- color:#d0ebfb;
- font-size:clamp(10px,1.7vw,12px);
- line-height:1.3;
-}
-.crew-chibi-pill{
- top:13px;right:13px;padding:5px 9px;
- border:2px solid #fff8d5;
- box-shadow:0 3px 8px #001e4680;
- font-size:11px;
-}
-@media(max-width:620px){
- .crew-chibi-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:11px}
- .crew-chibi-tile{padding:5px;border-radius:17px}
- .crew-chibi-art{border-radius:12px;aspect-ratio:220 / 140}
- .crew-chibi-tile strong{font-size:clamp(12px,3.5vw,16px);padding:9px 3px 2px;min-height:0}
- .crew-chibi-tile small{font-size:10px;padding:1px 3px 8px}
-}
-@media(max-width:355px){
- .crew-chibi-grid{gap:8px}
- .crew-chibi-tile strong{font-size:11px}
- .crew-chibi-tile small{font-size:9px}
-}
+@media(max-width:355px){.crew-chibi-grid{gap:7px}.crew-chibi-pill{font-size:10px;padding:4px 6px}}
+@media(prefers-reduced-motion:reduce){.crew-chibi-tile,.crew-chibi-image{transition:none!important;transform:none!important}}

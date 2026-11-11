@@ -82,7 +82,7 @@ test('eight visual card controls, daily modal and official existing actions exis
  assert.match(html,/data-crew-tile="rewards" data-open-dialog="rewards-dialog"/);
  assert.match(html,/data-crew-tile="ranking" href="\.\/ranking\/index\.html#level"/);
  assert.match(html,/crew-chibi-dashboard\.js\?v=chibi-v1/);
- assert.match(html,/crew-chibi-dashboard\.css\?v=chibi-cards-v2/);
+ assert.match(html,/crew-chibi-dashboard\.css\?v=chibi-cards-v3/);
 });
 test('the display illustration contains no literal personal identity or mockup revenue/XP',()=>{
  const js=source;
@@ -95,8 +95,11 @@ test('the display illustration contains no literal personal identity or mockup r
  }
  assert.match(svg,/DOLPHIN/);
  assert.match(css,/assets\/dolphin-chibi-ship\.svg/);
- assert.match(css,/assets\/crew-chibi-function-art\.svg/);
- assert.match(worker,/crew-chibi-dashboard\.js/);
- assert.match(worker,/assets\/crew-chibi-function-art\.svg/);
+ assert.doesNotMatch(css,/crew-chibi-function-art\\.svg/);
+ assert.match(worker,/crew-chibi-dashboard\\.js/);
+ for(const name of ['profile','daily','xp','achievements','work','revenue','ranking','rewards']){
+  assert(html.includes('class="crew-chibi-image" src="./assets/crew-card-'+name+'.webp"'));
+  assert(worker.includes('assets/crew-card-'+name+'.webp'));
+ }
  assert.doesNotMatch(js,/httpsCallable|staffRecordLiveAction|staffAdjustOwnTestXP|firebase\.|revenue\s*=/i);
 });

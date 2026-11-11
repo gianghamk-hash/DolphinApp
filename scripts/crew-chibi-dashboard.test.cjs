@@ -82,7 +82,7 @@ test('eight visual card controls, daily modal and official existing actions exis
  assert.match(html,/data-crew-tile="rewards" data-open-dialog="rewards-dialog"/);
  assert.match(html,/data-crew-tile="ranking" href="\.\/ranking\/index\.html#level"/);
  assert.match(html,/crew-chibi-dashboard\.js\?v=chibi-v1/);
- assert.match(html,/crew-chibi-dashboard\.css\?v=chibi-v1/);
+ assert.match(html,/crew-chibi-dashboard\.css\?v=chibi-cards-v2/);
 });
 test('the display illustration contains no literal personal identity or mockup revenue/XP',()=>{
  const js=source;

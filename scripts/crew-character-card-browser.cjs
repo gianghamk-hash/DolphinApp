@@ -77,6 +77,7 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
    const pos=r=>({x:(r.x-s.card.x)/s.card.width,y:(r.y-s.card.y)/s.card.height,
      centerX:(r.x+r.width/2-s.card.x)/s.card.width,centerY:(r.y+r.height/2-s.card.y)/s.card.height});
    const avatar=pos(s.portrait),name=pos(s.name),level=pos(s.level),xp=pos(s.progress),id=pos(s.staffid),rank=pos(s.rankName);
+   console.log('VISUAL COORD',label,JSON.stringify({card:s.card,avatar,name,level,xp,id,rank,staffid:s.staffid}));
    assert(avatar.centerX>.11&&avatar.centerX<.19&&avatar.centerY>.40&&avatar.centerY<.60,label+' avatar inside pictured gold ring');
    assert(name.x>.30&&name.x<.39&&name.y>.20&&name.y<.40,label+' live staff name inside illustration nameplate');
    assert(level.centerX>.82&&level.centerX<.94&&level.centerY>.33&&level.centerY<.56,label+' live level in crown shield');

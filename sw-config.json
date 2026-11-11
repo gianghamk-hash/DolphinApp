@@ -1,5 +1,5 @@
 {
-  "version": "1.1.108",
+  "version": "1.1.109",
   "releaseDate": "2026-11-11",
-  "notes": "feat(profile): approved WebP cruise banner and staff identity artwork (#254)"
+  "notes": "fix(profile): align live staff identity, level and XP inside approved WebP card on phones"
 }

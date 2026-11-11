@@ -17,8 +17,8 @@
   background:#071d39!important; border:0!important; border-radius:0!important;
   box-shadow:none!important;
 }
-#crew-profile-banner>.crew-profile-frame-image {
-  position:absolute; z-index:0; inset:0;
+#crew-profile-banner.crew-character-card>img.crew-profile-frame-image {
+  position:absolute!important; z-index:1!important; inset:0;
   display:block; width:100%; height:100%; object-fit:fill;
   pointer-events:none; user-select:none;
 }
@@ -141,7 +141,7 @@
     padding:0 0 12px!important;background:#061b3b!important;
     border:1px solid #549eda!important;border-radius:15px!important;
   }
-  #crew-profile-banner>.crew-profile-frame-image{
+  #crew-profile-banner.crew-character-card>img.crew-profile-frame-image{
     position:relative!important;inset:auto!important;height:auto!important;
     aspect-ratio:3/1;object-fit:contain;
   }

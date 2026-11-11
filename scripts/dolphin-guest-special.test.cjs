@@ -11,16 +11,15 @@ function segment(start,end){
 }
 function originalParser(){
  const source=segment('function parse(rows){','function scopeOk(b){');
+ const dietary=segment('var BUNG=/bungalow/i,LOB=','/* ═══════════════════════════════════════════════════════════');
  const context={
-  window:{DolphinGuestSpecialRules:rules},BUNG:/bungalow/i,LOB:/tôm hùm|lobster/i,
-  DIET:/\bveg\b|chay|halal|jain|indian food/i,
+  window:{DolphinGuestSpecialRules:rules},
   ROOMS:['201','202','203','204'],
   seg:s=>String(s||'').split(/\n/).map(s=>s.replace(/^\s*[-–]\s*/,'').trim()).filter(Boolean),
-  dietType:()=> 'Veg',
   detectLoungeTicket:()=>null,detectShowSlots:()=>[],
   normalizeTables:s=>String(s||''),tables:()=>[],areaName:s=>s,
  };
- return rows=>vm.runInNewContext(source+';parse(rows)',{...context,rows});
+ return rows=>vm.runInNewContext(dietary+source+';parse(rows)',{...context,rows});
 }
 const pakoraNote=[
  '- Đặt 02 bungalow (1tr8) đã thanh toán',
@@ -92,45 +91,78 @@ test('future explicit add-on dish is included, while room, show and Veg packages
  assert.equal(result[0].payment,'paid');
  assert.equal(rules.detect('Đặt thêm 02 set Veg 1').length,0);
 });
-test('special tab and booking cards expose full source notes without mutating orders or guest data',()=>{
- const source=segment('function tagHtml(b){','function getPriority(b){');
+test('overview cards stay compact; F&B categories only render in special tab with one source panel',()=>{
+ const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
  const context={
-  esc:s=>String(s??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'),
+  esc:value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'),
   slotIcon:()=>'',bungTxt:()=>'',tour:'am'
  };
- const b={diet:[],lob:[],bung:[],specialFood:rules.detect('Đặt 01 set pakora cho 04 khách (200k) đã thanh toán')};
- const htmlTags=vm.runInNewContext(source+';tagHtml(b)',{...context,b});
- assert.match(htmlTags,/class="tag f"/);
- assert.match(htmlTags,/Pakora/);
- assert.match(htmlTags,/cho 4 khách/);
- assert.match(htmlTags,/ĐÃ THANH TOÁN/);
- assert.match(htmlTags,/200k/);
- assert.match(htmlTags,/01 set pakora cho 04 khách/);
- const view=segment('function viewSpecial(L){','function pushKey(b,i,j){');
- assert.match(view,/specialFood/);
- assert.match(view,/Coconut Welcome/);
- assert.match(view,/Trà Ấn/);
+ const note='Đặt 01 set pakora cho 04 khách (200k) đã thanh toán';
+ const b={diet:[{t:'Veg',s:'02 set veg'},{t:'Veg',s:'We are pure vegetarian'}],
+  lob:[],bung:[],showSlots:[],specialFood:rules.detect(note),noteRaw:'02 set veg\n'+note};
+ const overview=vm.runInNewContext(helpers+';tagHtml(b)',{...context,b});
+ assert.equal(overview,'','Overview must not repeat 3+ dietary/add-on content cards');
+ const compact=vm.runInNewContext(helpers+';tagHtml(b,true)',{...context,b});
+ assert.match(compact,/class="special-compact"/);
+ assert.match(compact,/Veg · Pakora/);
+ assert.equal((compact.match(/class="special-compact"/g)||[]).length,1);
+ assert.equal((compact.match(/<details/g)||[]).length,1);
+ assert.match(compact,/Xem ghi chú gốc/);
+ assert.match(compact,/200k/);
+ assert.match(compact,/đã thanh toán/);
+ assert.doesNotMatch(compact,/class="tag f"/);
+ const injected=vm.runInNewContext(helpers+';tagHtml(b,true)',{...context,b:{...b,noteRaw:'<script>alert(1)</script>'}});
+ assert.doesNotMatch(injected,/<script>/);
+ const cardSource=segment('function card(b,showSpecial){','function statBox(');
+ assert.match(cardSource,/tagHtml\(b,!!showSpecial\)/);
  assert.match(html,/b\.specialFood = window\.DolphinGuestSpecialRules\.detect\(b\.noteRaw\)/);
- assert.match(html,/dolphin-guest-special-rules\.js\?v=fnb-notes-v1/);
- const tag=vm.runInNewContext(source+';tagHtml(b)',{...context,b:{
-  diet:[],lob:[],bung:[],specialFood:rules.detect('Đặt 01 set Pakora <script>alert(1)</script>')
- }});
- assert.doesNotMatch(tag,/<script>/);
 });
-
-
-test('special BKK tab includes a booking that only has Coconut Welcome and Trà Ấn',()=>{
- const view=segment('function viewSpecial(L){','function pushKey(b,i,j){');
- const booking={code:'DP-COCONUT-TEA',diet:[],lob:[],bung:[],
+test('all categories including Chay Âu and mixed Non-veg are recognized and deduplicated',()=>{
+ const categories=[
+  ['Veg','pure vegetarian'],['Non-veg','non-veg'],['Jain','Jain'],
+  ['Halal','Halal'],['Chay Việt','Chay Việt'],
+  ['Chay Âu','chay Âu'],['Chay Âu','Western vegetarian'],
+  ['Indian Food','Indian food']
+ ];
+ for(const [wanted,note] of categories){
+  const rows=[['1','DP101','Agent','Guest','2','India','A1',note,'']];
+  const booking=originalParser()(rows)[0];
+  assert(booking.diet.some(x=>x.t===wanted),note+' expected '+wanted);
+ }
+ const rows=[['1','DP102','Agent','Guest','2','India','A1',
+  '02 set veg 02 phụ thu 260k trên tàu (pure veg)\nwe are pure vegetarian, please provide good vegetarian set menu','']];
+ const one=originalParser()(rows)[0];
+ assert.equal(one.diet.filter(x=>x.t==='Veg').length,1,'two notes collapse to one Veg category');
+ const mix=originalParser()([['1','DP103','Agent','Guest','2','India','A1','Non-veg + Jain + Halal','']])[0];
+ assert.deepEqual(Array.from(mix.diet,x=>x.t).sort(),['Halal','Jain','Non-veg']);
+});
+test('special BKK tab filters only existing categories and counts each booking once',()=>{
+ const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
+ const view=segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
+ const b1={code:'DP-COCONUT-TEA',diet:[],lob:[],bung:[],noteRaw:'Coconut Welcome + Trà Ấn',
   specialFood:rules.detect('Coconut Welcome + trà Ấn')};
- const output=vm.runInNewContext(view+';viewSpecial([booking])',{
-  booking,statBox:(icon,count,label)=>'<span>'+label+': '+count+'</span>',
-  card:b=>'<article>'+b.code+'</article>'
- });
- assert.match(output,/DP-COCONUT-TEA/);
- assert.match(output,/Coconut Welcome: 1/);
- assert.match(output,/Trà Ấn: 1/);
- assert.doesNotMatch(output,/Không có booking nào có yêu cầu/);
- const priority=segment('function getPriority(b){','function card(b){');
- assert.equal(vm.runInNewContext(priority+';getPriority(booking)',{booking}),'pri-food');
+ const b2={code:'DP-VEG',diet:[{t:'Veg',s:'Veg'},{t:'Veg',s:'pure veg'}],lob:[],bung:[],noteRaw:'Veg',
+  specialFood:[]};
+ const context={b1,b2,esc:x=>String(x??''),card:b=>'<article>'+b.code+'</article>'};
+ const all=vm.runInNewContext(helpers+view+';viewSpecial([b1,b2])',context);
+ assert.match(all,/DP-COCONUT-TEA/);
+ assert.match(all,/DP-VEG/);
+ assert.match(all,/Coconut Welcome · 1/);
+ assert.match(all,/Trà Ấn \(Indian Tea\) · 1/);
+ assert.match(all,/Veg · 1/);
+ assert.match(all,/2 BKK có yêu cầu/);
+ assert.doesNotMatch(all,/class="st"/,'no oversized counters for each category');
+ const onlyTea=vm.runInNewContext(helpers+view+";specialCategoryFilter='indian-tea';viewSpecial([b1,b2])",context);
+ assert.match(onlyTea,/DP-COCONUT-TEA/);
+ assert.doesNotMatch(onlyTea,/DP-VEG/);
+ assert.match(onlyTea,/aria-pressed="true">Trà Ấn/);
+ const priority=segment('function getPriority(b){','function card(b,showSpecial){');
+ assert.equal(vm.runInNewContext(priority+';getPriority(b1)',{b1}),'pri-food');
+});
+test('Pakora lobster Coconut Welcome Indian Tea map to distinct special categories',()=>{
+ const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
+ const b={diet:[],lob:['Tôm hùm'],bung:[],noteRaw:'Coconut Welcome + Trà Ấn + Pakora',
+  specialFood:rules.detect('Coconut Welcome + Trà Ấn + Đặt 01 set Pakora')};
+ const keys=vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b});
+ assert.deepEqual(Array.from(keys),['lobster','coconut-welcome','indian-tea','pakora']);
 });

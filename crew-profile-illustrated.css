@@ -94,7 +94,7 @@
  color:#fff3c8!important;text-align:center!important;
  white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
 }
-#crew-profile-banner #employee-id{
+#crew-profile-banner #profile-title[hidden]{display:none!important}\n#crew-profile-banner #employee-id{
  position:absolute!important;z-index:3;left:52.2%!important;top:46%!important;
  width:13.6%!important;height:7.8%;
  margin:0!important;padding:0!important;

@@ -81,6 +81,11 @@ async function legacyScenario(players,rtt){
   const entry=await peers[i].mp.joinRoom(room.roomId,'sprint3-transport',{name:'P'+i});
   assert.equal(entry.side,'p'+(i+1));
  }
+ // Capture each individual ACK sample, not only each client's rolling P95.
+ const ackSamples=[];
+ for(const peer of peers.slice(1))peer.mp.onNetwork(stats=>{
+  if(Number.isFinite(stats.ackMs)&&stats.failedWrites===0)ackSamples.push(stats.ackMs);
+ });
  const sends=[];
  for(let i=1;i<players;i++)for(let n=0;n<SAMPLE_COUNT;n++)
   sends.push(peers[i].mp.sendInputStrict({type:'sprint3-test',nonce:n}));
@@ -109,9 +114,9 @@ async function legacyScenario(players,rtt){
  assert.equal(received.filter(p=>p.from===guest.net.id&&p.nonce==='reconnected').length,1);
  assert.equal(received.filter(p=>p.from===guest.net.id).length,SAMPLE_COUNT+1);
  assert.equal(store.snap('mp_rooms/'+room.roomId).data().hostId,original.hostId);
- const acks=peers.slice(1).map(p=>p.mp.getNetworkStats().ackP95Ms).filter(Number.isFinite);
  const results={mode:'legacy',players,injectedRttMs:rtt,commands:received.length,
-   ...summarize(acks),reconnected:true,duplicates:0};
+   ...summarize(ackSamples),reconnected:true,duplicates:0};
+ assert.ok(ackSamples.length>=SAMPLE_COUNT*(players-1),'capture every synthetic ACK');
  await Promise.all(peers.slice(1).map(p=>p.mp.leaveRoom()));
  await host.mp.leaveRoom();
  return results;

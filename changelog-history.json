@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.113",
+      "releaseDate": "2026-11-12T02:00:44.220Z",
+      "summary": "fix(profile): show avatar FX above illustrated Crew card (#258)",
+      "details": [
+        "fix(profile): show avatar FX above illustrated Crew card (#258)"
+      ]
+    },
+    {
       "version": "1.1.112",
       "releaseDate": "2026-11-12T00:57:45.493Z",
       "summary": "fix(guests): add VISA to Premium Lounge payment selector (#257)",
@@ -390,14 +398,6 @@
       "summary": "fix(staff): restore repairName API for mandatory iPhone name change",
       "details": [
         "fix(staff): restore repairName API for mandatory iPhone name change"
-      ]
-    },
-    {
-      "version": "1.1.61",
-      "releaseDate": "2026-11-03T05:10:51.006Z",
-      "summary": "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID",
-      "details": [
-        "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID"
       ]
     }
   ]

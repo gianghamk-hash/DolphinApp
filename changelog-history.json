@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.112",
+      "releaseDate": "2026-11-12T00:57:45.493Z",
+      "summary": "fix(guests): add VISA to Premium Lounge payment selector (#257)",
+      "details": [
+        "fix(guests): add VISA to Premium Lounge payment selector (#257)"
+      ]
+    },
+    {
       "version": "1.1.111",
       "releaseDate": "2026-11-11T16:32:00.727Z",
       "summary": "perf(games): smoother online sync + live Firebase ping HUD (#256)",
@@ -390,14 +398,6 @@
       "summary": "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID",
       "details": [
         "fix(ranking): attribute Lounge Bungalow Show sales by verified Staff ID"
-      ]
-    },
-    {
-      "version": "1.1.60",
-      "releaseDate": "2026-11-03T04:34:08.163Z",
-      "summary": "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID",
-      "details": [
-        "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID"
       ]
     }
   ]

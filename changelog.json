@@ -1,26 +1,42 @@
 {
-  "version": "1.1.112",
-  "previousVersion": "1.1.111",
-  "commit": "e2dc99d",
-  "previousCommit": "47fc5d0",
-  "buildDate": "2026-11-12T00:57:45.493Z",
-  "summary": "fix(guests): add VISA to Premium Lounge payment selector (#257)",
+  "version": "1.1.113",
+  "previousVersion": "1.1.112",
+  "commit": "b2a595c",
+  "previousCommit": "e2dc99d",
+  "buildDate": "2026-11-12T02:00:44.220Z",
+  "summary": "fix(profile): show avatar FX above illustrated Crew card (#258)",
   "changes": {
-    "totalCommits": 334,
-    "filesChanged": 2,
+    "totalCommits": 335,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(guests): add VISA to Premium Lounge payment selector (#257)"
+    "fix(profile): show avatar FX above illustrated Crew card (#258)"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-guests.html",
+      "file": "crew-profile-illustrated.css",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-guest-special.test.cjs",
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-character-card-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-character-card.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-profile-clean.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

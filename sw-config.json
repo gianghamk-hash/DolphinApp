@@ -1,5 +1,5 @@
 {
-  "version": "1.1.112",
+  "version": "1.1.113",
   "releaseDate": "2026-11-12",
-  "notes": "fix(guests): add VISA to Premium Lounge payment selector (#257)"
+  "notes": "fix(profile): show avatar FX above illustrated Crew card (#258)"
 }

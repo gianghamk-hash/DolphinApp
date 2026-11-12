@@ -179,3 +179,32 @@ test('Sprint 1: write failures do not deadlock later inputs and ACK diagnostics 
   assert.equal(h.mp.getNetworkStats().ackMs,null);
   assert.equal(h.mp.getNetworkStats().pendingInputs,0);
 });
+
+test('Sprint 1: input queue is bounded under a hung network and room leave cancels queued commands',async()=>{
+  const h=harness({holdInputs:true});
+  await h.mp.createRoom('snake-coop',{name:'Guest'});
+  const errors=[];h.mp.onError(e=>errors.push(e.type));
+  const sends=Array.from({length:33},(_,i)=>h.mp.sendInput({dir:i%2?'up':'left'}));
+  await new Promise(resolve=>setImmediate(resolve));
+  assert.equal(h.mp.getNetworkStats().pendingInputs,32);
+  assert.equal(h.pendingInputs.length,1,'one active write, not 32 simultaneous writes');
+  assert.deepEqual(errors,['input_backpressure']);
+  await h.mp.leaveRoom();
+  h.releaseInput();
+  await Promise.all(sends);
+  assert.equal(h.mp.getRoomId(),null);
+  assert.equal(h.mp.getNetworkStats().pendingInputs,0);
+});
+test('Sprint 1: leaving a room settles unsent normal states without spilling into another room',async()=>{
+  const h=harness({holdStates:true});
+  await h.mp.createRoom('snake-coop',{name:'Host'});
+  h.advance(200);
+  const first=h.mp.sendState({tick:1});
+  h.advance(200);
+  const queued=h.mp.sendState({tick:2});
+  assert.equal(h.writes.filter(w=>w.path.endsWith('/data/state')).length,1);
+  await h.mp.leaveRoom();
+  await queued;
+  h.releaseState();await first;
+  assert.equal(h.writes.filter(w=>w.path.endsWith('/data/state')).length,1);
+});

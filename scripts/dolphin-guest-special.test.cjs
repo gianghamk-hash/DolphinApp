@@ -166,3 +166,11 @@ test('Pakora lobster Coconut Welcome Indian Tea map to distinct special categori
  const keys=vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b});
  assert.deepEqual(Array.from(keys).sort(),['lobster','coconut-welcome','indian-tea','pakora'].sort());
 });
+
+test('Premium Lounge guest transfer offers VISA and preserves all existing payments',()=>{
+ const block=segment('<select id="lgPayment">','</select>');
+ const options=Array.from(block.matchAll(/<option value="([^"]*)">/g),m=>m[1]);
+ assert.deepEqual(options,['','TA_PAID','TA_UNPAID','TM','CK','VISA','FOC']);
+ assert.match(html,/paymentMethod:payment/,'Selected payment is sent unchanged to Lounge');
+ assert.match(html,/var table=\$\('lgTable'\)\.value,pax=Number\(\$\('lgPax'\)\.value\),payment=\$\('lgPayment'\)\.value/);
+});

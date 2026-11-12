@@ -12,7 +12,7 @@ assert.ok(host&&/^(127\.0\.0\.1|localhost):\d+$/.test(host),'A local FIRESTORE_E
 const [emulatorHost,emulatorPort]=host.split(':');
 const base=process.env.TFT_BASE_URL||'http://127.0.0.1:8765';
 assert.ok(/^http:\/\/(127\.0\.0\.1|localhost):\d+$/.test(base),'Use a local HTTP server');
-const game=base+'/giaitri/games/tactics-online/index.html';
+const game=base+'/giaitri/games/tactics-online/index.html'+(process.env.TFT_FPS_BENCH==='1'?'?benchfps=1':'');
 const runId=Date.now().toString(36),errors=[];
 async function main(){
  const browser=await chromium.launch({headless:true,executablePath:process.env.TFT_CHROMIUM_PATH||undefined,args:['--no-sandbox','--enable-unsafe-swiftshader']});
@@ -52,6 +52,18 @@ async function main(){
   await pages[0].waitForFunction(()=>document.getElementById('lobbyStatus').textContent.startsWith('4/4'));
   await pages[0].evaluate(()=>window.startRoom());
   await Promise.all(pages.map(p=>p.locator('#game:not(.hidden)').waitFor()));
+  if(process.env.TFT_FPS_BENCH==='1'){
+   await pages[0].waitForTimeout(5000);
+   const browserResults=await Promise.all(pages.map(p=>p.evaluate(()=>
+      window.DolphinRenderMetrics?.report('tft-render')||null)));
+   assert.ok(browserResults.every(r=>r?.frames>10&&r?.fps>0),
+      'All four actual browser contexts should collect draw callbacks');
+   console.log('SPRINT3_BROWSER_FPS_JSON '+JSON.stringify({
+     kind:'FIRESTORE_EMULATOR_BROWSER_RENDER_FPS',players:4,
+     note:'FPS measures WebGL render callback cadence, not GPU presentation or production ping',
+     browserResults
+   }));
+  }
   const read=p=>p.evaluate(async()=> (await db.collection('mp_rooms').doc(DolphinMP.getRoomId()).collection('data').doc('state').get({source:'server'})).data());
   const before=await read(pages[1]),started=Date.now();
   const buys=await Promise.all(pages.map(p=>p.evaluate(()=>window.send({type:'BUY',index:0}))));assert.ok(buys.every(Boolean));

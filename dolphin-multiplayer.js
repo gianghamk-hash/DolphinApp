@@ -20,6 +20,9 @@ const DEVICE_KEY = 'dolphin_device_id';
 const HEARTBEAT_MS = 10000;
 const STALE_MS = 35000;
 const MAX_ATTEMPTS = 10;
+const INPUT_HISTORY_LIMIT = 16;
+const INPUT_SEEN_LIMIT = 64;
+const ACK_SAMPLE_LIMIT = 24;
 
 function getDB(){
   if (window.db) return window.db;
@@ -76,7 +79,53 @@ let _adapterCleanup = null;
 let _adapterPlayerId = null;
 const _adapters = Object.create(null);
 let _hbTimer = null;
+let _hbPendingEpoch = null;
 let _unsubs = [];
+// Queues and diagnostics are scoped to the current room, never to Staff IDs.
+let _transferEpoch = 0;
+const _inputSession = Math.random().toString(36).slice(2);
+let _inputSequence = 0, _inputTail = Promise.resolve(), _inputHistory = [];
+let _pendingInputs = 0, _failedWrites = 0, _lastAckMs = null, _ackSamples = [];
+let _stateQueue = {jobs:[],draining:false,epoch:0};
+let _lastSendStateTime = 0;
+function resetTransfers(){
+  _transferEpoch++;
+  _inputTail=Promise.resolve();
+  _inputHistory=[];
+  _inputSequence=0;
+  _pendingInputs=0;
+  _failedWrites=0;
+  _lastAckMs=null;
+  _ackSamples=[];
+  const old=_stateQueue;
+  _stateQueue={jobs:[],draining:false,epoch:_transferEpoch};
+  for(const job of old.jobs)for(const waiter of job.waiters)waiter.reject(Error('Đã rời phòng'));
+  old.jobs.length=0;
+  _lastSendStateTime=0;
+}
+function getNetworkStats(){
+  const sorted=_ackSamples.slice().sort((a,b)=>a-b);
+  const jitter=_ackSamples.length>1
+    ? _ackSamples.slice(1).reduce((sum,ms,i)=>sum+Math.abs(ms-_ackSamples[i]),0)/(_ackSamples.length-1):0;
+  return {...getPing(),ackMs:_lastAckMs,
+    ackP95Ms:sorted.length?sorted[Math.ceil(sorted.length*.95)-1]:null,
+    jitterMs:Math.round(jitter),failedWrites:_failedWrites,
+    pendingInputs:_pendingInputs,pendingStates:_stateQueue.jobs.length};
+}
+function recordAck(ms,room,epoch){
+  if(room!==_roomId||epoch!==_transferEpoch)return;
+  _lastAckMs=Math.max(0,Math.round(ms));
+  _ackSamples.push(_lastAckMs);
+  if(_ackSamples.length>ACK_SAMPLE_LIMIT)_ackSamples.shift();
+  notePing(ms,room);
+  fire('network',getNetworkStats());
+}
+function recordFailure(room,epoch,type,err){
+  if(room!==_roomId||epoch!==_transferEpoch)return;
+  _failedWrites++;
+  fire('error',{type,err});
+  fire('network',getNetworkStats());
+}
 
 const _handlers = { room: [], players: [], state: [], input: [], error: [], network: [] };
 
@@ -152,10 +201,13 @@ function startHeartbeat(){
   const beat = () => {
     if (!_roomId) return;
     const db = getDB(); if (!db) return;
-    const room = _roomId, started = Date.now();
+    const room = _roomId, epoch = _transferEpoch, started = Date.now();
+    if (_hbPendingEpoch === epoch) return;
+    _hbPendingEpoch = epoch;
     db.collection(COL).doc(room).collection('players').doc(_deviceId)
       .update({ lastSeen: started })
-      .then(() => notePing(Date.now() - started, room)).catch(() => {});
+      .then(() => recordAck(Date.now()-started,room,epoch)).catch(()=>{})
+      .finally(()=>{if(_hbPendingEpoch===epoch)_hbPendingEpoch=null;});
   };
   startPing();
   beat();
@@ -195,14 +247,32 @@ function subscribe(){
       fire('state', snap.data());
     }, err => {}));
 
-  // Other player's inputs
+  // Existing inputs/{deviceId} document is unchanged. A bounded optional
+  // log permits a lagged listener to process rapid distinct commands once.
+  // Legacy clients without a log still work with their original root payload.
+  const seen = new Map();
+  let initialInputs = true;
   _unsubs.push(db.collection(COL).doc(_roomId).collection('inputs').onSnapshot(snap => {
     snap.docChanges().forEach(ch => {
-      if (ch.type === 'removed') return;
-      if (ch.doc.id === _deviceId) return;
-      fire('input', { playerId: ch.doc.id, ...ch.doc.data() });
+      if(ch.type==='removed'||ch.doc.id===_deviceId)return;
+      const data=ch.doc.data();
+      const log=Array.isArray(data.__mpInputLog)?data.__mpInputLog:null;
+      if(!log||!log.length){fire('input',{playerId:ch.doc.id,...data});return;}
+      let known=seen.get(ch.doc.id);
+      if(!known){known=new Set();seen.set(ch.doc.id,known);}
+      const valid=log.filter(item=>item&&typeof item.id==='string'&&item.data&&typeof item.data==='object');
+      valid.forEach((entry,index)=>{
+        if(known.has(entry.id))return;
+        known.add(entry.id);
+        // Reconnect mirrors old single-doc behaviour: only replay the newest
+        // existing command, not an entire historical chat/move burst.
+        if(!initialInputs||index===valid.length-1)
+          fire('input',{playerId:ch.doc.id,...entry.data});
+      });
+      while(known.size>INPUT_SEEN_LIMIT)known.delete(known.values().next().value);
     });
-  }, err => {}));
+    initialInputs=false;
+  },err=>fire('error',{type:'input',err})));
 }
 
 // ═══ OPTIONAL GAME TRANSPORT ADAPTERS ═══
@@ -234,13 +304,14 @@ async function connectAdapter(game, code, opts){
   _isHost = !!result.isHost;
   _activeAdapter = adapter;
   _adapterPlayerId = result.playerId || result.uid || null;
+  resetTransfers();
   startPing();
   try {
     const cleanup = adapter.subscribe({
       roomId: _roomId, playerId: _adapterPlayerId,
       emit: (type, payload) => {
         if (type === 'room' && payload) _isHost = !!payload.isHost;
-        if (type === 'network' && payload && Number.isFinite(payload.rttMs)) notePing(payload.rttMs, _roomId);
+        if (type === 'network' && payload && Number.isFinite(payload.rttMs)) recordAck(payload.rttMs,_roomId,_transferEpoch);
         fire(type, payload);
       }
     });
@@ -291,6 +362,7 @@ async function createRoom(game, opts = {}){
   _side = 'p1';
   _isHost = true;
 
+  resetTransfers();
   startHeartbeat();
   subscribe();
 
@@ -338,7 +410,7 @@ async function joinRoom(code, game, opts = {}){
       return slot;
     });
     _roomId=code;_side=assigned;_isHost=room.hostId===_deviceId;
-    startHeartbeat();subscribe();
+    resetTransfers();startHeartbeat();subscribe();
     return {roomId:code,side:assigned,isHost:_isHost,seed:room.seed,name:_name};
   }
   const pSnap = await db.collection(COL).doc(code).collection('players').get();
@@ -367,6 +439,7 @@ async function joinRoom(code, game, opts = {}){
   _side = side;
   _isHost = room.hostId === _deviceId;
 
+  resetTransfers();
   startHeartbeat();
   subscribe();
 
@@ -380,12 +453,14 @@ async function leaveRoom(){
     _adapterCleanup = null;
     _activeAdapter = null;
     _roomId = null; _side = null; _isHost = false; _game = null; _adapterPlayerId = null;
+    resetTransfers();
     stopPing();
     if (typeof adapter.leaveRoom === 'function') await adapter.leaveRoom(id);
     return;
   }
   stopHeartbeat();
   unsubscribeAll();
+  resetTransfers();
   const db = getDB();
   if(db && _roomId && _game === 'dolphin-tactics'){
     const roomRef=db.collection(COL).doc(_roomId);
@@ -418,54 +493,88 @@ async function leaveRoom(){
   stopPing();
 }
 
-// Strict variants surface permissions/network errors to the game rather than
-// silently losing player commands. Legacy multiplayer API is unchanged.
-async function sendInputStrict(payload){
-  if(!_roomId)throw Error('Chưa vào phòng');
-  const db=getDB();if(!db)throw Error('Chưa kết nối Firestore');
-  const room = _roomId, started = Date.now();
-  await db.collection(COL).doc(room).collection('inputs').doc(_deviceId).set({
-    ...payload,at:started,
+// Serialize writes to each existing input document; no new collection,
+// permission change, or change to create/join/leave room APIs.
+function queueInput(payload,strict){
+  if(!_roomId)return strict?Promise.reject(Error('Chưa vào phòng')):Promise.resolve();
+  const db=getDB();
+  if(!db)return strict?Promise.reject(Error('Chưa kết nối Firestore')):Promise.resolve();
+  const room=_roomId,epoch=_transferEpoch,data={...(payload||{})};
+  _pendingInputs++;
+  const write=_inputTail.then(async()=>{
+    if(room!==_roomId||epoch!==_transferEpoch)throw Error('Đã rời phòng');
+    const started=Date.now();
+    const entry={id:_inputSession+':'+epoch+':'+(++_inputSequence),data:{...data,at:started}};
+    const history=[..._inputHistory,entry].slice(-INPUT_HISTORY_LIMIT);
+    await db.collection(COL).doc(room).collection('inputs').doc(_deviceId)
+      .set({...entry.data,__mpInputLog:history});
+    if(room===_roomId&&epoch===_transferEpoch){
+      _inputHistory=history;recordAck(Date.now()-started,room,epoch);
+    }
   });
-  notePing(Date.now() - started, room);
+  _inputTail=write.catch(()=>{});
+  return write.catch(err=>{recordFailure(room,epoch,'input',err);if(strict)throw err;})
+    .finally(()=>{if(room===_roomId&&epoch===_transferEpoch)_pendingInputs=Math.max(0,_pendingInputs-1);});
 }
-async function sendStateStrict(snapshot){
-  if(!_roomId||!_isHost)throw Error('Chỉ chủ phòng được ghi trạng thái');
-  const db=getDB();if(!db)throw Error('Chưa kết nối Firestore');
-  const room = _roomId, started = Date.now();
-  await db.collection(COL).doc(room).collection('data').doc('state').set(snapshot);
-  notePing(Date.now() - started, room);
-}
-
+async function sendInputStrict(payload){return queueInput(payload,true);}
 async function sendInput(payload){
-  if (_activeAdapter){
-    if (!_activeAdapter.sendInput) throw new Error('Adapter chỉ nhận thao tác qua máy chủ');
+  if(_activeAdapter){
+    if(!_activeAdapter.sendInput)throw Error('Adapter chỉ nhận thao tác qua máy chủ');
     return _activeAdapter.sendInput(payload);
   }
-  if (!_roomId) return;
-  const db = getDB(); if (!db) return;
-  const room = _roomId, started = Date.now();
-  try {
-    await db.collection(COL).doc(room).collection('inputs').doc(_deviceId).set({
-      ...payload, at: started,
-    });
-    notePing(Date.now() - started, room);
-  } catch(e){}
+  return queueInput(payload,false);
 }
-let _lastSendStateTime = 0;
+
+// Strict states and critical events always go through FIFO. Unsent normal
+// frames coalesce into the latest frame under Firestore backpressure.
+function queueState(snapshot,strict){
+  if(!_roomId||!_isHost)
+    return strict?Promise.reject(Error('Chỉ chủ phòng được ghi trạng thái')):Promise.resolve();
+  const db=getDB();
+  if(!db)return strict?Promise.reject(Error('Chưa kết nối Firestore')):Promise.resolve();
+  const room=_roomId,epoch=_transferEpoch,queue=_stateQueue;
+  return new Promise((resolve,reject)=>{
+    const last=queue.jobs[queue.jobs.length-1];
+    if(!strict&&!snapshot?.__event&&last&&!last.strict&&!last.state?.__event){
+      last.state=snapshot;last.waiters.push({resolve,reject});
+    }else queue.jobs.push({state:snapshot,strict,waiters:[{resolve,reject}]});
+    void drainStates(queue,room,epoch,db);
+  });
+}
+async function drainStates(queue,room,epoch,db){
+  if(queue.draining)return;
+  queue.draining=true;
+  try{
+    while(queue.jobs.length){
+      const job=queue.jobs.shift();
+      if(room!==_roomId||epoch!==_transferEpoch){
+        job.waiters.forEach(w=>w.reject(Error('Đã rời phòng')));
+        continue;
+      }
+      const started=Date.now();
+      try{
+        await db.collection(COL).doc(room).collection('data').doc('state').set(job.state);
+        recordAck(Date.now()-started,room,epoch);
+        job.waiters.forEach(w=>w.resolve());
+      }catch(err){
+        recordFailure(room,epoch,'state',err);
+        job.waiters.forEach(w=>job.strict?w.reject(err):w.resolve());
+      }
+    }
+  }finally{queue.draining=false;}
+}
+async function sendStateStrict(snapshot){
+  if(_activeAdapter)throw Error('Không thể ghi trạng thái trận đấu từ client adapter');
+  return queueState(snapshot,true);
+}
 async function sendState(state){
-  if (_activeAdapter) throw new Error('Không thể ghi trạng thái trận đấu từ client adapter');
-  if (!_roomId || !_isHost) return;
-  const now = Date.now();
-  // Never discard game events (Snake eat/death/respawn) with the normal frame throttle.
-  if (!state?.__event && now - _lastSendStateTime < 100) return;
-  _lastSendStateTime = now;
-  const db = getDB(); if (!db) return;
-  const room = _roomId, started = Date.now();
-  try {
-    await db.collection(COL).doc(room).collection('data').doc('state').set(state);
-    notePing(Date.now() - started, room);
-  } catch(e){}
+  if(_activeAdapter)throw Error('Không thể ghi trạng thái trận đấu từ client adapter');
+  if(!_roomId||!_isHost)return;
+  const now=Date.now(),critical=!!state?.__event;
+  if(!critical&&now-_lastSendStateTime<100&&
+     !_stateQueue.jobs.some(j=>!j.strict&&!j.state?.__event))return;
+  _lastSendStateTime=now;
+  return queueState(state,false);
 }
 
 async function sendConfig(config){
@@ -516,7 +625,7 @@ window.DolphinMP = {
   getSide:     () => _side,
   isHost:      () => _isHost,
   getName:     () => _name,
-  getPing,
+  getPing, getNetworkStats,
 };
 
 console.log('%c🎮 DolphinMP v1.0 ready', 'background:#F4B842;color:#123634;font-weight:900;padding:3px 10px;border-radius:5px');

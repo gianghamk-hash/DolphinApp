@@ -21,6 +21,7 @@ const HEARTBEAT_MS = 10000;
 const STALE_MS = 35000;
 const MAX_ATTEMPTS = 10;
 const INPUT_HISTORY_LIMIT = 16;
+const MAX_PENDING_INPUTS = 32;
 const INPUT_SEEN_LIMIT = 64;
 const ACK_SAMPLE_LIMIT = 24;
 
@@ -99,7 +100,10 @@ function resetTransfers(){
   _ackSamples=[];
   const old=_stateQueue;
   _stateQueue={jobs:[],draining:false,epoch:_transferEpoch};
-  for(const job of old.jobs)for(const waiter of job.waiters)waiter.reject(Error('Đã rời phòng'));
+  // Legacy sendState silently resolves when leaving. Strict commits still
+  // reject so their callers can handle a room transition explicitly.
+  for(const job of old.jobs)for(const waiter of job.waiters)
+    job.strict?waiter.reject(Error('Đã rời phòng')):waiter.resolve();
   old.jobs.length=0;
   _lastSendStateTime=0;
 }
@@ -500,6 +504,11 @@ function queueInput(payload,strict){
   const db=getDB();
   if(!db)return strict?Promise.reject(Error('Chưa kết nối Firestore')):Promise.resolve();
   const room=_roomId,epoch=_transferEpoch,data={...(payload||{})};
+  if(_pendingInputs>=MAX_PENDING_INPUTS){
+    const err=Error('Đang đồng bộ quá nhiều thao tác; hãy kiểm tra kết nối');
+    fire('error',{type:'input_backpressure',err});
+    return strict?Promise.reject(err):Promise.resolve();
+  }
   _pendingInputs++;
   const write=_inputTail.then(async()=>{
     if(room!==_roomId||epoch!==_transferEpoch)throw Error('Đã rời phòng');

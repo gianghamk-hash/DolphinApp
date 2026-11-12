@@ -107,3 +107,18 @@ test('XP zero displays Level 1 despite old Level 54 unlock, without removing cos
  assert.equal(h.nodes.get('crew-card-xp-percent').textContent,'0%');
  assert.match(h.nodes.get('crew-card-xp-dial').title,/Mốc cao nhất từng đạt: Level 54/);
 });
+
+test('profile illustration stays behind equipped avatar FX and does not clip avatar orbit layers',()=>{
+ const css=read('crew-profile-illustrated.css'),page=read('dolphin-profile.html'),worker=read('service-worker.js');
+ const section=(start)=>{const pos=css.indexOf(start);assert(pos>=0,'Missing '+start);return css.slice(pos,css.indexOf('}',pos)+1);};
+ const artwork=section('#crew-profile-banner>.crew-profile-frame-image{');
+ const portrait=section('#crew-profile-banner .crew-card-portrait{');
+ const avatar=section('#crew-profile-banner #profile-avatar{');
+ assert.match(artwork,/z-index:0!important/,'Artwork must paint behind all verified avatar FX');
+ assert.match(portrait,/z-index:3!important/,'Portrait is layered above the image');
+ assert.match(portrait,/overflow:visible!important/,'Outer rings can extend outside portrait');
+ assert.match(avatar,/overflow:visible!important/,'Mythic/motion/rarity particles cannot be clipped at avatar edge');
+ assert.match(page,/crew-profile-illustrated\.css\?v=hero-image-v4/,'Bust old PWA stylesheet cache');
+ assert.match(worker,/crew-profile-illustrated\.css\?v=hero-image-v4/,'Precache the same new stylesheet');
+ assert.match(page,/src="\.\/assets\/crew-profile-identity-frame-v2\.webp"/,'Illustrated card must remain unchanged');
+});

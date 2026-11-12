@@ -24,7 +24,7 @@
 #crew-profile-banner.crew-character-card::before,
 #crew-profile-banner.crew-character-card::after{display:none!important}
 #crew-profile-banner>.crew-profile-frame-image{
- position:absolute!important;display:block;inset:0!important;z-index:1;
+ position:absolute!important;display:block;inset:0!important;z-index:0!important;
  width:100%!important;height:100%!important;aspect-ratio:3/1;
  object-fit:fill;pointer-events:none;user-select:none;
 }
@@ -56,9 +56,10 @@
  border:0!important;background:none!important;box-shadow:none!important;
 }
 #crew-profile-banner .crew-card-portrait{
- position:absolute!important;z-index:3;left:5.8%!important;top:23%!important;
+ position:absolute!important;z-index:3!important;left:5.8%!important;top:23%!important;
  width:17.3%!important;max-width:none!important;height:52%!important;
  min-height:0!important;margin:0!important;padding:0!important;
+ overflow:visible!important; /* Orbit layers must extend beyond the portrait's painted box. */
  display:grid!important;place-items:center!important;
 }
 #crew-profile-banner #profile-avatar{
@@ -66,7 +67,7 @@
  width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
  max-width:none!important;max-height:none!important;
  aspect-ratio:1!important;border-radius:50%!important;
- overflow:hidden!important;background:rgba(8,30,65,.13)!important;
+ overflow:visible!important;background:rgba(8,30,65,.13)!important; /* Preserve orbit, aura and motion effects. */
  font-size:clamp(24px,6.4vw,68px)!important;line-height:1!important;
 }
 #crew-profile-banner #profile-name{

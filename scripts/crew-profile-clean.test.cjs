@@ -60,7 +60,7 @@ test('approved rendered image banners replace CSS-drawn header and identity fram
   assert(html.includes('src="./'+file+'"'),file+' must be rendered as an img');
   assert(sw.includes(file),file+' should be available in the PWA cache');
  }
- assert(html.includes('crew-profile-illustrated.css?v=hero-image-v3'));
+ assert(html.includes('crew-profile-illustrated.css?v=hero-image-v4'));
  assert(css.includes('.crew-profile-ship-image'));
  assert(css.includes('.crew-profile-frame-image'));
  assert.match(css,/#staff-xp-track/);

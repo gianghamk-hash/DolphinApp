@@ -122,7 +122,11 @@ function createTransport(E,db,options={}){
   const result=(priority?Promise.resolve():tail).then(async()=>{
    if(gen!==generation)throw Error('Đã rời phòng');
    if(now()>deadline)throw Error('Thao tác hết hạn, hãy kiểm tra trạng thái và thử lại');
-   try{const value=await operation(id,gen,deadline);if(gen===generation){lastServerAt=clock();lastError='';}return value;}
+   try{
+    const sent=clock(),value=await operation(id,gen,deadline);
+    if(gen===generation){lastServerAt=clock();lastError='';network({rttMs:Math.max(0,lastServerAt-sent)});}
+    return value;
+   }
    catch(err){if(gen===generation){lastError=String(err.message||err);}throw err;}
   });
   if(!priority)tail=result.catch(()=>{});

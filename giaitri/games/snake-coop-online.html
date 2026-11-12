@@ -695,6 +695,9 @@ function smoothSnakeSnapshot(previous,current){
   if(grid.stepX<=0||grid.stepY<=0)return;
   const now=performance.now(),duration=Math.max(85,Math.min(220,Number(current.speed)||BASE_SPEED));
   for(const side of ['p1','p2']){
+    // An absent teammate is drawn as a ghost in the original grid; do not
+    // accidentally overlay it with a solid interpolated head.
+    if(side!==mySide&&!oppPresent)continue;
     const a=previous.snakes?.find(s=>s.id===side);
     const b=current.snakes?.find(s=>s.id===side);
     if(!interpolateSnakeHead(a,b,0))continue;

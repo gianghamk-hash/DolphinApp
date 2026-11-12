@@ -255,7 +255,6 @@ function subscribe(){
   // log permits a lagged listener to process rapid distinct commands once.
   // Legacy clients without a log still work with their original root payload.
   const seen = new Map();
-  let initialInputs = true;
   _unsubs.push(db.collection(COL).doc(_roomId).collection('inputs').onSnapshot(snap => {
     snap.docChanges().forEach(ch => {
       if(ch.type==='removed'||ch.doc.id===_deviceId)return;
@@ -263,6 +262,7 @@ function subscribe(){
       const log=Array.isArray(data.__mpInputLog)?data.__mpInputLog:null;
       if(!log||!log.length){fire('input',{playerId:ch.doc.id,...data});return;}
       let known=seen.get(ch.doc.id);
+      const firstForPlayer=!known;
       if(!known){known=new Set();seen.set(ch.doc.id,known);}
       const valid=log.filter(item=>item&&typeof item.id==='string'&&item.data&&typeof item.data==='object');
       valid.forEach((entry,index)=>{
@@ -270,12 +270,11 @@ function subscribe(){
         known.add(entry.id);
         // Reconnect mirrors old single-doc behaviour: only replay the newest
         // existing command, not an entire historical chat/move burst.
-        if(!initialInputs||index===valid.length-1)
+        if(!firstForPlayer||index===valid.length-1)
           fire('input',{playerId:ch.doc.id,...entry.data});
       });
       while(known.size>INPUT_SEEN_LIMIT)known.delete(known.values().next().value);
     });
-    initialInputs=false;
   },err=>fire('error',{type:'input',err})));
 }
 

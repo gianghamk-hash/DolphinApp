@@ -236,4 +236,5 @@ test('Sprint 2: Snake guest head interpolation is bounded and never predicts gam
   assert.match(html,/prefers-reduced-motion: reduce/,'Reduced motion must be respected');
   assert.match(html,/snakeSmoothFrame=requestAnimationFrame\(paintSnakeSmoothFrame\)/);
   assert.match(html,/#board\.snake-smoothing/);
+  assert.match(html,/if\(side!==mySide&&!oppPresent\)continue/,'Disconnected teammate remains a ghost, not a solid head');
 });

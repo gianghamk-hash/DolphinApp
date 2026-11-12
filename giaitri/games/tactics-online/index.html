@@ -475,6 +475,17 @@ const combatMetrics=new Map(),combatStatuses=new Map();let lastMetricPaint=0;
 let lastBoardSignature='',seenPhaseKey='',replay=null,advancing=false,lastAdvance=0,visualFX=[],battleHealth=new Map(),screenWake=null,dragUnit=null,zoomLevel=1,pseudoFullscreen=false,connectivityTimer=null,replayGeneration=0;
 const info=msg=>$("loginStatus").textContent=msg;
 const reconnectKey='dolphin_tactics_last_room';
+// Preserve existing controls and input focus when Firestore revisions do not
+// change their markup; never reuse stale nodes across different elements.
+const tftMarkupCache=new WeakMap();
+function setMarkupIfChanged(node,markup){
+ if(!node)return false;
+ if(tftMarkupCache.get(node)===markup)return false;
+ node.innerHTML=markup;
+ tftMarkupCache.set(node,markup);
+ return true;
+}
+let lastHudLayoutKey='';
 // Package E: browser-hosted rooms are NOT eligible for verified competitive rating.
 // Server-authoritative rooms use tacticsSubmitVerifiedResult after secure completion.
 function staffName(){return (window.getSyncedStaffName?.()||localStorage.getItem('dolphinStaffName')||'').trim();}
@@ -638,7 +649,7 @@ function itemText(id){const def=itemDef(id);if(!def)return safe(id);const attrs=
 window.unequipSelected=slot=>{const u=state?.players?.[uid]?.units?.[selected];if(!u||state?.roundPhase!=='PREPARATION'){info('Chọn tướng trước, chỉ tháo đồ trong giai đoạn Chuẩn bị.');return;}send({type:'UNEQUIP',unitId:selected,slot});};
 function selectedHeroInfo(){
  const u=selectedShopHero?{id:'shop:'+selectedShopHero,heroId:selectedShopHero,star:1,items:[]}:state?.players?.[uid]?.units?.[selected];
- if(!u){$('heroInfo').innerHTML='';return;}
+ if(!u){setMarkupIfChanged($('heroInfo'),'');return;}
  const h=hero[u.heroId];if(!h)return;
  const p=state.players[uid],t=E.activeTraits(p),combat=E.combatStats(p,u,t);
  const skill=h.ability||{},spell=skill.name||SKILL_LABELS[skill.kind]||skill.kind;
@@ -647,7 +658,7 @@ function selectedHeroInfo(){
  const metrics=combatMetrics.get(u.id);
  const metricsHtml=metrics?'<div class="combatMetrics">⚔ Sát thương '+Math.round(metrics.damage||0)+' · ❤ Hồi phục '+Math.round(metrics.heal||0)+' · 🛡 Khiên '+Math.round(metrics.shield||0)+' · ✦ Kỹ năng '+(metrics.casts||0)+'</div>':'';
  const worn=(u.items||[]).map((id,i)=>'<div class="itemChip">'+itemIcon(id)+itemText(id)+' <button onclick="unequipSelected('+i+')" '+(state.roundPhase!=='PREPARATION'?'disabled':'')+'>Tháo</button></div>').join('');
- $('heroInfo').innerHTML='<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong>'+(selectedShopHero?'<div>Trong Shop · Giá '+h.cost+' vàng</div>':'')+'<div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div>'+signature+'<div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+metricsHtml+'</div>';
+ setMarkupIfChanged($('heroInfo'),'<div class="heroDetail"><strong>'+safe(h.name)+' ★'.repeat(u.star)+'</strong>'+(selectedShopHero?'<div>Trong Shop · Giá '+h.cost+' vàng</div>':'')+'<div>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</div><div>'+stats.map(([k,v])=>'<span class="statPill">'+safe(k)+' '+safe(v)+'</span>').join('')+'</div><div style="margin-top:7px"><strong>⚡ Kỹ năng: '+safe(spell)+'</strong> · Sức mạnh '+safe(skill.power||0)+' · Phạm vi '+safe(skill.radius||1)+'</div>'+signature+'<div style="margin-top:7px"><strong>🎒 Trang bị ('+(u.items||[]).length+'/3)</strong></div>'+(worn||'<div>Chưa trang bị</div>')+metricsHtml+'</div>');
 }
 function setupMP(){
  if(!MP)throw Error('Không thấy Dolphin Multiplayer');
@@ -770,11 +781,11 @@ function combatType(){return isPvERound(Number(state?.round||1))?"PvE · ĐẤU 
 const phaseName={PREPARATION:"🛒 CHUẨN BỊ",COMBAT:"⚔ CHIẾN ĐẤU",TRANSITION:"🏁 KẾT QUẢ"};
 function paintOpponent(){roundBanner.update(state,uid);}
 function paintPlayers(){
- $('players').innerHTML=state.playerOrder.map(id=>{
+ setMarkupIfChanged($('players'),state.playerOrder.map(id=>{
   const p=state.players[id];if(!p)return '';
   const hp=Math.max(0,Math.min(100,Number(p.hp)||0)),angle=hp/100*360;
   return '<div class="hpEntry '+(id===uid?'mine':'')+'" title="'+safe(p.displayName)+' · '+hp+' HP"><span class="hpPortrait" style="--hp:'+angle+'deg"><span class="hpInside">'+(id===uid?'🐬':'⚔')+'</span></span><span class="hpIdentity"><strong>'+safe(p.displayName)+'</strong><small class="hpMeta"><span class="hpValue" aria-label="Máu còn lại">❤ '+hp+'/100</span><span class="hpLevel">Lv'+p.level+'</span></small></span></div>';
- }).join('');
+ }).join(''));
 }
 function viewUnit(p,id){const u=p.units[id],h=u&&hero[u.heroId];return h?h.name+" ★".repeat(u.star):"Trống";}
 function traitProgress(p,key){
@@ -788,6 +799,9 @@ function traitProgress(p,key){
 }
 function syncBattleHudScale(){
  const stage=$('stage'),w=stage?.clientWidth||500,h=stage?.clientHeight||400;
+ const layoutKey=w+':'+h+':'+zoomLevel;
+ if(layoutKey===lastHudLayoutKey)return;
+ lastHudLayoutKey=layoutKey;
  // Visual HUD remains anchored to viewport edges; zoom affects only the 3D camera.
  // Scale to available stage area, not camera zoom, preserving readable information.
  const ratio=Math.min(w/600,h/420,1);
@@ -811,23 +825,23 @@ function paintControls(){
  $("phaseLabel").textContent=phaseName[state.roundPhase]+' · '+combatType()+' · VÒNG '+state.round;
  const slots=E.slotsForLevel(p.level),xpGoal=E.LEVEL_XP[p.level]||0,boardCount=Object.keys(p.board||{}).length;
  $("economy").textContent="🪙 "+p.gold+" · XP "+p.xp+(xpGoal?"/"+xpGoal:" (MAX)")+" · LV "+p.level+" · HP "+p.hp+(p.ready?" · Đã sẵn sàng":"");
- $("deployment").innerHTML='<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+(state.roundPhase==='COMBAT'&&p.pendingMerge?'<div class="pendingMergeHint">⏳ Dung hợp khi sang phase Chuẩn bị</div>':'')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>';
- $("shop").innerHTML=p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;const hint=window.DolphinTFTShopHints.hints(p,id,catalog);const marked=hint.upgrade||hint.synergy;const reason=hint.upgrade?(state.roundPhase==='COMBAT'?"Đủ bộ — dung hợp ở phase Chuẩn bị":"Có thể ghép lên 2 sao"):hint.synergy?"Cùng tộc/hệ: "+hint.traits.map(t=>catalog.origins[t]?.label||t).join(", "):"";
+ setMarkupIfChanged($("deployment"),'<strong>♟ Tướng ra sân: '+boardCount+'/'+slots+' slot</strong> · '+(xpGoal?'Cấp '+(p.level+1)+': cần '+Math.max(0,xpGoal-p.xp)+' XP nữa':'Đạt cấp tối đa')+(state.roundPhase==='COMBAT'&&p.pendingMerge?'<div class="pendingMergeHint">⏳ Dung hợp khi sang phase Chuẩn bị</div>':'')+'<div class="deployProgress"><i style="width:'+Math.min(100,boardCount/slots*100)+'%"></i></div>');
+ setMarkupIfChanged($("shop"),p.shop.map((id,i)=>{const h=hero[id],cost=h?.cost||1;const hint=window.DolphinTFTShopHints.hints(p,id,catalog);const marked=hint.upgrade||hint.synergy;const reason=hint.upgrade?(state.roundPhase==='COMBAT'?"Đủ bộ — dung hợp ở phase Chuẩn bị":"Có thể ghép lên 2 sao"):hint.synergy?"Cùng tộc/hệ: "+hint.traits.map(t=>catalog.origins[t]?.label||t).join(", "):"";
  return '<div class="shopOffer"><button class="shopHero tier'+cost+(marked?' shopRecommended':'')+(hint.upgrade?' shopUpgrade':'')+(hint.synergy?' shopSynergy':'')+'" title="'+safe(reason)+'" '+(!shopEnabled||!h||p.gold<h.cost?'disabled':'')+' onclick="buyHero('+i+')">'+
  (h?'<span class="shopRank">★'+cost+' <span>🪙'+cost+'</span></span><span class="shopAvatar" title="'+safe(ROLE_NAMES[primaryRole(h)]||'Vai trò chưa xác định')+'">'+roleIcon(h)+'</span><strong>'+safe(h.name)+'</strong><small>'+safe([...h.origins,...h.classes].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'Đã bán')+'</button>'+(h?'<button type="button" class="shopInspect" onclick="inspectShopHero('+i+')" aria-label="Xem thông tin '+safe(h.name)+'" title="Xem thông tin '+safe(h.name)+'">ⓘ Thông tin</button>':'')+'</div>';
- }).join('');
- $("bench").innerHTML=Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<div class="benchUnitWrap"><button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>'+(h?'<button type="button" class="benchSellBtn" '+(prep?'':'disabled')+' aria-label="Bán '+safe(h.name)+'" onclick="sellUnitById(\''+id+'\')">🪙 BÁN</button>':'')+'</div>';}).join('');
+ }).join(''));
+ setMarkupIfChanged($("bench"),Array.from({length:8},(_,i)=>{let id=p.bench[i],u=p.units[id],h=u&&hero[u.heroId];return '<div class="benchUnitWrap"><button class="'+(selected===id?'gold':'')+'" data-bench="'+i+'" onclick="tapBench('+i+')">'+(h?'<strong>★'+u.star+' '+safe(h.name)+'</strong><small>'+safe([...(h.origins||[]),...(h.classes||[])].map(k=>catalog.origins[k]?.label||k).join(' · '))+'</small>':'·')+'</button>'+(h?'<button type="button" class="benchSellBtn" '+(prep?'':'disabled')+' aria-label="Bán '+safe(h.name)+'" onclick="sellUnitById(\''+id+'\')">🪙 BÁN</button>':'')+'</div>';}).join(''));
  const icons={Mech:'🤖',Void:'🕳️',Arcane:'🔮',Beast:'🐺',Shadow:'🌑',Celestial:'☀️',Brawler:'⚔️',Assassin:'🗡️',Ranger:'🏹',Guardian:'🛡️',Sorcerer:'✨'};
  // Include every represented trait, even before its first activation threshold.
  const represented=new Set();
  for(const id of Object.values(p.board||{})){const u=p.units?.[id],h=u&&hero[u.heroId];if(h)[...(h.origins||[]),...(h.classes||[])].forEach(t=>represented.add(t));}
  const traits=[...represented].map(k=>traitProgress(p,k)).filter(Boolean).sort((a,b)=>Number(b.active)-Number(a.active)||b.count-a.count||a.key.localeCompare(b.key));
- $('traitRail').innerHTML=traits.map(t=>'<button class="traitOrb '+(t.active?'isActive':'isInactive')+'" type="button" data-trait="'+safe(t.key)+'" title="'+safe(t.def.label||t.key)+' · '+t.count+'/'+t.max+'" aria-label="'+safe(t.def.label||t.key)+' '+t.count+'/'+t.max+(t.active?' đã kích hoạt mốc '+t.tier:' chưa kích hoạt')+'"><span class="traitIcon">'+(icons[t.key]||'✨')+'</span><span class="traitCount">'+t.count+'/'+t.max+'</span><span class="traitState">'+(t.active?'●':'○')+'</span></button>').join('');
+ setMarkupIfChanged($('traitRail'),traits.map(t=>'<button class="traitOrb '+(t.active?'isActive':'isInactive')+'" type="button" data-trait="'+safe(t.key)+'" title="'+safe(t.def.label||t.key)+' · '+t.count+'/'+t.max+'" aria-label="'+safe(t.def.label||t.key)+' '+t.count+'/'+t.max+(t.active?' đã kích hoạt mốc '+t.tier:' chưa kích hoạt')+'"><span class="traitIcon">'+(icons[t.key]||'✨')+'</span><span class="traitCount">'+t.count+'/'+t.max+'</span><span class="traitState">'+(t.active?'●':'○')+'</span></button>').join(''));
  if(!traits.length)$('traitInfo').classList.add('hidden');
  syncBattleHudScale();
  // The touch tray mirrors the inventory; the original select remains as a fallback.
  const tray=$('touchItemSlots');
- if(tray)tray.innerHTML=p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" data-select-item="'+i+'" title="'+safe(itemDef(id)?.name||id)+'">'+itemIcon(id)+'<small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>';
+ if(tray)setMarkupIfChanged(tray,p.inventory.length?p.inventory.map((id,i)=>'<button type="button" class="touchGear" data-item-index="'+i+'" data-select-item="'+i+'" title="'+safe(itemDef(id)?.name||id)+'">'+itemIcon(id)+'<small>'+safe(itemDef(id)?.name||id)+'</small></button>').join(''):'<span class="touchItemEmpty">Chưa có trang bị</span>');
  // Inventory is now exclusively displayed underneath the board.
  selectedHeroInfo();
  $('lockShopBtn').textContent=p.shopLocked?'🔒':'🔓';

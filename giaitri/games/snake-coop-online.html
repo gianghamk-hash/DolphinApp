@@ -44,6 +44,16 @@ body{display:flex;flex-direction:column;height:100dvh;max-height:100dvh}
 .cell.body-p2::after{background:linear-gradient(135deg,#c44569,#8b1a42);box-shadow:inset 0 1px 0 rgba(255,255,255,.25)}
 .cell.head-p2::after{background:linear-gradient(135deg,#f9a8d4,#f472b6);box-shadow:0 0 8px rgba(244,114,182,.85);border-radius:3px}
 .cell.head-p2::before{content:'';position:absolute;top:50%;left:50%;width:3px;height:3px;background:#0a1f1d;border-radius:50%;transform:translate(-50%,-50%);z-index:2}
+/* Smooth only the two visible heads; the authoritative 24x24 body grid and
+ * collision logic are untouched. No new Firestore reads or animation writes. */
+.snake-smooth-layer{position:absolute;inset:0;z-index:4;pointer-events:none;overflow:hidden;border-radius:8px}
+.snake-smooth-head{position:absolute;left:0;top:0;display:none;border-radius:3px;will-change:transform;box-shadow:0 0 9px currentColor}
+.snake-smooth-head.p1{color:#4ade80;background:linear-gradient(135deg,#86efac,#4ade80)}
+.snake-smooth-head.p2{color:#f472b6;background:linear-gradient(135deg,#f9a8d4,#f472b6)}
+.snake-smooth-head::after{content:'';position:absolute;left:50%;top:50%;width:3px;height:3px;border-radius:50%;background:#0a1f1d;transform:translate(-50%,-50%)}
+#board.snake-smoothing .cell.head-p1::before,#board.snake-smoothing .cell.head-p1::after,
+#board.snake-smoothing .cell.head-p2::before,#board.snake-smoothing .cell.head-p2::after{opacity:0}
+@media(prefers-reduced-motion:reduce){.snake-smooth-layer{display:none!important}#board.snake-smoothing .cell.head-p1::before,#board.snake-smoothing .cell.head-p1::after,#board.snake-smoothing .cell.head-p2::before,#board.snake-smoothing .cell.head-p2::after{opacity:1}}
 .cell.food-normal::after{background:radial-gradient(circle,#ef4444 30%,#991b1b 100%);border-radius:50%;box-shadow:0 0 8px rgba(239,68,68,.7);animation:foodPulse 1s ease-in-out infinite}
 .cell.food-golden::after{background:radial-gradient(circle,#fde68a 20%,#F4B842 50%,#B7791F 100%);border-radius:50%;box-shadow:0 0 12px rgba(244,184,66,.9);animation:foodPulse .7s ease-in-out infinite}
 .cell.ghost-p2::after{background:rgba(244,114,182,.25)}
@@ -322,11 +332,14 @@ var oppPresent = false;
 var countdownActive = false;
 
 function fitBoard(){
+  // Geometry changes invalidate the ongoing pixel-space interpolation.
+  // It will resume with the next authoritative tick.
   var area = $('gameArea'), wrap = $('boardWrap');
   if (!area || !wrap) return;
   var w = area.clientWidth - 12;
   var h = area.clientHeight - 12;
   var size = Math.max(160, Math.min(w, h));
+  if(wrap.style.width!==size+'px'||wrap.style.height!==size+'px')stopSnakeSmoothing();
   wrap.style.width = size + 'px';
   wrap.style.height = size + 'px';
 }
@@ -587,8 +600,10 @@ function buildSnap(){
 
 function hostRender(){
   if (!hostState || !isHost) return;
+  var previous = gameState;
   gameState = buildSnap();
   renderState(gameState);
+  smoothSnakeSnapshot(previous,gameState);
 }
 
 async function publishState(){
@@ -610,6 +625,93 @@ function hostGameOver(){
     handleGameOver(hostState.snakes[0].score, hostState.snakes[1].score, hostState.startTs);
   }, 400);
 }
+
+
+// Visual interpolation for both host and guest: positions come from authoritative
+// snapshots. No prediction of collisions, score, direction or opponent inputs.
+var snakeSmoothLayer = null, snakeSmoothFrame = 0, snakeSmoothMotion = [];
+function interpolateSnakeHead(previous, current, progress){
+  if(!previous || !current || previous.alive===false || current.alive===false
+    || !previous.body?.[0] || !current.body?.[0]) return null;
+  var a=previous.body[0],b=current.body[0];
+  if(![a.x,a.y,b.x,b.y].every(Number.isFinite)) return null;
+  if(Math.abs(a.x-b.x)+Math.abs(a.y-b.y)!==1) return null; // teleport/respawn must snap
+  var t=Math.max(0,Math.min(1,Number(progress)||0));
+  return {x:a.x+(b.x-a.x)*t,y:a.y+(b.y-a.y)*t};
+}
+function stopSnakeSmoothing(){
+  if(snakeSmoothFrame){ cancelAnimationFrame(snakeSmoothFrame);snakeSmoothFrame=0; }
+  snakeSmoothMotion=[];
+  $('board')?.classList.remove('snake-smoothing');
+  if(snakeSmoothLayer)snakeSmoothLayer.style.display='none';
+}
+function snakeSmoothingEnabled(){
+  return running && !paused && !gameOverFlag && !document.hidden
+    && typeof requestAnimationFrame==='function'
+    && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+function ensureSnakeSmoothLayer(){
+  if(snakeSmoothLayer)return snakeSmoothLayer;
+  const wrap=$('boardWrap');
+  if(!wrap)return null;
+  const layer=document.createElement('div');layer.className='snake-smooth-layer';
+  layer.setAttribute('aria-hidden','true');
+  for(const side of ['p1','p2']){
+    const el=document.createElement('div');el.className='snake-smooth-head '+side;
+    el.dataset.side=side;layer.appendChild(el);
+  }
+  wrap.appendChild(layer);
+  snakeSmoothLayer=layer;
+  return layer;
+}
+function paintSnakeSmoothFrame(now){
+  snakeSmoothFrame=0;
+  if(!snakeSmoothingEnabled()||!snakeSmoothMotion.length){stopSnakeSmoothing();return;}
+  const elapsed=now-snakeSmoothMotion[0].started;
+  let active=false;
+  for(const m of snakeSmoothMotion){
+    const t=Math.max(0,Math.min(1,elapsed/m.duration));
+    const pos=interpolateSnakeHead(m.previous,m.current,t);
+    if(!pos){m.element.style.display='none';continue;}
+    m.element.style.transform='translate3d('+(m.grid.left+pos.x*m.grid.stepX)+'px,'+
+      (m.grid.top+pos.y*m.grid.stepY)+'px,0)';
+    if(t<1)active=true;
+  }
+  if(active)snakeSmoothFrame=requestAnimationFrame(paintSnakeSmoothFrame);
+  else stopSnakeSmoothing(); // underlying authoritative heads are now exact
+}
+function smoothSnakeSnapshot(previous,current){
+  stopSnakeSmoothing();
+  if(!snakeSmoothingEnabled() || !previous || !current
+    || previous.startTs!==current.startTs
+    || current.status!=='playing' || current.tick<=previous.tick
+    || current.tick-previous.tick!==1)return;
+  const layer=ensureSnakeSmoothLayer(),cells=$('board')?.children;
+  if(!layer||!cells||cells.length<SIZE*SIZE)return;
+  const origin=cells[0].getBoundingClientRect(),right=cells[1].getBoundingClientRect();
+  const below=cells[SIZE].getBoundingClientRect(),rect=layer.getBoundingClientRect();
+  const grid={left:origin.left-rect.left,top:origin.top-rect.top,
+    stepX:right.left-origin.left,stepY:below.top-origin.top};
+  if(grid.stepX<=0||grid.stepY<=0)return;
+  const now=performance.now(),duration=Math.max(85,Math.min(220,Number(current.speed)||BASE_SPEED));
+  for(const side of ['p1','p2']){
+    // An absent teammate is drawn as a ghost in the original grid; do not
+    // accidentally overlay it with a solid interpolated head.
+    if(side!==mySide&&!oppPresent)continue;
+    const a=previous.snakes?.find(s=>s.id===side);
+    const b=current.snakes?.find(s=>s.id===side);
+    if(!interpolateSnakeHead(a,b,0))continue;
+    const element=layer.querySelector('[data-side="'+side+'"]');
+    element.style.width=origin.width+'px';element.style.height=origin.height+'px';
+    element.style.display='block';
+    snakeSmoothMotion.push({previous:a,current:b,element,grid,started:now,duration});
+  }
+  if(!snakeSmoothMotion.length)return;
+  layer.style.display='block';
+  $('board').classList.add('snake-smoothing');
+  snakeSmoothFrame=requestAnimationFrame(paintSnakeSmoothFrame);
+}
+document.addEventListener('visibilitychange',()=>{if(document.hidden)stopSnakeSmoothing();});
 
 // Avoid rewriting hundreds of unchanged grid cells on every online Snake tick.
 function setCellClass(el, value){ if (el && el.className !== value) el.className = value; }
@@ -804,8 +906,13 @@ function handleRoomUpdate(room){
 }
 
 function handleStateUpdate(st){
-  if (isHost) return;
+  if (isHost || !st) return;
   if (st.__event){ applyEvent(st.__event); }
+  // Countdown event-only packets are not full snapshots.
+  if (!Array.isArray(st.snakes)) return;
+  if (gameState && st.startTs===gameState.startTs && Number.isFinite(st.tick)
+      && st.tick < gameState.tick) return;
+  var previous = gameState;
   gameState = st;
   if (st.status === 'playing' && !running && !gameOverFlag){
     enterGameUI();
@@ -823,6 +930,7 @@ function handleStateUpdate(st){
     handleGameOver(p1.score, p2.score, st.startTs);
   }
   renderState(st);
+  smoothSnakeSnapshot(previous,st);
 }
 
 function applyEvent(ev){
@@ -997,6 +1105,7 @@ function requestRestart(){
 window.requestRestart = requestRestart;
 
 function hostRestart(){
+  stopSnakeSmoothing();
   if (!isHost) return;
   submitted = false;
   gameOverFlag = false;
@@ -1013,6 +1122,7 @@ function hostRestart(){
 }
 
 function handleGameOver(s1, s2, startTs){
+  stopSnakeSmoothing();
   if (gameOverFlag) return;
   gameOverFlag = true;
   running = false;
@@ -1046,6 +1156,7 @@ function handleGameOver(s1, s2, startTs){
 }
 
 function triggerDisconnect(msg){
+  stopSnakeSmoothing();
   if (gameOverFlag) return;
   running = false;
   clearTimeout(loopTimer);
@@ -1139,6 +1250,7 @@ function copyCode(){
 window.copyCode = copyCode;
 
 async function leaveAndBack(){
+  stopSnakeSmoothing();
   try { await window.DolphinMP.leaveRoom(); } catch(e){}
   window.DolphinNavigation.back();
 }
@@ -1153,6 +1265,7 @@ function goBack(){
 window.goBack = goBack;
 
 window.addEventListener('beforeunload', function(){
+  stopSnakeSmoothing();
   try { window.DolphinMP.leaveRoom(); } catch(e){}
 });
 

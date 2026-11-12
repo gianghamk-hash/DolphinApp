@@ -214,3 +214,27 @@ test('Sprint 1: leaving a room settles unsent normal states without spilling int
   h.releaseState();await first;
   assert.equal(h.writes.filter(w=>w.path.endsWith('/data/state')).length,1);
 });
+
+test('Sprint 2: Snake guest head interpolation is bounded and never predicts game state',()=>{
+  const html=fs.readFileSync(path.join(__dirname,'..','..','giaitri/games/snake-coop-online.html'),'utf8');
+  const marker='function interpolateSnakeHead(previous, current, progress){';
+  const start=html.indexOf(marker),end=html.indexOf('\nfunction stopSnakeSmoothing()',start);
+  assert.ok(start>0&&end>start,'Pure interpolation helper must exist');
+  const interpolate=vm.runInNewContext(html.slice(start,end)+'; interpolateSnakeHead;');
+  const snake=(x,y,alive=true)=>({id:'p1',alive,body:[{x,y}]});
+  assert.deepEqual(JSON.parse(JSON.stringify(interpolate(snake(2,3),snake(3,3),.5))),{x:2.5,y:3});
+  assert.deepEqual(JSON.parse(JSON.stringify(interpolate(snake(2,3),snake(3,3),12))),{x:3,y:3});
+  assert.deepEqual(JSON.parse(JSON.stringify(interpolate(snake(2,3),snake(3,3),-2))),{x:2,y:3});
+  assert.equal(interpolate(snake(2,3),snake(6,3),.5),null,'Packet gaps must snap rather than predict');
+  assert.equal(interpolate(snake(2,3),snake(3,3,false),.5),null,'Death must snap');
+  assert.equal(interpolate(snake(2,3,false),snake(3,3),.5),null,'Respawn must snap');
+  assert.equal(interpolate(null,snake(3,3),.5),null);
+  assert.match(html,/smoothSnakeSnapshot\(previous,st\)/,'Guest snapshots are smoothed');
+  assert.match(html,/smoothSnakeSnapshot\(previous,gameState\)/,'Host-authoritative ticks are also smoothed');
+  assert.match(html,/if \(!Array\.isArray\(st\.snakes\)\) return/,'Event-only packets do not reset authoritative game state');
+  assert.match(html,/stopSnakeSmoothing\(\);[\s\S]{0,150}if \(gameOverFlag\) return/,'Game over stops animation');
+  assert.match(html,/prefers-reduced-motion: reduce/,'Reduced motion must be respected');
+  assert.match(html,/snakeSmoothFrame=requestAnimationFrame\(paintSnakeSmoothFrame\)/);
+  assert.match(html,/#board\.snake-smoothing/);
+  assert.match(html,/if\(side!==mySide&&!oppPresent\)continue/,'Disconnected teammate remains a ghost, not a solid head');
+});

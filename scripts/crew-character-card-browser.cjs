@@ -39,6 +39,11 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
     frame:$('crew-card-equipped-frame').textContent,
     size:getComputedStyle($('profile-avatar')).width,
     visual:getComputedStyle($('crew-profile-banner'),'::before').display,
+    artworkZ:getComputedStyle(document.querySelector('.crew-profile-frame-image')).zIndex,
+    portraitZ:getComputedStyle(document.querySelector('.crew-card-portrait')).zIndex,
+    portraitOverflow:getComputedStyle(document.querySelector('.crew-card-portrait')).overflow,
+    avatarOverflow:getComputedStyle($('profile-avatar')).overflow,
+    cardOverflow:getComputedStyle($('crew-profile-banner')).overflow,
     frameImg:(()=>{const im=document.querySelector('.crew-profile-frame-image');return {src:im?.getAttribute('src'),ready:im?.complete&&im?.naturalWidth===1200&&im?.naturalHeight===400,rect:im?.getBoundingClientRect().toJSON()}})(),
     level:r('crew-card-level-number').toJSON(),staffid:r('employee-id').toJSON(),rankName:r('crew-card-rank-name').toJSON(),
     tilesColumns:getComputedStyle(document.querySelector('.crew-chibi-grid')).gridTemplateColumns.split(' ').length,
@@ -63,6 +68,13 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   const cardImages=await page.locator('.crew-chibi-tile .crew-chibi-image').evaluateAll(images=>images.map(im=>({src:im.getAttribute('src'),ready:im.complete&&im.naturalWidth===420&&im.naturalHeight===315})));
   assert(cardImages.every(x=>x.ready&&x.src.endsWith('.webp')),'Eight illustrated WebP images decode independently');
   const mobile=await sample();
+  for(const [label,s] of [['390px',mobile]]){
+   assert.equal(s.artworkZ,'0',label+' approved WebP artwork stays behind avatar FX');
+   assert.equal(s.portraitZ,'3',label+' avatar effects render in foreground');
+   assert.equal(s.portraitOverflow,'visible',label+' portrait ornaments are not clipped');
+   assert.equal(s.avatarOverflow,'visible',label+' rings, aura and motion remain visible');
+   assert.equal(s.cardOverflow,'hidden',label+' card frame still bounds effects to artwork');
+  }
   assert(mobile.width<=mobile.viewport+2,'Character Card must not cause horizontal scrolling on phones');
   assert(mobile.card.width<=mobile.viewport,'Card must fit within viewport');
   assert(mobile.portrait.x<mobile.name.x,'Phone layout places avatar beside the identity');
@@ -89,11 +101,15 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert(mobile.portrait.width>=60,'Compact hero avatar remains legible at 66px');
   await page.setViewportSize({width:320,height:700});
   const compact=await sample();
+  assert.equal(compact.avatarOverflow,'visible','320px icon supports orbit FX');
+  assert.equal(compact.artworkZ,'0','320px illustration remains background');
   assert(compact.width<=compact.viewport+2,'320px screen must not scroll horizontally');
   assert(compact.card.width<=compact.viewport,'320px card should fit within viewport');
   mapped(compact,'320px phone');
   await page.setViewportSize({width:1040,height:900});
   const desktop=await sample();
+  assert.equal(desktop.avatarOverflow,'visible','Desktop icon supports orbit FX');
+  assert.equal(desktop.portraitZ,'3','Desktop avatar layer is above artwork');
   assert(desktop.width<=desktop.viewport+2,'Desktop should not overflow');
   assert(desktop.portrait.x<desktop.name.x,'Desktop portrait is next to the identity');
   assert(desktop.tilesColumns===4,'Desktop shows four columns of chibi tiles');

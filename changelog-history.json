@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.111",
+      "releaseDate": "2026-11-11T16:32:00.727Z",
+      "summary": "perf(games): smoother online sync + live Firebase ping HUD (#256)",
+      "details": [
+        "perf(games): smoother online sync + live Firebase ping HUD (#256)"
+      ]
+    },
+    {
       "version": "1.1.110",
       "releaseDate": "2026-11-11T10:54:41.965Z",
       "summary": "fix(profile): overlay staff identity, level and XP on illustrated card",
@@ -390,14 +398,6 @@
       "summary": "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID",
       "details": [
         "fix(staff): lock pending approval and enforce unique name remediation preserving Staff ID"
-      ]
-    },
-    {
-      "version": "1.1.59",
-      "releaseDate": "2026-11-03T01:04:50.457Z",
-      "summary": "feat(crew): 100x verified order handling XP without changing sales or daily missions",
-      "details": [
-        "feat(crew): 100x verified order handling XP without changing sales or daily missions"
       ]
     }
   ]

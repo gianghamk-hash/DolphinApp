@@ -1,62 +1,26 @@
 {
-  "version": "1.1.111",
-  "previousVersion": "1.1.110",
-  "commit": "47fc5d0",
-  "previousCommit": "3799b21",
-  "buildDate": "2026-11-11T16:32:00.727Z",
-  "summary": "perf(games): smoother online sync + live Firebase ping HUD (#256)",
+  "version": "1.1.112",
+  "previousVersion": "1.1.111",
+  "commit": "e2dc99d",
+  "previousCommit": "47fc5d0",
+  "buildDate": "2026-11-12T00:57:45.493Z",
+  "summary": "fix(guests): add VISA to Premium Lounge payment selector (#257)",
   "changes": {
-    "totalCommits": 333,
-    "filesChanged": 11,
+    "totalCommits": 334,
+    "filesChanged": 2,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "perf(games): smoother online sync + live Firebase ping HUD (#256)"
+    "fix(guests): add VISA to Premium Lounge payment selector (#257)"
   ],
   "fileChanges": [
     {
-      "file": "caro/index.html",
+      "file": "dolphin-guests.html",
       "type": "update"
     },
     {
-      "file": "dolphin-multiplayer.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/tactics/online-latency.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/battleship.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/caro.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/chess.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/snake-coop-online.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/index.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/tactics-online/online-transport.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/xiangqi.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/index.html",
+      "file": "scripts/dolphin-guest-special.test.cjs",
       "type": "update"
     }
   ]

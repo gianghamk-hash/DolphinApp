@@ -1,7 +1,7 @@
 {
-  "version": "1.1.111",
-  "buildDate": "2026-11-11T16:32:00.727Z",
-  "commit": "47fc5d0",
-  "notes": "perf(games): smoother online sync + live Firebase ping HUD (#256)",
+  "version": "1.1.112",
+  "buildDate": "2026-11-12T00:57:45.493Z",
+  "commit": "e2dc99d",
+  "notes": "fix(guests): add VISA to Premium Lounge payment selector (#257)",
   "forceUpdate": false
 }

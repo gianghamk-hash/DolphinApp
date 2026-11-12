@@ -1,5 +1,5 @@
 {
-  "version": "1.1.111",
-  "releaseDate": "2026-11-11",
-  "notes": "perf(games): smoother online sync + live Firebase ping HUD (#256)"
+  "version": "1.1.112",
+  "releaseDate": "2026-11-12",
+  "notes": "fix(guests): add VISA to Premium Lounge payment selector (#257)"
 }

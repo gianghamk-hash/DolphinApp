@@ -141,6 +141,12 @@ test('Sprint 1: delayed listener unpacks unseen commands once while legacy messa
   assert.deepEqual(events.map(e=>e.text),['message 2','message 3','message 4']);
   h.emitInput(roomId,[{id:'legacy',value:{type:'caro-chat',text:'old client'}}]);
   assert.equal(events.at(-1).text,'old client');
+  // An offline first snapshot may be empty: when a player appears later,
+  // never replay their entire old log as if every action were new.
+  h.emitInput(roomId,[]);
+  h.emitInput(roomId,[{id:'late-player',value:{...b.data,__mpInputLog:[a,b]}}]);
+  assert.equal(events.at(-1).text,'message 2');
+  assert.equal(events.length,5);
   await h.mp.leaveRoom();
 });
 test('Sprint 1: slow state ACK coalesces normal frames without dropping critical Snake events',async()=>{

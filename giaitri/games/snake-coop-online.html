@@ -287,7 +287,7 @@ button:focus-visible,[role="button"]:focus-visible{outline:2px solid #fbd77a;out
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../staff-sync.js" defer></script>
 <script src="../../dolphin-leaderboard.js?v=2"></script>
-<script src="../../dolphin-multiplayer.js?v=sprint1-20261112"></script>
+<script src="../../dolphin-multiplayer.js?v=sprint1-20261112"></script><script src="../../game-performance-metrics.js?v=sprint3-20261112"></script>
 <script>
 'use strict';
 
@@ -665,6 +665,7 @@ function ensureSnakeSmoothLayer(){
   return layer;
 }
 function paintSnakeSmoothFrame(now){
+  window.DolphinRenderMetrics?.frame('snake-head-interpolation',now);
   snakeSmoothFrame=0;
   if(!snakeSmoothingEnabled()||!snakeSmoothMotion.length){stopSnakeSmoothing();return;}
   const elapsed=now-snakeSmoothMotion[0].started;

@@ -260,3 +260,28 @@ test('equipment tap opens target list for all deployed heroes without pointer hi
  assert.match(html,/send\(\{type:'EQUIP',unitId,component:item\.id\}\)/);
  assert.doesNotMatch(html,/function finishGearDrag/);
 });
+
+test('Sprint 2: TFT retains DOM nodes when unchanged, updating only the modified region',()=>{
+ const marker='const tftMarkupCache=new WeakMap();';
+ const start=html.indexOf(marker),end=html.indexOf("\nlet lastHudLayoutKey='';",start);
+ assert.ok(start>=0&&end>start,'TFT cache helper should be isolated and testable');
+ const cached=Function(html.slice(start,end)+'; return setMarkupIfChanged;')();
+ let assignments=0;
+ const node={set innerHTML(value){assignments++;this.content=value;},get innerHTML(){return this.content;}};
+ assert.equal(cached(node,'<button>Buy</button>'),true);
+ assert.equal(cached(node,'<button>Buy</button>'),false);
+ assert.equal(node.content,'<button>Buy</button>');
+ assert.equal(assignments,1,'Unchanged state must preserve node identity and focus');
+ assert.equal(cached(node,'<button disabled>Buy</button>'),true);
+ assert.equal(assignments,2,'State changes still update the UI');
+ for(const part of [
+  "setMarkupIfChanged($('players')",
+  'setMarkupIfChanged($("shop")',
+  'setMarkupIfChanged($("bench")',
+  "setMarkupIfChanged($('traitRail')",
+  "setMarkupIfChanged($('heroInfo')",
+  'setMarkupIfChanged(tray,'
+ ])assert.ok(html.includes(part),'Cache must cover '+part);
+ assert.match(html,/signature!==lastBoardSignature/,'Three.js still rebuilds on formation changes');
+ assert.match(html,/if\(layoutKey===lastHudLayoutKey\)return/,'Repeated layout writes are suppressed');
+});

@@ -1,38 +1,22 @@
 {
-  "version": "1.1.114",
-  "previousVersion": "1.1.113",
-  "commit": "c008dcc",
-  "previousCommit": "b2a595c",
-  "buildDate": "2026-11-12T05:16:02.276Z",
-  "summary": "perf(games): Sprint 1 multiplayer queues, ACK metrics and input replay (#259)",
+  "version": "1.1.115",
+  "previousVersion": "1.1.114",
+  "commit": "adca6b4",
+  "previousCommit": "c008dcc",
+  "buildDate": "2026-11-12T05:31:49.613Z",
+  "summary": "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)",
   "changes": {
-    "totalCommits": 336,
-    "filesChanged": 9,
+    "totalCommits": 337,
+    "filesChanged": 4,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "perf(games): Sprint 1 multiplayer queues, ACK metrics and input replay (#259)"
+    "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)"
   ],
   "fileChanges": [
     {
-      "file": "dolphin-multiplayer.js",
-      "type": "update"
-    },
-    {
       "file": "functions/tactics/online-latency.test.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/battleship.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/caro.html",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/chess.html",
       "type": "update"
     },
     {
@@ -44,11 +28,7 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/online-transport.js",
-      "type": "update"
-    },
-    {
-      "file": "giaitri/games/xiangqi.html",
+      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
       "type": "update"
     }
   ]

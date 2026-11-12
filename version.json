@@ -1,7 +1,7 @@
 {
-  "version": "1.1.114",
-  "buildDate": "2026-11-12T05:16:02.276Z",
-  "commit": "c008dcc",
-  "notes": "perf(games): Sprint 1 multiplayer queues, ACK metrics and input replay (#259)",
+  "version": "1.1.115",
+  "buildDate": "2026-11-12T05:31:49.613Z",
+  "commit": "adca6b4",
+  "notes": "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)",
   "forceUpdate": false
 }

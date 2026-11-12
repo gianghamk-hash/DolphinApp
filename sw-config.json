@@ -1,5 +1,5 @@
 {
-  "version": "1.1.114",
+  "version": "1.1.115",
   "releaseDate": "2026-11-12",
-  "notes": "perf(games): Sprint 1 multiplayer queues, ACK metrics and input replay (#259)"
+  "notes": "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)"
 }

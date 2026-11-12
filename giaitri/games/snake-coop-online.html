@@ -600,8 +600,10 @@ function buildSnap(){
 
 function hostRender(){
   if (!hostState || !isHost) return;
+  var previous = gameState;
   gameState = buildSnap();
   renderState(gameState);
+  smoothSnakeSnapshot(previous,gameState);
 }
 
 async function publishState(){
@@ -625,7 +627,7 @@ function hostGameOver(){
 }
 
 
-// Guest-only visual interpolation: positions come solely from validated
+// Visual interpolation for both host and guest: positions come from authoritative
 // snapshots. No prediction of collisions, score, direction or opponent inputs.
 var snakeSmoothLayer = null, snakeSmoothFrame = 0, snakeSmoothMotion = [];
 function interpolateSnakeHead(previous, current, progress){
@@ -644,7 +646,7 @@ function stopSnakeSmoothing(){
   if(snakeSmoothLayer)snakeSmoothLayer.style.display='none';
 }
 function snakeSmoothingEnabled(){
-  return !isHost && running && !paused && !gameOverFlag && !document.hidden
+  return running && !paused && !gameOverFlag && !document.hidden
     && typeof requestAnimationFrame==='function'
     && !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
 }

@@ -1,22 +1,30 @@
 {
-  "version": "1.1.115",
-  "previousVersion": "1.1.114",
-  "commit": "adca6b4",
-  "previousCommit": "c008dcc",
-  "buildDate": "2026-11-12T05:31:49.613Z",
-  "summary": "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)",
+  "version": "1.1.116",
+  "previousVersion": "1.1.115",
+  "commit": "6ad6a0c",
+  "previousCommit": "adca6b4",
+  "buildDate": "2026-11-12T05:50:51.194Z",
+  "summary": "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)",
   "changes": {
-    "totalCommits": 337,
-    "filesChanged": 4,
+    "totalCommits": 338,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)"
+    "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)"
   ],
   "fileChanges": [
     {
-      "file": "functions/tactics/online-latency.test.js",
+      "file": ".github/workflows/tactics-engine-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": "game-performance-metrics.js",
+      "type": "update"
+    },
+    {
+      "file": "game-performance-metrics.test.cjs",
       "type": "update"
     },
     {
@@ -28,7 +36,15 @@
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/tactics-ui.test.js",
+      "file": "giaitri/games/tactics-online/online-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "reports/MULTIPLAYER_SPRINT3.md",
+      "type": "update"
+    },
+    {
+      "file": "scripts/multiplayer-sprint3-benchmark.cjs",
       "type": "update"
     }
   ]

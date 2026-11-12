@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.115",
+      "releaseDate": "2026-11-12T05:31:49.613Z",
+      "summary": "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)",
+      "details": [
+        "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)"
+      ]
+    },
+    {
       "version": "1.1.114",
       "releaseDate": "2026-11-12T05:16:02.276Z",
       "summary": "perf(games): Sprint 1 multiplayer queues, ACK metrics and input replay (#259)",
@@ -390,14 +398,6 @@
       "summary": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)",
       "details": [
         "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)"
-      ]
-    },
-    {
-      "version": "1.1.63",
-      "releaseDate": "2026-11-03T07:47:04.201Z",
-      "summary": "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)",
-      "details": [
-        "Fix Manager PAX updates on Lounge tables owned by other or renamed staff (#218)"
       ]
     }
   ]

@@ -229,7 +229,8 @@ test('Sprint 2: Snake guest head interpolation is bounded and never predicts gam
   assert.equal(interpolate(snake(2,3),snake(3,3,false),.5),null,'Death must snap');
   assert.equal(interpolate(snake(2,3,false),snake(3,3),.5),null,'Respawn must snap');
   assert.equal(interpolate(null,snake(3,3),.5),null);
-  assert.match(html,/smoothSnakeSnapshot\(previous,st\)/,'Only guest snapshots trigger visual interpolation');
+  assert.match(html,/smoothSnakeSnapshot\(previous,st\)/,'Guest snapshots are smoothed');
+  assert.match(html,/smoothSnakeSnapshot\(previous,gameState\)/,'Host-authoritative ticks are also smoothed');
   assert.match(html,/if \(!Array\.isArray\(st\.snakes\)\) return/,'Event-only packets do not reset authoritative game state');
   assert.match(html,/stopSnakeSmoothing\(\);[\s\S]{0,150}if \(gameOverFlag\) return/,'Game over stops animation');
   assert.match(html,/prefers-reduced-motion: reduce/,'Reduced motion must be respected');

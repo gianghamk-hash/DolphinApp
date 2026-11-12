@@ -416,7 +416,7 @@ html.tft-android-apk #game:not(.hidden){flex:1 1 auto!important;min-height:0!imp
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.2/firebase-firestore-compat.js"></script>
 <script src="../../../functions/tactics/engine.js?v=combat-controls-1"></script><script src="visuals.js"></script><script src="hero-profiles.js"></script><script src="hero-visual-defs.js"></script><script src="hero-identity.js"></script><script src="shop-hints.js"></script><script src="rigged-model-factory.js"></script><script src="rig-animator.js"></script><script src="skeletal-system.js"></script><script src="combat-fx.js"></script><script src="combat-timeline.js"></script><script src="model-loader.js"></script><script src="animation.js"></script><script src="extreme-ai.js"></script><script src="guide.js"></script>
-<script src="../../../dolphin-tactics-results.js?v=1"></script><script src="match-results.js?v=1"></script><script src="phase-banner.js?v=1"></script><script src="online-transport.js?v=sprint1-20261112"></script><script src="simulation-client.js?v=2"></script><script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=2"></script><script src="../../../dolphin-multiplayer.js?v=sprint1-20261112"></script>
+<script src="../../../dolphin-tactics-results.js?v=1"></script><script src="match-results.js?v=1"></script><script src="phase-banner.js?v=1"></script><script src="online-transport.js?v=sprint1-20261112"></script><script src="../../../game-performance-metrics.js?v=sprint3-20261112"></script><script src="simulation-client.js?v=2"></script><script src="../../../staff-sync.js"></script><script src="../../../dolphin-leaderboard.js?v=2"></script><script src="../../../dolphin-multiplayer.js?v=sprint1-20261112"></script>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.165.0/build/three.module.js"}}</script>
 <script>
 (function(){
@@ -1178,7 +1178,7 @@ function setup3D(){
    qualityWindowStart=now;qualitySamples=0;qualityFrameTime=0;
   }
   if(now-last<33)return;
-  last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);if(!frame.labelsAt||now-frame.labelsAt>100){syncHeroNames();frame.labelsAt=now;}renderer.render(stageScene,camera);
+  last=now;tickReplay();Animator.tick(stageScene,characterById,now);CombatFX.tick(now);Visuals.animateFX(stageScene,visualFX,now);if(!frame.labelsAt||now-frame.labelsAt>100){syncHeroNames();frame.labelsAt=now;}renderer.render(stageScene,camera);window.DolphinRenderMetrics?.frame('tft-render',now);
  }
  requestAnimationFrame(frame);
 }

@@ -3,6 +3,10 @@ on:
   pull_request:
     paths:
       - "functions/tactics/**"
+      - "scripts/multiplayer-sprint3-benchmark.cjs"
+      - "game-performance-metrics.js"
+      - "game-performance-metrics.test.cjs"
+      - "giaitri/games/snake-coop-online.html"
       - "functions/index.js"
       - "functions/package.json"
       - "functions/push*.js"
@@ -17,6 +21,10 @@ on:
   push:
     paths:
       - "functions/tactics/**"
+      - "scripts/multiplayer-sprint3-benchmark.cjs"
+      - "game-performance-metrics.js"
+      - "game-performance-metrics.test.cjs"
+      - "giaitri/games/snake-coop-online.html"
       - "functions/index.js"
       - "functions/package.json"
       - "functions/push*.js"
@@ -42,5 +50,9 @@ jobs:
           node --test ../giaitri/games/tactics-online/hero-identity.test.js ../giaitri/games/tactics-online/weapon-animation.test.js ../giaitri/games/tactics-online/combat-performance.test.js ../giaitri/games/tactics-online/combat-timeline.test.js ../giaitri/games/tactics-online/hero-quality.test.js ../giaitri/games/tactics-online/model-loader.test.js
       - name: Validate atomic online rooms and worker simulation
         run: node --test giaitri/games/tactics-online/online-transport.test.js giaitri/games/tactics-online/simulation-client.test.js giaitri/games/tactics-online/phase-banner.test.js giaitri/games/tactics-online/tactics-ui.test.js
+      - name: Sprint 3 deterministic RTT 50-400 ms, reconnect, 2-4 peers
+        run: node scripts/multiplayer-sprint3-benchmark.cjs
+      - name: Validate real-frame FPS metric computations
+        run: node --test game-performance-metrics.test.cjs
       - name: Validate completed match receipts and leaderboard recovery
         run: node --test dolphin-tactics-results.test.js giaitri/games/tactics-online/match-results.test.js

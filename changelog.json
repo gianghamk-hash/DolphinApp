@@ -1,30 +1,58 @@
 {
-  "version": "1.1.118",
-  "previousVersion": "1.1.117",
-  "commit": "99a8a90",
-  "previousCommit": "08b2afe",
-  "buildDate": "2026-11-14T10:27:52.233Z",
-  "summary": "Fix table sign preview replacing APK host window (#263)",
+  "version": "1.1.119",
+  "previousVersion": "1.1.118",
+  "commit": "6fc3b70",
+  "previousCommit": "99a8a90",
+  "buildDate": "2026-11-14T10:39:40.624Z",
+  "summary": "Merge pull request #265 from gianghamk-hash/feat/guest-table-sheet-sync",
   "changes": {
-    "totalCommits": 340,
-    "filesChanged": 3,
+    "totalCommits": 341,
+    "filesChanged": 10,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix table sign preview replacing APK host window (#263)"
+    "Merge pull request #265 from gianghamk-hash/feat/guest-table-sheet-sync"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/dolphin-guest-special-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": "docs/GUEST_TABLE_SHEET_SYNC.md",
+      "type": "update"
+    },
     {
       "file": "dolphin-guests.html",
       "type": "update"
     },
     {
-      "file": "dolphin-table-signs.js",
+      "file": "functions/guest-table-parser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-table-signs-browser.cjs",
+      "file": "functions/guest-table-sheet.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-table-sheet.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/package.json",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

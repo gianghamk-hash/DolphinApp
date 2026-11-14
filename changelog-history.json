@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.118",
+      "releaseDate": "2026-11-14T10:27:52.233Z",
+      "summary": "Fix table sign preview replacing APK host window (#263)",
+      "details": [
+        "Fix table sign preview replacing APK host window (#263)"
+      ]
+    },
+    {
       "version": "1.1.117",
       "releaseDate": "2026-11-14T09:50:48.932Z",
       "summary": "feat(guests): print Word-style reservation signs by area (#262)",
@@ -390,14 +398,6 @@
       "summary": "Fix Staff ID rename blocked by contended full-registry transactions (#222)",
       "details": [
         "Fix Staff ID rename blocked by contended full-registry transactions (#222)"
-      ]
-    },
-    {
-      "version": "1.1.66",
-      "releaseDate": "2026-11-03T08:07:03.216Z",
-      "summary": "ci(staff): require rename regression tests before Firebase production deployment (#221)",
-      "details": [
-        "ci(staff): require rename regression tests before Firebase production deployment (#221)"
       ]
     }
   ]

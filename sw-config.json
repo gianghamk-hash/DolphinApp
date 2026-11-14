@@ -1,5 +1,5 @@
 {
-  "version": "1.1.118",
+  "version": "1.1.119",
   "releaseDate": "2026-11-14",
-  "notes": "Fix table sign preview replacing APK host window (#263)"
+  "notes": "Merge pull request #265 from gianghamk-hash/feat/guest-table-sheet-sync"
 }

@@ -596,7 +596,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-note-ai-v1"></script>
-<script src="./dolphin-guest-note-summary.js?v=ai-v2"></script>
+<script src="./dolphin-guest-note-summary.js?v=ai-v3"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
@@ -1009,6 +1009,7 @@ function parse(rows){
     });
 
     b.showSlots = detectShowSlots(allNotes, b.bung);
+    if(window.DolphinGuestNoteSummary)window.DolphinGuestNoteSummary.prepare(b);
     return b;
   });
 }
@@ -1059,7 +1060,7 @@ function specialCategoryKeys(b){
  (b.specialFood||[]).forEach(function(item){
    if(item.type&&keys.indexOf(item.type)<0)keys.push(item.type);
  });
- if(!keys.length&&b.dietNoteRaw)keys.push('diet-note');
+ if(!keys.length&&b.dietNoteRaw&&b.aiClassificationState!=='ready')keys.push('diet-note');
  return keys;
 }
 function specialCategoryName(key){
@@ -1075,7 +1076,7 @@ function specialSummaryHtml(b){
  var key=summary?summary.key(note):'';
  return '<details class="special-source"><summary aria-label="Xem đầy đủ ghi chú khách">'+
   '<span class="special-note-preview" data-guest-summary="'+esc(key)+'">'+esc(preview)+'</span></summary>'+
-  '<div class="special-source-text">'+esc(note)+'</div></details>';
+  '<div class="special-source-text">'+(b.aiClassificationState==='review'?'<b>Yêu cầu chưa rõ — cần kiểm tra.</b><br>':'')+esc(note)+'</div></details>';
 }
 function tagHtml(b,showSpecial){
  if(showSpecial)return specialSummaryHtml(b);
@@ -1094,7 +1095,7 @@ function getPriority(b){
   var txt = (b.name+' '+(b.code||'')+' '+(b.agent||'')).toLowerCase();
   if (b.lob.length > 0) return 'pri-vip';
   if (/\bvip\b|\bvvip\b/.test(txt)) return 'pri-vip';
-  if (b.diet.length > 0 || b.dietNoteRaw) return 'pri-diet';
+  if (b.diet.length > 0 || (b.dietNoteRaw&&b.aiClassificationState!=='ready')) return 'pri-diet';
   if (b.specialFood && b.specialFood.length > 0) return 'pri-food';
   return 'pri-normal';
 }
@@ -1244,19 +1245,19 @@ function pushBlock(b,i,j,x){
   }else if(room)msg='P.'+room+' đang trống';
   var opts='<option value="">— chọn phòng —</option>'+ROOMS.map(function(r){return '<option'+(r===room?' selected':'')+'>'+r+'</option>'}).join('');
   var dis=(!ready||BS.error||!isToday||!room)?' disabled':'';
-  return '<div class="push"><select data-pk="'+esc(k)+'">'+opts+'</select>'+
+  return (x.quantityKnown===false?'<div class="msg warn">Chưa rõ số bungalow — đối chiếu ghi chú trước khi gửi.</div>':'')+'<div class="push"><select data-pk="'+esc(k)+'">'+opts+'</select>'+
     '<button class="btn" data-push="'+esc(k)+'"'+dis+'><i class="ic ic-send"></i> Gửi</button>'+(msg?'<div class="msg '+cls+'">'+esc(msg)+'</div>':'')+'</div>';
 }
 function viewBung(L){
   var S=L.filter(function(b){return b.bung.length});
   var h='<div class="stats">'+
     statBox('<i class="ic ic-clipboard"></i>',S.length,'booking có bungalow')+
-    statBox('<i class="ic ic-tent"></i>',nBung(L),'tổng bungalow')+'</div>';
+    statBox('<i class="ic ic-tent"></i>',nBung(L),'bungalow ghi rõ số lượng')+'</div>';
   if(!S.length)return h+'<div class="empty">Chưa có khách nào đặt bungalow trong danh sách này.</div>';
   h+='<div class="grid">';
   S.forEach(function(b){
     var p='';
-    b.bung.forEach(function(x,i){for(var j=0;j<Math.min(x.n,6);j++)p+=pushBlock(b,i,j,x)});
+    b.bung.forEach(function(x,i){for(var j=0;j<Math.min(Math.max(1,x.n),6);j++)p+=pushBlock(b,i,j,x)});
     h+=card(b).replace(/<\/div>$/,p+'</div>');
   });
   return h+'</div>';
@@ -1625,7 +1626,13 @@ function renderFilter(){
   $('subRow').style.display=h?'flex':'none';
 }
 
-function render(){
+function refreshGuestClassification(){
+  if($('out').contains(document.activeElement)&&/^(INPUT|SELECT|TEXTAREA)$/.test(document.activeElement.tagName)){updateMiniStats();return;}
+  var opened=Array.from(document.querySelectorAll('details.special-source[open] [data-guest-summary]')).map(function(n){return n.dataset.guestSummary});
+  render(true);
+  document.querySelectorAll('[data-guest-summary]').forEach(function(n){if(opened.indexOf(n.dataset.guestSummary)>-1)n.closest('details').open=true});
+}
+function render(preserveEntry){
   var L=B.filter(match);
   var h;
   var dd=curDate.split('-').reverse().join('/');
@@ -1640,7 +1647,7 @@ function render(){
   else if(tab==='lg') h=loungeView(L);
   else h = (tour === 'am') ? viewBung(L) : viewShow(L);
   $('out').innerHTML=h;
-  renderUnassigned();
+  if(!preserveEntry)renderUnassigned();
   if($('printSigns'))$('printSigns').disabled=status!=='ok'||!B.length;
   $('tAm').classList.toggle('on',tour==='am');
   $('tDn').classList.toggle('on',tour==='dn');
@@ -1774,7 +1781,7 @@ function load(){
     if(my!==loadSeq)return;
     status='error';B=[];foundName='';
     $('out').innerHTML='<div class="err"><i class="ic ic-alert"></i> Không tải được dữ liệu ('+esc(e.message)+').<br>Kiểm tra: Google Sheet đang để <b>"Bất kỳ ai có đường liên kết đều xem được"</b> và mạng còn hoạt động.</div>';
-  }).then(function(){if(my===loadSeq){btn.disabled=false;render();if(status==='ok'&&window.DolphinGuestNoteSummary)window.DolphinGuestNoteSummary.ensure(B)}});
+  }).then(function(){if(my===loadSeq){btn.disabled=false;render();if(status==='ok'&&window.DolphinGuestNoteSummary)window.DolphinGuestNoteSummary.ensure(B,function(){if(my===loadSeq)refreshGuestClassification()})}});
 }
 
 $('reload').onclick=async function(){

@@ -72,7 +72,6 @@
   }).join('');
   const sheets=pages.map(page=>'<section class="sheet" data-area="'+page.area+'">'+
    page.records.map(b=>sign(b,asset)).join('')+'</section>').join('');
-  const style=String.raw;
   const css=[
    '*{box-sizing:border-box}',
    'body{margin:0;background:#dce6e8;color:#125263;font-family:Arial,sans-serif}',
@@ -90,10 +89,11 @@
    '.warning{font-size:12px;color:#994b1d;margin-top:8px}',
    '#pages{padding:18px 0 28px}',
    '.sheet{position:relative;width:8.5in;height:11in;margin:0 auto 22px;background:white;overflow:hidden;box-shadow:0 3px 16px #0003}',
+   '.sheet.is-hidden{display:none!important}',
    '.sign{position:absolute;left:.5in;top:.95in;width:6.5in;height:4.595833in;overflow:hidden}',
-   '.sign:nth-of-type(2){top:5.55in}',
+   '.sign:nth-of-type(2){top:5.13in}',
    '.art{width:100%;height:100%;display:block;position:absolute;inset:0;object-fit:contain}',
-   '.fields{position:absolute;top:2.04in;left:.25in;right:.08in;font:italic 18pt "Times New Roman",Times,serif;line-height:.39in;color:#000}',
+   '.fields{position:absolute;top:2.10in;left:.48in;right:.08in;font:italic 18pt "Times New Roman",Times,serif;line-height:.39in;color:#000}',
    '.fields>div{height:.39in;white-space:nowrap;letter-spacing:-.01em}',
    '.fields strong{font-weight:700}',
    '.empty{text-align:center;color:#677b83;padding:45px}',
@@ -102,23 +102,27 @@
    '@media print{html,body{margin:0!important;padding:0!important;background:white!important}',
    '.toolbar,.empty{display:none!important}#pages{padding:0!important}',
    '.sheet{width:8.5in;height:11in;box-shadow:none!important;margin:0!important;page-break-after:always;break-after:page;page-break-inside:avoid}',
-   '.sheet.is-hidden{display:none!important}.sheet:last-child{page-break-after:auto;break-after:auto}',
+   '.sheet.is-last-visible{page-break-after:auto;break-after:auto}',
    '.art{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'
   ].join('\n');
   const script=[
    '(function(){',
    'const boxes=[...document.querySelectorAll("input[data-area]")];',
    'const selected=new Set(boxes.filter(x=>x.checked).map(x=>x.dataset.area));',
-   'function refresh(){let count=0,n=0;',
+   'function refresh(){let count=0,n=0,last=null;',
    'document.querySelectorAll(".sheet").forEach(sheet=>{const visible=selected.has(sheet.dataset.area);sheet.classList.toggle("is-hidden",!visible);',
-   'if(visible){n++;count+=sheet.querySelectorAll(".sign").length;}});',
+   'sheet.classList.remove("is-last-visible");if(visible){n++;last=sheet;count+=sheet.querySelectorAll(".sign").length;}});',
+   'if(last)last.classList.add("is-last-visible");',
    'document.getElementById("count").textContent=count+" biển · "+n+" trang";',
    'document.getElementById("print").disabled=!n;',
    'document.getElementById("empty").style.display=n?"none":"block";}',
    'boxes.forEach(box=>box.addEventListener("change",()=>{box.checked?selected.add(box.dataset.area):selected.delete(box.dataset.area);refresh();}));',
    'document.getElementById("all").onclick=()=>{boxes.forEach(b=>{if(!b.disabled){b.checked=true;selected.add(b.dataset.area);}});refresh();};',
    'document.getElementById("none").onclick=()=>{boxes.forEach(b=>{b.checked=false;selected.delete(b.dataset.area);});refresh();};',
-   'document.getElementById("print").onclick=()=>window.print();refresh();',
+   'document.getElementById("print").onclick=async()=>{',
+   'const imgs=[...document.querySelectorAll(".sheet:not(.is-hidden) img")];',
+   'await Promise.all(imgs.map(img=>img.decode?img.decode().catch(()=>{}):Promise.resolve()));',
+   'window.print();};refresh();',
    '})();'
   ].join('\n');
   return '<!doctype html><html lang="vi"><head><meta charset="utf-8">'+

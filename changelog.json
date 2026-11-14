@@ -1,24 +1,20 @@
 {
-  "version": "1.1.127",
-  "previousVersion": "1.1.126",
-  "commit": "4691de3",
-  "previousCommit": "9118007",
-  "buildDate": "2026-11-14T14:15:28.543Z",
-  "summary": "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary",
+  "version": "1.1.128",
+  "previousVersion": "1.1.127",
+  "commit": "24ccb29",
+  "previousCommit": "4691de3",
+  "buildDate": "2026-11-14T14:32:56.021Z",
+  "summary": "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope",
   "changes": {
-    "totalCommits": 349,
-    "filesChanged": 13,
+    "totalCommits": 350,
+    "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary"
+    "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/dolphin-guest-special-tests.yml",
-      "type": "update"
-    },
     {
       "file": "docs/GUEST_NOTE_AI.md",
       "type": "update"
@@ -40,14 +36,6 @@
       "type": "update"
     },
     {
-      "file": "functions/index.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-id.test.js",
-      "type": "update"
-    },
-    {
       "file": "scripts/dolphin-guest-entry-browser.cjs",
       "type": "update"
     },
@@ -61,10 +49,6 @@
     },
     {
       "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
       "type": "update"
     }
   ]

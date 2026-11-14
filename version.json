@@ -1,7 +1,7 @@
 {
-  "version": "1.1.127",
-  "buildDate": "2026-11-14T14:15:28.543Z",
-  "commit": "4691de3",
-  "notes": "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary",
+  "version": "1.1.128",
+  "buildDate": "2026-11-14T14:32:56.021Z",
+  "commit": "24ccb29",
+  "notes": "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope",
   "forceUpdate": false
 }

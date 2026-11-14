@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.127",
+      "releaseDate": "2026-11-14T14:15:28.543Z",
+      "summary": "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary",
+      "details": [
+        "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary"
+      ]
+    },
+    {
       "version": "1.1.126",
       "releaseDate": "2026-11-14T14:04:14.353Z",
       "summary": "Merge pull request #272 from gianghamk-hash/feat/guest-conflict-popup-notes",
@@ -390,14 +398,6 @@
       "summary": "Automatically equip level cosmetics and preserve later personal customization (#238)",
       "details": [
         "Automatically equip level cosmetics and preserve later personal customization (#238)"
-      ]
-    },
-    {
-      "version": "1.1.75",
-      "releaseDate": "2026-11-04T03:19:01.805Z",
-      "summary": "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)",
-      "details": [
-        "Retry pending personal XP on progress refresh with no new Scheduler permissions (#237)"
       ]
     }
   ]

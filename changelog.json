@@ -1,22 +1,62 @@
 {
-  "version": "1.1.121",
-  "previousVersion": "1.1.120",
-  "commit": "b92a9d2",
-  "previousCommit": "354bc2c",
-  "buildDate": "2026-11-14T11:54:04.396Z",
-  "summary": "Merge pull request #267 from gianghamk-hash/fix/visible-guest-table-entry",
+  "version": "1.1.122",
+  "previousVersion": "1.1.121",
+  "commit": "6215c3a",
+  "previousCommit": "b92a9d2",
+  "buildDate": "2026-11-14T12:17:32.860Z",
+  "summary": "Stage signed Apps Script sync and table assignment bridge with shared locking (#268)",
   "changes": {
-    "totalCommits": 343,
-    "filesChanged": 1,
+    "totalCommits": 344,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #267 from gianghamk-hash/fix/visible-guest-table-entry"
+    "Stage signed Apps Script sync and table assignment bridge with shared locking (#268)"
   ],
   "fileChanges": [
     {
+      "file": ".github/workflows/dolphin-guest-special-tests.yml",
+      "type": "update"
+    },
+    {
+      "file": "apps-script/DolphinBridge.gs",
+      "type": "update"
+    },
+    {
+      "file": "apps-script/DolphinFB.gs",
+      "type": "update"
+    },
+    {
+      "file": "docs/GUEST_APPS_SCRIPT_BRIDGE.md",
+      "type": "update"
+    },
+    {
       "file": "dolphin-guests.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-sheet-bridge.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-table-sheet.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-table-sheet.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

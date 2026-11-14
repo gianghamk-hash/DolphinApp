@@ -1,7 +1,7 @@
 {
-  "version": "1.1.121",
-  "buildDate": "2026-11-14T11:54:04.396Z",
-  "commit": "b92a9d2",
-  "notes": "Merge pull request #267 from gianghamk-hash/fix/visible-guest-table-entry",
+  "version": "1.1.122",
+  "buildDate": "2026-11-14T12:17:32.860Z",
+  "commit": "6215c3a",
+  "notes": "Stage signed Apps Script sync and table assignment bridge with shared locking (#268)",
   "forceUpdate": false
 }

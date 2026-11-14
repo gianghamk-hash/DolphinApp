@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.121",
+      "releaseDate": "2026-11-14T11:54:04.396Z",
+      "summary": "Merge pull request #267 from gianghamk-hash/fix/visible-guest-table-entry",
+      "details": [
+        "Merge pull request #267 from gianghamk-hash/fix/visible-guest-table-entry"
+      ]
+    },
+    {
       "version": "1.1.120",
       "releaseDate": "2026-11-14T10:46:01.182Z",
       "summary": "Merge pull request #266 from gianghamk-hash/fix/a4-linked-booking-signs",
@@ -390,14 +398,6 @@
       "summary": "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)",
       "details": [
         "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)"
-      ]
-    },
-    {
-      "version": "1.1.69",
-      "releaseDate": "2026-11-03T14:14:10.953Z",
-      "summary": "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)",
-      "details": [
-        "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)"
       ]
     }
   ]

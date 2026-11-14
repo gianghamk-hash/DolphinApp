@@ -27,7 +27,7 @@ test('original sample signs retain text fields, sequence and US Letter 2-per-pag
  assert.match(out,/@page\{size:letter;margin:0\}/);
  assert.match(out,/width:8.5in;height:11in/);
  assert.match(out,/width:6.5in;height:4.595833in/);
- assert.match(out,/top:5.55in/);
+ assert.match(out,/top:5.13in/);
  assert.equal((out.match(/class="sign"/g)||[]).length,2);
 });
 test('range parser supports A,B,C,D,E,J,Q,L and Lounge aliases',()=>{
@@ -93,4 +93,20 @@ test('button runs on current tour and source bookings, with no database writes',
  assert.match(guest,/printSigns'\)\.disabled=status!=='ok'\|\|!B\.length/);
  const js=fs.readFileSync(path.join(__dirname,'..','dolphin-table-signs.js'),'utf8');
  assert.doesNotMatch(js,/setDoc\(|runTransaction\(|updateDoc\(|DolphinStaffId\.performLiveAction/);
+});
+
+test('preview and print filter the same selected zones and omit the trailing blank sheet',()=>{
+ const data=sign.collect([
+  {code:'DP-A',name:'A',tb:['A1']},
+  {code:'DP-E',name:'E',tb:['E1']},
+  {code:'DP-L',name:'L',tb:['L1']}
+ ]);
+ const html=sign.documentHtml(data);
+ assert.match(html,/\.sheet\.is-hidden\{display:none!important\}/);
+ assert.match(html,/\.sheet\.is-last-visible\{page-break-after:auto;break-after:auto\}/);
+ assert.match(html,/last\.classList\.add\("is-last-visible"\)/);
+ assert.match(html,/document\.getElementById\("print"\)\.disabled=!n/);
+ assert.match(html,/await Promise\.all\(imgs\.map/,'Browser should wait for artwork to decode');
+ assert.equal((html.match(/class="sheet" data-area=/g)||[]).length,3);
+ assert.deepEqual(sign.pagesOf(data,['E']).map(p=>p.area),['E']);
 });

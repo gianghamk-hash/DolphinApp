@@ -4,6 +4,9 @@ on:
     paths:
       - 'functions/guest-table*'
       - 'functions/guest-sheet-bridge.js'
+      - 'functions/guest-note-summary*'
+      - 'dolphin-guest-note-summary.js'
+      - 'scripts/dolphin-guest-note-summary.test.cjs'
       - 'apps-script/**'
       - 'dolphin-guests.html'
       - 'dolphin-guest-table-input.js'
@@ -22,6 +25,9 @@ on:
     paths:
       - 'functions/guest-table*'
       - 'functions/guest-sheet-bridge.js'
+      - 'functions/guest-note-summary*'
+      - 'dolphin-guest-note-summary.js'
+      - 'scripts/dolphin-guest-note-summary.test.cjs'
       - 'apps-script/**'
       - 'dolphin-guests.html'
       - 'dolphin-guest-table-input.js'
@@ -52,7 +58,7 @@ jobs:
         run: node --test scripts/dolphin-guest-special.test.cjs
 
       - name: Verify authenticated Sheets assignment and conflict handling
-        run: node --test functions/guest-table-sheet.test.cjs scripts/dolphin-guest-table-input.test.cjs
+        run: node --test functions/guest-table-sheet.test.cjs scripts/dolphin-guest-table-input.test.cjs functions/guest-note-summary.test.cjs scripts/dolphin-guest-note-summary.test.cjs
       - name: Install print layout verification dependencies
         run: |
           npm install --no-save --package-lock=false playwright

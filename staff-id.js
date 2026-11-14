@@ -143,6 +143,7 @@ window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:
  approveRegistration:employeeId=>call('staffApproveRegistration',{employeeId}),
  rejectRegistration:employeeId=>call('staffRejectRegistration',{employeeId}),
  assignGuestTable:payload=>call('guestSheetBridge',{action:'assign',data:payload}),
+ summarizeGuestNotes:notes=>call('guestSummarizeNotes',{notes}),
  syncGuestSheets:()=>call('guestSheetBridge',{action:'sync'}),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},
  syncSavedActivity:syncXP,retrySavedXP:retryXP,

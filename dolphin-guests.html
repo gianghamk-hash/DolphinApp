@@ -595,7 +595,8 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 </style>
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
-<script src="./staff-id.js?v=guest-sheet-bridge-1"></script>
+<script src="./staff-id.js?v=guest-note-ai-v1"></script>
+<script src="./dolphin-guest-note-summary.js?v=ai-v1"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
@@ -1065,23 +1066,19 @@ function specialCategoryName(key){
  return match?match.label:key;
 }
 function specialSummaryHtml(b){
- var keys=specialCategoryKeys(b);
- if(!keys.length)return '';
- var names=keys.map(specialCategoryName);
- var h='<div class="special-compact"><strong>Ăn đặc biệt · F&B</strong>'+
-   '<span class="special-compact-values">'+names.map(esc).join(' · ')+'</span></div>';
- if(b.noteRaw&&b.noteRaw.trim()){
-   var preview=String(b.dietNoteRaw||'').replace(/\s+/g,' ').trim();
-   if(preview.length>110)preview=preview.slice(0,110)+'…';
-   h+='<details class="special-source"><summary>'+(preview?'<span class="special-note-preview">'+esc(preview)+'</span>':'')+'<span>Xem ghi chú gốc / số suất / thanh toán</span></summary>'+
-     '<div class="special-source-text">'+esc(b.noteRaw)+'</div></details>';
- }
- return h;
+ var note=String(b.noteRaw||b.dietNoteRaw||'');
+ if(!note.trim())return '';
+ var summary=window.DolphinGuestNoteSummary;
+ var plainNote=note.replace(/\s+/g,' ').trim();
+ var preview=summary?summary.preview(note):plainNote.slice(0,240)+(plainNote.length>240?'…':'');
+ var key=summary?summary.key(note):'';
+ return '<details class="special-source"><summary aria-label="Xem đầy đủ ghi chú khách">'+
+  '<span class="special-note-preview" data-guest-summary="'+esc(key)+'">'+esc(preview)+'</span></summary>'+
+  '<div class="special-source-text">'+esc(note)+'</div></details>';
 }
 function tagHtml(b,showSpecial){
  if(showSpecial)return specialSummaryHtml(b);
- // Các tab Tổng quan/Bungalow/Show không lặp lại thẻ món ăn và đồ uống.
- // BKK có yêu cầu đặc biệt vẫn được đánh dấu bằng huy hiệu trên card.
+ // Show one concise, expandable customer request on cards with dietary notes.
  var h=b.dietNoteRaw?specialSummaryHtml(b):'';
  b.bung.forEach(function(x){h+='<span class="tag o"><i class="ic ic-tent"></i> '+esc(bungTxt(x))+'</span>'});
  if(tour==='dn'&&b.showSlots&&b.showSlots.length){
@@ -1776,7 +1773,7 @@ function load(){
     if(my!==loadSeq)return;
     status='error';B=[];foundName='';
     $('out').innerHTML='<div class="err"><i class="ic ic-alert"></i> Không tải được dữ liệu ('+esc(e.message)+').<br>Kiểm tra: Google Sheet đang để <b>"Bất kỳ ai có đường liên kết đều xem được"</b> và mạng còn hoạt động.</div>';
-  }).then(function(){if(my===loadSeq){btn.disabled=false;render()}});
+  }).then(function(){if(my===loadSeq){btn.disabled=false;render();if(status==='ok'&&window.DolphinGuestNoteSummary)window.DolphinGuestNoteSummary.ensure(B)}});
 }
 
 $('reload').onclick=async function(){

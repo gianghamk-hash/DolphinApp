@@ -27,6 +27,7 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   await page.locator('input[name=table]').fill('C1');await page.locator('form button').click();
   await page.waitForFunction(()=>document.querySelector('form button').disabled===false);
   assert.equal(dialogs.length,2);assert.match(dialogs[1],/booking khác/);
+  await page.addScriptTag({path:path.join(root,'dolphin-guest-note-summary.js')});
   await page.addScriptTag({content:part('var SPECIAL_CATEGORIES=[','function getPriority(b){')});
   const raw='FOC 01 HDV ăn như khách\nGhi chú chưa phân loại '+ 'nguyên văn '.repeat(30)+'<img src=x onerror=alert(1)>';
   await page.evaluate(raw=>{
@@ -39,6 +40,14 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   assert(await page.locator('#noteTest .special-source-text').isVisible());
   assert.equal(await page.locator('#noteTest .special-source-text').textContent(),raw+'\nKhông kayak/bamboo');
   assert.equal(await page.locator('#noteTest img').count(),0);
+  assert.equal(await page.locator('#noteTest .special-compact').count(),0,'No generic F&B heading');
+  await page.evaluate(async raw=>{
+   DolphinStaffId.summarizeGuestNotes=async notes=>({summaries:notes.map((n,id)=>({id,text:'Yêu cầu phục vụ đã tóm tắt'}))});
+   await DolphinGuestNoteSummary.ensure([{noteRaw:raw+'\nKhông kayak/bamboo'}]);
+  },raw);
+  assert.equal(await page.locator('#noteTest summary span').textContent(),'Yêu cầu phục vụ đã tóm tắt');
+  assert(await page.locator('#noteTest .special-source-text').isVisible(),'AI update must not close an open note');
+  assert.equal(await page.locator('#noteTest .special-source-text').textContent(),raw+'\nKhông kayak/bamboo');
   await page.locator('#noteTest summary').press('Enter');
   assert.equal(await page.locator('#noteTest .special-source-text').isVisible(),false);
   assert.equal(dialogs.length,2,'Note text must never execute HTML');

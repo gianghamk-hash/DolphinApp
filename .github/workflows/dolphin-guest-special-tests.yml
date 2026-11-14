@@ -4,7 +4,10 @@ on:
     paths:
       - 'dolphin-guests.html'
       - 'dolphin-guest-special-rules.js'
+      - 'dolphin-table-signs.js'
+      - 'assets/dolphin-table-sign-word.png'
       - 'scripts/dolphin-guest-special.test.cjs'
+      - 'scripts/dolphin-table-signs.test.cjs'
       - '.github/workflows/dolphin-guest-special-tests.yml'
       - 'service-worker.js'
   push:
@@ -12,7 +15,10 @@ on:
     paths:
       - 'dolphin-guests.html'
       - 'dolphin-guest-special-rules.js'
+      - 'dolphin-table-signs.js'
+      - 'assets/dolphin-table-sign-word.png'
       - 'scripts/dolphin-guest-special.test.cjs'
+      - 'scripts/dolphin-table-signs.test.cjs'
       - '.github/workflows/dolphin-guest-special-tests.yml'
 jobs:
   guest-special-fnb:
@@ -24,5 +30,9 @@ jobs:
           node-version: '22'
       - name: Validate booking-note parser syntax
         run: node --check dolphin-guest-special-rules.js
+      - name: Validate Word-based table-sign printer JS
+        run: node --check dolphin-table-signs.js
+      - name: Verify eight-area sign grouping, exact Letter layout, artwork and escaping
+        run: node --test scripts/dolphin-table-signs.test.cjs
       - name: Verify Pakora, Coconut Welcome, Trà Ấn and special BKK display
         run: node --test scripts/dolphin-guest-special.test.cjs

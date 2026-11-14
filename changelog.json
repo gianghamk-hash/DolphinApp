@@ -1,50 +1,42 @@
 {
-  "version": "1.1.116",
-  "previousVersion": "1.1.115",
-  "commit": "6ad6a0c",
-  "previousCommit": "adca6b4",
-  "buildDate": "2026-11-12T05:50:51.194Z",
-  "summary": "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)",
+  "version": "1.1.117",
+  "previousVersion": "1.1.116",
+  "commit": "08b2afe",
+  "previousCommit": "6ad6a0c",
+  "buildDate": "2026-11-14T09:50:48.932Z",
+  "summary": "feat(guests): print Word-style reservation signs by area (#262)",
   "changes": {
-    "totalCommits": 338,
-    "filesChanged": 8,
+    "totalCommits": 339,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)"
+    "feat(guests): print Word-style reservation signs by area (#262)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/tactics-engine-tests.yml",
+      "file": ".github/workflows/dolphin-guest-special-tests.yml",
       "type": "update"
     },
     {
-      "file": "game-performance-metrics.js",
+      "file": "assets/dolphin-table-sign-word.png",
       "type": "update"
     },
     {
-      "file": "game-performance-metrics.test.cjs",
+      "file": "dolphin-guests.html",
       "type": "update"
     },
     {
-      "file": "giaitri/games/snake-coop-online.html",
+      "file": "dolphin-table-signs.js",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/index.html",
+      "file": "scripts/dolphin-table-signs.test.cjs",
       "type": "update"
     },
     {
-      "file": "giaitri/games/tactics-online/online-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "reports/MULTIPLAYER_SPRINT3.md",
-      "type": "update"
-    },
-    {
-      "file": "scripts/multiplayer-sprint3-benchmark.cjs",
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

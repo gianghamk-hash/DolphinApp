@@ -1,5 +1,5 @@
 {
-  "version": "1.1.116",
-  "releaseDate": "2026-11-12",
-  "notes": "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)"
+  "version": "1.1.117",
+  "releaseDate": "2026-11-14",
+  "notes": "feat(guests): print Word-style reservation signs by area (#262)"
 }

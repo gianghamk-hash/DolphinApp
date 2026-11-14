@@ -1,7 +1,7 @@
 {
-  "version": "1.1.116",
-  "buildDate": "2026-11-12T05:50:51.194Z",
-  "commit": "6ad6a0c",
-  "notes": "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)",
+  "version": "1.1.117",
+  "buildDate": "2026-11-14T09:50:48.932Z",
+  "commit": "08b2afe",
+  "notes": "feat(guests): print Word-style reservation signs by area (#262)",
   "forceUpdate": false
 }

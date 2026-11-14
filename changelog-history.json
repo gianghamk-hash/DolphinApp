@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.116",
+      "releaseDate": "2026-11-12T05:50:51.194Z",
+      "summary": "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)",
+      "details": [
+        "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)"
+      ]
+    },
+    {
       "version": "1.1.115",
       "releaseDate": "2026-11-12T05:31:49.613Z",
       "summary": "perf(games): Sprint 2 Snake interpolation and selective TFT rendering (#260)",
@@ -390,14 +398,6 @@
       "summary": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)",
       "details": [
         "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)"
-      ]
-    },
-    {
-      "version": "1.1.64",
-      "releaseDate": "2026-11-03T08:02:05.151Z",
-      "summary": "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)",
-      "details": [
-        "Fix mandatory Staff ID name repair being blocked by shared rate limiter (#219)"
       ]
     }
   ]

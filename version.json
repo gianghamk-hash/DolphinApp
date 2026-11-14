@@ -1,7 +1,7 @@
 {
-  "version": "1.1.128",
-  "buildDate": "2026-11-14T14:32:56.021Z",
-  "commit": "24ccb29",
-  "notes": "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope",
+  "version": "1.1.129",
+  "buildDate": "2026-11-14T16:45:17.017Z",
+  "commit": "021a01e",
+  "notes": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification",
   "forceUpdate": false
 }

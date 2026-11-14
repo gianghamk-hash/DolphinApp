@@ -1,5 +1,5 @@
 {
-  "version": "1.1.128",
+  "version": "1.1.129",
   "releaseDate": "2026-11-14",
-  "notes": "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope"
+  "notes": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification"
 }

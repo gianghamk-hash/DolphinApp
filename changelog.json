@@ -1,20 +1,24 @@
 {
-  "version": "1.1.128",
-  "previousVersion": "1.1.127",
-  "commit": "24ccb29",
-  "previousCommit": "4691de3",
-  "buildDate": "2026-11-14T14:32:56.021Z",
-  "summary": "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope",
+  "version": "1.1.129",
+  "previousVersion": "1.1.128",
+  "commit": "021a01e",
+  "previousCommit": "24ccb29",
+  "buildDate": "2026-11-14T16:45:17.017Z",
+  "summary": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification",
   "changes": {
-    "totalCommits": 350,
-    "filesChanged": 9,
+    "totalCommits": 351,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope"
+    "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/dolphin-guest-special-tests.yml",
+      "type": "update"
+    },
     {
       "file": "docs/GUEST_NOTE_AI.md",
       "type": "update"
@@ -25,6 +29,14 @@
     },
     {
       "file": "dolphin-guests.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-classification.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-classification.test.cjs",
       "type": "update"
     },
     {
@@ -41,10 +53,6 @@
     },
     {
       "file": "scripts/dolphin-guest-note-summary.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/dolphin-guest-special.test.cjs",
       "type": "update"
     },
     {

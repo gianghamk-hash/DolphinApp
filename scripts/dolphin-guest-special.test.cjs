@@ -141,30 +141,30 @@ test('special BKK tab filters only existing categories and counts each booking o
  const view=segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
  const b1={code:'DP-COCONUT-TEA',diet:[],lob:[],bung:[],noteRaw:'Coconut Welcome + Trà Ấn',
   specialFood:rules.detect('Coconut Welcome + trà Ấn')};
- const b2={code:'DP-VEG',diet:[{t:'Veg',s:'Veg'},{t:'Veg',s:'pure veg'}],lob:[],bung:[],noteRaw:'Veg',
+ const b2={code:'DP-VEG',diet:[{t:'Veg',s:'Veg',setMenu:true},{t:'Veg',s:'pure veg',setMenu:true}],lob:[],bung:[],noteRaw:'Veg',
   specialFood:[]};
  const context={b1,b2,esc:x=>String(x??''),card:b=>'<article>'+b.code+'</article>'};
  const all=vm.runInNewContext(helpers+view+';viewSpecial([b1,b2])',context);
- assert.match(all,/DP-COCONUT-TEA/);
+ assert.doesNotMatch(all,/DP-COCONUT-TEA/);
  assert.match(all,/DP-VEG/);
- assert.match(all,/Coconut Welcome · 1/);
- assert.match(all,/Trà Ấn \(Indian Tea\) · 1/);
+ assert.doesNotMatch(all,/Coconut Welcome · 1/);
+ assert.doesNotMatch(all,/Trà Ấn \(Indian Tea\) · 1/);
  assert.match(all,/Veg · 1/);
- assert.match(all,/2 BKK có yêu cầu/);
+ assert.match(all,/1 BKK có yêu cầu/);
  assert.doesNotMatch(all,/class="st"/,'no oversized counters for each category');
- const onlyTea=vm.runInNewContext(helpers+view+";specialCategoryFilter='indian-tea';viewSpecial([b1,b2])",context);
- assert.match(onlyTea,/DP-COCONUT-TEA/);
- assert.doesNotMatch(onlyTea,/DP-VEG/);
- assert.match(onlyTea,/aria-pressed="true">Trà Ấn/);
+ const onlyTea=vm.runInNewContext(helpers+view+";specialCategoryFilter='Veg';viewSpecial([b1,b2])",context);
+ assert.doesNotMatch(onlyTea,/DP-COCONUT-TEA/);
+ assert.match(onlyTea,/DP-VEG/);
+ assert.match(onlyTea,/aria-pressed="true">Veg/);
  const priority=segment('function getPriority(b){','function card(b,showSpecial){');
  assert.equal(vm.runInNewContext(priority+';getPriority(b1)',{b1}),'pri-food');
 });
-test('Pakora lobster Coconut Welcome Indian Tea map to distinct special categories',()=>{
+test('only lobster remains in special menu among food add-ons',()=>{
  const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
  const b={diet:[],lob:['Tôm hùm'],bung:[],noteRaw:'Coconut Welcome + Trà Ấn + Pakora',
   specialFood:rules.detect('Coconut Welcome + Trà Ấn + Đặt 01 set Pakora')};
  const keys=vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b});
- assert.deepEqual(Array.from(keys).sort(),['lobster','coconut-welcome','indian-tea','pakora'].sort());
+ assert.deepEqual(Array.from(keys).sort(),['lobster']);
 });
 
 test('Premium Lounge guest transfer offers VISA and preserves all existing payments',()=>{
@@ -189,7 +189,22 @@ test('every nonempty dietary-note cell appears with a clickable preview and comp
  assert(full.includes(ctx.esc(note)),'Full content is never truncated');
  const view=segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
  const special=vm.runInNewContext(helpers+view+';viewSpecial([b])',{...ctx,card:b=>'<article>'+b.code+'</article>'});
- assert.match(special,/DP463411/);assert.match(special,/Ghi chú kiêng chay · 1/);
+ assert.doesNotMatch(special,/DP463411/);assert.doesNotMatch(special,/Ghi chú kiêng chay · 1/);
  const empty=originalParser()([['1','DP0','Agent','Guest','2','','A1','   ','Chỉ ghi chú cột I']])[0];
  assert.equal(vm.runInNewContext(helpers+';tagHtml(b,false)',{...ctx,b:empty}),'');
+});
+
+test('DP4634011 allergy/avoidance note never becomes special menu, even pending AI',()=>{
+ const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
+ const priority=segment('function getPriority(b){','function card(b,showSpecial){');
+ for(const state of ['pending','ready','review']){
+  const b={code:'DP4634011',name:'Long',dietNoteRaw:'01 HDV ăn như khách; đoàn không ăn bò',aiClassificationState:state,diet:[{t:'diet-note',s:'đoàn không ăn bò'}],lob:[],specialFood:[]};
+  const r=vm.runInNewContext(helpers+priority+';({keys:specialCategoryKeys(b),priority:getPriority(b)})',{b});
+  assert.equal(r.keys.length,0);assert.equal(r.priority,'pri-normal');
+ }
+ for(const t of ['Veg','Non-veg','Halal','Jain']){
+  const b={diet:[{t,setMenu:true}],lob:[]};
+  assert.deepEqual(Array.from(vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b})),[t]);
+  b.diet[0].setMenu=false;assert.equal(vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b}).length,0);
+ }
 });

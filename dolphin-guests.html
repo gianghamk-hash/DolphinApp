@@ -596,7 +596,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-note-ai-v1"></script>
-<script src="./dolphin-guest-note-summary.js?v=ai-v3"></script>
+<script src="./dolphin-guest-note-summary.js?v=ai-v4"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
@@ -1043,24 +1043,15 @@ function slotIcon(type){
 }
 var SPECIAL_CATEGORIES=[
  {key:'Veg',label:'Veg'}, {key:'Non-veg',label:'Non-veg'},
- {key:'Jain',label:'Jain'},{key:'Halal',label:'Halal'},
- {key:'Chay Việt',label:'Chay Việt'},{key:'Chay Âu',label:'Chay Âu'},
- {key:'coconut-welcome',label:'Coconut Welcome'},
- {key:'indian-tea',label:'Trà Ấn (Indian Tea)'},
- {key:'lobster',label:'Tôm hùm'},
- {key:'pakora',label:'Pakora'},
- {key:'custom-order',label:'Món đặt thêm'},
- {key:'Indian Food',label:'Indian Food'},
- {key:'diet-note',label:'Ghi chú kiêng chay'}
+ {key:'Halal',label:'Halal'}, {key:'Jain',label:'Jain'},
+ {key:'lobster',label:'Tôm hùm'}
 ];
 function specialCategoryKeys(b){
  var keys=[];
- (b.diet||[]).forEach(function(d){if(d.t&&keys.indexOf(d.t)<0)keys.push(d.t)});
- if((b.lob||[]).length&&keys.indexOf('lobster')<0)keys.push('lobster');
- (b.specialFood||[]).forEach(function(item){
-   if(item.type&&keys.indexOf(item.type)<0)keys.push(item.type);
+ (b.diet||[]).forEach(function(d){
+  if(d.setMenu===true&&['Veg','Non-veg','Halal','Jain'].indexOf(d.t)>-1&&keys.indexOf(d.t)<0)keys.push(d.t);
  });
- if(!keys.length&&b.dietNoteRaw&&b.aiClassificationState!=='ready')keys.push('diet-note');
+ if((b.lob||[]).length)keys.push('lobster');
  return keys;
 }
 function specialCategoryName(key){
@@ -1095,7 +1086,7 @@ function getPriority(b){
   var txt = (b.name+' '+(b.code||'')+' '+(b.agent||'')).toLowerCase();
   if (b.lob.length > 0) return 'pri-vip';
   if (/\bvip\b|\bvvip\b/.test(txt)) return 'pri-vip';
-  if (b.diet.length > 0 || (b.dietNoteRaw&&b.aiClassificationState!=='ready')) return 'pri-diet';
+  if ((b.diet||[]).some(function(d){return d.setMenu===true&&['Veg','Non-veg','Halal','Jain'].indexOf(d.t)>-1})) return 'pri-diet';
   if (b.specialFood && b.specialFood.length > 0) return 'pri-food';
   return 'pri-normal';
 }
@@ -1698,7 +1689,7 @@ function updateMiniStats(){
   B.forEach(function(b){
     var pri = getPriority(b);
     if (pri === 'pri-vip') vip++;
-    if (b.dietNoteRaw||b.diet.length||b.lob.length||(b.specialFood&&b.specialFood.length)) diet++;
+    if (specialCategoryKeys(b).length) diet++;
   });
   var g = $('hdMiniGuests'), v = $('hdMiniVip'), d = $('hdMiniDiet');
   if (g) g.textContent = total;

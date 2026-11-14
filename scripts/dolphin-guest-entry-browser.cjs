@@ -62,7 +62,7 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
    await DolphinGuestNoteSummary.ensure([b]);
    return {keys:specialCategoryKeys(b),bung:b.bung.length,lob:b.lob.length,lounge:b.loungeTicket};
   });
-  assert.deepEqual(classified,{keys:['diet-note'],bung:1,lob:0,lounge:null});
+  assert.deepEqual(classified,{keys:[],bung:1,lob:0,lounge:null});
   console.log('PASS: mobile local/server duplicate popups, corrected save, complete notes, click/keyboard disclosure and escaping');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

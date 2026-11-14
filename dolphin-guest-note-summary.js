@@ -18,7 +18,7 @@
   const diets=['Veg','Non-veg','Jain','Halal','Chay Việt','Chay Âu','Indian Food','diet-note'];
   for(const x of c.items){
    if(x.state!=='confirmed')continue;
-   if(diets.includes(x.category)){if(!b.diet.some(d=>d.t===x.category))b.diet.push({t:x.category,s:x.evidence});}
+   if(diets.includes(x.category)){if(!b.diet.some(d=>d.t===x.category))b.diet.push({t:x.category,s:x.evidence,setMenu:x.setMenu===true});}
    else if(x.category==='lobster')b.lob.push(x.evidence);
    else if(x.category==='bungalow')b.bung.push({s:x.evidence,n:x.quantity||0,num:x.room||'',quantityKnown:x.quantity>0});
    else if(x.category==='lounge'||x.category==='premium-lounge'){

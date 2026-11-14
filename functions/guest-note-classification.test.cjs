@@ -17,3 +17,9 @@ test('cancellation and unresolved alternatives stay out of confirmed assignments
  assert.equal(r.needsReview,true);assert(!r.items.some(x=>x.state==='confirmed'));
  assert.match(instruction,/không ăn tôm hùm => diet-note confirmed, lobster excluded/);
 });
+test('set-menu flag is explicit and never inferred from dietary category',()=>{
+ const note='Đặt 2 set Veg';
+ const ordered=validate(note,[item('Veg',note,{quantity:2,setMenu:true})],false);
+ assert.equal(ordered.items[0].setMenu,true);
+ for(const extra of [{},{setMenu:false},{setMenu:'true'}])assert.equal(validate('Khách ăn chay',[item('Veg','Khách ăn chay',extra)],false).items[0].setMenu,false);
+});

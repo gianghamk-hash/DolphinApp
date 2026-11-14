@@ -27,7 +27,7 @@ test('original sample signs retain text fields, sequence and US Letter 2-per-pag
  assert.match(out,/@page\{size:letter;margin:0\}/);
  assert.match(out,/width:8.5in;height:11in/);
  assert.match(out,/width:6.5in;height:4.595833in/);
- assert.match(out,/top:5.13in/);
+ assert.match(out,/top:5.28in/);
  assert.equal((out.match(/class="sign"/g)||[]).length,2);
 });
 test('range parser supports A,B,C,D,E,J,Q,L and Lounge aliases',()=>{

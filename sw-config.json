@@ -1,5 +1,5 @@
 {
-  "version": "1.1.117",
+  "version": "1.1.118",
   "releaseDate": "2026-11-14",
-  "notes": "feat(guests): print Word-style reservation signs by area (#262)"
+  "notes": "Fix table sign preview replacing APK host window (#263)"
 }

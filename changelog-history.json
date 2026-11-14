@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.117",
+      "releaseDate": "2026-11-14T09:50:48.932Z",
+      "summary": "feat(guests): print Word-style reservation signs by area (#262)",
+      "details": [
+        "feat(guests): print Word-style reservation signs by area (#262)"
+      ]
+    },
+    {
       "version": "1.1.116",
       "releaseDate": "2026-11-12T05:50:51.194Z",
       "summary": "test(multiplayer): Sprint 3 simulated latency, reconnect and FPS measurement (#261)",
@@ -390,14 +398,6 @@
       "summary": "ci(staff): require rename regression tests before Firebase production deployment (#221)",
       "details": [
         "ci(staff): require rename regression tests before Firebase production deployment (#221)"
-      ]
-    },
-    {
-      "version": "1.1.65",
-      "releaseDate": "2026-11-03T08:05:40.777Z",
-      "summary": "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)",
-      "details": [
-        "Fix false 'hồ sơ không thuộc diện phải sửa tên' during Staff ID rename (#220)"
       ]
     }
   ]

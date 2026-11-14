@@ -42,7 +42,7 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   assert.equal(await page.locator('#noteTest img').count(),0);
   assert.equal(await page.locator('#noteTest .special-compact').count(),0,'No generic F&B heading');
   await page.evaluate(async raw=>{
-   DolphinStaffId.summarizeGuestNotes=async notes=>({summaries:notes.map((n,id)=>({id,text:'Yêu cầu phục vụ đã tóm tắt'}))});
+   DolphinStaffId.summarizeGuestNotes=async notes=>({summaries:notes.map((n,id)=>({id,text:'Yêu cầu phục vụ đã tóm tắt',classification:{items:[],needsReview:false}}))});
    await DolphinGuestNoteSummary.ensure([{dietNoteRaw:raw,noteRaw:raw+'\nKhông kayak/bamboo'}]);
   },raw);
   assert.equal(await page.locator('#noteTest summary span').textContent(),'Yêu cầu phục vụ đã tóm tắt');
@@ -51,6 +51,18 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   await page.locator('#noteTest summary').press('Enter');
   assert.equal(await page.locator('#noteTest .special-source-text').isVisible(),false);
   assert.equal(dialogs.length,2,'Note text must never execute HTML');
+  const classified=await page.evaluate(async()=>{
+   const note='Không ăn tôm hùm; đặt 2 bungalow; hủy lounge';
+   const b=DolphinGuestNoteSummary.prepare({dietNoteRaw:note,lob:['old keyword hit'],bung:[],showSlots:[]});
+   DolphinStaffId.summarizeGuestNotes=async()=>({summaries:[{id:0,text:note,classification:{needsReview:false,items:[
+    {category:'diet-note',state:'confirmed',evidence:'Không ăn tôm hùm',quantity:0,room:''},
+    {category:'bungalow',state:'confirmed',evidence:'đặt 2 bungalow',quantity:2,room:''},
+    {category:'lounge',state:'excluded',evidence:'hủy lounge',quantity:0,room:''}
+   ]}}]});
+   await DolphinGuestNoteSummary.ensure([b]);
+   return {keys:specialCategoryKeys(b),bung:b.bung.length,lob:b.lob.length,lounge:b.loungeTicket};
+  });
+  assert.deepEqual(classified,{keys:['diet-note'],bung:1,lob:0,lounge:null});
   console.log('PASS: mobile local/server duplicate popups, corrected save, complete notes, click/keyboard disclosure and escaping');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

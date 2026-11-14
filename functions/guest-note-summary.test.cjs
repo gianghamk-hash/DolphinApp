@@ -31,3 +31,12 @@ test('missing and duplicate AI IDs are rejected instead of mapping notes to wron
  const h=setup();h.setAnswer({summaries:[{id:0,text:'A'},{id:0,text:'B'}]});
  await assert.rejects(h.api.guestSummarizeNotes({auth:{uid:'u'},data:{notes:['A','B']}}),{code:'unavailable'});
 });
+
+test('callable returns validated classifications independently of unchanged summary',async()=>{
+ const h=setup(),note='Không ăn tôm hùm; đặt 2 bungalow';
+ h.setAnswer({summaries:[{id:0,text:note,needsReview:false,classifications:[
+ {category:'diet-note',evidence:'Không ăn tôm hùm',state:'confirmed',quantity:0,room:''},
+ {category:'bungalow',evidence:'đặt 2 bungalow',state:'confirmed',quantity:2,room:''}]}]});
+ const r=await h.api.guestSummarizeNotes({auth:{uid:'u'},data:{notes:[note]}});
+ assert.equal(r.summaries[0].source,'original');assert.equal(r.summaries[0].classification.items[1].quantity,2);
+});

@@ -582,9 +582,14 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
  .special-toolbar{padding:11px 9px}
  .special-compact{padding:8px}
 }
+#printSigns.print-signs-btn{white-space:nowrap;background:linear-gradient(125deg,#eef9fa,#d4eef1)!important;color:#07576a!important;border:1px solid #89cbd4!important;font-weight:850;min-height:42px}
+#printSigns.print-signs-btn:hover{background:#fff!important;color:#064858!important}
+#printSigns.print-signs-btn:disabled{opacity:.5;cursor:not-allowed}
+@media(max-width:550px){#printSigns.print-signs-btn{flex:1;min-width:140px;font-size:.77rem}}
 </style>
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
+<script src="./dolphin-table-signs.js?v=word-print-20261114"></script>
 </head>
 <body>
 
@@ -611,6 +616,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
       <button id="dNext" aria-label="Ngày sau">›</button>
     </div>
     <button class="today-btn" id="dToday">Hôm nay</button>
+    <button type="button" id="printSigns" class="today-btn print-signs-btn" title="Tự tạo biển đặt bàn theo mẫu Word, chia theo từng khu">🖨️ Tự tạo biển bàn</button>
     <div class="search-wrap">
       <input id="q" placeholder="Tìm mã BKK hoặc tên khách...">
     </div>
@@ -1623,6 +1629,7 @@ function render(){
   else if(tab==='lg') h=loungeView(L);
   else h = (tour === 'am') ? viewBung(L) : viewShow(L);
   $('out').innerHTML=h;
+  if($('printSigns'))$('printSigns').disabled=status!=='ok'||!B.length;
   $('tAm').classList.toggle('on',tour==='am');
   $('tDn').classList.toggle('on',tour==='dn');
   $('dToday').classList.toggle('on',curDate===vnToday());
@@ -1725,6 +1732,13 @@ function load(){
 }
 
 $('reload').onclick=load;
+$('printSigns').onclick=function(){
+  if(status!=='ok'||!B.length){toast('Chưa có dữ liệu khách để tạo biển bàn');return;}
+  if(!window.DolphinGuestTableSigns){toast('Lỗi: chưa tải bộ tạo biển bàn');return;}
+  var result=window.DolphinGuestTableSigns.openPrint(B,{date:curDate,tour:tour});
+  if(!result.ok)toast('Lỗi tạo biển bàn: '+result.reason);
+  else if(result.duplicates)toast('Có '+result.duplicates+' bàn trùng giữa các BKK; vui lòng kiểm tra trước khi in');
+};
 function reset(){B=[];foundName='';status='loading';render()}
 function setDate(d){if(!d)return;curDate=d;$('date').value=d;reset();load()}
 function setTour(t){tour=t;reset();load()}

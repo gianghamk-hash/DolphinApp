@@ -29,7 +29,7 @@ async function init(){
   const a=auth.getAuth(app);if(a.authStateReady)await a.authStateReady();
   const user=a.currentUser|| (await auth.signInAnonymously(a)).user;
   uid=user.uid;const functions=func.getFunctions(app,'asia-southeast1');
-  api=name=>func.httpsCallable(functions,name);
+  api=name=>func.httpsCallable(functions,name,name==='guestSheetBridge'?{timeout:540000}:{});
   auth.onAuthStateChanged(a,next=>{if((next?.uid||'')!==uid){uid=next?.uid||'';identity=null;emit();if(next)void refresh();}});
   await refresh();
   void retryXP();
@@ -142,7 +142,8 @@ window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:
  approveNameRecovery:requestId=>call('staffApproveNameRecovery',{requestId}),
  approveRegistration:employeeId=>call('staffApproveRegistration',{employeeId}),
  rejectRegistration:employeeId=>call('staffRejectRegistration',{employeeId}),
- assignGuestTable:payload=>call('guestAssignTable',payload),
+ assignGuestTable:payload=>call('guestSheetBridge',{action:'assign',data:payload}),
+ syncGuestSheets:()=>call('guestSheetBridge',{action:'sync'}),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},
  syncSavedActivity:syncXP,retrySavedXP:retryXP,
  recoverTodayXP:async()=>{await connect();if(!api)throw Error('Chưa kết nối Firebase XP');const result=await api('staffSyncMyRecentXP')({});return result.data;},

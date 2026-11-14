@@ -39,12 +39,10 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
     frame:$('crew-card-equipped-frame').textContent,
     size:getComputedStyle($('profile-avatar')).width,
     visual:getComputedStyle($('crew-profile-banner'),'::before').display,
-    artworkZ:getComputedStyle(document.querySelector('.crew-profile-frame-image')).zIndex,
     portraitZ:getComputedStyle(document.querySelector('.crew-card-portrait')).zIndex,
     portraitOverflow:getComputedStyle(document.querySelector('.crew-card-portrait')).overflow,
     avatarOverflow:getComputedStyle($('profile-avatar')).overflow,
     cardOverflow:getComputedStyle($('crew-profile-banner')).overflow,
-    frameImg:(()=>{const im=document.querySelector('.crew-profile-frame-image');return {src:im?.getAttribute('src'),ready:im?.complete&&im?.naturalWidth===1200&&im?.naturalHeight===400,rect:im?.getBoundingClientRect().toJSON()}})(),
     level:r('crew-card-level-number').toJSON(),staffid:r('employee-id').toJSON(),rankName:r('crew-card-rank-name').toJSON(),
     tilesColumns:getComputedStyle(document.querySelector('.crew-chibi-grid')).gridTemplateColumns.split(' ').length,
     equipmentVisible:getComputedStyle(document.querySelector('.crew-card-equipment')).display!=='none'};
@@ -64,12 +62,15 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
    })));
   });
   assert(assets.every(x=>x.loaded&&x.w>0&&x.h>0),'Chibi artwork and bright legacy atlases must all decode');
-  assert.equal(await page.locator('.crew-chibi-tile img.crew-chibi-image').count(),8,'Eight cards are real image elements');
-  const cardImages=await page.locator('.crew-chibi-tile .crew-chibi-image').evaluateAll(images=>images.map(im=>({src:im.getAttribute('src'),ready:im.complete&&im.naturalWidth===420&&im.naturalHeight===315})));
-  assert(cardImages.every(x=>x.ready&&x.src.endsWith('.webp')),'Eight illustrated WebP images decode independently');
+  assert.equal(await page.locator('.crew-chibi-art').count(),8);
+  assert.equal(await page.locator('.crew-profile-frame-image').count(),0,'No employee data baked into a background');
+  for(const src of ['assets/crew-chibi-banner-v3.webp','assets/crew-chibi-icons-v3.webp']){
+   assert(await page.evaluate(src=>new Promise(resolve=>{const im=new Image();im.onload=()=>resolve(im.naturalWidth>0);im.onerror=()=>resolve(false);im.src=src;}),src));
+  }
+  const captions=await page.locator('.crew-chibi-tile strong').evaluateAll(nodes=>nodes.map(n=>({w:n.getBoundingClientRect().width,h:n.getBoundingClientRect().height,clip:getComputedStyle(n).clipPath})));
+  assert(captions.every(n=>n.w>40&&n.h>10&&n.clip==='none'),'All eight live captions are visible');
   const mobile=await sample();
   for(const [label,s] of [['390px',mobile]]){
-   assert.equal(s.artworkZ,'0',label+' approved WebP artwork stays behind avatar FX');
    assert.equal(s.portraitZ,'3',label+' avatar effects render in foreground');
    assert.equal(s.portraitOverflow,'visible',label+' portrait ornaments are not clipped');
    assert.equal(s.avatarOverflow,'visible',label+' rings, aura and motion remain visible');
@@ -84,25 +85,17 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert.equal(mobile.frame,'Silver');assert.equal(mobile.rank,'PLATINUM RANK');
   assert.equal(mobile.visual,'none','Decorative pseudo-background is hidden so the approved WebP remains visible');
   const mapped=(s,label)=>{
-   assert(s.frameImg.ready,label+' uses the approved real 1200x400 WebP');
-   assert(Math.abs(s.card.height/s.card.width-1/3)<0.025,label+' keeps the illustration aspect ratio');
-   const pos=r=>({x:(r.x-s.card.x)/s.card.width,y:(r.y-s.card.y)/s.card.height,
-     centerX:(r.x+r.width/2-s.card.x)/s.card.width,centerY:(r.y+r.height/2-s.card.y)/s.card.height});
-   const avatar=pos(s.portrait),name=pos(s.name),level=pos(s.level),xp=pos(s.progress),id=pos(s.staffid),rank=pos(s.rankName);
-   console.log('VISUAL COORD',label,JSON.stringify({card:s.card,avatar,name,level,xp,id,rank,staffid:s.staffid}));
-   assert(avatar.centerX>.11&&avatar.centerX<.19&&avatar.centerY>.40&&avatar.centerY<.60,label+' avatar inside pictured gold ring');
-   assert(name.x>.30&&name.x<.39&&name.y>.20&&name.y<.40,label+' live staff name inside illustration nameplate');
-   assert(level.centerX>.82&&level.centerX<.94&&level.centerY>.33&&level.centerY<.56,label+' live level in crown shield');
-   assert(id.centerX>.54&&id.centerX<.64&&id.y>.40&&id.y<.55,label+' staff ID in the card ID slot');
-   assert(rank.centerX>.33&&rank.centerX<.43&&rank.y>.70&&rank.y<.85,label+' live rank in bottom rank badge');
-   assert(xp.x>.47&&xp.x<.55&&xp.y>.68&&xp.y<.82,label+' XP progress track in illustrated XP bar');
+   const inside=r=>r.x>=s.card.x-1&&r.y>=s.card.y-1&&r.right<=s.card.right+1&&r.bottom<=s.card.bottom+1;
+   for(const key of ['portrait','name','level','staffid','progress'])assert(inside(s[key]),label+' '+key+' stays inside live card');
+   assert(s.name.bottom<=s.staffid.y+1,label+' name and ID do not overlap');
+   assert(s.staffid.bottom<=s.level.y+1,label+' ID and level do not overlap');
+   assert(s.progress.y>=s.level.bottom,label+' XP follows identity');
   };
   mapped(mobile,'390px phone');
   assert(mobile.portrait.width>=60,'Compact hero avatar remains legible at 66px');
   await page.setViewportSize({width:320,height:700});
   const compact=await sample();
   assert.equal(compact.avatarOverflow,'visible','320px icon supports orbit FX');
-  assert.equal(compact.artworkZ,'0','320px illustration remains background');
   assert(compact.width<=compact.viewport+2,'320px screen must not scroll horizontally');
   assert(compact.card.width<=compact.viewport,'320px card should fit within viewport');
   mapped(compact,'320px phone');
@@ -114,6 +107,9 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   assert(desktop.portrait.x<desktop.name.x,'Desktop portrait is next to the identity');
   assert(desktop.tilesColumns===4,'Desktop shows four columns of chibi tiles');
   mapped(desktop,'Desktop');
+  await page.evaluate(()=>{document.getElementById('profile-name').textContent='Nguyễn Hoàng Minh Anh · Nhân viên thử nghiệm';document.getElementById('employee-id').textContent='DOL-0099';});
+  await page.setViewportSize({width:320,height:700});
+  mapped(await sample(),'Long name at 320px');
   await page.emulateMedia({reducedMotion:'reduce'});
   const stopped=await page.evaluate(()=>getComputedStyle(document.querySelector('.crew-card-dial-track')).animationName);
   assert.equal(stopped,'none','Reduced Motion disables decorative orbit');

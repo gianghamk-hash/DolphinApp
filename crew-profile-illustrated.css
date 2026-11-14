@@ -1,251 +1,49 @@
-/* Dolphin Crew Club — v3 art-mapped character card.
- * The approved 1200x400 WebP is the only illustrated frame.
- * Live staff values are positioned in its empty slots, never baked into the image.
- * All positioning is proportional to the frame (3:1) on phones and desktops.
- */
-.crew-chibi-ship{
- position:relative;min-height:0!important;height:auto!important;aspect-ratio:3/1;
- border:0!important;border-radius:0!important;background:none!important;
- box-shadow:none!important;overflow:visible;margin:0 0 12px;
-}
+/* Approved quiet chibi artwork. Identity, avatar, level and XP are live DOM,
+   never pixels from the design preview. No fixed-height identity slots. */
+body:has(.crew-chibi-heading){background:#e1f5ef!important;color:#173852}
+.crew-chibi-heading-brand,.crew-chibi-heading-copy strong{color:#173852;text-shadow:none;font-family:system-ui,sans-serif;letter-spacing:.06em}
+.crew-chibi-back,.crew-chibi-settings{background:#fffaf0;color:#173852;border:1px solid #b6d9d4;box-shadow:none}
+.crew-chibi-ship{height:auto!important;min-height:0!important;aspect-ratio:3/1;border:0!important;border-radius:22px!important;background:none!important;box-shadow:none!important;overflow:hidden}
 .crew-chibi-ship>span{display:none!important}
-.crew-profile-ship-image{
- display:block;width:100%;height:100%;aspect-ratio:3/1;object-fit:contain;
- filter:drop-shadow(0 5px 11px rgba(1,12,42,.38));
-}
-#crew-profile-banner.crew-character-card{
- position:relative!important;display:block!important;isolation:isolate;
- width:100%!important;min-width:0!important;min-height:0!important;
- height:auto!important;aspect-ratio:3/1!important;
- padding:0!important;margin:0 0 16px!important;
- border:0!important;border-radius:0!important;background:transparent!important;
- box-shadow:none!important;overflow:hidden!important;
-}
-#crew-profile-banner.crew-character-card::before,
-#crew-profile-banner.crew-character-card::after{display:none!important}
-#crew-profile-banner>.crew-profile-frame-image{
- position:absolute!important;display:block;inset:0!important;z-index:0!important;
- width:100%!important;height:100%!important;aspect-ratio:3/1;
- object-fit:fill;pointer-events:none;user-select:none;
-}
-#crew-profile-banner .crew-card-seascape,
-#crew-profile-banner .crew-card-topline,
-#crew-profile-banner .crew-card-equipment,
-#crew-profile-banner .crew-card-footer,
-#crew-profile-banner .crew-card-copy-eyebrow,
-#crew-profile-banner .crew-card-portrait-halo,
-#crew-profile-banner .crew-card-dial,
-#crew-profile-banner .crew-card-portrait-bottom,
-#crew-profile-banner .crew-card-level-name,
-#crew-profile-banner .crew-card-level-cap,
-#crew-profile-banner .crew-card-level-rule,
-#crew-profile-banner .crew-card-progress .section-line,
-#crew-profile-banner #staff-next-reward{display:none!important}
-#crew-profile-banner .crew-card-identity{
- position:static!important;display:block!important;min-height:0!important;
- padding:0!important;margin:0!important;gap:0!important;
-}
-#crew-profile-banner .crew-card-copy,
-#crew-profile-banner .identity-meta,
-#crew-profile-banner .crew-card-level,
-#crew-profile-banner .crew-card-progress,
-#crew-profile-banner .progress-foot,
-#crew-profile-banner .crew-card-progress-actions{
- position:static!important;display:block!important;width:auto!important;
- min-height:0!important;margin:0!important;padding:0!important;
- border:0!important;background:none!important;box-shadow:none!important;
-}
-#crew-profile-banner .crew-card-portrait{
- position:absolute!important;z-index:3!important;left:5.8%!important;top:23%!important;
- width:17.3%!important;max-width:none!important;height:52%!important;
- min-height:0!important;margin:0!important;padding:0!important;
- overflow:visible!important; /* Orbit layers must extend beyond the portrait's painted box. */
- display:grid!important;place-items:center!important;
-}
-#crew-profile-banner #profile-avatar{
- display:grid!important;place-items:center!important;position:relative!important;
- width:100%!important;height:100%!important;min-width:0!important;min-height:0!important;
- max-width:none!important;max-height:none!important;
- aspect-ratio:1!important;border-radius:50%!important;
- overflow:visible!important;background:rgba(8,30,65,.13)!important; /* Preserve orbit, aura and motion effects. */
- font-size:clamp(24px,6.4vw,68px)!important;line-height:1!important;
-}
-#crew-profile-banner #profile-name{
- position:absolute!important;z-index:4;
- left:33.0%!important;top:24.3%!important;width:34.0%!important;height:13.8%;
- margin:0!important;padding:0!important;
- font-size:clamp(10px,2.7vw,23px)!important;line-height:1.15!important;
- font-weight:900!important;letter-spacing:-.025em!important;
- text-align:center!important;white-space:nowrap!important;
- text-overflow:ellipsis!important;overflow:hidden!important;
- color:#fff4d1!important;text-shadow:0 1px 3px #001732,0 0 5px #002b6b!important;
-}
-#crew-profile-banner #profile-name.name-gradient{
- background:linear-gradient(92deg,#fff8dc,#ffe4a0,#91ecff,#ffe7b0)!important;
- background-size:220% 100%!important;
- background-clip:text!important;-webkit-background-clip:text!important;
- -webkit-text-fill-color:transparent!important;
- filter:drop-shadow(0 1px 2px #031d48);
-}
-#crew-profile-banner #profile-title{
- position:absolute!important;z-index:3;left:31%!important;top:46%!important;
- width:16.5%!important;height:7.8%;display:block!important;
- margin:0!important;padding:0!important;line-height:1.15!important;
- font-size:clamp(7px,1.75vw,13px)!important;font-weight:800!important;
- color:#fff3c8!important;text-align:center!important;
- white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
-}
-#crew-profile-banner #profile-title[hidden]{display:none!important}
-#crew-profile-banner #employee-id{
- position:absolute!important;z-index:3;left:52.2%!important;top:46%!important;
- width:13.6%!important;height:7.8%;
- margin:0!important;padding:0!important;
- border:0!important;border-radius:0!important;background:transparent!important;
- font:800 clamp(7px,1.7vw,13px)/1.1 ui-monospace,monospace!important;
- text-align:center!important;white-space:nowrap!important;overflow:hidden!important;
- text-overflow:ellipsis!important;color:#f3fbff!important;letter-spacing:0!important;
-}
-#crew-profile-banner #profile-state,
-#crew-profile-banner #staff-next-level{
- position:absolute!important;width:1px!important;height:1px!important;
- margin:-1px!important;padding:0!important;border:0!important;
- overflow:hidden!important;white-space:nowrap!important;
- clip:rect(0,0,0,0)!important;clip-path:inset(50%)!important;
-}
-#crew-profile-banner .crew-card-level{
- display:contents!important;
-}
-#crew-profile-banner #crew-card-level-number{
- position:absolute!important;z-index:4;left:84.9%!important;top:35%!important;
- width:6.7%!important;height:13%!important;margin:0!important;padding:0!important;
- display:grid!important;place-items:center!important;
- font:900 clamp(13px,3.65vw,36px)/1 Georgia,serif!important;
- text-align:center!important;color:#fff4c5!important;
- text-shadow:0 1px 4px #190c5b,0 0 7px #fdcf7f80!important;
-}
-#crew-profile-banner #crew-card-rank-name{
- position:absolute!important;z-index:4;left:32.5%!important;top:74.8%!important;
- width:8.5%!important;height:7.5%!important;margin:0!important;padding:0!important;
- display:grid!important;place-items:center!important;line-height:1.1!important;
- font-size:clamp(6px,1.5vw,13px)!important;font-weight:900!important;
- letter-spacing:0!important;color:#fff1cb!important;text-align:center!important;
- background:#392161!important;border-radius:3px!important;
- text-overflow:clip!important;overflow:hidden!important;
-}
-#crew-profile-banner .crew-card-progress-stats{
- position:absolute!important;z-index:4;left:51%!important;top:84.3%!important;
- width:31.5%!important;height:8%!important;margin:0!important;padding:0!important;
- display:flex!important;justify-content:space-between!important;align-items:center!important;
- gap:3px!important;font-size:clamp(6px,1.15vw,11px)!important;line-height:1.1!important;
- color:#eafaff!important;
-}
-#crew-profile-banner #staff-xp-summary{
- flex:1!important;min-width:0!important;margin:0!important;display:block!important;
- white-space:nowrap!important;overflow:hidden!important;text-overflow:ellipsis!important;
- font-size:inherit!important;color:#e5f7ff!important;
-}
-#crew-profile-banner #crew-card-xp-percent{
- flex:0 0 auto!important;font-size:inherit!important;line-height:1.1!important;
- color:#ffedb4!important;
-}
-#crew-profile-banner #staff-xp-track{
- position:absolute!important;z-index:4;left:50.0%!important;top:72.9%!important;
- width:34.0%!important;height:8.3%!important;min-height:0!important;
- margin:0!important;padding:0!important;border:1px solid #7ccdf5!important;
- border-radius:999px!important;background:#0b2350!important;
- overflow:hidden!important;box-shadow:inset 0 1px 3px #00112eaa!important;
-}
-#crew-profile-banner #staff-xp-fill{
- height:100%!important;max-width:100%!important;
- border-radius:999px!important;
- background:linear-gradient(90deg,#ffe487,#5bffed,#2d90ff)!important;
-}
-#crew-profile-banner .crew-card-reward-open{
- position:absolute!important;z-index:6;left:87.2%!important;top:62.5%!important;
- width:9.2%!important;height:28%!important;
- margin:0!important;padding:0!important;display:block!important;
- border:0!important;background:transparent!important;color:transparent!important;
- font-size:0!important;cursor:pointer;overflow:hidden!important;
-}
-#crew-profile-banner .crew-card-reward-open .crew-2d-icon{display:none!important}
-#crew-profile-banner .crew-card-reward-open:focus-visible{
- outline:2px solid #fff2b5!important;outline-offset:-4px;
-}
-#crew-profile-banner #crew-levelup-replay:not([hidden]){
- position:absolute!important;z-index:6;left:42%!important;top:90%!important;
- width:auto!important;height:auto!important;padding:2px 4px!important;
- font-size:clamp(6px,.9vw,10px)!important;
- line-height:1!important;background:#071c46db!important;
- color:#ffefbb!important;border-radius:4px!important;
-}
-@media(max-width:620px){
- .crew-chibi-ship{margin-bottom:9px}
- #crew-profile-banner.crew-character-card{
-  aspect-ratio:3/1!important;height:auto!important;min-height:0!important;
-  padding:0!important;border:0!important;border-radius:0!important;
-  background:transparent!important;
- }
- #crew-profile-banner>.crew-profile-frame-image{
-  position:absolute!important;inset:0!important;height:100%!important;
-  width:100%!important;object-fit:fill!important;
- }
- #crew-profile-banner .crew-card-identity{
-  display:block!important;position:static!important;
-  min-height:0!important;padding:0!important;margin:0!important;
- }
- #crew-profile-banner .crew-card-portrait{
-  position:absolute!important;left:5.8%!important;top:23%!important;
-  width:17.3%!important;max-width:none!important;height:52%!important;
- }
- #crew-profile-banner #profile-avatar{width:100%!important;height:100%!important}
- #crew-profile-banner .crew-card-copy{position:static!important;display:block!important}
- #crew-profile-banner #profile-name{
-  position:absolute!important;left:33%!important;top:24.3%!important;
-  width:34%!important;font-size:clamp(10px,2.7vw,15px)!important;
-  white-space:nowrap!important;
- }
- #crew-profile-banner #profile-title{
-  position:absolute!important;left:31%!important;top:46%!important;
-  width:16.5%!important;font-size:clamp(7px,1.75vw,10px)!important;
-  text-align:center!important;
- }
- #crew-profile-banner .identity-meta{position:static!important;display:block!important}
- #crew-profile-banner #employee-id{
-  position:absolute!important;left:52.2%!important;top:46%!important;
-  width:13.6%!important;white-space:nowrap!important;
- }
- #crew-profile-banner .crew-card-level{display:contents!important}
- #crew-profile-banner #crew-card-level-number{
-  position:absolute!important;left:84.9%!important;top:35%!important;
-  font-size:clamp(13px,3.65vw,22px)!important;
- }
- #crew-profile-banner #crew-card-rank-name{
-  position:absolute!important;left:32.5%!important;top:74.8%!important;
-  font-size:clamp(6px,1.5vw,8px)!important;
- }
- #crew-profile-banner .crew-card-progress{
-  display:block!important;position:static!important;margin:0!important;padding:0!important;
- }
- #crew-profile-banner .crew-card-progress-stats{
-  position:absolute!important;left:51%!important;top:84.3%!important;
-  width:31.5%!important;display:flex!important;
- }
- #crew-profile-banner #staff-xp-track{
-  position:absolute!important;left:50%!important;top:72.9%!important;
-  width:34%!important;height:8.3%!important;min-height:0!important;
-  margin:0!important;
- }
- #crew-profile-banner .progress-foot{
-  position:static!important;display:block!important;
- }
- #crew-profile-banner .crew-card-progress-actions{display:block!important;position:static!important}
- #crew-profile-banner .crew-card-reward-open{
-  position:absolute!important;left:87.2%!important;top:62.5%!important;
-  width:9.2%!important;height:28%!important;font-size:0!important;
-  padding:0!important;border:0!important;background:transparent!important;
-  color:transparent!important;
- }
-}
-@media(prefers-reduced-motion:reduce){
- #crew-profile-banner #staff-xp-fill{transition:none!important}
-}
+.crew-profile-ship-image{display:block;width:100%;height:100%;object-fit:cover}
+#crew-profile-banner.crew-character-card{display:block!important;position:relative!important;isolation:isolate;width:100%;height:auto!important;min-height:0!important;padding:20px!important;border:1px solid #c6dfd8!important;border-radius:24px!important;background:#fffaf0!important;box-shadow:none!important;overflow:hidden!important;margin:16px 0!important}
+#crew-profile-banner::before,#crew-profile-banner::after,
+#crew-profile-banner .crew-card-seascape,#crew-profile-banner .crew-card-topline,
+#crew-profile-banner .crew-card-equipment,#crew-profile-banner .crew-card-footer,
+#crew-profile-banner .crew-card-copy-eyebrow,#crew-profile-banner .crew-card-portrait-halo,
+#crew-profile-banner .crew-card-dial,#crew-profile-banner .crew-card-portrait-bottom,
+#crew-profile-banner .crew-card-level-cap,#crew-profile-banner .crew-card-level-rule,
+#crew-profile-banner .crew-card-progress .section-line,#crew-profile-banner #staff-next-reward{display:none!important}
+#crew-profile-banner .crew-card-identity{position:relative!important;display:grid!important;grid-template-columns:clamp(72px,18vw,140px) minmax(0,1fr)!important;align-items:center;gap:22px!important;padding:0!important;margin:0!important;min-height:0!important}
+#crew-profile-banner .crew-card-portrait{position:relative!important;z-index:3!important;width:100%!important;max-width:none!important;height:auto!important;aspect-ratio:1;min-height:0!important;margin:0!important;padding:0!important;overflow:visible!important;display:grid!important;place-items:center}
+#crew-profile-banner #profile-avatar{position:relative!important;display:grid!important;place-items:center;width:100%!important;height:auto!important;aspect-ratio:1;min-width:0!important;min-height:0!important;max-width:none!important;max-height:none!important;border-radius:50%;background:#d5eeea!important;overflow:visible!important;font-size:clamp(32px,8vw,65px)!important}
+#crew-profile-banner .crew-card-copy{min-width:0!important;text-align:left!important}
+#crew-profile-banner #profile-name{position:static!important;width:auto!important;height:auto!important;margin:0!important;font:800 clamp(18px,3.4vw,28px)/1.25 system-ui,sans-serif!important;color:#173852!important;text-shadow:none!important;white-space:normal!important;overflow-wrap:anywhere}
+#crew-profile-banner #profile-title{font-size:12px;color:#365c6a;text-shadow:none;margin:5px 0}
+#crew-profile-banner .identity-meta{display:flex!important;flex-wrap:wrap;gap:6px;margin:7px 0!important}
+#crew-profile-banner #employee-id{position:static!important;font:700 14px/1.4 ui-monospace,monospace!important;color:#244a63!important;background:none!important;border:0!important;padding:0!important;overflow-wrap:anywhere}
+#crew-profile-banner #profile-state{font-size:10px;background:#e0f0e9;color:#315965;border:0}
+#crew-profile-banner .crew-card-level{display:flex!important;flex-wrap:wrap;align-items:center;justify-content:flex-start!important;gap:6px!important;margin:10px 0 0!important;color:#173852}
+#crew-profile-banner .crew-card-level-name{display:inline!important;font:800 11px/1 system-ui;color:#315965}
+#crew-profile-banner #crew-card-level-number{position:static!important;font:900 24px/1 system-ui!important;color:#173852!important;text-shadow:none!important}
+#crew-profile-banner #crew-card-rank-name{font-size:10px;color:#315965;background:#e4f0ea;border:0;padding:4px 8px;border-radius:20px}
+#crew-profile-banner .crew-card-progress{position:static!important;margin:18px 0 0!important;padding:0!important;background:none!important;border:0!important;box-shadow:none!important}
+#crew-profile-banner .crew-card-progress-stats{display:flex;justify-content:space-between;gap:8px;font-size:12px;color:#365c6a}
+#crew-profile-banner #staff-xp-summary,#crew-profile-banner #crew-card-xp-percent{color:#365c6a!important;font-size:12px}
+#crew-profile-banner #staff-xp-track{position:relative!important;width:100%!important;height:12px!important;margin:9px 0!important;border:0!important;border-radius:20px;background:#d4e9e4!important;box-shadow:none!important;overflow:hidden}
+#crew-profile-banner #staff-xp-fill{height:100%;background:#1ca9a5!important;box-shadow:none!important;border-radius:20px}
+#crew-profile-banner .progress-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;color:#456777;font-size:11px}
+#crew-profile-banner .crew-card-progress-actions{display:flex;flex-wrap:wrap;gap:8px}
+#crew-profile-banner .text-button{color:#176b73;background:transparent;border:0;text-shadow:none}
+.crew-chibi-grid{gap:14px}
+.crew-chibi-tile{border:1px solid #c6dfd8!important;border-radius:20px!important;background:#fffaf0!important;box-shadow:none!important;padding:8px 8px 12px!important;color:#173852!important;aspect-ratio:auto!important}
+.crew-chibi-tile::before,.crew-chibi-tile::after{display:none!important}
+.crew-chibi-tile .crew-chibi-art{display:block;width:100%;aspect-ratio:1;background-image:url('./assets/crew-chibi-icons-v3.webp');background-size:400% 200%;background-position:var(--art-x) var(--art-y);background-repeat:no-repeat;border-radius:12px}
+.crew-chibi-tile strong{display:block!important;position:static!important;font:800 clamp(12px,1.8vw,16px)/1.3 system-ui!important;color:#173852!important;text-shadow:none!important;padding:4px 0 0!important}
+.crew-chibi-tile small{display:block!important;position:static!important;font-size:10px!important;color:#4b6a75!important;text-shadow:none!important}
+.crew-chibi-tile:focus-visible{outline:3px solid #158b91;outline-offset:3px}
+.crew-chibi-tools button{background:#fffaf0;color:#173852;border-color:#b6d9d4;box-shadow:none}
+.crew-chibi-week{background:#fffaf0;border:1px solid #c6dfd8;box-shadow:none}
+@media(max-width:620px){#crew-profile-banner.crew-character-card{padding:16px!important}#crew-profile-banner .crew-card-identity{gap:16px!important}.crew-chibi-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}.crew-chibi-settings span{display:none}}
+/* Previous art embedded captions; new captions are accessible live text. */
+.crew-chibi-tile strong,.crew-chibi-tile small{width:auto!important;height:auto!important;overflow:visible!important;margin:0!important;clip:auto!important;clip-path:none!important;white-space:normal!important;line-height:1.35!important}

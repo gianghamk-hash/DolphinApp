@@ -94,7 +94,7 @@ test('future explicit add-on dish is included, while room, show and Veg packages
 test('overview cards stay compact; F&B categories only render in special tab with one source panel',()=>{
  const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
  const context={
-  esc:value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'),
+  window:{},esc:value=>String(value??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/"/g,'&quot;'),
   slotIcon:()=>'',bungTxt:()=>'',tour:'am'
  };
  const note='Đặt 01 set pakora cho 04 khách (200k) đã thanh toán';
@@ -103,11 +103,11 @@ test('overview cards stay compact; F&B categories only render in special tab wit
  const overview=vm.runInNewContext(helpers+';tagHtml(b)',{...context,b});
  assert.equal(overview,'','Overview must not repeat 3+ dietary/add-on content cards');
  const compact=vm.runInNewContext(helpers+';tagHtml(b,true)',{...context,b});
- assert.match(compact,/class="special-compact"/);
- assert.match(compact,/Veg · Pakora/);
- assert.equal((compact.match(/class="special-compact"/g)||[]).length,1);
+ assert.doesNotMatch(compact,/Ăn đặc biệt · F&B/);
+ assert.match(compact,/pakora/);
+ assert.equal((compact.match(/data-guest-summary=/g)||[]).length,1);
  assert.equal((compact.match(/<details/g)||[]).length,1);
- assert.match(compact,/Xem ghi chú gốc/);
+ assert.match(compact,/Xem đầy đủ ghi chú khách/);
  assert.match(compact,/200k/);
  assert.match(compact,/đã thanh toán/);
  assert.doesNotMatch(compact,/class="tag f"/);
@@ -180,9 +180,9 @@ test('every nonempty dietary-note cell appears with a clickable preview and comp
  const b=originalParser()([['17','DP463411','F5 Travel','MR KHỞI','36','Đài Loan','B5-B9',note,'Không kayak/bamboo']])[0];
  assert.equal(b.dietNoteRaw,note);assert.equal(b.diet.length,0);
  const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
- const ctx={b,esc:x=>String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),tour:'am',bungTxt:()=>'',slotIcon:()=>''};
+ const ctx={b,window:{},esc:x=>String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),tour:'am',bungTxt:()=>'',slotIcon:()=>''};
  const out=vm.runInNewContext(helpers+';tagHtml(b,false)',ctx);
- assert.match(out,/Ghi chú kiêng chay/);assert.match(out,/special-note-preview/);
+ assert.doesNotMatch(out,/Ăn đặc biệt · F&B|Ghi chú kiêng chay/);assert.match(out,/special-note-preview/);
  assert.match(out,/…/);assert.equal((out.match(/<details/g)||[]).length,1);
  assert.match(out,/Không kayak\/bamboo/);assert.match(out,/&lt;img/);assert.doesNotMatch(out,/<img/);
  const full=out.match(/<div class="special-source-text">([\s\S]*?)<\/div>/)[1];

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.119",
-  "buildDate": "2026-11-14T10:39:40.624Z",
-  "commit": "6fc3b70",
-  "notes": "Merge pull request #265 from gianghamk-hash/feat/guest-table-sheet-sync",
+  "version": "1.1.120",
+  "buildDate": "2026-11-14T10:46:01.182Z",
+  "commit": "354bc2c",
+  "notes": "Merge pull request #266 from gianghamk-hash/fix/a4-linked-booking-signs",
   "forceUpdate": false
 }

@@ -1,18 +1,18 @@
 {
-  "version": "1.1.119",
-  "previousVersion": "1.1.118",
-  "commit": "6fc3b70",
-  "previousCommit": "99a8a90",
-  "buildDate": "2026-11-14T10:39:40.624Z",
-  "summary": "Merge pull request #265 from gianghamk-hash/feat/guest-table-sheet-sync",
+  "version": "1.1.120",
+  "previousVersion": "1.1.119",
+  "commit": "354bc2c",
+  "previousCommit": "6fc3b70",
+  "buildDate": "2026-11-14T10:46:01.182Z",
+  "summary": "Merge pull request #266 from gianghamk-hash/fix/a4-linked-booking-signs",
   "changes": {
-    "totalCommits": 341,
-    "filesChanged": 10,
+    "totalCommits": 342,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #265 from gianghamk-hash/feat/guest-table-sheet-sync"
+    "Merge pull request #266 from gianghamk-hash/fix/a4-linked-booking-signs"
   ],
   "fileChanges": [
     {
@@ -28,31 +28,15 @@
       "type": "update"
     },
     {
-      "file": "functions/guest-table-parser.cjs",
+      "file": "dolphin-table-signs.js",
       "type": "update"
     },
     {
-      "file": "functions/guest-table-sheet.js",
+      "file": "scripts/dolphin-table-signs-print-browser.cjs",
       "type": "update"
     },
     {
-      "file": "functions/guest-table-sheet.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "functions/index.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/package.json",
-      "type": "update"
-    },
-    {
-      "file": "functions/staff-id.test.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
+      "file": "scripts/dolphin-table-signs.test.cjs",
       "type": "update"
     }
   ]

@@ -142,6 +142,7 @@ window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:
  approveNameRecovery:requestId=>call('staffApproveNameRecovery',{requestId}),
  approveRegistration:employeeId=>call('staffApproveRegistration',{employeeId}),
  rejectRegistration:employeeId=>call('staffRejectRegistration',{employeeId}),
+ assignGuestTable:payload=>call('guestAssignTable',payload),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},
  syncSavedActivity:syncXP,retrySavedXP:retryXP,
  recoverTodayXP:async()=>{await connect();if(!api)throw Error('Chưa kết nối Firebase XP');const result=await api('staffSyncMyRecentXP')({});return result.data;},

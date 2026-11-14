@@ -2,6 +2,7 @@ name: Dolphin Guest F&B booking notes regression
 on:
   pull_request:
     paths:
+      - 'functions/guest-table*'
       - 'dolphin-guests.html'
       - 'dolphin-guest-special-rules.js'
       - 'dolphin-table-signs.js'
@@ -13,6 +14,7 @@ on:
   push:
     branches: [main]
     paths:
+      - 'functions/guest-table*'
       - 'dolphin-guests.html'
       - 'dolphin-guest-special-rules.js'
       - 'dolphin-table-signs.js'
@@ -36,3 +38,6 @@ jobs:
         run: node --test scripts/dolphin-table-signs.test.cjs
       - name: Verify Pakora, Coconut Welcome, Trà Ấn and special BKK display
         run: node --test scripts/dolphin-guest-special.test.cjs
+
+      - name: Verify authenticated Sheets assignment and conflict handling
+        run: node --test functions/guest-table-sheet.test.cjs

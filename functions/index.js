@@ -318,3 +318,5 @@ for(const [name,handler] of Object.entries(require('./staff-manager-adjustments'
 for (const [name, handler] of Object.entries(require('./push'))) {
   if (!name.startsWith('_')) exports[name] = handler;
 }
+
+exports.guestAssignTable=require('./guest-table-sheet').guestAssignTable;

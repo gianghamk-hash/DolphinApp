@@ -37,6 +37,7 @@ function harness(admins='manager',{cold=false,removeOnRetry=false}={}){
   if(n==='firebase-functions/v2/scheduler')return {onSchedule:(_,fn)=>fn};
   if(n==='./tactics/engine')return {};
   if(n==='./push')return {};
+  if(n==='./guest-table-sheet')return {guestAssignTable:async()=>{throw Error('Guest Sheets callable is tested in guest-table-sheet.test.cjs');}};
   if(n==='./staff-prestige')return {};
   if(n==='./staff-daily-missions')return {_award:async()=>({addedXP:0}),staffCheckInDaily:async()=>({})};
   if(n==='./staff-xp-reconcile')return {};

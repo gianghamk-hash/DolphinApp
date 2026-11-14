@@ -1,24 +1,20 @@
 {
-  "version": "1.1.129",
-  "previousVersion": "1.1.128",
-  "commit": "021a01e",
-  "previousCommit": "24ccb29",
-  "buildDate": "2026-11-14T16:45:17.017Z",
-  "summary": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification",
+  "version": "1.1.130",
+  "previousVersion": "1.1.129",
+  "commit": "8dc5028",
+  "previousCommit": "021a01e",
+  "buildDate": "2026-11-14T16:59:02.597Z",
+  "summary": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope",
   "changes": {
-    "totalCommits": 351,
-    "filesChanged": 11,
+    "totalCommits": 352,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification"
+    "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/dolphin-guest-special-tests.yml",
-      "type": "update"
-    },
     {
       "file": "docs/GUEST_NOTE_AI.md",
       "type": "update"
@@ -40,19 +36,11 @@
       "type": "update"
     },
     {
-      "file": "functions/guest-note-summary.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/guest-note-summary.test.cjs",
-      "type": "update"
-    },
-    {
       "file": "scripts/dolphin-guest-entry-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-guest-note-summary.test.cjs",
+      "file": "scripts/dolphin-guest-special.test.cjs",
       "type": "update"
     },
     {

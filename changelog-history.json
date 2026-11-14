@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.129",
+      "releaseDate": "2026-11-14T16:45:17.017Z",
+      "summary": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification",
+      "details": [
+        "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification"
+      ]
+    },
+    {
       "version": "1.1.128",
       "releaseDate": "2026-11-14T14:32:56.021Z",
       "summary": "Merge pull request #274 from gianghamk-hash/fix/guest-ai-model-and-note-scope",
@@ -390,14 +398,6 @@
       "summary": "feat(lounge): feature Cold Brew Classic with glowing gold menu border",
       "details": [
         "feat(lounge): feature Cold Brew Classic with glowing gold menu border"
-      ]
-    },
-    {
-      "version": "1.1.77",
-      "releaseDate": "2026-11-06T00:40:23.105Z",
-      "summary": "fix(guests): include Indian Food notes in special dietary list",
-      "details": [
-        "fix(guests): include Indian Food notes in special dietary list"
       ]
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.129",
+  "version": "1.1.130",
   "releaseDate": "2026-11-14",
-  "notes": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification"
+  "notes": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope"
 }

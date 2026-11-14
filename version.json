@@ -1,7 +1,7 @@
 {
-  "version": "1.1.129",
-  "buildDate": "2026-11-14T16:45:17.017Z",
-  "commit": "021a01e",
-  "notes": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification",
+  "version": "1.1.130",
+  "buildDate": "2026-11-14T16:59:02.597Z",
+  "commit": "8dc5028",
+  "notes": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope",
   "forceUpdate": false
 }

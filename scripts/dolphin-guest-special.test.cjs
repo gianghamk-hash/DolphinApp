@@ -174,3 +174,22 @@ test('Premium Lounge guest transfer offers VISA and preserves all existing payme
  assert.match(html,/paymentMethod:payment/,'Selected payment is sent unchanged to Lounge');
  assert.match(html,/var table=\$\('lgTable'\)\.value,pax=Number\(\$\('lgPax'\)\.value\),payment=\$\('lgPayment'\)\.value/);
 });
+
+test('every nonempty dietary-note cell appears with a clickable preview and complete escaped notes',()=>{
+ const note='FOC 01HDV có thẻ, ăn như khách\nĐăng ký xe vào cảng: 29E-584.78\n'+ 'Ghi chú thêm '.repeat(30)+'<img src=x onerror=alert(1)>';
+ const b=originalParser()([['17','DP463411','F5 Travel','MR KHỞI','36','Đài Loan','B5-B9',note,'Không kayak/bamboo']])[0];
+ assert.equal(b.dietNoteRaw,note);assert.equal(b.diet.length,0);
+ const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
+ const ctx={b,esc:x=>String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),tour:'am',bungTxt:()=>'',slotIcon:()=>''};
+ const out=vm.runInNewContext(helpers+';tagHtml(b,false)',ctx);
+ assert.match(out,/Ghi chú kiêng chay/);assert.match(out,/special-note-preview/);
+ assert.match(out,/…/);assert.equal((out.match(/<details/g)||[]).length,1);
+ assert.match(out,/Không kayak\/bamboo/);assert.match(out,/&lt;img/);assert.doesNotMatch(out,/<img/);
+ const full=out.match(/<div class="special-source-text">([\s\S]*?)<\/div>/)[1];
+ assert(full.includes(ctx.esc(note)),'Full content is never truncated');
+ const view=segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
+ const special=vm.runInNewContext(helpers+view+';viewSpecial([b])',{...ctx,card:b=>'<article>'+b.code+'</article>'});
+ assert.match(special,/DP463411/);assert.match(special,/Ghi chú kiêng chay · 1/);
+ const empty=originalParser()([['1','DP0','Agent','Guest','2','','A1','   ','Chỉ ghi chú cột I']])[0];
+ assert.equal(vm.runInNewContext(helpers+';tagHtml(b,false)',{...ctx,b:empty}),'');
+});

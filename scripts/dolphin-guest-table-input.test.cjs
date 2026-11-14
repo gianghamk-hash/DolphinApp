@@ -12,20 +12,20 @@ test('rejects ambiguous, malformed, overlapping and excessive ranges without par
  for(const text of ['',null,'A0','A01','A1000','F1','A11-B16','A16-A11','A1 garbage','A1/2','A1,','A1,,A2','A1-A3,A3','A1-A61','A1-A60,B1'])assert.throws(()=>input.normalize(text),String(text));
  assert.equal(input.normalize('A1-A60').split(',').length,60);
 });
-function ui(raw,fail=false){
+function ui(raw,fail=false,others=[]){
  const html=fs.readFileSync(require.resolve('../dolphin-guests.html'),'utf8');
  const code=html.slice(html.indexOf('function renderUnassigned(){'),html.indexOf('function updateMiniStats(){'));
- let sent=[],loads=0,toasts=[];
+ let sent=[],loads=0,toasts=[],alerts=[],focused=0;
  const button={disabled:false},msg={textContent:''};
- const form={dataset:{unassigned:'0'},elements:{table:{value:raw}},querySelector:q=>q==='button'?button:msg};
+ const form={dataset:{unassigned:'0'},elements:{table:{value:raw,focus:()=>focused++}},querySelector:q=>q==='button'?button:msg};
  const box={innerHTML:'',querySelectorAll:()=>[form]};
  const nodes={unassignedBookings:box,assignTables:{}};
  const b={code:'DP4634118',name:'HDV Mr Hiếu',agent:'TH Ha Long Travel',pax:36,stt:'12',tbl:'',tb:[]};
- const context={B:[b],syncingSheets:false,status:'ok',foundName:'DOLPHIN 14.11',$:id=>nodes[id],esc:s=>s,
- window:{DolphinGuestTableInput:input,DolphinStaffId:{assignGuestTable:async p=>{sent.push(p);if(fail)throw Error('Bàn đã có booking khác.');return {ok:true,table:p.table};}}},
+ const context={B:[b,...others],syncingSheets:false,status:'ok',foundName:'DOLPHIN 14.11',$:id=>nodes[id],esc:s=>s,
+ window:{alert:s=>alerts.push(s),DolphinGuestTableInput:input,DolphinStaffId:{assignGuestTable:async p=>{sent.push(p);if(fail)throw Error('Bàn đã có booking khác.');return {ok:true,table:p.table};}}},
  toast:s=>toasts.push(s),load:async()=>loads++};
  vm.runInNewContext(code,context);context.renderUnassigned();
- return {submit:()=>form.onsubmit({preventDefault(){}}),sent,msg,button,toasts,loads:()=>loads};
+ return {submit:()=>form.onsubmit({preventDefault(){}}),sent,msg,button,toasts,alerts,focused:()=>focused,loads:()=>loads};
 }
 test('real booking form sends expanded tables with exact BKK/STT/tab and only reloads on success',async()=>{
  const h=ui('A11-A16');await h.submit();
@@ -35,7 +35,7 @@ test('real booking form sends expanded tables with exact BKK/STT/tab and only re
 });
 test('form validation and remote conflicts keep the form available without claiming a save',async()=>{
  const invalid=ui('A11-B16');await invalid.submit();assert.equal(invalid.sent.length,0);assert.equal(invalid.loads(),0);assert.equal(invalid.button.disabled,false);assert.match(invalid.msg.textContent,/cùng khu/);
- const conflict=ui('A11-A16',true);await conflict.submit();assert.equal(conflict.loads(),0);assert.equal(conflict.toasts.length,0);assert.equal(conflict.button.disabled,false);assert.match(conflict.msg.textContent,/booking khác/);
+ const conflict=ui('A11-A16',true);await conflict.submit();assert.equal(conflict.loads(),0);assert.equal(conflict.toasts.length,0);assert.equal(conflict.button.disabled,false);assert.match(conflict.msg.textContent,/booking khác/);assert.equal(conflict.alerts.length,1);assert.equal(conflict.focused(),1);
 });
 test('compact display groups consecutive tables only and includes every table in the range',()=>{
  assert.equal(input.compact('A11,A12,A13,A14,A15,A16'),'A11-A16');
@@ -46,4 +46,16 @@ test('compact display groups consecutive tables only and includes every table in
  assert.equal(input.display('Bàn riêng khách VIP'),'Bàn riêng khách VIP');
  for(const value of ['A11-A16','A1,A3-A5,E22','L998-L999'])
   assert.equal(input.normalize(input.compact(value)),input.normalize(value));
+});
+
+test('local overlap opens a popup before writing, including an interior range table',async()=>{
+ const other={code:'DP-OTHER',name:'Khách khác',tb:['A15'],tbl:'A15'};
+ const h=ui('A11-A16',false,[other]);await h.submit();
+ assert.equal(h.sent.length,0);assert.equal(h.loads(),0);assert.equal(h.alerts.length,1);
+ assert.match(h.alerts[0],/BÀN ĐÃ BỊ TRÙNG/);assert.match(h.alerts[0],/A15 · BKK DP-OTHER/);
+ assert.equal(h.button.disabled,false);assert.equal(h.focused(),1);
+ assert.equal(input.conflicts('A1',[{tb:['A10']}],null).length,0);
+ const current={code:'SAME',tb:['A1']};
+ assert.equal(input.conflicts('A1',[current],current).length,0);
+ assert.equal(input.conflicts('A1',[{code:'SAME',tb:['A1']}],current).length,1);
 });

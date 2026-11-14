@@ -1,7 +1,7 @@
 {
-  "version": "1.1.120",
-  "buildDate": "2026-11-14T10:46:01.182Z",
-  "commit": "354bc2c",
-  "notes": "Merge pull request #266 from gianghamk-hash/fix/a4-linked-booking-signs",
+  "version": "1.1.121",
+  "buildDate": "2026-11-14T11:54:04.396Z",
+  "commit": "b92a9d2",
+  "notes": "Merge pull request #267 from gianghamk-hash/fix/visible-guest-table-entry",
   "forceUpdate": false
 }

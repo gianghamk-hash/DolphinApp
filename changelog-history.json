@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.120",
+      "releaseDate": "2026-11-14T10:46:01.182Z",
+      "summary": "Merge pull request #266 from gianghamk-hash/fix/a4-linked-booking-signs",
+      "details": [
+        "Merge pull request #266 from gianghamk-hash/fix/a4-linked-booking-signs"
+      ]
+    },
+    {
       "version": "1.1.119",
       "releaseDate": "2026-11-14T10:39:40.624Z",
       "summary": "Merge pull request #265 from gianghamk-hash/feat/guest-table-sheet-sync",
@@ -390,14 +398,6 @@
       "summary": "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)",
       "details": [
         "Fix Dolphin Show combos blocked on previously saved legacy bookings (#231)"
-      ]
-    },
-    {
-      "version": "1.1.68",
-      "releaseDate": "2026-11-03T13:06:22.694Z",
-      "summary": "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)",
-      "details": [
-        "Fix previously approved staff blocked from booking and order actions by stale device flag (#230)"
       ]
     }
   ]

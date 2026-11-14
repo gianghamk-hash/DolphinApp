@@ -99,9 +99,9 @@ test('overview cards stay compact; F&B categories only render in special tab wit
  };
  const note='Đặt 01 set pakora cho 04 khách (200k) đã thanh toán';
  const b={diet:[{t:'Veg',s:'02 set veg'},{t:'Veg',s:'We are pure vegetarian'}],
-  lob:[],bung:[],showSlots:[],specialFood:rules.detect(note),noteRaw:'02 set veg\n'+note};
+  lob:[],bung:[],showSlots:[],specialFood:rules.detect(note),dietNoteRaw:'02 set veg\n'+note,noteRaw:'02 set veg\n'+note};
  const overview=vm.runInNewContext(helpers+';tagHtml(b)',{...context,b});
- assert.equal(overview,'','Overview must not repeat 3+ dietary/add-on content cards');
+ assert.equal((overview.match(/<details/g)||[]).length,1,'Overview shows one H-note disclosure');
  const compact=vm.runInNewContext(helpers+';tagHtml(b,true)',{...context,b});
  assert.doesNotMatch(compact,/Ăn đặc biệt · F&B/);
  assert.match(compact,/pakora/);
@@ -111,7 +111,7 @@ test('overview cards stay compact; F&B categories only render in special tab wit
  assert.match(compact,/200k/);
  assert.match(compact,/đã thanh toán/);
  assert.doesNotMatch(compact,/class="tag f"/);
- const injected=vm.runInNewContext(helpers+';tagHtml(b,true)',{...context,b:{...b,noteRaw:'<script>alert(1)</script>'}});
+ const injected=vm.runInNewContext(helpers+';tagHtml(b,true)',{...context,b:{...b,dietNoteRaw:'<script>alert(1)</script>'}});
  assert.doesNotMatch(injected,/<script>/);
  const cardSource=segment('function card(b,showSpecial){','function statBox(');
  assert.match(cardSource,/tagHtml\(b,!!showSpecial\)/);
@@ -184,7 +184,7 @@ test('every nonempty dietary-note cell appears with a clickable preview and comp
  const out=vm.runInNewContext(helpers+';tagHtml(b,false)',ctx);
  assert.doesNotMatch(out,/Ăn đặc biệt · F&B|Ghi chú kiêng chay/);assert.match(out,/special-note-preview/);
  assert.match(out,/…/);assert.equal((out.match(/<details/g)||[]).length,1);
- assert.match(out,/Không kayak\/bamboo/);assert.match(out,/&lt;img/);assert.doesNotMatch(out,/<img/);
+ assert.doesNotMatch(out,/Không kayak\/bamboo/);assert.match(out,/&lt;img/);assert.doesNotMatch(out,/<img/);
  const full=out.match(/<div class="special-source-text">([\s\S]*?)<\/div>/)[1];
  assert(full.includes(ctx.esc(note)),'Full content is never truncated');
  const view=segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");

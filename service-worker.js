@@ -19,7 +19,7 @@ const CACHE_URLS = [
   BASE + '/',
   BASE + '/index.html',
   BASE + '/dolphin-guests.html',
-  BASE + '/dolphin-guest-note-summary.js?v=ai-v1',
+  BASE + '/dolphin-guest-note-summary.js?v=ai-v2',
   BASE + '/dolphin-guest-table-input.js?v=range-v3',
   BASE + '/dolphin-guest-special-rules.js?v=fnb-notes-v1',
   BASE + '/dolphin-table-signs.js?v=word-print-20261114',

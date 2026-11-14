@@ -20,9 +20,17 @@
   return [...new Set(rooms)];
  }
  function collect(bookings){
+  const rows=Array.isArray(bookings)?bookings:[];
+  const parents=new Map();
+  const codes=value=>String(value||'').split(/\s*\+\s*/).map(x=>x.trim()).filter(Boolean);
+  function group(c){if(!parents.has(c))parents.set(c,c);if(parents.get(c)!==c)parents.set(c,group(parents.get(c)));return parents.get(c);}
+  for(const b of rows){const list=codes(b.code);for(const c of list)parents.set(group(c),group(list[0]));}
+  const groups=new Map();
+  for(const c of parents.keys()){const key=group(c);if(!groups.has(key))groups.set(key,[]);groups.get(key).push(c);}
+  const combined=new Map();
   const areas=Object.fromEntries(AREAS.map(a=>[a,[]])),seen=new Set(),occupied=new Map(),duplicates=[];
   let missing=0,excluded=0;
-  for(const b of (Array.isArray(bookings)?bookings:[])){
+  for(const b of rows){
    const code=String(b.code||'').trim(),name=String(b.name||'').trim(),agent=String(b.agent||'').trim();
    const parsed=Array.isArray(b.tb)&&b.tb.length?b.tb:parseTables(b.tbl);
    const rooms=[...new Set(parsed.flatMap(parseTables))];
@@ -30,13 +38,22 @@
    for(const room of rooms){
     const area=room.match(/^[A-Z]+/)?.[0];
     if(!AREAS.includes(area)){excluded++;continue;}
-    const key=(code||String(b.stt||''))+'|'+room;
+    const linked=codes(code),family=linked.length?group(linked[0]):'';
+    const key=(family||String(b.stt||''))+'|'+room;
+    if(combined.has(key)){
+     const existing=combined.get(key);
+     if(name&&!existing.names.includes(name))existing.names.push(name);
+     if(agent&&!existing.agents.includes(agent))existing.agents.push(agent);
+     existing.name=existing.names.join(' / ');existing.agent=existing.agents.join(' / ');
+     continue;
+    }
     if(seen.has(key))continue;
     seen.add(key);
     const previous=occupied.get(room);
     if(previous&&previous!==code)duplicates.push({room,first:previous,second:code});
     else occupied.set(room,code);
-    areas[area].push({area,room,code,name,agent});
+    const record={area,room,code:(groups.get(family)||[code]).join(' + '),name,agent,names:name?[name]:[],agents:agent?[agent]:[]};
+    combined.set(key,record);areas[area].push(record);
    }
   }
   for(const a of AREAS)areas[a].sort((x,y)=>+x.room.slice(a.length)-+y.room.slice(a.length)
@@ -88,21 +105,22 @@
    '.summary{font:bold 12px Arial;margin-left:auto}',
    '.warning{font-size:12px;color:#994b1d;margin-top:8px}',
    '#pages{padding:18px 0 28px}',
-   '.sheet{position:relative;width:8.5in;height:11in;margin:0 auto 22px;background:white;overflow:hidden;box-shadow:0 3px 16px #0003}',
+   '.sheet{position:relative;width:190mm;height:276mm;margin:0 auto 22px;background:white;overflow:hidden;box-shadow:0 3px 16px #0003}',
    '.sheet.is-hidden{display:none!important}',
-   '.sign{position:absolute;left:.5in;top:1.00in;width:6.5in;height:4.595833in;overflow:hidden}',
-   '.sign:nth-of-type(2){top:5.28in}',
+   '.sign{position:absolute;left:12.45mm;top:15mm;width:6.5in;height:4.595833in;overflow:hidden}',
+   '.sign:nth-of-type(2){top:145mm}',
    '.art{width:100%;height:100%;display:block;position:absolute;inset:0;object-fit:contain}',
    '.fields{position:absolute;top:2.14in;left:.51in;right:.08in;font:italic 18pt "Times New Roman",Times,serif;line-height:.39in;color:#000}',
    '.fields>div{height:.39in;white-space:nowrap;letter-spacing:-.01em}',
    '.fields strong{font-weight:700}',
    '.empty{text-align:center;color:#677b83;padding:45px}',
-   '@page{size:letter;margin:0}',
+   '@page{size:A4 portrait;margin:10mm}',
    '@media(max-width:880px){#pages{overflow-x:auto}.sheet{margin-left:12px;margin-right:12px}}',
    '@media print{html,body{margin:0!important;padding:0!important;background:white!important}',
    '.toolbar,.empty{display:none!important}#pages{padding:0!important}',
-   '.sheet{width:8.5in;height:11in;box-shadow:none!important;margin:0!important;page-break-after:always;break-after:page;page-break-inside:avoid}',
+   '.sheet{width:190mm;height:276mm;box-shadow:none!important;margin:0!important;page-break-after:always;break-after:page;page-break-inside:avoid}',
    '.sheet.is-last-visible{page-break-after:auto;break-after:auto}',
+   '#pages{overflow:visible!important}.sheet{flex-shrink:0}',
    '.art{-webkit-print-color-adjust:exact;print-color-adjust:exact}}'
   ].join('\n');
   const script=[
@@ -122,7 +140,9 @@
    'document.getElementById("print").onclick=async()=>{',
    'const imgs=[...document.querySelectorAll(".sheet:not(.is-hidden) img")];',
    'await Promise.all(imgs.map(img=>img.decode?img.decode().catch(()=>{}):Promise.resolve()));',
-   'window.print();};refresh();',
+   'if(document.fonts)await document.fonts.ready;fit();window.print();};refresh();',
+   'function fit(){document.querySelectorAll(".fields>div").forEach(el=>{el.style.fontSize="18pt";el.querySelectorAll("strong").forEach(x=>x.style.fontSize="inherit");let size=18;while(el.scrollWidth>el.clientWidth&&size>8){size-=.5;el.style.fontSize=size+"pt";}});}',
+   'window.addEventListener("beforeprint",fit);if(document.fonts)document.fonts.ready.then(fit);else fit();',
    '})();'
   ].join('\n');
   return '<!doctype html><html lang="vi"><head><meta charset="utf-8">'+
@@ -130,7 +150,7 @@
    '<title>Biển đặt bàn Dolphin · '+esc(config.date||'')+'</title><style>'+css+'</style></head><body>'+
    '<header class="toolbar"><h1>🖨️ Tự tạo biển đặt bàn Dolphin</h1>'+
    '<div class="intro">'+esc(config.date||'')+' · '+(config.tour==='dn'?'Tour tối':'Tour sáng')+
-   ' · Letter 8,5 × 11 inch · 2 biển trên một trang · Các khu không trộn trang</div>'+
+   ' · A4 210 × 297 mm · 2 biển trên một trang · Các khu không trộn trang</div>'+
    '<div class="controls">'+controls+
    '<button id="all" class="alt">Chọn tất cả</button><button id="none" class="alt">Bỏ chọn</button>'+
    '<span id="count" class="summary"></span><button id="print">In / Lưu PDF</button></div>'+

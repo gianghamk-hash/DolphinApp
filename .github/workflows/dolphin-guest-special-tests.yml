@@ -9,6 +9,7 @@ on:
       - 'assets/dolphin-table-sign-word.png'
       - 'scripts/dolphin-guest-special.test.cjs'
       - 'scripts/dolphin-table-signs.test.cjs'
+      - 'scripts/dolphin-table-signs-print-browser.cjs'
       - '.github/workflows/dolphin-guest-special-tests.yml'
       - 'service-worker.js'
   push:
@@ -21,6 +22,7 @@ on:
       - 'assets/dolphin-table-sign-word.png'
       - 'scripts/dolphin-guest-special.test.cjs'
       - 'scripts/dolphin-table-signs.test.cjs'
+      - 'scripts/dolphin-table-signs-print-browser.cjs'
       - '.github/workflows/dolphin-guest-special-tests.yml'
 jobs:
   guest-special-fnb:
@@ -41,3 +43,10 @@ jobs:
 
       - name: Verify authenticated Sheets assignment and conflict handling
         run: node --test functions/guest-table-sheet.test.cjs
+      - name: Install print layout verification dependencies
+        run: |
+          npm install --no-save --package-lock=false playwright
+          npx playwright install --with-deps chromium
+          python3 -m pip install pypdf
+      - name: Verify actual A4 PDF pagination and joined bookings
+        run: node scripts/dolphin-table-signs-print-browser.cjs

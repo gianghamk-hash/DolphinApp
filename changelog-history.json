@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.124",
+      "releaseDate": "2026-11-14T13:37:35.525Z",
+      "summary": "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry",
+      "details": [
+        "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry"
+      ]
+    },
+    {
       "version": "1.1.123",
       "releaseDate": "2026-11-14T13:10:52.010Z",
       "summary": "Merge pull request #269 from gianghamk-hash/feat/clean-chibi-profile",
@@ -390,14 +398,6 @@
       "summary": "Use existing protected namespace for XP delivery without Rules deployment (#235)",
       "details": [
         "Use existing protected namespace for XP delivery without Rules deployment (#235)"
-      ]
-    },
-    {
-      "version": "1.1.72",
-      "releaseDate": "2026-11-04T03:01:34.411Z",
-      "summary": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)",
-      "details": [
-        "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)"
       ]
     }
   ]

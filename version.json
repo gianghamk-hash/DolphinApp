@@ -1,7 +1,7 @@
 {
-  "version": "1.1.124",
-  "buildDate": "2026-11-14T13:37:35.525Z",
-  "commit": "78f4523",
-  "notes": "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry",
+  "version": "1.1.125",
+  "buildDate": "2026-11-14T13:50:00.102Z",
+  "commit": "adae55a",
+  "notes": "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges",
   "forceUpdate": false
 }

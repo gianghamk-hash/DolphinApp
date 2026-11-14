@@ -1,22 +1,26 @@
 {
-  "version": "1.1.124",
-  "previousVersion": "1.1.123",
-  "commit": "78f4523",
-  "previousCommit": "2bba0bf",
-  "buildDate": "2026-11-14T13:37:35.525Z",
-  "summary": "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry",
+  "version": "1.1.125",
+  "previousVersion": "1.1.124",
+  "commit": "adae55a",
+  "previousCommit": "78f4523",
+  "buildDate": "2026-11-14T13:50:00.102Z",
+  "summary": "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges",
   "changes": {
-    "totalCommits": 346,
-    "filesChanged": 5,
+    "totalCommits": 347,
+    "filesChanged": 7,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry"
+    "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/dolphin-guest-special-tests.yml",
+      "file": "apps-script/DolphinBridge.gs",
+      "type": "update"
+    },
+    {
+      "file": "docs/GUEST_APPS_SCRIPT_BRIDGE.md",
       "type": "update"
     },
     {
@@ -25,6 +29,10 @@
     },
     {
       "file": "dolphin-guests.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-table-sheet.test.cjs",
       "type": "update"
     },
     {

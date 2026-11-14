@@ -37,3 +37,13 @@ test('form validation and remote conflicts keep the form available without claim
  const invalid=ui('A11-B16');await invalid.submit();assert.equal(invalid.sent.length,0);assert.equal(invalid.loads(),0);assert.equal(invalid.button.disabled,false);assert.match(invalid.msg.textContent,/cùng khu/);
  const conflict=ui('A11-A16',true);await conflict.submit();assert.equal(conflict.loads(),0);assert.equal(conflict.toasts.length,0);assert.equal(conflict.button.disabled,false);assert.match(conflict.msg.textContent,/booking khác/);
 });
+test('compact display groups consecutive tables only and includes every table in the range',()=>{
+ assert.equal(input.compact('A11,A12,A13,A14,A15,A16'),'A11-A16');
+ assert.equal(input.compact('A16,A12,A11,A15,A14,A13'),'A11-A16');
+ assert.equal(input.compact('A11,A12,A13,A14,A16'),'A11-A14,A16');
+ assert.equal(input.compact('A1,A2,A4,B1,B2'),'A1-A2,A4,B1-B2');
+ assert.equal(input.compact('E22'),'E22');
+ assert.equal(input.display('Bàn riêng khách VIP'),'Bàn riêng khách VIP');
+ for(const value of ['A11-A16','A1,A3-A5,E22','L998-L999'])
+  assert.equal(input.normalize(input.compact(value)),input.normalize(value));
+});

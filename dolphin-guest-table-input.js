@@ -28,5 +28,20 @@
   }
   return result.join(',');
  }
- return Object.freeze({normalize});
+ function compact(raw){
+  const tables=normalize(raw).split(',').sort((a,b)=>{
+   const zones='ABCDEJQL';
+   return zones.indexOf(a[0])-zones.indexOf(b[0])||Number(a.slice(1))-Number(b.slice(1));
+  });
+  const groups=[];
+  for(let i=0;i<tables.length;){
+   const start=tables[i];let end=start;i++;
+   while(i<tables.length&&tables[i][0]===end[0]&&Number(tables[i].slice(1))===Number(end.slice(1))+1)end=tables[i++];
+   groups.push(start===end?start:start+'-'+end);
+  }
+  return groups.join(',');
+ }
+ // Display legacy/free-text cells without silently discarding unknown content.
+ function display(raw){try{return compact(raw);}catch(_){return String(raw||'');}}
+ return Object.freeze({normalize,compact,display});
 });

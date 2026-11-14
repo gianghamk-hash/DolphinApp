@@ -15,7 +15,8 @@ function preserveDolphinTable_(bkk,existing){
   if(!previous.every(c=>next.has(c)))throw new Error('Nhóm BKK đã tách; cần đối chiếu bàn trước khi đồng bộ: '+old);
   if(table&&!tables.includes(table))tables.push(table);
  });
- return tables.join(',');
+ const joined=tables.join(',');
+ try{return dolphinCompactTables_(joined);}catch(_){return joined;}
 }
 function doPost(e){
  function reply(v){return ContentService.createTextOutput(JSON.stringify(v)).setMimeType(ContentService.MimeType.JSON);}
@@ -39,8 +40,8 @@ function doPost(e){
 function dolphinAssign_(data){
  const {sheetName,code,stt,expectedTable,table}=data||{};
  if(typeof sheetName!=='string'||!isDolphinSheet(sheetName)||typeof code!=='string'||!code.trim()||typeof stt!=='string'||typeof expectedTable!=='string'||typeof table!=='string')throw new Error('Thông tin booking không hợp lệ.');
- const normalized=table.toUpperCase().replace(/\s+/g,'');
- if(!/^[ABCDEJQL][1-9]\d{0,2}(,[ABCDEJQL][1-9]\d{0,2})*$/.test(normalized))throw new Error('Nhập bàn như A1 hoặc A1,A2.');
+ const expanded=dolphinExpandTables_(table);
+ const normalized=dolphinCompactTables_(expanded);
  const sheet=SpreadsheetApp.openById(DOLPHIN_TARGET_ID).getSheetByName(sheetName);
  if(!sheet)throw new Error('Không tìm thấy tab ngày/tour.');
  const rows=sheet.getDataRange().getValues(),found=[];
@@ -48,7 +49,7 @@ function dolphinAssign_(data){
  if(found.length!==1)throw new Error('Booking đã thay đổi. Hãy tải lại.');
  const row=found[0],cell=sheet.getRange(row+1,7);
  if(cell.getFormula()||String(rows[row][6]||'').trim()!==expectedTable.trim())throw new Error('Số bàn đã thay đổi hoặc có công thức. Hãy tải lại.');
- const wanted=normalized.split(',');
+ const wanted=expanded.split(',');
  if(new Set(wanted).size!==wanted.length)throw new Error('Bàn bị lặp.');
  rows.forEach((r,i)=>{if(i!==row&&/^\d+$/.test(String(r[0]))&&parseTables(r[6]).some(t=>wanted.includes(t)))throw new Error('Bàn đã có booking khác.');});
  cell.setValue(normalized);SpreadsheetApp.flush();
@@ -67,3 +68,39 @@ function dolphinAssign_(data){
   return [...new Set(rooms)];
  }
 
+
+// Same strict range policy as dolphin-guest-table-input.js; parity tested.
+ function dolphinExpandTables_(raw){
+  if(typeof raw!=='string'||raw.length>1000)throw Error('Số bàn không hợp lệ.');
+  const text=raw.trim().toUpperCase().replace(/[–—−]/g,'-');
+  if(!text)throw Error('Hãy nhập số bàn, ví dụ A11-A16.');
+  const result=[],seen=new Set();
+  for(const part of text.split(',')){
+   const m=/^\s*([ABCDEJQL])\s*([1-9]\d{0,2})\s*(?:-\s*([ABCDEJQL])?\s*([1-9]\d{0,2})\s*)?$/.exec(part);
+   if(!m)throw Error('Nhập bàn như A11, A11-A16 hoặc A11,A12.');
+   const zone=m[1],start=Number(m[2]),end=m[4]?Number(m[4]):start;
+   if(m[3]&&m[3]!==zone)throw Error('Dải bàn phải cùng khu, ví dụ A11-A16.');
+   if(end<start)throw Error('Nhập dải bàn theo thứ tự tăng, ví dụ A11-A16.');
+   if(end-start+1>60)throw Error('Mỗi lần chỉ được nhập tối đa 60 bàn.');
+   for(let n=start;n<=end;n++){
+    const table=zone+n;
+    if(seen.has(table))throw Error('Bàn '+table+' bị lặp. Hãy kiểm tra lại.');
+    seen.add(table);result.push(table);
+    if(result.length>60)throw Error('Mỗi lần chỉ được nhập tối đa 60 bàn.');
+   }
+  }
+  return result.join(',');
+ }
+ function dolphinCompactTables_(raw){
+  const tables=dolphinExpandTables_(raw).split(',').sort((a,b)=>{
+   const zones='ABCDEJQL';
+   return zones.indexOf(a[0])-zones.indexOf(b[0])||Number(a.slice(1))-Number(b.slice(1));
+  });
+  const groups=[];
+  for(let i=0;i<tables.length;){
+   const start=tables[i];let end=start;i++;
+   while(i<tables.length&&tables[i][0]===end[0]&&Number(tables[i].slice(1))===Number(end.slice(1))+1)end=tables[i++];
+   groups.push(start===end?start:start+'-'+end);
+  }
+  return groups.join(',');
+ }

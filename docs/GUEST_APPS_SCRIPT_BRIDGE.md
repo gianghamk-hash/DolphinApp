@@ -23,3 +23,15 @@ Status: staged integration, NOT activated. Do not merge/deploy the frontend befo
 Script locks coordinate this project's menu, trigger, bridge sync and assignment operations. Direct human edits, other Apps Script projects or other APIs do not honor ScriptLock. Avoid direct table edits during sync. The Apps Script execution limit may interrupt a large workbook; return/report failure, never claim completion. A timeout after a request was sent has an uncertain outcome; check Apps Script Executions and Sheet before trying again.
 
 The UI disables its local table inputs during manual sync. Independent clients are protected by the shared script lock only after both callables have been deployed. Do not activate remote sync while a legacy direct-write callable is still deployed.
+
+## Canonical table notation
+
+Store and display consecutive tables in the same area as an inclusive range: `A11-A16` means A11, A12, A13, A14, **A15**, A16. Never skip an interior table. Single tables remain `E22`; gaps remain explicit (`A11-A14,A16`); different areas never combine (`A1-A2,B1-B2`). Input normalization rejects ambiguous/cross-area ranges, duplicates, descending ranges and more than 60 tables.
+
+The app sends an expanded list for compatibility with previously deployed bridges, but displays compact notation. `DolphinBridge.gs` validates and expands for conflict detection, then writes and verifies the **compact** value in column G. The same helper compacts valid existing assignments preserved during sync. Unknown historical free-text cells are preserved rather than silently rewritten. Table-sign generation continues to expand ranges into individual physical tables.
+
+### Activate compact Sheet writes
+
+After merging this change, replace **DolphinBridge.gs** in the existing AUTO Apps Script project with the repository version. Keep VIP.gs and Script Properties, including the shared secret. Save, then Deploy → Manage deployments → edit the existing Web App → Version: New version → Deploy. Keep the existing `/exec` URL. No Firebase redeployment or key rotation is needed. Until the Web App is updated, the old deployed bridge still stores comma-separated tables.
+
+Existing Sheet cells are not mass-migrated by a repository merge. On a subsequent successful normal sync, valid preserved table lists are compacted; future assignments save compactly after deployment.

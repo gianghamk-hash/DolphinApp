@@ -594,7 +594,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-sheet-bridge-1"></script>
-<script src="./dolphin-guest-table-input.js?v=range-v1"></script>
+<script src="./dolphin-guest-table-input.js?v=range-v2"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
 <body>
@@ -935,7 +935,7 @@ function openLoungeSend(stt){
   if(curDate!==vnToday()){toast('Chỉ gửi Lounge cho ngày hôm nay');return;}
   var sync=window.LoungeSync;if(!sync||!sync.ready||sync.error){toast('Lỗi: chưa kết nối Premium Lounge');return;}
   loungeCtx=b;
-  $('lgBooking').textContent=(b.code||'')+' · '+(b.name||'')+' · '+b.pax+' khách · Bàn NH '+(b.tbl||'');
+  $('lgBooking').textContent=(b.code||'')+' · '+(b.name||'')+' · '+b.pax+' khách · Bàn NH '+window.DolphinGuestTableInput.display(b.tbl);
   $('lgSourceNote').textContent=b.loungeTicket.note;
   var current=currentLoungeAssignment(b);
   $('lgTable').innerHTML='<option value="">-- Chọn bàn Lounge --</option>'+Array.from({length:20},function(_,i){var v=loungeTableName(i+1);return '<option value="'+v+'">'+v+'</option>';}).join('');
@@ -1105,7 +1105,7 @@ function card(b,showSpecial){
   else if (pri === 'pri-diet') badge = '<span class="pri-badge"><i class="ic ic-leaf"></i> ĂN ĐB</span>';
   else if (pri === 'pri-food') badge = '<span class="pri-badge">🍽️ F&B</span>';
   return '<div class="bk '+pri+'">'+badge+
-    '<div class="h"><span class="tb">'+esc(b.tbl||'Chưa xếp')+'</span><span class="pax">'+b.pax+' khách</span></div>'+
+    '<div class="h"><span class="tb">'+esc(window.DolphinGuestTableInput.display(b.tbl)||'Chưa xếp')+'</span><span class="pax">'+b.pax+' khách</span></div>'+
     '<div class="nm">'+esc(b.name)+'</div>'+
     '<div class="meta">'+meta+'</div>'+
     tagHtml(b,!!showSpecial)+'</div>';
@@ -1666,7 +1666,7 @@ function renderUnassigned(){
       if(!window.DolphinGuestTableInput)throw Error('Chưa tải bộ xử lý số bàn. Hãy mở lại app.');
       var normalizedTable=window.DolphinGuestTableInput.normalize(form.elements.table.value);
       await window.DolphinStaffId.assignGuestTable({sheetName:foundName,code:b.code,stt:b.stt,expectedTable:b.tbl||'',table:normalizedTable});
-      toast('Đã lưu '+normalizedTable+' vào Google Sheet');await load();
+      toast('Đã lưu '+window.DolphinGuestTableInput.compact(normalizedTable)+' vào Google Sheet');await load();
     }catch(err){msg.textContent=err.message||'Chưa lưu được số bàn';button.disabled=false;}
   };});
 }

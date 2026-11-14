@@ -320,3 +320,5 @@ for (const [name, handler] of Object.entries(require('./push'))) {
 }
 
 exports.guestAssignTable=require('./guest-table-sheet').guestAssignTable;
+
+exports.guestSheetBridge=require('./guest-sheet-bridge').guestSheetBridge;

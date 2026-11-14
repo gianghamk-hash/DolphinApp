@@ -3,6 +3,8 @@ on:
   pull_request:
     paths:
       - 'functions/guest-table*'
+      - 'functions/guest-sheet-bridge.js'
+      - 'apps-script/**'
       - 'dolphin-guests.html'
       - 'dolphin-guest-special-rules.js'
       - 'dolphin-table-signs.js'
@@ -16,6 +18,8 @@ on:
     branches: [main]
     paths:
       - 'functions/guest-table*'
+      - 'functions/guest-sheet-bridge.js'
+      - 'apps-script/**'
       - 'dolphin-guests.html'
       - 'dolphin-guest-special-rules.js'
       - 'dolphin-table-signs.js'

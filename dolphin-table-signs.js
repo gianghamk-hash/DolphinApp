@@ -144,10 +144,29 @@
   const data=collect(bookings);
   if(!data.total)return {ok:false,reason:'Không có bàn thuộc A, B, C, D, E, J, Q, L để tạo biển.'};
   if(typeof window==='undefined')return {ok:false,reason:'Chỉ hỗ trợ trên trình duyệt.'};
-  const viewer=window.open('','_blank');
-  if(!viewer)return {ok:false,reason:'Trình duyệt đang chặn cửa sổ in; hãy cho phép pop-up.'};
+  // Keep the preview isolated in the current WebView: some APKs reuse the
+  // host window for window.open(), so document.write() can erase the app.
+  const doc=window.document;
+  const previous=doc.getElementById('dolphinTableSignsPreview');
+  if(previous)previous.remove();
+  const overlay=doc.createElement('div');
+  overlay.id='dolphinTableSignsPreview';
+  overlay.setAttribute('role','dialog');
+  overlay.setAttribute('aria-label','Xem trước biển đặt bàn');
+  overlay.style.cssText='position:fixed;inset:0;z-index:2147483647;background:#fff;display:flex;flex-direction:column';
+  const close=doc.createElement('button');
+  close.type='button';close.textContent='← Đóng bản xem trước';
+  close.style.cssText='flex:none;padding:14px;border:0;background:#076078;color:white;text-align:left;font:bold 15px Arial;cursor:pointer';
+  const frame=doc.createElement('iframe');
+  frame.title='Biển đặt bàn Dolphin';
+  frame.style.cssText='flex:1;width:100%;min-height:0;border:0;background:white';
   const assetUrl=new URL(ART,window.location.href).href;
-  viewer.document.open();viewer.document.write(documentHtml(data,{...config,assetUrl}));viewer.document.close();
+  frame.srcdoc=documentHtml(data,{...config,assetUrl});
+  const focused=doc.activeElement;
+  const overflow=doc.body.style.overflow;
+  close.onclick=()=>{overlay.remove();doc.body.style.overflow=overflow;if(focused&&focused.focus)focused.focus();};
+  overlay.append(close,frame);doc.body.appendChild(overlay);
+  doc.body.style.overflow='hidden';close.focus();
   return {ok:true,total:data.total,missing:data.missing,duplicates:data.duplicates.length};
  }
  return Object.freeze({AREAS,ART,parseTables,collect,pagesOf,documentHtml,openPrint});

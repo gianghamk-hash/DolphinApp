@@ -43,5 +43,15 @@
  }
  // Display legacy/free-text cells without silently discarding unknown content.
  function display(raw){try{return compact(raw);}catch(_){return String(raw||'');}}
- return Object.freeze({normalize,compact,display});
+ function conflicts(raw,bookings,current){
+  const wanted=new Set(normalize(raw).split(','));
+  const found=[];
+  (bookings||[]).forEach(function(booking){
+   if(booking===current)return;
+   const overlap=(booking.tb||[]).filter(table=>wanted.has(table));
+   if(overlap.length)found.push({code:booking.code||'',name:booking.name||'',tables:Array.from(new Set(overlap))});
+  });
+  return found;
+ }
+ return Object.freeze({normalize,compact,display,conflicts});
 });

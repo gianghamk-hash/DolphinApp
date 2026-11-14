@@ -569,10 +569,12 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
  border-radius:9px;color:#135d4b;font-size:.77rem;line-height:1.5}
 .special-compact strong{font-weight:900;flex-shrink:0}
 .special-compact-values{font-weight:750;color:#075985;overflow-wrap:anywhere}
+.tags>.special-compact,.tags>.special-source{width:100%;box-sizing:border-box}
 .special-source{padding:2px 2px 0;color:#475569}
 .special-source summary{cursor:pointer;font-size:.71rem;font-weight:750;color:#0b7284;
  padding:5px 0;list-style-position:inside}
 .special-source summary:focus-visible{outline:2px solid #0284c7;outline-offset:2px}
+.special-note-preview{display:block;background:#e7f8f1;padding:7px 9px;border-radius:8px;color:#135d4b;line-height:1.5;margin-bottom:5px;white-space:normal;overflow-wrap:anywhere}
 .special-source-text{white-space:pre-wrap;overflow-wrap:anywhere;
  font-size:.74rem;font-weight:600;line-height:1.6;
  padding:9px 11px;border:1px solid #cbd5e1;border-radius:10px;
@@ -594,7 +596,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-sheet-bridge-1"></script>
-<script src="./dolphin-guest-table-input.js?v=range-v2"></script>
+<script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
 <body>
@@ -979,7 +981,7 @@ function parse(rows){
     var tb=tables(rawTbl);
     var b={stt:c[0],code:c[1],agent:c[2],name:c[3],pax:parseInt(c[4],10)||0,nat:c[5],tbl:c[6],tb:tb,
       areas:tb.map(function(t){return areaName(t[0])}).filter(function(v,i,a){return a.indexOf(v)===i}),
-      bung:[],lob:[],diet:[],specialFood:[],showSlots:[],noteRaw:'',loungeTicket:null};
+      bung:[],lob:[],diet:[],specialFood:[],showSlots:[],noteRaw:'',dietNoteRaw:String(r[7]||'').trim(),loungeTicket:null};
 
     var allNotes = (c[7] || '') + '\n' + (c[8] || '');
     b.noteRaw = allNotes.trim();
@@ -1045,7 +1047,8 @@ var SPECIAL_CATEGORIES=[
  {key:'lobster',label:'Tôm hùm'},
  {key:'pakora',label:'Pakora'},
  {key:'custom-order',label:'Món đặt thêm'},
- {key:'Indian Food',label:'Indian Food'}
+ {key:'Indian Food',label:'Indian Food'},
+ {key:'diet-note',label:'Ghi chú kiêng chay'}
 ];
 function specialCategoryKeys(b){
  var keys=[];
@@ -1054,6 +1057,7 @@ function specialCategoryKeys(b){
  (b.specialFood||[]).forEach(function(item){
    if(item.type&&keys.indexOf(item.type)<0)keys.push(item.type);
  });
+ if(!keys.length&&b.dietNoteRaw)keys.push('diet-note');
  return keys;
 }
 function specialCategoryName(key){
@@ -1067,7 +1071,9 @@ function specialSummaryHtml(b){
  var h='<div class="special-compact"><strong>Ăn đặc biệt · F&B</strong>'+
    '<span class="special-compact-values">'+names.map(esc).join(' · ')+'</span></div>';
  if(b.noteRaw&&b.noteRaw.trim()){
-   h+='<details class="special-source"><summary>Xem ghi chú gốc / số suất / thanh toán</summary>'+
+   var preview=String(b.dietNoteRaw||'').replace(/\s+/g,' ').trim();
+   if(preview.length>110)preview=preview.slice(0,110)+'…';
+   h+='<details class="special-source"><summary>'+(preview?'<span class="special-note-preview">'+esc(preview)+'</span>':'')+'<span>Xem ghi chú gốc / số suất / thanh toán</span></summary>'+
      '<div class="special-source-text">'+esc(b.noteRaw)+'</div></details>';
  }
  return h;
@@ -1076,7 +1082,7 @@ function tagHtml(b,showSpecial){
  if(showSpecial)return specialSummaryHtml(b);
  // Các tab Tổng quan/Bungalow/Show không lặp lại thẻ món ăn và đồ uống.
  // BKK có yêu cầu đặc biệt vẫn được đánh dấu bằng huy hiệu trên card.
- var h='';
+ var h=b.dietNoteRaw?specialSummaryHtml(b):'';
  b.bung.forEach(function(x){h+='<span class="tag o"><i class="ic ic-tent"></i> '+esc(bungTxt(x))+'</span>'});
  if(tour==='dn'&&b.showSlots&&b.showSlots.length){
    b.showSlots.forEach(function(slot){
@@ -1090,7 +1096,7 @@ function getPriority(b){
   var txt = (b.name+' '+(b.code||'')+' '+(b.agent||'')).toLowerCase();
   if (b.lob.length > 0) return 'pri-vip';
   if (/\bvip\b|\bvvip\b/.test(txt)) return 'pri-vip';
-  if (b.diet.length > 0) return 'pri-diet';
+  if (b.diet.length > 0 || b.dietNoteRaw) return 'pri-diet';
   if (b.specialFood && b.specialFood.length > 0) return 'pri-food';
   return 'pri-normal';
 }
@@ -1665,9 +1671,19 @@ function renderUnassigned(){
       if(!window.DolphinStaffId)throw Error('Chưa tải xác minh Staff ID.');
       if(!window.DolphinGuestTableInput)throw Error('Chưa tải bộ xử lý số bàn. Hãy mở lại app.');
       var normalizedTable=window.DolphinGuestTableInput.normalize(form.elements.table.value);
+      var conflicts=window.DolphinGuestTableInput.conflicts(normalizedTable,B,b);
+      if(conflicts.length){
+        var warning='BÀN ĐÃ BỊ TRÙNG\n'+conflicts.map(function(item){return window.DolphinGuestTableInput.compact(item.tables.join(','))+' · BKK '+item.code+(item.name?' · '+item.name:'');}).join('\n')+'\nVui lòng nhập bàn khác.';
+        msg.textContent=warning;window.alert(warning);button.disabled=false;form.elements.table.focus();return;
+      }
       await window.DolphinStaffId.assignGuestTable({sheetName:foundName,code:b.code,stt:b.stt,expectedTable:b.tbl||'',table:normalizedTable});
       toast('Đã lưu '+window.DolphinGuestTableInput.compact(normalizedTable)+' vào Google Sheet');await load();
-    }catch(err){msg.textContent=err.message||'Chưa lưu được số bàn';button.disabled=false;}
+    }catch(err){
+      msg.textContent=err.message||'Chưa lưu được số bàn';button.disabled=false;
+      if(/bàn.*(?:đã có booking|bị lặp|bị trùng)/i.test(msg.textContent)){
+        window.alert('BÀN ĐÃ BỊ TRÙNG\n'+msg.textContent+'\nVui lòng nhập bàn khác.');form.elements.table.focus();
+      }
+    }
   };});
 }
 
@@ -1677,7 +1693,7 @@ function updateMiniStats(){
   B.forEach(function(b){
     var pri = getPriority(b);
     if (pri === 'pri-vip') vip++;
-    if (b.diet.length||b.lob.length||(b.specialFood&&b.specialFood.length)) diet++;
+    if (b.dietNoteRaw||b.diet.length||b.lob.length||(b.specialFood&&b.specialFood.length)) diet++;
   });
   var g = $('hdMiniGuests'), v = $('hdMiniVip'), d = $('hdMiniDiet');
   if (g) g.textContent = total;

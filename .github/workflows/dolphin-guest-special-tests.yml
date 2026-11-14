@@ -8,6 +8,7 @@ on:
       - 'dolphin-guests.html'
       - 'dolphin-guest-table-input.js'
       - 'scripts/dolphin-guest-table-input.test.cjs'
+      - 'scripts/dolphin-guest-entry-browser.cjs'
       - 'dolphin-guest-special-rules.js'
       - 'dolphin-table-signs.js'
       - 'assets/dolphin-table-sign-word.png'
@@ -25,6 +26,7 @@ on:
       - 'dolphin-guests.html'
       - 'dolphin-guest-table-input.js'
       - 'scripts/dolphin-guest-table-input.test.cjs'
+      - 'scripts/dolphin-guest-entry-browser.cjs'
       - 'dolphin-guest-special-rules.js'
       - 'dolphin-table-signs.js'
       - 'assets/dolphin-table-sign-word.png'
@@ -58,3 +60,6 @@ jobs:
           python3 -m pip install pypdf
       - name: Verify actual A4 PDF pagination and joined bookings
         run: node scripts/dolphin-table-signs-print-browser.cjs
+
+      - name: Verify duplicate popups and complete dietary-note disclosure
+        run: node scripts/dolphin-guest-entry-browser.cjs

@@ -594,6 +594,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-sheet-bridge-1"></script>
+<script src="./dolphin-guest-table-input.js?v=range-v1"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
 <body>
@@ -1656,14 +1657,16 @@ function renderUnassigned(){
   $('assignTables').disabled=status!=='ok';
   $('assignTables').textContent='✏️ Xếp bàn / Nhập số bàn'+(status==='ok'?' ('+missing.length+')':'');
   if(status!=='ok'){box.innerHTML='';return;}
-  box.innerHTML='<details open><summary style="padding:14px;cursor:pointer;color:#FBD77A;font-weight:bold">BKK chưa xếp bàn ('+missing.length+')</summary><div class="grid">'+missing.map(function(b,i){return '<form class="bk" data-unassigned="'+i+'"><b>'+esc(b.code)+' · '+esc(b.name)+'</b><span>'+esc(b.agent)+' · '+b.pax+' khách</span><label>Số bàn <input name="table" required placeholder="A1 hoặc A1,A2" style="padding:10px;max-width:100%"></label><button type="submit" class="btn">Lưu vào Google Sheet</button><span role="status"></span></form>';}).join('')+(missing.length?'':'<p>Không có BKK chưa xếp bàn trong ngày/tour này.</p>')+'</div></details>';
+  box.innerHTML='<details open><summary style="padding:14px;cursor:pointer;color:#FBD77A;font-weight:bold">BKK chưa xếp bàn ('+missing.length+')</summary><div class="grid">'+missing.map(function(b,i){return '<form class="bk" data-unassigned="'+i+'"><b>'+esc(b.code)+' · '+esc(b.name)+'</b><span>'+esc(b.agent)+' · '+b.pax+' khách</span><label>Số bàn <input name="table" required placeholder="A11-A16 hoặc A11,A12" style="padding:10px;max-width:100%"></label><button type="submit" class="btn">Lưu vào Google Sheet</button><span role="status"></span></form>';}).join('')+(missing.length?'':'<p>Không có BKK chưa xếp bàn trong ngày/tour này.</p>')+'</div></details>';
   box.querySelectorAll('form').forEach(function(form){form.onsubmit=async function(e){
     e.preventDefault();var b=missing[Number(form.dataset.unassigned)],button=form.querySelector('button'),msg=form.querySelector('[role=status]');
     button.disabled=true;msg.textContent='Đang lưu vào Google Sheet…';
     try{
       if(!window.DolphinStaffId)throw Error('Chưa tải xác minh Staff ID.');
-      await window.DolphinStaffId.assignGuestTable({sheetName:foundName,code:b.code,stt:b.stt,expectedTable:b.tbl||'',table:form.elements.table.value});
-      toast('Đã lưu số bàn vào Google Sheet');await load();
+      if(!window.DolphinGuestTableInput)throw Error('Chưa tải bộ xử lý số bàn. Hãy mở lại app.');
+      var normalizedTable=window.DolphinGuestTableInput.normalize(form.elements.table.value);
+      await window.DolphinStaffId.assignGuestTable({sheetName:foundName,code:b.code,stt:b.stt,expectedTable:b.tbl||'',table:normalizedTable});
+      toast('Đã lưu '+normalizedTable+' vào Google Sheet');await load();
     }catch(err){msg.textContent=err.message||'Chưa lưu được số bàn';button.disabled=false;}
   };});
 }

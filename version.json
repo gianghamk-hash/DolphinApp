@@ -1,7 +1,7 @@
 {
-  "version": "1.1.117",
-  "buildDate": "2026-11-14T09:50:48.932Z",
-  "commit": "08b2afe",
-  "notes": "feat(guests): print Word-style reservation signs by area (#262)",
+  "version": "1.1.118",
+  "buildDate": "2026-11-14T10:27:52.233Z",
+  "commit": "99a8a90",
+  "notes": "Fix table sign preview replacing APK host window (#263)",
   "forceUpdate": false
 }

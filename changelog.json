@@ -1,28 +1,20 @@
 {
-  "version": "1.1.117",
-  "previousVersion": "1.1.116",
-  "commit": "08b2afe",
-  "previousCommit": "6ad6a0c",
-  "buildDate": "2026-11-14T09:50:48.932Z",
-  "summary": "feat(guests): print Word-style reservation signs by area (#262)",
+  "version": "1.1.118",
+  "previousVersion": "1.1.117",
+  "commit": "99a8a90",
+  "previousCommit": "08b2afe",
+  "buildDate": "2026-11-14T10:27:52.233Z",
+  "summary": "Fix table sign preview replacing APK host window (#263)",
   "changes": {
-    "totalCommits": 339,
-    "filesChanged": 6,
+    "totalCommits": 340,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat(guests): print Word-style reservation signs by area (#262)"
+    "Fix table sign preview replacing APK host window (#263)"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/dolphin-guest-special-tests.yml",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-table-sign-word.png",
-      "type": "update"
-    },
     {
       "file": "dolphin-guests.html",
       "type": "update"
@@ -32,11 +24,7 @@
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-table-signs.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
+      "file": "scripts/dolphin-table-signs-browser.cjs",
       "type": "update"
     }
   ]

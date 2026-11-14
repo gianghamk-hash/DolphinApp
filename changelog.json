@@ -1,26 +1,22 @@
 {
-  "version": "1.1.125",
-  "previousVersion": "1.1.124",
-  "commit": "adae55a",
-  "previousCommit": "78f4523",
-  "buildDate": "2026-11-14T13:50:00.102Z",
-  "summary": "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges",
+  "version": "1.1.126",
+  "previousVersion": "1.1.125",
+  "commit": "9118007",
+  "previousCommit": "adae55a",
+  "buildDate": "2026-11-14T14:04:14.353Z",
+  "summary": "Merge pull request #272 from gianghamk-hash/feat/guest-conflict-popup-notes",
   "changes": {
-    "totalCommits": 347,
+    "totalCommits": 348,
     "filesChanged": 7,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges"
+    "Merge pull request #272 from gianghamk-hash/feat/guest-conflict-popup-notes"
   ],
   "fileChanges": [
     {
-      "file": "apps-script/DolphinBridge.gs",
-      "type": "update"
-    },
-    {
-      "file": "docs/GUEST_APPS_SCRIPT_BRIDGE.md",
+      "file": ".github/workflows/dolphin-guest-special-tests.yml",
       "type": "update"
     },
     {
@@ -32,7 +28,11 @@
       "type": "update"
     },
     {
-      "file": "functions/guest-table-sheet.test.cjs",
+      "file": "scripts/dolphin-guest-entry-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-guest-special.test.cjs",
       "type": "update"
     },
     {

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.125",
+      "releaseDate": "2026-11-14T13:50:00.102Z",
+      "summary": "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges",
+      "details": [
+        "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges"
+      ]
+    },
+    {
       "version": "1.1.124",
       "releaseDate": "2026-11-14T13:37:35.525Z",
       "summary": "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry",
@@ -390,14 +398,6 @@
       "summary": "Acknowledge retry policy for explicit XP function deployment (#236)",
       "details": [
         "Acknowledge retry policy for explicit XP function deployment (#236)"
-      ]
-    },
-    {
-      "version": "1.1.73",
-      "releaseDate": "2026-11-04T03:06:44.269Z",
-      "summary": "Use existing protected namespace for XP delivery without Rules deployment (#235)",
-      "details": [
-        "Use existing protected namespace for XP delivery without Rules deployment (#235)"
       ]
     }
   ]

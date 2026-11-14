@@ -1,5 +1,5 @@
 {
-  "version": "1.1.125",
+  "version": "1.1.126",
   "releaseDate": "2026-11-14",
-  "notes": "Merge pull request #271 from gianghamk-hash/fix/compact-guest-table-ranges"
+  "notes": "Merge pull request #272 from gianghamk-hash/feat/guest-conflict-popup-notes"
 }

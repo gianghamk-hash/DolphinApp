@@ -1,7 +1,7 @@
 {
-  "version": "1.1.122",
-  "buildDate": "2026-11-14T12:17:32.860Z",
-  "commit": "6215c3a",
-  "notes": "Stage signed Apps Script sync and table assignment bridge with shared locking (#268)",
+  "version": "1.1.123",
+  "buildDate": "2026-11-14T13:10:52.010Z",
+  "commit": "2bba0bf",
+  "notes": "Merge pull request #269 from gianghamk-hash/feat/clean-chibi-profile",
   "forceUpdate": false
 }

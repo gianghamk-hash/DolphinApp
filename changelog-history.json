@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.122",
+      "releaseDate": "2026-11-14T12:17:32.860Z",
+      "summary": "Stage signed Apps Script sync and table assignment bridge with shared locking (#268)",
+      "details": [
+        "Stage signed Apps Script sync and table assignment bridge with shared locking (#268)"
+      ]
+    },
+    {
       "version": "1.1.121",
       "releaseDate": "2026-11-14T11:54:04.396Z",
       "summary": "Merge pull request #267 from gianghamk-hash/fix/visible-guest-table-entry",
@@ -390,14 +398,6 @@
       "summary": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)",
       "details": [
         "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)"
-      ]
-    },
-    {
-      "version": "1.1.70",
-      "releaseDate": "2026-11-04T00:48:32.927Z",
-      "summary": "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)",
-      "details": [
-        "Unify verified Staff ID operations and XP across Lounge, Bungalow, Show, Restaurant (#232)"
       ]
     }
   ]

@@ -67,6 +67,8 @@ const profile=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   for(const src of ['assets/crew-chibi-banner-v3.webp','assets/crew-chibi-icons-v3.webp']){
    assert(await page.evaluate(src=>new Promise(resolve=>{const im=new Image();im.onload=()=>resolve(im.naturalWidth>0);im.onerror=()=>resolve(false);im.src=src;}),src));
   }
+  const captions=await page.locator('.crew-chibi-tile strong').evaluateAll(nodes=>nodes.map(n=>({w:n.getBoundingClientRect().width,h:n.getBoundingClientRect().height,clip:getComputedStyle(n).clipPath})));
+  assert(captions.every(n=>n.w>40&&n.h>10&&n.clip==='none'),'All eight live captions are visible');
   const mobile=await sample();
   for(const [label,s] of [['390px',mobile]]){
    assert.equal(s.portraitZ,'3',label+' avatar effects render in foreground');

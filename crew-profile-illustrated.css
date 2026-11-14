@@ -45,3 +45,5 @@ body:has(.crew-chibi-heading){background:#e1f5ef!important;color:#173852}
 .crew-chibi-tools button{background:#fffaf0;color:#173852;border-color:#b6d9d4;box-shadow:none}
 .crew-chibi-week{background:#fffaf0;border:1px solid #c6dfd8;box-shadow:none}
 @media(max-width:620px){#crew-profile-banner.crew-character-card{padding:16px!important}#crew-profile-banner .crew-card-identity{gap:16px!important}.crew-chibi-grid{grid-template-columns:repeat(2,minmax(0,1fr))!important;gap:12px}.crew-chibi-settings span{display:none}}
+/* Previous art embedded captions; new captions are accessible live text. */
+.crew-chibi-tile strong,.crew-chibi-tile small{width:auto!important;height:auto!important;overflow:visible!important;margin:0!important;clip:auto!important;clip-path:none!important;white-space:normal!important;line-height:1.35!important}

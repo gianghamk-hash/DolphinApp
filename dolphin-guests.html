@@ -596,7 +596,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-note-ai-v1"></script>
-<script src="./dolphin-guest-note-summary.js?v=ai-v1"></script>
+<script src="./dolphin-guest-note-summary.js?v=ai-v2"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
@@ -607,6 +607,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <h1><span class="logo"><i class="ic ic-waves"></i></span>Danh sách khách</h1>
     <span class="sp"></span>
     <span class="hd-meta" id="upd"></span>
+    <span class="hd-meta" id="guestNoteAiStatus" role="status" aria-live="polite"></span>
     <span class="hd-meta" id="sheetName"></span>
     <span class="hd-mini-stats" id="hdMiniStats">
       <i class="ic ic-users"></i> <b id="hdMiniGuests">0</b> · <i class="dot dot-r"></i> <b id="hdMiniVip">0</b> · <i class="dot dot-y"></i> <b id="hdMiniDiet">0</b>
@@ -1066,7 +1067,7 @@ function specialCategoryName(key){
  return match?match.label:key;
 }
 function specialSummaryHtml(b){
- var note=String(b.noteRaw||b.dietNoteRaw||'');
+ var note=String(b.dietNoteRaw||'');
  if(!note.trim())return '';
  var summary=window.DolphinGuestNoteSummary;
  var plainNote=note.replace(/\s+/g,' ').trim();

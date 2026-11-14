@@ -1,7 +1,7 @@
 {
-  "version": "1.1.126",
-  "buildDate": "2026-11-14T14:04:14.353Z",
-  "commit": "9118007",
-  "notes": "Merge pull request #272 from gianghamk-hash/feat/guest-conflict-popup-notes",
+  "version": "1.1.127",
+  "buildDate": "2026-11-14T14:15:28.543Z",
+  "commit": "4691de3",
+  "notes": "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary",
   "forceUpdate": false
 }

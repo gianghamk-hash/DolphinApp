@@ -1,18 +1,18 @@
 {
-  "version": "1.1.126",
-  "previousVersion": "1.1.125",
-  "commit": "9118007",
-  "previousCommit": "adae55a",
-  "buildDate": "2026-11-14T14:04:14.353Z",
-  "summary": "Merge pull request #272 from gianghamk-hash/feat/guest-conflict-popup-notes",
+  "version": "1.1.127",
+  "previousVersion": "1.1.126",
+  "commit": "4691de3",
+  "previousCommit": "9118007",
+  "buildDate": "2026-11-14T14:15:28.543Z",
+  "summary": "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary",
   "changes": {
-    "totalCommits": 348,
-    "filesChanged": 7,
+    "totalCommits": 349,
+    "filesChanged": 13,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #272 from gianghamk-hash/feat/guest-conflict-popup-notes"
+    "Merge pull request #273 from gianghamk-hash/feat/guest-ai-note-summary"
   ],
   "fileChanges": [
     {
@@ -20,7 +20,11 @@
       "type": "update"
     },
     {
-      "file": "dolphin-guest-table-input.js",
+      "file": "docs/GUEST_NOTE_AI.md",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-guest-note-summary.js",
       "type": "update"
     },
     {
@@ -28,7 +32,27 @@
       "type": "update"
     },
     {
+      "file": "functions/guest-note-summary.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-summary.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/index.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-id.test.js",
+      "type": "update"
+    },
+    {
       "file": "scripts/dolphin-guest-entry-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-guest-note-summary.test.cjs",
       "type": "update"
     },
     {
@@ -36,11 +60,11 @@
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-guest-table-input.test.cjs",
+      "file": "service-worker.js",
       "type": "update"
     },
     {
-      "file": "service-worker.js",
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

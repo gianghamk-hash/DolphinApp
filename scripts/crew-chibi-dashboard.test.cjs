@@ -98,7 +98,8 @@ test('the display illustration contains no literal personal identity or mockup r
  assert(!css.includes('crew-chibi-function-art.svg'),'Cards must not be rendered from the old CSS sprite');
  assert(worker.includes('crew-chibi-dashboard.js'));
  for(const name of ['profile','daily','xp','achievements','work','revenue','ranking','rewards']){
-  assert(html.includes('class="crew-chibi-image" src="./assets/crew-card-'+name+'.webp"'));
+  assert(html.includes('data-crew-tile="'+name+'"'));
+  assert(html.includes('class="crew-chibi-art"'));
   assert(worker.includes('assets/crew-card-'+name+'.webp'));
  }
  assert.doesNotMatch(js,/httpsCallable|staffRecordLiveAction|staffAdjustOwnTestXP|firebase\.|revenue\s*=/i);

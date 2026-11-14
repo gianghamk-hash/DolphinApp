@@ -14,7 +14,7 @@ test('original Word art is committed and has valid PNG dimensions',()=>{
  assert.equal(asset.readUInt32BE(16),600);
  assert.equal(asset.readUInt32BE(20),424);
 });
-test('original sample signs retain text fields, sequence and US Letter 2-per-page format',()=>{
+test('original sample signs retain text fields, sequence and A4 2-per-page format',()=>{
  const data=sign.collect(sample),out=sign.documentHtml(data,{date:'2026-11-14',tour:'am'});
  assert.equal(data.total,2);
  assert.equal(sign.pagesOf(data).length,1);
@@ -24,10 +24,10 @@ test('original sample signs retain text fields, sequence and US Letter 2-per-pag
  assert.match(out,/Table Number :<strong>E16/);
  assert.match(out,/Booking Code: DP4605790/);
  assert.ok(out.indexOf('E16')<out.indexOf('E17'));
- assert.match(out,/@page\{size:letter;margin:0\}/);
- assert.match(out,/width:8.5in;height:11in/);
+ assert.match(out,/@page\{size:A4 portrait;margin:10mm\}/);
+ assert.match(out,/width:190mm;height:276mm/);
  assert.match(out,/width:6.5in;height:4.595833in/);
- assert.match(out,/top:5.28in/);
+ assert.match(out,/top:145mm/);
  assert.equal((out.match(/class="sign"/g)||[]).length,2);
 });
 test('range parser supports A,B,C,D,E,J,Q,L and Lounge aliases',()=>{
@@ -88,7 +88,7 @@ test('escape booking and agency HTML before injecting into printable page',()=>{
 });
 test('button runs on current tour and source bookings, with no database writes',()=>{
  assert.match(guest,/id="printSigns"/);
- assert.match(guest,/dolphin-table-signs\.js\?v=word-print-20261114/);
+ assert.match(guest,/dolphin-table-signs\.js\?v=a4-grouped-20261114/);
  assert.match(guest,/DolphinGuestTableSigns\.openPrint\(B,\{date:curDate,tour:tour\}\)/);
  assert.match(guest,/printSigns'\)\.disabled=status!=='ok'\|\|!B\.length/);
  const js=fs.readFileSync(path.join(__dirname,'..','dolphin-table-signs.js'),'utf8');
@@ -109,4 +109,18 @@ test('preview and print filter the same selected zones and omit the trailing bla
  assert.match(html,/await Promise\.all\(imgs\.map/,'Browser should wait for artwork to decode');
  assert.equal((html.match(/class="sheet" data-area=/g)||[]).length,3);
  assert.deepEqual(sign.pagesOf(data,['E']).map(p=>p.area),['E']);
+});
+
+test('explicit plus-linked bookings print one sign per shared table regardless of row order',()=>{
+ const rows=[{code:'DP4633955',name:'WILLEE JI YANG',tbl:'E22'},
+ {code:'DP4633963',name:'WILLEE JI YANG',tbl:'E22'},
+ {code:'DP4633955 + DP4633963',name:'WILLEE JI YANG',tbl:'E22'}];
+ for(const input of [rows,[...rows].reverse()]){
+ const result=sign.collect(input);assert.equal(result.total,1);assert.equal(result.duplicates.length,0);
+ assert.match(result.areas.E[0].code,/DP4633955/);assert.match(result.areas.E[0].code,/DP4633963/);
+ assert.equal((sign.documentHtml(result).match(/class="sign"/g)||[]).length,1);
+ }
+});
+test('linked booking with two tables still gets one sign for each table',()=>{
+ const d=sign.collect([{code:'DP1 + DP2',name:'Group',tbl:'E22,E23'}]);assert.equal(d.total,2);
 });

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.123",
+      "releaseDate": "2026-11-14T13:10:52.010Z",
+      "summary": "Merge pull request #269 from gianghamk-hash/feat/clean-chibi-profile",
+      "details": [
+        "Merge pull request #269 from gianghamk-hash/feat/clean-chibi-profile"
+      ]
+    },
+    {
       "version": "1.1.122",
       "releaseDate": "2026-11-14T12:17:32.860Z",
       "summary": "Stage signed Apps Script sync and table assignment bridge with shared locking (#268)",
@@ -390,14 +398,6 @@
       "summary": "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)",
       "details": [
         "Fix staff XP recovery, verified manager account controls and level-up rewards (#234)"
-      ]
-    },
-    {
-      "version": "1.1.71",
-      "releaseDate": "2026-11-04T02:08:58.316Z",
-      "summary": "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)",
-      "details": [
-        "Secure DOL-0001 Manager APK sessions and reorganize profile tools (#233)"
       ]
     }
   ]

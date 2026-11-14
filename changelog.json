@@ -1,50 +1,34 @@
 {
-  "version": "1.1.123",
-  "previousVersion": "1.1.122",
-  "commit": "2bba0bf",
-  "previousCommit": "6215c3a",
-  "buildDate": "2026-11-14T13:10:52.010Z",
-  "summary": "Merge pull request #269 from gianghamk-hash/feat/clean-chibi-profile",
+  "version": "1.1.124",
+  "previousVersion": "1.1.123",
+  "commit": "78f4523",
+  "previousCommit": "2bba0bf",
+  "buildDate": "2026-11-14T13:37:35.525Z",
+  "summary": "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry",
   "changes": {
-    "totalCommits": 345,
-    "filesChanged": 9,
+    "totalCommits": 346,
+    "filesChanged": 5,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #269 from gianghamk-hash/feat/clean-chibi-profile"
+    "Merge pull request #270 from gianghamk-hash/fix/guest-table-range-entry"
   ],
   "fileChanges": [
     {
-      "file": "assets/crew-chibi-banner-v3.webp",
+      "file": ".github/workflows/dolphin-guest-special-tests.yml",
       "type": "update"
     },
     {
-      "file": "assets/crew-chibi-icons-v3.webp",
+      "file": "dolphin-guest-table-input.js",
       "type": "update"
     },
     {
-      "file": "crew-profile-illustrated.css",
+      "file": "dolphin-guests.html",
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-character-card-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-character-card.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-chibi-dashboard.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/crew-profile-clean.test.cjs",
+      "file": "scripts/dolphin-guest-table-input.test.cjs",
       "type": "update"
     },
     {

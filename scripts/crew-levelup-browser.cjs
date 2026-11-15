@@ -57,6 +57,16 @@ const html=fs.readFileSync(path.join(root,'dolphin-profile.html'),'utf8')
   await page.locator('#crew-levelup-cinematic[open]').waitFor();
   await page.locator('.crew-lc-primary').click();
   await page.locator('#rewards-dialog[open]').waitFor();
+  await page.locator('#rewards-dialog').evaluate(d=>d.close());
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  assert.equal(await page.evaluate(x=>window.DolphinLevelUp.notify({...x,level:100,xp:24012450}),profile),true);
+  a=await get();assert.equal(a.tier,'mythic');assert(a.scroll<=a.viewport+2);
+  assert.equal(await page.locator('.crew-lc-to').textContent(),'100');
+  assert.equal(await page.locator('.crew-lc-star').count(),24);
+  assert.equal(await page.locator('body').evaluate(e=>getComputedStyle(e).backgroundColor),'rgb(3, 4, 6)');
+  assert.match(await page.locator('.crew-chibi-art').first().evaluate(e=>getComputedStyle(e).backgroundImage),/crew-transparent\.png/);
+  await page.emulateMedia({reducedMotion:'reduce'});
+  assert.equal(await page.locator('.crew-lc-star').first().evaluate(e=>getComputedStyle(e).animationName),'none');
   assert.deepEqual(errors,[],'No page errors in cinematic lifecycle');
   console.log('PASS: Rank cinematic, rewards, replay, 320px/390px layouts and Reduced Motion.');
  }finally{await browser.close();}

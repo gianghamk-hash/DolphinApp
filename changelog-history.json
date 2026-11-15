@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.136",
+      "releaseDate": "2026-11-15T04:54:38.374Z",
+      "summary": "Merge pull request #282 from gianghamk-hash/fix/guest-gemini35-room-count",
+      "details": [
+        "Merge pull request #282 from gianghamk-hash/fix/guest-gemini35-room-count"
+      ]
+    },
+    {
       "version": "1.1.135",
       "releaseDate": "2026-11-15T04:33:45.361Z",
       "summary": "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery",
@@ -390,14 +398,6 @@
       "summary": "docs(crew): update all daily mission rewards to 3x",
       "details": [
         "docs(crew): update all daily mission rewards to 3x"
-      ]
-    },
-    {
-      "version": "1.1.84",
-      "releaseDate": "2026-11-07T07:50:09.514Z",
-      "summary": "test(crew): correct daily check-in assertions at triple reward",
-      "details": [
-        "test(crew): correct daily check-in assertions at triple reward"
       ]
     }
   ]

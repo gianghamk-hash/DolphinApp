@@ -3,11 +3,12 @@
  const data=root.DolphinCountryData,cache=new Map();let busy=false,retryAt=0,latest=[];
  const norm=s=>String(s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/gi,'d').toLowerCase().trim().replace(/\s+/g,' ');
  const esc=s=>String(s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+ function alias(label){const key=norm(label);return Object.hasOwn(data.aliases,key)?data.aliases[key]:null;}
  function resolve(raw){
   if(cache.has(raw))return cache.get(raw);
-  const direct=data.aliases[norm(raw)];if(direct)return {codes:[direct],unknown:false};
+  const direct=alias(raw);if(direct)return {codes:[direct],unknown:false};
   const parts=String(raw).split(/\s*(?:[+,;/&\n]|\s+và\s+|\s+and\s+)\s*/i).filter(Boolean),codes=[];let unknown=!parts.length;
-  for(const part of parts){const code=data.aliases[norm(part)];if(code){if(!codes.includes(code))codes.push(code);}else unknown=true;}
+  for(const part of parts){const code=alias(part);if(code){if(!codes.includes(code))codes.push(code);}else unknown=true;}
   return {codes,unknown};
  }
  function icons(raw){const r=resolve(raw);return r.codes.map(code=>'<img class="guest-flag" src="./assets/flags/'+code+'.svg" width="18" height="14" alt="'+esc('Cờ '+data.names[code])+'" title="'+esc(data.names[code])+'" loading="lazy">').join('')+(r.unknown?'<span class="guest-flag-unknown" title="Chưa xác định chắc chắn quốc tịch" aria-label="Quốc tịch chưa xác định">?</span>':'');}

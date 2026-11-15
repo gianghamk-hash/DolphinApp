@@ -6,7 +6,7 @@ test('Taiwan and multi-national Vietnamese/English labels resolve locally withou
  const w=setup();for(const [name,codes]of [['Đài Loan',['tw']],['Đài',['tw']],['Mỹ + Trung Quốc',['us','cn']],['Việt Nam và Hàn Quốc',['vn','kr']],['Taiwan / Việt Nam / Taiwan',['tw','vn']],['Indonesia',['id']]]){
   const r=w.DolphinGuestFlags.resolve(name);assert.deepEqual(Array.from(r.codes),codes);assert.equal(r.unknown,false);
  }
- assert(w.DolphinGuestFlags.resolve('Châu Âu').unknown);assert(w.DolphinGuestFlags.resolve('Khách quốc tế').unknown);
+ assert(w.DolphinGuestFlags.resolve('__proto__').unknown);assert(w.DolphinGuestFlags.resolve('constructor').unknown);assert(w.DolphinGuestFlags.resolve('Châu Âu').unknown);assert(w.DolphinGuestFlags.resolve('Khách quốc tế').unknown);
 });
 test('all flag assets exist and labels are escaped with fixed local sources',()=>{
  const w=setup();for(const code of Object.keys(w.DolphinCountryData.names)){

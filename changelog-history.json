@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.135",
+      "releaseDate": "2026-11-15T04:33:45.361Z",
+      "summary": "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery",
+      "details": [
+        "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery"
+      ]
+    },
+    {
       "version": "1.1.134",
       "releaseDate": "2026-11-15T02:32:10.678Z",
       "summary": "Merge pull request #280 from gianghamk-hash/feat/guest-list-audit",
@@ -390,14 +398,6 @@
       "summary": "test(crew): correct daily check-in assertions at triple reward",
       "details": [
         "test(crew): correct daily check-in assertions at triple reward"
-      ]
-    },
-    {
-      "version": "1.1.83",
-      "releaseDate": "2026-11-07T07:49:45.447Z",
-      "summary": "test/docs: reflect 3x daily mission rewards",
-      "details": [
-        "test/docs: reflect 3x daily mission rewards"
       ]
     }
   ]

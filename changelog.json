@@ -1,18 +1,18 @@
 {
-  "version": "1.1.135",
-  "previousVersion": "1.1.134",
-  "commit": "2c2805e",
-  "previousCommit": "9d58e2a",
-  "buildDate": "2026-11-15T04:33:45.361Z",
-  "summary": "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery",
+  "version": "1.1.136",
+  "previousVersion": "1.1.135",
+  "commit": "0b0e1f4",
+  "previousCommit": "2c2805e",
+  "buildDate": "2026-11-15T04:54:38.374Z",
+  "summary": "Merge pull request #282 from gianghamk-hash/fix/guest-gemini35-room-count",
   "changes": {
-    "totalCommits": 357,
-    "filesChanged": 12,
+    "totalCommits": 358,
+    "filesChanged": 6,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery"
+    "Merge pull request #282 from gianghamk-hash/fix/guest-gemini35-room-count"
   ],
   "fileChanges": [
     {
@@ -20,11 +20,7 @@
       "type": "update"
     },
     {
-      "file": "dolphin-guest-note-summary.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-guests.html",
+      "file": "functions/guest-nationalities.js",
       "type": "update"
     },
     {
@@ -41,26 +37,6 @@
     },
     {
       "file": "functions/guest-note-summary.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/dolphin-guest-entry-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/dolphin-guest-note-summary.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/dolphin-guest-special.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
       "type": "update"
     }
   ]

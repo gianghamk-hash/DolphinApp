@@ -1,0 +1,5 @@
+const {test}=require('node:test'),assert=require('node:assert/strict'),{check}=require('../dolphin-guest-audit');
+const row=(code,tb,extra={})=>({code,tb,tbl:tb.join(','),pax:2,paxRaw:'2',...extra});
+test('missing tables, invalid quantities and independent table overlaps are detected',()=>{const result=check([row('A',['A12']),row('B',['A12']),row('C',[],{paxRaw:'abc'})]);assert(result.some(x=>x.title.includes('Bàn A12')));assert(result.some(x=>x.title==='Chưa xếp bàn'));assert(result.some(x=>x.title.includes('Số khách')));});
+test('explicit linked BKK family shares tables; repeated codes remain review only',()=>{const result=check([row('A + B',['A1']),row('B',['A1'])]);assert(!result.some(x=>x.title.includes('trùng giữa')));assert(result.some(x=>x.severity==='review'&&x.title.includes('xuất hiện')));});
+test('AI unavailability cannot yield a clean result; missing and uncertain services are reviewable',()=>{const result=check([row('A',['A1'],{dietNoteRaw:'ghi chú'}),row('B',['B1'],{_aiClassification:{needsReview:true,items:[{category:'lobster',state:'confirmed',quantity:0}]}})]);assert.equal(result.length,3);assert(result.every(x=>x.severity==='review'));});

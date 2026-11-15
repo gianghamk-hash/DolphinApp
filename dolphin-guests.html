@@ -598,6 +598,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-flags-v2"></script>
 <script src="./dolphin-country-data.js?v=flags-v2"></script>
+<script src="./dolphin-guest-audit.js?v=1"></script>
 <script src="./dolphin-guest-flags.js?v=flags-v2"></script>
 <script src="./dolphin-guest-note-summary.js?v=ai-v5"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
@@ -629,6 +630,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
       <button id="dNext" aria-label="Ngày sau">›</button>
     </div>
     <button class="today-btn" id="dToday">Hôm nay</button>
+    <button type="button" class="btn" id="auditGuests">🔎 Kiểm tra danh sách</button>
     <button type="button" id="assignTables" aria-controls="unassignedBookings">✏️ Xếp bàn / Nhập số bàn</button>
     <button type="button" id="printSigns" class="today-btn print-signs-btn" title="Tự tạo biển đặt bàn theo mẫu Word, chia theo từng khu">🖨️ Tự tạo biển bàn</button>
     <div class="search-wrap">
@@ -754,7 +756,7 @@ var SHOW_FAMILY = {
   'BAR VIEW': ['BAR VIEW 1','BAR VIEW 2','BAR VIEW 3','BAR VIEW 4','BAR VIEW 5','BAR VIEW 6','BAR VIEW 7','BAR VIEW 8','BAR VIEW 9','BAR VIEW 10','BAR VIEW 11','BAR VIEW 12']
 };
 
-var B=[],tab='ov',query='';
+var B=[],tab='ov',query='',auditFocus=null;
 var loungeFilter='all',loungeCtx=null,loungeBusy=false;
 var floor=store.get('dg_floor','all');
 var area=store.get('dg_area',null);
@@ -984,7 +986,7 @@ function parse(rows){
     var c=r.map(function(x){return (x||'').trim()});
     var rawTbl=normalizeTables(c[6]);
     var tb=tables(rawTbl);
-    var b={stt:c[0],code:c[1],agent:c[2],name:c[3],pax:parseInt(c[4],10)||0,nat:c[5],tbl:c[6],tb:tb,
+    var b={stt:c[0],code:c[1],agent:c[2],name:c[3],pax:parseInt(c[4],10)||0,paxRaw:c[4],nat:c[5],tbl:c[6],tb:tb,
       areas:tb.map(function(t){return areaName(t[0])}).filter(function(v,i,a){return a.indexOf(v)===i}),
       bung:[],lob:[],diet:[],specialFood:[],showSlots:[],noteRaw:'',dietNoteRaw:String(r[7]||'').trim(),loungeTicket:null};
 
@@ -1025,6 +1027,8 @@ function scopeOk(b){
   return true;
 }
 function match(b){
+  if(auditFocus&&B.indexOf(auditFocus)<0)auditFocus=null;
+  if(auditFocus)return b===auditFocus;
   if(!scopeOk(b))return false;
   if(!query)return true;
   return (b.code+' '+b.name+' '+b.agent+' '+b.tbl+' '+b.nat).toLowerCase().indexOf(query)>-1;
@@ -1627,7 +1631,10 @@ function refreshGuestClassification(){
   render(true);
   document.querySelectorAll('[data-guest-summary]').forEach(function(n){if(opened.indexOf(n.dataset.guestSummary)>-1)n.closest('details').open=true});
 }
+function showGuestAudit(){window.DolphinGuestAudit.open(B,curDate+' · '+(tour==='am'?'Tour sáng':'Tour tối'),function(b){auditFocus=b;tab='ov';floor='all';area='';query='';$('q').value='';render();$('out').scrollIntoView({behavior:'smooth'});});}
 function render(preserveEntry){
+  $('auditGuests').disabled=status!=='ok';
+  if(window.DolphinGuestAudit.isOpen())showGuestAudit();
   var L=B.filter(match);
   var h;
   var dd=curDate.split('-').reverse().join('/');
@@ -1816,7 +1823,8 @@ $('dNext').onclick=function(){setDate(shiftDay(curDate,1))};
 $('dToday').onclick=function(){setDate(vnToday())};
 $('tAm').onclick=function(){setTour('am')};
 $('tDn').onclick=function(){setTour('dn')};
-$('q').oninput=function(){query=this.value.trim().toLowerCase();render()};
+$('auditGuests').onclick=showGuestAudit;
+$('q').oninput=function(){auditFocus=null;query=this.value.trim().toLowerCase();render()};
 $('tabs').onclick=function(e){var t=e.target.closest('[data-t]');if(t){tab=t.dataset.t;render()}};
 
 $('segMain').onclick=function(e){

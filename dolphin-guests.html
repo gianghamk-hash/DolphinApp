@@ -596,9 +596,9 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 </style>
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
-<script src="./staff-id.js?v=guest-flags-v1"></script>
-<script src="./dolphin-country-data.js?v=flags-v1"></script>
-<script src="./dolphin-guest-flags.js?v=flags-v1"></script>
+<script src="./staff-id.js?v=guest-flags-v2"></script>
+<script src="./dolphin-country-data.js?v=flags-v2"></script>
+<script src="./dolphin-guest-flags.js?v=flags-v2"></script>
 <script src="./dolphin-guest-note-summary.js?v=ai-v5"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
@@ -1131,7 +1131,7 @@ function bookingNationalities(value){
 function nationalitySummary(A){
   var names=Object.keys(A.nationalities).sort(function(a,b){return a.localeCompare(b,'vi')});
   var rows=names.map(function(name){
-    return '<div><dt>'+esc(name)+'</dt><dd>'+String(A.nationalities[name]).padStart(2,'0')+'</dd></div>';
+    return '<div><dt>'+(window.DolphinGuestFlags?window.DolphinGuestFlags.html(name):esc(name))+'</dt><dd>'+String(A.nationalities[name]).padStart(2,'0')+'</dd></div>';
   }).join('');
   return '<section class="nationality-summary" aria-label="Tổng hợp quốc tịch theo bàn"><h4>Quốc tịch · Số bàn / nhóm bàn</h4><dl>'+rows+'</dl><p>Mỗi bàn hoặc nhóm bàn trong một booking được tính 01 cho từng quốc tịch có mặt.</p></section>';
 }

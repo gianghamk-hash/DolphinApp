@@ -74,6 +74,12 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   assert.equal(await page.locator('.guest-flag').count(),2);
   const flagBox=await page.locator('.guest-flag').first().boundingBox();assert.equal(flagBox.width,18);assert.equal(flagBox.height,14);
   assert.equal(await page.locator('.guest-flag').first().getAttribute('alt'),'Cờ Đài Loan');
+  await page.addScriptTag({content:part('function nationalitySummary(A){','function viewOverview(L){')});
+  await page.evaluate(()=>document.getElementById('noteTest').innerHTML=nationalitySummary({nationalities:{'Ả RẬP XÊ ÚT':2,'VIỆT NAM':6,'ĐÀI LOAN':1}}));
+  await page.waitForFunction(()=>Array.from(document.querySelectorAll('.guest-flag')).every(i=>i.complete&&i.naturalWidth>0));
+  assert.equal(await page.locator('.nationality-summary img').count(),3);
+  assert.equal(await page.locator('.nationality-summary img[src$="sa.svg"]').count(),1);
+  assert.deepEqual((await page.locator('.nationality-summary dd').allTextContents()).sort(),['01','02','06']);
   console.log('PASS: mobile local/server duplicate popups, corrected save, complete notes, click/keyboard disclosure and escaping');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

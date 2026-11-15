@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.130",
+      "releaseDate": "2026-11-14T16:59:02.597Z",
+      "summary": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope",
+      "details": [
+        "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope"
+      ]
+    },
+    {
       "version": "1.1.129",
       "releaseDate": "2026-11-14T16:45:17.017Z",
       "summary": "Merge pull request #275 from gianghamk-hash/feat/guest-gemini-classification",
@@ -390,14 +398,6 @@
       "summary": "fix(landing): animate avatar orbit rings on three Top 1 podium cards",
       "details": [
         "fix(landing): animate avatar orbit rings on three Top 1 podium cards"
-      ]
-    },
-    {
-      "version": "1.1.78",
-      "releaseDate": "2026-11-06T09:31:05.576Z",
-      "summary": "feat(lounge): feature Cold Brew Classic with glowing gold menu border",
-      "details": [
-        "feat(lounge): feature Cold Brew Classic with glowing gold menu border"
       ]
     }
   ]

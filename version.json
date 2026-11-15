@@ -1,7 +1,7 @@
 {
-  "version": "1.1.130",
-  "buildDate": "2026-11-14T16:59:02.597Z",
-  "commit": "8dc5028",
-  "notes": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope",
+  "version": "1.1.131",
+  "buildDate": "2026-11-15T00:50:16.367Z",
+  "commit": "9680201",
+  "notes": "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries",
   "forceUpdate": false
 }

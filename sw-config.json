@@ -1,5 +1,5 @@
 {
-  "version": "1.1.130",
-  "releaseDate": "2026-11-14",
-  "notes": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope"
+  "version": "1.1.131",
+  "releaseDate": "2026-11-15",
+  "notes": "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries"
 }

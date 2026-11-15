@@ -1,18 +1,18 @@
 {
-  "version": "1.1.130",
-  "previousVersion": "1.1.129",
-  "commit": "8dc5028",
-  "previousCommit": "021a01e",
-  "buildDate": "2026-11-14T16:59:02.597Z",
-  "summary": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope",
+  "version": "1.1.131",
+  "previousVersion": "1.1.130",
+  "commit": "9680201",
+  "previousCommit": "8dc5028",
+  "buildDate": "2026-11-15T00:50:16.367Z",
+  "summary": "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries",
   "changes": {
-    "totalCommits": 352,
-    "filesChanged": 8,
+    "totalCommits": 353,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope"
+    "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries"
   ],
   "fileChanges": [
     {
@@ -36,7 +36,19 @@
       "type": "update"
     },
     {
+      "file": "functions/guest-note-summary.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-summary.test.cjs",
+      "type": "update"
+    },
+    {
       "file": "scripts/dolphin-guest-entry-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-guest-note-summary.test.cjs",
       "type": "update"
     },
     {

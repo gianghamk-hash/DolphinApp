@@ -592,10 +592,13 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 #assignTables:disabled{opacity:.5;cursor:wait}
 #unassignedBookings{scroll-margin-top:150px;margin-bottom:16px}
 #unassignedBookings input{color:#0f172a;background:white;border:1px solid #64748b;border-radius:8px}
+.guest-flags{display:inline-flex;align-items:center;gap:3px;vertical-align:middle;margin-right:3px}.guest-flag{width:18px;height:14px;object-fit:contain;flex:none;border-radius:2px;box-shadow:0 0 0 1px #ffffff30}.guest-flag-unknown{font-size:11px;opacity:.7}
 </style>
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
-<script src="./staff-id.js?v=guest-note-ai-v1"></script>
+<script src="./staff-id.js?v=guest-flags-v1"></script>
+<script src="./dolphin-country-data.js?v=flags-v1"></script>
+<script src="./dolphin-guest-flags.js?v=flags-v1"></script>
 <script src="./dolphin-guest-note-summary.js?v=ai-v5"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
@@ -1094,7 +1097,7 @@ function getPriority(b){
 function card(b,showSpecial){
   var meta='';
   if(b.agent) meta+='<span><i class="ic ic-building"></i> '+esc(b.agent)+'</span>';
-  if(b.nat) meta+='<span><i class="ic ic-globe"></i> '+esc(b.nat)+'</span>';
+  if(b.nat) meta+='<span>'+(window.DolphinGuestFlags?window.DolphinGuestFlags.html(b.nat):esc(b.nat))+'</span>';
   if(b.code) meta+='<span><i class="ic ic-ticket"></i> '+esc(b.code)+'</span>';
   var pri = getPriority(b);
   var badge = '';
@@ -1773,7 +1776,7 @@ function load(){
     if(my!==loadSeq)return;
     status='error';B=[];foundName='';
     $('out').innerHTML='<div class="err"><i class="ic ic-alert"></i> Không tải được dữ liệu ('+esc(e.message)+').<br>Kiểm tra: Google Sheet đang để <b>"Bất kỳ ai có đường liên kết đều xem được"</b> và mạng còn hoạt động.</div>';
-  }).then(function(){if(my===loadSeq){btn.disabled=false;render();if(status==='ok'&&window.DolphinGuestNoteSummary)window.DolphinGuestNoteSummary.ensure(B,function(){if(my===loadSeq)refreshGuestClassification()})}});
+  }).then(function(){if(my===loadSeq){btn.disabled=false;render();if(status==='ok'&&window.DolphinGuestFlags)window.DolphinGuestFlags.ensure(B);if(status==='ok'&&window.DolphinGuestNoteSummary)window.DolphinGuestNoteSummary.ensure(B,function(){if(my===loadSeq)refreshGuestClassification()})}});
 }
 
 $('reload').onclick=async function(){

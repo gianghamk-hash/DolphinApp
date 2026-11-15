@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.132",
+      "releaseDate": "2026-11-15T02:03:04.040Z",
+      "summary": "Merge pull request #278 from gianghamk-hash/feat/guest-nationality-flags",
+      "details": [
+        "Merge pull request #278 from gianghamk-hash/feat/guest-nationality-flags"
+      ]
+    },
+    {
       "version": "1.1.131",
       "releaseDate": "2026-11-15T00:50:16.367Z",
       "summary": "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries",
@@ -390,14 +398,6 @@
       "summary": "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards",
       "details": [
         "feat(crew): triple all eight daily mission rewards at source without retroactive re-awards"
-      ]
-    },
-    {
-      "version": "1.1.80",
-      "releaseDate": "2026-11-06T10:06:05.219Z",
-      "summary": "feat(lounge): double verified order processing XP",
-      "details": [
-        "feat(lounge): double verified order processing XP"
       ]
     }
   ]

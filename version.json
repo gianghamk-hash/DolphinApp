@@ -1,7 +1,7 @@
 {
-  "version": "1.1.132",
-  "buildDate": "2026-11-15T02:03:04.040Z",
-  "commit": "7cdd8a4",
-  "notes": "Merge pull request #278 from gianghamk-hash/feat/guest-nationality-flags",
+  "version": "1.1.133",
+  "buildDate": "2026-11-15T02:17:12.791Z",
+  "commit": "5cd9d85",
+  "notes": "Merge pull request #279 from gianghamk-hash/fix/saudi-and-area-nationality-flags",
   "forceUpdate": false
 }

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.141",
+      "releaseDate": "2026-11-15T09:55:33.155Z",
+      "summary": "fix(ci): verify guest AI with runtime identity rather than deployment identity",
+      "details": [
+        "fix(ci): verify guest AI with runtime identity rather than deployment identity"
+      ]
+    },
+    {
       "version": "1.1.140",
       "releaseDate": "2026-11-15T09:52:06.039Z",
       "summary": "ci: deploy guest request AI independently and verify live endpoint (#286)",
@@ -390,14 +398,6 @@
       "summary": "feat(crew): Ocean Ascension Level Up Cinematic with safe replay",
       "details": [
         "feat(crew): Ocean Ascension Level Up Cinematic with safe replay"
-      ]
-    },
-    {
-      "version": "1.1.89",
-      "releaseDate": "2026-11-09T05:42:12.829Z",
-      "summary": "feat(crew): ship premium Dolphin Crew Club Character Card",
-      "details": [
-        "feat(crew): ship premium Dolphin Crew Club Character Card"
       ]
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.141",
+  "version": "1.1.142",
   "releaseDate": "2026-11-15",
-  "notes": "fix(ci): verify guest AI with runtime identity rather than deployment identity"
+  "notes": "Level 100: ascending visual effects, full XP sandbox and XP ×5 (#287)"
 }

@@ -1,22 +1,98 @@
 {
-  "version": "1.1.141",
-  "previousVersion": "1.1.140",
-  "commit": "6eedc06",
-  "previousCommit": "220b9a2",
-  "buildDate": "2026-11-15T09:55:33.155Z",
-  "summary": "fix(ci): verify guest AI with runtime identity rather than deployment identity",
+  "version": "1.1.142",
+  "previousVersion": "1.1.141",
+  "commit": "1c75985",
+  "previousCommit": "6eedc06",
+  "buildDate": "2026-11-15T10:26:02.971Z",
+  "summary": "Level 100: ascending visual effects, full XP sandbox and XP ×5 (#287)",
   "changes": {
-    "totalCommits": 363,
-    "filesChanged": 1,
+    "totalCommits": 364,
+    "filesChanged": 20,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(ci): verify guest AI with runtime identity rather than deployment identity"
+    "Level 100: ascending visual effects, full XP sandbox and XP ×5 (#287)"
   ],
   "fileChanges": [
     {
-      "file": "scripts/verify-guest-ai-deploy.cjs",
+      "file": ".github/workflows/staff-ascension.yml",
+      "type": "update"
+    },
+    {
+      "file": "crew-arcade-missions.js",
+      "type": "update"
+    },
+    {
+      "file": "crew-ascension.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-levelup-cinematic.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-avatars.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-arcade.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-core.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-core.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-daily-missions.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-prestige.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/staff-xp-actions.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-ascension-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-cosmetics.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/crew-levelup-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/prepare-staff-ascension-deploy.cjs",
+      "type": "update"
+    },
+    {
+      "file": "staff-prestige-profile.js",
       "type": "update"
     }
   ]

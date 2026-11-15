@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.137",
+      "releaseDate": "2026-11-15T09:11:04.013Z",
+      "summary": "Hồ sơ nền đen, ảnh Bungalow, Level 100 và XP mới ×3 (#283)",
+      "details": [
+        "Hồ sơ nền đen, ảnh Bungalow, Level 100 và XP mới ×3 (#283)"
+      ]
+    },
+    {
       "version": "1.1.136",
       "releaseDate": "2026-11-15T04:54:38.374Z",
       "summary": "Merge pull request #282 from gianghamk-hash/fix/guest-gemini35-room-count",
@@ -390,14 +398,6 @@
       "summary": "test(crew): prevent retroactive mission multiplier on prior receipts",
       "details": [
         "test(crew): prevent retroactive mission multiplier on prior receipts"
-      ]
-    },
-    {
-      "version": "1.1.85",
-      "releaseDate": "2026-11-07T07:50:35.619Z",
-      "summary": "docs(crew): update all daily mission rewards to 3x",
-      "details": [
-        "docs(crew): update all daily mission rewards to 3x"
       ]
     }
   ]

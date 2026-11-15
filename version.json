@@ -1,7 +1,7 @@
 {
-  "version": "1.1.137",
-  "buildDate": "2026-11-15T09:11:04.013Z",
-  "commit": "0d20e24",
-  "notes": "Hồ sơ nền đen, ảnh Bungalow, Level 100 và XP mới ×3 (#283)",
+  "version": "1.1.138",
+  "buildDate": "2026-11-15T09:23:02.005Z",
+  "commit": "9e52255",
+  "notes": "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)",
   "forceUpdate": false
 }

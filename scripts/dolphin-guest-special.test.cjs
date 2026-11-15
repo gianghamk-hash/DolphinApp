@@ -138,12 +138,12 @@ test('all categories including Chay Âu and mixed Non-veg are recognized and ded
 });
 test('special BKK tab filters only existing categories and counts each booking once',()=>{
  const helpers=segment('var SPECIAL_CATEGORIES=[','function getPriority(b){');
- const view=segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
+ const view=segment("function serviceReview(L,group){","function loungeView(L){")+segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
  const b1={code:'DP-COCONUT-TEA',diet:[],lob:[],bung:[],noteRaw:'Coconut Welcome + Trà Ấn',
   specialFood:rules.detect('Coconut Welcome + trà Ấn')};
  const b2={code:'DP-VEG',diet:[{t:'Veg',s:'Veg',setMenu:true},{t:'Veg',s:'pure veg',setMenu:true}],lob:[],bung:[],noteRaw:'Veg',
   specialFood:[]};
- const context={b1,b2,esc:x=>String(x??''),card:b=>'<article>'+b.code+'</article>'};
+ const context={window:{},b1,b2,esc:x=>String(x??''),card:b=>'<article>'+b.code+'</article>'};
  const all=vm.runInNewContext(helpers+view+';viewSpecial([b1,b2])',context);
  assert.doesNotMatch(all,/DP-COCONUT-TEA/);
  assert.match(all,/DP-VEG/);
@@ -187,7 +187,7 @@ test('every nonempty dietary-note cell appears with a clickable preview and comp
  assert.doesNotMatch(out,/Không kayak\/bamboo/);assert.match(out,/&lt;img/);assert.doesNotMatch(out,/<img/);
  const full=out.match(/<div class="special-source-text">([\s\S]*?)<\/div>/)[1];
  assert(full.includes(ctx.esc(note)),'Full content is never truncated');
- const view=segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
+ const view=segment("function serviceReview(L,group){","function loungeView(L){")+segment("var specialCategoryFilter='all';","function pushKey(b,i,j){");
  const special=vm.runInNewContext(helpers+view+';viewSpecial([b])',{...ctx,card:b=>'<article>'+b.code+'</article>'});
  assert.doesNotMatch(special,/DP463411/);assert.doesNotMatch(special,/Ghi chú kiêng chay · 1/);
  const empty=originalParser()([['1','DP0','Agent','Guest','2','','A1','   ','Chỉ ghi chú cột I']])[0];

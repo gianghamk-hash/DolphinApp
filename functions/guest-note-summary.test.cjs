@@ -45,3 +45,11 @@ test('nationality task uses the same authentication gate before model access',as
  await assert.rejects(setup().api.guestSummarizeNotes({data:{task:'nationalities',names:['Đài Loan']}}),{code:'unauthenticated'});
  await assert.rejects(setup(false).api.guestSummarizeNotes({auth:{uid:'u'},data:{task:'nationalities',names:['Đài Loan']}}),{code:'permission-denied'});
 });
+test('explicit refresh bypasses an old cached empty classification',async()=>{
+ const h=setup(),note='bungalow 401, phụ thu 2tr trên tàu',req={auth:{uid:'u'},data:{notes:[note]}};
+ h.setAnswer({summaries:[{id:0,text:'',classifications:[],needsReview:false}]});
+ await h.api.guestSummarizeNotes(req);
+ h.setAnswer({summaries:[{id:0,text:'',needsReview:false,classifications:[{category:'bungalow',evidence:note,state:'confirmed',quantity:0,room:'401'}]}]});
+ const result=await h.api.guestSummarizeNotes({...req,data:{notes:[note],refresh:true}});
+ assert.equal(h.calls(),2);assert.equal(result.summaries[0].text,'Bungalow (P.401)');
+});

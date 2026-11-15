@@ -49,3 +49,31 @@ test('old backend text never leaks ignored guide, seat or allergy notes into pre
  await window.DolphinGuestNoteSummary.ensure([{dietNoteRaw:'Original H'}]);
  assert.equal(window.DolphinGuestNoteSummary.preview('Original H'),'Xem ghi chú gốc');
 });
+test('DP4634122 remains discoverable in Bungalow when AI fails or silently omits it',async()=>{
+ const h=setup(),b=h.api.prepare({code:'DP4634122',dietNoteRaw:'- bungalow 401, phụ thu 2tr trên tàu'});
+ assert(h.api.pending(b,'bungalow'));assert.equal(b.bung.length,0,'review cannot create a room assignment');
+ await h.api.ensure([b]);assert(h.api.pending(b,'bungalow'),'empty AI output cannot hide the evidence');
+ assert.match(h.status.textContent,/cần kiểm tra/);
+});
+test('missing service categories remain in review even when another service is confirmed',()=>{
+ const h=setup(),b={dietNoteRaw:'2 set Veg; 1 tôm hùm; bungalow 401; 1 Lounge',_aiClassification:{needsReview:false,items:[{category:'Veg',state:'confirmed',setMenu:true}]}};
+ assert(h.api.pending(b,'food'));assert(h.api.pending(b,'bungalow'));assert(h.api.pending(b,'lounge'));
+ b._aiClassification.items.push({category:'lobster',state:'excluded'},{category:'bungalow',state:'confirmed'},{category:'lounge',state:'excluded'});
+ assert(!h.api.pending(b,'food'));assert(!h.api.pending(b,'bungalow'));assert(!h.api.pending(b,'lounge'));
+});
+test('all requested meal labels, compact room notes and irrelevant notes are covered',()=>{
+ const h=setup();
+ for(const note of ['Chay Việt','Chay Âu','Indian Food','Veg','Non-veg','Jain','Halal','Gói menu Ấn','2 set noveg 1','1 suất tôm hùm'])assert(h.api.pending({dietNoteRaw:note},'food'),note);
+ for(const note of ['01 HDV ăn như khách; đoàn không ăn bò','dị ứng tôm, bò, dê; cửa sổ; guide Trung','Không kayak/bamboo'])assert.equal(h.api.candidates(note).length,0,note);
+ assert(h.api.pending({dietNoteRaw:'1private bungalow.'},'bungalow'));
+ assert(!h.api.pending({noteRaw:'Đặt bungalow 401',dietNoteRaw:''},'bungalow'),'column I never used');
+ assert.deepEqual(Array.from(h.api.candidates('2 set Non-veg')),['Non-veg']);
+});
+test('a failed batch does not prevent later bookings from being classified and manual retry is allowed',async()=>{
+ let calls=0,forced=false;
+ const window={DolphinStaffId:{summarizeGuestNotes:async(notes,options)=>{calls++;forced=options.refresh;if(calls===1)throw Error('offline');return {summaries:notes.map((note,id)=>({id,text:'',classification:{items:[],needsReview:false}}))};}}};
+ vm.runInNewContext(fs.readFileSync(require.resolve('../dolphin-guest-note-summary.js'),'utf8'),{window,document:{querySelectorAll:()=>[],getElementById:()=>null}});
+ const api=window.DolphinGuestNoteSummary,rows=Array.from({length:21},(_,i)=>api.prepare({dietNoteRaw:'Note '+i}));
+ await api.ensure(rows);assert.equal(calls,2);assert(rows[20]._aiClassification);assert(!rows[0]._aiClassification);
+ await api.retry();assert.equal(calls,4);assert(forced);assert(rows[0]._aiClassification);
+});

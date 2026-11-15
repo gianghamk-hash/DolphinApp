@@ -33,7 +33,7 @@ async function handle(req){
  if(!project)throw new HttpsError('failed-precondition','Chưa cấu hình AI.');
  for(const [key,value] of cache)if(value.until<now)cache.delete(key);
  for(const [key,value] of limits)if(value.until<now)limits.delete(key);
- const pending=[...new Set(notes)].filter(n=>!cache.has(n));
+ const pending=[...new Set(notes)].filter(n=>req.data.refresh===true||!cache.has(n));
  if(pending.length){
   const rate=limits.get(req.auth.uid)||{count:0,until:now+60000};
   if(rate.count>=10)throw new HttpsError('resource-exhausted','Vui lòng chờ trước khi tóm tắt thêm.');
@@ -53,7 +53,7 @@ async function handle(req){
    for(const item of parsed.summaries){if(!Number.isInteger(item.id)||item.id<0||item.id>=pending.length||byId.has(item.id))throw Error('Invalid AI index');byId.set(item.id,item);}
    pending.forEach((note,id)=>{
     const item=byId.get(id),classified=classification.validate(note,item.classifications,item.needsReview);
-    cache.set(note,{until:now+86400000,text:classification.focusedSummary(classified),source:classified?'ai':'original',classification:classified});
+    cache.set(note,{until:now+(classified&&!classified.needsReview?86400000:60000),text:classification.focusedSummary(classified),source:classified?'ai':'original',classification:classified});
    });
    while(cache.size>500)cache.delete(cache.keys().next().value);
   }catch(error){

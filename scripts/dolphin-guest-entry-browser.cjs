@@ -87,6 +87,27 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   await page.locator('dialog details button').first().click();
   assert.equal(await page.evaluate(()=>window.auditSelected),'AUDIT-BKK');
   assert.equal(await page.locator('dialog').isVisible(),false);
+  await page.addScriptTag({content:part('function serviceReview(L,group){','function loungeView(L){')});
+  await page.evaluate(async()=>{
+   window.card=b=>'<article>'+esc(b.code)+'</article>';
+   window.recoveryBooking=DolphinGuestNoteSummary.prepare({code:'DP4634122',dietNoteRaw:'- bungalow 401, phụ thu 2tr trên tàu <img src=x onerror=alert(1)>'});
+   DolphinStaffId.summarizeGuestNotes=async()=>{throw Error('offline');};
+   await DolphinGuestNoteSummary.ensure([recoveryBooking]);
+   document.getElementById('noteTest').innerHTML=serviceReview([recoveryBooking],'bungalow');
+  });
+  assert.match(await page.locator('#noteTest').textContent(),/DP4634122/);
+  assert.match(await page.locator('#noteTest h3').textContent(),/Cần kiểm tra/);
+  assert.equal(await page.locator('#noteTest [data-push]').count(),0);
+  assert.equal(await page.locator('#noteTest img').count(),0);
+  await page.locator('#noteTest summary').click();
+  assert(await page.locator('#noteTest .slot-note').isVisible());
+  await page.evaluate(async()=>{
+   DolphinStaffId.summarizeGuestNotes=async()=>({summaries:[{id:0,text:'Bungalow (P.401)',summaryScope:'services-v2',classification:{needsReview:false,items:[{category:'bungalow',state:'confirmed',quantity:0,room:'401',evidence:recoveryBooking.dietNoteRaw}]}}]});
+   await DolphinGuestNoteSummary.retry();
+   document.getElementById('noteTest').innerHTML=serviceReview([recoveryBooking],'bungalow');
+  });
+  assert.equal(await page.locator('#noteTest .service-review').count(),0);
+  assert.equal(await page.evaluate(()=>recoveryBooking.bung[0].num),'401');
   console.log('PASS: mobile local/server duplicate popups, corrected save, complete notes, click/keyboard disclosure and escaping');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

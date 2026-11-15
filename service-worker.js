@@ -19,6 +19,7 @@ const CACHE_URLS = [
   BASE + '/',
   BASE + '/index.html',
   BASE + '/dolphin-guests.html',
+  BASE + '/dolphin-guest-audit.js?v=1',
   BASE + '/dolphin-country-data.js?v=flags-v2',
   BASE + '/dolphin-guest-flags.js?v=flags-v2',
   BASE + '/assets/flags/sa.svg',

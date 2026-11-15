@@ -80,6 +80,13 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   assert.equal(await page.locator('.nationality-summary img').count(),3);
   assert.equal(await page.locator('.nationality-summary img[src$="sa.svg"]').count(),1);
   assert.deepEqual((await page.locator('.nationality-summary dd').allTextContents()).sort(),['01','02','06']);
+  await page.addScriptTag({path:path.join(root,'dolphin-guest-audit.js')});
+  await page.evaluate(()=>DolphinGuestAudit.open([{code:'AUDIT-BKK',stt:'5',name:'Test',paxRaw:'bad',tbl:'',tb:[],dietNoteRaw:'<script>bad</script>'}],'15/11 · Sáng',b=>window.auditSelected=b.code));
+  assert(await page.locator('dialog').isVisible());
+  await page.locator('dialog details summary').first().click();
+  await page.locator('dialog details button').first().click();
+  assert.equal(await page.evaluate(()=>window.auditSelected),'AUDIT-BKK');
+  assert.equal(await page.locator('dialog').isVisible(),false);
   console.log('PASS: mobile local/server duplicate popups, corrected save, complete notes, click/keyboard disclosure and escaping');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

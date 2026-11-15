@@ -7,6 +7,8 @@ on:
       - 'functions/guest-note-*'
       - 'functions/guest-nationalities*'
       - 'functions/guest-country-codes.json'
+      - 'dolphin-guest-audit.js'
+      - 'scripts/dolphin-guest-audit.test.cjs'
       - 'dolphin-guest-flags.js'
       - 'dolphin-country-data.js'
       - 'assets/flags/**'
@@ -34,6 +36,8 @@ on:
       - 'functions/guest-note-*'
       - 'functions/guest-nationalities*'
       - 'functions/guest-country-codes.json'
+      - 'dolphin-guest-audit.js'
+      - 'scripts/dolphin-guest-audit.test.cjs'
       - 'dolphin-guest-flags.js'
       - 'dolphin-country-data.js'
       - 'assets/flags/**'
@@ -70,7 +74,7 @@ jobs:
         run: node --test scripts/dolphin-guest-special.test.cjs
 
       - name: Verify authenticated Sheets assignment and conflict handling
-        run: node --test functions/guest-table-sheet.test.cjs scripts/dolphin-guest-table-input.test.cjs functions/guest-note-summary.test.cjs functions/guest-note-classification.test.cjs functions/guest-nationalities.test.cjs scripts/dolphin-guest-flags.test.cjs scripts/dolphin-guest-note-summary.test.cjs
+        run: node --test scripts/dolphin-guest-audit.test.cjs functions/guest-table-sheet.test.cjs scripts/dolphin-guest-table-input.test.cjs functions/guest-note-summary.test.cjs functions/guest-note-classification.test.cjs functions/guest-nationalities.test.cjs scripts/dolphin-guest-flags.test.cjs scripts/dolphin-guest-note-summary.test.cjs
       - name: Install print layout verification dependencies
         run: |
           npm install --no-save --package-lock=false playwright

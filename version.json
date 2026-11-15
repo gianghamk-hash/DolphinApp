@@ -1,7 +1,7 @@
 {
-  "version": "1.1.140",
-  "buildDate": "2026-11-15T09:52:06.039Z",
-  "commit": "220b9a2",
-  "notes": "ci: deploy guest request AI independently and verify live endpoint (#286)",
+  "version": "1.1.141",
+  "buildDate": "2026-11-15T09:55:33.155Z",
+  "commit": "6eedc06",
+  "notes": "fix(ci): verify guest AI with runtime identity rather than deployment identity",
   "forceUpdate": false
 }

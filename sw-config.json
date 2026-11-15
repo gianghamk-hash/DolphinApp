@@ -1,5 +1,5 @@
 {
-  "version": "1.1.140",
+  "version": "1.1.141",
   "releaseDate": "2026-11-15",
-  "notes": "ci: deploy guest request AI independently and verify live endpoint (#286)"
+  "notes": "fix(ci): verify guest AI with runtime identity rather than deployment identity"
 }

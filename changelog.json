@@ -1,28 +1,20 @@
 {
-  "version": "1.1.140",
-  "previousVersion": "1.1.139",
-  "commit": "220b9a2",
-  "previousCommit": "7e5c2e3",
-  "buildDate": "2026-11-15T09:52:06.039Z",
-  "summary": "ci: deploy guest request AI independently and verify live endpoint (#286)",
+  "version": "1.1.141",
+  "previousVersion": "1.1.140",
+  "commit": "6eedc06",
+  "previousCommit": "220b9a2",
+  "buildDate": "2026-11-15T09:55:33.155Z",
+  "summary": "fix(ci): verify guest AI with runtime identity rather than deployment identity",
   "changes": {
-    "totalCommits": 362,
-    "filesChanged": 3,
+    "totalCommits": 363,
+    "filesChanged": 1,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "ci: deploy guest request AI independently and verify live endpoint (#286)"
+    "fix(ci): verify guest AI with runtime identity rather than deployment identity"
   ],
   "fileChanges": [
-    {
-      "file": ".github/workflows/guest-ai-production.yml",
-      "type": "update"
-    },
-    {
-      "file": "scripts/prepare-guest-ai-deploy.cjs",
-      "type": "update"
-    },
     {
       "file": "scripts/verify-guest-ai-deploy.cjs",
       "type": "update"

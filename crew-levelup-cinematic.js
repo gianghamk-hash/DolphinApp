@@ -72,19 +72,22 @@
   const dialog=el('dialog',undefined,'crew-lc-dialog');dialog.id='crew-levelup-cinematic';
   dialog.dataset.tier=moment.tier;
   dialog.dataset.ascension=String(moment.to>=70);
+  const ascTier=moment.to>=100?'eternal':moment.to>=90?'sovereign':moment.to>=80?'galaxy':moment.to>=70?'polar':'';
+  dialog.dataset.ascTier=ascTier;
   dialog.setAttribute('aria-labelledby','crew-lc-title');
   dialog.setAttribute('aria-describedby','crew-lc-message');
   const scene=el('div',undefined,'crew-lc-scene');
   const ambient=el('div',undefined,'crew-lc-ambient');
   const stars=el('div',undefined,'crew-lc-stars');
-  for(let i=0;i<24;i++){const star=el('span','✦','crew-lc-star');star.style.setProperty('--i',String(i));star.style.left=(4+(i%8)*12)+'%';star.style.top=(8+(i%3)*27)+'%';stars.append(star);}
+  for(let i=0;i<(moment.to>=100?96:moment.to>=90?72:moment.to>=80?56:moment.to>=70?40:24);i++){const star=el('span','✦','crew-lc-star');star.style.setProperty('--i',String(i));star.style.left=(4+(i%8)*12)+'%';star.style.top=(8+(i%3)*27)+'%';stars.append(star);}
   const head=el('div',undefined,'crew-lc-header');
   head.append(el('span','✦ DOLPHIN CREW CLUB · ASCENSION','crew-lc-brand'),
    el('span',preview?'XEM LẠI':'LEVEL UP','crew-lc-flag'));
   const portal=el('div',undefined,'crew-lc-portal');
-  portal.append(el('div',undefined,'crew-lc-halo'),
-   el('span',moment.avatar||'🐬','crew-lc-avatar'));
-  const label=el('div',moment.tier==='mythic'?'MYTHIC ASCENSION':
+  const portalAvatar=el('span',moment.avatar||'🐬','crew-lc-avatar');
+  portal.append(el('div',undefined,'crew-lc-halo'),portalAvatar);
+  if(ascTier){const avatar=portalAvatar;avatar.dataset.frame=ascTier;avatar.dataset.avatarMotion=ascTier;window.DolphinFrameFX?.decorate?.(avatar);}
+  const label=el('div',ascTier?({polar:'AURORA AWAKENING',galaxy:'GALACTIC SOVEREIGN',sovereign:'SOLAR EMPEROR',eternal:'ETERNAL INFINITY'}[ascTier]):moment.tier==='mythic'?'MYTHIC ASCENSION':
    moment.tier==='rank'?'RANK TRANSFORMATION':
    moment.tier==='milestone'?'OCEAN MILESTONE':'NEW LEVEL ACHIEVED','crew-lc-overline');
   const number=el('div',undefined,'crew-lc-level');

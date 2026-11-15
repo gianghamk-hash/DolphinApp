@@ -8,31 +8,31 @@ test('eight fixed tasks have precisely the requested rewards',()=>{
   'checkin','order_completed','bungalow_opened','lounge_opened',
   'order_received','avatar_changed','snake_100','game2048_1000'
  ]);
- assert.deepEqual(core.TASKS.map(x=>x.xp),[1800,3600,2700,2250,1350,900,4500,9000]);
- assert.equal(core.checkinXP(1),1800);
- assert.equal(core.checkinXP(7),4500);
- assert.equal(core.checkinXP(999),4500);
+ assert.deepEqual(core.TASKS.map(x=>x.xp),[9000,18000,13500,11250,6750,4500,22500,45000]);
+ assert.equal(core.checkinXP(1),9000);
+ assert.equal(core.checkinXP(7),22500);
+ assert.equal(core.checkinXP(999),22500);
  assert.throws(()=>core.apply(person(),'arbitrary_task',vn('2026-11-03')));
 });
 test('VN midnight resets eight daily missions but preserves streak',()=>{
  const a=Date.parse('2026-11-02T16:59:59Z'),b=a+1000;
  const claimed=core.apply(person(),'snake_100',a,'snake-proof');
- assert.equal(claimed.addedXP,4500);
+ assert.equal(claimed.addedXP,22500);
  assert.equal(core.view(claimed.profile,a).completedCount,1);
  assert.equal(core.view(claimed.profile,b).completedCount,0);
  assert.equal(core.view(claimed.profile,b).resetAt,Date.parse('2026-11-03T17:00:00Z'));
 });
-test('check-in is tripled to 1800–4500 XP independent of order work XP',()=>{
+test('check-in is increased fivefold to 9000–22500 XP independent of order work XP',()=>{
  let p=person(),total=0;
  for(let i=1;i<=9;i++){
   const result=core.apply(p,'checkin',vn('2026-11-'+String(i).padStart(2,'0')),String(i));
   assert.equal(result.addedXP,core.checkinXP(i));
   total+=result.addedXP;p=result.profile;assert.equal(p.xp,total);
  }
- assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,1800);
+ assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,9000);
 });
 test('each verified task is claimed once per day per Staff ID',()=>{
- const time=vn('2026-11-03'),amounts={checkin:1800,order_completed:3600,bungalow_opened:2700,lounge_opened:2250,order_received:1350,avatar_changed:900,snake_100:4500,game2048_1000:9000};
+ const time=vn('2026-11-03'),amounts={checkin:9000,order_completed:18000,bungalow_opened:13500,lounge_opened:11250,order_received:6750,avatar_changed:4500,snake_100:22500,game2048_1000:45000};
  let p=person(),total=0;
  for(const [task,xp] of Object.entries(amounts)){
   const first=core.apply(p,task,time,task);total+=xp;
@@ -40,7 +40,7 @@ test('each verified task is claimed once per day per Staff ID',()=>{
   assert.equal(core.apply(first.profile,task,time+1000,'retry').addedXP,0);
   p=first.profile;
  }
- assert.equal(total,26100);assert.equal(p.xp,total);
+ assert.equal(total,130500);assert.equal(p.xp,total);
  assert.equal(core.view(p,time).completedCount,8);
  assert.equal(core.view(p,time).todayXP,total);
 });
@@ -78,7 +78,7 @@ test('legacy business mission receipts top up only TODAY; unverified receipts do
  const untrusted={...base,dailyMissions:{...base.dailyMissions,completed:{order_completed:{xp:40,at:time}}}};
  assert.equal(core.reconcileLegacyDaily(untrusted,time).changed,false);
 });
-test('new triple rewards do not top up previously completed missions',()=>{
+test('new fivefold rewards do not top up previously completed missions',()=>{
  const t=vn('2026-11-07');
  const prior={...person(),xp:400,dailyMissions:{date:'2026-11-07',completed:{
   order_completed:{xp:400,at:t,receipt:'verified-pre-upgrade'}
@@ -86,12 +86,12 @@ test('new triple rewards do not top up previously completed missions',()=>{
  assert.equal(core.view(prior,t).tasks.find(task=>task.id==='order_completed').xp,400);
  assert.equal(core.apply(prior,'order_completed',t+1000,'retry').addedXP,0);
  assert.equal(core.reconcileLegacyDaily(prior,t+1000).changed,false);
- assert.equal(core.apply(person(),'order_completed',t+1000,'new').addedXP,3600);
+ assert.equal(core.apply(person(),'order_completed',t+1000,'new').addedXP,18000);
 });
 test('game mission rewards use the single new triple multiplier',()=>{
  const t=vn('2026-11-03');
- assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,4500);
- assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,9000);
+ assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,22500);
+ assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,45000);
 });
 
 test('daily rewards and same-day legacy top-ups auto-equip only when they raise the permanent level',()=>{
@@ -99,9 +99,23 @@ test('daily rewards and same-day legacy top-ups auto-equip only when they raise 
  const base={...person(),xp:engine.xpForLevel(3)-200,levelPeak:2};
  const level=core.apply(base,'checkin',now,'checkin');
  assert.equal(level.profile.selectedNameFx,'ember');assert.equal(level.profile.selectedAvatarMotion,'pulse');
- const custom={...level.profile,selectedNameFx:'none',nameFlame:false};
+ const custom={...level.profile,xp:engine.xpForLevel(20),selectedNameFx:'none',nameFlame:false};
  const same=core.apply(custom,'order_received',now,'received');assert.equal(same.profile.selectedNameFx,'none');
  const old={...person(),xp:engine.xpForLevel(3)-360,levelPeak:2,dailyMissions:{date:core.vietnamDay(now),completed:{order_completed:{xp:40,at:now,receipt:'legacy'}}}};
  const repaired=core.reconcileLegacyDaily(old,now);assert.equal(repaired.profile.selectedNameFx,'ember');
 });
 
+
+test('fivefold rollout preserves v5 completed receipts and pending business rewards',()=>{
+ const now=Date.now(),day=core.vietnamDay(now);
+ const previous={checkin:1800,order_completed:3600,bungalow_opened:2700,lounge_opened:2250,order_received:1350,avatar_changed:900,snake_100:4500,game2048_1000:9000};
+ for(const [id,amount]of Object.entries(previous)){
+  assert.equal(core.TASKS.find(t=>t.id===id).xp,amount*5);
+  const old={...person(),xp:amount,dailyMissions:{date:day,streak:1,lastCheckinDay:day,completed:{[id]:{xp:amount,at:now,receipt:'v5',rateVersion:5}}}};
+  assert.equal(core.view(old,now).tasks.find(t=>t.id===id).xp,amount);
+  assert.equal(core.apply(old,id,now+1,'retry').addedXP,0);
+  assert.equal(core.reconcileLegacyDaily(old,now+1).changed,false);
+ }
+ assert.equal(core.apply(person(),'order_completed',now,'old-pending',5).addedXP,3600);
+ assert.equal(core.apply(person(),'order_completed',now,'new-pending',6).addedXP,18000);
+});

@@ -56,7 +56,7 @@ test('fake client score without matching replay cannot create XP',async()=>{
 });
 test('replayed and correctly verified game run awards once per task and per day',async()=>{
  const h=fixture({validReplay:true});
- for(const [game,score,xp] of [['snake',200,4500],['2048',1000,9000]]){
+ for(const [game,score,xp] of [['snake',200,22500],['2048',1000,45000]]){
   const run=await h.api.staffStartArcadeMission(h.req('worker',{game}));
   h.data.get('staffDailyGameChallenges/worker/'+game).startedAt-=20000;
   const request=h.req('worker',{game,challengeId:run.challengeId,score,moves:'LRUD'});
@@ -72,7 +72,7 @@ test('replayed and correctly verified game run awards once per task and per day'
   }));
   assert.equal(second.addedXP,0);
  }
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,13500);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,67500);
  assert.equal(h.rebuilds(),2);
 });
 test('Snake needs 200 points, not the former 100-point threshold',async()=>{
@@ -85,7 +85,7 @@ test('Snake needs 200 points, not the former 100-point threshold',async()=>{
  const result=await h.api.staffFinishArcadeMission(h.req('worker',{
   game:'snake',challengeId:run.challengeId,score:200,moves:'LRUD'
  }));
- assert.equal(result.awarded,true);assert.equal(result.addedXP,4500);
+ assert.equal(result.awarded,true);assert.equal(result.addedXP,22500);
  const task=result.missions.tasks.find(t=>t.id==='snake_100');
  assert.equal(task.done,true);assert.match(task.title,/200/);
 });
@@ -99,8 +99,8 @@ test('server failure after consuming a verified run is recoverable with identica
  assert.equal(h.data.get('staffDailyGameChallenges/worker/snake').used,true);
  assert.equal(h.data.get('staffRegistry/DOL-0002').xp,0);
  const retry=await h.api.staffFinishArcadeMission(request);
- assert.equal(retry.awarded,true);assert.equal(retry.addedXP,4500);
- assert.equal(h.data.get('staffRegistry/DOL-0002').xp,4500);
+ assert.equal(retry.awarded,true);assert.equal(retry.addedXP,22500);
+ assert.equal(h.data.get('staffRegistry/DOL-0002').xp,22500);
  assert.equal((await h.api.staffFinishArcadeMission(request)).addedXP,0);
  await assert.rejects(()=>h.api.staffFinishArcadeMission(h.req('worker',{
   game:'snake',challengeId:run.challengeId,score:200,moves:'LRRU'

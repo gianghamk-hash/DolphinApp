@@ -486,3 +486,18 @@ test('Premium personal style cannot be re-equipped based on historical levelPeak
  assert.equal(mine.selectedTitle,'none');assert.equal(mine.selectedFrame,'none');assert.equal(mine.personalTheme,'dark');
 });
 
+
+test('DOL-0001 sandbox reaches every ascension tier and lowering relocks effects',async()=>{
+ const {api,data}=harness({coldCacheProfile:true});
+ for(const [level,id] of [[70,'polar'],[80,'galaxy'],[90,'sovereign'],[100,'eternal']]){
+  const result=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'level',amount:level}));
+  assert.equal(result.level,level);assert.equal(result.xp,engine.xpForLevel(level));
+  assert.equal(result.selectedFrame,id);assert.equal(result.selectedAvatarMotion,id);assert.equal(result.selectedNameFx,id);
+ }
+ const capped=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'add',amount:1000000}));
+ assert.equal(capped.level,100);assert.equal(capped.xp,engine.xpForLevel(100));
+ const down=await api.staffAdjustOwnTestXP(req('lanDevice',{action:'level',amount:2}));
+ assert.equal(down.level,2);assert.equal(down.selectedFrame,'none');assert.equal(down.selectedNameFx,'none');
+ assert.equal([...data.keys()].some(k=>k.startsWith('staffXpLedger/')),false);
+ for(const amount of [0,101,1.5,'100'])await assert.rejects(()=>api.staffAdjustOwnTestXP(req('lanDevice',{action:'level',amount})),e=>e.code==='invalid-argument');
+});

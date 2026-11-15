@@ -51,7 +51,7 @@
    // downgrade a verified employee to free play while the server is waking up.
    const challenge=await bounded(api('staffStartArcadeMission',{game}),20000);
    if(!challenge?.challengeId||!Number.isSafeInteger(challenge.seed))throw Error('Máy chủ chưa cấp ván có thưởng.');
-   status(game==='snake'?'🎯 Đạt 200 điểm để nhận 1.500 XP!':'🎯 Đạt 1.000 điểm để nhận 3.000 XP!');
+   status(game==='snake'?'🎯 Đạt 200 điểm để nhận 22.500 XP!':'🎯 Đạt 1.000 điểm để nhận 45.000 XP!');
    return {game,challengeId:challenge.challengeId,rng:root.DolphinArcadeProof.random(challenge.seed),
     moves:'',submitted:false,eligible:true,verifying:false,claimed:false,claimPayload:null};
   }catch(error){

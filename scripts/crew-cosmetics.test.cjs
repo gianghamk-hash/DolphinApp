@@ -88,7 +88,8 @@ test('V4 ring satellites have different physical counts and opposite directions'
  const avatarJs=read('dolphin-avatars.js');
  assert.match(css,/CREW CLUB V4 — TRUE ORBIT ANIMATIONS/);
  assert.match(avatarJs,/const count=\{bronze:1,silver:2,gold:3\}\[frame\]/);
- assert.match(avatarJs,/if\(frame==='mythic'\|\|\['polar','galaxy','sovereign','eternal'\]\.includes\(frame\)\)/);
+ assert.match(avatarJs,/if\(ASCENSION_TIERS\[frame\]\)/);
+ assert.match(avatarJs,/else if\(frame==='mythic'\)/);
  assert.match(avatarJs,/for\(let i=1;i<=4;i\+\+\)/);
  assert.match(css,/crew-fx-ring--1/);
  assert.match(css,/crew-fx-ring--2/);

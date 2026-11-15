@@ -23,7 +23,7 @@ function harness(){
   if(n==='./staff-xp-live-engine.cjs')return require('./staff-xp-live-engine.cjs');
   if(n==='./staff-daily-core.cjs')return require('./staff-daily-core.cjs');
   if(n==='./staff-xp-engine.cjs')return require('./staff-xp-engine.cjs');
-  if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>{missionAwards.push({employeeId,taskId});return {addedXP:{lounge_opened:2250,bungalow_opened:2700,order_received:1350,order_completed:3600}[taskId]||0,awarded:true};}};
+  if(n==='./staff-daily-missions')return {_award:async(employeeId,taskId)=>{missionAwards.push({employeeId,taskId});return {addedXP:{lounge_opened:11250,bungalow_opened:13500,order_received:6750,order_completed:18000}[taskId]||0,awarded:true};}};
   if(n==='./staff-prestige')return {_awardTrustedLiveXP:async d=>{if(failAward)throw Error('credit offline');const k='staffXpLedger/'+d.employeeId+'/'+d.eventId;if(data.has(k))return {duplicate:true};data.set(k,d);awards.push(d);return {duplicate:false}}};
   if(n==='./staff-name-policy.cjs')return require('./staff-name-policy.cjs');
   throw Error(n);
@@ -35,7 +35,7 @@ test('only manager verified staff can open revenue sessions, no duplicate XP',as
  const h=harness(),input={kind:'lounge_tables',id:'LOUNGE 1',action:'booking',data:{customerName:'Guest',pax:3,paymentMethod:'TM',openedByStaff:'spoof'}};
  await assert.rejects(()=>h.call('self',input),e=>e.code==='permission-denied');
  await assert.rejects(()=>h.call(null,input),e=>e.code==='unauthenticated');
- assert.equal((await h.call('verified',input)).xpAwarded,2250);
+ assert.equal((await h.call('verified',input)).xpAwarded,11250);
  assert.equal(h.docs.get('lounge_tables/LOUNGE 1').openedByStaff,'Lan');
  assert.equal((await h.call('verified',input)).xpAwarded,0);assert.equal(h.awards.length,1);
 });
@@ -70,7 +70,7 @@ test('Show needs verified booking; same combo is not counted twice',async()=>{
  const h=harness(),combo={kind:'show_tables',id:'S1',action:'combo',data:{combo:'combo2',foods:{set:1}}};
  await assert.rejects(()=>h.call('owner',combo),e=>e.code==='not-found');
  await h.call('owner',{kind:'show_tables',id:'S1',action:'booking',data:{leader:'L',dining:'J1',guests:2,payment:'Tiền mặt'}});
- assert.equal((await h.call('owner',combo)).xpAwarded,2370);
+ assert.equal((await h.call('owner',combo)).xpAwarded,11850);
  assert.equal((await h.call('owner',combo)).xpAwarded,0);
 });
 test('legacy Show booking can save combo with no invented XP, then verified booking earns once',async()=>{
@@ -103,10 +103,10 @@ test('legacy Show combo cannot be saved by a different verified employee',async(
 test('Work credits verified prepare and remaining completion XP once',async()=>{
  const h=harness();h.docs.set('lounge_orders/o1',{status:'pending'});
  const a={kind:'lounge_orders',id:'o1',action:'preparing'},b={...a,action:'completed'};
- assert.equal((await h.call('verified',a)).xpAwarded,600);
- assert.equal((await h.call('verified',b)).xpAwarded,900);
+ assert.equal((await h.call('verified',a)).xpAwarded,3000);
+ assert.equal((await h.call('verified',b)).xpAwarded,4500);
  assert.equal((await h.call('verified',b)).xpAwarded,0);
- assert.equal(h.awards.reduce((n,x)=>n+x.amount,0),1500);
+ assert.equal(h.awards.reduce((n,x)=>n+x.amount,0),7500);
 });
 test('completed client-writable legacy source cannot retroactively grant XP',async()=>{
  const h=harness();h.docs.set('res_orders/o2',{status:'completed',completedBy:'Guest'});
@@ -116,7 +116,7 @@ test('completed client-writable legacy source cannot retroactively grant XP',asy
 
 test('authorized manager edits another employee table without stealing their revenue',async()=>{
  const h=harness(),first={kind:'lounge_tables',id:'L3',action:'booking',data:{customerName:'Guest',pax:2,paymentMethod:'TM'}};
- assert.equal((await h.call('verified',first)).xpAwarded,1500);
+ assert.equal((await h.call('verified',first)).xpAwarded,7500);
  const changed=await h.call('manager',{...first,data:{customerName:'Guest 2',pax:3,paymentMethod:'TM'}});
  assert.equal(changed.xpAwarded,0);assert.equal(h.docs.get('lounge_tables/L3').openedByStaff,'Lan');assert.equal(h.awards.length,1);
 });
@@ -131,13 +131,13 @@ test('authorized manager edits Show combo without receiving XP for another selle
 test('daily rewards are tied to actual first server-side booking and order transitions',async()=>{
  const h=harness(),lounge={kind:'lounge_tables',id:'L9',action:'booking',data:{customerName:'Guest',pax:2,paymentMethod:'TM'}};
  const first=await h.call('verified',lounge);
- assert.equal(first.missionXP,2250);
+ assert.equal(first.missionXP,11250);
  const repeat=await h.call('verified',lounge);
  assert.equal(repeat.missionXP,0);
  h.docs.set('bun_orders/b1',{status:'pending'});
- assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'preparing'})).missionXP,1350);
+ assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'preparing'})).missionXP,6750);
  assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'preparing'})).missionXP,0);
- assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'completed'})).missionXP,3600);
+ assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'completed'})).missionXP,18000);
  assert.equal((await h.call('verified',{kind:'bun_orders',id:'b1',action:'completed'})).missionXP,0);
  assert.deepEqual(h.missionAwards.map(x=>x.taskId),['lounge_opened','order_received','order_completed']);
 });
@@ -147,14 +147,14 @@ test('DOL-0001 verified Bungalow booking receives revenue XP and first-open miss
  const input={kind:'bun_tables',id:'BGL 201',action:'booking',data:{customerName:'Customer',restaurantTable:'A1',paymentMethod:'TM',openedByStaff:'untrusted client'}};
  const first=await h.call('verified',input);
  assert.equal(first.saved,true);
- assert.equal(first.xpAwarded,6000);
- assert.equal(first.missionXP,2700);
+ assert.equal(first.xpAwarded,30000);
+ assert.equal(first.missionXP,13500);
  assert.equal(h.docs.get('bun_tables/BGL 201').openedByStaff,'Lan');
  assert.equal(h.docs.get('bun_tables/BGL 201').openedByStaffId,'DOL-0001');
  const again=await h.call('verified',input);
  assert.equal(again.xpAwarded,0);
  assert.equal(again.missionXP,0);
- assert.equal(h.awards.filter(x=>x.employeeId==='DOL-0001'&&x.amount===6000).length,1);
+ assert.equal(h.awards.filter(x=>x.employeeId==='DOL-0001'&&x.amount===30000).length,1);
 });
 test('Lounge booking retained from a previous day awards new tour revenue and mission once',async()=>{
  const h=harness();
@@ -166,8 +166,8 @@ test('Lounge booking retained from a previous day awards new tour revenue and mi
   data:{customerName:'Today',pax:3,paymentMethod:'TM'}};
  const first=await h.call('verified',input);
  assert.equal(first.saved,true);
- assert.equal(first.xpAwarded,2250);
- assert.equal(first.missionXP,2250);
+ assert.equal(first.xpAwarded,11250);
+ assert.equal(first.missionXP,11250);
  const second=await h.call('verified',input);
  assert.equal(second.xpAwarded,0);
  assert.equal(second.missionXP,0);
@@ -181,7 +181,7 @@ test('verified new employee can reopen a prior-day Bungalow without stealing sam
   data:{customerName:'Today',restaurantTable:'A2',paymentMethod:'TM'}};
  const now=await h.call('owner',action);
  assert.equal(now.saved,true);
- assert.equal(now.xpAwarded,6000);
+ assert.equal(now.xpAwarded,30000);
  assert.equal(h.docs.get('bun_tables/BGL 301').openedByStaffId,'DOL-0004');
  assert.equal((await h.call('owner',action)).xpAwarded,0);
  await assert.rejects(()=>h.call('intruder',action),e=>e.code==='permission-denied');
@@ -194,8 +194,8 @@ test('reopening a Bungalow saved on a previous VN day qualifies for a new daily 
  });
  const input={kind:'bun_tables',id:'BGL 202',action:'booking',data:{customerName:'Today',restaurantTable:'A2',paymentMethod:'TM'}};
  const renewed=await h.call('verified',input);
- assert.equal(renewed.missionXP,2700);
- assert.equal(renewed.xpAwarded,6000);
+ assert.equal(renewed.missionXP,13500);
+ assert.equal(renewed.xpAwarded,30000);
  const repeat=await h.call('verified',input);
  assert.equal(repeat.missionXP,0);
 });
@@ -220,31 +220,31 @@ test('Show accepts Vietnamese display item labels and awards fixed combo XP once
  const h=harness();
  await h.call('verified',{kind:'show_tables',id:'D2',action:'booking',data:{leader:'Guest',dining:'A1',guests:4,payment:'Tiền mặt'}});
  const combo={kind:'show_tables',id:'D2',action:'combo',data:{combo:'combo1',foods:{'Khô bò cay':1,'Đồ ăn đi kèm (01 set)':1},drinks:{'Nước ép dứa':1}}};
- assert.equal((await h.call('verified',combo)).xpAwarded,4170);
+ assert.equal((await h.call('verified',combo)).xpAwarded,20850);
  assert.equal((await h.call('verified',combo)).xpAwarded,0);
 });
 
-test('Restaurant operation XP is 500 for prepare and 500 more for completing',async()=>{
+test('Restaurant operation XP is 7500 for prepare and 7500 more for completing',async()=>{
  const h=harness();h.docs.set('res_orders/restaurant1',{status:'pending'});
  const first=await h.call('verified',{kind:'res_orders',id:'restaurant1',action:'preparing'});
  const second=await h.call('verified',{kind:'res_orders',id:'restaurant1',action:'completed'});
- assert.equal(first.xpAwarded,1500);
- assert.equal(second.xpAwarded,1500);
- assert.equal(h.awards.reduce((sum,a)=>sum+a.amount,0),3000);
+ assert.equal(first.xpAwarded,7500);
+ assert.equal(second.xpAwarded,7500);
+ assert.equal(h.awards.reduce((sum,a)=>sum+a.amount,0),15000);
  assert.equal((await h.call('verified',{kind:'res_orders',id:'restaurant1',action:'completed'})).xpAwarded,0);
 });
-test('Bungalow completed without preparing receives 1000 work XP; daily reward becomes 1,200',async()=>{
+test('Bungalow direct completion receives 15000 work XP and 18000 daily XP',async()=>{
  const h=harness();h.docs.set('bun_orders/bglTest',{status:'pending'});
  const done=await h.call('verified',{kind:'bun_orders',id:'bglTest',action:'completed'});
- assert.equal(done.xpAwarded,3000);
- assert.equal(done.missionXP,3600);
+ assert.equal(done.xpAwarded,15000);
+ assert.equal(done.missionXP,18000);
  assert.equal((await h.call('verified',{kind:'bun_orders',id:'bglTest',action:'completed'})).xpAwarded,0);
 });
-test('Lounge completed directly receives 500 work XP plus unchanged daily mission XP',async()=>{
+test('Lounge direct completion receives 7500 work XP plus fivefold daily XP',async()=>{
  const h=harness();h.docs.set('lounge_orders/lnTest',{status:'pending'});
  const done=await h.call('verified',{kind:'lounge_orders',id:'lnTest',action:'completed'});
- assert.equal(done.xpAwarded,1500);
- assert.equal(done.missionXP,3600);
+ assert.equal(done.xpAwarded,7500);
+ assert.equal(done.missionXP,18000);
 });
 
 
@@ -254,7 +254,7 @@ test('opening an FOC Lounge table can grant first daily mission XP but not reven
   data:{customerName:'Guest',pax:5,paymentMethod:'FOC'}});
  assert.equal(res.saved,true);
  assert.equal(res.xpAwarded,0);
- assert.equal(res.missionXP,2250);
+ assert.equal(res.missionXP,11250);
  assert.equal(h.awards.filter(x=>x.source==='revenue').length,0);
 });
 
@@ -320,7 +320,7 @@ test('work saved before an XP outage is retried from a trusted obligation exactl
  await assert.rejects(()=>h.call('owner',input),/credit offline/);
  assert.equal(h.docs.get('lounge_orders/retry-order').status,'completed');
  h.failAward(false);
- assert.equal((await h.call('owner',input)).xpAwarded,1500);
+ assert.equal((await h.call('owner',input)).xpAwarded,7500);
  assert.equal((await h.call('owner',input)).xpAwarded,0);assert.equal(h.awards.length,1);
 });
 test('trusted outbox delivery survives deletion of the client-writable live order',async()=>{
@@ -328,7 +328,7 @@ test('trusted outbox delivery survives deletion of the client-writable live orde
  await assert.rejects(()=>h.call('owner',{kind:'bun_orders',id:'archived',action:'completed'}));
  h.docs.delete('bun_orders/archived');h.failAward(false);
  const key=[...h.docs.keys()].find(k=>k.startsWith('dolphin_push_crew_xp_outbox/'));
- await h.deliver({key});await h.deliver({key});assert.equal(h.awards.length,1);assert.equal(h.awards[0].amount,3000);
+ await h.deliver({key});await h.deliver({key});assert.equal(h.awards.length,1);assert.equal(h.awards[0].amount,15000);
 });
 
 test('profile fallback drains only the linked employee obligations and leaves another employee pending',async()=>{

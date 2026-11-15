@@ -82,12 +82,12 @@ async function deliver(ref){
  const grant=e.action==='sale'
   ?await onceSale(e.kind,e.id,{id:e.employeeId},e.amount,e.day)
   :await credit(e.employeeId,e.eventId,'work',e.amount);
- const missionXP=e.mission?(await daily._award(e.employeeId,e.mission,e.createdAt)).addedXP||0:0;
+ const missionXP=e.mission?(await daily._award(e.employeeId,e.mission,e.createdAt,e.xpRateVersion||5)).addedXP||0:0;
  await getFirestore().runTransaction(async tx=>{const current=(await tx.get(ref)).data();if(current?.amount===e.amount&&current?.createdAt===e.createdAt)tx.update(ref,{state:'done',deliveredAt:Date.now()});});
  return {...grant,missionXP};
 }
 function obligation(tx,ref,old,data){
- if(!old.exists||(!old.data().amount&&data.amount>0))tx.set(ref,{...data,amount:Number((data.amount*3).toFixed(2)),xpRateVersion:5,state:'pending',createdAt:Date.now()});
+ if(!old.exists||(!old.data().amount&&data.amount>0))tx.set(ref,{...data,amount:Number((data.amount*15).toFixed(2)),xpRateVersion:6,state:'pending',createdAt:Date.now()});
 }
 exports.staffDeliverPendingXP=onDocumentCreated({region:opts.region,document:OUTBOX+'/{event}',retry:true},event=>deliver(event.data.ref));
 // Internal, scoped to the identity resolved by staffGetMyProgress. Eventarc
@@ -210,7 +210,7 @@ async function combo(id,data,who){
  // service operation, but never mint revenue XP from an untrusted booking.
  // The UI can offer to re-save this booking via the verified staff callable.
  if(!currentProof)return {saved:true,xpAwarded:0,requiresVerifiedBooking:true,managerOverride:who.admin};
- const amount=proof.payment.toUpperCase()==='FOC'?0:3*xp.revenueXP(live.tableValue('show_tables',{seller:who.name,payment:proof.payment,service}));
+ const amount=proof.payment.toUpperCase()==='FOC'?0:15*xp.revenueXP(live.tableValue('show_tables',{seller:who.name,payment:proof.payment,service}));
  const grant=await deliver(queue);
  return {saved:true,xpAwarded:grant.amount,duplicate:grant.duplicate};
 }

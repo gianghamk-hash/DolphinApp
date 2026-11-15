@@ -23,3 +23,17 @@ test('set-menu flag is explicit and never inferred from dietary category',()=>{
  assert.equal(ordered.items[0].setMenu,true);
  for(const extra of [{},{setMenu:false},{setMenu:'true'}])assert.equal(validate('Khách ăn chay',[item('Veg','Khách ăn chay',extra)],false).items[0].setMenu,false);
 });
+test('focused summary includes only supported services, never original irrelevant text',()=>{
+ const {focusedSummary}=require('./guest-note-classification');
+ const items=[item('Chay Việt','2 khách ăn chay',{quantity:2,setMenu:true}),item('lobster','3 suất tôm hùm',{quantity:3}),item('bungalow','Bungalow 201',{room:'201'}),item('diet-note','HDV ăn như khách, guide Hàn, cửa sổ, dị ứng bò'),item('coconut-welcome','Tặng dừa')];
+ const summary=focusedSummary({items});
+ assert.equal(summary,'Chay Việt ×2 · Tôm hùm ×3 · Bungalow (P.201)');
+ assert.equal(focusedSummary({items:[items[3],items[4]]}),'');
+ for(const category of ['Chay Việt','Chay Âu','Indian Food','Veg','Non-veg','Jain','Halal'])assert.equal(focusedSummary({items:[item(category,'suất ăn',{setMenu:true})]}),category);
+});
+test('concise summary does not confirm alternatives, add overlapping counts or include canceled services',()=>{
+ const {focusedSummary}=require('./guest-note-classification');
+ assert.equal(focusedSummary({items:[item('lounge','hủy lounge',{state:'excluded'})]}),'');
+ assert.equal(focusedSummary({items:[item('bungalow','hoặc bungalow',{state:'uncertain'}),item('lounge','hoặc lounge',{state:'uncertain'})]}),'Bungalow (chưa chốt) · Lounge (chưa chốt)');
+ assert.equal(focusedSummary({items:[item('Veg','2 set',{quantity:2,setMenu:true}),item('Veg','2 khách',{quantity:2,setMenu:true})]}),'Veg');
+});

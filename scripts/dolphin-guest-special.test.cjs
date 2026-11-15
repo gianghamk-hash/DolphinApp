@@ -183,7 +183,7 @@ test('every nonempty dietary-note cell appears with a clickable preview and comp
  const ctx={b,window:{},esc:x=>String(x??'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'),tour:'am',bungTxt:()=>'',slotIcon:()=>''};
  const out=vm.runInNewContext(helpers+';tagHtml(b,false)',ctx);
  assert.doesNotMatch(out,/Ăn đặc biệt · F&B|Ghi chú kiêng chay/);assert.match(out,/special-note-preview/);
- assert.match(out,/…/);assert.equal((out.match(/<details/g)||[]).length,1);
+ assert.match(out,/Xem ghi chú gốc/);assert.equal((out.match(/<details/g)||[]).length,1);
  assert.doesNotMatch(out,/Không kayak\/bamboo/);assert.match(out,/&lt;img/);assert.doesNotMatch(out,/<img/);
  const full=out.match(/<div class="special-source-text">([\s\S]*?)<\/div>/)[1];
  assert(full.includes(ctx.esc(note)),'Full content is never truncated');
@@ -202,7 +202,7 @@ test('DP4634011 allergy/avoidance note never becomes special menu, even pending 
   const r=vm.runInNewContext(helpers+priority+';({keys:specialCategoryKeys(b),priority:getPriority(b)})',{b});
   assert.equal(r.keys.length,0);assert.equal(r.priority,'pri-normal');
  }
- for(const t of ['Veg','Non-veg','Halal','Jain']){
+ for(const t of ['Veg','Non-veg','Halal','Jain','Chay Việt','Chay Âu','Indian Food']){
   const b={diet:[{t,setMenu:true}],lob:[]};
   assert.deepEqual(Array.from(vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b})),[t]);
   b.diet[0].setMenu=false;assert.equal(vm.runInNewContext(helpers+';specialCategoryKeys(b)',{b}).length,0);

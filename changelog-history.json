@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.131",
+      "releaseDate": "2026-11-15T00:50:16.367Z",
+      "summary": "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries",
+      "details": [
+        "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries"
+      ]
+    },
+    {
       "version": "1.1.130",
       "releaseDate": "2026-11-14T16:59:02.597Z",
       "summary": "Merge pull request #276 from gianghamk-hash/fix/special-menu-order-scope",
@@ -390,14 +398,6 @@
       "summary": "feat(lounge): double verified order processing XP",
       "details": [
         "feat(lounge): double verified order processing XP"
-      ]
-    },
-    {
-      "version": "1.1.79",
-      "releaseDate": "2026-11-06T09:41:26.301Z",
-      "summary": "fix(landing): animate avatar orbit rings on three Top 1 podium cards",
-      "details": [
-        "fix(landing): animate avatar orbit rings on three Top 1 podium cards"
       ]
     }
   ]

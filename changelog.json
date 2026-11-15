@@ -1,26 +1,1034 @@
 {
-  "version": "1.1.131",
-  "previousVersion": "1.1.130",
-  "commit": "9680201",
-  "previousCommit": "8dc5028",
-  "buildDate": "2026-11-15T00:50:16.367Z",
-  "summary": "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries",
+  "version": "1.1.132",
+  "previousVersion": "1.1.131",
+  "commit": "7cdd8a4",
+  "previousCommit": "9680201",
+  "buildDate": "2026-11-15T02:03:04.040Z",
+  "summary": "Merge pull request #278 from gianghamk-hash/feat/guest-nationality-flags",
   "changes": {
-    "totalCommits": 353,
-    "filesChanged": 11,
+    "totalCommits": 354,
+    "filesChanged": 264,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #277 from gianghamk-hash/fix/guest-focused-service-summaries"
+    "Merge pull request #278 from gianghamk-hash/feat/guest-nationality-flags"
   ],
   "fileChanges": [
     {
-      "file": "docs/GUEST_NOTE_AI.md",
+      "file": ".github/workflows/dolphin-guest-special-tests.yml",
       "type": "update"
     },
     {
-      "file": "dolphin-guest-note-summary.js",
+      "file": "assets/flags/LICENSE",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/README.md",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ad.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ae.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/af.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ag.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ai.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/al.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/am.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ao.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/aq.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ar.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/as.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/at.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/au.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/aw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ax.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/az.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ba.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bb.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bd.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/be.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bh.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bi.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bj.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bl.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bo.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bq.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/br.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bs.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bt.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bv.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/by.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/bz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ca.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cc.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cd.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ch.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ci.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ck.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cl.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/co.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cu.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cv.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cx.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cy.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/cz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/de.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/dj.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/dk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/dm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/do.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/dz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ec.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ee.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/eg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/eh.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/er.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/es.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/et.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/fi.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/fj.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/fk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/fm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/fo.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/fr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ga.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gb.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gd.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ge.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gh.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gi.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gl.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gp.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gq.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gs.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gt.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gu.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/gy.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/hk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/hm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/hn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/hr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ht.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/hu.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/id.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ie.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/il.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/im.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/in.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/io.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/iq.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ir.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/is.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/it.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/je.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/jm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/jo.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/jp.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ke.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/kg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/kh.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ki.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/km.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/kn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/kp.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/kr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/kw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ky.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/kz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/la.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/lb.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/lc.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/li.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/lk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/lr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ls.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/lt.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/lu.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/lv.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ly.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ma.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mc.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/md.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/me.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mh.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ml.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mo.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mp.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mq.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ms.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mt.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mu.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mv.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mx.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/my.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/mz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/na.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/nc.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ne.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/nf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ng.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ni.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/nl.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/no.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/np.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/nr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/nu.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/nz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/om.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pa.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pe.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ph.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pl.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ps.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pt.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/pw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/py.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/qa.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/re.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ro.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/rs.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ru.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/rw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sa.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sb.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sc.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sd.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/se.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sh.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/si.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sj.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sl.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/so.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ss.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/st.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sv.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sx.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sy.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/sz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tc.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/td.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/th.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tj.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tk.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tl.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/to.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tr.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tt.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tv.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tw.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/tz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ua.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ug.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/um.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/us.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/uy.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/uz.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/va.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/vc.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ve.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/vg.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/vi.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/vn.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/vu.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/wf.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ws.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/ye.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/yt.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/za.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/zm.svg",
+      "type": "update"
+    },
+    {
+      "file": "assets/flags/zw.svg",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-country-data.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-guest-flags.js",
       "type": "update"
     },
     {
@@ -28,11 +1036,15 @@
       "type": "update"
     },
     {
-      "file": "functions/guest-note-classification.js",
+      "file": "functions/guest-country-codes.json",
       "type": "update"
     },
     {
-      "file": "functions/guest-note-classification.test.cjs",
+      "file": "functions/guest-nationalities.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-nationalities.test.cjs",
       "type": "update"
     },
     {
@@ -48,15 +1060,15 @@
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-guest-note-summary.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/dolphin-guest-special.test.cjs",
+      "file": "scripts/dolphin-guest-flags.test.cjs",
       "type": "update"
     },
     {
       "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

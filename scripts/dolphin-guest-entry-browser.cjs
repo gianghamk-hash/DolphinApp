@@ -63,6 +63,17 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
    return {keys:specialCategoryKeys(b),bung:b.bung.length,lob:b.lob.length,lounge:b.loungeTicket};
   });
   assert.deepEqual(classified,{keys:[],bung:1,lob:0,lounge:null});
+  await page.addScriptTag({path:path.join(root,'dolphin-country-data.js')});
+  await page.addScriptTag({path:path.join(root,'dolphin-guest-flags.js')});
+  await page.route('https://flags.test/assets/flags/**',route=>route.fulfill({contentType:'image/svg+xml',body:fs.readFileSync(path.join(root,'assets/flags',path.basename(route.request().url())))}));
+  await page.evaluate(()=>{
+   const base=document.createElement('base');base.href='https://flags.test/';document.head.appendChild(base);
+   document.getElementById('noteTest').innerHTML=DolphinGuestFlags.html('Đài Loan + Việt Nam');
+  });
+  await page.waitForFunction(()=>Array.from(document.querySelectorAll('.guest-flag')).every(i=>i.complete&&i.naturalWidth>0));
+  assert.equal(await page.locator('.guest-flag').count(),2);
+  const flagBox=await page.locator('.guest-flag').first().boundingBox();assert.equal(flagBox.width,18);assert.equal(flagBox.height,14);
+  assert.equal(await page.locator('.guest-flag').first().getAttribute('alt'),'Cờ Đài Loan');
   console.log('PASS: mobile local/server duplicate popups, corrected save, complete notes, click/keyboard disclosure and escaping');
  }finally{await browser.close();}
 })().catch(error=>{console.error(error);process.exitCode=1;});

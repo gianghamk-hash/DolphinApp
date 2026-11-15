@@ -40,3 +40,8 @@ test('callable returns validated classifications independently of unchanged summ
  const r=await h.api.guestSummarizeNotes({auth:{uid:'u'},data:{notes:[note]}});
  assert.equal(r.summaries[0].source,'ai');assert.equal(r.summaries[0].text,'Bungalow ×2');assert.equal(r.summaries[0].classification.items[1].quantity,2);
 });
+
+test('nationality task uses the same authentication gate before model access',async()=>{
+ await assert.rejects(setup().api.guestSummarizeNotes({data:{task:'nationalities',names:['Đài Loan']}}),{code:'unauthenticated'});
+ await assert.rejects(setup(false).api.guestSummarizeNotes({auth:{uid:'u'},data:{task:'nationalities',names:['Đài Loan']}}),{code:'permission-denied'});
+});

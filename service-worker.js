@@ -16,6 +16,9 @@ let CACHE_NAME = FALLBACK_CACHE;
 let configLoaded = false;
 
 const CACHE_URLS = [
+  BASE + '/crew-ascension.css?v=level100-v1',
+  BASE + '/assets/crew-transparent.png',
+  BASE + '/assets/bungalow-menu-photo.png',
   BASE + '/',
   BASE + '/index.html',
   BASE + '/dolphin-guests.html',
@@ -65,7 +68,7 @@ const CACHE_URLS = [
   BASE + '/crew-2d-icons.css?v=bright-v2',
   BASE + '/crew-profile-clean.css?v=clean-v2',
   BASE + '/crew-chibi-dashboard.css?v=chibi-cards-v3',
-  BASE + '/crew-profile-illustrated.css?v=chibi-clean-v5',
+  BASE + '/crew-profile-illustrated.css?v=level100-v1',
   BASE + '/crew-chibi-dashboard.js?v=chibi-v1',
   BASE + '/assets/dolphin-chibi-ship.svg',
   BASE + '/assets/crew-chibi-banner-v3.webp',
@@ -266,3 +269,4 @@ self.addEventListener('notificationclick', event => {
     return self.clients.openWindow(target.href);
   })());
 });
+

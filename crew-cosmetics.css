@@ -836,3 +836,34 @@
 @media(prefers-reduced-motion:reduce){
  :is(.sow-name,.leader-tile-name,.drl-name,.level-person-name)[data-name-fx]{animation:none!important}
 }
+
+
+/* Level 70–100. GPU-friendly bounded celebrations and opt-in equipped effects. */
+:is([data-frame="polar"],[data-crew-aura="polar"],[data-crew-card="polar"],[data-name-fx="polar"],[data-avatar-motion="polar"],[data-banner="polar"],[data-crew-trail="polar"],[data-title="polar"]){--asc-a:#53ffd5;--asc-b:#6699ff;--asc-speed:6s}
+:is([data-frame="galaxy"],[data-crew-aura="galaxy"],[data-crew-card="galaxy"],[data-name-fx="galaxy"],[data-avatar-motion="galaxy"],[data-banner="galaxy"],[data-crew-trail="galaxy"],[data-title="galaxy"]){--asc-a:#d7a1ff;--asc-b:#536dff;--asc-speed:5s}
+:is([data-frame="sovereign"],[data-crew-aura="sovereign"],[data-crew-card="sovereign"],[data-name-fx="sovereign"],[data-avatar-motion="sovereign"],[data-banner="sovereign"],[data-crew-trail="sovereign"],[data-title="sovereign"]){--asc-a:#ffe88e;--asc-b:#ff8a40;--asc-speed:4s}
+:is([data-frame="eternal"],[data-crew-aura="eternal"],[data-crew-card="eternal"],[data-name-fx="eternal"],[data-avatar-motion="eternal"],[data-banner="eternal"],[data-crew-trail="eternal"],[data-title="eternal"]){--asc-a:#d9ffff;--asc-b:#f7b6ff;--asc-speed:3s}
+:is([data-frame="polar"],[data-frame="galaxy"],[data-frame="sovereign"],[data-frame="eternal"]){border:3px solid var(--asc-a)!important;box-shadow:0 0 0 5px #05080e,0 0 0 7px var(--asc-b),0 0 28px var(--asc-a)!important}
+:is([data-crew-aura="polar"],[data-crew-aura="galaxy"],[data-crew-aura="sovereign"],[data-crew-aura="eternal"]){filter:drop-shadow(0 0 12px var(--asc-a)) drop-shadow(0 0 22px var(--asc-b))}
+:is([data-avatar-motion="polar"],[data-avatar-motion="galaxy"],[data-avatar-motion="sovereign"],[data-avatar-motion="eternal"]){animation:crew-asc-float var(--asc-speed) ease-in-out infinite!important}
+:is([data-name-fx="polar"],[data-name-fx="galaxy"],[data-name-fx="sovereign"],[data-name-fx="eternal"]){color:var(--asc-a)!important;text-shadow:0 0 8px var(--asc-a),0 0 24px var(--asc-b)!important;animation:crew-asc-glow var(--asc-speed) ease-in-out infinite}
+:is([data-crew-trail="polar"],[data-crew-trail="galaxy"],[data-crew-trail="sovereign"],[data-crew-trail="eternal"]){text-shadow:8px 0 16px var(--asc-a),-8px 0 26px var(--asc-b)!important}
+:is([data-crew-card="polar"],[data-crew-card="galaxy"],[data-crew-card="sovereign"],[data-crew-card="eternal"]){border:2px solid var(--asc-a)!important;box-shadow:0 0 22px color-mix(in srgb,var(--asc-a) 45%,transparent),inset 0 0 22px color-mix(in srgb,var(--asc-b) 20%,transparent)!important}
+:is([data-banner="polar"],[data-banner="galaxy"],[data-banner="sovereign"],[data-banner="eternal"]){background:radial-gradient(ellipse at top right,color-mix(in srgb,var(--asc-b) 30%,#05080d),#030406 75%)!important}
+:is([data-title="polar"],[data-title="galaxy"],[data-title="sovereign"],[data-title="eternal"]){color:var(--asc-a);text-shadow:0 0 12px var(--asc-b);border:1px solid var(--asc-a);border-radius:99px;padding:5px 10px}
+.crew-lc-dialog[data-ascension="true"] .crew-lc-scene{background:radial-gradient(ellipse at 50% 20%,#513175,#0a1126 55%,#030407);box-shadow:inset 0 0 70px #91f7ff33}
+.crew-lc-dialog .crew-lc-star{animation:crew-asc-burst 2.4s ease-out 2 both;animation-delay:calc(var(--i)*35ms)}
+.crew-lc-dialog[data-tier="mythic"] .crew-lc-portal{filter:drop-shadow(0 0 24px #fff2af);animation:crew-asc-float 2s ease-in-out 3}
+.crew-chibi-tile small{color:#b3cbd8!important}
+#crew-profile-banner .text-button{color:#77e4e0}
+@keyframes crew-asc-float{50%{transform:translateY(-5px) scale(1.04)}}
+@keyframes crew-asc-glow{50%{filter:brightness(1.35)}}
+@keyframes crew-asc-burst{0%{opacity:0;transform:scale(.3) rotate(-40deg)}30%{opacity:1}100%{opacity:0;transform:translateY(-42px) scale(1.6) rotate(80deg)}}
+@media(prefers-reduced-motion:reduce){[data-avatar-motion],[data-name-fx],.crew-lc-dialog *{animation:none!important;transition:none!important}.crew-lc-dialog .crew-lc-star{opacity:.5}}
+
+/* Beat the identity card layout rules without changing its geometry. */
+#crew-profile-banner.crew-character-card:is([data-crew-card="polar"],[data-crew-card="galaxy"],[data-crew-card="sovereign"],[data-crew-card="eternal"]){border:2px solid var(--asc-a)!important;box-shadow:0 0 24px color-mix(in srgb,var(--asc-a) 45%,transparent),inset 0 0 25px color-mix(in srgb,var(--asc-b) 22%,transparent)!important}
+#crew-profile-banner.crew-character-card:is([data-banner="polar"],[data-banner="galaxy"],[data-banner="sovereign"],[data-banner="eternal"]){background:radial-gradient(ellipse at top right,color-mix(in srgb,var(--asc-b) 30%,#05080d),#030406 75%)!important}
+#crew-profile-banner #profile-name:is([data-name-fx="polar"],[data-name-fx="galaxy"],[data-name-fx="sovereign"],[data-name-fx="eternal"]){color:var(--asc-a)!important;text-shadow:0 0 8px var(--asc-a),0 0 24px var(--asc-b)!important}
+.crew-chibi-week{color:#edf7ff}
+.crew-chibi-week-title small,.crew-chibi-week-stats span{color:#b3cbd8}

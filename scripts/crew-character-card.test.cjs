@@ -44,17 +44,17 @@ test('Card model renders verified Level without altering XP, levelPeak or cosmet
 });
 test('No linked staff means no old employee Level/Rank leaks',()=>{
  const h=harness();
- h.api.render({employeeId:'DOL-0003',xp:xpAt(60),level:60,rank:'Legend'});
+ h.api.render({employeeId:'DOL-0003',xp:xpAt(100),level:100,rank:'Legend'});
  assert.equal(h.nodes.get('crew-card-level-number').textContent,'—');
  assert.equal(h.nodes.get('crew-card-rank-badge').textContent,'CREW CARD');
  assert.equal(h.nodes.get('crew-card-xp-dial').style.values['--crew-progress'],'0%');
  assert.equal(h.nodes.get('crew-card-equipped-frame').textContent,'Chưa trang bị');
 });
-test('Prestige Lv60 is capped and LevelPeak preserves unlocked styles when XP has been deducted',()=>{
+test('Prestige Lv100 is capped and LevelPeak preserves unlocked styles when XP has been deducted',()=>{
  const h=harness();
- const max=h.api.model({employeeId:'DOL-0002',xp:xpAt(60),level:60,rank:'Legend'});
- assert.equal(max.level,60);assert.equal(max.percent,100);
- assert.equal(h.api.model({employeeId:'DOL-0002',xp:xpAt(60)+500,level:70}).level,60);
+ const max=h.api.model({employeeId:'DOL-0002',xp:xpAt(100),level:100,rank:'Legend'});
+ assert.equal(max.level,100);assert.equal(max.percent,100);
+ assert.equal(h.api.model({employeeId:'DOL-0002',xp:xpAt(100)+500,level:110}).level,100);
  const preserved=h.api.model({employeeId:'DOL-0002',xp:3200,level:2,highestLevel:40,levelPeak:40,
   selectedFrame:'gold',selectedAura:'nebula',selectedTitle:'titan'});
  assert.equal(preserved.level,2);assert.equal(preserved.highestLevel,40);assert.equal(preserved.preserved,true);
@@ -112,6 +112,7 @@ test('live portrait retains room for equipped avatar effects',()=>{
  const css=read('crew-profile-illustrated.css');
  assert.match(css,/overflow:visible!important/);
  assert.match(css,/z-index:3!important/);
- assert.match(read('dolphin-profile.html'),/chibi-clean-v5/);
- assert.match(read('service-worker.js'),/chibi-clean-v5/);
+ assert.match(read('dolphin-profile.html'),/level100-v1/);
+ assert.match(read('service-worker.js'),/level100-v1/);
 });
+

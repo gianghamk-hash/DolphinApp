@@ -72,4 +72,5 @@ jobs:
           node --check staff-xp-manager.js
           node --check theme-system.js
       - name: Staff XP and archival reconciliation tests
-        run: node --test scripts/staff-levelup.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs scripts/crew-arcade-missions.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs scripts/crew-character-card.test.cjs
+        run: node --test functions/staff-level100.test.cjs scripts/staff-levelup.test.cjs functions/staff-daily-core.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs scripts/crew-arcade-missions.test.cjs functions/staff-xp-actions.test.cjs functions/staff-xp-rank-sync.test.cjs scripts/staff-prestige-client.test.cjs functions/staff-xp-engine.test.cjs functions/staff-xp-reconcile.test.cjs functions/staff-prestige.test.cjs functions/staff-xp-live-engine.test.cjs scripts/crew-character-card.test.cjs
+

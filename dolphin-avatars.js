@@ -59,7 +59,7 @@ const frameSelector=[
 ].join(',');
 function decorateFrame(el){
  const frame=el?.dataset?.frame||'none';
- const supported=['bronze','silver','gold','mythic','emerald','sapphire','nebula'];
+ const supported=['bronze','silver','gold','mythic','emerald','sapphire','nebula','polar','galaxy','sovereign','eternal'];
  const previous=el?.querySelector(':scope > .crew-fx-orbits');
  const oldMotion=el?.querySelector(':scope > .crew-avatar-motion');
  const motion=el?.dataset?.avatarMotion||'none';
@@ -103,7 +103,7 @@ function decorateFrame(el){
  if(previous)previous.remove();
  const wrap=document.createElement('span');wrap.className='crew-fx-orbits';
  wrap.setAttribute('aria-hidden','true');
- if(frame==='mythic'){
+ if(frame==='mythic'||['polar','galaxy','sovereign','eternal'].includes(frame)){
   const universe=document.createElement('span');universe.className='crew-mythic-universe';
   for(const kind of ['halo','ring-outer','ring-inner','shimmer']){
    const layer=document.createElement('span');layer.className='crew-mythic-'+kind;universe.appendChild(layer);
@@ -147,7 +147,7 @@ function paint(){
   const chosen=verifiedBoard?null:source.profile?.(name,id);
   // Keep already-rendered, server-backed board cosmetics while the directory
   // is loading, instead of silently wiping premium styles to "none".
-  const allowed=['bronze','silver','gold','mythic','emerald','sapphire','nebula'];
+  const allowed=['bronze','silver','gold','mythic','emerald','sapphire','nebula','polar','galaxy','sovereign','eternal'];
   const frame=chosen
     ? (allowed.includes(chosen.selectedFrame)?chosen.selectedFrame:'none')
     : (allowed.includes(el.dataset.frame)?el.dataset.frame:'none');

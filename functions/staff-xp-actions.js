@@ -87,7 +87,7 @@ async function deliver(ref){
  return {...grant,missionXP};
 }
 function obligation(tx,ref,old,data){
- if(!old.exists||(!old.data().amount&&data.amount>0))tx.set(ref,{...data,state:'pending',createdAt:Date.now()});
+ if(!old.exists||(!old.data().amount&&data.amount>0))tx.set(ref,{...data,amount:Number((data.amount*3).toFixed(2)),xpRateVersion:5,state:'pending',createdAt:Date.now()});
 }
 exports.staffDeliverPendingXP=onDocumentCreated({region:opts.region,document:OUTBOX+'/{event}',retry:true},event=>deliver(event.data.ref));
 // Internal, scoped to the identity resolved by staffGetMyProgress. Eventarc
@@ -210,7 +210,7 @@ async function combo(id,data,who){
  // service operation, but never mint revenue XP from an untrusted booking.
  // The UI can offer to re-save this booking via the verified staff callable.
  if(!currentProof)return {saved:true,xpAwarded:0,requiresVerifiedBooking:true,managerOverride:who.admin};
- const amount=proof.payment.toUpperCase()==='FOC'?0:xp.revenueXP(live.tableValue('show_tables',{seller:who.name,payment:proof.payment,service}));
+ const amount=proof.payment.toUpperCase()==='FOC'?0:3*xp.revenueXP(live.tableValue('show_tables',{seller:who.name,payment:proof.payment,service}));
  const grant=await deliver(queue);
  return {saved:true,xpAwarded:grant.amount,duplicate:grant.duplicate};
 }
@@ -263,4 +263,5 @@ exports.staffRecordLiveAction=onCall(opts,async req=>{
  if(data.action!=='booking'&&!editOnly)fail('Thao tác không hợp lệ');
  return booking(kind,id,data.data||{},who,{editOnly});
 });
+
 

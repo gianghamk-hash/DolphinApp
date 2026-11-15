@@ -3,14 +3,14 @@
 const engine=require('./staff-xp-engine.cjs');
 const ZONE='Asia/Ho_Chi_Minh';
 const TASKS=Object.freeze([
- Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Ngày 1: 600 XP · tăng 150 XP/ngày · tối đa 1.500 XP',xp:600}),
- Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:1200}),
- Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:900}),
- Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:750}),
- Object.freeze({id:'order_received',icon:'📥',title:'Nhận 1 order',description:'Nhận và bắt đầu xử lý một đơn mới',xp:450}),
- Object.freeze({id:'avatar_changed',icon:'🎭',title:'Đổi avatar 1 lần',description:'Lưu một avatar khác với avatar hiện tại',xp:300}),
- Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 200 điểm',description:'Đạt ít nhất 200 điểm trong một ván Rắn Săn Mồi Offline',xp:1500}),
- Object.freeze({id:'game2048_1000',icon:'🔢',title:'2048 đạt 1.000 điểm',description:'Đạt ít nhất 1.000 điểm trong một ván 2048',xp:3000})
+ Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Ngày 1: 1.800 XP · tăng 450 XP/ngày · tối đa 4.500 XP',xp:1800}),
+ Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:3600}),
+ Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:2700}),
+ Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:2250}),
+ Object.freeze({id:'order_received',icon:'📥',title:'Nhận 1 order',description:'Nhận và bắt đầu xử lý một đơn mới',xp:1350}),
+ Object.freeze({id:'avatar_changed',icon:'🎭',title:'Đổi avatar 1 lần',description:'Lưu một avatar khác với avatar hiện tại',xp:900}),
+ Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 200 điểm',description:'Đạt ít nhất 200 điểm trong một ván Rắn Săn Mồi Offline',xp:4500}),
+ Object.freeze({id:'game2048_1000',icon:'🔢',title:'2048 đạt 1.000 điểm',description:'Đạt ít nhất 1.000 điểm trong một ván 2048',xp:9000})
 ]);
 const ids=new Set(TASKS.map(task=>task.id));
 function vietnamDay(time=Date.now()){
@@ -30,7 +30,7 @@ function nextMidnight(day){
  return utcDate(day)+86400000-7*3600000;
 }
 function checkinXP(streak){
- return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*30;
+ return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*90;
 }
 function todayCompleted(record,day){
  return record?.date===day&&record.completed&&typeof record.completed==='object'
@@ -76,7 +76,7 @@ function apply(profile,taskId,time=Date.now(),receipt=''){
  const nextProfile={
   ...profile,xp,levelPeak:Math.max(Number(profile.levelPeak)||1,engine.levelForXP(xp)),
   dailyMissions:{
-   date:day,completed:{...completed,[taskId]:{xp:addedXP,at:time,receipt}},
+   date:day,completed:{...completed,[taskId]:{xp:addedXP,at:time,receipt,rateVersion:5}},
    lastCheckinDay:taskId==='checkin'?day:(prior.lastCheckinDay||''),
    streak,bestStreak:Math.max(Number(prior.bestStreak)||0,streak)
   },
@@ -107,7 +107,7 @@ function reconcileLegacyDaily(profile,time=Date.now()){
   const base=task.id==='checkin'?
     15+Math.min(7,Math.max(1,Number(record.streak)||1))*5:PRE_TRIPLE_TASK_XP[task.id]/10;
   const allowed=task.id==='checkin'?[base,base*100]:[base];
-  const target=task.id==='checkin'?checkinXP(record.streak)/3:PRE_TRIPLE_TASK_XP[task.id];
+  const target=task.id==='checkin'?checkinXP(record.streak)/9:PRE_TRIPLE_TASK_XP[task.id];
   if(!allowed.includes(Number(entry.xp))||Number(entry.xp)===target)continue;
   adjustment+=target-Number(entry.xp);
   entries[task.id]={...entry,xp:target,rateVersion:4,backfilledAt:time};
@@ -126,3 +126,4 @@ function reconcileLegacyCheckin(profile,time=Date.now()){
 }
 
 module.exports={ZONE,TASKS,vietnamDay,daysBetween,nextMidnight,checkinXP,view,apply,reconcileLegacyCheckin,reconcileLegacyDaily};
+

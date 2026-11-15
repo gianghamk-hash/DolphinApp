@@ -8,31 +8,31 @@ test('eight fixed tasks have precisely the requested rewards',()=>{
   'checkin','order_completed','bungalow_opened','lounge_opened',
   'order_received','avatar_changed','snake_100','game2048_1000'
  ]);
- assert.deepEqual(core.TASKS.map(x=>x.xp),[600,1200,900,750,450,300,1500,3000]);
- assert.equal(core.checkinXP(1),600);
- assert.equal(core.checkinXP(7),1500);
- assert.equal(core.checkinXP(999),1500);
+ assert.deepEqual(core.TASKS.map(x=>x.xp),[1800,3600,2700,2250,1350,900,4500,9000]);
+ assert.equal(core.checkinXP(1),1800);
+ assert.equal(core.checkinXP(7),4500);
+ assert.equal(core.checkinXP(999),4500);
  assert.throws(()=>core.apply(person(),'arbitrary_task',vn('2026-11-03')));
 });
 test('VN midnight resets eight daily missions but preserves streak',()=>{
  const a=Date.parse('2026-11-02T16:59:59Z'),b=a+1000;
  const claimed=core.apply(person(),'snake_100',a,'snake-proof');
- assert.equal(claimed.addedXP,1500);
+ assert.equal(claimed.addedXP,4500);
  assert.equal(core.view(claimed.profile,a).completedCount,1);
  assert.equal(core.view(claimed.profile,b).completedCount,0);
  assert.equal(core.view(claimed.profile,b).resetAt,Date.parse('2026-11-03T17:00:00Z'));
 });
-test('check-in is tripled to 600–1500 XP independent of order work XP',()=>{
+test('check-in is tripled to 1800–4500 XP independent of order work XP',()=>{
  let p=person(),total=0;
  for(let i=1;i<=9;i++){
   const result=core.apply(p,'checkin',vn('2026-11-'+String(i).padStart(2,'0')),String(i));
   assert.equal(result.addedXP,core.checkinXP(i));
   total+=result.addedXP;p=result.profile;assert.equal(p.xp,total);
  }
- assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,600);
+ assert.equal(core.apply(p,'checkin',vn('2026-11-12')).addedXP,1800);
 });
 test('each verified task is claimed once per day per Staff ID',()=>{
- const time=vn('2026-11-03'),amounts={checkin:600,order_completed:1200,bungalow_opened:900,lounge_opened:750,order_received:450,avatar_changed:300,snake_100:1500,game2048_1000:3000};
+ const time=vn('2026-11-03'),amounts={checkin:1800,order_completed:3600,bungalow_opened:2700,lounge_opened:2250,order_received:1350,avatar_changed:900,snake_100:4500,game2048_1000:9000};
  let p=person(),total=0;
  for(const [task,xp] of Object.entries(amounts)){
   const first=core.apply(p,task,time,task);total+=xp;
@@ -40,7 +40,7 @@ test('each verified task is claimed once per day per Staff ID',()=>{
   assert.equal(core.apply(first.profile,task,time+1000,'retry').addedXP,0);
   p=first.profile;
  }
- assert.equal(total,8700);assert.equal(p.xp,total);
+ assert.equal(total,26100);assert.equal(p.xp,total);
  assert.equal(core.view(p,time).completedCount,8);
  assert.equal(core.view(p,time).todayXP,total);
 });
@@ -86,12 +86,12 @@ test('new triple rewards do not top up previously completed missions',()=>{
  assert.equal(core.view(prior,t).tasks.find(task=>task.id==='order_completed').xp,400);
  assert.equal(core.apply(prior,'order_completed',t+1000,'retry').addedXP,0);
  assert.equal(core.reconcileLegacyDaily(prior,t+1000).changed,false);
- assert.equal(core.apply(person(),'order_completed',t+1000,'new').addedXP,1200);
+ assert.equal(core.apply(person(),'order_completed',t+1000,'new').addedXP,3600);
 });
 test('game mission rewards use the single new triple multiplier',()=>{
  const t=vn('2026-11-03');
- assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,1500);
- assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,3000);
+ assert.equal(core.apply(person(),'snake_100',t,'run').addedXP,4500);
+ assert.equal(core.apply(person(),'game2048_1000',t,'run').addedXP,9000);
 });
 
 test('daily rewards and same-day legacy top-ups auto-equip only when they raise the permanent level',()=>{
@@ -104,3 +104,4 @@ test('daily rewards and same-day legacy top-ups auto-equip only when they raise 
  const old={...person(),xp:engine.xpForLevel(3)-360,levelPeak:2,dailyMissions:{date:core.vietnamDay(now),completed:{order_completed:{xp:40,at:now,receipt:'legacy'}}}};
  const repaired=core.reconcileLegacyDaily(old,now);assert.equal(repaired.profile.selectedNameFx,'ember');
 });
+

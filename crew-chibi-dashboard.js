@@ -14,7 +14,7 @@
   const owner=ownerId();
   if(owner&&payload.employeeId!==owner)return null;
   const xp=Number(payload.xp),level=Number(payload.level);
-  if(!Number.isFinite(xp)||xp<0||!Number.isInteger(level)||level<1||level>60)return null;
+  if(!Number.isFinite(xp)||xp<0||!Number.isInteger(level)||level<1||level>100)return null;
   const daily=payload.dailyMissions,hasDaily=daily&&Array.isArray(daily.tasks);
   const completed=hasDaily?Math.max(0,Math.min(daily.tasks.length,Math.trunc(Number(daily.completedCount)||0))):null;
   const total=hasDaily?Math.max(0,Number(daily.total)||daily.tasks.length):null;
@@ -85,3 +85,4 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init,{once:true});
  else init();
 })(window);
+

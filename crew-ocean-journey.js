@@ -4,14 +4,18 @@
  */
 (function(root){
  'use strict';
- const MAX_LEVEL=60;
+ const MAX_LEVEL=100;
  const regions=Object.freeze([
   {id:'departure',name:'Bến Khởi Hành',subtitle:'The Departure',from:1,to:10,icon:'journey',note:'Những bước chân đầu tiên trên đại dương'},
   {id:'silver',name:'Sóng Xa Bờ',subtitle:'Silver Tides',from:11,to:20,icon:'current',note:'Đi xa hơn cùng Dolphin Crew'},
   {id:'coral',name:'Rạn San Hô',subtitle:'Coral Kingdom',from:21,to:30,icon:'frame',note:'Sắc màu của những cuộc khám phá'},
   {id:'current',name:'Hải Lưu Mạnh',subtitle:'Ocean Currents',from:31,to:40,icon:'aura',note:'Không ngừng chinh phục thử thách'},
   {id:'stars',name:'Biển Sao',subtitle:'Celestial Sea',from:41,to:50,icon:'title',note:'Tỏa sáng cùng đồng đội'},
-  {id:'mythic',name:'Vương Miện Đại Dương',subtitle:'Ocean Crown',from:51,to:60,icon:'treasure',note:'Hành trình vươn tới đỉnh cao'}
+  {id:'mythic',name:'Vương Miện Đại Dương',subtitle:'Ocean Crown',from:51,to:60,icon:'treasure',note:'Hành trình vươn tới đỉnh cao'},
+{id:'aurora',name:'Cực quang',subtitle:'AURORA',from:61,to:70,icon:'treasure',note:'Khám phá sức mạnh mới'},
+{id:'galaxy',name:'Ngân hà',subtitle:'GALAXY',from:71,to:80,icon:'treasure',note:'Khám phá sức mạnh mới'},
+{id:'sovereign',name:'Đế vương',subtitle:'SOVEREIGN',from:81,to:90,icon:'treasure',note:'Khám phá sức mạnh mới'},
+{id:'eternal',name:'Vĩnh cửu',subtitle:'ETERNAL',from:91,to:100,icon:'treasure',note:'Khám phá sức mạnh mới'}
  ]);
  const rankBands=Object.freeze([
   {min:41,label:'LEGEND'},{min:31,label:'DIAMOND'},{min:21,label:'PLATINUM'},
@@ -44,7 +48,7 @@
  function model(profile){
   const p=ownedView(profile);
   const current=p&&validLevel(Number(p.level))?Number(p.level):0;
-  const highest=current?Math.max(current,Math.min(60,Math.max(1,Number(p.levelPeak)||current))):0;
+  const highest=current?Math.max(current,Math.min(100,Math.max(1,Number(p.levelPeak)||current))):0;
   const list=Array.isArray(p?.rewardCatalog)?p.rewardCatalog:[];
   const perks=Array.isArray(p?.perkCatalog)?p.perkCatalog:[];
   const map=new Map();
@@ -220,3 +224,4 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
  else init();
 })(window);
+

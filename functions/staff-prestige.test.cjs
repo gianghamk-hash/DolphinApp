@@ -329,11 +329,11 @@ test('public Level board is rebuilt on demand for the new 2450 threshold',async(
  data.set('staffRegistry/DOL-0002',{employeeId:'DOL-0002',name:'Visible Crew',avatar:'🐬',active:true,xp:2450,levelPeak:1});
  data.set('staffPrestige/public',{leaderboard:[{employeeId:'DOL-0002',name:'Visible Crew',xp:2450,level:1}],updatedAt:123});
  const first=await api.staffGetPrestige(req('lanDevice'));
- assert.equal(first.levelRulesVersion,4);
+ assert.equal(first.levelRulesVersion,5);
  assert.equal(first.leaderboard[0].level,2);
  const second=await api.staffGetPrestige(req('lanDevice'));
  assert.equal(second.leaderboard[0].level,2);
- assert.equal(data.get('staffPrestige/public').levelRulesVersion,4);
+ assert.equal(data.get('staffPrestige/public').levelRulesVersion,5);
 });
 
 test('pending registrations never enter Level rankings, Emperor or legends, even with stale cache',async()=>{
@@ -485,3 +485,4 @@ test('Premium personal style cannot be re-equipped based on historical levelPeak
  assert.equal(mine.level,2);assert.equal(mine.highestLevel,54);
  assert.equal(mine.selectedTitle,'none');assert.equal(mine.selectedFrame,'none');assert.equal(mine.personalTheme,'dark');
 });
+

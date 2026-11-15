@@ -3,14 +3,18 @@
 const $=id=>document.getElementById(id);
 const themes={dark:'Dark',light:'Light',gray:'Gray',default:'🐬 Dolphin',spring:'🌸 Mùa Xuân',summer:'☀️ Mùa Hè',autumn:'🍁 Mùa Thu',winter:'❄️ Mùa Đông',tet:'🧧 Tết',valentine:'💝 Valentine',womenday:'🌷 Phụ Nữ',reunification:'⭐ 30/4',children:'🎈 Thiếu Nhi',nationalday:'⭐ Quốc Khánh',midautumn:'🏮 Trung Thu',halloween:'🎃 Halloween',christmas:'🎄 Giáng Sinh',newyear:'🎊 Tết Dương Lịch',abyss:'🌊 Vực Sâu',aurora:'🌌 Cực Quang',coral:'🪸 San Hô',neon:'💠 Cyber Neon',cosmic:'🪐 Ngân Hà',royal:'👑 Hoàng Gia',obsidian:'🖤 Obsidian'};
 const themeLevels={default:8,spring:10,summer:10,autumn:10,winter:10,tet:20,valentine:20,womenday:20,reunification:20,children:20,nationalday:20,midautumn:20,halloween:30,christmas:30,newyear:30,abyss:4,aurora:12,coral:18,neon:28,cosmic:36,royal:48,obsidian:55};
-const rewards=[[1,'Avatar cơ bản · Bronze'],[3,'Tên phát sáng OnFlame · Avatar Khám phá'],[5,'Bộ avatar Ocean'],[6,'Thăng hạng Silver'],[8,'Chủ đề Dolphin'],[10,'Bốn chủ đề mùa · Avatar Phiêu lưu'],[11,'Thăng hạng Gold'],[15,'Bộ avatar Legends'],[20,'Bảy chủ đề ngày lễ · Avatar Lễ hội'],[21,'Thăng hạng Platinum'],[25,'OnFlame cao cấp'],[30,'Halloween · Giáng Sinh · Tết Dương · Avatar Thần tốc'],[31,'Thăng hạng Diamond'],[40,'Bộ avatar Mythic'],[41,'Thăng hạng Legend'],[60,'Cấp độ tối đa']];
+const rewards=[[1,'Avatar cơ bản · Bronze'],[3,'Tên phát sáng OnFlame · Avatar Khám phá'],[5,'Bộ avatar Ocean'],[6,'Thăng hạng Silver'],[8,'Chủ đề Dolphin'],[10,'Bốn chủ đề mùa · Avatar Phiêu lưu'],[11,'Thăng hạng Gold'],[15,'Bộ avatar Legends'],[20,'Bảy chủ đề ngày lễ · Avatar Lễ hội'],[21,'Thăng hạng Platinum'],[25,'OnFlame cao cấp'],[30,'Halloween · Giáng Sinh · Tết Dương · Avatar Thần tốc'],[31,'Thăng hạng Diamond'],[40,'Bộ avatar Mythic'],[41,'Thăng hạng Legend'],[100,'Cấp độ tối đa']];
 const XP_RATE=2450; // Must match functions/staff-xp-engine.cjs
 const xpAt=level=>XP_RATE*(level-1)**2;
 const fmt=n=>Number(n||0).toLocaleString('vi-VN',{maximumFractionDigits:2});
 const cosmeticOptions={avatarMotion:[['none','Tắt chuyển động',1],['pulse','💗 Soft Pulse',3],['float','🪶 Floating',10],['wave','🌊 Wave Spin',20],['orbit','🪐 Energy Orbit',30],['prism','🌈 Prism Flicker',45],['ascension','👑 Mythic Ascension',60],['comet','☄️ Comet Dash',6],['tide','🌊 Tidal Surge',14],['vortex','🌀 Vortex Gate',24],['phoenix','🔥 Phoenix Rebirth',36],['supernova','🌠 Supernova Burst',52]],frame:[['none','Không dùng',1],['bronze','🥉 Bronze',5],['silver','🥈 Silver',22],['gold','🥇 Gold',40],['mythic','💎 Mythic',60],['emerald','🟢 Emerald',12],['sapphire','🔷 Sapphire',28],['nebula','🌌 Nebula',48]],title:[['none','Không dùng',1],['rookie','⭐ Rookie Star',12],['wave','🏄 Wave Rider',25],['legend','👑 Dolphin Legend',50],['navigator','🧭 Ocean Navigator',7],['guardian','🛡️ Coral Guardian',20],['titan','⚔️ Tidal Titan',36],['emperor','👑 Abyss Emperor',55]],banner:[['default','Mặc định',1],['wave','🌊 Sóng Biển',15],['gold','🌟 Ánh Kim',35],['mythic','⚡ Mythic',60],['abyss','🌊 Deep Sea',4],['aurora','🌌 Aurora',12],['neon','💠 Cyber Neon',28],['cosmic','🪐 Cosmic',48]],nameFx:[['none','Tắt hiệu ứng tên',1],['ember','🔥 Lửa nhỏ',3],['inferno','🔥 Hỏa diệm',25],['prism','🌈 Quang phổ',45],['celestial','✨ Thiên quang',60],['tide','🌊 Tidal Glow',12],['nova','🌟 Nova',36],['royal','👑 Royal',55]],aura:[['none','Tắt hào quang',1],['spark','💫 Spark Ring I',3],['dual','💫 Dual Halo II',25],['celestial','💫 Celestial Pulse III',60],['ripple','💠 Ripple',6],['nebula','🌌 Nebula',36],['stardust','✨ Stardust',52]],trail:[['none','Tắt vệt sao',1],['wave','☄️ Wave Shine I',3],['comet','☄️ Twin Comet II',25],['nova','☄️ Royal Nova III',60],['stardust','✨ Stardust',12],['meteor','☄️ Meteor',36],['starfall','🌠 Starfall',55]],cardFx:[['none','Tắt thẻ hiệu ứng',1],['soft','✨ Soft Glow I',3],['energy','✨ Energy Border II',25],['mythic','✨ Mythic Shimmer III',60],['ocean','🌊 Ocean Edge',12],['prism','🌈 Prism Edge',36],['aurora','🌌 Aurora Edge',52]]};
+for(const kind of Object.keys(cosmeticOptions))cosmeticOptions[kind].push(['polar','✦ Cực quang',70]);
+for(const kind of Object.keys(cosmeticOptions))cosmeticOptions[kind].push(['galaxy','✦ Ngân hà',80]);
+for(const kind of Object.keys(cosmeticOptions))cosmeticOptions[kind].push(['sovereign','✦ Đế vương',90]);
+for(const kind of Object.keys(cosmeticOptions))cosmeticOptions[kind].push(['eternal','✦ Vĩnh cửu',100]);
 // Display every collectible tier in ascending Level order.
 for(const options of Object.values(cosmeticOptions))options.sort((a,b)=>a[2]-b[2]);
-const titleNames={rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'};
+const titleNames={polar:'✦ Cực quang',galaxy:'✦ Ngân hà',sovereign:'✦ Đế vương',eternal:'✦ Vĩnh cửu',rookie:'⭐ Rookie Star',wave:'🏄 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'};
 let mine=null;
 // Level follows XP; historical unlocks remain available after a deduction.
 const unlockedLevel=()=>Math.max(1,Number(mine?.level)||1); // XP hiện tại quyết định hiệu ứng được sử dụng
@@ -203,7 +207,7 @@ function previewCosmetics(){
  $('profile-name').dataset.crewTrail=mine?.selectedTrail||'none';
  $('crew-profile-banner').dataset.banner=mine?.selectedBanner||'default';
  const label=$('profile-title'),title=mine?.selectedTitle||'none';
- label.textContent=titleNames[title]||'';label.hidden=!titleNames[title];
+ label.dataset.title=title;label.textContent=titleNames[title]||'';label.hidden=!titleNames[title];
  $('profile-name').classList.toggle('name-gradient',!!mine?.nameGradient&&unlockedLevel()>=45);
 }
 function renderThemes(){
@@ -313,9 +317,9 @@ function renderMine(){
   $('staff-level-tag').textContent='LEVEL '+mine.level;
   $('staff-xp-summary').textContent=mine.rank+' · '+fmt(mine.xp)+' XP hiện tại';
   const floor=xpAt(mine.level),ceil=xpAt(mine.level+1);
-  const percent=mine.level>=60?100:Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)));
+  const percent=mine.level>=100?100:Math.max(0,Math.min(100,100*(mine.xp-floor)/(ceil-floor)));
   $('staff-xp-fill').style.width=percent+'%';$('staff-xp-track').setAttribute('aria-valuenow',String(Math.round(percent)));
-  $('staff-next-level').textContent=(mine.level>=60?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1))+
+  $('staff-next-level').textContent=(mine.level>=100?'Đã đạt cấp độ tối đa':'Còn '+fmt(Math.max(0,ceil-mine.xp))+' XP đến Lv.'+(mine.level+1))+
    (Number(mine.highestLevel||mine.levelPeak)>mine.level?' · Hiệu ứng cấp cao khóa đến khi đủ XP':'');
   const next=rewardCatalog().find(x=>x.level>unlockedLevel());
   $('staff-next-reward').textContent=next?'🎁 Lv.'+next.level+' · '+next.label+' — còn '+fmt(Math.max(0,xpAt(next.level)-mine.xp))+' XP':'🏆 Đã mở toàn bộ phần thưởng!';
@@ -401,3 +405,4 @@ window.addEventListener('dolphin-prestige-status',showStatus);
 document.addEventListener('close',()=>setTimeout(()=>celebrateLevel(mine),0),true);
 if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);else init();
 })();
+

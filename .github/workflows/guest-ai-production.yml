@@ -1,0 +1,55 @@
+name: Deploy guest request AI to Firebase
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/guest-ai-production.yml'
+      - 'scripts/prepare-guest-ai-deploy.cjs'
+      - 'scripts/verify-guest-ai-deploy.cjs'
+      - 'functions/guest-note-summary.js'
+      - 'functions/guest-request-translation.js'
+      - 'functions/guest-note-classification.js'
+      - 'functions/guest-nationalities.js'
+      - 'functions/guest-country-codes.json'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: firebase-guest-ai-production
+  cancel-in-progress: false
+jobs:
+  deploy:
+    if: github.repository == 'gianghamk-hash/DolphinApp' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    environment: production
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify project and credential availability
+        env:
+          FIREBASE_CREDENTIALS: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+        run: |
+          test -n "$FIREBASE_CREDENTIALS" || { echo "::error::Missing Firebase deployment credentials"; exit 1; }
+          node -e "if(JSON.parse(require('node:fs').readFileSync('.firebaserc','utf8')).projects.default!=='dolphin-f6d67')process.exit(1)"
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - name: Test guest AI and prepare isolated deployment source
+        run: |
+          npm install --prefix functions --no-audit --no-fund
+          node --test functions/guest-request-translation.test.cjs functions/guest-note-summary.test.cjs functions/guest-note-classification.test.cjs functions/guest-nationalities.test.cjs
+          node scripts/prepare-guest-ai-deploy.cjs
+          node scripts/verify-guest-ai-deploy.cjs prepare
+          npm install --prefix .firebase-guest-ai/functions --no-audit --no-fund
+      - name: Deploy only guestSummarizeNotes
+        run: npx -y firebase-tools@latest deploy --config .firebase-guest-ai/firebase.json --project dolphin-f6d67 --non-interactive --only functions:guestSummarizeNotes
+      - name: Verify live function and synthetic translations
+        run: node scripts/verify-guest-ai-deploy.cjs
+      - name: Remove temporary model configuration
+        if: always()
+        run: rm -f .firebase-guest-ai/functions/.env.dolphin-f6d67

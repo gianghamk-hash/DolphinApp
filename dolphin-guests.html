@@ -596,7 +596,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./staff-prestige-client.js?v=1" defer></script>
 <script src="./dolphin-guest-special-rules.js?v=fnb-notes-v1"></script>
 <script src="./staff-id.js?v=guest-note-ai-v1"></script>
-<script src="./dolphin-guest-note-summary.js?v=ai-v4"></script>
+<script src="./dolphin-guest-note-summary.js?v=ai-v5"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
@@ -1044,12 +1044,13 @@ function slotIcon(type){
 var SPECIAL_CATEGORIES=[
  {key:'Veg',label:'Veg'}, {key:'Non-veg',label:'Non-veg'},
  {key:'Halal',label:'Halal'}, {key:'Jain',label:'Jain'},
- {key:'lobster',label:'Tôm hùm'}
+ {key:'Chay Việt',label:'Chay Việt'}, {key:'Chay Âu',label:'Chay Âu'},
+ {key:'Indian Food',label:'Indian Food'}, {key:'lobster',label:'Tôm hùm'}
 ];
 function specialCategoryKeys(b){
  var keys=[];
  (b.diet||[]).forEach(function(d){
-  if(d.setMenu===true&&['Veg','Non-veg','Halal','Jain'].indexOf(d.t)>-1&&keys.indexOf(d.t)<0)keys.push(d.t);
+  if(d.setMenu===true&&['Veg','Non-veg','Halal','Jain','Chay Việt','Chay Âu','Indian Food'].indexOf(d.t)>-1&&keys.indexOf(d.t)<0)keys.push(d.t);
  });
  if((b.lob||[]).length)keys.push('lobster');
  return keys;
@@ -1063,7 +1064,7 @@ function specialSummaryHtml(b){
  if(!note.trim())return '';
  var summary=window.DolphinGuestNoteSummary;
  var plainNote=note.replace(/\s+/g,' ').trim();
- var preview=summary?summary.preview(note):plainNote.slice(0,240)+(plainNote.length>240?'…':'');
+ var preview=summary?summary.preview(note):'Xem ghi chú gốc';
  var key=summary?summary.key(note):'';
  return '<details class="special-source"><summary aria-label="Xem đầy đủ ghi chú khách">'+
   '<span class="special-note-preview" data-guest-summary="'+esc(key)+'">'+esc(preview)+'</span></summary>'+
@@ -1086,7 +1087,7 @@ function getPriority(b){
   var txt = (b.name+' '+(b.code||'')+' '+(b.agent||'')).toLowerCase();
   if (b.lob.length > 0) return 'pri-vip';
   if (/\bvip\b|\bvvip\b/.test(txt)) return 'pri-vip';
-  if ((b.diet||[]).some(function(d){return d.setMenu===true&&['Veg','Non-veg','Halal','Jain'].indexOf(d.t)>-1})) return 'pri-diet';
+  if ((b.diet||[]).some(function(d){return d.setMenu===true&&['Veg','Non-veg','Halal','Jain','Chay Việt','Chay Âu','Indian Food'].indexOf(d.t)>-1})) return 'pri-diet';
   if (b.specialFood && b.specialFood.length > 0) return 'pri-food';
   return 'pri-normal';
 }

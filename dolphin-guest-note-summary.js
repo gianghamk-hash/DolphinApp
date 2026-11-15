@@ -31,7 +31,7 @@
   return true;
  }
  function refresh(){let changed=false;for(const b of latest)if(apply(b))changed=true;if(changed&&onChange)onChange();update();}
- function preview(note){const item=record(note),text=(item.text||note).replace(/\s+/g,' ').trim();return text.length>240?text.slice(0,240)+'…':text;}
+ function preview(note){const item=record(note);return item.summaryScope==='services-v2'&&item.text?item.text:'Xem ghi chú gốc';}
  function update(){document.querySelectorAll('[data-guest-summary]').forEach(node=>{
   for(const [note,item] of records)if(item.id===node.dataset.guestSummary){node.textContent=preview(note);break;}
  });}
@@ -52,7 +52,7 @@
     if(!Array.isArray(result?.summaries)||result.summaries.length!==batch.length||new Set(result.summaries.map(i=>i.id)).size!==batch.length)throw Error('Invalid summary');
     for(const item of result.summaries){
      if(!Number.isInteger(item.id)||item.id<0||item.id>=batch.length||typeof item.text!=='string')throw Error('Invalid summary');
-     const rec=record(batch[item.id]);rec.text=item.text;rec.done=true;rec.source=item.source||'original';rec.classification=item.classification||null;if(!rec.classification){rec.done=false;retryAt=Date.now()+60000;}
+     const rec=record(batch[item.id]);rec.text=item.text;rec.done=true;rec.source=item.source||'original';rec.summaryScope=item.summaryScope;rec.classification=item.classification||null;if(!rec.classification){rec.done=false;retryAt=Date.now()+60000;}
     }
     refresh();
    }

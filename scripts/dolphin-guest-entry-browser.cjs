@@ -42,7 +42,7 @@ const part=(a,b)=>html.slice(html.indexOf(a),html.indexOf(b));
   assert.equal(await page.locator('#noteTest img').count(),0);
   assert.equal(await page.locator('#noteTest .special-compact').count(),0,'No generic F&B heading');
   await page.evaluate(async raw=>{
-   DolphinStaffId.summarizeGuestNotes=async notes=>({summaries:notes.map((n,id)=>({id,text:'Yêu cầu phục vụ đã tóm tắt',classification:{items:[],needsReview:false}}))});
+   DolphinStaffId.summarizeGuestNotes=async notes=>({summaries:notes.map((n,id)=>({id,summaryScope:'services-v2',text:'Yêu cầu phục vụ đã tóm tắt',classification:{items:[],needsReview:false}}))});
    await DolphinGuestNoteSummary.ensure([{dietNoteRaw:raw,noteRaw:raw+'\nKhông kayak/bamboo'}]);
   },raw);
   assert.equal(await page.locator('#noteTest summary span').textContent(),'Yêu cầu phục vụ đã tóm tắt');

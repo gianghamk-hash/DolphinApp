@@ -40,7 +40,7 @@ const CACHE_URLS = [
   BASE + '/assets/flags/my.svg',
   BASE + '/assets/flags/th.svg',
 
-  BASE + '/dolphin-guest-note-summary.js?v=ai-v5',
+  BASE + '/dolphin-guest-note-summary.js?v=ai-v6',
   BASE + '/dolphin-guest-table-input.js?v=range-v3',
   BASE + '/dolphin-guest-special-rules.js?v=fnb-notes-v1',
   BASE + '/dolphin-table-signs.js?v=word-print-20261114',

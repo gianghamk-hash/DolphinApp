@@ -37,3 +37,15 @@ test('concise summary does not confirm alternatives, add overlapping counts or i
  assert.equal(focusedSummary({items:[item('bungalow','hoặc bungalow',{state:'uncertain'}),item('lounge','hoặc lounge',{state:'uncertain'})]}),'Bungalow (chưa chốt) · Lounge (chưa chốt)');
  assert.equal(focusedSummary({items:[item('Veg','2 set',{quantity:2,setMenu:true}),item('Veg','2 khách',{quantity:2,setMenu:true})]}),'Veg');
 });
+test('one invalid model item cannot erase independent valid services',()=>{
+ const note='bungalow 401, phụ thu 2tr trên tàu; 2 set Jain; 1 vé lounge';
+ const r=validate(note,[item('bungalow','bungalow 401, phụ thu 2tr trên tàu',{quantity:1,room:'401'}),item('Jain','2 set Jain',{quantity:2,setMenu:true}),item('lounge','1 vé lounge',{quantity:1})],false);
+ assert(r.needsReview);assert.deepEqual(r.items.map(x=>x.category),['Jain','lounge']);
+ const correct=validate(note,[item('bungalow','bungalow 401, phụ thu 2tr trên tàu',{room:'401'})],false);
+ assert.equal(correct.items[0].room,'401');assert.equal(correct.items[0].quantity,0);
+});
+test('a rejected cancellation never leaves the same category confirmed',()=>{
+ const note='Đặt 2 bungalow; hủy bungalow';
+ const r=validate(note,[item('bungalow','Đặt 2 bungalow',{quantity:2}),item('bungalow','hủy bungalow',{state:'excluded',quantity:99})],false);
+ assert(r.needsReview);assert.equal(r.items[0].state,'uncertain');
+});

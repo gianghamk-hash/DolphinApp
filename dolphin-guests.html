@@ -600,7 +600,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <script src="./dolphin-country-data.js?v=flags-v2"></script>
 <script src="./dolphin-guest-audit.js?v=1"></script>
 <script src="./dolphin-guest-flags.js?v=flags-v2"></script>
-<script src="./dolphin-guest-note-summary.js?v=ai-v5"></script>
+<script src="./dolphin-guest-note-summary.js?v=ai-v6"></script>
 <script src="./dolphin-guest-table-input.js?v=range-v3"></script>
 <script src="./dolphin-table-signs.js?v=a4-grouped-20261114"></script>
 </head>
@@ -611,6 +611,7 @@ button:focus-visible,.btn:focus-visible,.tab:focus-visible{outline:2px solid rgb
 <h1><span class="logo"><i class="ic ic-waves"></i></span>Danh sách khách</h1>
     <span class="sp"></span>
     <span class="hd-meta" id="upd"></span>
+    <button class="btn" type="button" onclick="DolphinGuestNoteSummary.retry()">Đọc lại AI</button>
     <span class="hd-meta" id="guestNoteAiStatus" role="status" aria-live="polite"></span>
     <span class="hd-meta" id="sheetName"></span>
     <span class="hd-mini-stats" id="hdMiniStats">
@@ -909,6 +910,16 @@ function currentLoungeAssignment(b){
   var sync=window.LoungeSync, rooms=sync&&sync.rooms||{};
   return Object.keys(rooms).find(function(k){var d=rooms[k];return d&&d.sheetCode===b.code&&d.sheetDate===curDate&&d.customerName===b.name;})||'';
 }
+// Keep suspected services visible when AI is unavailable or omits a service.
+function serviceReview(L,group){
+ var api=window.DolphinGuestNoteSummary;
+ var rows=api&&api.pending?L.filter(function(b){return api.pending(b,group)}):[];
+ if(!rows.length)return '';
+ var label={bungalow:'Bungalow',lounge:'Lounge',food:'Ăn đặc biệt F&B'}[group];
+ return '<section class="service-review" aria-label="'+label+' cần kiểm tra"><h3>⚠ '+label+' · Cần kiểm tra ('+rows.length+')</h3>'+
+ '<p>Ghi chú có nhắc dịch vụ nhưng AI chưa xác nhận đầy đủ. Đối chiếu ghi chú gốc; chưa tính vào số suất và chưa gửi dịch vụ.</p><div class="grid">'+
+ rows.map(function(b){return '<div>'+card(b)+'<details><summary>Xem ghi chú cần kiểm tra</summary><div class="slot-note" style="white-space:pre-wrap">'+esc(b.dietNoteRaw)+'</div></details></div>'}).join('')+'</div></section>';
+}
 function loungeView(L){
   var all=L.filter(function(b){return !!b.loungeTicket;});
   var done=all.filter(function(b){return !!currentLoungeAssignment(b);});
@@ -919,6 +930,7 @@ function loungeView(L){
   h+='<div class="sub-row" style="display:flex;gap:8px;margin:12px 0"><button class="sub-chip'+(loungeFilter==='all'?' on':'')+'" data-lgfilter="all">Tất cả</button>'+
     '<button class="sub-chip'+(loungeFilter==='unsent'?' on':'')+'" data-lgfilter="unsent">Chưa gửi</button>'+
     '<button class="sub-chip'+(loungeFilter==='sent'?' on':'')+'" data-lgfilter="sent">Đã gửi</button></div>';
+  h+=serviceReview(L,'lounge');
   if(!selected.length)return h+'<div class="empty">Không có booking Lounge trong bộ lọc này.</div>';
   h+='<div class="grid">';
   selected.forEach(function(b){
@@ -1221,7 +1233,7 @@ function viewSpecial(L){
       '" data-special-category="'+esc(cat.key)+'" aria-pressed="'+active+'">'+
       esc(cat.label)+' · '+counts[cat.key]+'</button>';
  });
- h+='</div></section>';
+ h+='</div></section>'+serviceReview(L,'food');
  if(!S.length)return h+'<div class="empty">Không có BKK có yêu cầu ăn đặc biệt hoặc F&B cần lưu ý.</div>';
  if(!filtered.length)return h+'<div class="empty">Không có BKK phù hợp bộ lọc.</div>';
  h+='<div class="grid special-booking-grid">';
@@ -1252,7 +1264,8 @@ function viewBung(L){
   var h='<div class="stats">'+
     statBox('<i class="ic ic-clipboard"></i>',S.length,'booking có bungalow')+
     statBox('<i class="ic ic-tent"></i>',nBung(L),'bungalow ghi rõ số lượng')+'</div>';
-  if(!S.length)return h+'<div class="empty">Chưa có khách nào đặt bungalow trong danh sách này.</div>';
+  h+=serviceReview(L,'bungalow');
+  if(!S.length)return h+'<div class="empty">Chưa có booking đã xác nhận đặt bungalow trong danh sách này.</div>';
   h+='<div class="grid">';
   S.forEach(function(b){
     var p='';

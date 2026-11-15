@@ -3,7 +3,35 @@
  'use strict';
  const records=new Map();let next=0,busy=false,retryAt=0,latest=[],onChange=null;
  function record(note){if(!records.has(note))records.set(note,{id:String(++next),text:'',done:false,source:'original'});return records.get(note);}
- // Classification drives these views; no keyword fallback while AI is pending/offline.
+ // Evidence candidates are a review queue, never confirmed bookings or quantities.
+ function candidates(note){
+  const n=String(note||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').toLowerCase();
+  const groups=[];
+  if(/bungalow|\bbgl\b/.test(n))groups.push('bungalow');
+  if(/\blounge\b/.test(n))groups.push('lounge');
+  if(/tom\s*hum|\blobster\b/.test(n))groups.push('lobster');
+  if(/\b(?:non[ -]?veg|noveg)\b/.test(n))groups.push('Non-veg');
+  if(/\b(?:veg|vegetarian)\b/.test(n.replace(/\b(?:non[ -]?veg|noveg)\b/g,'')))groups.push('Veg');
+  if(/\bjain\b/.test(n))groups.push('Jain');
+  if(/\bhalal\b/.test(n))groups.push('Halal');
+  if(/\bchay\s*au\b/.test(n))groups.push('Chay Âu');
+  if(/\bchay\b/.test(n.replace(/\bchay\s*au\b/g,'')))groups.push('Chay Việt');
+  if(/indian\s*(?:food|veg|buffet)|menu\s*an\b/.test(n))groups.push('Indian Food');
+  return groups;
+ }
+ function pending(b,group){
+  const hits=candidates(b.dietNoteRaw).filter(x=>group==='food'?!['bungalow','lounge'].includes(x):x===group);
+  if(!hits.length)return false;
+  const c=b._aiClassification;
+  if(!c||c.needsReview)return true;
+  return hits.some(hit=>!c.items.some(x=>{
+   // Cuisine and menu labels can describe one meal (Indian Veg); accept that equivalence.
+   const same=x.category===hit||(hit==='lounge'&&x.category==='premium-lounge')||
+    (hit==='Indian Food'&&['Veg','Non-veg','Jain','Halal'].includes(x.category));
+   return same&&['confirmed','excluded'].includes(x.state)&&
+    (x.state==='excluded'||['bungalow','lounge','premium-lounge','lobster'].includes(x.category)||x.setMenu===true);
+  }));
+ }
  function prepare(b){
   b.showSlots=(b.showSlots||[]).filter(x=>x.type!=='BGL');
   b.bung=[];b.lob=[];b.diet=[];b.specialFood=[];b.loungeTicket=null;
@@ -36,29 +64,36 @@
   for(const [note,item] of records)if(item.id===node.dataset.guestSummary){node.textContent=preview(note);break;}
  });}
  function status(text){const node=document.getElementById?.('guestNoteAiStatus');if(node)node.textContent=text;}
- async function ensure(bookings,changed){
+ async function ensure(bookings,changed,force=false){
   latest=bookings;onChange=changed||null;
   const allNotes=[...new Set(bookings.map(b=>b.dietNoteRaw||'').filter(n=>n.trim()))];
   const notes=allNotes.filter(n=>n.length<=2000);
   if(!allNotes.length){status('');return;}
   if(busy||Date.now()<retryAt)return;
   if(!root.DolphinStaffId?.summarizeGuestNotes){status('Chưa tạo được tóm tắt — đang hiển thị ghi chú gốc.');return;}
-  const report=()=>status(allNotes.some(n=>!record(n).classification)?'Một số ghi chú chưa được AI phân loại; xem ghi chú gốc.':allNotes.some(n=>record(n).classification.needsReview)?'Có yêu cầu chưa rõ — cần nhân viên kiểm tra ghi chú.':allNotes.some(n=>record(n).source!=='ai')?'Đã phân loại; một số ghi chú giữ nguyên để đủ thông tin.':'');
-  const pending=notes.filter(n=>!record(n).done);if(!pending.length){refresh();report();return;}
+  const report=()=>status(bookings.some(b=>['bungalow','lounge','food'].some(g=>pending(b,g)))?'Có dịch vụ cần kiểm tra trong các mục Bungalow / Lounge / F&B.':allNotes.some(n=>!record(n).classification)?'Một số ghi chú chưa được AI phân loại; xem ghi chú gốc.':allNotes.some(n=>record(n).classification.needsReview)?'Có yêu cầu chưa rõ — cần nhân viên kiểm tra ghi chú.':allNotes.some(n=>record(n).source!=='ai')?'Đã phân loại; một số ghi chú giữ nguyên để đủ thông tin.':'');
+  const pendingNotes=notes.filter(n=>!record(n).done);if(!pendingNotes.length){refresh();report();return;}
   busy=true;status('Đang đọc và phân loại yêu cầu khách…');
   try{
-   for(let start=0;start<pending.length;start+=20){
-    const batch=pending.slice(start,start+20),result=await root.DolphinStaffId.summarizeGuestNotes(batch);
+   for(let start=0;start<pendingNotes.length;start+=20){
+    try{
+    const batch=pendingNotes.slice(start,start+20),result=await root.DolphinStaffId.summarizeGuestNotes(batch,{refresh:force});
     if(!Array.isArray(result?.summaries)||result.summaries.length!==batch.length||new Set(result.summaries.map(i=>i.id)).size!==batch.length)throw Error('Invalid summary');
     for(const item of result.summaries){
      if(!Number.isInteger(item.id)||item.id<0||item.id>=batch.length||typeof item.text!=='string')throw Error('Invalid summary');
      const rec=record(batch[item.id]);rec.text=item.text;rec.done=true;rec.source=item.source||'original';rec.summaryScope=item.summaryScope;rec.classification=item.classification||null;if(!rec.classification){rec.done=false;retryAt=Date.now()+60000;}
     }
     refresh();
+    }catch(_){retryAt=Date.now()+60000;}
    }
-   report();
+   report();if(retryAt>Date.now())status('Chưa tạo được tóm tắt cho một số ghi chú — kiểm tra các mục Cần kiểm tra.');
   }catch(_){retryAt=Date.now()+60000;status('Chưa tạo được tóm tắt — đang hiển thị ghi chú gốc.');}
   finally{busy=false;if(latest!==bookings)ensure(latest,onChange);}
  }
- root.DolphinGuestNoteSummary={key:note=>record(note).id,preview,ensure,prepare,apply};
+ async function retry(){
+  if(busy)return;
+  for(const rec of records.values())rec.done=false;
+  retryAt=0;await ensure(latest,onChange,true);
+ }
+ root.DolphinGuestNoteSummary={key:note=>record(note).id,preview,ensure,prepare,apply,candidates,pending,retry};
 })(window);

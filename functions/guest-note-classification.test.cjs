@@ -27,7 +27,7 @@ test('focused summary includes only supported services, never original irrelevan
  const {focusedSummary}=require('./guest-note-classification');
  const items=[item('Chay Việt','2 khách ăn chay',{quantity:2,setMenu:true}),item('lobster','3 suất tôm hùm',{quantity:3}),item('bungalow','Bungalow 201',{room:'201'}),item('diet-note','HDV ăn như khách, guide Hàn, cửa sổ, dị ứng bò'),item('coconut-welcome','Tặng dừa')];
  const summary=focusedSummary({items});
- assert.equal(summary,'Chay Việt ×2 · Tôm hùm ×3 · Bungalow (P.201)');
+ assert.equal(summary,'Chay Việt ×2 · Tôm hùm ×3 · Bungalow (201)');
  assert.equal(focusedSummary({items:[items[3],items[4]]}),'');
  for(const category of ['Chay Việt','Chay Âu','Indian Food','Veg','Non-veg','Jain','Halal'])assert.equal(focusedSummary({items:[item(category,'suất ăn',{setMenu:true})]}),category);
 });
@@ -39,13 +39,31 @@ test('concise summary does not confirm alternatives, add overlapping counts or i
 });
 test('one invalid model item cannot erase independent valid services',()=>{
  const note='bungalow 401, phụ thu 2tr trên tàu; 2 set Jain; 1 vé lounge';
- const r=validate(note,[item('bungalow','bungalow 401, phụ thu 2tr trên tàu',{quantity:1,room:'401'}),item('Jain','2 set Jain',{quantity:2,setMenu:true}),item('lounge','1 vé lounge',{quantity:1})],false);
+ const r=validate(note,[item('bungalow','bungalow 401, phụ thu 2tr trên tàu',{quantity:3,room:'401'}),item('Jain','2 set Jain',{quantity:2,setMenu:true}),item('lounge','1 vé lounge',{quantity:1})],false);
  assert(r.needsReview);assert.deepEqual(r.items.map(x=>x.category),['Jain','lounge']);
  const correct=validate(note,[item('bungalow','bungalow 401, phụ thu 2tr trên tàu',{room:'401'})],false);
- assert.equal(correct.items[0].room,'401');assert.equal(correct.items[0].quantity,0);
+ assert.equal(correct.items[0].room,'401');assert.equal(correct.items[0].quantity,1);
 });
 test('a rejected cancellation never leaves the same category confirmed',()=>{
  const note='Đặt 2 bungalow; hủy bungalow';
  const r=validate(note,[item('bungalow','Đặt 2 bungalow',{quantity:2}),item('bungalow','hủy bungalow',{state:'excluded',quantity:99})],false);
  assert(r.needsReview);assert.equal(r.items[0].state,'uncertain');
+});
+test('one explicitly named confirmed room accepts or derives quantity one',()=>{
+ const note='- bungalow 401, phụ thu 2tr trên tàu';
+ for(const quantity of [0,1]){
+  const r=validate(note,[item('bungalow',note,{quantity,room:'401'})],false);
+  assert.equal(r.items[0].quantity,1);
+  assert.equal(require('./guest-note-classification').focusedSummary(r),'Bungalow ×1 (401)');
+ }
+});
+test('room inference excludes cancellations, alternatives, deck numbers and multiple rooms',()=>{
+ for(const [note,room,state] of [
+  ['hủy bungalow 401','401','excluded'],['bungalow 401 hoặc 402','401','uncertain'],
+  ['bungalow 401/402','401','confirmed'],['2 bungalow 401','401','confirmed'],
+  ['bungalow deck 3, phụ thu 2tr','','confirmed'],['chưa chốt bungalow 401','401','uncertain']
+ ]){
+  const r=validate(note,[item('bungalow',note,{quantity:0,room,state})],false);
+  assert.equal(r.items[0].quantity,0,note);
+ }
 });

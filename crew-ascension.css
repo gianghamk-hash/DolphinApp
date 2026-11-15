@@ -20,3 +20,10 @@
 @keyframes crew-asc-glow{50%{filter:brightness(1.35)}}
 @keyframes crew-asc-burst{0%{opacity:0;transform:scale(.3) rotate(-40deg)}30%{opacity:1}100%{opacity:0;transform:translateY(-42px) scale(1.6) rotate(80deg)}}
 @media(prefers-reduced-motion:reduce){[data-avatar-motion],[data-name-fx],.crew-lc-dialog *{animation:none!important;transition:none!important}.crew-lc-dialog .crew-lc-star{opacity:.5}}
+
+/* Beat the identity card layout rules without changing its geometry. */
+#crew-profile-banner.crew-character-card:is([data-crew-card="polar"],[data-crew-card="galaxy"],[data-crew-card="sovereign"],[data-crew-card="eternal"]){border:2px solid var(--asc-a)!important;box-shadow:0 0 24px color-mix(in srgb,var(--asc-a) 45%,transparent),inset 0 0 25px color-mix(in srgb,var(--asc-b) 22%,transparent)!important}
+#crew-profile-banner.crew-character-card:is([data-banner="polar"],[data-banner="galaxy"],[data-banner="sovereign"],[data-banner="eternal"]){background:radial-gradient(ellipse at top right,color-mix(in srgb,var(--asc-b) 30%,#05080d),#030406 75%)!important}
+#crew-profile-banner #profile-name:is([data-name-fx="polar"],[data-name-fx="galaxy"],[data-name-fx="sovereign"],[data-name-fx="eternal"]){color:var(--asc-a)!important;text-shadow:0 0 8px var(--asc-a),0 0 24px var(--asc-b)!important}
+.crew-chibi-week{color:#edf7ff}
+.crew-chibi-week-title small,.crew-chibi-week-stats span{color:#b3cbd8}

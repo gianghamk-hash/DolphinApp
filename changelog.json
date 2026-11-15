@@ -1,58 +1,30 @@
 {
-  "version": "1.1.139",
-  "previousVersion": "1.1.138",
-  "commit": "7e5c2e3",
-  "previousCommit": "9e52255",
-  "buildDate": "2026-11-15T09:48:19.569Z",
-  "summary": "feat: translate guest order requests into Vietnamese for staff (#285)",
+  "version": "1.1.140",
+  "previousVersion": "1.1.139",
+  "commit": "220b9a2",
+  "previousCommit": "7e5c2e3",
+  "buildDate": "2026-11-15T09:52:06.039Z",
+  "summary": "ci: deploy guest request AI independently and verify live endpoint (#286)",
   "changes": {
-    "totalCommits": 361,
-    "filesChanged": 10,
+    "totalCommits": 362,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: translate guest order requests into Vietnamese for staff (#285)"
+    "ci: deploy guest request AI independently and verify live endpoint (#286)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/guest-request-translation.yml",
+      "file": ".github/workflows/guest-ai-production.yml",
       "type": "update"
     },
     {
-      "file": "docs/guest-request-translation.md",
+      "file": "scripts/prepare-guest-ai-deploy.cjs",
       "type": "update"
     },
     {
-      "file": "dolphin-bungalow.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-lounge.html",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-request-translation.js",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-restaurant.html",
-      "type": "update"
-    },
-    {
-      "file": "functions/guest-note-summary.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/guest-request-translation.js",
-      "type": "update"
-    },
-    {
-      "file": "functions/guest-request-translation.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "staff-id.js",
+      "file": "scripts/verify-guest-ai-deploy.cjs",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.139",
+      "releaseDate": "2026-11-15T09:48:19.569Z",
+      "summary": "feat: translate guest order requests into Vietnamese for staff (#285)",
+      "details": [
+        "feat: translate guest order requests into Vietnamese for staff (#285)"
+      ]
+    },
+    {
       "version": "1.1.138",
       "releaseDate": "2026-11-15T09:23:02.005Z",
       "summary": "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)",
@@ -390,14 +398,6 @@
       "summary": "fix(crew arcade): reliable daily XP claims and 200-point Snake mission",
       "details": [
         "fix(crew arcade): reliable daily XP claims and 200-point Snake mission"
-      ]
-    },
-    {
-      "version": "1.1.87",
-      "releaseDate": "2026-11-09T03:49:02.031Z",
-      "summary": "feat(manager): secure employee XP and revenue leaderboard corrections",
-      "details": [
-        "feat(manager): secure employee XP and revenue leaderboard corrections"
       ]
     }
   ]

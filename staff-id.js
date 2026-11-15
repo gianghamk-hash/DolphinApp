@@ -144,6 +144,7 @@ window.DolphinStaffId={get:()=>identity,wasRejected:()=>rejection,refresh,ready:
  rejectRegistration:employeeId=>call('staffRejectRegistration',{employeeId}),
  assignGuestTable:payload=>call('guestSheetBridge',{action:'assign',data:payload}),
  resolveGuestNationalities:names=>call('guestSummarizeNotes',{task:'nationalities',names}),
+ translateGuestRequests:notes=>call('guestSummarizeNotes',{task:'translate-requests',notes}),
  summarizeGuestNotes:(notes,options={})=>call('guestSummarizeNotes',{notes,refresh:options.refresh===true}),
  syncGuestSheets:()=>call('guestSheetBridge',{action:'sync'}),
  performLiveAction:async payload=>{await connect();if(!api)throw Error('Chưa kết nối Firebase');const response=await api('staffRecordLiveAction')(payload);return response.data;},

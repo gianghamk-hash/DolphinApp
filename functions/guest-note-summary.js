@@ -26,6 +26,7 @@ async function handle(req){
  const db=getDatabase(),identity=(await db.ref('staffIdentity/'+req.auth.uid).get()).val();
  const profile=identity?.employeeId?(await db.ref('staffRegistry/'+identity.employeeId).get()).val():null;
  if(!profile?.active||!(identity.verified===true||profile.approved===true)||(profile.registrationSource==='self'&&profile.approved!==true))throw new HttpsError('permission-denied','Cần Staff ID đã được duyệt.');
+ if(req.data?.task==='translate-requests')return require('./guest-request-translation').handle(req,auth,effectiveModel(),HttpsError);
  if(req.data?.task==='nationalities')return require('./guest-nationalities').handle(req,auth,effectiveModel(),HttpsError);
  const notes=req.data?.notes;
  if(!Array.isArray(notes)||!notes.length||notes.length>20||notes.some(n=>typeof n!=='string'||!n.trim()||n.length>2000))throw new HttpsError('invalid-argument','Ghi chú không hợp lệ.');

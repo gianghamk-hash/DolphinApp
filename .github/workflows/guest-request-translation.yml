@@ -1,0 +1,24 @@
+name: Guest request translation tests
+on:
+  pull_request:
+    paths:
+      - 'functions/guest-request-translation*'
+      - 'functions/guest-note-summary.js'
+      - 'dolphin-request-translation.js'
+      - 'dolphin-lounge.html'
+      - 'dolphin-bungalow.html'
+      - 'dolphin-restaurant.html'
+      - 'staff-id.js'
+      - '.github/workflows/guest-request-translation.yml'
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test functions/guest-request-translation.test.cjs

@@ -1,26 +1,58 @@
 {
-  "version": "1.1.138",
-  "previousVersion": "1.1.137",
-  "commit": "9e52255",
-  "previousCommit": "0d20e24",
-  "buildDate": "2026-11-15T09:23:02.005Z",
-  "summary": "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)",
+  "version": "1.1.139",
+  "previousVersion": "1.1.138",
+  "commit": "7e5c2e3",
+  "previousCommit": "9e52255",
+  "buildDate": "2026-11-15T09:48:19.569Z",
+  "summary": "feat: translate guest order requests into Vietnamese for staff (#285)",
   "changes": {
-    "totalCommits": 360,
-    "filesChanged": 2,
+    "totalCommits": 361,
+    "filesChanged": 10,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)"
+    "feat: translate guest order requests into Vietnamese for staff (#285)"
   ],
   "fileChanges": [
     {
-      "file": "assets/bungalow-menu-cans-v2.svg",
+      "file": ".github/workflows/guest-request-translation.yml",
+      "type": "update"
+    },
+    {
+      "file": "docs/guest-request-translation.md",
       "type": "update"
     },
     {
       "file": "dolphin-bungalow.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-lounge.html",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-request-translation.js",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-restaurant.html",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-summary.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-request-translation.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-request-translation.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

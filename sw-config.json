@@ -1,5 +1,5 @@
 {
-  "version": "1.1.138",
+  "version": "1.1.139",
   "releaseDate": "2026-11-15",
-  "notes": "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)"
+  "notes": "feat: translate guest order requests into Vietnamese for staff (#285)"
 }

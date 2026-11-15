@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.138",
+      "releaseDate": "2026-11-15T09:23:02.005Z",
+      "summary": "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)",
+      "details": [
+        "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)"
+      ]
+    },
+    {
       "version": "1.1.137",
       "releaseDate": "2026-11-15T09:11:04.013Z",
       "summary": "Hồ sơ nền đen, ảnh Bungalow, Level 100 và XP mới ×3 (#283)",
@@ -390,14 +398,6 @@
       "summary": "feat(manager): secure employee XP and revenue leaderboard corrections",
       "details": [
         "feat(manager): secure employee XP and revenue leaderboard corrections"
-      ]
-    },
-    {
-      "version": "1.1.86",
-      "releaseDate": "2026-11-07T07:51:47.246Z",
-      "summary": "test(crew): prevent retroactive mission multiplier on prior receipts",
-      "details": [
-        "test(crew): prevent retroactive mission multiplier on prior receipts"
       ]
     }
   ]

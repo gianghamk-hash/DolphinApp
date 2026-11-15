@@ -1,7 +1,7 @@
 {
-  "version": "1.1.138",
-  "buildDate": "2026-11-15T09:23:02.005Z",
-  "commit": "9e52255",
-  "notes": "fix(bungalow): add drink can labels and correct I-ON WATER packaging (#284)",
+  "version": "1.1.139",
+  "buildDate": "2026-11-15T09:48:19.569Z",
+  "commit": "7e5c2e3",
+  "notes": "feat: translate guest order requests into Vietnamese for staff (#285)",
   "forceUpdate": false
 }

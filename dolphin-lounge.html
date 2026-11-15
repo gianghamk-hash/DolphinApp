@@ -71,6 +71,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script src="./staff-id.js?v=crew-operational-auth-v1" defer></script>
 <script src="./dolphin-avatars.js?v=crew-global-v9" defer></script>
 <script src="./staff-prestige-client.js?v=1.1.138" defer></script>
+<script src="dolphin-request-translation.js?v=1"></script>
 </head>
 <body class="min-h-screen flex flex-col justify-between selection:bg-gold-500 selection:text-black relative z-0">
 
@@ -1683,7 +1684,7 @@ window.generateOrderGridHtml = function(ordersList){
     if(o.status==='pending'){ btn = `<button onclick="openStaffNameModal('${o.id}','preparing')" class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Bắt đầu pha chế 🔥</button>`; }
     else { btn = `<button onclick="openStaffNameModal('${o.id}','completed')" class="bg-gradient-to-r from-emerald-400 to-emerald-500 text-black text-xs font-black px-4 py-3.5 rounded-xl w-full shadow-lg hover:scale-[1.02] transition-transform tracking-widest uppercase">Xác nhận Phục vụ ✅</button>`; }
     const bCls = (o.status==='preparing') ? 'border-gold-500/60 shadow-[0_5px_20px_rgba(245,158,11,.15)]' : (isDelayed ? 'border-red-500 shadow-[0_0_15px_rgba(239,68,68,.4)] animate-pulse' : 'border-teal-700/50');
-    return `<div class="glass-card border ${bCls} rounded-2xl p-5 flex flex-col transition-all"><div class="flex justify-between items-start mb-4"><span class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-widest">${o.table}</span><div class="text-right flex flex-col items-end gap-1.5"><span class="text-[10px] text-teal-300 block font-mono bg-teal-950/50 px-2 py-0.5 rounded">${o.time}</span><span class="text-[9px] text-teal-400 uppercase tracking-widest font-bold mt-1">${o.status==='pending'?'⏳ Chờ xác nhận': '🔥 Làm: '+(o.preparedBy||'NV')}</span>${isDelayed?'<span class="bg-red-600 text-white px-2 py-1 rounded text-[9px] font-black animate-bounce mt-1 shadow-md tracking-wider">⚠️ QUÁ 5 PHÚT</span>':''}</div></div><div class="mb-5 flex-1">${itemsList}</div>${o.notes?`<div class="text-[11px] bg-gold-500/10 border border-gold-500/30 p-3 rounded-xl text-gold-200 italic mb-5 leading-relaxed shadow-inner">Lưu ý: ${o.notes}</div>`:''}${btn}</div>`;
+    return `<div class="glass-card border ${bCls} rounded-2xl p-5 flex flex-col transition-all"><div class="flex justify-between items-start mb-4"><span class="bg-gradient-to-r from-gold-400 to-gold-500 text-black text-[11px] font-black px-3 py-1.5 rounded-lg shadow-sm tracking-widest">${o.table}</span><div class="text-right flex flex-col items-end gap-1.5"><span class="text-[10px] text-teal-300 block font-mono bg-teal-950/50 px-2 py-0.5 rounded">${o.time}</span><span class="text-[9px] text-teal-400 uppercase tracking-widest font-bold mt-1">${o.status==='pending'?'⏳ Chờ xác nhận': '🔥 Làm: '+(o.preparedBy||'NV')}</span>${isDelayed?'<span class="bg-red-600 text-white px-2 py-1 rounded text-[9px] font-black animate-bounce mt-1 shadow-md tracking-wider">⚠️ QUÁ 5 PHÚT</span>':''}</div></div><div class="mb-5 flex-1">${itemsList}</div>${window.DolphinRequestTranslation.render(o.notes)}${btn}</div>`;
   }).join('');
 };
 

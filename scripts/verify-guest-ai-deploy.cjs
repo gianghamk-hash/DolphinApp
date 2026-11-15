@@ -1,6 +1,6 @@
 'use strict';
 const fs=require('node:fs');
-const {GoogleAuth}=require('../functions/node_modules/google-auth-library');
+const {GoogleAuth,Impersonated}=require('../functions/node_modules/google-auth-library');
 const project='dolphin-f6d67';
 const url='https://cloudfunctions.googleapis.com/v2/projects/'+project+'/locations/asia-southeast1/functions/guestSummarizeNotes';
 (async()=>{
@@ -23,8 +23,21 @@ const url='https://cloudfunctions.googleapis.com/v2/projects/'+project+'/locatio
  if(response.status!==401||payload.error?.status!=='UNAUTHENTICATED')throw Error('Staff authentication check failed');
  console.log('Unauthenticated requests are rejected.');
  const effective=/^(?:gemini-2\.5-flash(?:-lite)?|gemini-3\.1-flash-lite)$/.test(model)?'gemini-3.5-flash':model;
+ let runtimeClient=client;
+ const runtimeEmail=fn.serviceConfig?.serviceAccountEmail;
+ const credentials=await auth.getCredentials();
+ if(runtimeEmail&&runtimeEmail!==credentials.client_email){
+  runtimeClient=new Impersonated({sourceClient:client,targetPrincipal:runtimeEmail,targetScopes:['https://www.googleapis.com/auth/cloud-platform'],lifetime:600});
+  try{await runtimeClient.getAccessToken();}catch(e){
+   const status=Number(e.response?.status)||0;
+   const message='Deployment and endpoint authentication verified. Runtime translation smoke test NOT RUN: deployment identity cannot impersonate the runtime service account (HTTP '+status+'). No IAM permissions were changed.';
+   console.warn('::warning::'+message);
+   if(process.env.GITHUB_STEP_SUMMARY)fs.appendFileSync(process.env.GITHUB_STEP_SUMMARY,message+'\n');
+   return;
+  }
+ }
  const inspectedAuth={getClient:async()=>({request:async options=>{
-  try{return await client.request(options);}catch(e){
+  try{return await runtimeClient.request(options);}catch(e){
    console.error('Vertex AI diagnostic:',Number(e.response?.status)||0,String(e.response?.data?.error?.message||'Provider request failed'));
    throw e;
   }
@@ -37,5 +50,5 @@ const url='https://cloudfunctions.googleapis.com/v2/projects/'+project+'/locatio
   '설탕을 넣지 마세요.',
   'Без молока, пожалуйста.'
  ]}},inspectedAuth,effective,HttpsError);
- console.log('Synthetic translation smoke test (deployment identity):',JSON.stringify(result.translations.map(x=>({id:x.id,text:x.text,needsReview:x.needsReview}))));
+ console.log('Synthetic translation smoke test (runtime identity):',JSON.stringify(result.translations.map(x=>({id:x.id,text:x.text,needsReview:x.needsReview}))));
 })().catch(e=>{console.error('Guest AI verification failed:',e.message);process.exitCode=1;});

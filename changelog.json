@@ -1,26 +1,26 @@
 {
-  "version": "1.1.134",
-  "previousVersion": "1.1.133",
-  "commit": "9d58e2a",
-  "previousCommit": "5cd9d85",
-  "buildDate": "2026-11-15T02:32:10.678Z",
-  "summary": "Merge pull request #280 from gianghamk-hash/feat/guest-list-audit",
+  "version": "1.1.135",
+  "previousVersion": "1.1.134",
+  "commit": "2c2805e",
+  "previousCommit": "9d58e2a",
+  "buildDate": "2026-11-15T04:33:45.361Z",
+  "summary": "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery",
   "changes": {
-    "totalCommits": 356,
-    "filesChanged": 6,
+    "totalCommits": 357,
+    "filesChanged": 12,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #280 from gianghamk-hash/feat/guest-list-audit"
+    "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/dolphin-guest-special-tests.yml",
+      "file": "docs/GUEST_SERVICE_RECOVERY.md",
       "type": "update"
     },
     {
-      "file": "dolphin-guest-audit.js",
+      "file": "dolphin-guest-note-summary.js",
       "type": "update"
     },
     {
@@ -28,7 +28,19 @@
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-guest-audit.test.cjs",
+      "file": "functions/guest-note-classification.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-classification.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-summary.js",
+      "type": "update"
+    },
+    {
+      "file": "functions/guest-note-summary.test.cjs",
       "type": "update"
     },
     {
@@ -36,7 +48,19 @@
       "type": "update"
     },
     {
+      "file": "scripts/dolphin-guest-note-summary.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-guest-special.test.cjs",
+      "type": "update"
+    },
+    {
       "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "staff-id.js",
       "type": "update"
     }
   ]

@@ -1,5 +1,5 @@
 {
-  "version": "1.1.134",
+  "version": "1.1.135",
   "releaseDate": "2026-11-15",
-  "notes": "Merge pull request #280 from gianghamk-hash/feat/guest-list-audit"
+  "notes": "Merge pull request #281 from gianghamk-hash/fix/guest-service-classification-recovery"
 }

@@ -178,7 +178,8 @@ const allowed={
  banner:['default','wave','gold','mythic','abyss','aurora','neon','cosmic'],
  cardFx:['none','soft','energy','mythic','ocean','prism','aurora']
 };
-const titles={none:'',rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'};
+for(const list of Object.values(allowed))list.push('polar','galaxy','sovereign','eternal');
+const titles={polar:'✦ Cực quang',galaxy:'✦ Ngân hà',sovereign:'✦ Đế vương',eternal:'✦ Vĩnh cửu',none:'',rookie:'⭐ Rookie Star',wave:'🌊 Wave Rider',legend:'👑 Dolphin Legend',navigator:'🧭 Ocean Navigator',guardian:'🛡️ Coral Guardian',titan:'⚔️ Tidal Titan',emperor:'👑 Abyss Emperor'};
 const themeColors={
  dark:['#fbd77a','#76e9dd','Dark'],light:['#f3e4ba','#8ddce8','Light'],gray:['#c7d2e5','#7cdacf','Gray'],
  default:['#fbd77a','#71e3d5','Dolphin'],spring:['#b6ee9b','#8fdbfc','Spring'],summer:['#ffd87f','#58e9cf','Summer'],
@@ -235,7 +236,7 @@ function drawLevel(leader){
   return;
  }
  const score=$('drl-level-score');
- score.textContent='Lv.'+Math.min(60,Math.max(1,Number(leader.level)||1))+
+ score.textContent='Lv.'+Math.min(100,Math.max(1,Number(leader.level)||1))+
   ' · '+Number(leader.xp||0).toLocaleString('vi-VN',{maximumFractionDigits:2})+' XP';
  card.setAttribute('aria-label','Top 1 Level: '+leader.name+', '+score.textContent);
 }

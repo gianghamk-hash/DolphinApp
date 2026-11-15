@@ -429,7 +429,7 @@
     var identity=staff.staffId
       ? window.DolphinAvatars?.profile?.(staff.name,staff.staffId)
       : null;
-    var allowed=['bronze','silver','gold','mythic','emerald','sapphire','nebula'];
+    var allowed=['bronze','silver','gold','mythic','emerald','sapphire','nebula','polar','galaxy','sovereign','eternal'];
     var titles={
       rookie:'⭐ Rookie Star',
       wave:'🌊 Wave Rider',

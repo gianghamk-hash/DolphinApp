@@ -1,0 +1,61 @@
+name: Staff Ascension 100 and XP x5
+on:
+  pull_request:
+    paths: ['functions/staff-*.js', 'functions/staff-*.cjs', 'crew-ascension.css', 'dolphin-avatars.js', 'crew-levelup-cinematic.js', 'scripts/crew-ascension-browser.cjs', 'scripts/prepare-staff-ascension-deploy.cjs', '.github/workflows/staff-ascension.yml']
+  push:
+    branches: [main]
+    paths: ['functions/staff-prestige.js', 'functions/staff-daily-core.cjs', 'functions/staff-daily-missions.js', 'functions/staff-xp-actions.js', 'crew-ascension.css', 'scripts/prepare-staff-ascension-deploy.cjs', '.github/workflows/staff-ascension.yml']
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: staff-ascension-${{ github.ref }}
+  cancel-in-progress: false
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Verify XP rates, level access and cosmetics
+        run: node --test functions/staff-daily-core.test.cjs functions/staff-xp-actions.test.cjs functions/staff-daily-missions.test.cjs functions/staff-daily-arcade.test.cjs functions/staff-prestige.test.cjs dolphin-avatars.test.cjs scripts/crew-cosmetics.test.cjs scripts/staff-levelup.test.cjs
+      - name: Browser verification
+        run: |
+          npm install --no-save playwright@1.56.1
+          npx playwright install --with-deps chromium
+          node scripts/crew-ascension-browser.cjs
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ascension-visual-review
+          path: reports/ascension-preview/
+  deploy:
+    needs: test
+    if: github.ref == 'refs/heads/main' && github.event_name != 'pull_request'
+    runs-on: ubuntu-24.04
+    environment: production
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_DOLPHIN }}
+          project_id: dolphin-f6d67
+          export_environment_variables: true
+      - name: Prepare isolated staff runtime
+        env:
+          STAFF_ADMIN_UIDS: ${{ secrets.STAFF_ADMIN_UIDS }}
+        run: |
+          test -n "$STAFF_ADMIN_UIDS"
+          node -e "if(JSON.parse(require('fs').readFileSync('.firebaserc','utf8')).projects.default!=='dolphin-f6d67')process.exit(1)"
+          node scripts/prepare-staff-ascension-deploy.cjs
+          npm install --prefix .firebase-staff-ascension/functions --no-audit --no-fund
+      - name: Deploy verified XP and level 100 functions
+        run: npx -y firebase-tools@latest deploy --config .firebase-staff-ascension/firebase.json --project dolphin-f6d67 --non-interactive --only "$(cat .firebase-staff-ascension/targets.txt)"
+      - name: Remove temporary environment
+        if: always()
+        run: rm -f .firebase-staff-ascension/functions/.env.dolphin-f6d67

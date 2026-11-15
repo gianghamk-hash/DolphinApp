@@ -28,7 +28,15 @@ function createResolver(){
 function avatarHTML(name,id='',avatar='👤'){
  return '<span class="dolphin-staff-avatar" data-staff-avatar data-staff-name="'+escapeHTML(name)+'" data-staff-id="'+escapeHTML(id)+'">'+escapeHTML(avatar)+'</span>';
 }
-if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML};
+
+const ASCENSION_TIERS=Object.freeze({
+ polar:Object.freeze({tier:1,rings:3,particles:16,rays:8}),
+ galaxy:Object.freeze({tier:2,rings:4,particles:24,rays:12}),
+ sovereign:Object.freeze({tier:3,rings:5,particles:36,rays:16}),
+ eternal:Object.freeze({tier:4,rings:6,particles:48,rays:24})
+});
+
+if(typeof module!=='undefined')module.exports={nameKey,createResolver,escapeHTML,avatarHTML,ASCENSION_TIERS};
 if(!root.document)return;
 const cosmeticsHref=new URL('crew-cosmetics.css?v=crew-global-v10',document.currentScript?.src||location.href).href;
 const resolver=createResolver(),listeners=new Set();let own=null,scheduled=false,inflight=null,shared=null;
@@ -57,6 +65,25 @@ const frameSelector=[
  '[data-avatar-motion]:not([data-avatar-motion="none"])',
  '#profile-avatar[data-frame]'
 ].join(',');
+
+function ascensionLayer(kind,id){
+ const spec=ASCENSION_TIERS[id],wrap=document.createElement('span');
+ wrap.className='crew-asc-system crew-asc-'+kind;wrap.dataset.ascTier=id;
+ wrap.setAttribute('aria-hidden','true');
+ const add=(name,index,parent=wrap)=>{const node=document.createElement('span');node.className='crew-asc-'+name;node.style.setProperty('--i',String(index));parent.appendChild(node);return node;};
+ add('nebula',0);add('disc',0);
+ for(let i=0;i<spec.rings;i++){
+  const ring=add('orbit',i);ring.style.setProperty('--orbit-count',String(spec.rings));
+  add('gem',i,ring);add('gem-tail',i,ring);
+ }
+ for(let i=0;i<spec.particles;i++){const node=add('particle',i);node.style.setProperty('--count',String(spec.particles));}
+ for(let i=0;i<spec.rays;i++){const node=add('ray',i);node.style.setProperty('--count',String(spec.rays));}
+ if(spec.tier>=2){add('saturn',0);add('saturn',1);}
+ if(spec.tier>=3){add('wing',0);add('wing',1);add('crown',0);}
+ if(spec.tier===4){add('infinity',0);add('infinity',1);add('eclipse',0);}
+ return wrap;
+}
+
 function decorateFrame(el){
  const frame=el?.dataset?.frame||'none';
  const supported=['bronze','silver','gold','mythic','emerald','sapphire','nebula','polar','galaxy','sovereign','eternal'];
@@ -92,6 +119,7 @@ function decorateFrame(el){
     spark.style.setProperty('--spark-index',String(i));layer.appendChild(spark);
    }
   }
+  if(ASCENSION_TIERS[motion])layer.appendChild(ascensionLayer('motion',motion));
   el.appendChild(layer);
  }
  if(!supported.includes(frame)){
@@ -103,7 +131,9 @@ function decorateFrame(el){
  if(previous)previous.remove();
  const wrap=document.createElement('span');wrap.className='crew-fx-orbits';
  wrap.setAttribute('aria-hidden','true');
- if(frame==='mythic'||['polar','galaxy','sovereign','eternal'].includes(frame)){
+ if(ASCENSION_TIERS[frame]){
+  wrap.appendChild(ascensionLayer('frame',frame));
+ }else if(frame==='mythic'){
   const universe=document.createElement('span');universe.className='crew-mythic-universe';
   for(const kind of ['halo','ring-outer','ring-inner','shimmer']){
    const layer=document.createElement('span');layer.className='crew-mythic-'+kind;universe.appendChild(layer);
@@ -215,6 +245,9 @@ function init(){
  // Place the shared stylesheet AFTER legacy injected rules so the epic tiers win.
  if(!document.getElementById('crew-cosmetics-stylesheet')){
   const link=document.createElement('link');link.id='crew-cosmetics-stylesheet';link.rel='stylesheet';link.href=cosmeticsHref;document.head.appendChild(link);
+ }
+ if(!document.querySelector('link[href*="crew-ascension.css"]')){
+  const link=document.createElement('link');link.rel='stylesheet';link.href=new URL('crew-ascension.css?v=ascension-v2',cosmeticsHref).href;document.head.appendChild(link);
  }
  new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['data-staff-name','data-staff-id']});
  root.addEventListener('dolphin-staff-id-changed',e=>{(shared||api).setOwn(e.detail);if(!shared)refresh();});

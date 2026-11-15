@@ -340,6 +340,7 @@ async function adminTestXP(action,amount){
  if(action==='add'&&(!Number.isSafeInteger(amount)||amount<1||amount>1000000)){
   $('admin-test-xp-result').textContent='Nhập số XP nguyên từ 1 đến 1.000.000.';return;
  }
+ if(action==='level'&&(!Number.isInteger(amount)||amount<1||amount>100)){$('admin-test-xp-result').textContent='Chọn Level từ 1 đến 100.';return;}
  const panel=$('crew-admin-sandbox');
  const buttons=[...panel.querySelectorAll('button')];
  buttons.forEach(b=>b.disabled=true);
@@ -349,7 +350,7 @@ async function adminTestXP(action,amount){
   mine=await window.DolphinPrestige.call('staffAdjustOwnTestXP',payload);
   $('admin-test-xp-result').textContent=action==='reset'
    ?'Đã đặt lại XP về 0, Level 1. Bạn có thể bắt đầu thử lại.'
-   :'Đã cộng '+fmt(amount)+' XP. Hiện tại: '+fmt(mine.xp)+' XP · Lv.'+mine.level;
+   :(action==='level'?'Đã chuyển đến Level '+mine.level:'Đã cộng XP thử nghiệm')+'. Hiện tại: '+fmt(mine.xp)+' XP · Lv.'+mine.level;
   renderMine();renderAdminSandbox();
   await window.DolphinPrestige.refresh();
  }catch(e){
@@ -390,6 +391,8 @@ function init(){
  document.querySelectorAll('[data-admin-test-add]').forEach(button=>{
   button.addEventListener('click',()=>void adminTestXP('add',Number(button.dataset.adminTestAdd)));
  });
+ document.querySelectorAll('[data-admin-test-level]').forEach(button=>button.addEventListener('click',()=>void adminTestXP('level',Number(button.dataset.adminTestLevel))));
+ $('admin-test-level-go')?.addEventListener('click',()=>void adminTestXP('level',Number($('admin-test-level').value)));
  $('admin-test-xp-add')?.addEventListener('click',()=>void adminTestXP('add',Number($('admin-test-xp-amount').value)));
  $('admin-test-xp-reset')?.addEventListener('click',()=>void adminTestXP('reset'));
  renderMine();showStatus();

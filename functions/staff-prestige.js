@@ -233,10 +233,11 @@ exports.staffAdjustOwnTestXP=onCall(opts,async req=>{
  if(!testAdmin)throw new HttpsError('permission-denied','Chỉ Admin DOL-0001 được thử XP của chính mình.');
  const action=String(req.data?.action||'');
  const amount=req.data?.amount;
- if(!['add','reset'].includes(action)||
+ if(!['add','reset','level'].includes(action)||
     (action==='add'&&(!Number.isSafeInteger(amount)||amount<1||amount>1000000))||
+    (action==='level'&&(!Number.isInteger(amount)||amount<1||amount>engine.MAX_LEVEL))||
     (action==='reset'&&amount!==undefined))
-  throw new HttpsError('invalid-argument','Chọn cộng 1–1.000.000 XP hoặc đặt lại XP.');
+  throw new HttpsError('invalid-argument','Chọn cộng 1–1.000.000 XP, Level 1–100 hoặc đặt lại XP.');
  const ref=getDatabase().ref('staffRegistry/'+id),now=Date.now();
  let firstUpdate=true;
  const result=await ref.transaction(value=>{
@@ -244,8 +245,8 @@ exports.staffAdjustOwnTestXP=onCall(opts,async req=>{
   const current=value===null&&initial?profile:value;
   if(!current?.active||current.employeeId!==TEST_ADMIN_ID||current.registrationSource==='self')return;
   const before=Math.max(0,Number(current.xp)||0);
-  const xp=action==='reset'?0:before+amount;
-  if(!Number.isSafeInteger(xp)||xp>engine.xpForLevel(60))return;
+  const xp=action==='reset'?0:action==='level'?engine.xpForLevel(amount):Math.min(engine.xpForLevel(engine.MAX_LEVEL),before+amount);
+  if(!Number.isSafeInteger(xp)||xp>engine.xpForLevel(engine.MAX_LEVEL))return;
   const peak=action==='reset'?1:Math.max(Number(current.levelPeak)||1,engine.levelForXP(xp));
   const next={...current,xp,levelPeak:peak,
     ...(action==='reset'?{nameFlame:false,nameGradient:false,selectedFrame:'none',selectedAvatarMotion:'none',selectedTitle:'none',selectedBanner:'default',selectedNameFx:'none',selectedAura:'none',selectedTrail:'none',selectedCardFx:'none',personalTheme:'dark',showcase:[],autoStyleLevel:1,autoStyleVersion:1}:{}),

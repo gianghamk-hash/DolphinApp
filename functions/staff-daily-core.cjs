@@ -3,14 +3,14 @@
 const engine=require('./staff-xp-engine.cjs');
 const ZONE='Asia/Ho_Chi_Minh';
 const TASKS=Object.freeze([
- Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Ngày 1: 1.800 XP · tăng 450 XP/ngày · tối đa 4.500 XP',xp:1800}),
- Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:3600}),
- Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:2700}),
- Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:2250}),
- Object.freeze({id:'order_received',icon:'📥',title:'Nhận 1 order',description:'Nhận và bắt đầu xử lý một đơn mới',xp:1350}),
- Object.freeze({id:'avatar_changed',icon:'🎭',title:'Đổi avatar 1 lần',description:'Lưu một avatar khác với avatar hiện tại',xp:900}),
- Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 200 điểm',description:'Đạt ít nhất 200 điểm trong một ván Rắn Săn Mồi Offline',xp:4500}),
- Object.freeze({id:'game2048_1000',icon:'🔢',title:'2048 đạt 1.000 điểm',description:'Đạt ít nhất 1.000 điểm trong một ván 2048',xp:9000})
+ Object.freeze({id:'checkin',icon:'🔥',title:'Điểm danh hằng ngày',description:'Ngày 1: 9.000 XP · tăng 2.250 XP/ngày · tối đa 22.500 XP',xp:9000}),
+ Object.freeze({id:'order_completed',icon:'✅',title:'Hoàn thành 1 order',description:'Hoàn tất một đơn được xác nhận trên máy chủ',xp:18000}),
+ Object.freeze({id:'bungalow_opened',icon:'🏝️',title:'Mở 1 Bungalow',description:'Tạo lượt phục vụ Bungalow mới',xp:13500}),
+ Object.freeze({id:'lounge_opened',icon:'🍸',title:'Mở 1 bàn Lounge',description:'Tạo lượt phục vụ Lounge mới',xp:11250}),
+ Object.freeze({id:'order_received',icon:'📥',title:'Nhận 1 order',description:'Nhận và bắt đầu xử lý một đơn mới',xp:6750}),
+ Object.freeze({id:'avatar_changed',icon:'🎭',title:'Đổi avatar 1 lần',description:'Lưu một avatar khác với avatar hiện tại',xp:4500}),
+ Object.freeze({id:'snake_100',icon:'🐍',title:'Rắn Offline đạt 200 điểm',description:'Đạt ít nhất 200 điểm trong một ván Rắn Săn Mồi Offline',xp:22500}),
+ Object.freeze({id:'game2048_1000',icon:'🔢',title:'2048 đạt 1.000 điểm',description:'Đạt ít nhất 1.000 điểm trong một ván 2048',xp:45000})
 ]);
 const ids=new Set(TASKS.map(task=>task.id));
 function vietnamDay(time=Date.now()){
@@ -30,7 +30,7 @@ function nextMidnight(day){
  return utcDate(day)+86400000-7*3600000;
 }
 function checkinXP(streak){
- return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*90;
+ return (15+Math.min(7,Math.max(1,Number(streak)||1))*5)*450;
 }
 function todayCompleted(record,day){
  return record?.date===day&&record.completed&&typeof record.completed==='object'
@@ -61,7 +61,8 @@ function view(profile,time=Date.now()){
   todayXP:tasks.filter(t=>t.done).reduce((sum,t)=>sum+t.xp,0),tasks
  };
 }
-function apply(profile,taskId,time=Date.now(),receipt=''){
+function taskXP(taskId,version=6){return TASKS.find(t=>t.id===taskId).xp/(version<6?5:1);}
+function apply(profile,taskId,time=Date.now(),receipt='',rateVersion=6){
  if(!ids.has(taskId))throw new TypeError('Nhiệm vụ không hợp lệ');
  if(!profile?.active||(profile.registrationSource==='self'&&profile.approved!==true))
   return {changed:false,profile,addedXP:0};
@@ -71,12 +72,12 @@ function apply(profile,taskId,time=Date.now(),receipt=''){
  const completed={...todayCompleted(prior,day)};
  if(completed[taskId])return {changed:false,profile,addedXP:0};
  const streak=taskId==='checkin'?nextStreak(prior,day):Math.max(0,Number(prior.streak)||0);
- const addedXP=taskId==='checkin'?checkinXP(streak):TASKS.find(t=>t.id===taskId).xp;
+ const addedXP=taskId==='checkin'?checkinXP(streak):taskXP(taskId,rateVersion);
  const xp=Math.max(0,Number(profile.xp)||0)+addedXP;
  const nextProfile={
   ...profile,xp,levelPeak:Math.max(Number(profile.levelPeak)||1,engine.levelForXP(xp)),
   dailyMissions:{
-   date:day,completed:{...completed,[taskId]:{xp:addedXP,at:time,receipt,rateVersion:5}},
+   date:day,completed:{...completed,[taskId]:{xp:addedXP,at:time,receipt,rateVersion}},
    lastCheckinDay:taskId==='checkin'?day:(prior.lastCheckinDay||''),
    streak,bestStreak:Math.max(Number(prior.bestStreak)||0,streak)
   },
@@ -107,7 +108,7 @@ function reconcileLegacyDaily(profile,time=Date.now()){
   const base=task.id==='checkin'?
     15+Math.min(7,Math.max(1,Number(record.streak)||1))*5:PRE_TRIPLE_TASK_XP[task.id]/10;
   const allowed=task.id==='checkin'?[base,base*100]:[base];
-  const target=task.id==='checkin'?checkinXP(record.streak)/9:PRE_TRIPLE_TASK_XP[task.id];
+  const target=task.id==='checkin'?checkinXP(record.streak)/45:PRE_TRIPLE_TASK_XP[task.id];
   if(!allowed.includes(Number(entry.xp))||Number(entry.xp)===target)continue;
   adjustment+=target-Number(entry.xp);
   entries[task.id]={...entry,xp:target,rateVersion:4,backfilledAt:time};
@@ -125,5 +126,5 @@ function reconcileLegacyCheckin(profile,time=Date.now()){
  return reconcileLegacyDaily(profile,time);
 }
 
-module.exports={ZONE,TASKS,vietnamDay,daysBetween,nextMidnight,checkinXP,view,apply,reconcileLegacyCheckin,reconcileLegacyDaily};
+module.exports={ZONE,TASKS,taskXP,vietnamDay,daysBetween,nextMidnight,checkinXP,view,apply,reconcileLegacyCheckin,reconcileLegacyDaily};
 

@@ -22,7 +22,7 @@ async function verifiedStaff(req){
  if(namePolicy.needsRename(registry,id))throw new HttpsError('permission-denied','Cần đổi họ tên hợp lệ trước khi nhận XP.');
  return {employeeId:id};
 }
-async function award(employeeId,taskId,eventTime){
+async function award(employeeId,taskId,eventTime,rateVersion=6){
  if(!core.TASKS.some(task=>task.id===taskId))
   throw new HttpsError('invalid-argument','Nhiệm vụ không hợp lệ.');
  if(!idPattern.test(String(employeeId||'')))
@@ -40,11 +40,11 @@ async function award(employeeId,taskId,eventTime){
   let next;
   if(business&&day<core.vietnamDay()){
    if(!current.active||(current.registrationSource==='self'&&current.approved!==true))return;
-   const amount=core.TASKS.find(t=>t.id===taskId).xp,xp=(Number(current.xp)||0)+amount;
+   const amount=core.taskXP(taskId,rateVersion),xp=(Number(current.xp)||0)+amount;
    next={changed:true,profile:require('./staff-xp-engine.cjs').equipOnLevelUp(current,{...current,xp,levelPeak:Math.max(Number(current.levelPeak)||1,require('./staff-xp-engine.cjs').levelForXP(xp))})};
-  }else next=core.apply(current,taskId,timestamp,receipt);
+  }else next=core.apply(current,taskId,timestamp,receipt,rateVersion);
   if(!next.changed)return;
-  if(business)next.profile.businessMissionReceipts={...current.businessMissionReceipts,[day]:{...current.businessMissionReceipts?.[day],[taskId]:{receipt,xp:core.TASKS.find(t=>t.id===taskId).xp,at:timestamp}}};
+  if(business)next.profile.businessMissionReceipts={...current.businessMissionReceipts,[day]:{...current.businessMissionReceipts?.[day],[taskId]:{receipt,xp:core.taskXP(taskId,rateVersion),at:timestamp}}};
   return next.profile;
  },undefined,false);
  const updated=result.snapshot?.val();

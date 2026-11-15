@@ -66,7 +66,7 @@ test('XP zero shows Level 1, and tasks without verified data show placeholders',
 });
 test('invalid identity, NaN and inconsistent Levels never appear on the profile',()=>{
  const h=harness();
- for(const values of [{...payload(),level:0},{...payload(),level:61},{...payload(),xp:-3},{...payload(),xp:NaN},{...payload(),employeeId:''}])
+ for(const values of [{...payload(),level:0},{...payload(),level:101},{...payload(),xp:-3},{...payload(),xp:NaN},{...payload(),employeeId:''}])
   assert.equal(h.api.model(values),null);
 });
 test('eight visual card controls, daily modal and official existing actions exist once',()=>{
@@ -104,3 +104,4 @@ test('the display illustration contains no literal personal identity or mockup r
  }
  assert.doesNotMatch(js,/httpsCallable|staffRecordLiveAction|staffAdjustOwnTestXP|firebase\.|revenue\s*=/i);
 });
+

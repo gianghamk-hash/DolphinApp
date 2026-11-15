@@ -22,7 +22,7 @@ test('reject negative and invalid revenue/points',()=>{
 });
 test('level progression is monotonically increasing and unlock thresholds are ordered',()=>{
  let prev=0;
- for(let level=1;level<=60;level++){const xp=e.xpForLevel(level);assert(xp>=prev);prev=xp;assert.equal(e.levelForXP(xp),level);}
+ for(let level=1;level<=100;level++){const xp=e.xpForLevel(level);assert(xp>=prev);prev=xp;assert.equal(e.levelForXP(xp),level);}
  assert.equal(e.LEVEL_COEFFICIENT,2450);
  assert.equal(e.levelForXP(2449),1);
  assert.equal(e.levelForXP(2450),2);
@@ -31,7 +31,7 @@ test('level progression is monotonically increasing and unlock thresholds are or
  assert.equal(e.xpForLevel(60),8528450);
  assert.equal(e.xpForLevel(10),198450);
  assert.equal(e.levelForXP(8528449),59);
- assert.equal(e.levelForXP(1000000000),60);
+ assert.equal(e.levelForXP(1000000000),100);
  const levels=e.PERKS.map(p=>p.level);
  assert(levels.every((v,i)=>!i||v>=levels[i-1]));
  assert.equal(e.PERKS.filter(p=>p.id.startsWith('theme-')).length,15);
@@ -45,7 +45,7 @@ test('perks activate only after meeting corresponding level threshold',()=>{
 });
 
 test('automatic presets select only unlocked effects for every level, including all Mythic slots',()=>{
- for(let level=1;level<=60;level++){
+ for(let level=1;level<=100;level++){
   const style=e.automaticStyle(level);
   for(const [kind,choices] of Object.entries(e.COSMETIC_CHOICES)){
    const field='selected'+kind[0].toUpperCase()+kind.slice(1),value=style[field];
@@ -130,3 +130,4 @@ test('XP loss across a threshold locks effects and later XP increases unlock the
  const untouched=e.equipOnLevelUp(regain,{...regain,xp:regain.xp+1});
  assert.equal(untouched.selectedTitle,'guardian');
 });
+

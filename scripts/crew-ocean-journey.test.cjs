@@ -11,11 +11,11 @@ function fixture(id='DOL-0002'){
  return win.DolphinOceanJourney;
 }
 const xp=level=>2450*(level-1)**2;
-test('Ocean Journey always has sixty distinct levels and six ten-level ocean regions',()=>{
+test('Ocean Journey always has one hundred distinct levels and ten ten-level ocean regions',()=>{
  const api=fixture(),model=api.model({employeeId:'DOL-0002',level:22,xp:xp(22)});
- assert.equal(model.levels.length,60);
- assert.deepEqual(Array.from(model.levels,x=>x.level),Array.from({length:60},(_,i)=>i+1));
- assert.equal(api.regions.length,6);
+ assert.equal(model.levels.length,100);
+ assert.deepEqual(Array.from(model.levels,x=>x.level),Array.from({length:100},(_,i)=>i+1));
+ assert.equal(api.regions.length,10);
  api.regions.forEach((zone,i)=>{
   assert.equal(zone.from,i*10+1);
   assert.equal(zone.to,(i+1)*10);
@@ -61,7 +61,7 @@ test('Uses correct backend Rank thresholds on all sixty levels',()=>{
  for(const [str,rank]of Object.entries(expected))assert.equal(model.levels[Number(str)-1].rank,rank);
  assert.equal(model.current,60);
  assert.equal(model.highest,60);
- assert.equal(model.levels.filter(x=>x.state==='locked').length,0);
+ assert.equal(model.levels.filter(x=>x.state==='locked').length,40);
 });
 test('New or switched Staff ID never exposes the previous employee history',()=>{
  const api=fixture('DOL-0002');
@@ -96,3 +96,4 @@ test('2D ocean atlases exist and all old data binding targets are retained witho
  assert.match(html,/data-open-dialog="style-dialog"/);
  assert.match(html,/data-open-dialog="rewards-dialog"/);
 });
+

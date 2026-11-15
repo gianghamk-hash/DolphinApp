@@ -4,7 +4,7 @@
  */
 (function(root){
  'use strict';
- const MAX_LEVEL=60,seenPrefix='dolphin_level_seen:',momentPrefix='dolphin_level_moment:';
+ const MAX_LEVEL=100,seenPrefix='dolphin_level_seen:',momentPrefix='dolphin_level_moment:';
  const sessionSeen=new Map(),sessionMoments=new Map();
  const rankBands=[{min:41,name:'Legend'},{min:31,name:'Diamond'},{min:21,name:'Platinum'},
   {min:11,name:'Gold'},{min:6,name:'Silver'},{min:1,name:'Bronze'}];
@@ -39,20 +39,20 @@
   return node;
  };
  function tier(from,to){
-  if(to===60)return 'mythic';
+  if(to===100)return 'mythic';
   if(rankAt(from)!==rankAt(to))return 'rank';
-  if([10,20,30,40,50].some(m=>m>from&&m<=to))return 'milestone';
+  if([10,20,30,40,50,60,70,80,90].some(m=>m>from&&m<=to))return 'milestone';
   return 'normal';
  }
  function createMoment(next,from){
-  const to=Math.min(60,next.level);
+  const to=Math.min(100,next.level);
   const all=[...(Array.isArray(next.rewardCatalog)?next.rewardCatalog:[]),
    ...(Array.isArray(next.perkCatalog)?next.perkCatalog:[])
     .filter(x=>typeof x.id==='string'&&x.id.startsWith('avatar-'))
     .map(x=>({...x,label:x.name}))];
   const rewards=[];
   for(const item of all){
-   if(!between(item.level,1,60)||item.level<=from||item.level>to)continue;
+   if(!between(item.level,1,100)||item.level<=from||item.level>to)continue;
    const name=String(item.label||'').trim().slice(0,180);
    if(name&&!rewards.includes(name)&&rewards.length<30)rewards.push(name);
   }
@@ -71,12 +71,13 @@
   if(document.hidden||document.querySelector('dialog[open]'))return false;
   const dialog=el('dialog',undefined,'crew-lc-dialog');dialog.id='crew-levelup-cinematic';
   dialog.dataset.tier=moment.tier;
+  dialog.dataset.ascension=String(moment.to>=70);
   dialog.setAttribute('aria-labelledby','crew-lc-title');
   dialog.setAttribute('aria-describedby','crew-lc-message');
   const scene=el('div',undefined,'crew-lc-scene');
   const ambient=el('div',undefined,'crew-lc-ambient');
   const stars=el('div',undefined,'crew-lc-stars');
-  for(let i=0;i<9;i++){const star=el('span','✦','crew-lc-star');star.style.setProperty('--i',String(i));stars.append(star);}
+  for(let i=0;i<24;i++){const star=el('span','✦','crew-lc-star');star.style.setProperty('--i',String(i));star.style.left=(4+(i%8)*12)+'%';star.style.top=(8+(i%3)*27)+'%';stars.append(star);}
   const head=el('div',undefined,'crew-lc-header');
   head.append(el('span','✦ DOLPHIN CREW CLUB · ASCENSION','crew-lc-brand'),
    el('span',preview?'XEM LẠI':'LEVEL UP','crew-lc-flag'));
@@ -95,7 +96,7 @@
   title.id='crew-lc-title';
   const message=el('p',
    'Bạn đã đạt Level '+moment.to+' · '+moment.rank+'.'+
-   (moment.to===60?' Hành trình 60 cấp đã hoàn thành!':' Tiếp tục hành trình Crew Club của bạn.'),
+   (moment.to===100?' Hành trình 100 cấp đã hoàn thành!':' Tiếp tục hành trình Crew Club của bạn.'),
    'crew-lc-message');
   message.id='crew-lc-message';
   const awards=el('div',undefined,'crew-lc-awards');
@@ -170,3 +171,4 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',init);
  else init();
 })(window);
+

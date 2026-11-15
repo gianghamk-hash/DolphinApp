@@ -27,11 +27,11 @@ function cosmeticChoice(type,selected,level){
 }
 function expose(p){
  const xp=Math.max(0,Number(p?.xp)||0),progress=engine.progress(xp);
- const level=progress.level,highestLevel=Math.min(60,Math.max(level,Number(p?.levelPeak)||1));
+ const level=progress.level,highestLevel=Math.min(100,Math.max(level,Number(p?.levelPeak)||1));
  const cosmetics=engine.currentCosmetics(p);
  return {employeeId:p.employeeId,name:p.name,avatar:cosmetics.avatar,
   level,highestLevel,levelPeak:highestLevel,rank:engine.rankForLevel(level),xp,
-  autoStyleLevel:Number(p.autoStyleLevel)||0,nextLevelAt:level>=60?null:engine.xpForLevel(level+1),
+  autoStyleLevel:Number(p.autoStyleLevel)||0,nextLevelAt:level>=100?null:engine.xpForLevel(level+1),
   unlocked:[...engine.PERKS.filter(x=>level>=x.level).map(x=>x.id),...engine.COSMETIC_REWARDS.filter(x=>level>=x.level).map(x=>x.id)],
   rewardCatalog:engine.COSMETIC_REWARDS,perkCatalog:engine.PERKS,nextReward:engine.COSMETIC_REWARDS.find(x=>x.level>level)||null,
   ...cosmetics,rankingVisible:p.employeeId===TEST_ADMIN_ID?p.rankingVisible===true:true,
@@ -358,3 +358,4 @@ exports.staffSetOwnRankingVisibility=onCall(opts,async req=>{
  await rebuild();
  return {visible,employeeId:id};
 });
+

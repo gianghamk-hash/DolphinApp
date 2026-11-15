@@ -4,15 +4,15 @@
  */
 (function(root){
  'use strict';
- const XP_COEFFICIENT=2450,MAX_LEVEL=60;
+ const XP_COEFFICIENT=2450,MAX_LEVEL=100;
  const rankNames=Object.freeze(['bronze','silver','gold','platinum','diamond','legend']);
  const rankBands=Object.freeze([{min:41,name:'legend'},{min:31,name:'diamond'},{min:21,name:'platinum'},
   {min:11,name:'gold'},{min:6,name:'silver'},{min:1,name:'bronze'}]);
  const equipment=Object.freeze({
-  frame:Object.freeze({none:'Chưa chọn',bronze:'Bronze',silver:'Silver',gold:'Gold',mythic:'Mythic',emerald:'Emerald',sapphire:'Sapphire',nebula:'Nebula'}),
-  aura:Object.freeze({none:'Chưa chọn',spark:'Spark Ring',dual:'Dual Halo',celestial:'Celestial',ripple:'Ripple',nebula:'Nebula',stardust:'Stardust'}),
-  motion:Object.freeze({none:'Chưa chọn',pulse:'Soft Pulse',float:'Floating',wave:'Wave Spin',orbit:'Energy Orbit',prism:'Prism',ascension:'Ascension',comet:'Comet Dash',tide:'Tidal Surge',vortex:'Vortex',phoenix:'Phoenix',supernova:'Supernova'}),
-  title:Object.freeze({none:'Chưa chọn',rookie:'Rookie Star',wave:'Wave Rider',legend:'Dolphin Legend',navigator:'Ocean Navigator',guardian:'Coral Guardian',titan:'Tidal Titan',emperor:'Abyss Emperor'})
+  frame:Object.freeze({polar:'Cực quang',galaxy:'Ngân hà',sovereign:'Đế vương',eternal:'Vĩnh cửu',none:'Chưa chọn',bronze:'Bronze',silver:'Silver',gold:'Gold',mythic:'Mythic',emerald:'Emerald',sapphire:'Sapphire',nebula:'Nebula'}),
+  aura:Object.freeze({polar:'Cực quang',galaxy:'Ngân hà',sovereign:'Đế vương',eternal:'Vĩnh cửu',none:'Chưa chọn',spark:'Spark Ring',dual:'Dual Halo',celestial:'Celestial',ripple:'Ripple',nebula:'Nebula',stardust:'Stardust'}),
+  motion:Object.freeze({polar:'Cực quang',galaxy:'Ngân hà',sovereign:'Đế vương',eternal:'Vĩnh cửu',none:'Chưa chọn',pulse:'Soft Pulse',float:'Floating',wave:'Wave Spin',orbit:'Energy Orbit',prism:'Prism',ascension:'Ascension',comet:'Comet Dash',tide:'Tidal Surge',vortex:'Vortex',phoenix:'Phoenix',supernova:'Supernova'}),
+  title:Object.freeze({polar:'Cực quang',galaxy:'Ngân hà',sovereign:'Đế vương',eternal:'Vĩnh cửu',none:'Chưa chọn',rookie:'Rookie Star',wave:'Wave Rider',legend:'Dolphin Legend',navigator:'Ocean Navigator',guardian:'Coral Guardian',titan:'Tidal Titan',emperor:'Abyss Emperor'})
  });
  const $=id=>document.getElementById(id);
  const value=(v,fallback)=>typeof v==='string'&&v.trim()?v:fallback;
@@ -57,7 +57,7 @@
     state.ready?'Đã hoàn thành '+state.percent+'% tiến độ đến cấp kế tiếp.':'Đang tải XP đã xác minh.';
   }
   const percent=$('crew-card-xp-percent');
-  if(percent)percent.textContent=state.ready?(state.level===MAX_LEVEL?'MAX · 60':state.percent+'%'):'0%';
+  if(percent)percent.textContent=state.ready?(state.level===MAX_LEVEL?'MAX · 100':state.percent+'%'):'0%';
   host.setAttribute('aria-label',state.ready?
    'Thẻ Dolphin Crew Club, '+state.rankName+', Level '+state.level+', '+state.employeeId:
    'Thẻ Dolphin Crew Club, chưa tải được hồ sơ đã xác minh');
@@ -72,3 +72,4 @@
  if(document.readyState==='loading')document.addEventListener('DOMContentLoaded',renderCurrent);
  else renderCurrent();
 })(window);
+

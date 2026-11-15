@@ -84,13 +84,13 @@ test('dialog/hidden screen defers without consuming, staff switch is isolated',(
  assert.equal(h.storage.get('dolphin_level_seen:DOL-0002'),'22');
  assert.equal(h.storage.get('dolphin_level_seen:DOL-0003'),'11');
 });
-test('major milestones and Mythic 60 use distinct cinematic tiers',()=>{
+test('major milestones and Mythic 100 use distinct cinematic tiers',()=>{
  const h=fixture({'dolphin_level_seen:DOL-0002':'9'});
  assert.equal(h.api.notify(staff(10)),true);
  assert.equal(h.dialogs()[0].dataset.tier,'milestone');
  h.dialogs()[0].close();
  h.storage.set('dolphin_level_seen:DOL-0002','59');
- assert.equal(h.api.notify(staff(60)),true);
+ assert.equal(h.api.notify(staff(100)),true);
  const mythic=h.dialogs()[1];
  assert.equal(mythic.dataset.tier,'mythic');
  assert.equal(mythic.children[0].children.find(c=>c.id==='crew-lc-title').textContent,'ĐỈNH CAO ĐẠI DƯƠNG');
@@ -124,3 +124,4 @@ test('verified staff Level decrease updates celebration baseline without a fake 
  assert.equal(h.dialogs()[0].dataset.tier,'normal');
  assert.equal(h.storage.get('dolphin_level_seen:DOL-0002'),'2');
 });
+

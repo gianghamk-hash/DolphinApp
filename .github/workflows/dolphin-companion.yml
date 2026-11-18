@@ -1,0 +1,26 @@
+name: Dolphin companion
+on:
+  pull_request:
+    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','.github/workflows/dolphin-companion.yml']
+  push:
+    branches: [main]
+    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','.github/workflows/dolphin-companion.yml']
+permissions:
+  contents: read
+jobs:
+  companion:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: node --test scripts/dolphin-companion.test.cjs
+      - run: npm install --no-save --package-lock=false playwright
+      - run: npx playwright install --with-deps chromium
+      - run: node scripts/dolphin-companion-browser.cjs
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: dolphin-companion-preview
+          path: reports/companion-preview/

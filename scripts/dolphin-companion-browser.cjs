@@ -54,7 +54,7 @@ fs.mkdirSync(out,{recursive:true});
     // Sample the entire orbit, checking the actual transformed rendered bounds.
     for(const time of [0,2000,4000,6000,8000,10000,12000,14000]){
      const result=await flight.evaluate((n,time)=>{
-      const a=n.getAnimations()[0];a.pause();a.currentTime=time;
+      for(const node of [n.parentElement,n]){const a=node.getAnimations()[0];a.pause();a.currentTime=time;}
       const r=n.getBoundingClientRect(),host=document.getElementById('crew-profile-banner').getBoundingClientRect();
       const overlaps=['profile-name','profile-title','employee-id','crew-card-level-number','staff-xp-track'].filter(id=>{
        const q=document.getElementById(id).getBoundingClientRect();return q.width&&q.height&&r.left<q.right&&r.right>q.left&&r.top<q.bottom&&r.bottom>q.top;
@@ -66,8 +66,34 @@ fs.mkdirSync(out,{recursive:true});
    }
    await page.screenshot({path:path.join(out,'level100-'+width+'.png'),fullPage:true});
   }
+  const smooth=await page.locator('.dolphin-pet-flight').evaluate(n=>{
+   const at=time=>{
+    for(const node of [n.parentElement,n])node.getAnimations()[0].currentTime=time;
+    const r=n.getBoundingClientRect();return {x:r.x+r.width/2,y:r.y+r.height/2,w:r.width,h:r.height};
+   };
+   const speeds=[],directions=[];
+   for(let t=0;t<16000;t+=2000){
+    const a=at(t===0?15990:t-10),b=at(t),c=at(t+10);
+    const u={x:b.x-a.x,y:b.y-a.y},v={x:c.x-b.x,y:c.y-b.y};
+    const su=Math.hypot(u.x,u.y),sv=Math.hypot(v.x,v.y);
+    speeds.push(su,sv);directions.push((u.x*v.x+u.y*v.y)/(su*sv));
+   }
+   const start=at(0),end=at(16000);
+   return {directions,speeds,wrap:Math.hypot(end.x-start.x,end.y-start.y),upright:Math.abs(start.w-end.w)};
+  });
+  assert(smooth.directions.every(d=>d>.999),'direction stays continuous at former corners and loop seam');
+  assert(Math.max(...smooth.speeds)/Math.min(...smooth.speeds)<1.01,'orbit speed stays constant');
+  assert(smooth.wrap<.01&&smooth.upright<.01,'loop returns upright without a jump');
+  // A reaction must not replace/restart the existing idle animation.
+  const idle=await page.locator('.dolphin-pet-sprite').evaluate(n=>{window.idleAnimation=n.getAnimations().find(a=>a.animationName==='dolphin-pet-bob');return getComputedStyle(n).animationName;});
   await page.locator('.dolphin-pet-flight').focus();await page.keyboard.press('Enter');
   assert.equal(await page.locator('.dolphin-pet-stage').getAttribute('data-reaction'),'hello');
+  assert.equal(await page.locator('.dolphin-pet-sprite').evaluate(n=>!!window.idleAnimation&&n.getAnimations().includes(window.idleAnimation)),true);
+  assert.equal(await page.locator('.dolphin-pet-sprite').evaluate(n=>getComputedStyle(n).animationName),idle);
+  for(const selector of ['.dolphin-pet-orbit','.dolphin-pet-flight'])assert.equal(await page.locator(selector).evaluate(n=>getComputedStyle(n).animationPlayState),'paused','keyboard focus pauses both rotations together');
+  await page.locator('.dolphin-pet-flight').evaluate(n=>n.blur());
+  await page.locator('.dolphin-pet-flight').click();
+  for(const selector of ['.dolphin-pet-orbit','.dolphin-pet-flight'])assert.equal(await page.locator(selector).evaluate(n=>getComputedStyle(n).animationPlayState),'running','pointer hover/click must not leave flight frozen');
   const update=async(level,xp)=>page.evaluate(({level,xp})=>{progress={employeeId:owner,level,xp,highestLevel:100};dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:progress}));},{level,xp});
   await update(1,0);assert.equal(await page.locator('.dolphin-pet-stage').getAttribute('data-form'),'0');
   assert.equal(await page.locator('.dolphin-pet-stage').getAttribute('data-reaction'),null);
@@ -81,6 +107,6 @@ fs.mkdirSync(out,{recursive:true});
   await page.evaluate(()=>{owner=null;dispatchEvent(new Event('dolphin-staff-id-changed'));});
   assert(await page.locator('.dolphin-pet-stage').isHidden());
   assert.deepEqual(errors,[]);
-  console.log('PASS: ten-form atlas, 320/390/768/1280px orbit bounds, XP gain/deduction, level up/down, identity switch, keyboard, reduced motion.');
+  console.log('PASS: continuous constant-speed orbit and loop seam, independent reactions, ten-form atlas, 320/390/768/1280px bounds, XP gain/deduction, identity switch, keyboard, reduced motion.');
  }finally{await browser.close();}
 })().catch(e=>{console.error(e);process.exitCode=1;});

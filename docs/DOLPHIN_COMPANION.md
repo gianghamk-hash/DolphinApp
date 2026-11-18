@@ -27,9 +27,15 @@ rendered cell and animates its orbit; it does not draw the dolphin. The pet is
 positioned inside the portrait's existing envelope. High-tier avatar effects
 already reserve 72px around the portrait; the pet uses that space without
 moving the name, title, ID, Level or XP. Reduced motion stops all pet animation,
-focus/hover pauses flight, and hidden pages pause the animation. Assets are
+keyboard focus pauses flight, and hidden pages pause the animation. Assets are
 included in the service worker cache list for the existing web/PWA/APK webview.
 No native APK code, Firebase rules or DOL-0001 authorization was changed.
+
+The orbit uses two synchronized, opposite rotations, keeping the sprite upright
+on a continuous circle at constant angular speed. Only transforms animate the
+flight; there are no animated layout coordinates or polygonal direction changes.
+Hover does not interrupt flight. Reactions animate a separate wrapper so the
+idle bob continues through greetings and XP/Level feedback.
 
 ## Artwork provenance
 

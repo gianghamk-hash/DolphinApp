@@ -16,6 +16,9 @@ let CACHE_NAME = FALLBACK_CACHE;
 let configLoaded = false;
 
 const CACHE_URLS = [
+  BASE + '/crew-dolphin-companion.css?v=1',
+  BASE + '/crew-dolphin-companion.js?v=1',
+  BASE + '/assets/dolphin-companions-v1.png',
   BASE + '/crew-ascension.css?v=level100-v1',
   BASE + '/assets/crew-transparent.png',
   BASE + '/assets/bungalow-menu-photo.png',

@@ -1,7 +1,7 @@
 {
-  "version": "1.1.142",
-  "buildDate": "2026-11-15T10:26:02.971Z",
-  "commit": "1c75985",
-  "notes": "Level 100: ascending visual effects, full XP sandbox and XP ×5 (#287)",
+  "version": "1.1.143",
+  "buildDate": "2026-11-18T01:09:11.223Z",
+  "commit": "8531aad",
+  "notes": "Fix guest AI surcharge and itemised lobster summaries",
   "forceUpdate": false
 }

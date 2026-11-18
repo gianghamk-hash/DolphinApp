@@ -59,7 +59,21 @@
   return true;
  }
  function refresh(){let changed=false;for(const b of latest)if(apply(b))changed=true;if(changed&&onChange)onChange();update();}
- function preview(note){const item=record(note);return item.summaryScope==='services-v2'&&item.text?item.text:'Xem ghi chú gốc';}
+ // A fully itemised onboard charge can be displayed even while AI is pending.
+ function itemisedCharge(note){
+  const match=String(note).trim().match(/^[-•\s]*(?:phụ\s+thu|thu)\s+\d+(?:[.,]\d+)*\s*(?:k|tr|triệu|nghìn|ngàn|đ|đồng|vnd|₫)?\s+trên tàu\s*[,;:\n]\s*([\s\S]+)$/iu);
+  if(!match)return '';
+  const dishes=new Set();let total=0;
+  for(const line of match[1].split(/\s*(?:\+|,|;|\n|\svà\s)\s*/iu)){
+   const dish=line.trim().match(/^(\d{1,3})\s*(?:suất|phần|con)\s+tôm hùm(?:\s+(nướng mọi|nướng phô mai|nướng bơ tỏi|hấp|hấp bia|luộc|nướng))?[.!]?$/iu);
+   if(!dish||!Number(dish[1]))return '';
+   const style=(dish[2]||'').toLowerCase();
+   if(dishes.has(style))return '';
+   dishes.add(style);total+=Number(dish[1]);
+  }
+  return 'Có phụ thu, '+total+' tôm hùm';
+ }
+ function preview(note){const explicit=itemisedCharge(note);if(explicit)return explicit;const item=record(note);return item.summaryScope==='services-v2'&&item.text?item.text:'Xem ghi chú gốc';}
  function update(){document.querySelectorAll('[data-guest-summary]').forEach(node=>{
   for(const [note,item] of records)if(item.id===node.dataset.guestSummary){node.textContent=preview(note);break;}
  });}

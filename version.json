@@ -1,7 +1,7 @@
 {
-  "version": "1.1.144",
-  "buildDate": "2026-11-18T04:35:04.919Z",
-  "commit": "f907085",
-  "notes": "Merge pull request #288 from gianghamk-hash/feat/dolphin-companion",
+  "version": "1.1.145",
+  "buildDate": "2026-11-18T08:50:32.241Z",
+  "commit": "f2ca104",
+  "notes": "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit",
   "forceUpdate": false
 }

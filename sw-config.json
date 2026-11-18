@@ -1,5 +1,5 @@
 {
-  "version": "1.1.144",
+  "version": "1.1.145",
   "releaseDate": "2026-11-18",
-  "notes": "Merge pull request #288 from gianghamk-hash/feat/dolphin-companion"
+  "notes": "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit"
 }

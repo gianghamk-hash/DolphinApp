@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.144",
+      "releaseDate": "2026-11-18T04:35:04.919Z",
+      "summary": "Merge pull request #288 from gianghamk-hash/feat/dolphin-companion",
+      "details": [
+        "Merge pull request #288 from gianghamk-hash/feat/dolphin-companion"
+      ]
+    },
+    {
       "version": "1.1.143",
       "releaseDate": "2026-11-18T01:09:11.223Z",
       "summary": "Fix guest AI surcharge and itemised lobster summaries",
@@ -390,14 +398,6 @@
       "summary": "WIP (disabled): verified XP wagering core and security gates for online games (#245)",
       "details": [
         "WIP (disabled): verified XP wagering core and security gates for online games (#245)"
-      ]
-    },
-    {
-      "version": "1.1.92",
-      "releaseDate": "2026-11-09T08:08:43.861Z",
-      "summary": "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey",
-      "details": [
-        "refactor(profile): clean Crew UI, replace icons with bright 2D assets, remove Ocean Journey"
       ]
     }
   ]

@@ -43,9 +43,11 @@
   const portrait=document.querySelector('#crew-profile-banner .crew-card-portrait');
   if(!portrait||stage)return;
   stage=document.createElement('div');stage.className='dolphin-pet-stage';stage.hidden=true;
+  const orbit=document.createElement('div');orbit.className='dolphin-pet-orbit';
   button=document.createElement('button');button.type='button';button.className='dolphin-pet-flight';
+  const reaction=document.createElement('span');reaction.className='dolphin-pet-reaction';
   sprite=document.createElement('span');sprite.className='dolphin-pet-sprite';sprite.setAttribute('aria-hidden','true');
-  button.append(sprite);stage.append(button);portrait.append(stage);
+  reaction.append(sprite);button.append(reaction);orbit.append(button);stage.append(orbit);portrait.append(stage);
   status=document.createElement('span');status.className='dolphin-pet-status';status.setAttribute('role','status');
   portrait.append(status);
   button.addEventListener('click',()=>{pulse('hello');status.textContent=last?last.name+' luôn đồng hành cùng bạn!':'';});

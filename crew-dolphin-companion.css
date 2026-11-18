@@ -2,14 +2,21 @@
    flight envelope inside the portrait's existing reserved space, away from text. */
 .dolphin-pet-stage{position:absolute;inset:0;z-index:8;pointer-events:none;isolation:isolate}
 #crew-profile-banner:has(.crew-asc-system) .dolphin-pet-stage{inset:-72px}
-.dolphin-pet-flight{position:absolute;left:84%;top:50%;width:28%;max-width:68px;aspect-ratio:1;padding:0;border:0;background:none;border-radius:50%;transform:translate(-50%,-50%);pointer-events:auto;animation:dolphin-pet-orbit 16s linear infinite;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
-.dolphin-pet-sprite{display:block;width:100%;height:100%;background-image:url('./assets/dolphin-companions-v1.png');background-size:500% 200%;background-repeat:no-repeat;filter:drop-shadow(0 2px 5px #7de9ff66);transition:filter .3s;animation:dolphin-pet-bob 2.4s ease-in-out infinite}
-.dolphin-pet-flight:hover,.dolphin-pet-flight:focus-visible{animation-play-state:paused;outline:2px solid #aff4ff;outline-offset:2px}
-.dolphin-pet-stage[data-reaction] .dolphin-pet-sprite{animation:dolphin-pet-greet .6s ease-in-out 3;filter:drop-shadow(0 0 8px #f1c5ff)}
+.dolphin-pet-orbit{position:absolute;inset:16%;animation:dolphin-pet-orbit 16s linear infinite;will-change:transform}
+/* Counter-rotation keeps the dolphin upright on a true circular path. The
+   41.176% width inside a 68% orbit preserves the original 28% sprite size. */
+.dolphin-pet-flight{position:absolute;left:100%;top:50%;width:41.176470588%;max-width:68px;aspect-ratio:1;padding:0;border:0;background:none;border-radius:50%;transform:translate(-50%,-50%);pointer-events:auto;animation:dolphin-pet-upright 16s linear infinite;will-change:transform;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
+.dolphin-pet-reaction{display:block;width:100%;height:100%}
+.dolphin-pet-sprite{display:block;width:100%;height:100%;background-image:url('./assets/dolphin-companions-v1.png');background-size:500% 200%;background-repeat:no-repeat;filter:drop-shadow(0 2px 5px #7de9ff66);transition:filter .3s;animation:dolphin-pet-bob 3.6s ease-in-out infinite}
+.dolphin-pet-flight:hover,.dolphin-pet-flight:focus-visible{outline:2px solid #aff4ff;outline-offset:2px}
+.dolphin-pet-stage:has(.dolphin-pet-flight:focus-visible) .dolphin-pet-orbit,.dolphin-pet-flight:focus-visible{animation-play-state:paused}
+.dolphin-pet-stage[data-reaction] .dolphin-pet-reaction{animation:dolphin-pet-greet .9s ease-in-out 2}
+.dolphin-pet-stage[data-reaction] .dolphin-pet-sprite{filter:drop-shadow(0 0 8px #f1c5ff)}
 .dolphin-pet-stage[data-reaction="level"] .dolphin-pet-sprite{filter:drop-shadow(0 0 12px #ffe99b)}
 .dolphin-pet-stage[data-paused="true"] *{animation-play-state:paused}
 .dolphin-pet-status{position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip-path:inset(50%);white-space:nowrap}
-@keyframes dolphin-pet-orbit{0%,100%{left:84%;top:50%}12.5%{left:74%;top:26%}25%{left:50%;top:16%}37.5%{left:26%;top:26%}50%{left:16%;top:50%}62.5%{left:26%;top:74%}75%{left:50%;top:84%}87.5%{left:74%;top:74%}}
-@keyframes dolphin-pet-bob{50%{transform:translateY(-2px) rotate(-5deg)}}
-@keyframes dolphin-pet-greet{50%{transform:translateY(-4px) rotate(10deg)}}
+@keyframes dolphin-pet-orbit{from{transform:rotate(0)}to{transform:rotate(-360deg)}}
+@keyframes dolphin-pet-upright{from{transform:translate(-50%,-50%) rotate(0)}to{transform:translate(-50%,-50%) rotate(360deg)}}
+@keyframes dolphin-pet-bob{50%{transform:translateY(-2px) rotate(-3deg)}}
+@keyframes dolphin-pet-greet{50%{transform:translateY(-3px) rotate(6deg)}}
 @media(prefers-reduced-motion:reduce){.dolphin-pet-stage *{animation:none!important;transition:none!important}}

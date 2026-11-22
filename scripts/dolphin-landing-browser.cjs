@@ -31,6 +31,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
    document.documentElement.classList.add('dolphin-access-allowed');
   });
   await page.addScriptTag({url:origin+'/crew-dolphin-companion.js'});
+  await page.addScriptTag({url:origin+'/crew-dolphin-play.js'});
   await page.addScriptTag({url:origin+'/crew-dolphin-landing.js'});
   const pet=page.locator('.dcl-flight'),stage=page.locator('#dolphinLandingCompanion');
   assert(await stage.isVisible(),'verified staff gets a visible companion');
@@ -219,6 +220,21 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   await page.waitForTimeout(240);
   const after=await pet.boundingBox();
   assert(Math.hypot(before.x-after.x,before.y-after.y)<1,'reduced-motion freezes flight');
+  await page.emulateMedia({reducedMotion:'no-preference'});
+  await pet.waitFor({state:'visible'});
+  const contact=await pet.boundingBox();
+  const finger=await context.newCDPSession(page);
+  await finger.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:contact.x+contact.width/2,y:contact.y+contact.height/2}]});
+  await page.waitForSelector('.dcl-flight[data-behavior="curious"]',{timeout:3500});
+  await page.waitForSelector('.dcl-flight[data-behavior="shy"]',{timeout:3500});
+  await finger.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+  await page.waitForFunction(()=>!document.querySelector('.dcl-flight').dataset.behavior);
+  assert.notEqual(await pet.getAttribute('data-reaction'),'pet','holding the pet does not also trigger tap chat');
+  await finger.detach();
+  // An unattended invitation expires and stays out of the way for the cooldown.
+  await page.waitForSelector('[data-play="ready"] .dcl-water-ball',{timeout:23000});
+  await page.waitForSelector('.dcl-water-ball',{state:'hidden',timeout:16000});
+  assert.equal(await stage.getAttribute('data-play'),null);
   await page.evaluate(()=>{owner=null;dispatchEvent(new Event('dolphin-staff-id-changed'));});
   assert(await stage.isHidden());
   assert.deepEqual(errors,[],'no runtime errors');

@@ -61,7 +61,7 @@
   panel:null,dock:null,performBtn:null,avatarBtn:null,collectionBtn:null,treasureBtn:null,
   scene:null,avatarFx:null,status:null,dialog:null,items:null,seen:null,petStage:null,
   collection:null,carry:null,allowed:false,due:0,sceneTimer:0,avatarTimer:0,dialogVisible:false,
-  busy:false,autoGreeted:false,lastPosition:null};
+  busy:false,autoGreeted:false,manualAvatar:false,lastPosition:null};
  function currentIdentity(){return root.DolphinStaffId?.get?.()||null;}
  function hasGate(){return doc.documentElement.classList.contains('dolphin-access-allowed');}
  function active(){
@@ -257,6 +257,7 @@
  }
  function meetAvatar(auto=false){
   if(!profileVisible()||!state.petStage||!state.avatarFx)return;
+  if(!auto)state.manualAvatar=true;
   root.clearTimeout(state.avatarTimer);
   state.petStage.dataset.avatar='true';
   state.avatarFx.hidden=false;
@@ -298,7 +299,7 @@
   if(switched){
    destroyAction();
    state.collection=loadCollection(next.employeeId);
-   state.autoGreeted=false;
+   state.autoGreeted=false;state.manualAvatar=false;
    state.due=Date.now()+6500;
    if(state.dialog?.open)state.dialog.close();
   }else if(lowered)destroyAction();
@@ -311,7 +312,7 @@
   if(state.place==='profile'){
    if(!state.autoGreeted&&hasGate()){
     state.autoGreeted=true;
-    root.setTimeout(()=>{if(active()&&profileVisible())meetAvatar(true);},1000);
+    root.setTimeout(()=>{if(active()&&profileVisible()&&!state.manualAvatar)meetAvatar(true);},1000);
    }
   }else tickTreasure();
  }

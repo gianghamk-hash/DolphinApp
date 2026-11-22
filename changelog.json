@@ -1,66 +1,22 @@
 {
-  "version": "1.1.149",
-  "previousVersion": "1.1.148",
-  "commit": "5f99a1e",
-  "previousCommit": "b1997b8",
-  "buildDate": "2026-11-22T05:38:43.433Z",
-  "summary": "Fix landing overlap and publish ten level assets",
+  "version": "1.1.150",
+  "previousVersion": "1.1.149",
+  "commit": "766e849",
+  "previousCommit": "5f99a1e",
+  "buildDate": "2026-11-22T06:04:28.865Z",
+  "summary": "Fix Dolphin landing swim animation",
   "changes": {
-    "totalCommits": 371,
-    "filesChanged": 17,
+    "totalCommits": 372,
+    "filesChanged": 7,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix landing overlap and publish ten level assets"
+    "Fix Dolphin landing swim animation"
   ],
   "fileChanges": [
     {
-      "file": "assets/dolphin-level-1.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-10.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-100.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-20.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-30.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-40.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-50.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-60.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-70.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-90.png",
-      "type": "update"
-    },
-    {
-      "file": "crew-dolphin-companion.css",
-      "type": "update"
-    },
-    {
-      "file": "crew-dolphin-companion.js",
+      "file": "assets/eternal-dolphin-swim-v2.png",
       "type": "update"
     },
     {
@@ -76,11 +32,15 @@
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-companion-browser.cjs",
+      "file": "scripts/dolphin-landing-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-landing-browser.cjs",
+      "file": "scripts/dolphin-landing.test.cjs",
+      "type": "update"
+    },
+    {
+      "file": "service-worker.js",
       "type": "update"
     }
   ]

@@ -133,6 +133,18 @@
    }
    return null;
   }
+  function findLane(b,manual) {
+   const origins=manual?[b.pos,...b.nodes()]:[b.pos];
+   // Leave headroom for the entrance animation when the user opens the game immediately.
+   const padded={...b,safe:(p,diameter)=>b.safe(p,diameter+14)};
+   for (const space of [padded,b]) {
+    for (const origin of origins) {
+     const lane=laneFor(origin,space);
+     if (lane) return lane;
+    }
+   }
+   return null;
+  }
   function positionBall(p) {
    ball.style.left=p.x+'px'; ball.style.top=p.y+'px';
   }
@@ -153,10 +165,7 @@
    if (game) { if (manual && !ball.hidden) ball.focus({preventScroll:true}); return true; }
    if (manual) showPlayArea();
    const b=snapshot();
-   let lane=laneFor(b.pos,b);
-   if (!lane && manual) {
-    for (const pos of b.nodes()) { lane=laneFor(pos,b); if (lane) break; }
-   }
+   const lane=findLane(b,manual);
    if (!lane) { nextOffer=performance.now()+3500; return false; }
    clearPath(); pointer=null; heldPet=false;
    const now=performance.now();
@@ -197,7 +206,7 @@
   }
   function playFrame(now,b) {
    const {lane}=game, age=now-game.since;
-   if (!b.safe(lane.end,60)) { reset(); return false; }
+
    let pet=lane.origin, orb=lane.end;
    const near=b.pet*.30, lunge=lane.reach*.27;
    switch (game.phase) {
@@ -224,7 +233,15 @@
      paint(canvas,b.index,clamp(age/2210,0,1),game.palette);
      break;
    }
-   if (!b.safe(pet,b.pet) || !b.safe(orb,44)) { reset(); return false; }
+   if (!b.safe(lane.end,60) || !b.safe(pet,b.pet) || !b.safe(orb,44)) {
+    // Font/image loads can move the logo or cards after the invitation starts.
+    // Re-offer in clear space and keep completed passes if a lane shifted.
+    const next=game.phase==='finale'?null:findLane(b,game.manual);
+    if (!next) { reset(); return false; }
+    clearTimeout(timer); game.lane=next; phase('offer',now);
+    place(next.origin,next.dx,next.dy,now); positionBall(next.at(b.pet*.30));
+    return true;
+   }
    place(pet,lane.dx,lane.dy,now); positionBall(orb); return true;
   }
   function consider(e) {

@@ -1,0 +1,30 @@
+/* Dolphin Landing Companion. Existing 5x2 RGBA atlas remains the only pet artwork. */
+.dcl-stage{position:fixed;inset:0;z-index:21;pointer-events:none;overflow:hidden;isolation:isolate}
+.dcl-stage[hidden],.dcl-bubble[hidden],.dcl-action[hidden]{display:none!important}
+.dcl-flight{position:absolute;top:0;left:0;width:clamp(56px,8vw,84px);aspect-ratio:1;padding:0;border:0;background:transparent;pointer-events:auto;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;will-change:transform}
+.dcl-flight:focus-visible{outline:2px solid #b6fff4;outline-offset:3px;border-radius:50%}
+.dcl-art{position:relative;display:block;width:100%;height:100%;animation:dcl-bob 3.4s ease-in-out infinite}
+.dcl-sprite{display:block;width:100%;height:100%;background-image:url('./assets/dolphin-companions-v1.png');background-size:500% 200%;background-repeat:no-repeat;transform:scaleX(var(--dcl-face,1));filter:drop-shadow(0 3px 6px #041a2999);transition:filter .3s ease}
+.dcl-art::before,.dcl-art::after{content:'✦';position:absolute;z-index:2;color:#befff5;opacity:0;pointer-events:none;text-shadow:0 0 10px #8defff}
+.dcl-art::before{top:-6px;left:1px}.dcl-art::after{top:0;right:-4px}
+.dcl-flight[data-mood="cheerful"] .dcl-art{animation-duration:2.9s}
+.dcl-flight[data-mood="calm"] .dcl-art{animation-duration:4.8s}
+.dcl-flight[data-mood="sleepy"] .dcl-art{animation-duration:5.8s}
+.dcl-flight[data-mood="sleepy"] .dcl-sprite{filter:drop-shadow(0 2px 6px #9a9cf299) brightness(.92)}
+.dcl-flight[data-reaction="pet"] .dcl-art,.dcl-flight[data-reaction="hello"] .dcl-art,.dcl-flight[data-reaction="cheerful"] .dcl-art{animation:dcl-pet 850ms ease-in-out 2}
+.dcl-flight[data-reaction="level"] .dcl-art{animation:dcl-level 1.5s ease-in-out 3}
+.dcl-flight[data-reaction="secret"] .dcl-art{animation:dcl-secret 1.2s ease-in-out 4}
+.dcl-flight[data-reaction="level"] .dcl-sprite,.dcl-flight[data-reaction="secret"] .dcl-sprite{filter:drop-shadow(0 0 15px #ffe8a2) drop-shadow(0 0 9px #80f5fd)}
+.dcl-flight[data-reaction] .dcl-art::before{animation:dcl-spark 1.1s ease-out 2}
+.dcl-flight[data-reaction] .dcl-art::after{animation:dcl-spark 1.1s ease-out 2 260ms}
+.dcl-bubble{position:absolute;box-sizing:border-box;width:min(235px,calc(100vw - 16px));padding:10px 12px;color:#e8ffff;background:linear-gradient(145deg,rgba(11,60,72,.97),rgba(8,35,47,.98));border:1px solid #9cebddcc;border-radius:14px;box-shadow:0 8px 30px #021820b8,0 0 16px #83faff2b;font:700 12px/1.45 'Nunito',system-ui,sans-serif;text-align:left;pointer-events:none;animation:dcl-bubble-in .2s ease-out}
+.dcl-bubble-text{display:block}
+.dcl-action{display:block;margin-top:7px;padding:6px 10px;border:1px solid #b8e9d9;border-radius:8px;background:#215c62;color:#fff;font:800 12px 'Nunito',system-ui,sans-serif;pointer-events:auto;cursor:pointer}
+.dcl-action:focus-visible{outline:2px solid #fff;outline-offset:2px}
+@keyframes dcl-bob{0%,100%{transform:translateY(0) rotate(-3deg)}50%{transform:translateY(-5px) rotate(3deg)}}
+@keyframes dcl-pet{0%,100%{transform:translateY(0) rotate(0)}35%{transform:translateY(-9px) rotate(-12deg)}70%{transform:translateY(-3px) rotate(10deg)}}
+@keyframes dcl-level{0%,100%{transform:scale(1) rotate(0)}50%{transform:scale(1.18) rotate(-9deg)}}
+@keyframes dcl-secret{0%,100%{transform:scale(1) rotate(-3deg)}45%{transform:scale(1.12) rotate(15deg)}75%{transform:scale(1.08) rotate(-12deg)}}
+@keyframes dcl-spark{0%{opacity:0;transform:translateY(3px) scale(.3)}35%{opacity:1}100%{opacity:0;transform:translateY(-20px) scale(1.2)}}
+@keyframes dcl-bubble-in{from{opacity:0;transform:translateY(7px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+@media(prefers-reduced-motion:reduce){.dcl-stage *, .dcl-bubble{animation:none!important;transition:none!important;scroll-behavior:auto!important}}

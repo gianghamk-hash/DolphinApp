@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.151",
+      "releaseDate": "2026-11-22T08:00:35.095Z",
+      "summary": "Render the landing dolphin with a rigged 3D model (#295)",
+      "details": [
+        "Render the landing dolphin with a rigged 3D model (#295)"
+      ]
+    },
+    {
       "version": "1.1.150",
       "releaseDate": "2026-11-22T06:04:28.865Z",
       "summary": "Fix Dolphin landing swim animation",
@@ -390,14 +398,6 @@
       "summary": "fix(tactics): restore authority-adapter interface and polling lock",
       "details": [
         "fix(tactics): restore authority-adapter interface and polling lock"
-      ]
-    },
-    {
-      "version": "1.1.99",
-      "releaseDate": "2026-11-10T04:46:20.652Z",
-      "summary": "Fix adapter registration and update room creation logic",
-      "details": [
-        "Fix adapter registration and update room creation logic"
       ]
     }
   ]

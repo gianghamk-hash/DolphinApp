@@ -1,5 +1,5 @@
 {
-  "version": "1.1.151",
+  "version": "1.1.152",
   "releaseDate": "2026-11-22",
-  "notes": "Render the landing dolphin with a rigged 3D model (#295)"
+  "notes": "Enlarge the landing dolphin and add effects for every form (#296)"
 }

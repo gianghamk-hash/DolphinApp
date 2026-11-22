@@ -1,66 +1,22 @@
 {
-  "version": "1.1.151",
-  "previousVersion": "1.1.150",
-  "commit": "28fd6b7",
-  "previousCommit": "766e849",
-  "buildDate": "2026-11-22T08:00:35.095Z",
-  "summary": "Render the landing dolphin with a rigged 3D model (#295)",
+  "version": "1.1.152",
+  "previousVersion": "1.1.151",
+  "commit": "983b3ca",
+  "previousCommit": "28fd6b7",
+  "buildDate": "2026-11-22T09:13:11.335Z",
+  "summary": "Enlarge the landing dolphin and add effects for every form (#296)",
   "changes": {
-    "totalCommits": 373,
-    "filesChanged": 22,
+    "totalCommits": 374,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Render the landing dolphin with a rigged 3D model (#295)"
+    "Enlarge the landing dolphin and add effects for every form (#296)"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/dolphin-companion.yml",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-forms-v1.glb",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-1.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-10.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-20.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-30.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-40.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-50.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-60.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-70.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-level-90.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/eternal-dolphin-swim-v3.png",
+      "file": "assets/dolphin-forms-v2.glb",
       "type": "update"
     },
     {
@@ -88,19 +44,7 @@
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-landing.test.cjs",
-      "type": "update"
-    },
-    {
       "file": "service-worker.js",
-      "type": "update"
-    },
-    {
-      "file": "vendor/dolphin-three-LICENSE.txt",
-      "type": "update"
-    },
-    {
-      "file": "vendor/dolphin-three-r180.js",
       "type": "update"
     }
   ]

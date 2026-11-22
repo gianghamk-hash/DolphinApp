@@ -93,8 +93,9 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   await page.evaluate(()=>document.documentElement.classList.add('dolphin-access-allowed'));
   assert(await stage.isVisible());
   await page.emulateMedia({reducedMotion:'reduce'});
+  await page.waitForTimeout(180);
   const before=await pet.boundingBox();
-  await page.waitForTimeout(120);
+  await page.waitForTimeout(240);
   const after=await pet.boundingBox();
   assert(Math.hypot(before.x-after.x,before.y-after.y)<1,'reduced-motion freezes flight');
   await page.evaluate(()=>{owner=null;dispatchEvent(new Event('dolphin-staff-id-changed'));});

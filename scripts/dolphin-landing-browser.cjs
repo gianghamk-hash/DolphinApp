@@ -74,7 +74,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   assert.equal(await model.getAttribute('data-level'),'100','landing loads the rig for the current form');
   assert.equal(await sprite.evaluate(el=>getComputedStyle(el).visibility),'hidden','3D hides the 2D fallback');
   const rendered=await page.evaluate(async()=>{
-   const {createDolphinModel}=await import('/crew-dolphin-landing-3d.js?v=rig-v1');
+   const {createDolphinModel}=await import('/crew-dolphin-landing-3d.js?v=rig-v2');
    const host=document.createElement('span');
    const model=await createDolphinModel(host);
    const canvas=host.querySelector('canvas');
@@ -94,20 +94,43 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
     model.pause();
     results.push({level:Number(canvas.dataset.level),...pose(form*100)});
    }
-   return {results,animated:pose(950).checksum!==pose(1000).checksum};
+   const animated=pose(950).checksum!==pose(1000).checksum;
+   model.dispose();
+   return {results,animated};
   });
   assert.deepEqual(rendered.results.map(x=>x.level),[...milestones,100]);
   assert(rendered.results.every(x=>x.transparent&&x.drawn),'every form renders on a transparent canvas');
   assert.equal(new Set(rendered.results.map(x=>x.checksum)).size,10,'all ten forms look different');
   assert(rendered.animated,'the rig changes rendered pixels while the viewport and facing stay fixed');
-  for(const width of [320,390,768,1280]){
-   await page.setViewportSize({width,height:860});
-   await page.waitForTimeout(100);
+  for(const [width,height,minSize] of [[320,568,72],[390,844,72],[768,860,107],[1280,860,152]]){
+   await page.setViewportSize({width,height});
+   await pet.waitFor({state:'visible',timeout:4500});
    assert(await stage.isVisible());
    const p=await pet.boundingBox();
    assert(p&&p.x>=-1&&p.x+p.width<=width+1,'pet stays in viewport at '+width);
-   const logo=await page.locator('#landing .logo-img').boundingBox();
-   assert(logo&&(p.x+p.width<=logo.x||p.x>=logo.x+logo.width||p.y+p.height<=logo.y||p.y>=logo.y+logo.height),'pet stays clear of logo at '+width);
+   assert(p.width>=minSize-.5,'companion uses the larger responsive size at '+width);
+   const samples=await pet.evaluate(el=>new Promise(resolve=>{
+    const points=[];
+    const deadline=performance.now()+2800;
+    function sample(now){
+     const pet=el.getBoundingClientRect();
+     const controls=document.querySelectorAll('#landing .logo-img,#landing .welcome-lbl,#landing .area-card,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
+     const overlap=[...controls].find(node=>{
+      const r=node.getBoundingClientRect();
+      const [left,top,right,bottom]=node.dataset.dolphinInk?.split(' ').map(Number)||[0,0,1,1];
+      return r.width>0&&r.height>0&&pet.left<r.left+right*r.width&&pet.right>r.left+left*r.width
+       &&pet.top<r.top+bottom*r.height&&pet.bottom>r.top+top*r.height;
+     });
+     if(getComputedStyle(el).visibility==='visible')points.push({x:pet.x,y:pet.y,overlap:overlap?.id||overlap?.className});
+     const moved=points.some(frame=>Math.hypot(frame.x-points[0].x,frame.y-points[0].y)>.4);
+     if((points.length>=6&&moved)||now>=deadline)return resolve(points);
+     requestAnimationFrame(sample);
+    }
+    requestAnimationFrame(sample);
+   }));
+   assert(samples.length>=6,`enough visible flight frames at ${width}: ${JSON.stringify(samples)}`);
+   assert.deepEqual(samples.filter(frame=>frame.overlap),[],'visible flight leaves landing content clear at '+width);
+   assert(samples.some(frame=>Math.hypot(frame.x-samples[0].x,frame.y-samples[0].y)>.4),'the larger form keeps flying at '+width);
    assert(!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)),'no horizontal overflow at '+width);
    if(width===390||width===1280)await page.screenshot({path:path.join(output,'landing-level100-'+width+'.png'),fullPage:true});
   }
@@ -122,15 +145,25 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
    dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:progress}));
   });
   assert.equal(await stage.getAttribute('data-form'),'6','Level deduction selects lower form');
+  assert.equal(await stage.getAttribute('data-effect'),'aurora','level deduction also selects the lower effect');
   assert.equal(await model.getAttribute('data-level'),'60','3D form tracks a level decrease');
   assert.equal(await pet.getAttribute('data-reaction'),null,'deduction cancels cinematics');
   assert((await sprite.evaluate(el=>getComputedStyle(el).backgroundImage)).includes('dolphin-level-60.png'),'lower levels use their own image asset');
+  const xpPulse=await page.evaluate(()=>{
+   progress={...progress,xp:progress.xp+5};
+   dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:progress}));
+   const flight=document.querySelector('.dcl-flight');
+   const burst=flight.querySelector('.dcl-fx-burst');
+   return [flight.dataset.reaction,getComputedStyle(burst).animationName];
+  });
+  assert.deepEqual(xpPulse,['xp','dcl-fx-burst'],'an XP increase at the same level triggers a pulse');
   await page.evaluate(()=>{
    progress={...progress,level:70,xp:11800000};
    dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:progress}));
   });
   await page.waitForTimeout(300);
   assert.equal(await stage.getAttribute('data-form'),'7');
+  assert.equal(await stage.getAttribute('data-effect'),'cosmos');
   assert.equal(await model.getAttribute('data-level'),'70','3D form tracks a level increase');
   assert.match(await page.locator('.dcl-bubble-text').innerText(),/Tiến hóa thành Cosmic Dolphin/);
   await page.evaluate(()=>{document.getElementById('orderNotif').classList.add('show');});
@@ -151,6 +184,18 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   });
   assert(await stage.isVisible());
   assert.equal(await stage.getAttribute('data-form'),'0');
+  assert.equal(await stage.getAttribute('data-effect'),'bubbles');
+  const effects=await page.evaluate(()=>{
+   const stage=document.getElementById('dolphinLandingCompanion');
+   return [1,10,20,30,40,50,60,70,90,100].map(level=>{
+    progress={...progress,level,xp:level*10000};
+    dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:progress}));
+    const spark=stage.querySelector('.dcl-fx-spark');
+    return [stage.dataset.effect,getComputedStyle(spark,'::before').content];
+   });
+  });
+  assert.deepEqual(effects.map(entry=>entry[0]),['bubbles','tide','coral','sapphire','crystal','sunlight','aurora','cosmos','royal','eternal']);
+  assert(effects.every(([,glyph])=>glyph!=='none'),'each tier paints its own particle shape');
   await model.waitFor({state:'visible'});
   const contextLost=await model.evaluate(canvas=>{
    const extension=canvas.getContext('webgl2').getExtension('WEBGL_lose_context');
@@ -167,6 +212,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   assert(await stage.isVisible());
   await page.emulateMedia({reducedMotion:'reduce'});
   assert(await model.isHidden(),'reduced motion uses a static fallback instead of rendering the rig');
+  assert(await stage.locator('.dcl-fx').isHidden(),'reduced motion disables the animated effects');
   assert.equal(await sprite.evaluate(el=>getComputedStyle(el).visibility),'visible');
   await page.waitForTimeout(180);
   const before=await pet.boundingBox();

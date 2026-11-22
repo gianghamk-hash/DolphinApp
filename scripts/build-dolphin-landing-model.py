@@ -176,14 +176,20 @@ def wings():
             for feather in reversed(range(6)):
                 t = feather/5
                 root = (-.20+t*.18, .12+t*.054, side*(.30+t*.08))
-                span = 1-layer*.28
+                span = 1-layer*.31
                 tip = (root[0]+(.46+t*.64)*span, root[1]+(1.16-t*.81)*span,
                        root[2]+side*(.40+t*.17)*span)
                 middle = plus(root, scale(minus(tip, root), .59))
-                bend = plus(middle, (-.044,.084,side*.038))
+                bend = plus(middle, (-.075,.105,side*.044))
                 color = ("wing", "wingLight", "wingTip")[(feather+layer)%3]
-                ribbon(surf, [(*root,.036,.047), (*bend,.114-layer*.028,.047),
-                              (*tip,.003,.005)], color, bone)
+                shoulder = plus(root, scale(minus(bend, root), .48))
+                ribbon(surf, [(*root,.036,.047), (*shoulder,.085-layer*.025,.052),
+                              (*bend,.131-layer*.030,.044), (*tip,.003,.005)], color, bone)
+                if layer==0 and feather%2==0:
+                    ridge = plus(bend, (.005,.008,side*.040))
+                    end = plus(ridge, scale(minus(tip,ridge), .72))
+                    ribbon(surf, [(*plus(shoulder,(0,0,side*.04)),.009,.009),
+                                  (*ridge,.020,.016), (*end,.002,.003)], "wingLight", bone)
     return surf
 
 
@@ -198,6 +204,22 @@ def tiara():
         surf.ellipse((-.796,height-.134,z), (.084,.102,.072), "gem")
     for z in [-.287,.287]:
         surf.ellipse((-.667,.614,z), (.114,.052,.050), "gem")
+    return surf
+
+
+def regalia():
+    """Raised settings and gold filigree that move with the fins and body."""
+    surf = Surface()
+    for z, wing_joint, fin_joint in ((1,5,3),(-1,6,4)):
+        for y, station in ((.69,-.75),(.79,-.81),(.88,-.85)):
+            surf.ellipse((station,y,z*.323),(.063,.049,.046),"trim")
+            surf.sweep([(station-.04,y,z*.355,.005,.006),(station,y,z*.381,.062,.052),
+                        (station+.04,y,z*.356,.006,.005)],"gem",0,around=8,subdivisions=1,dorsal=True)
+        ribbon(surf,[(-.32,.30,z*.362,.013,.014),(-.19,.39,z*.434,.033,.024),
+                     (-.03,.28,z*.456,.026,.020),(.11,.19,z*.412,.007,.008)],"trim",wing_joint)
+        surf.ellipse((-.145,.336,z*.466),(.061,.070,.044),"gem",wing_joint)
+        ribbon(surf,[(-.21,-.198,z*.405,.006,.010),(-.077,-.256,z*.482,.028,.017),
+                     (.065,-.348,z*.542,.020,.017),(.185,-.40,z*.555,.004,.005)],"trim",fin_joint)
     return surf
 
 
@@ -242,8 +264,8 @@ FORMS = [
     (50,"459add","fef4dd","de982d", "ee9a28","ffebb2","ffcc5f","ffce68","ffefbc", ["wings","tiara"]),
     (60,"3d9bdc","e7fbff","54babf", "4bbace","bbfaff","8773ea","b9ecff","a6ffef", ["wings","coral"]),
     (70,"446adc","ecf0ff","3e409c", "394ccf","8996ff","d360f9","f9b84f","5965ff", ["wings","tiara"]),
-    (90,"4394df","f4f5ff","699ee1", "e5a747","fff1bf","6baff7","ffc75a","226ffb", ["wings","tiara"]),
-    (100,"c9defc","fcf2ff","8f97f4", "6bcdfa","ded7ff","cb80f5","ffd162","56c8ff", ["wings","tiara","aura"]),
+    (90,"4394df","f4f5ff","699ee1", "e5a747","fff1bf","6baff7","ffc75a","226ffb", ["wings","tiara","regalia"]),
+    (100,"c3dcff","fcf2ff","9d98f5", "75d6fe","ebeaff","c179fc","ffca5b","42d3ff", ["wings","tiara","regalia","aura"]),
 ]
 PALETTE = ["body","belly","fin","wing","wingLight","wingTip","trim","gem"]
 REST = [(0,0,0),(.349,-.105,0),(.91,-.29,0),(-.287,-.07,.27),
@@ -263,7 +285,8 @@ def build(path):
     doc = {"asset":{"version":"2.0","generator":"DolphinApp companion sculpt"},
            "scene":0,"scenes":[{"nodes":[0]}],"nodes":[],
            "buffers":[],"bufferViews":[],"accessors":[],"meshes":[],
-           "skins":[],"animations":[],"materials":[]}
+           "skins":[],"animations":[],"materials":[],
+           "extensionsUsed":["KHR_materials_clearcoat"]}
     binary = bytearray()
 
     def node(**props):
@@ -295,9 +318,14 @@ def build(path):
         indices[name] = len(doc["materials"])
         doc["materials"].append({"name":name,"pbrMetallicRoughness":{
             "baseColorFactor":[*rgb(hex_value),1],
-            "roughnessFactor": .29 if name in ("iris","trim","gem") else .48,
-            "metallicFactor": .32 if name=="trim" else .03
+            "roughnessFactor": .25 if name in ("iris","trim","gem") else .39,
+            "metallicFactor": .39 if name=="trim" else .03
         }})
+        if name in ("body","fin","wing","wingLight","wingTip","gem"):
+            doc["materials"][-1]["extensions"] = {"KHR_materials_clearcoat":{
+                "clearcoatFactor": .59 if name=="gem" else .32,
+                "clearcoatRoughnessFactor": .16
+            }}
         if name=="starlight":
             doc["materials"][-1]["emissiveFactor"] = rgb("a7631f")
 
@@ -312,7 +340,8 @@ def build(path):
                          "inverseBindMatrices":vectors(matrices,"f","MAT4")})
 
     for label, mesh in [("dolphin",base_dolphin()),("crest",sea_crests()),("wings",wings()),
-                        ("tiara",tiara()),("coral",coral()),("aura",eternal_aura())]:
+                        ("tiara",tiara()),("coral",coral()),("regalia",regalia()),
+                        ("aura",eternal_aura())]:
         attributes = {
             "POSITION":vectors(mesh.points,"f","VEC3",bounds=True,target=34962),
             "NORMAL":vectors([unit(n) for n in mesh.normals],"f","VEC3",target=34962),

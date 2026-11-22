@@ -125,7 +125,7 @@
  }
  function tick(now){
   state.frame=0;
-  if(!canShow()){syncVisibility();return;}
+  if(!canShow()||root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){syncVisibility();return;}
   if(!state.path)startPath(now);
   const p=state.path,t=clamp((now-p.startAt)/p.duration,0,1);
   const a=cubic(p.points,t),b=cubic(p.points,Math.min(t+.012,1));

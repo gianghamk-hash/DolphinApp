@@ -60,7 +60,7 @@
  const state={owner:'',form:null,profile:null,place:'',
   panel:null,dock:null,performBtn:null,avatarBtn:null,collectionBtn:null,treasureBtn:null,
   scene:null,avatarFx:null,status:null,dialog:null,items:null,seen:null,petStage:null,
-  collection:null,allowed:false,due:0,sceneTimer:0,avatarTimer:0,dialogVisible:false,
+  collection:null,carry:null,allowed:false,due:0,sceneTimer:0,avatarTimer:0,dialogVisible:false,
   busy:false,autoGreeted:false,lastPosition:null};
  function currentIdentity(){return root.DolphinStaffId?.get?.()||null;}
  function hasGate(){return doc.documentElement.classList.contains('dolphin-access-allowed');}
@@ -156,6 +156,8 @@
   state.panel.append(title,actions,state.status);
   grid.insertAdjacentElement('afterend',state.panel);
   state.scene=createScene(stage);
+  state.carry=el('span','dcl-living-carry');state.carry.hidden=true;
+  state.carry.setAttribute('aria-hidden','true');stage.append(state.carry);
   state.dialog=el('dialog','dcl-living-dialog');
   state.dialog.setAttribute('aria-label','Bộ sưu tập kho báu Dolphin');
   const head=el('div','dcl-living-dialog-head');
@@ -169,6 +171,7 @@
  }
  function destroyAction(){
   root.clearTimeout(state.sceneTimer);root.clearTimeout(state.avatarTimer);
+  state.busy=false;
   if(state.scene){state.scene.hidden=true;delete state.scene.dataset.skill;}
   if(state.avatarFx)state.avatarFx.hidden=true;
   if(state.petStage)delete state.petStage.dataset.avatar;
@@ -223,7 +226,9 @@
   state.collection.openedDay=day;
   if(!state.collection.items.includes(reward.id))state.collection.items.push(reward.id);
   state.collection.selected=reward.id;saveCollection();
-  state.treasureBtn.hidden=true;applyCosmetic();
+  state.treasureBtn.hidden=true;
+  if(state.carry)state.carry.hidden=true;
+  applyCosmetic();
   status('🎁 Rương kho báu: '+reward.name+' ('+reward.rarity+'). Đã thêm vào bộ sưu tập!');
   if(state.scene)showScene(state.form.index,'treasure');
   renderCollection();
@@ -268,6 +273,7 @@
   const available=!!(landingVisible()&&Date.now()>=state.due&&
     state.collection&&offer(state.owner,day,state.form.index,state.collection.openedDay));
   state.treasureBtn.hidden=!available;
+  if(state.carry)state.carry.hidden=!available;
   if(state.collectionBtn)state.collectionBtn.hidden=!landingVisible();
   if(state.performBtn)state.performBtn.hidden=!landingVisible();
   if(state.panel)state.panel.hidden=!landingVisible();
@@ -282,6 +288,7 @@
    if(state.dialog?.open)state.dialog.close();
    if(state.panel)state.panel.hidden=true;
    if(state.treasureBtn)state.treasureBtn.hidden=true;
+   if(state.carry)state.carry.hidden=true;
    if(state.scene)state.scene.hidden=true;
    return;
   }
@@ -331,5 +338,11 @@
   }
   render(root.DolphinPrestige?.getMine?.());
  }
+ root.DolphinLivingBridge=Object.freeze({move(x,y){
+  if(state.place!=='landing')return;
+  if(state.scene){state.scene.style.setProperty('--dcl-sx',x+'px');state.scene.style.setProperty('--dcl-sy',y+'px');}
+  if(state.carry){const b=state.carry.offsetWidth||39;
+   state.carry.style.transform='translate3d('+(x+b*.32)+'px,'+(y-36)+'px,0)';}
+ }});
  if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',init);else init();
 })(typeof window==='undefined'?globalThis:window);

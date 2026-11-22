@@ -99,3 +99,51 @@ current form and cancel ongoing celebrations.
 
 This change does not ship/rebuild an Android APK. Physical Android WebView
 testing remains a release verification step.
+
+
+## Sprint 2 · Living Pet (treasure, avatar, ten form skills)
+
+This release extends the already approved companion rather than replacing
+the ten-form 5×2 PNG artwork or changing the profile's existing circular orbit.
+
+- **Ten exclusive performances:** one animation choreography per currently
+  verified form: Baby (Bubble Parade), Wave (Tidal Hello), Coral (Coral Bloom),
+  Sapphire (Sapphire Flash), Crystal (Crystal Waltz), Celestial (Celestial
+  Wings), Aurora (Aurora Ribbon), Cosmic (Cosmic Gateway), Royal (Royal Halo),
+  Eternal (Eternal Ocean). The Performance button uses the *current* Level
+  from the authoritative DolphinCompanion.model and reads the same Prestige
+  state. Decreased Levels select the appropriate lower animation and
+  immediately cancel a performance already in progress.
+- **Avatar meeting:** on the Profile screen, a dedicated button or click on
+  the avatar triggers a temporary close approach by the existing pet sprite,
+  together with decorative heart particles. The profile identity card fields,
+  avatar art, Level badge and work controls remain unchanged. The first valid
+  profile view plays a single introductory greeting.
+- **Treasure:** some days (stable 45% daily offer per Staff ID, using Vietnam
+  date) a cosmetic chest accompanies the pet on Landing after a brief delay.
+  The art is stored separately at assets/dolphin-treasure-chest.svg. Only one
+  chest can be opened per local calendar day; rewards are Level-gated,
+  collectible decorative trails/aura treatments with an equip control.
+  Unlocked items remain in the local inventory after Level deduction but their
+  visual effects cannot be equipped or used below the required Level.
+
+**Security and persistence:** the inventory is saved in browser localStorage
+keyed by verified Staff ID, and is *device-local, not server authoritative*.
+It is intentionally not an XP source, an employment incentive, a payment, or
+a shared reward. No Firebase method, order action, mission, account privilege,
+salary or ranking is updated. If data is cleared or a different device is
+used, the cosmetics do not synchronize. Staff identity must be server
+verified, match the Prestige profile and pass the existing access gate.
+Business alerts and subapps hide the Landing controls. Reduced-motion user
+preferences suppress particle flight while preserving keyboard actions.
+
+Validation:
+
+    node --test scripts/dolphin-companion.test.cjs scripts/dolphin-landing.test.cjs scripts/dolphin-living.test.cjs
+    node scripts/dolphin-companion-browser.cjs
+    node scripts/dolphin-landing-browser.cjs
+    node scripts/dolphin-living-browser.cjs
+
+The CI archives Landing and Profile screenshots for inspection. Physical
+Android Staff/Manager WebView and real-device touch testing are still needed
+before calling APK behavior verified.

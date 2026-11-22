@@ -10,12 +10,11 @@
   {start:0,end:24,key:'night',mood:'sleepy',text:'Muộn rồi đó! Nhớ dành thời gian nghỉ ngơi nhé!'}
  ];
  const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
- function faceForMovement(heading,formIndex,previousFacing=1){
+ function faceForMovement(heading,previousFacing=1){
   let facing=previousFacing<0?-1:1;
   if(heading>.35)facing=1;
   else if(heading<-.35)facing=-1;
-  const spriteFacesRight=formIndex===9;
-  return {facing,scaleX:((facing>0)===spriteFacesRight)?1:-1};
+  return {facing,scaleX:-facing};
  }
  const distance=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
  function hourVN(date){
@@ -44,8 +43,10 @@
  root.DolphinLandingCompanionLogic=logic;
  const doc=root.document;
  if(!doc)return;
+ const modelURL=new URL('./crew-dolphin-landing-3d.js?v=rig-v1',doc.currentScript?.src||doc.baseURI);
  const state={stage:null,flight:null,sprite:null,bubble:null,bubbleText:null,bubbleAction:null,
   profile:null,form:null,path:null,position:null,exit:null,frame:0,turn:0,
+  art:null,model:null,modelRequested:false,
   lastWelcome:0,lastHint:'',pendingHint:'',lastSlot:'',touchCount:0,lastSecret:0,facing:1,
   obstacles:null,obstaclesAt:0,
   reactionTimer:0,talkTimer:0,hintTimer:0,press:null,enabled:false};
@@ -124,13 +125,22 @@
   state.path=pathTo(state.position,chosen.p,state.exit,now);
   return true;
  }
- function move(x,y,heading){
+ function move(x,y,dx,dy=0,now){
   const b=size(),pet=b.pet,px=clamp(x,pet/2,b.w-pet/2),py=clamp(y,pet/2,b.h-pet/2);
   state.flight.style.transform='translate3d('+(px-pet/2)+'px,'+(py-pet/2)+'px,0)';
   root.DolphinLivingBridge?.move?.(px,py);
-  const orientation=faceForMovement(heading,state.form?.index,state.facing);
+  const orientation=faceForMovement(dx,state.facing);
   state.facing=orientation.facing;
   state.flight.style.setProperty('--dcl-face',String(orientation.scaleX));
+  if(state.model&&now!==undefined){
+   try{
+    state.model.draw({now,size:pet,facing:state.facing,dx,dy,
+     mood:state.flight.dataset.mood,reaction:state.flight.dataset.reaction});
+   }catch(error){
+    state.model.dispose();
+    state.model=null;
+   }
+  }
   const nearButton=covers(px,py,protect(),pet/2+5);
   state.flight.style.pointerEvents=nearButton?'none':'auto';
   const bubbleWidth=Math.min(235,b.w-16),bx=clamp(px+pet*.25,8,b.w-bubbleWidth-8);
@@ -140,11 +150,14 @@
  function tick(now){
   state.frame=0;
   if(!canShow()||root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){syncVisibility();return;}
-  if(!state.path&&!startPath(now)){state.frame=root.requestAnimationFrame(tick);return;}
+  if(!state.path&&!startPath(now)){
+   if(state.position)move(state.position.x,state.position.y,0,0,now);
+   state.frame=root.requestAnimationFrame(tick);return;
+  }
   const p=state.path,t=clamp((now-p.startAt)/p.duration,0,1);
-  const a=cubic(p.points,t),b=cubic(p.points,Math.min(t+.012,1));
-  const dx=b.x-a.x||p.points[3].x-p.points[2].x;
-  move(a.x,a.y+Math.sin(now/850)*2,dx);
+  const a=cubic(p.points,t);
+  const before=cubic(p.points,Math.max(t-.006,0)),after=cubic(p.points,Math.min(t+.006,1));
+  move(a.x,a.y+Math.sin(now/850)*2,after.x-before.x,after.y-before.y,now);
   state.position={x:a.x,y:a.y};
   if(t>=1){
    const c=p.points[2],end=p.points[3],d=distance(c,end)||1;
@@ -156,6 +169,19 @@
  function stop(){
   if(state.frame)root.cancelAnimationFrame(state.frame);
   state.frame=0;state.path=null;
+  state.model?.pause();
+ }
+ function syncModel(){
+  if(state.model){
+   state.model.setForm(state.form.index);
+   return;
+  }
+  if(state.modelRequested||!root.WebGL2RenderingContext)return;
+  state.modelRequested=true;
+  import(modelURL.href)
+   .then(module=>module.createDolphinModel(state.art))
+   .then(model=>{state.model=model;syncVisibility();})
+   .catch(()=>{ /* Keep the 2D artwork when WebGL or its asset is unavailable. */ });
  }
  function syncVisibility(){
   if(!state.stage)return;
@@ -166,7 +192,10 @@
    stop();
    if(!state.position)state.position=waypointList().find(p=>allowedNode(p.x,p.y,protect(),size().pet/2+7))||waypointList()[2];
    move(state.position.x,state.position.y,1);
-  }else if(!state.frame)state.frame=root.requestAnimationFrame(tick);
+  }else{
+   syncModel();
+   if(!state.frame)state.frame=root.requestAnimationFrame(tick);
+  }
   const now=Date.now();
   if(now-state.lastWelcome>10*60*1000){
    state.lastWelcome=now;
@@ -266,9 +295,9 @@
   state.stage.hidden=true;state.stage.setAttribute('aria-label','Linh thú Dolphin đồng hành');
   state.flight=doc.createElement('button');state.flight.type='button';state.flight.className='dcl-flight';
   state.flight.style.transform='translate3d(-200px,-200px,0)';
-  const art=doc.createElement('span');art.className='dcl-art';
+  state.art=doc.createElement('span');state.art.className='dcl-art';
   state.sprite=doc.createElement('span');state.sprite.className='dcl-sprite';state.sprite.setAttribute('aria-hidden','true');
-  art.append(state.sprite);state.flight.append(art);
+  state.art.append(state.sprite);state.flight.append(state.art);
   state.bubble=doc.createElement('div');state.bubble.className='dcl-bubble';state.bubble.hidden=true;
   state.bubble.setAttribute('role','status');state.bubble.setAttribute('aria-live','polite');
   state.bubbleText=doc.createElement('span');state.bubbleText.className='dcl-bubble-text';

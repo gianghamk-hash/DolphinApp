@@ -299,7 +299,7 @@
    destroyAction();
    state.collection=loadCollection(next.employeeId);
    state.autoGreeted=false;
-   state.due=Date.now()+12000;
+   state.due=Date.now()+6500;
    if(state.dialog?.open)state.dialog.close();
   }else if(lowered)destroyAction();
   if(state.panel)state.panel.hidden=!hasGate();
@@ -331,7 +331,7 @@
     obs.observe($(id),{attributes:true,attributeFilter:['class']});
    obs.observe(doc.body,{attributes:true,attributeFilter:['class']});
    obs.observe(doc.documentElement,{attributes:true,attributeFilter:['class']});
-   root.setInterval(tickTreasure,6000);
+   root.setInterval(tickTreasure,4000);
   }else{
    new MutationObserver(()=>{if(!hasGate()||!active())destroyAction();if(state.panel)state.panel.hidden=!active();})
      .observe(doc.documentElement,{attributes:true,attributeFilter:['class']});

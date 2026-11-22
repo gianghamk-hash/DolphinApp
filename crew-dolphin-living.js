@@ -247,6 +247,10 @@
   state.scene.hidden=true;delete state.scene.dataset.skill;
   void state.scene.offsetWidth;
   state.scene.dataset.skill=SKILLS[index].id;
+  if(state.place==='landing'&&state.lastPosition){
+   state.scene.style.setProperty('--dcl-sx',state.lastPosition.x+'px');
+   state.scene.style.setProperty('--dcl-sy',state.lastPosition.y+'px');
+  }
   state.scene.dataset.mode=mode;
   state.scene.hidden=false;
   state.busy=true;
@@ -274,7 +278,9 @@
   const available=!!(landingVisible()&&Date.now()>=state.due&&
     state.collection&&offer(state.owner,day,state.form.index,state.collection.openedDay));
   state.treasureBtn.hidden=!available;
-  if(state.carry)state.carry.hidden=!available;
+  if(state.carry){state.carry.hidden=!available;
+   if(available&&state.lastPosition)state.carry.style.transform='translate3d('+(state.lastPosition.x+13)+'px,'+(state.lastPosition.y-36)+'px,0)';
+  }
   if(state.collectionBtn)state.collectionBtn.hidden=!landingVisible();
   if(state.performBtn)state.performBtn.hidden=!landingVisible();
   if(state.panel)state.panel.hidden=!landingVisible();
@@ -340,10 +346,11 @@
   render(root.DolphinPrestige?.getMine?.());
  }
  root.DolphinLivingBridge=Object.freeze({move(x,y){
-  if(state.place!=='landing')return;
-  if(state.scene){state.scene.style.setProperty('--dcl-sx',x+'px');state.scene.style.setProperty('--dcl-sy',y+'px');}
-  if(state.carry){const b=state.carry.offsetWidth||39;
-   state.carry.style.transform='translate3d('+(x+b*.32)+'px,'+(y-36)+'px,0)';}
+  if(state.place!=='landing'||!state.form)return;
+  state.lastPosition={x,y};
+  if(state.scene&&!state.scene.hidden){state.scene.style.setProperty('--dcl-sx',x+'px');state.scene.style.setProperty('--dcl-sy',y+'px');}
+  if(state.carry&&!state.carry.hidden)
+   state.carry.style.transform='translate3d('+(x+13)+'px,'+(y-36)+'px,0)';
  }});
  if(doc.readyState==='loading')doc.addEventListener('DOMContentLoaded',init);else init();
 })(typeof window==='undefined'?globalThis:window);

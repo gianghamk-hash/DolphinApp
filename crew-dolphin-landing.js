@@ -10,6 +10,13 @@
   {start:0,end:24,key:'night',mood:'sleepy',text:'Muộn rồi đó! Nhớ dành thời gian nghỉ ngơi nhé!'}
  ];
  const clamp=(n,min,max)=>Math.min(max,Math.max(min,n));
+ function faceForMovement(heading,formIndex,previousFacing=1){
+  let facing=previousFacing<0?-1:1;
+  if(heading>.35)facing=1;
+  else if(heading<-.35)facing=-1;
+  const spriteFacesRight=formIndex===9;
+  return {facing,scaleX:((facing>0)===spriteFacesRight)?1:-1};
+ }
  const distance=(a,b)=>Math.hypot(b.x-a.x,b.y-a.y);
  function hourVN(date){
   const h=Number(new Intl.DateTimeFormat('en-GB',{timeZone:TZ,hour:'2-digit',hourCycle:'h23'}).format(date));
@@ -32,14 +39,14 @@
   return {x:u*u*u*p[0].x+3*u*u*t*p[1].x+3*u*t*t*p[2].x+t*t*t*p[3].x,
     y:u*u*u*p[0].y+3*u*u*t*p[1].y+3*u*t*t*p[2].y+t*t*t*p[3].y};
  }
- const logic=Object.freeze({hourVN,dayVN,slot,pendingCheckin,cubic});
+ const logic=Object.freeze({hourVN,dayVN,slot,pendingCheckin,cubic,faceForMovement});
  if(typeof module==='object'&&module.exports)module.exports=logic;
  root.DolphinLandingCompanionLogic=logic;
  const doc=root.document;
  if(!doc)return;
  const state={stage:null,flight:null,sprite:null,bubble:null,bubbleText:null,bubbleAction:null,
   profile:null,form:null,path:null,position:null,exit:null,frame:0,turn:0,
-  lastWelcome:0,lastHint:'',pendingHint:'',lastSlot:'',touchCount:0,lastSecret:0,
+  lastWelcome:0,lastHint:'',pendingHint:'',lastSlot:'',touchCount:0,lastSecret:0,facing:1,
   obstacles:null,obstaclesAt:0,
   reactionTimer:0,talkTimer:0,hintTimer:0,press:null,enabled:false};
  const $=id=>doc.getElementById(id);
@@ -121,7 +128,9 @@
   const b=size(),pet=b.pet,px=clamp(x,pet/2,b.w-pet/2),py=clamp(y,pet/2,b.h-pet/2);
   state.flight.style.transform='translate3d('+(px-pet/2)+'px,'+(py-pet/2)+'px,0)';
   root.DolphinLivingBridge?.move?.(px,py);
-  state.flight.style.setProperty('--dcl-face',heading>=0?'-1':'1');
+  const orientation=faceForMovement(heading,state.form?.index,state.facing);
+  state.facing=orientation.facing;
+  state.flight.style.setProperty('--dcl-face',String(orientation.scaleX));
   const nearButton=covers(px,py,protect(),pet/2+5);
   state.flight.style.pointerEvents=nearButton?'none':'auto';
   const bubbleWidth=Math.min(235,b.w-16),bx=clamp(px+pet*.25,8,b.w-bubbleWidth-8);
@@ -228,7 +237,7 @@
   const same=prev&&prev.employeeId===next.employeeId;
   if(!same){
    state.lastWelcome=0;state.lastHint='';state.pendingHint='';state.touchCount=0;state.lastSecret=0;
-   state.position=null;state.path=null;
+   state.position=null;state.path=null;state.facing=1;
    state.bubble.hidden=true;root.clearTimeout(state.talkTimer);
   }else if(next.currentLevel<prev.currentLevel||next.xp<prev.xp){
    root.clearTimeout(state.reactionTimer);delete state.flight.dataset.reaction;

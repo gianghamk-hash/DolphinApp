@@ -42,7 +42,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   assert(asset&&asset[0]>1000&&asset[1]>500,'reuse actual 10-form raster atlas');
   const sprite=pet.locator('.dcl-sprite');
   const imageCSS=await sprite.evaluate(el=>getComputedStyle(el).backgroundImage);
-  assert(imageCSS.includes('eternal-dolphin-swim.png'),'Level 100 uses the rendered swim-cycle asset');
+  assert(imageCSS.includes('eternal-dolphin-swim-v2.png'),'Level 100 uses the rendered swim-cycle asset');
   const milestones=[1,10,20,30,40,50,60,70,90];
   for(let form=0;form<milestones.length;form++){
    await stage.evaluate((node,index)=>node.dataset.form=String(index),form);
@@ -51,6 +51,11 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   }
   await stage.evaluate(node=>node.dataset.form='9');
   assert.equal(await sprite.evaluate(el=>getComputedStyle(el).animationName),'dcl-eternal-swim','Level 100 runs the frame animation');
+  const swim=await page.evaluate(()=>new Promise(resolve=>{
+   const image=new Image();image.onload=()=>resolve([image.naturalWidth,image.naturalHeight]);
+   image.onerror=()=>resolve(null);image.src='assets/eternal-dolphin-swim-v2.png';
+  }));
+  assert.deepEqual(swim,[516,172],'swim frames preserve their fixed 3:1 sheet proportions');
   for(const width of [320,390,768,1280]){
    await page.setViewportSize({width,height:860});
    await page.waitForTimeout(100);

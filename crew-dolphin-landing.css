@@ -1,4 +1,4 @@
-/* Dolphin Landing Companion. Existing 5x2 RGBA atlas remains the only pet artwork. */
+/* Dolphin landing companion: rendered evolution art and an Eternal swim cycle. */
 .dcl-stage{position:fixed;inset:0;z-index:21;pointer-events:none;overflow:hidden;isolation:isolate}
 .dcl-stage[hidden],.dcl-bubble[hidden],.dcl-action[hidden]{display:none!important}
 .dcl-flight{position:absolute;top:0;left:0;width:clamp(36px,8vw,84px);aspect-ratio:1;padding:0;border:0;background:transparent;pointer-events:auto;cursor:pointer;touch-action:manipulation;-webkit-tap-highlight-color:transparent;will-change:transform}
@@ -29,23 +29,6 @@
 @keyframes dcl-bubble-in{from{opacity:0;transform:translateY(7px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.dcl-stage *, .dcl-bubble{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
 
-/* Eternal Dolphin uses a rendered four-frame swim cycle. The existing 10-form
-   atlas continues to select every evolution stage; this replaces only the
-   Level 100 artwork while its independent Bezier flight path keeps running. */
-.dcl-stage[data-form="9"] .dcl-sprite{
- background-image:url('./assets/eternal-dolphin-swim.png');
- background-size:400% 100%;
- background-position:0 0;
- animation:dcl-eternal-swim 720ms steps(4,end) infinite;
-}
-@keyframes dcl-eternal-swim{
- from{background-position:0 0}
- to{background-position:100% 0}
-}
-@media(prefers-reduced-motion:reduce){
- .dcl-stage[data-form="9"] .dcl-sprite{background-position:0 0}
-}
-
 /* Keep each evolution as its own transparent rendered image. */
 .dcl-stage .dcl-sprite,.dolphin-pet-stage .dolphin-pet-sprite{
  background-size:contain;
@@ -63,9 +46,13 @@
 .dcl-stage[data-form="8"] .dcl-sprite,.dolphin-pet-stage[data-form="8"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-90.png')}
 .dcl-stage[data-form="9"] .dcl-sprite,.dolphin-pet-stage[data-form="9"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-100.png')}
 
-/* The highest form has its own rendered swim-cycle sprite sheet. */
+/* A fixed-proportion four-frame swim cycle avoids frame-to-frame resizing.
+   The source strip is 3:1, so one frame is 75% as wide as it is tall. */
 .dcl-stage[data-form="9"] .dcl-sprite{
- background-image:url('./assets/eternal-dolphin-swim.png');
+ width:75%;
+ height:100%;
+ margin-inline:auto;
+ background-image:url('./assets/eternal-dolphin-swim-v2.png');
  background-size:400% 100%;
  background-position:0 0;
  animation:dcl-eternal-swim 720ms steps(4,end) infinite;
@@ -75,7 +62,7 @@
  to{background-position:100% 0}
 }
 @media(prefers-reduced-motion:reduce){
- .dcl-stage[data-form="9"] .dcl-sprite{background-position:0 0}
+ .dcl-stage[data-form="9"] .dcl-sprite{animation:none!important;background-position:0 0}
 }
 
 @media(max-width:480px){#landing .logo-img{max-width:min(70vw,380px)!important}}

@@ -1,26 +1,82 @@
 {
-  "version": "1.1.148",
-  "previousVersion": "1.1.147",
-  "commit": "b1997b8",
-  "previousCommit": "5ebeb54",
-  "buildDate": "2026-11-22T05:18:16.773Z",
-  "summary": "Animate Eternal Dolphin on landing",
+  "version": "1.1.149",
+  "previousVersion": "1.1.148",
+  "commit": "5f99a1e",
+  "previousCommit": "b1997b8",
+  "buildDate": "2026-11-22T05:38:43.433Z",
+  "summary": "Fix landing overlap and publish ten level assets",
   "changes": {
-    "totalCommits": 370,
-    "filesChanged": 3,
+    "totalCommits": 371,
+    "filesChanged": 17,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Animate Eternal Dolphin on landing"
+    "Fix landing overlap and publish ten level assets"
   ],
   "fileChanges": [
     {
-      "file": "assets/eternal-dolphin-swim.png",
+      "file": "assets/dolphin-level-1.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-10.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-100.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-20.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-30.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-40.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-50.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-60.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-70.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-90.png",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-companion.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-companion.js",
       "type": "update"
     },
     {
       "file": "crew-dolphin-landing.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-landing.js",
+      "type": "update"
+    },
+    {
+      "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-companion-browser.cjs",
       "type": "update"
     },
     {

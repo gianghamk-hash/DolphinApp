@@ -1,7 +1,7 @@
 {
-  "version": "1.1.148",
-  "buildDate": "2026-11-22T05:18:16.773Z",
-  "commit": "b1997b8",
-  "notes": "Animate Eternal Dolphin on landing",
+  "version": "1.1.149",
+  "buildDate": "2026-11-22T05:38:43.433Z",
+  "commit": "5f99a1e",
+  "notes": "Fix landing overlap and publish ten level assets",
   "forceUpdate": false
 }

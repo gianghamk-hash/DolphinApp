@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.148",
+      "releaseDate": "2026-11-22T05:18:16.773Z",
+      "summary": "Animate Eternal Dolphin on landing",
+      "details": [
+        "Animate Eternal Dolphin on landing"
+      ]
+    },
+    {
       "version": "1.1.147",
       "releaseDate": "2026-11-22T04:55:56.352Z",
       "summary": "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)",
@@ -390,14 +398,6 @@
       "summary": "fix(snake): allow both players to use WASD and arrow keys",
       "details": [
         "fix(snake): allow both players to use WASD and arrow keys"
-      ]
-    },
-    {
-      "version": "1.1.96",
-      "releaseDate": "2026-11-10T03:27:38.103Z",
-      "summary": "fix(multiplayer): fix 2-player seats assignment and throttle sendState",
-      "details": [
-        "fix(multiplayer): fix 2-player seats assignment and throttle sendState"
       ]
     }
   ]

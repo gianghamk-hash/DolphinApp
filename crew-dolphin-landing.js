@@ -70,7 +70,7 @@
  function protect(){
   const now=Date.now();
   if(state.obstacles&&now-state.obstaclesAt<600)return state.obstacles;
-  const els=doc.querySelectorAll('#landing .area-card,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
+  const els=doc.querySelectorAll('#landing .logo-img,#landing .welcome-lbl,#landing .area-card,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
   state.obstacles=[...els].map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
   state.obstaclesAt=now;
   return state.obstacles;
@@ -99,19 +99,23 @@
  function startPath(now){
   const b=size(),rects=protect(),margin=b.pet/2+7,all=waypointList();
   if(!state.position){
-   state.position=all.find(p=>allowedNode(p.x,p.y,rects,margin))||all[2];
+   state.position=all.find(p=>allowedNode(p.x,p.y,rects,margin))||null;
+   if(!state.position)return false;
   }
+  const steps=Array.from({length:15},(_,i)=>(i+1)/16);
   const candidates=all.map((p,i)=>{
    const d=distance(state.position,p);
-   if(d<Math.min(b.w,b.h)*.22)return {p,score:-Infinity,i};
-   const path=pathTo(state.position,p,state.exit,now),steps=[.2,.4,.6,.8];
-   const obstacles=steps.filter(t=>{const q=cubic(path.points,t);return covers(q.x,q.y,rects,margin);}).length;
-   const targetBlocked=!allowedNode(p.x,p.y,rects,margin);
-   return {p,i,score:d*.7-obstacles*130-(targetBlocked?350:0)+((i+state.turn)%all.length)*2};
+   if(d<Math.min(b.w,b.h)*.22)return {p,score:-Infinity,i,clear:false};
+   const path=pathTo(state.position,p,state.exit,now);
+   const blocked=steps.some(t=>{const q=cubic(path.points,t);return covers(q.x,q.y,rects,margin);});
+   const clear=!blocked&&allowedNode(p.x,p.y,rects,margin);
+   return {p,i,clear,score:d*.7+((i+state.turn)%all.length)*2};
   }).sort((a,c)=>c.score-a.score);
-  const chosen=candidates.find(c=>Number.isFinite(c.score))||{p:all[(state.turn+3)%all.length]};
+  const chosen=candidates.find(c=>Number.isFinite(c.score)&&c.clear);
+  if(!chosen)return false;
   state.turn=(state.turn+1)%all.length;
   state.path=pathTo(state.position,chosen.p,state.exit,now);
+  return true;
  }
  function move(x,y,heading){
   const b=size(),pet=b.pet,px=clamp(x,pet/2,b.w-pet/2),py=clamp(y,pet/2,b.h-pet/2);
@@ -127,7 +131,7 @@
  function tick(now){
   state.frame=0;
   if(!canShow()||root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){syncVisibility();return;}
-  if(!state.path)startPath(now);
+  if(!state.path&&!startPath(now)){state.frame=root.requestAnimationFrame(tick);return;}
   const p=state.path,t=clamp((now-p.startAt)/p.duration,0,1);
   const a=cubic(p.points,t),b=cubic(p.points,Math.min(t+.012,1));
   const dx=b.x-a.x||p.points[3].x-p.points[2].x;
@@ -217,8 +221,6 @@
    root.clearTimeout(state.hintTimer);root.clearTimeout(state.reactionTimer);root.clearTimeout(state.talkTimer);
    syncVisibility();return;
   }
-  const pos=(next.index%5*25)+'% '+(Math.floor(next.index/5)*100)+'%';
-  state.sprite.style.backgroundPosition=pos;
   state.flight.setAttribute('aria-label',next.name+' · Level '+next.currentLevel+' · Chạm để vuốt ve linh thú');
   state.stage.dataset.form=String(next.index);
   const current=slot(hourVN(new Date()));

@@ -26,7 +26,6 @@
   const next=model(profile,root.DolphinStaffId?.get?.()?.employeeId);
   stage.hidden=!next;
   if(!next){last=null;clearTimeout(timer);delete stage.dataset.reaction;status.textContent='';return;}
-  sprite.style.backgroundPosition=(next.index%5*25)+'% '+(Math.floor(next.index/5)*100)+'%';
   const label=next.name+' · Level '+next.currentLevel;
   button.setAttribute('aria-label',label+' — Chạm để gọi linh thú');
   button.title=label;stage.dataset.form=String(next.index);

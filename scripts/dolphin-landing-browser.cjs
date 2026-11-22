@@ -43,6 +43,13 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   const sprite=pet.locator('.dcl-sprite');
   const imageCSS=await sprite.evaluate(el=>getComputedStyle(el).backgroundImage);
   assert(imageCSS.includes('eternal-dolphin-swim.png'),'Level 100 uses the rendered swim-cycle asset');
+  const milestones=[1,10,20,30,40,50,60,70,90];
+  for(let form=0;form<milestones.length;form++){
+   await stage.evaluate((node,index)=>node.dataset.form=String(index),form);
+   const formImage=await sprite.evaluate(el=>getComputedStyle(el).backgroundImage);
+   assert(formImage.includes('dolphin-level-'+milestones[form]+'.png'),'Level '+milestones[form]+' uses its own image asset');
+  }
+  await stage.evaluate(node=>node.dataset.form='9');
   assert.equal(await sprite.evaluate(el=>getComputedStyle(el).animationName),'dcl-eternal-swim','Level 100 runs the frame animation');
   for(const width of [320,390,768,1280]){
    await page.setViewportSize({width,height:860});
@@ -65,7 +72,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   });
   assert.equal(await stage.getAttribute('data-form'),'6','Level deduction selects lower form');
   assert.equal(await pet.getAttribute('data-reaction'),null,'deduction cancels cinematics');
-  assert((await sprite.evaluate(el=>getComputedStyle(el).backgroundImage)).includes('dolphin-companions-v1.png'),'lower levels retain the ten-form atlas');
+  assert((await sprite.evaluate(el=>getComputedStyle(el).backgroundImage)).includes('dolphin-level-60.png'),'lower levels use their own image asset');
   await page.evaluate(()=>{
    progress={...progress,level:70,xp:11800000};
    dispatchEvent(new CustomEvent('dolphin-my-progress-updated',{detail:progress}));

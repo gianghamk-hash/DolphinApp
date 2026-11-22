@@ -39,7 +39,8 @@
  if(!doc)return;
  const state={stage:null,flight:null,sprite:null,bubble:null,bubbleText:null,bubbleAction:null,
   profile:null,form:null,path:null,position:null,exit:null,frame:0,turn:0,
-  lastWelcome:0,lastHint:'',lastSlot:'',touchCount:0,lastSecret:0,
+  lastWelcome:0,lastHint:'',pendingHint:'',lastSlot:'',touchCount:0,lastSecret:0,
+  obstacles:null,obstaclesAt:0,
   reactionTimer:0,talkTimer:0,hintTimer:0,press:null,enabled:false};
  const $=id=>doc.getElementById(id);
  function identity(){
@@ -67,8 +68,12 @@
   return {w:Math.max(1,root.innerWidth),h:Math.max(1,root.innerHeight),pet:state.flight?.offsetWidth||72};
  }
  function protect(){
+  const now=Date.now();
+  if(state.obstacles&&now-state.obstaclesAt<600)return state.obstacles;
   const els=doc.querySelectorAll('#landing .area-card,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
-  return [...els].map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
+  state.obstacles=[...els].map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
+  state.obstaclesAt=now;
+  return state.obstacles;
  }
  function covers(x,y,rects,margin){
   return rects.some(r=>x+margin>r.left&&x-margin<r.right&&y+margin>r.top&&y-margin<r.bottom);
@@ -143,11 +148,18 @@
   const active=canShow();
   state.stage.hidden=!active;
   if(!active){stop();return;}
-  if(!state.frame)state.frame=root.requestAnimationFrame(tick);
+  if(root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
+   stop();
+   if(!state.position)state.position=waypointList().find(p=>allowedNode(p.x,p.y,protect(),size().pet/2+7))||waypointList()[2];
+   move(state.position.x,state.position.y,1);
+  }else if(!state.frame)state.frame=root.requestAnimationFrame(tick);
   const now=Date.now();
   if(now-state.lastWelcome>10*60*1000){
    state.lastWelcome=now;
-   root.setTimeout(()=>{if(canShow()&&Date.now()-state.lastWelcome<3000)talk(slot(hourVN(new Date())).text,'hello',4600);},650);
+   root.setTimeout(()=>{if(canShow()&&Date.now()-state.lastWelcome<3000){
+    const name=identity()?.name;
+    talk((typeof name==='string'&&name.trim()?name.trim():'Bạn')+' ơi! '+slot(hourVN(new Date())).text,'hello',4600);
+   }},650);
    scheduleCheckin();
   }
  }
@@ -168,12 +180,15 @@
  function scheduleCheckin(){
   if(!state.form||!pendingCheckin(state.profile,new Date()))return;
   const key=state.form.employeeId+'|'+dayVN(new Date());
-  if(key===state.lastHint)return;
-  state.lastHint=key;
+  if(key===state.lastHint||key===state.pendingHint)return;
+  state.pendingHint=key;
   root.clearTimeout(state.hintTimer);
   state.hintTimer=root.setTimeout(()=>{
-   if(state.form&&state.form.employeeId===key.split('|')[0]&&pendingCheckin(state.profile,new Date())&&canShow())
+   state.pendingHint='';
+   if(state.form&&state.form.employeeId===key.split('|')[0]&&pendingCheckin(state.profile,new Date())&&canShow()){
+    state.lastHint=key;
     talk('Bạn chưa điểm danh hôm nay! Mở Hồ sơ để nhận thưởng nhé!','cheerful',6500,'checkin');
+   }
   },8900);
  }
  function secretMessage(index){
@@ -197,7 +212,7 @@
   state.profile=next?progress:null;
   state.form=next;
   if(!next){
-   state.lastWelcome=0;state.touchCount=0;state.lastHint='';state.bubble.hidden=true;
+   state.lastWelcome=0;state.touchCount=0;state.lastHint='';state.pendingHint='';state.bubble.hidden=true;
    root.clearTimeout(state.hintTimer);root.clearTimeout(state.reactionTimer);root.clearTimeout(state.talkTimer);
    syncVisibility();return;
   }
@@ -209,7 +224,7 @@
   state.flight.dataset.mood=current.mood;state.lastSlot=current.key;
   const same=prev&&prev.employeeId===next.employeeId;
   if(!same){
-   state.lastWelcome=0;state.lastHint='';state.touchCount=0;state.lastSecret=0;
+   state.lastWelcome=0;state.lastHint='';state.pendingHint='';state.touchCount=0;state.lastSecret=0;
    state.position=null;state.path=null;
    state.bubble.hidden=true;root.clearTimeout(state.talkTimer);
   }else if(next.currentLevel<prev.currentLevel||next.xp<prev.xp){
@@ -268,7 +283,9 @@
   root.addEventListener('dolphin-staff-id-changed',()=>applyProgress(root.DolphinPrestige?.getMine?.()));
   doc.addEventListener('visibilitychange',syncVisibility);
   root.addEventListener('focus',syncVisibility);
-  root.addEventListener('resize',()=>{state.position=null;state.path=null;syncVisibility();});
+  root.addEventListener('resize',()=>{state.position=null;state.path=null;state.obstaclesAt=0;syncVisibility();});
+  const reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)');
+  reduced?.addEventListener?.('change',syncVisibility);
   const observe=(el,attributes)=>{if(el)new MutationObserver(syncVisibility).observe(el,{attributes:true,attributeFilter:attributes});};
   observe(doc.documentElement,['class']);observe(doc.body,['class']);observe(landing,['class','style']);
   observe($('orderNotif'),['class','style']);observe($('reminderAlarm'),['class','style']);

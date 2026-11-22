@@ -1,0 +1,114 @@
+/* Living Pet Sprint 2 · decorative FX only; existing dolphin atlas stays unchanged. */
+.dcl-living-panel{position:relative;z-index:5;box-sizing:border-box;margin:12px 0 18px;padding:12px 14px;
+ border:1px solid rgba(130,241,231,.38);border-radius:16px;background:linear-gradient(135deg,rgba(9,48,65,.95),rgba(12,32,50,.96));
+ box-shadow:0 8px 24px rgba(1,17,28,.2);color:#e8fffd}
+.dcl-living-panel[hidden],.dcl-living-scene[hidden],.dcl-living-avatar-fx[hidden],.dcl-living-treasure[hidden],
+.dcl-living-carry[hidden],.dcl-living-button[hidden]{display:none!important}
+.dcl-living-title{display:block;font:850 12px/1.4 'Nunito',system-ui,sans-serif;letter-spacing:.07em;color:#b4f4ef}
+.dcl-living-actions{display:flex;gap:9px;flex-wrap:wrap;margin-top:10px;align-items:center}
+.dcl-living-button{font:800 12px/1.4 'Nunito',system-ui,sans-serif;padding:10px 13px;border:1px solid #86dfd4b9;border-radius:12px;
+ background:linear-gradient(135deg,#1a656c,#154459);color:#fff;cursor:pointer;min-height:40px;touch-action:manipulation}
+.dcl-living-button:focus-visible,.dcl-living-equip:focus-visible,.dcl-living-close:focus-visible{outline:2px solid #fff;outline-offset:2px}
+.dcl-living-button:active{transform:scale(.98)}
+.dcl-living-treasure{background:linear-gradient(135deg,#945f1d,#664622);border-color:#ffdf8a;animation:dcl-treasure-glow 3s ease-in-out infinite}
+.dcl-living-status{margin:8px 0 0;min-height:1.4em;color:#e6dc9e;font:700 12px/1.5 'Nunito',system-ui,sans-serif}
+.dcl-living-landing{max-width:1200px;width:100%;margin:18px auto 10px}
+.dcl-living-scene{position:absolute;left:var(--dcl-sx,50%);top:var(--dcl-sy,50%);width:210px;height:210px;z-index:25;
+ transform:translate(-50%,-50%);pointer-events:none;isolation:isolate;
+ --dcl-a:#51c7f7;--dcl-b:#d8f9ff;--dcl-glyph:'○'}
+.dcl-living-ring{position:absolute;inset:24%;border-radius:50%;border:3px solid var(--dcl-a);
+ box-shadow:0 0 22px var(--dcl-a),inset 0 0 22px var(--dcl-b);
+ animation:dcl-ring 3.4s cubic-bezier(.14,.6,.3,1) both}
+.dcl-living-spark{position:absolute;left:50%;top:50%;width:22px;height:22px;display:grid;place-items:center;
+ color:var(--dcl-b);text-shadow:0 0 12px var(--dcl-a),0 0 18px var(--dcl-b);
+ animation:dcl-sparks 3.2s ease-out both;animation-delay:calc(var(--i)*75ms)}
+.dcl-living-spark::before{content:var(--dcl-glyph);font:bold 28px/1 Georgia,serif}
+.dcl-living-scene[data-skill="bubble"]{--dcl-a:#48caf0;--dcl-b:#e5faff;--dcl-glyph:'○'}
+.dcl-living-scene[data-skill="wave"]{--dcl-a:#23aed3;--dcl-b:#91f5ff;--dcl-glyph:'≈'}
+.dcl-living-scene[data-skill="coral"]{--dcl-a:#fc95ae;--dcl-b:#ffe7c9;--dcl-glyph:'✿'}
+.dcl-living-scene[data-skill="sapphire"]{--dcl-a:#507efb;--dcl-b:#b7e4ff;--dcl-glyph:'◆'}
+.dcl-living-scene[data-skill="crystal"]{--dcl-a:#ac73e9;--dcl-b:#f2ddff;--dcl-glyph:'◇'}
+.dcl-living-scene[data-skill="celestial"]{--dcl-a:#ead486;--dcl-b:#fff5c7;--dcl-glyph:'✧'}
+.dcl-living-scene[data-skill="aurora"]{--dcl-a:#74efba;--dcl-b:#c1bdff;--dcl-glyph:'✺'}
+.dcl-living-scene[data-skill="cosmic"]{--dcl-a:#9371e9;--dcl-b:#e1d9ff;--dcl-glyph:'✦'}
+.dcl-living-scene[data-skill="royal"]{--dcl-a:#e7b754;--dcl-b:#fff0bb;--dcl-glyph:'♛'}
+.dcl-living-scene[data-skill="eternal"]{--dcl-a:#88efff;--dcl-b:#fff4cf;--dcl-glyph:'✦'}
+/* Separate, Level-specific choreography. All ten forms keep the same unchanged sprite atlas. */
+.dcl-living-scene[data-skill="bubble"] .dcl-living-spark{animation-name:dcl-bubbles}
+.dcl-living-scene[data-skill="wave"] .dcl-living-ring{border-radius:30%;animation-name:dcl-waves}
+.dcl-living-scene[data-skill="coral"] .dcl-living-spark{animation-name:dcl-bloom}
+.dcl-living-scene[data-skill="sapphire"] .dcl-living-spark{animation-name:dcl-flash}
+.dcl-living-scene[data-skill="crystal"] .dcl-living-spark{animation-name:dcl-crystal}
+.dcl-living-scene[data-skill="celestial"] .dcl-living-ring{animation-name:dcl-wings}
+.dcl-living-scene[data-skill="aurora"] .dcl-living-ring{inset:18%;border-width:6px;border-color:transparent;box-shadow:none;
+ background:conic-gradient(from 0deg,transparent,#4bdda2aa,#a19cffb8,#43d8e0b8,transparent);
+ -webkit-mask:radial-gradient(transparent 55%,#000 58%);mask:radial-gradient(transparent 55%,#000 58%);animation-name:dcl-aurora}
+.dcl-living-scene[data-skill="cosmic"] .dcl-living-ring{border-style:dashed;border-width:5px;animation-name:dcl-portal}
+.dcl-living-scene[data-skill="royal"] .dcl-living-ring{border-color:#e4b24d;animation-name:dcl-royal}
+.dcl-living-scene[data-skill="eternal"] .dcl-living-ring{inset:12%;border-width:5px;
+ box-shadow:0 0 23px #8dfaff,0 0 47px #ad8dfa,inset 0 0 35px #ffe7a4;animation-name:dcl-eternal}
+.dcl-living-scene[data-skill="eternal"] .dcl-living-spark{animation-name:dcl-eternal-spark}
+.dcl-living-scene[data-mode="treasure"] .dcl-living-ring{border-color:#ffe7a0;box-shadow:0 0 24px #ffd66c;animation-name:dcl-treasure-burst}
+.dcl-living-carry{position:absolute;top:0;left:0;width:39px;height:35px;pointer-events:none;
+ background:url('./assets/dolphin-treasure-chest.svg') center/contain no-repeat;
+ transform:translate3d(-150px,-150px,0);filter:drop-shadow(0 3px 5px #041d25c9);animation:dcl-carry-bob 2.6s ease-in-out infinite}
+.dcl-living-avatar-fx{position:absolute;inset:4%;z-index:9;pointer-events:none;isolation:isolate}
+.dcl-avatar-heart{position:absolute;bottom:30%;left:47%;font-size:17px;color:#ffe6f3;text-shadow:0 0 7px #ff9ecf;
+ opacity:0;animation:dcl-hearts 2.8s ease-out both;animation-delay:calc(var(--n,0)*.19s)}
+.dcl-avatar-heart:nth-child(2){--n:1;left:59%;color:#c1ffeb}
+.dcl-avatar-heart:nth-child(3){--n:2;left:37%}
+.dcl-avatar-heart:nth-child(4){--n:3;left:68%;color:#ffe6af}
+.dcl-avatar-heart:nth-child(5){--n:4;left:24%}
+.dolphin-pet-stage[data-avatar="true"] .dolphin-pet-orbit{animation-play-state:paused}
+.dolphin-pet-stage[data-avatar="true"] .dolphin-pet-flight{animation:dcl-avatar-greet 3s ease-in-out both}
+.dolphin-pet-stage[data-cosmetic="aurora"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="aurora"] .dcl-sprite{filter:drop-shadow(0 0 9px #74ebcc) drop-shadow(0 0 6px #b6a4ff)}
+.dolphin-pet-stage[data-cosmetic="royal"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="royal"] .dcl-sprite{filter:drop-shadow(0 0 13px #ffc96f)}
+.dolphin-pet-stage[data-cosmetic="cosmic"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="cosmic"] .dcl-sprite{filter:drop-shadow(0 0 13px #bf9cff)}
+.dolphin-pet-stage[data-cosmetic="eternal"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="eternal"] .dcl-sprite{filter:drop-shadow(0 0 17px #9cecff) drop-shadow(0 0 8px #ffe6c6)}
+.dolphin-pet-stage[data-cosmetic="sapphire"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="sapphire"] .dcl-sprite{filter:drop-shadow(0 0 10px #8da9ff)}
+.dolphin-pet-stage[data-cosmetic="coral"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="coral"] .dcl-sprite{filter:drop-shadow(0 0 9px #ffa9cb)}
+.dolphin-pet-stage[data-cosmetic="crystal"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="crystal"] .dcl-sprite{filter:drop-shadow(0 0 10px #d2baff)}
+.dolphin-pet-stage[data-cosmetic="pearls"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="pearls"] .dcl-sprite{filter:drop-shadow(0 0 9px #c3fffb)}
+.dolphin-pet-stage[data-cosmetic="bubbles"] .dolphin-pet-sprite,
+.dcl-stage[data-cosmetic="bubbles"] .dcl-sprite{filter:drop-shadow(0 0 9px #9dcbff)}
+.dcl-living-dialog{box-sizing:border-box;border:1px solid #8cddd1;border-radius:18px;
+ background:linear-gradient(135deg,#0d3649,#112838);color:#eaffff;padding:18px;max-width:min(94vw,480px);width:94%;
+ max-height:80dvh;overflow:auto;box-shadow:0 18px 55px #000a}
+.dcl-living-dialog::backdrop{background:#03151ddd;backdrop-filter:blur(4px)}
+.dcl-living-dialog-head{display:flex;justify-content:space-between;align-items:center;gap:10px}
+.dcl-living-dialog-head h2{margin:0;font:900 20px 'Nunito',system-ui,sans-serif;color:#e7faf9}
+.dcl-living-close,.dcl-living-equip{min-height:36px;padding:7px 10px;border:1px solid #82d8cf;border-radius:9px;background:#155a66;color:white;cursor:pointer}
+.dcl-living-equip:disabled{opacity:.53;cursor:default}
+.dcl-living-dialog-tip,.dcl-living-disclaimer,.dcl-living-empty{font:600 12px/1.5 'Nunito',system-ui,sans-serif;color:#c4e4df}
+.dcl-living-item{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:9px 0;border-bottom:1px solid #8bdacf40}
+.dcl-living-item-copy{font:700 13px/1.5 'Nunito',system-ui,sans-serif}
+@keyframes dcl-ring{0%{transform:scale(.2) rotate(0);opacity:0}20%{opacity:1}75%{opacity:.9}100%{transform:scale(2.4) rotate(65deg);opacity:0}}
+@keyframes dcl-sparks{0%{transform:rotate(calc(var(--i)*45deg)) translateX(0) scale(.2);opacity:0}25%{opacity:1}100%{transform:rotate(calc(var(--i)*45deg)) translateX(105px) scale(1.1);opacity:0}}
+@keyframes dcl-bubbles{0%{transform:translateY(28px) scale(.3);opacity:0}25%{opacity:.9}100%{transform:translate(calc((var(--i) - 3)*8px),-135px) scale(1.6);opacity:0}}
+@keyframes dcl-waves{0%{transform:scale(.3) rotate(-15deg);opacity:0}25%{opacity:1}100%{transform:scale(2.8) rotate(40deg);opacity:0}}
+@keyframes dcl-bloom{0%{transform:rotate(calc(var(--i)*45deg)) translateX(0) scale(.2);opacity:0}50%{opacity:1}100%{transform:rotate(calc(var(--i)*45deg + 75deg)) translateX(90px) scale(1.6);opacity:0}}
+@keyframes dcl-flash{0%{transform:translateX(0) scale(.1);opacity:0}20%{opacity:1}45%{transform:rotate(calc(var(--i)*45deg)) translateX(45px) scale(1.8)}100%{transform:rotate(calc(var(--i)*45deg)) translateX(140px) scale(.1);opacity:0}}
+@keyframes dcl-crystal{0%{transform:rotate(0) translateY(0) scale(.1);opacity:0}40%{opacity:1}100%{transform:rotate(calc(var(--i)*150deg)) translateX(125px) scale(1.25);opacity:0}}
+@keyframes dcl-wings{0%{transform:scaleX(.1) scaleY(.4);opacity:0}30%{transform:scaleX(2) scaleY(.75);opacity:1}100%{transform:scaleX(.4) scaleY(2);opacity:0}}
+@keyframes dcl-aurora{0%{transform:rotate(-75deg) scale(.4);opacity:0}30%{opacity:1}100%{transform:rotate(290deg) scale(2.5);opacity:0}}
+@keyframes dcl-portal{0%{transform:perspective(160px) rotateY(80deg) scale(.3);opacity:0}35%{opacity:1}100%{transform:perspective(160px) rotateY(520deg) scale(2.3);opacity:0}}
+@keyframes dcl-royal{0%{transform:translateY(50px) scale(.2);opacity:0}35%{opacity:1}65%{transform:translateY(-15px) scale(1.5)}100%{transform:translateY(-70px) scale(2);opacity:0}}
+@keyframes dcl-eternal{0%{transform:rotate(-45deg) scale(.12);opacity:0}30%{opacity:1}85%{opacity:.8}100%{transform:rotate(315deg) scale(2.6);opacity:0}}
+@keyframes dcl-eternal-spark{0%{transform:rotate(calc(var(--i)*45deg)) translateX(0) scale(.1);opacity:0}30%{opacity:1}65%{transform:rotate(calc(var(--i)*45deg)) translateX(90px) scale(2.1)}100%{transform:rotate(calc(var(--i)*45deg + 40deg)) translateX(120px) scale(.1);opacity:0}}
+@keyframes dcl-treasure-burst{0%{transform:scale(.2);opacity:0}45%{transform:scale(1.7);opacity:1}100%{transform:scale(2.5);opacity:0}}
+@keyframes dcl-avatar-greet{0%,100%{transform:translate(-50%,-50%) scale(1)}
+ 35%{transform:translate(-160%,-50%) scale(1.05) rotate(-15deg)}
+ 65%{transform:translate(-145%,-60%) scale(1.12) rotate(10deg)}}
+@keyframes dcl-hearts{0%{opacity:0;transform:translateY(0) scale(.3)}20%{opacity:1}100%{opacity:0;transform:translateY(-56px) scale(1.3)}}
+@keyframes dcl-carry-bob{50%{filter:drop-shadow(0 3px 9px #ffe487);}}
+@keyframes dcl-treasure-glow{50%{box-shadow:0 0 11px #ffdc7b99}}
+@media(max-width:380px){.dcl-living-button{font-size:11px;padding:8px 10px}.dcl-living-panel{padding:11px 9px}}
+@media(prefers-reduced-motion:reduce){.dcl-living-panel *,.dcl-living-scene *,.dcl-living-avatar-fx *, .dcl-living-carry{animation:none!important;transition:none!important}}

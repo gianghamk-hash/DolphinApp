@@ -116,6 +116,7 @@
  function move(x,y,heading){
   const b=size(),pet=b.pet,px=clamp(x,pet/2,b.w-pet/2),py=clamp(y,pet/2,b.h-pet/2);
   state.flight.style.transform='translate3d('+(px-pet/2)+'px,'+(py-pet/2)+'px,0)';
+  root.DolphinLivingBridge?.move?.(px,py);
   state.flight.style.setProperty('--dcl-face',heading>=0?'-1':'1');
   const nearButton=covers(px,py,protect(),pet/2+5);
   state.flight.style.pointerEvents=nearButton?'none':'auto';

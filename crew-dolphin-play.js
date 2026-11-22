@@ -151,15 +151,10 @@
   function invite(manual=false,trigger=null) {
    if (!canPlay()) return false;
    if (game) { if (manual && !ball.hidden) ball.focus({preventScroll:true}); return true; }
-   let b=snapshot();
+   if (manual) showPlayArea();
+   const b=snapshot();
    let lane=laneFor(b.pos,b);
    if (!lane && manual) {
-    for (const pos of b.nodes()) { lane=laneFor(pos,b); if (lane) break; }
-   }
-   if (!lane && manual && landing.scrollTop>0) {
-    // The launcher can be below the cards on a phone. Return to open water.
-    showPlayArea();
-    b=snapshot();
     for (const pos of b.nodes()) { lane=laneFor(pos,b); if (lane) break; }
    }
    if (!lane) { nextOffer=performance.now()+3500; return false; }

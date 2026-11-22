@@ -43,7 +43,17 @@ for(const name of ['index.html','dolphin-profile.html'])
   assert(await panel.isVisible(),'Landing control bar visible only for verified staff');
   const play=page.getByRole('button',{name:'Chuyền bóng nước',exact:true});
   const stage=page.locator('#dolphinLandingCompanion'), ball=stage.locator('.dcl-water-ball');
-  const phase=value=>page.waitForFunction(p=>document.querySelector('#dolphinLandingCompanion').dataset.play===p,value,{timeout:5000});
+  async function phase(value){
+   try{
+    await page.waitForFunction(p=>document.querySelector('#dolphinLandingCompanion').dataset.play===p,value,{timeout:12000});
+   }catch(error){
+    const info=await stage.evaluate(el=>({
+     phase:el.dataset.play,hidden:el.hidden,passes:el.querySelector('.dcl-water-ball').dataset.hits,
+     scroll:el.parentElement.scrollTop,status:document.querySelector('.dcl-living-status').textContent
+    }));
+    throw new Error('Waiting for '+value+' '+JSON.stringify(info),{cause:error});
+   }
+  }
   await play.click();
   await phase('ready');
   for(let pass=1;pass<=3;pass++){

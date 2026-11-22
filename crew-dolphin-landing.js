@@ -267,7 +267,7 @@
  function talk(message,emotion,duration,action){
   if(!canShow())return;
   root.clearTimeout(state.talkTimer);
-  if(action==='checkin'||emotion==='level')state.play?.reset();
+  if(action==='checkin')state.play?.reset();
   state.bubbleText.textContent=message;
   state.bubbleAction.hidden=action!=='checkin';
   state.bubble.hidden=false;

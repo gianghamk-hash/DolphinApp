@@ -1,5 +1,5 @@
 {
-  "version": "1.1.145",
-  "releaseDate": "2026-11-18",
-  "notes": "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit"
+  "version": "1.1.146",
+  "releaseDate": "2026-11-22",
+  "notes": "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)"
 }

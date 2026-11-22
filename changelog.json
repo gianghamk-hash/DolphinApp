@@ -1,26 +1,30 @@
 {
-  "version": "1.1.145",
-  "previousVersion": "1.1.144",
-  "commit": "f2ca104",
-  "previousCommit": "f907085",
-  "buildDate": "2026-11-18T08:50:32.241Z",
-  "summary": "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit",
+  "version": "1.1.146",
+  "previousVersion": "1.1.145",
+  "commit": "1753f28",
+  "previousCommit": "f2ca104",
+  "buildDate": "2026-11-22T03:41:31.996Z",
+  "summary": "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)",
   "changes": {
-    "totalCommits": 367,
-    "filesChanged": 6,
+    "totalCommits": 368,
+    "filesChanged": 8,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit"
+    "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)"
   ],
   "fileChanges": [
     {
-      "file": "crew-dolphin-companion.css",
+      "file": ".github/workflows/dolphin-companion.yml",
       "type": "update"
     },
     {
-      "file": "crew-dolphin-companion.js",
+      "file": "crew-dolphin-landing.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-landing.js",
       "type": "update"
     },
     {
@@ -28,11 +32,15 @@
       "type": "update"
     },
     {
-      "file": "dolphin-profile.html",
+      "file": "index.html",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-companion-browser.cjs",
+      "file": "scripts/dolphin-landing-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-landing.test.cjs",
       "type": "update"
     },
     {

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.145",
+      "releaseDate": "2026-11-18T08:50:32.241Z",
+      "summary": "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit",
+      "details": [
+        "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit"
+      ]
+    },
+    {
       "version": "1.1.144",
       "releaseDate": "2026-11-18T04:35:04.919Z",
       "summary": "Merge pull request #288 from gianghamk-hash/feat/dolphin-companion",
@@ -390,14 +398,6 @@
       "summary": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking",
       "details": [
         "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking"
-      ]
-    },
-    {
-      "version": "1.1.93",
-      "releaseDate": "2026-11-09T10:22:52.357Z",
-      "summary": "WIP (disabled): verified XP wagering core and security gates for online games (#245)",
-      "details": [
-        "WIP (disabled): verified XP wagering core and security gates for online games (#245)"
       ]
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.150",
+      "releaseDate": "2026-11-22T06:04:28.865Z",
+      "summary": "Fix Dolphin landing swim animation",
+      "details": [
+        "Fix Dolphin landing swim animation"
+      ]
+    },
+    {
       "version": "1.1.149",
       "releaseDate": "2026-11-22T05:38:43.433Z",
       "summary": "Fix landing overlap and publish ten level assets",
@@ -390,14 +398,6 @@
       "summary": "Fix adapter registration and update room creation logic",
       "details": [
         "Fix adapter registration and update room creation logic"
-      ]
-    },
-    {
-      "version": "1.1.98",
-      "releaseDate": "2026-11-10T03:37:04.504Z",
-      "summary": "perf(tactics): prevent fetchState pileup and add optimistic state update",
-      "details": [
-        "perf(tactics): prevent fetchState pileup and add optimistic state update"
       ]
     }
   ]

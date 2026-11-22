@@ -1,22 +1,70 @@
 {
-  "version": "1.1.150",
-  "previousVersion": "1.1.149",
-  "commit": "766e849",
-  "previousCommit": "5f99a1e",
-  "buildDate": "2026-11-22T06:04:28.865Z",
-  "summary": "Fix Dolphin landing swim animation",
+  "version": "1.1.151",
+  "previousVersion": "1.1.150",
+  "commit": "28fd6b7",
+  "previousCommit": "766e849",
+  "buildDate": "2026-11-22T08:00:35.095Z",
+  "summary": "Render the landing dolphin with a rigged 3D model (#295)",
   "changes": {
-    "totalCommits": 372,
-    "filesChanged": 7,
+    "totalCommits": 373,
+    "filesChanged": 22,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Fix Dolphin landing swim animation"
+    "Render the landing dolphin with a rigged 3D model (#295)"
   ],
   "fileChanges": [
     {
-      "file": "assets/eternal-dolphin-swim-v2.png",
+      "file": ".github/workflows/dolphin-companion.yml",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-forms-v1.glb",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-1.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-10.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-20.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-30.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-40.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-50.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-60.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-70.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-level-90.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/eternal-dolphin-swim-v3.png",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-landing-3d.js",
       "type": "update"
     },
     {
@@ -32,6 +80,10 @@
       "type": "update"
     },
     {
+      "file": "scripts/build-dolphin-landing-model.py",
+      "type": "update"
+    },
+    {
       "file": "scripts/dolphin-landing-browser.cjs",
       "type": "update"
     },
@@ -41,6 +93,14 @@
     },
     {
       "file": "service-worker.js",
+      "type": "update"
+    },
+    {
+      "file": "vendor/dolphin-three-LICENSE.txt",
+      "type": "update"
+    },
+    {
+      "file": "vendor/dolphin-three-r180.js",
       "type": "update"
     }
   ]

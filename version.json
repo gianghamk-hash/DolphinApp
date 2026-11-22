@@ -1,7 +1,7 @@
 {
-  "version": "1.1.150",
-  "buildDate": "2026-11-22T06:04:28.865Z",
-  "commit": "766e849",
-  "notes": "Fix Dolphin landing swim animation",
+  "version": "1.1.151",
+  "buildDate": "2026-11-22T08:00:35.095Z",
+  "commit": "28fd6b7",
+  "notes": "Render the landing dolphin with a rigged 3D model (#295)",
   "forceUpdate": false
 }

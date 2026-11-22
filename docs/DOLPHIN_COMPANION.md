@@ -59,3 +59,43 @@ The Dolphin companion workflow runs both and uploads screenshots for review.
 The existing staff-profile workflow independently tests profile/XP/permissions
 and the Manager APK presentation. These checks do not constitute testing on a
 physical Android device or producing a new APK binary.
+
+
+## Landing companion · Sprint 1
+
+The existing 5×2 rendered atlas and 10 current-Level forms are shared between
+the profile's circular orbit and a new crew-dolphin-landing.js controller.
+The Landing version uses cubic Bézier trajectories with continuous outgoing
+tangents, upright artwork, time-of-day moods, petting/click/keyboard reactions,
+secret messages for Cosmic/Royal/Eternal forms, and level-up/evolution messages.
+The dialogue greeting uses Asia/Ho_Chi_Minh time and the verified Staff ID name.
+
+The companion only renders for verified linked identities while the Landing is
+actually visible and the access gate is unlocked. It hides over subapps and
+urgent order/alarm overlays, and its clickable hit target yields to operational
+buttons. Reduced-motion preference freezes roaming while keeping the companion
+interactive. There are no additional image assets or Firebase permissions.
+
+The daily check-in hint is read-only: only a *fresh*, server-provided
+dailyMissions.tasks entry with id="checkin" and done=false qualifies.
+The prompt opens the existing profile check-in screen; it never invokes
+staffCheckInDaily, awards XP, changes a mission, or updates any work records.
+It appears at most once per local day per current staff session, and is skipped
+if another overlay interrupts the prompt.
+
+Level-up reactions occur only on a genuine within-session increase for the same
+verified employee. First load, account switch, historical highest level and XP
+loss cannot trigger a Level Up. Level deductions immediately select the lower
+current form and cancel ongoing celebrations.
+
+### Validation
+- node --test scripts/dolphin-landing.test.cjs: Vietnam time windows, check-in
+  freshness and Bézier endpoints.
+- node scripts/dolphin-landing-browser.cjs: 320/390/768/1280px visuals,
+  ten-form atlas, interactions, evolution and deductions, account switch,
+  approval gate, order-alert priority, app navigation and reduced-motion behavior.
+- Existing profile/XP checks remain in the Dolphin companion and staff-profile
+  workflows. Screenshots are archived with the companion workflow.
+
+This change does not ship/rebuild an Android APK. Physical Android WebView
+testing remains a release verification step.

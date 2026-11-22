@@ -28,3 +28,20 @@
 @keyframes dcl-spark{0%{opacity:0;transform:translateY(3px) scale(.3)}35%{opacity:1}100%{opacity:0;transform:translateY(-20px) scale(1.2)}}
 @keyframes dcl-bubble-in{from{opacity:0;transform:translateY(7px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
 @media(prefers-reduced-motion:reduce){.dcl-stage *, .dcl-bubble{animation:none!important;transition:none!important;scroll-behavior:auto!important}}
+
+/* Eternal Dolphin uses a rendered four-frame swim cycle. The existing 10-form
+   atlas continues to select every evolution stage; this replaces only the
+   Level 100 artwork while its independent Bezier flight path keeps running. */
+.dcl-stage[data-form="9"] .dcl-sprite{
+ background-image:url('./assets/eternal-dolphin-swim.png');
+ background-size:400% 100%;
+ background-position:0 0;
+ animation:dcl-eternal-swim 720ms steps(4,end) infinite;
+}
+@keyframes dcl-eternal-swim{
+ from{background-position:0 0}
+ to{background-position:100% 0}
+}
+@media(prefers-reduced-motion:reduce){
+ .dcl-stage[data-form="9"] .dcl-sprite{background-position:0 0}
+}

@@ -1,18 +1,18 @@
 {
-  "version": "1.1.146",
-  "previousVersion": "1.1.145",
-  "commit": "1753f28",
-  "previousCommit": "f2ca104",
-  "buildDate": "2026-11-22T03:41:31.996Z",
-  "summary": "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)",
+  "version": "1.1.147",
+  "previousVersion": "1.1.146",
+  "commit": "5ebeb54",
+  "previousCommit": "1753f28",
+  "buildDate": "2026-11-22T04:55:56.352Z",
+  "summary": "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)",
   "changes": {
-    "totalCommits": 368,
-    "filesChanged": 8,
+    "totalCommits": 369,
+    "filesChanged": 11,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)"
+    "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)"
   ],
   "fileChanges": [
     {
@@ -20,7 +20,7 @@
       "type": "update"
     },
     {
-      "file": "crew-dolphin-landing.css",
+      "file": "assets/dolphin-treasure-chest.svg",
       "type": "update"
     },
     {
@@ -28,7 +28,19 @@
       "type": "update"
     },
     {
+      "file": "crew-dolphin-living.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-living.js",
+      "type": "update"
+    },
+    {
       "file": "docs/DOLPHIN_COMPANION.md",
+      "type": "update"
+    },
+    {
+      "file": "dolphin-profile.html",
       "type": "update"
     },
     {
@@ -36,11 +48,11 @@
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-landing-browser.cjs",
+      "file": "scripts/dolphin-living-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-landing.test.cjs",
+      "file": "scripts/dolphin-living.test.cjs",
       "type": "update"
     },
     {

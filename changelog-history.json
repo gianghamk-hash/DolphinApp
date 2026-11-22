@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.146",
+      "releaseDate": "2026-11-22T03:41:31.996Z",
+      "summary": "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)",
+      "details": [
+        "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)"
+      ]
+    },
+    {
       "version": "1.1.145",
       "releaseDate": "2026-11-18T08:50:32.241Z",
       "summary": "Merge pull request #289 from gianghamk-hash/fix/dolphin-smooth-orbit",
@@ -390,14 +398,6 @@
       "summary": "fix(crew): lock avatar, titles and cosmetic FX to current XP Level",
       "details": [
         "fix(crew): lock avatar, titles and cosmetic FX to current XP Level"
-      ]
-    },
-    {
-      "version": "1.1.94",
-      "releaseDate": "2026-11-10T00:26:58.546Z",
-      "summary": "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking",
-      "details": [
-        "fix(crew): Level follows current XP and duplicate roster entries stay out of ranking"
       ]
     }
   ]

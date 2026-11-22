@@ -1,7 +1,7 @@
 {
-  "version": "1.1.146",
-  "buildDate": "2026-11-22T03:41:31.996Z",
-  "commit": "1753f28",
-  "notes": "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)",
+  "version": "1.1.147",
+  "buildDate": "2026-11-22T04:55:56.352Z",
+  "commit": "5ebeb54",
+  "notes": "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)",
   "forceUpdate": false
 }

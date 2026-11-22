@@ -1,7 +1,7 @@
 {
-  "version": "1.1.147",
-  "buildDate": "2026-11-22T04:55:56.352Z",
-  "commit": "5ebeb54",
-  "notes": "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)",
+  "version": "1.1.148",
+  "buildDate": "2026-11-22T05:18:16.773Z",
+  "commit": "b1997b8",
+  "notes": "Animate Eternal Dolphin on landing",
   "forceUpdate": false
 }

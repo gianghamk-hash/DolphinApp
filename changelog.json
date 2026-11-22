@@ -1,62 +1,30 @@
 {
-  "version": "1.1.147",
-  "previousVersion": "1.1.146",
-  "commit": "5ebeb54",
-  "previousCommit": "1753f28",
-  "buildDate": "2026-11-22T04:55:56.352Z",
-  "summary": "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)",
+  "version": "1.1.148",
+  "previousVersion": "1.1.147",
+  "commit": "b1997b8",
+  "previousCommit": "5ebeb54",
+  "buildDate": "2026-11-22T05:18:16.773Z",
+  "summary": "Animate Eternal Dolphin on landing",
   "changes": {
-    "totalCommits": 369,
-    "filesChanged": 11,
+    "totalCommits": 370,
+    "filesChanged": 3,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)"
+    "Animate Eternal Dolphin on landing"
   ],
   "fileChanges": [
     {
-      "file": ".github/workflows/dolphin-companion.yml",
+      "file": "assets/eternal-dolphin-swim.png",
       "type": "update"
     },
     {
-      "file": "assets/dolphin-treasure-chest.svg",
+      "file": "crew-dolphin-landing.css",
       "type": "update"
     },
     {
-      "file": "crew-dolphin-landing.js",
-      "type": "update"
-    },
-    {
-      "file": "crew-dolphin-living.css",
-      "type": "update"
-    },
-    {
-      "file": "crew-dolphin-living.js",
-      "type": "update"
-    },
-    {
-      "file": "docs/DOLPHIN_COMPANION.md",
-      "type": "update"
-    },
-    {
-      "file": "dolphin-profile.html",
-      "type": "update"
-    },
-    {
-      "file": "index.html",
-      "type": "update"
-    },
-    {
-      "file": "scripts/dolphin-living-browser.cjs",
-      "type": "update"
-    },
-    {
-      "file": "scripts/dolphin-living.test.cjs",
-      "type": "update"
-    },
-    {
-      "file": "service-worker.js",
+      "file": "scripts/dolphin-landing-browser.cjs",
       "type": "update"
     }
   ]

@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.147",
+      "releaseDate": "2026-11-22T04:55:56.352Z",
+      "summary": "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)",
+      "details": [
+        "feat: Dolphin Living Pet Sprint 2 — 10 signature skills, avatar interaction and treasure (#291)"
+      ]
+    },
+    {
       "version": "1.1.146",
       "releaseDate": "2026-11-22T03:41:31.996Z",
       "summary": "feat: Dolphin Companion roaming on Landing with greetings, petting and Level reactions (#290)",
@@ -390,14 +398,6 @@
       "summary": "fix(multiplayer): fix 2-player seats assignment and throttle sendState",
       "details": [
         "fix(multiplayer): fix 2-player seats assignment and throttle sendState"
-      ]
-    },
-    {
-      "version": "1.1.95",
-      "releaseDate": "2026-11-10T00:53:19.756Z",
-      "summary": "fix(crew): lock avatar, titles and cosmetic FX to current XP Level",
-      "details": [
-        "fix(crew): lock avatar, titles and cosmetic FX to current XP Level"
       ]
     }
   ]

@@ -47,7 +47,7 @@
  const modelURL=new URL('./crew-dolphin-landing-3d.js?v=rig-v2',doc.currentScript?.src||doc.baseURI);
  const state={stage:null,flight:null,sprite:null,bubble:null,bubbleText:null,bubbleAction:null,
   profile:null,form:null,path:null,position:null,exit:null,frame:0,turn:0,
-  art:null,model:null,modelRequested:false,
+  play:null,art:null,model:null,modelRequested:false,
   lastWelcome:0,lastHint:'',pendingHint:'',lastSlot:'',touchCount:0,lastSecret:0,facing:1,
   obstacles:null,obstaclesAt:0,nextRouteAt:0,
   reactionTimer:0,talkTimer:0,hintTimer:0,press:null,enabled:false};
@@ -62,7 +62,7 @@
    doc.documentElement.classList.contains('dolphin-access-allowed')&&
    !doc.hidden&&!doc.body.classList.contains('app-mode')&&
    landing&&landing.style.display!=='none'&&!landing.classList.contains('fade-out')&&
-   !urgentVisible());
+   !urgentVisible()&&!doc.querySelector('dialog[open]'));
  }
  function urgentVisible(){
   for(const name of ['reminderAlarm','orderNotif']){
@@ -79,7 +79,7 @@
  function protect(){
   const now=Date.now();
   if(state.obstacles&&now-state.obstaclesAt<200)return state.obstacles;
-  const els=doc.querySelectorAll('#landing .logo-img,#landing .welcome-lbl,#landing .area-card,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
+  const els=doc.querySelectorAll('#landing .logo-img,#landing .welcome-lbl,#landing .area-card,#landing .dcl-living-panel,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
   state.obstacles=[...els].map(el=>{
    const rect=el.getBoundingClientRect();
    if(!rect.width||!rect.height)return null;
@@ -190,11 +190,17 @@
   const by=clamp(py-pet/2-94,8,b.h-100);
   state.bubble.style.left=bx+'px';state.bubble.style.top=by+'px';
  }
+ function playground(bounds=size(),rects=protect()){
+  return {pos:state.position,pet:bounds.pet,index:state.form?.index,facing:state.facing,
+   safe:(point,diameter)=>allowedNode(point,{...bounds,pet:diameter},rects),
+   nodes:()=>waypointList(bounds,rects)};
+ }
  function tick(now){
   state.frame=0;
   if(!canShow()||root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){syncVisibility();return;}
   state.frame=root.requestAnimationFrame(tick);
   const bounds=size(),rects=protect();
+  if(state.play?.tick(now,playground(bounds,rects)))return;
   if(!state.path&&now>=state.nextRouteAt&&!startPath(now,bounds,rects))state.nextRouteAt=now+300;
   if(!state.path){
    if(state.position&&allowedNode(state.position,bounds,rects))move(state.position.x,state.position.y,0,0,now);
@@ -238,7 +244,7 @@
   if(!state.stage)return;
   const active=canShow();
   state.stage.hidden=!active;
-  if(!active){stop();return;}
+  if(!active){state.play?.reset();stop();return;}
   if(root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
    stop();
    const position=park(size(),protect());
@@ -261,6 +267,7 @@
  function talk(message,emotion,duration,action){
   if(!canShow())return;
   root.clearTimeout(state.talkTimer);
+  if(action==='checkin')state.play?.reset();
   state.bubbleText.textContent=message;
   state.bubbleAction.hidden=action!=='checkin';
   state.bubble.hidden=false;
@@ -318,6 +325,7 @@
   const current=slot(hourVN(new Date()));
   state.flight.dataset.mood=current.mood;state.lastSlot=current.key;
   const same=prev&&prev.employeeId===next.employeeId;
+  if(!same||next.currentLevel!==prev.currentLevel||next.xp<prev.xp)state.play?.reset();
   if(!same){
    state.lastWelcome=0;state.lastHint='';state.pendingHint='';state.touchCount=0;state.lastSecret=0;
    state.position=null;state.path=null;state.facing=1;
@@ -376,6 +384,19 @@
   });
   state.bubble.append(state.bubbleText,state.bubbleAction);
   state.stage.append(state.flight,state.bubble);landing.append(state.stage);
+  state.play=root.DolphinLandingPlay?.create({stage:state.stage,flight:state.flight,landing,
+   snapshot:playground,canPlay:canShow,
+   showPlayArea(){landing.scrollTo({top:0,behavior:'instant'});state.obstacles=null;},
+   clearPath(){state.path=null;state.exit=null;state.nextRouteAt=0;},
+   place(point,dx,dy,now){state.position=point;move(point.x,point.y,dx,dy,
+    root.matchMedia('(prefers-reduced-motion: reduce)').matches?undefined:now);}
+  });
+  landing.addEventListener('dolphin-play-invite',event=>{
+   if(state.play?.invite(true,event.detail))event.preventDefault();
+  });
+  // Dialogs are created by the living companion after the landing initializes.
+  doc.addEventListener('toggle',e=>{if(e.target.tagName==='DIALOG')syncVisibility();},true);
+  doc.addEventListener('close',e=>{if(e.target.tagName==='DIALOG')syncVisibility();},true);
   state.flight.addEventListener('pointerdown',e=>{
    if(e.button!==undefined&&e.button!==0)return;
    state.press={x:e.clientX,y:e.clientY};
@@ -384,7 +405,7 @@
   state.flight.addEventListener('pointerup',e=>{
    if(!state.press)return;
    const movement=Math.hypot(e.clientX-state.press.x,e.clientY-state.press.y);
-   state.press=null;if(movement<180)touchPet();
+   state.press=null;if(movement<180&&!state.play?.consumedHold())touchPet();
   });
   state.flight.addEventListener('pointercancel',()=>{state.press=null;});
   state.flight.addEventListener('click',e=>{if(e.detail===0)touchPet();});
@@ -393,13 +414,15 @@
   doc.addEventListener('visibilitychange',syncVisibility);
   root.addEventListener('focus',syncVisibility);
   root.addEventListener('resize',()=>{
+   state.play?.reset();
    state.position=null;state.path=null;state.obstaclesAt=0;state.nextRouteAt=0;
    delete state.flight.dataset.positioned;
    syncVisibility();
   });
   const reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)');
-  reduced?.addEventListener?.('change',syncVisibility);
+  reduced?.addEventListener?.('change',()=>{state.play?.reset();syncVisibility();});
   landing.addEventListener('scroll',()=>{
+   state.play?.scroll();
    state.obstaclesAt=0;state.nextRouteAt=0;
    if(reduced?.matches)syncVisibility();
   },{passive:true});

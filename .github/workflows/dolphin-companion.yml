@@ -1,10 +1,10 @@
 name: Dolphin companion
 on:
   pull_request:
-    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','.github/workflows/dolphin-companion.yml']
+    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-play.js','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','.github/workflows/dolphin-companion.yml']
   push:
     branches: [main]
-    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','.github/workflows/dolphin-companion.yml']
+    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-play.js','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','.github/workflows/dolphin-companion.yml']
 permissions:
   contents: read
 jobs:

@@ -37,10 +37,54 @@ for(const name of ['index.html','dolphin-profile.html'])
    window.DolphinPrestige={getMine:()=>window.progress,call:()=>{throw Error('Pet cannot mutate XP')}};
    document.documentElement.classList.add('dolphin-access-allowed');
   },owner);
-  for(const script of ['crew-dolphin-companion.js','crew-dolphin-landing.js','crew-dolphin-living.js'])
+  for(const script of ['crew-dolphin-companion.js','crew-dolphin-play.js','crew-dolphin-landing.js','crew-dolphin-living.js'])
    await page.addScriptTag({url:origin+'/'+script});
   const panel=page.locator('.dcl-living-landing');
   assert(await panel.isVisible(),'Landing control bar visible only for verified staff');
+  const play=page.getByRole('button',{name:'Chuyền bóng nước',exact:true});
+  const stage=page.locator('#dolphinLandingCompanion'), ball=stage.locator('.dcl-water-ball');
+  async function phase(value){
+   try{
+    await page.waitForFunction(p=>document.querySelector('#dolphinLandingCompanion').dataset.play===p,value,{timeout:12000});
+   }catch(error){
+    const info=await stage.evaluate(el=>({
+     phase:el.dataset.play,hidden:el.hidden,passes:el.querySelector('.dcl-water-ball').dataset.hits,
+     scroll:el.parentElement.scrollTop,status:document.querySelector('.dcl-living-status').textContent
+    }));
+    throw new Error('Waiting for '+value+' '+JSON.stringify(info),{cause:error});
+   }
+  }
+  await play.click();
+  await phase('ready');
+  for(let pass=1;pass<=3;pass++){
+   assert.equal(await ball.getAttribute('data-hits'),String(pass-1));
+   const target=await ball.boundingBox();
+   await ball.click();
+   if(pass===1){
+    // Simulate newly laid-out landing content taking the original catching spot.
+    await page.evaluate(box=>{
+     const obstacle=document.createElement('div');
+     obstacle.id='late-card';obstacle.className='area-card';
+     obstacle.style.cssText='position:fixed;width:32px;height:32px;min-height:0;padding:0;left:'+box.x+'px;top:'+box.y+'px';
+     document.getElementById('landing').append(obstacle);
+    },target);
+   }
+   await phase(pass===3?'finale':'ready');
+   if(pass===1)await page.locator('#late-card').evaluate(el=>el.remove());
+  }
+  assert(await stage.locator('.dcl-signature').isVisible(),'third return draws the signature');
+  await page.waitForTimeout(1150);
+  await page.screenshot({path:path.join(output,'living-eternal-constellation.png')});
+  await page.evaluate(()=>document.getElementById('orderNotif').classList.add('show'));
+  assert(await ball.isHidden() && await stage.locator('.dcl-signature').isHidden(),'urgent alerts stop play');
+  await page.evaluate(()=>document.getElementById('orderNotif').classList.remove('show'));
+  await page.emulateMedia({reducedMotion:'reduce'});
+  await play.click();
+  await phase('ready');
+  for(let i=0;i<3;i++)await page.keyboard.press('Enter');
+  await phase('finale');
+  assert.equal(await play.evaluate(el=>el===document.activeElement),true,'keyboard focus returns to the game launcher');
+  await page.emulateMedia({reducedMotion:'no-preference'});
   await page.getByRole('button',{name:'Biểu diễn Eternal Ocean'}).click();
   assert(await page.locator('.dcl-living-scene[data-skill="eternal"]').isVisible());
   assert.match(await panel.locator('.dcl-living-status').innerText(),/Eternal Ocean/);

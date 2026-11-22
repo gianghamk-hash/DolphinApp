@@ -151,7 +151,13 @@
   state.collectionBtn=btn('♢ Bộ sưu tập kho báu','dcl-living-button',()=>openCollection());
   state.treasureBtn=btn('🎁 Mở rương bí mật','dcl-living-button dcl-living-treasure',()=>openTreasure());
   state.treasureBtn.hidden=true;
-  actions.append(state.performBtn,state.collectionBtn,state.treasureBtn);
+  const playBtn=btn('Chuyền bóng nước','dcl-living-button',()=>{
+   if(!landingVisible())return;
+   const started=!landing.dispatchEvent(new CustomEvent('dolphin-play-invite',{detail:playBtn,cancelable:true}));
+   status(started?'Chạm bóng 3 lần khi bóng quay về.':'Cuộn tới khoảng trống cạnh logo để chuyền bóng.');
+  });
+  playBtn.title='Chuyền bóng với cá heo. Giữ ngón tay gần cá heo để gọi lại.';
+  actions.append(state.performBtn,playBtn,state.collectionBtn,state.treasureBtn);
   state.status=el('p','dcl-living-status','');state.status.setAttribute('role','status');
   state.panel.append(title,actions,state.status);
   grid.insertAdjacentElement('afterend',state.panel);
@@ -307,6 +313,7 @@
    state.collection=loadCollection(next.employeeId);
    state.autoGreeted=false;state.manualAvatar=false;
    state.due=Date.now()+6500;
+   if(state.place==='landing')status('Giữ ngón tay hoặc con trỏ gần cá heo để gọi lại.');
    if(state.dialog?.open)state.dialog.close();
   }else if(lowered)destroyAction();
   if(state.panel)state.panel.hidden=!hasGate();

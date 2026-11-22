@@ -37,9 +37,7 @@ test('Bezier trajectory has exact endpoints and smooth intermediary points',()=>
 });
 
 test('sprite faces its travel direction and keeps orientation near vertical motion',()=>{
- assert.deepEqual(logic.faceForMovement(8,9,1),{facing:1,scaleX:1},'right-facing Eternal art points right');
- assert.deepEqual(logic.faceForMovement(-8,9,1),{facing:-1,scaleX:-1},'right-facing Eternal art flips left');
- assert.deepEqual(logic.faceForMovement(.1,9,-1),{facing:-1,scaleX:-1},'subpixel turn does not flicker');
- assert.deepEqual(logic.faceForMovement(8,8,1),{facing:1,scaleX:-1},'left-facing evolution art flips right');
- assert.deepEqual(logic.faceForMovement(-8,8,1),{facing:-1,scaleX:1},'left-facing evolution art points left');
+ assert.deepEqual(logic.faceForMovement(8,1),{facing:1,scaleX:-1},'left-facing art flips right');
+ assert.deepEqual(logic.faceForMovement(-8,1),{facing:-1,scaleX:1},'left-facing art points left');
+ assert.deepEqual(logic.faceForMovement(.1,-1),{facing:-1,scaleX:1},'subpixel turn does not flicker');
 });

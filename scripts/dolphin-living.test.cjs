@@ -1,7 +1,9 @@
 'use strict';
 const test=require('node:test'),assert=require('node:assert/strict');
 const rules=require('../crew-dolphin-living.js');
-const companion=require('../crew-dolphin-companion.js');
+const vm=require('node:vm'),fs=require('node:fs'),path=require('node:path');
+const sandbox={};vm.runInNewContext(fs.readFileSync(path.join(__dirname,'../crew-dolphin-companion.js'),'utf8'),{window:sandbox});
+const companion=sandbox.DolphinCompanion;
 test('all 10 Level forms have unique, non-XP decorative skills',()=>{
  assert.equal(rules.SKILLS.length,10);
  assert.equal(new Set(rules.SKILLS.map(x=>x.id)).size,10);

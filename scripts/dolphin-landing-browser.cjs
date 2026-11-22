@@ -57,6 +57,8 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
    assert(await stage.isVisible());
    const p=await pet.boundingBox();
    assert(p&&p.x>=-1&&p.x+p.width<=width+1,'pet stays in viewport at '+width);
+   const logo=await page.locator('#landing .logo-img').boundingBox();
+   assert(logo&&(p.x+p.width<=logo.x||p.x>=logo.x+logo.width||p.y+p.height<=logo.y||p.y>=logo.y+logo.height),'pet stays clear of logo at '+width);
    assert(!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)),'no horizontal overflow at '+width);
    if(width===390||width===1280)await page.screenshot({path:path.join(output,'landing-level100-'+width+'.png'),fullPage:true});
   }

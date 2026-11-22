@@ -83,8 +83,8 @@
   return x>=radius&&x<=b.w-radius&&y>=radius&&y<=b.h-radius&&!covers(x,y,rects,radius+6);
  }
  function waypointList(){
-  const b=size(),margin=b.pet/2+12;
-  const nodes=[[.14,.14],[.5,.12],[.84,.14],[.91,.32],[.9,.63],[.8,.82],[.51,.9],[.18,.82],[.09,.6],[.09,.35],[.35,.4],[.65,.43],[.52,.67]];
+  const b=size(),margin=b.pet/2+2;
+  const nodes=[[.06,.22],[.94,.22],[.06,.32],[.94,.32],[.14,.14],[.5,.12],[.84,.14],[.91,.32],[.9,.63],[.8,.82],[.51,.9],[.18,.82],[.09,.6],[.09,.35],[.35,.4],[.65,.43],[.52,.67]];
   return nodes.map(([x,y])=>({x:clamp(b.w*x,margin,b.w-margin),y:clamp(b.h*y,margin,b.h-margin)}));
  }
  function pathTo(start,target,exitVector,now){
@@ -97,7 +97,7 @@
   return {points:[start,c1,c2,target],duration:clamp(dist*20,3900,12500),startAt:now};
  }
  function startPath(now){
-  const b=size(),rects=protect(),margin=b.pet/2+7,all=waypointList();
+  const b=size(),rects=protect(),margin=b.pet/2+2,all=waypointList();
   if(!state.position){
    state.position=all.find(p=>allowedNode(p.x,p.y,rects,margin))||null;
    if(!state.position)return false;

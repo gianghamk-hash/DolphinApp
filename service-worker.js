@@ -18,6 +18,8 @@ let configLoaded = false;
 const CACHE_URLS = [
   BASE + '/crew-dolphin-companion.css?v=smooth-v2',
   BASE + '/crew-dolphin-companion.js?v=smooth-v2',
+  BASE + '/crew-dolphin-landing.css?v=landing-v1',
+  BASE + '/crew-dolphin-landing.js?v=landing-v1',
   BASE + '/assets/dolphin-companions-v1.png',
   BASE + '/crew-ascension.css?v=level100-v1',
   BASE + '/assets/crew-transparent.png',

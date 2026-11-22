@@ -20,3 +20,20 @@
 @keyframes dolphin-pet-bob{50%{transform:translateY(-2px) rotate(-3deg)}}
 @keyframes dolphin-pet-greet{50%{transform:translateY(-3px) rotate(6deg)}}
 @media(prefers-reduced-motion:reduce){.dolphin-pet-stage *{animation:none!important;transition:none!important}}
+
+/* Keep each evolution as its own transparent rendered image. */
+.dcl-stage .dcl-sprite,.dolphin-pet-stage .dolphin-pet-sprite{
+ background-size:contain;
+ background-position:center;
+ background-repeat:no-repeat;
+}
+.dcl-stage[data-form="0"] .dcl-sprite,.dolphin-pet-stage[data-form="0"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-1.png')}
+.dcl-stage[data-form="1"] .dcl-sprite,.dolphin-pet-stage[data-form="1"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-10.png')}
+.dcl-stage[data-form="2"] .dcl-sprite,.dolphin-pet-stage[data-form="2"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-20.png')}
+.dcl-stage[data-form="3"] .dcl-sprite,.dolphin-pet-stage[data-form="3"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-30.png')}
+.dcl-stage[data-form="4"] .dcl-sprite,.dolphin-pet-stage[data-form="4"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-40.png')}
+.dcl-stage[data-form="5"] .dcl-sprite,.dolphin-pet-stage[data-form="5"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-50.png')}
+.dcl-stage[data-form="6"] .dcl-sprite,.dolphin-pet-stage[data-form="6"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-60.png')}
+.dcl-stage[data-form="7"] .dcl-sprite,.dolphin-pet-stage[data-form="7"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-70.png')}
+.dcl-stage[data-form="8"] .dcl-sprite,.dolphin-pet-stage[data-form="8"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-90.png')}
+.dcl-stage[data-form="9"] .dcl-sprite,.dolphin-pet-stage[data-form="9"] .dolphin-pet-sprite{background-image:url('./assets/dolphin-level-100.png')}

@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 112" role="img" aria-label="Rương kho báu Dolphin">
+<defs>
+ <linearGradient id="gold" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#fff2b4"/><stop offset=".45" stop-color="#efbd53"/><stop offset="1" stop-color="#b66b26"/></linearGradient>
+ <linearGradient id="ocean" x1="0" x2="1" y1="0" y2="1"><stop stop-color="#42bdc4"/><stop offset="1" stop-color="#075467"/></linearGradient>
+ <radialGradient id="pearl"><stop stop-color="#fff"/><stop offset=".55" stop-color="#baf7ed"/><stop offset="1" stop-color="#50bbdc"/></radialGradient>
+ <filter id="glow"><feGaussianBlur stdDeviation="3"/></filter>
+</defs>
+<ellipse cx="65" cy="103" rx="46" ry="6" fill="#021e31" opacity=".27"/>
+<path d="M23 46V29c0-16 14-24 40-24s43 9 43 26v20l-9 7H31Z" fill="url(#gold)" stroke="#5d3b22" stroke-width="4"/>
+<path d="M34 42V29c0-11 10-15 29-15s31 5 31 16v18Z" fill="url(#ocean)" stroke="#fff1b0" stroke-width="3"/>
+<path d="M65 7v40M43 9l5 39M86 10l-5 38" fill="none" stroke="#c88328" stroke-width="5"/>
+<path d="M22 47h85v45c-29 16-58 17-86 0Z" fill="url(#ocean)" stroke="#74502a" stroke-width="4"/>
+<path d="M18 47h93v14H18Z" fill="url(#gold)" stroke="#945d2f" stroke-width="2"/>
+<path d="M23 83h82v9c-31 13-51 13-82 0Z" fill="url(#gold)" stroke="#86542e" stroke-width="2"/>
+<path d="M56 46h17v32H56Z" fill="url(#gold)" stroke="#86542e" stroke-width="2"/>
+<circle cx="65" cy="65" r="7" fill="url(#pearl)" stroke="#fff8cd" stroke-width="2"/>
+<path d="M30 33 17 25M101 28l13-14M65 3V0" stroke="#eafffa" stroke-width="2.5" stroke-linecap="round"/>
+<g fill="#f9e8aa"><path d="m12 51 2 6 6 2-6 2-2 6-2-6-6-2 6-2ZM111 64l2 6 6 2-6 2-2 6-2-6-6-2 6-2Z"/></g>
+</svg>

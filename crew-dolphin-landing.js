@@ -131,30 +131,43 @@
   state.exit=null;
   return state.position;
  }
- function startPath(now,b,rects){
-  const start=park(b,rects);
-  if(!start)return false;
-  const all=waypointList(b,rects);
-  const minimum=Math.max(24,b.pet*.5);
-  const candidates=all.map((p,i)=>{
+ function routeFrom(start,nodes,now,b,rects){
+  const minimum=Math.max(22,b.pet*.44);
+  const candidates=nodes.map((p,i)=>{
    const d=distance(start,p);
-   return {p,d,score:d*.7+((i+state.turn)%all.length)*1.5};
+   return {p,d,score:d*.7+((i+state.turn)%nodes.length)*1.5};
   }).filter(item=>item.d>=minimum).sort((a,c)=>c.score-a.score);
-  let chosen;
   for(const heading of state.exit?[state.exit,null]:[null]){
    for(const {p,d} of candidates){
     const route=pathTo(start,p,heading,now,b);
     const samples=Math.ceil(d/7)+8;
-    const covered=Array.from({length:samples-1},(_,i)=>cubic(route.points,(i+1)/samples))
-     .some(({x,y})=>covers(x,y,rects,b.pet/2+8));
-    if(!covered){chosen=route;break;}
+    let covered=false;
+    for(let step=1;step<samples&&!covered;step++){
+     const {x,y}=cubic(route.points,step/samples);
+     covered=covers(x,y,rects,b.pet/2+8);
+    }
+    if(!covered)return route;
    }
-   if(chosen)break;
   }
-  if(!chosen)return false;
-  state.turn=(state.turn+1)%all.length;
-  state.path=chosen;
-  return true;
+  return null;
+ }
+ function startPath(now,b,rects){
+  const nodes=waypointList(b,rects);
+  const staysInPlace=state.position&&allowedNode(state.position,b,rects);
+  const starts=staysInPlace?[state.position]:nodes.slice(0,8);
+  if(!staysInPlace){
+   state.position=starts[0]||null;
+   state.exit=null;
+  }
+  for(const start of starts){
+   const route=routeFrom(start,nodes,now,b,rects);
+   if(!route)continue;
+   state.position=start;
+   state.path=route;
+   state.turn++;
+   return true;
+  }
+  return false;
  }
  function move(x,y,dx,dy=0,now){
   const b=size(),pet=b.pet,px=clamp(x,pet/2,b.w-pet/2),py=clamp(y,pet/2,b.h-pet/2);

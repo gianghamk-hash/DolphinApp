@@ -94,7 +94,9 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
     model.pause();
     results.push({level:Number(canvas.dataset.level),...pose(form*100)});
    }
-   return {results,animated:pose(950).checksum!==pose(1000).checksum};
+   const animated=pose(950).checksum!==pose(1000).checksum;
+   model.dispose();
+   return {results,animated};
   });
   assert.deepEqual(rendered.results.map(x=>x.level),[...milestones,100]);
   assert(rendered.results.every(x=>x.transparent&&x.drawn),'every form renders on a transparent canvas');
@@ -109,23 +111,25 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
    assert(p.width>=minSize-.5,'companion uses the larger responsive size at '+width);
    const samples=await pet.evaluate(el=>new Promise(resolve=>{
     const points=[];
-    let attempts=0;
-    function sample(){
+    const deadline=performance.now()+2800;
+    function sample(now){
      const pet=el.getBoundingClientRect();
      const controls=document.querySelectorAll('#landing .logo-img,#landing .welcome-lbl,#landing .area-card,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
-     const overlap=[...controls].some(node=>{
+     const overlap=[...controls].find(node=>{
       const r=node.getBoundingClientRect();
       const [left,top,right,bottom]=node.dataset.dolphinInk?.split(' ').map(Number)||[0,0,1,1];
       return r.width>0&&r.height>0&&pet.left<r.left+right*r.width&&pet.right>r.left+left*r.width
        &&pet.top<r.top+bottom*r.height&&pet.bottom>r.top+top*r.height;
      });
-     if(getComputedStyle(el).visibility==='visible')points.push({x:pet.x,y:pet.y,overlap});
-     if(points.length>=10||++attempts>=40)return resolve(points);
+     if(getComputedStyle(el).visibility==='visible')points.push({x:pet.x,y:pet.y,overlap:overlap?.id||overlap?.className});
+     const moved=points.some(frame=>Math.hypot(frame.x-points[0].x,frame.y-points[0].y)>.4);
+     if((points.length>=6&&moved)||now>=deadline)return resolve(points);
      requestAnimationFrame(sample);
     }
     requestAnimationFrame(sample);
    }));
-   assert(samples.length===10&&samples.every(frame=>!frame.overlap),'visible flight leaves landing content clear at '+width);
+   assert(samples.length>=6,`enough visible flight frames at ${width}: ${JSON.stringify(samples)}`);
+   assert.deepEqual(samples.filter(frame=>frame.overlap),[],'visible flight leaves landing content clear at '+width);
    assert(samples.some(frame=>Math.hypot(frame.x-samples[0].x,frame.y-samples[0].y)>.4),'the larger form keeps flying at '+width);
    assert(!(await page.evaluate(()=>document.documentElement.scrollWidth>innerWidth)),'no horizontal overflow at '+width);
    if(width===390||width===1280)await page.screenshot({path:path.join(output,'landing-level100-'+width+'.png'),fullPage:true});

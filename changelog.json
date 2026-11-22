@@ -1,26 +1,22 @@
 {
-  "version": "1.1.152",
-  "previousVersion": "1.1.151",
-  "commit": "983b3ca",
-  "previousCommit": "28fd6b7",
-  "buildDate": "2026-11-22T09:13:11.335Z",
-  "summary": "Enlarge the landing dolphin and add effects for every form (#296)",
+  "version": "1.1.153",
+  "previousVersion": "1.1.152",
+  "commit": "9ccd8ea",
+  "previousCommit": "983b3ca",
+  "buildDate": "2026-11-22T10:04:40.734Z",
+  "summary": "Add water-ball rallies and curious dolphin gestures on landing (#297)",
   "changes": {
-    "totalCommits": 374,
-    "filesChanged": 8,
+    "totalCommits": 375,
+    "filesChanged": 9,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Enlarge the landing dolphin and add effects for every form (#296)"
+    "Add water-ball rallies and curious dolphin gestures on landing (#297)"
   ],
   "fileChanges": [
     {
-      "file": "assets/dolphin-forms-v2.glb",
-      "type": "update"
-    },
-    {
-      "file": "crew-dolphin-landing-3d.js",
+      "file": ".github/workflows/dolphin-companion.yml",
       "type": "update"
     },
     {
@@ -32,15 +28,23 @@
       "type": "update"
     },
     {
+      "file": "crew-dolphin-living.js",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-play.js",
+      "type": "update"
+    },
+    {
       "file": "index.html",
       "type": "update"
     },
     {
-      "file": "scripts/build-dolphin-landing-model.py",
+      "file": "scripts/dolphin-landing-browser.cjs",
       "type": "update"
     },
     {
-      "file": "scripts/dolphin-landing-browser.cjs",
+      "file": "scripts/dolphin-living-browser.cjs",
       "type": "update"
     },
     {

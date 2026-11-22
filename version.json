@@ -1,7 +1,7 @@
 {
-  "version": "1.1.152",
-  "buildDate": "2026-11-22T09:13:11.335Z",
-  "commit": "983b3ca",
-  "notes": "Enlarge the landing dolphin and add effects for every form (#296)",
+  "version": "1.1.153",
+  "buildDate": "2026-11-22T10:04:40.734Z",
+  "commit": "9ccd8ea",
+  "notes": "Add water-ball rallies and curious dolphin gestures on landing (#297)",
   "forceUpdate": false
 }

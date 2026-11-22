@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.152",
+      "releaseDate": "2026-11-22T09:13:11.335Z",
+      "summary": "Enlarge the landing dolphin and add effects for every form (#296)",
+      "details": [
+        "Enlarge the landing dolphin and add effects for every form (#296)"
+      ]
+    },
+    {
       "version": "1.1.151",
       "releaseDate": "2026-11-22T08:00:35.095Z",
       "summary": "Render the landing dolphin with a rigged 3D model (#295)",
@@ -390,14 +398,6 @@
       "summary": "fix(multiplayer): restore room creation across online games",
       "details": [
         "fix(multiplayer): restore room creation across online games"
-      ]
-    },
-    {
-      "version": "1.1.100",
-      "releaseDate": "2026-11-10T04:51:20.541Z",
-      "summary": "fix(tactics): restore authority-adapter interface and polling lock",
-      "details": [
-        "fix(tactics): restore authority-adapter interface and polling lock"
       ]
     }
   ]

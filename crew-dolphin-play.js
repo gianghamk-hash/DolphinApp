@@ -238,8 +238,10 @@
     // Re-offer in clear space and keep completed passes if a lane shifted.
     const next=game.phase==='finale'?null:findLane(b,game.manual);
     if (!next) { reset(); return false; }
-    clearTimeout(timer); game.lane=next; phase('offer',now);
-    place(next.origin,next.dx,next.dy,now); positionBall(next.at(b.pet*.30));
+    const returning=game.phase==='inbound';
+    clearTimeout(timer); game.lane=next; phase(returning?'inbound':'offer',now);
+    place(next.origin,next.dx,next.dy,now);
+    positionBall(returning?next.end:next.at(b.pet*.30));
     return true;
    }
    place(pet,lane.dx,lane.dy,now); positionBall(orb); return true;

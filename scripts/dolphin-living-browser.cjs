@@ -58,8 +58,19 @@ for(const name of ['index.html','dolphin-profile.html'])
   await phase('ready');
   for(let pass=1;pass<=3;pass++){
    assert.equal(await ball.getAttribute('data-hits'),String(pass-1));
+   const target=await ball.boundingBox();
    await ball.click();
+   if(pass===1){
+    // Simulate newly laid-out landing content taking the original catching spot.
+    await page.evaluate(box=>{
+     const obstacle=document.createElement('div');
+     obstacle.id='late-card';obstacle.className='area-card';
+     obstacle.style.cssText='position:fixed;width:32px;height:32px;min-height:0;padding:0;left:'+box.x+'px;top:'+box.y+'px';
+     document.getElementById('landing').append(obstacle);
+    },target);
+   }
    await phase(pass===3?'finale':'ready');
+   if(pass===1)await page.locator('#late-card').evaluate(el=>el.remove());
   }
   assert(await stage.locator('.dcl-signature').isVisible(),'third return draws the signature');
   await page.waitForTimeout(1150);

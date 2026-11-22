@@ -3,7 +3,7 @@ import {
   Scene, WebGLRenderer, GLTFLoader
 } from './vendor/dolphin-three-r180.js';
 
-const asset = new URL('./assets/dolphin-forms-v1.glb', import.meta.url);
+const asset = new URL('./assets/dolphin-forms-v2.glb', import.meta.url);
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export async function createDolphinModel(host) {
@@ -22,12 +22,12 @@ export async function createDolphinModel(host) {
   const camera = new OrthographicCamera(-1.78, 1.78, 1.78, -1.78, .1, 20);
   camera.position.set(0, .32, 6);
   camera.lookAt(0, .24, 0);
-  scene.add(new AmbientLight(0xe0efff, 1.6));
-  const mainLight = new DirectionalLight(0xe8f9ff, 3);
+  scene.add(new AmbientLight(0xe0efff, 1.12));
+  const mainLight = new DirectionalLight(0xfff3dd, 2.85);
   mainLight.position.set(-3, 4, 5);
   scene.add(mainLight);
-  const rim = new DirectionalLight(0x9b9fff, 1.6);
-  rim.position.set(1, 2, -4);
+  const rim = new DirectionalLight(0x9b9fff, 2);
+  rim.position.set(2, 2.6, -3.8);
   scene.add(rim);
 
   let gltf;
@@ -74,6 +74,8 @@ export async function createDolphinModel(host) {
     }
     const selection = new Set(variant.parts);
     for (const part of parts) part.visible = selection.has(part.userData.part);
+    rim.color.fromArray(variant.colors.wingTip).lerp(mainLight.color,.28);
+    rim.intensity = 1.55+formIndex*.14;
     currentForm = formIndex;
     canvas.dataset.level = String(variant.level);
   }

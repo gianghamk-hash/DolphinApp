@@ -2,6 +2,7 @@
 (function(root){
  'use strict';
  const TZ='Asia/Ho_Chi_Minh';
+ const effects=['bubbles','tide','coral','sapphire','crystal','sunlight','aurora','cosmos','royal','eternal'];
  const greetingSlots=[
   {start:5,end:11,key:'morning',mood:'playful',text:'Chào buổi sáng! Một ngày mới đầy năng lượng nhé!'},
   {start:11,end:14,key:'noon',mood:'cheerful',text:'Chào buổi trưa! Chúc bạn phục vụ thật suôn sẻ!'},
@@ -43,12 +44,12 @@
  root.DolphinLandingCompanionLogic=logic;
  const doc=root.document;
  if(!doc)return;
- const modelURL=new URL('./crew-dolphin-landing-3d.js?v=rig-v1',doc.currentScript?.src||doc.baseURI);
+ const modelURL=new URL('./crew-dolphin-landing-3d.js?v=rig-v2',doc.currentScript?.src||doc.baseURI);
  const state={stage:null,flight:null,sprite:null,bubble:null,bubbleText:null,bubbleAction:null,
   profile:null,form:null,path:null,position:null,exit:null,frame:0,turn:0,
   art:null,model:null,modelRequested:false,
   lastWelcome:0,lastHint:'',pendingHint:'',lastSlot:'',touchCount:0,lastSecret:0,facing:1,
-  obstacles:null,obstaclesAt:0,
+  obstacles:null,obstaclesAt:0,nextRouteAt:0,
   reactionTimer:0,talkTimer:0,hintTimer:0,press:null,enabled:false};
  const $=id=>doc.getElementById(id);
  function identity(){
@@ -73,30 +74,50 @@
   return false;
  }
  function size(){
-  return {w:Math.max(1,root.innerWidth),h:Math.max(1,root.innerHeight),pet:state.flight?.offsetWidth||72};
+  return {w:Math.max(1,root.innerWidth),h:Math.max(1,root.innerHeight),pet:state.flight.offsetWidth};
  }
  function protect(){
   const now=Date.now();
-  if(state.obstacles&&now-state.obstaclesAt<600)return state.obstacles;
+  if(state.obstacles&&now-state.obstaclesAt<200)return state.obstacles;
   const els=doc.querySelectorAll('#landing .logo-img,#landing .welcome-lbl,#landing .area-card,#halongClock,#announcementBar,#notifPermBtn,#dolphinMusicBtn');
-  state.obstacles=[...els].map(el=>el.getBoundingClientRect()).filter(r=>r.width>0&&r.height>0);
+  state.obstacles=[...els].map(el=>{
+   const rect=el.getBoundingClientRect();
+   if(!rect.width||!rect.height)return null;
+   // The logo PNG is square, but the logo only occupies its central band.
+   if(!el.dataset.dolphinInk||!el.naturalWidth)return rect;
+   const [left,top,right,bottom]=el.dataset.dolphinInk.split(' ').map(Number);
+   return {left:rect.left+left*rect.width,top:rect.top+top*rect.height,
+    right:rect.left+right*rect.width,bottom:rect.top+bottom*rect.height};
+  }).filter(Boolean);
   state.obstaclesAt=now;
   return state.obstacles;
  }
  function covers(x,y,rects,margin){
   return rects.some(r=>x+margin>r.left&&x-margin<r.right&&y+margin>r.top&&y-margin<r.bottom);
  }
- function allowedNode(x,y,rects,radius){
-  const b=size();
-  return x>=radius&&x<=b.w-radius&&y>=radius&&y<=b.h-radius&&!covers(x,y,rects,radius+6);
+ function allowedNode({x,y},bounds,rects){
+  const {w,h,pet}=bounds,radius=pet/2;
+  return x>=radius&&x<=w-radius&&y>=radius&&y<=h-radius&&!covers(x,y,rects,radius+8);
  }
- function waypointList(){
-  const b=size(),margin=b.pet/2+2;
-  const nodes=[[.06,.22],[.94,.22],[.06,.32],[.94,.32],[.14,.14],[.5,.12],[.84,.14],[.91,.32],[.9,.63],[.8,.82],[.51,.9],[.18,.82],[.09,.6],[.09,.35],[.35,.4],[.65,.43],[.52,.67]];
-  return nodes.map(([x,y])=>({x:clamp(b.w*x,margin,b.w-margin),y:clamp(b.h*y,margin,b.h-margin)}));
+ function waypointList({w,h,pet},rects){
+  const edge=pet/2+3;
+  const nodes=[[.08,.20],[.92,.20],[.5,.14],[.12,.36],[.88,.36],
+   [.10,.68],[.90,.68],[.16,.84],[.50,.90],[.84,.84]];
+  const points=nodes.map(([x,y])=>({x:w*x,y:h*y}));
+  const gap=edge+10;
+  for(const rect of rects){
+   for(const x of [edge,w/2,w-edge]){
+    points.push({x,y:rect.top-gap},{x,y:rect.bottom+gap});
+   }
+   for(const x of [rect.left-gap,rect.right+gap]){
+    points.push({x,y:(rect.top+rect.bottom)/2});
+   }
+  }
+  return points.map(({x,y})=>({x:clamp(x,edge,w-edge),y:clamp(y,edge,h-edge)}))
+   .filter(point=>allowedNode(point,{w,h,pet},rects));
  }
- function pathTo(start,target,exitVector,now){
-  const b=size(),dx=target.x-start.x,dy=target.y-start.y,dist=Math.max(1,Math.hypot(dx,dy));
+ function pathTo(start,target,exitVector,now,b){
+  const dx=target.x-start.x,dy=target.y-start.y,dist=Math.max(1,Math.hypot(dx,dy));
   const ux=dx/dist,uy=dy/dist,head=exitVector||{x:ux,y:uy};
   const length=Math.min(130,dist*.30),endLen=Math.min(130,dist*.32),m=b.pet/2+5;
   const bound=p=>({x:clamp(p.x,m,b.w-m),y:clamp(p.y,m,b.h-m)});
@@ -104,45 +125,54 @@
   const c2=bound({x:target.x-ux*endLen,y:target.y-uy*endLen});
   return {points:[start,c1,c2,target],duration:clamp(dist*20,3900,12500),startAt:now};
  }
- function startPath(now){
-  const b=size(),rects=protect(),margin=b.pet/2+2,all=waypointList();
-  if(!state.position){
-   state.position=all.find(p=>allowedNode(p.x,p.y,rects,margin))||null;
-   if(!state.position)return false;
-  }
-  const steps=Array.from({length:15},(_,i)=>(i+1)/16);
+ function park(bounds,rects){
+  if(state.position&&allowedNode(state.position,bounds,rects))return state.position;
+  state.position=waypointList(bounds,rects)[0]||null;
+  state.exit=null;
+  return state.position;
+ }
+ function startPath(now,b,rects){
+  const start=park(b,rects);
+  if(!start)return false;
+  const all=waypointList(b,rects);
+  const minimum=Math.max(24,b.pet*.5);
   const candidates=all.map((p,i)=>{
-   const d=distance(state.position,p);
-   if(d<Math.min(b.w,b.h)*.22)return {p,score:-Infinity,i,clear:false};
-   const path=pathTo(state.position,p,state.exit,now);
-   const blocked=steps.some(t=>{const q=cubic(path.points,t);return covers(q.x,q.y,rects,margin);});
-   const clear=!blocked&&allowedNode(p.x,p.y,rects,margin);
-   return {p,i,clear,score:d*.7+((i+state.turn)%all.length)*2};
-  }).sort((a,c)=>c.score-a.score);
-  const chosen=candidates.find(c=>Number.isFinite(c.score)&&c.clear);
+   const d=distance(start,p);
+   return {p,d,score:d*.7+((i+state.turn)%all.length)*1.5};
+  }).filter(item=>item.d>=minimum).sort((a,c)=>c.score-a.score);
+  let chosen;
+  for(const heading of state.exit?[state.exit,null]:[null]){
+   for(const {p,d} of candidates){
+    const route=pathTo(start,p,heading,now,b);
+    const samples=Math.ceil(d/7)+8;
+    const covered=Array.from({length:samples-1},(_,i)=>cubic(route.points,(i+1)/samples))
+     .some(({x,y})=>covers(x,y,rects,b.pet/2+8));
+    if(!covered){chosen=route;break;}
+   }
+   if(chosen)break;
+  }
   if(!chosen)return false;
   state.turn=(state.turn+1)%all.length;
-  state.path=pathTo(state.position,chosen.p,state.exit,now);
+  state.path=chosen;
   return true;
  }
  function move(x,y,dx,dy=0,now){
   const b=size(),pet=b.pet,px=clamp(x,pet/2,b.w-pet/2),py=clamp(y,pet/2,b.h-pet/2);
   state.flight.style.transform='translate3d('+(px-pet/2)+'px,'+(py-pet/2)+'px,0)';
+  state.flight.dataset.positioned='true';
   root.DolphinLivingBridge?.move?.(px,py);
   const orientation=faceForMovement(dx,state.facing);
   state.facing=orientation.facing;
   state.flight.style.setProperty('--dcl-face',String(orientation.scaleX));
   if(state.model&&now!==undefined){
    try{
-    state.model.draw({now,size:pet,facing:state.facing,dx,dy,
+    state.model.draw({now,size:Math.round(pet*.92),facing:state.facing,dx,dy,
      mood:state.flight.dataset.mood,reaction:state.flight.dataset.reaction});
    }catch(error){
     state.model.dispose();
     state.model=null;
    }
   }
-  const nearButton=covers(px,py,protect(),pet/2+5);
-  state.flight.style.pointerEvents=nearButton?'none':'auto';
   const bubbleWidth=Math.min(235,b.w-16),bx=clamp(px+pet*.25,8,b.w-bubbleWidth-8);
   const by=clamp(py-pet/2-94,8,b.h-100);
   state.bubble.style.left=bx+'px';state.bubble.style.top=by+'px';
@@ -150,12 +180,21 @@
  function tick(now){
   state.frame=0;
   if(!canShow()||root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){syncVisibility();return;}
-  if(!state.path&&!startPath(now)){
-   if(state.position)move(state.position.x,state.position.y,0,0,now);
-   state.frame=root.requestAnimationFrame(tick);return;
+  state.frame=root.requestAnimationFrame(tick);
+  const bounds=size(),rects=protect();
+  if(!state.path&&now>=state.nextRouteAt&&!startPath(now,bounds,rects))state.nextRouteAt=now+300;
+  if(!state.path){
+   if(state.position&&allowedNode(state.position,bounds,rects))move(state.position.x,state.position.y,0,0,now);
+   else delete state.flight.dataset.positioned;
+   return;
   }
   const p=state.path,t=clamp((now-p.startAt)/p.duration,0,1);
   const a=cubic(p.points,t);
+  if(!allowedNode(a,bounds,rects)){
+   state.path=null;state.position=null;state.nextRouteAt=0;
+   delete state.flight.dataset.positioned;
+   return;
+  }
   const before=cubic(p.points,Math.max(t-.006,0)),after=cubic(p.points,Math.min(t+.006,1));
   move(a.x,a.y+Math.sin(now/850)*2,after.x-before.x,after.y-before.y,now);
   state.position={x:a.x,y:a.y};
@@ -164,11 +203,10 @@
    state.exit={x:(end.x-c.x)/d,y:(end.y-c.y)/d};
    state.path=null;
   }
-  state.frame=root.requestAnimationFrame(tick);
  }
  function stop(){
   if(state.frame)root.cancelAnimationFrame(state.frame);
-  state.frame=0;state.path=null;
+  state.frame=0;state.path=null;state.nextRouteAt=0;
   state.model?.pause();
  }
  function syncModel(){
@@ -190,8 +228,9 @@
   if(!active){stop();return;}
   if(root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
    stop();
-   if(!state.position)state.position=waypointList().find(p=>allowedNode(p.x,p.y,protect(),size().pet/2+7))||waypointList()[2];
-   move(state.position.x,state.position.y,1);
+   const position=park(size(),protect());
+   if(position)move(position.x,position.y,1);
+   else delete state.flight.dataset.positioned;
   }else{
    syncModel();
    if(!state.frame)state.frame=root.requestAnimationFrame(tick);
@@ -256,17 +295,21 @@
   state.form=next;
   if(!next){
    state.lastWelcome=0;state.touchCount=0;state.lastHint='';state.pendingHint='';state.bubble.hidden=true;
+   delete state.flight.dataset.reaction;
    root.clearTimeout(state.hintTimer);root.clearTimeout(state.reactionTimer);root.clearTimeout(state.talkTimer);
    syncVisibility();return;
   }
   state.flight.setAttribute('aria-label',next.name+' · Level '+next.currentLevel+' · Chạm để vuốt ve linh thú');
   state.stage.dataset.form=String(next.index);
+  state.stage.dataset.effect=effects[next.index];
   const current=slot(hourVN(new Date()));
   state.flight.dataset.mood=current.mood;state.lastSlot=current.key;
   const same=prev&&prev.employeeId===next.employeeId;
   if(!same){
    state.lastWelcome=0;state.lastHint='';state.pendingHint='';state.touchCount=0;state.lastSecret=0;
    state.position=null;state.path=null;state.facing=1;
+   delete state.flight.dataset.positioned;
+   delete state.flight.dataset.reaction;
    state.bubble.hidden=true;root.clearTimeout(state.talkTimer);
   }else if(next.currentLevel<prev.currentLevel||next.xp<prev.xp){
    root.clearTimeout(state.reactionTimer);delete state.flight.dataset.reaction;
@@ -276,6 +319,8 @@
    state.lastWelcome=Date.now();
    root.setTimeout(()=>{if(state.form===next)
     talk((evolved?'Tiến hóa thành '+next.name+'! ':'')+'Chúc mừng bạn đạt Level '+next.currentLevel+'!','level',5100);},250);
+  }else if(next.xp>prev.xp&&!state.flight.dataset.reaction){
+   react('xp',1300);
   }
   syncVisibility();
   if(same)scheduleCheckin();
@@ -288,16 +333,26 @@
   if(state.form&&canShow())scheduleCheckin();
   syncVisibility();
  }
+ function makeEffects(){
+  const effectsRoot=doc.createElement('span');
+  effectsRoot.className='dcl-fx';
+  effectsRoot.setAttribute('aria-hidden','true');
+  for(const layer of ['halo','orbit','orbit','spark','spark','spark','spark','spark','spark','burst']){
+   const node=doc.createElement('span');
+   node.className='dcl-fx-'+layer;
+   effectsRoot.append(node);
+  }
+  return effectsRoot;
+ }
  function init(){
   const landing=$('landing');
   if(!landing||state.stage||!root.DolphinCompanion)return;
   state.stage=doc.createElement('div');state.stage.id='dolphinLandingCompanion';state.stage.className='dcl-stage';
   state.stage.hidden=true;state.stage.setAttribute('aria-label','Linh thú Dolphin đồng hành');
   state.flight=doc.createElement('button');state.flight.type='button';state.flight.className='dcl-flight';
-  state.flight.style.transform='translate3d(-200px,-200px,0)';
   state.art=doc.createElement('span');state.art.className='dcl-art';
   state.sprite=doc.createElement('span');state.sprite.className='dcl-sprite';state.sprite.setAttribute('aria-hidden','true');
-  state.art.append(state.sprite);state.flight.append(state.art);
+  state.art.append(state.sprite);state.flight.append(makeEffects(),state.art);
   state.bubble=doc.createElement('div');state.bubble.className='dcl-bubble';state.bubble.hidden=true;
   state.bubble.setAttribute('role','status');state.bubble.setAttribute('aria-live','polite');
   state.bubbleText=doc.createElement('span');state.bubbleText.className='dcl-bubble-text';
@@ -324,9 +379,17 @@
   root.addEventListener('dolphin-staff-id-changed',()=>applyProgress(root.DolphinPrestige?.getMine?.()));
   doc.addEventListener('visibilitychange',syncVisibility);
   root.addEventListener('focus',syncVisibility);
-  root.addEventListener('resize',()=>{state.position=null;state.path=null;state.obstaclesAt=0;syncVisibility();});
+  root.addEventListener('resize',()=>{
+   state.position=null;state.path=null;state.obstaclesAt=0;state.nextRouteAt=0;
+   delete state.flight.dataset.positioned;
+   syncVisibility();
+  });
   const reduced=root.matchMedia?.('(prefers-reduced-motion: reduce)');
   reduced?.addEventListener?.('change',syncVisibility);
+  landing.addEventListener('scroll',()=>{
+   state.obstaclesAt=0;state.nextRouteAt=0;
+   if(reduced?.matches)syncVisibility();
+  },{passive:true});
   const observe=(el,attributes)=>{if(el)new MutationObserver(syncVisibility).observe(el,{attributes:true,attributeFilter:attributes});};
   observe(doc.documentElement,['class']);observe(doc.body,['class']);observe(landing,['class','style']);
   observe($('orderNotif'),['class','style']);observe($('reminderAlarm'),['class','style']);

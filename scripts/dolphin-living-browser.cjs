@@ -219,10 +219,11 @@ for(const name of ['index.html','dolphin-profile.html'])
    await installed.locator('.dcl-wheel[open]').waitFor({state:'visible',timeout:4000});
    await installed.close();
   }
+  await page.bringToFront();
   for(const [width,height] of [[320,568],[1280,800]]){
    await page.setViewportSize({width,height});await page.emulateMedia({reducedMotion:'reduce'});
    await page.evaluate(()=>document.documentElement.classList.add('dolphin-access-allowed'));
-   await pet.focus();await page.keyboard.press('Enter');await wheel.waitFor({state:'visible'});
+   await pet.waitFor({state:'visible'});await pet.focus();await page.keyboard.press('Enter');await wheel.waitFor({state:'visible'});
    const r=await wheel.boundingBox();
    assert(r.x>=0&&r.y>=0&&r.x+r.width<=width&&r.y+r.height<=height,'radial picker fits '+width);
    for(const icon of await wheel.locator('.dcl-wheel-item img').all())

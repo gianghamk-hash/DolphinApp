@@ -1,7 +1,7 @@
 {
-  "version": "1.1.154",
-  "buildDate": "2026-11-23T00:52:59.165Z",
-  "commit": "a6d4627",
-  "notes": "Personalize the landing dolphin with a radial menu and live briefings (#298)",
+  "version": "1.1.155",
+  "buildDate": "2026-11-23T06:11:31.060Z",
+  "commit": "59bdac3",
+  "notes": "Enlarge the mobile companion, add Vietnam social briefings and print Bungalow signs (#299)",
   "forceUpdate": false
 }

@@ -1,82 +1,30 @@
 {
-  "version": "1.1.154",
-  "previousVersion": "1.1.153",
-  "commit": "a6d4627",
-  "previousCommit": "9ccd8ea",
-  "buildDate": "2026-11-23T00:52:59.165Z",
-  "summary": "Personalize the landing dolphin with a radial menu and live briefings (#298)",
+  "version": "1.1.155",
+  "previousVersion": "1.1.154",
+  "commit": "59bdac3",
+  "previousCommit": "a6d4627",
+  "buildDate": "2026-11-23T06:11:31.060Z",
+  "summary": "Enlarge the mobile companion, add Vietnam social briefings and print Bungalow signs (#299)",
   "changes": {
-    "totalCommits": 376,
-    "filesChanged": 32,
+    "totalCommits": 377,
+    "filesChanged": 18,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Personalize the landing dolphin with a radial menu and live briefings (#298)"
+    "Enlarge the mobile companion, add Vietnam social briefings and print Bungalow signs (#299)"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/build.yml",
+      "type": "update"
+    },
     {
       "file": ".github/workflows/dolphin-companion-bulletin.yml",
       "type": "update"
     },
     {
-      "file": ".github/workflows/dolphin-companion.yml",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-forms-v3.glb",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/LICENSE.txt",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/ball.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/chat.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/collection.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/flower.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/hat.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/mood.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/pose.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/ribbon.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/scarf.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/skill.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/star.png",
-      "type": "update"
-    },
-    {
-      "file": "assets/dolphin-wheel/weather.png",
+      "file": "android/BungalowPrinter.java",
       "type": "update"
     },
     {
@@ -84,7 +32,7 @@
       "type": "update"
     },
     {
-      "file": "crew-dolphin-landing-3d.js",
+      "file": "crew-dolphin-landing.css",
       "type": "update"
     },
     {
@@ -96,15 +44,11 @@
       "type": "update"
     },
     {
-      "file": "crew-dolphin-wardrobe.js",
+      "file": "dolphin-bungalow.html",
       "type": "update"
     },
     {
-      "file": "crew-dolphin-wheel.css",
-      "type": "update"
-    },
-    {
-      "file": "crew-dolphin-wheel.js",
+      "file": "dolphin-table-signs.js",
       "type": "update"
     },
     {
@@ -112,19 +56,11 @@
       "type": "update"
     },
     {
-      "file": "scripts/build-dolphin-landing-model.py",
-      "type": "update"
-    },
-    {
-      "file": "scripts/companion-feed/package-lock.json",
-      "type": "update"
-    },
-    {
-      "file": "scripts/companion-feed/package.json",
-      "type": "update"
-    },
-    {
       "file": "scripts/companion-feed/refresh.mjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/companion-feed/vietnam.mjs",
       "type": "update"
     },
     {
@@ -137,6 +73,14 @@
     },
     {
       "file": "scripts/dolphin-living-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-table-signs-print-browser.cjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-table-signs.test.cjs",
       "type": "update"
     },
     {

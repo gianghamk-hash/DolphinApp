@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.154",
+      "releaseDate": "2026-11-23T00:52:59.165Z",
+      "summary": "Personalize the landing dolphin with a radial menu and live briefings (#298)",
+      "details": [
+        "Personalize the landing dolphin with a radial menu and live briefings (#298)"
+      ]
+    },
+    {
       "version": "1.1.153",
       "releaseDate": "2026-11-22T10:04:40.734Z",
       "summary": "Add water-ball rallies and curious dolphin gestures on landing (#297)",
@@ -390,14 +398,6 @@
       "summary": "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes",
       "details": [
         "fix(dolphin guest): include paid Pakora, Coconut Welcome and Indian tea in special BKK notes"
-      ]
-    },
-    {
-      "version": "1.1.102",
-      "releaseDate": "2026-11-10T07:48:08.172Z",
-      "summary": "feat(arcade): adopt approved glossy 2D icons for all games",
-      "details": [
-        "feat(arcade): adopt approved glossy 2D icons for all games"
       ]
     }
   ]

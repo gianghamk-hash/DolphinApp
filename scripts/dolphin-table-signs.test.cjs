@@ -124,3 +124,12 @@ test('explicit plus-linked bookings print one sign per shared table regardless o
 test('linked booking with two tables still gets one sign for each table',()=>{
  const d=sign.collect([{code:'DP1 + DP2',name:'Group',tbl:'E22,E23'}]);assert.equal(d.total,2);
 });
+
+test('Bungalow uses only listed rooms with both current fields and preserves table labels',()=>{
+ const data=sign.collectBungalows(['201','202','203','204'],{201:{customerName:' <Lan> ',restaurantTable:'A1 + A2'},
+  202:{customerName:'Bình'},203:{restaurantTable:'A3'},204:{},999:{customerName:'Other',restaurantTable:'A4'}});
+ assert.equal(data.total,1);assert.deepEqual(data.incomplete,['202','203']);
+ assert.deepEqual(data.areas.Bungalow,[{bungalow:'201',name:'<Lan>',room:'A1 + A2'}]);
+ assert.match(sign.documentHtml(data),/Tên khách: <strong>&lt;Lan&gt;/);
+ assert.equal(sign.openBungalowPrint([],{}).ok,false);
+});

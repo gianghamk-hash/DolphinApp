@@ -60,9 +60,20 @@
      ||x.code.localeCompare(y.code,'vi',{numeric:true}));
   return {areas,duplicates,missing,excluded,total:AREAS.reduce((n,a)=>n+areas[a].length,0)};
  }
- function pagesOf(result,selected=AREAS){
+ function collectBungalows(rooms,assignments){
+  const records=[],incomplete=[];
+  for(const bungalow of new Set(rooms)){
+   const assignment=assignments?.[bungalow];
+   const name=String(assignment?.customerName??'').trim();
+   const room=String(assignment?.restaurantTable??'').trim();
+   if(name&&room)records.push({bungalow,name,room});
+   else if(name||room)incomplete.push(bungalow);
+  }
+  return {kind:'bungalow',areas:{Bungalow:records},duplicates:[],missing:incomplete.length,incomplete,total:records.length};
+ }
+ function pagesOf(result,selected=Object.keys(result.areas)){
   const pages=[],wanted=new Set(selected);
-  for(const area of AREAS){
+  for(const area of Object.keys(result.areas)){
    if(!wanted.has(area))continue;
    const list=result.areas[area]||[];
    for(let i=0;i<list.length;i+=2)pages.push({area,records:list.slice(i,i+2)});
@@ -70,6 +81,9 @@
   return pages;
  }
  function sign(record,art){
+  if(record.bungalow)return '<div class="sign"><img class="art" src="'+esc(art)+'" alt=""><div class="fields bungalow-fields">'+
+   '<div>Bungalow <strong>'+esc(record.bungalow)+'</strong></div><div>Tên khách: <strong>'+esc(record.name)+'</strong></div>'+
+   '<div>Số bàn: <strong>'+esc(record.room)+'</strong></div></div></div>';
   const nameSize=record.name.length>56?12:record.name.length>42?14:record.name.length>31?16:18;
   return '<div class="sign"><img class="art" src="'+esc(art)+'" alt="">'+
    '<div class="fields">'+
@@ -80,9 +94,10 @@
    '</div></div>';
  }
  function documentHtml(result,config={}){
-  const selected=(config.selectedAreas||AREAS).filter(a=>AREAS.includes(a)),pages=pagesOf(result,selected);
+  const bungalow=result.kind==='bungalow',areas=bungalow?['Bungalow']:AREAS;
+  const selected=(config.selectedAreas||areas).filter(a=>areas.includes(a)),pages=pagesOf(result,selected);
   const asset=config.assetUrl||ART;
-  const controls=AREAS.map(a=>{
+  const controls=areas.map(a=>{
    const count=result.areas[a].length;
    return '<label class="area"><input type="checkbox" data-area="'+a+'"'+(selected.includes(a)?' checked':'')+
     (count?'':' disabled')+'><b>'+a+'</b><span>'+count+'</span></label>';
@@ -112,6 +127,7 @@
    '.art{width:100%;height:100%;display:block;position:absolute;inset:0;object-fit:contain}',
    '.fields{position:absolute;top:2.14in;left:.51in;right:.08in;font:italic 18pt "Times New Roman",Times,serif;line-height:.39in;color:#000}',
    '.fields>div{height:.39in;white-space:nowrap;letter-spacing:-.01em}',
+   '.bungalow-fields{top:2.16in;left:.45in;right:.45in;text-align:center}.bungalow-fields>div{height:.48in;line-height:.48in}',
    '.fields strong{font-weight:700}',
    '.empty{text-align:center;color:#677b83;padding:45px}',
    '@page{size:A4 portrait;margin:10mm}',
@@ -148,20 +164,27 @@
   return '<!doctype html><html lang="vi"><head><meta charset="utf-8">'+
    '<meta name="viewport" content="width=device-width,initial-scale=1">'+
    '<title>Biển đặt bàn Dolphin · '+esc(config.date||'')+'</title><style>'+css+'</style></head><body>'+
-   '<header class="toolbar"><h1>🖨️ Tự tạo biển đặt bàn Dolphin</h1>'+
-   '<div class="intro">'+esc(config.date||'')+' · '+(config.tour==='dn'?'Tour tối':'Tour sáng')+
-   ' · A4 210 × 297 mm · 2 biển trên một trang · Các khu không trộn trang</div>'+
+   '<header class="toolbar"><h1>🖨️ '+(bungalow?'Biển bàn Bungalow':'Tự tạo biển đặt bàn Dolphin')+'</h1>'+
+   '<div class="intro">'+(bungalow?'Bungalow':esc(config.date||'')+' · '+(config.tour==='dn'?'Tour tối':'Tour sáng'))+
+   ' · A4 210 × 297 mm · 2 biển trên một trang'+(bungalow?'':' · Các khu không trộn trang')+'</div>'+
    '<div class="controls">'+controls+
    '<button id="all" class="alt">Chọn tất cả</button><button id="none" class="alt">Bỏ chọn</button>'+
    '<span id="count" class="summary"></span><button id="print">In / Lưu PDF</button></div>'+
-   (result.missing?'<div class="warning">⚠ '+result.missing+' booking chưa có số bàn hợp lệ.</div>':'')+
+   (result.missing?'<div class="warning">⚠ '+(bungalow?'Bỏ qua phòng thiếu tên khách hoặc số bàn: '+esc(result.incomplete.join(', ')):result.missing+' booking chưa có số bàn hợp lệ.')+'</div>':'')+
    (result.duplicates.length?'<div class="warning">⚠ '+result.duplicates.length+
      ' bàn xuất hiện ở nhiều booking; vui lòng đối chiếu RESA trước khi in.</div>':'')+
    '</header><main id="pages">'+sheets+'</main><div id="empty" class="empty" style="display:none">Không có biển trong các khu đang chọn.</div>'+
    '<script>'+script+'<\/script></body></html>';
  }
  function openPrint(bookings,config={}){
-  const data=collect(bookings);
+  return openPreview(collect(bookings),config);
+ }
+ function openBungalowPrint(rooms,assignments,config={}){
+  const data=collectBungalows(rooms,assignments);
+  if(!data.total)return {ok:false,reason:'Chưa có Bungalow đủ tên khách và số bàn nhà hàng để in.'};
+  return openPreview(data,config);
+ }
+ function openPreview(data,config){
   if(!data.total)return {ok:false,reason:'Không có bàn thuộc A, B, C, D, E, J, Q, L để tạo biển.'};
   if(typeof window==='undefined')return {ok:false,reason:'Chỉ hỗ trợ trên trình duyệt.'};
   // Keep the preview isolated in the current WebView: some APKs reuse the
@@ -181,6 +204,28 @@
   frame.title='Biển đặt bàn Dolphin';
   frame.style.cssText='flex:1;width:100%;min-height:0;border:0;background:white';
   const assetUrl=new URL(ART,window.location.href).href;
+  if(data.kind==='bungalow'&&/Dolphin(?:Staff|Manager)\//.test(navigator.userAgent)){
+   frame.addEventListener('load',()=>{
+    frame.contentWindow.print=()=>{
+     if(!navigator.userAgent.includes('DolphinPrint/1')){
+      window.alert('Vui lòng cập nhật APK Dolphin hoặc mở Bungalow bằng trình duyệt để in.');return;
+     }
+     const paper=frame.contentDocument;
+     const image=paper.querySelector('.art');
+     if(!image?.naturalWidth){window.alert('Chưa tải được nền biển bàn. Vui lòng mở lại bản xem trước.');return;}
+     const canvas=doc.createElement('canvas');canvas.width=image.naturalWidth;canvas.height=image.naturalHeight;
+     canvas.getContext('2d').drawImage(image,0,0);
+     const sheets=[...paper.querySelectorAll('.sheet:not(.is-hidden)')].map(sheet=>{
+      const copy=sheet.cloneNode(true);
+      copy.querySelectorAll('.art').forEach(img=>{const div=doc.createElement('div');div.className='art';img.replaceWith(div);});
+      return copy.outerHTML;
+     }).join('');
+     const css=paper.querySelector('style').textContent+'.art{background:url('+canvas.toDataURL()+') center/contain no-repeat}';
+     const snapshot='<!doctype html><meta charset="utf-8"><style>'+css+'</style><main id="pages">'+sheets+'</main>';
+     if(window.prompt('dolphin:print-bungalow',snapshot)!=='ok')window.alert('Không mở được dịch vụ in Android.');
+    };
+   },{once:true});
+  }
   frame.srcdoc=documentHtml(data,{...config,assetUrl});
   const focused=doc.activeElement;
   const overflow=doc.body.style.overflow;
@@ -189,5 +234,5 @@
   doc.body.style.overflow='hidden';close.focus();
   return {ok:true,total:data.total,missing:data.missing,duplicates:data.duplicates.length};
  }
- return Object.freeze({AREAS,ART,parseTables,collect,pagesOf,documentHtml,openPrint});
+ return Object.freeze({AREAS,ART,parseTables,collect,collectBungalows,pagesOf,documentHtml,openPrint,openBungalowPrint});
 });

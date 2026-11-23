@@ -174,3 +174,19 @@
 }
 @keyframes dcl-impact{from{opacity:1;transform:scale(.5)}to{opacity:0;transform:scale(1.25)}}
 @media(prefers-reduced-motion:reduce){.dcl-water-ball::after{animation:none!important}}
+
+@media(max-width:600px),(pointer:coarse),(display-mode:standalone){
+ .dcl-flight{width:min(clamp(94px,26vw,166px),26vh)}
+}
+.dcl-flight[data-installed]{width:min(clamp(94px,26vw,166px),26vh)}
+.dcl-flight:is([data-pose="heart"],[data-pose="pearl"])::after{
+ position:absolute;inset:6% 8% auto auto;pointer-events:none;font-size:clamp(19px,3vw,32px);
+ animation:dcl-gift 2s ease-out both;z-index:5;
+}
+.dcl-flight[data-pose="heart"]::after{content:"🩵"}
+.dcl-flight[data-pose="pearl"]::after{content:"🫧";filter:drop-shadow(0 0 4px #fff1ac)}
+@keyframes dcl-gift{0%{opacity:0;transform:translateY(55%) scale(.65)}30%,70%{opacity:1}100%{opacity:0;transform:translateY(-15%) scale(1.18)}}
+@media(prefers-reduced-motion:reduce){.dcl-flight::after{animation:none!important}}
+
+/* Leave a swimming lane between the clock and the printed part of the logo. */
+@media(max-width:600px){#landing:has(.dcl-stage:not([hidden])) .logo-img{margin-top:28px!important}}

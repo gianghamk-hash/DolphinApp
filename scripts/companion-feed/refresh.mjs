@@ -1,6 +1,7 @@
 import {writeFile} from 'node:fs/promises';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
+import {vietnamTopics} from './vietnam.mjs';
 import {pipeline} from '@huggingface/transformers';
 
 const now=Date.now(), hour=3600000;
@@ -11,28 +12,18 @@ async function json(url){
  return res.json();
 }
 
-async function trends(){
- const sources=await Promise.allSettled([
-  json('https://public.api.bsky.app/xrpc/app.bsky.unspecced.getTrends?limit=25').then(({trends})=>trends
-   .filter(t=>['culture','entertainment','sports','science','technology','other'].includes(t.category)&&/^\/profile\/[\w:.-]+\/feed\/[\w.-]+$/.test(t.link))
-   .map(t=>({title:t.displayName,context:t.description,url:'https://bsky.app'+t.link,source:'Bluesky'}))),
-  json('https://mastodon.social/api/v1/trends/tags?limit=20').then(tags=>tags
-   .filter(t=>/^https:\/\/mastodon\.social\/tags\//i.test(t.url))
-   .map(t=>({title:'#'+t.name,context:t.name.replace(/([a-z])([A-Z])/g,'$1 $2'),url:t.url,source:'Mastodon'})))
- ]);
- const topics=sources.flatMap(s=>s.status==='fulfilled'?s.value:[]).filter(t=>t.title&&t.title.length<=90);
- if(!topics.length)throw Error('No current social topics');
+async function classify(topics){
  const themes={
-  music:'Listening to a favorite song, a singer, concert, band or music album.',
+  music:'Nghe nhạc, bài hát yêu thích, ca sĩ, hòa nhạc và album.',
   art:'Photography, drawing and painting, watercolor, favorite artwork or landscape photographs.',
-  animals:'Cute cats, dogs, dolphins, wildlife photography and friendly animals.',
+  animals:'Mèo dễ thương, chó, cá heo và những con vật đáng yêu.',
   food:'Delicious food, home cooking, desserts and favorite recipes.',
-  games:'Fun board games, video games, playing cards or a friendly sports match.',
+  games:'Trò chơi vui, giải Rubik, trò điện tử, cờ bàn và thi đấu thể thao.',
   nature:'Exploring nature, beaches, the ocean, flowers and the night sky.'
  };
  const reject='Political controversy, partisan conflict, death, war, crime, illness, tragedy, adult content, hate or violence.';
- const embed=await pipeline('feature-extraction','Xenova/all-MiniLM-L6-v2',{
-  revision:'751bff37182d3f1213fa05d7196b954e230abad9',dtype:'q8',device:'cpu',cache_dir:join(tmpdir(),'dolphin-embeddings')
+ const embed=await pipeline('feature-extraction','Xenova/paraphrase-multilingual-MiniLM-L12-v2',{
+  revision:'2c4055b12046f11709e9df2c122e59ffbdc2f900',dtype:'q8',device:'cpu',cache_dir:join(tmpdir(),'dolphin-embeddings')
  });
  const vectors=(await embed([...Object.values(themes),reject,...topics.map(t=>t.title+' '+(t.context||''))],
   {pooling:'mean',normalize:true})).tolist();
@@ -44,7 +35,23 @@ async function trends(){
  }).filter(t=>t.eligible).sort((a,b)=>b.score-a.score);
  await embed.dispose();
  if(!ranked.length)throw Error('No suitable trending topics this cycle');
- return {updated:now,items:ranked.slice(0,12).map(({score,eligible,...t})=>t)};
+ return {updated:now,items:ranked.map(({score,eligible,...t})=>t)};
+}
+async function trends(){
+ const topics=await vietnamTopics(now);
+ if(!topics.length)throw Error('No current social topics');
+ try{return await classify(topics);}
+ catch(error){
+  console.warn('AI selection unavailable: '+error.message);
+  // Select from the same observed posts if the embedding model cannot be loaded.
+  const keywords={games:/rubik|chơi game|trò chơi|bóng đá/iu,music:/bài hát|bản nhạc|hòa nhạc|nghe nhạc/iu,
+   nature:/bình minh|vịnh hạ long|hoàng hôn/iu,animals:/mèo con|cá heo|#cat\b/iu,food:/nấu ăn|món ngon|công thức nấu/iu,art:/vẽ tranh|tranh màu nước/iu};
+  const items=topics.flatMap(({context,...topic})=>{
+   const category=Object.keys(keywords).find(key=>keywords[key].test(context));
+   return category?[{...topic,category}]:[];
+  });
+  return {updated:now,items};
+ }
 }
 async function weather(){
  const {properties}=await json('https://api.met.no/weatherapi/locationforecast/2.0/compact?lat=20.95&lon=107.08');
@@ -58,12 +65,15 @@ async function weather(){
 }
 const previous=await json('https://raw.githubusercontent.com/gianghamk-hash/DolphinApp/companion-bulletin/brief.json').catch(()=>({}));
 const result=await Promise.allSettled([trends(),weather()]);
-const brief={};
-for(const [index,key] of ['trends','weather'].entries()){
- const item=result[index];
- if(item.status==='fulfilled')brief[key]=item.value;
- else {console.warn(key+': '+item.reason.message);if(previous[key])brief[key]=previous[key];}
+const current=result[0].status==='fulfilled'?result[0].value.items:[];
+const items=new Map();
+for(const t of [...current,...(previous.trends?.items||[])]){
+ if(t.region==='VN'&&['Facebook','TikTok'].includes(t.source)&&t.observed<=now&&now-t.observed<36*hour&&!items.has(t.url))items.set(t.url,t);
 }
-if(result.every(r=>r.status==='rejected')||(!previous.trends&&!brief.trends)||(!previous.weather&&!brief.weather))throw Error('Incomplete initial bulletin or both sources unavailable');
+const available=[...items.values()];
+const brief={trends:{updated:now,items:['TikTok','Facebook'].flatMap(source=>available.filter(x=>x.source===source).slice(0,8))}};
+brief.weather=result[1].status==='fulfilled'?result[1].value:previous.weather;
+for(const item of result)if(item.status==='rejected')console.warn(item.reason.message);
+if(!brief.weather&&!brief.trends.items.length)throw Error('No bulletin data available');
 await writeFile(process.argv[2],JSON.stringify(brief)+'\n');
 console.log((brief.trends?.items.length||0)+' social topics, '+(brief.weather?.hours.length||0)+' forecast hours');

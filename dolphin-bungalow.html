@@ -129,6 +129,7 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <script src="./dolphin-avatars.js?v=crew-global-v9" defer></script>
 <script src="./staff-prestige-client.js?v=1.1.154" defer></script>
 <style>.bungalow-menu-photo{display:block;width:100%;aspect-ratio:1;background-image:url("./assets/bungalow-menu-cans-v2.svg");background-size:500% 200%;background-repeat:no-repeat;border-radius:12px;margin-bottom:12px;background-color:#050608}</style>
+<script src="dolphin-table-signs.js?v=bungalow-print-v1" defer></script>
 <script src="dolphin-request-translation.js?v=1.1.154"></script>
 </head>
 <body class="min-h-screen flex flex-col selection:bg-gold-500 selection:text-black relative z-0">
@@ -242,6 +243,8 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 <div id="bungalow-alert-banner" class="hidden bg-red-950/80 border border-red-500/50 p-3.5 md:p-5 rounded-2xl shadow-lg flex items-center gap-3 animate-pulse"><span class="text-2xl md:text-4xl">⏰</span><div><h3 class="text-red-400 font-black text-[12px] md:text-base uppercase">16:20 - Rà soát Bungalow!</h3><p class="text-[10px] md:text-sm text-red-200 mt-0.5">Các phòng đỏ chưa gọi đủ tiêu chuẩn. Nhắc khách trước 17:30.</p></div></div>
 <div class="glass-card premium p-4 md:p-6 rounded-2xl border border-emerald-500/30">
 <h3 class="font-black text-emerald-400 text-[11.5px] md:text-sm uppercase border-b border-teal-700/50 pb-2.5 mb-4 flex flex-wrap justify-between gap-2"><span class="flex items-center gap-2"><span class="icon-badge emerald">👁️</span> BẢN ĐỒ TIẾN ĐỘ</span><span class="text-[9.5px] md:text-xs text-teal-300 bg-teal-900/50 px-2 py-1 rounded">Max: 1 Khoai - 1 Quả - 5 Nước</span></h3>
+<button type="button" onclick="openBungalowSigns()" class="rounded-lg border border-emerald-400/50 px-3 py-2 text-xs font-bold text-emerald-200">In biển Bungalow</button>
+
 <span class="text-[10px] md:text-xs text-emerald-300 font-black block mb-2 uppercase bg-teal-900/50 inline-block px-2 py-0.5 rounded">TẦNG 2</span>
 <div class="grid grid-cols-2 lg:grid-cols-4 gap-2.5 md:gap-4 mb-4" id="bungalow-track-b2"></div>
 <span class="text-[10px] md:text-xs text-emerald-300 font-black block mb-2 uppercase bg-teal-900/50 inline-block px-2 py-0.5 rounded">TẦNG 3</span>
@@ -259,6 +262,8 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 </div>
 <div class="glass-card premium p-3.5 md:p-6 rounded-2xl border border-teal-700/50">
 <h3 class="font-black text-white text-[11.5px] md:text-sm uppercase border-b border-teal-700/50 pb-3 mb-4">👥 SƠ ĐỒ GẮN TÊN PHÒNG</h3>
+<button type="button" onclick="openBungalowSigns()" class="rounded-lg border border-emerald-400/50 px-3 py-2 text-xs font-bold text-emerald-200">In biển Bungalow</button>
+
 <span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 2:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-3 mb-4" id="reception-tables-b2"></div>
 <span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 3:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-3 mb-4" id="reception-tables-b3"></div>
 <span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 4:</span><div class="grid grid-cols-3 md:grid-cols-4 gap-1.5 md:gap-3" id="reception-tables-b4"></div>
@@ -278,6 +283,8 @@ body{background:linear-gradient(160deg,var(--theme-bg1) 0%,var(--theme-bg2) 100%
 </div>
 <div class="glass-card premium p-3.5 md:p-6 rounded-2xl border border-teal-700/50">
 <h3 class="font-black text-white text-[10.5px] md:text-sm uppercase border-b border-teal-700/50 pb-3 mb-4 flex justify-between items-center flex-wrap gap-2"><span class="flex items-center gap-2"><span class="icon-badge emerald">🗺️</span> GIÁM SÁT PHÒNG</span><div class="flex gap-2 text-[8.5px] md:text-[10.5px] font-bold bg-teal-900/50 px-2 py-1 rounded"><span class="text-teal-400">Trống</span><span class="text-gold-500">Chờ</span><span class="text-red-400">Nấu</span></div></h3>
+<button type="button" onclick="openBungalowSigns()" class="rounded-lg border border-emerald-400/50 px-3 py-2 text-xs font-bold text-emerald-200">In biển Bungalow</button>
+
 <span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 2:</span><div class="grid grid-cols-4 md:grid-cols-6 gap-1 md:gap-2 mb-2.5" id="matrix-tables-b2"></div>
 <span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 3:</span><div class="grid grid-cols-4 md:grid-cols-6 gap-1 md:gap-2 mb-2.5" id="matrix-tables-b3"></div>
 <span class="text-[9.5px] md:text-xs text-emerald-400 font-bold block mb-2 uppercase">TẦNG 4:</span><div class="grid grid-cols-4 md:grid-cols-6 gap-1 md:gap-2" id="matrix-tables-b4"></div>
@@ -445,6 +452,11 @@ const TABLES_B2=['201','202','203','204'];
 const TABLES_B3=['301','302','303','304','305','306'];
 const TABLES_B4=['401','402','403','404','405','406'];
 const ALL_BUNGALOW=[...TABLES_B2,...TABLES_B3,...TABLES_B4];
+window.openBungalowSigns=function(){
+ if(!['reception','bungalow','admin'].includes(state.currentRole))return;
+ const result=window.DolphinGuestTableSigns.openBungalowPrint(ALL_BUNGALOW,state.tableAssignments);
+ if(!result.ok)window.showToast(result.reason,'🖨️');
+};
 const ADMIN_PIN='8888',RECEPTION_PIN='1111';
 
 window.isBungalow=()=>true;

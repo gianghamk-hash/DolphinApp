@@ -149,7 +149,8 @@
   state.place='landing';state.petStage=stage;
   const item=(key,short,label,icon,extra={})=>({key,short,label,icon,...extra});
   function items(page){
-   if(page==='pose')return [item('bow','Cúi chào','Cúi chào','ribbon'),item('roll','Lộn vòng','Lộn vòng','pose'),item('peek','Nghiêng đầu','Nghiêng đầu','flower')];
+   if(page==='pose')return [item('bow','Cúi chào','Cúi chào','ribbon'),item('roll','Lộn vòng','Lộn vòng','pose'),item('peek','Nghiêng đầu','Nghiêng đầu','flower'),
+    item('heart','Bắn tim','Bắn tim đại dương','ribbon'),item('pearl','Bói ngọc','Mở ngọc may mắn','star')];
    if(page==='mood')return [['auto','Theo giờ','weather'],['cheerful','Tinh nghịch','skill'],['calm','Thư thái','flower'],['sleepy','Buồn ngủ','mood']]
     .map(([key,short,icon])=>item(key,short,short,icon,{selected:key===(state.collection?.mood||'auto')}));
    return [item('skill','Tuyệt chiêu','Biểu diễn '+SKILLS[state.form.index].name,'skill'),

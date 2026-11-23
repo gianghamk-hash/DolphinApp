@@ -108,7 +108,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   assert.equal(new Set(rendered.results.map(x=>x.checksum)).size,10,'all ten forms look different');
   assert.equal(new Set(rendered.outfits).size,6,'six costume meshes render distinct silhouettes at a fixed pose');
   assert(rendered.animated,'the rig changes rendered pixels while the viewport and facing stay fixed');
-  for(const [width,height,minSize] of [[320,568,72],[390,844,72],[768,860,107],[1280,860,152]]){
+  for(const [width,height,minSize] of [[320,568,94],[390,844,101],[768,860,107],[1280,860,152]]){
    await page.setViewportSize({width,height});
    await pet.waitFor({state:'visible',timeout:4500});
    assert(await stage.isVisible());

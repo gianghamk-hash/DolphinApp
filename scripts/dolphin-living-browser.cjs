@@ -49,6 +49,7 @@ for(const name of ['index.html','dolphin-profile.html'])
    await pet.dblclick({force:true});
    await wheel.waitFor({state:'visible',timeout:4000});
   }
+  await pet.waitFor({state:'visible'});await pet.hover();await pet.click();await page.waitForTimeout(370);assert(await wheel.isHidden(),'one desktop mouse click keeps the wheel closed');
   await openWheel();
   assert.equal(await wheel.locator('.dcl-wheel-item img').count(),8);
   await page.keyboard.press('ArrowRight');
@@ -61,6 +62,10 @@ for(const name of ['index.html','dolphin-profile.html'])
   await wheel.getByRole('button',{name:'Chọn tư thế'}).click();
   await wheel.getByRole('button',{name:'Cúi chào'}).click();
   assert.equal(await pet.getAttribute('data-pose'),'bow');
+  for(const [key,label] of [['heart','Bắn tim đại dương'],['pearl','Mở ngọc may mắn']]){
+   await openWheel();await wheel.getByRole('button',{name:'Chọn tư thế'}).click();
+   await wheel.getByRole('button',{name:label}).click();assert.equal(await pet.getAttribute('data-pose'),key);
+  }
   await openWheel();await wheel.getByRole('button',{name:'Chọn trạng thái'}).click();
   await wheel.getByRole('button',{name:'Thư thái'}).click();
   assert.equal(await pet.getAttribute('data-mood'),'calm');
@@ -167,7 +172,7 @@ for(const name of ['index.html','dolphin-profile.html'])
   let reads=0;
   await friend.route('https://raw.githubusercontent.com/**',route=>{
    reads++;
-   return route.fulfill({json:{trends:{updated:stamp,items:[{title:'#OceanArt',source:'Mastodon',category:'art',url:'https://mastodon.social/tags/OceanArt'}]},
+   return route.fulfill({json:{trends:{updated:stamp,items:[{title:'#OceanArt',region:'VN',observed:stamp,source:'TikTok',category:'art',url:'https://www.tiktok.com/@ocean/video/123456789'}]},
     weather:{updated:stamp,hours:[{at:stamp,temperature:17,wind:2,sky:'fair_day'}]}}});
   });
   await friend.goto(origin+'/index.html');
@@ -185,9 +190,7 @@ for(const name of ['index.html','dolphin-profile.html'])
    await finger.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:target.x+target.width/2,y:target.y+target.height/2}]});
    await finger.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
   };
-  await tap();await friend.clock.runFor(400);
-  assert.match(await friend.locator('.dcl-bubble-text').textContent(),/nhột quá/);
-  await tap();await friend.clock.runFor(90);await tap();
+  await tap();
   await menu.waitFor({state:'visible'});
   await menu.getByRole('button',{name:'Hỏi thời tiết Hạ Long'}).click();
   await friend.waitForFunction(()=>document.querySelector('.dcl-bubble-text').textContent.includes('đủ ấm'));
@@ -196,7 +199,7 @@ for(const name of ['index.html','dolphin-profile.html'])
   await friend.clock.fastForward(300000);
   await friend.waitForFunction(()=>document.querySelector('.dcl-bubble-text').textContent.includes('#OceanArt'));
   assert.match(await friend.locator('.dcl-bubble-text').textContent(),/Lan ơi/);
-  assert.equal(await friend.locator('.dcl-bubble-source').getAttribute('href'),'https://mastodon.social/tags/OceanArt');
+  assert.equal(await friend.locator('.dcl-bubble-source').getAttribute('href'),'https://www.tiktok.com/@ocean/video/123456789');
   assert.equal(reads,1,'weather and conversations share one cached bulletin');
   await finger.detach();await friend.close();
   for(const [width,height] of [[320,568],[1280,800]]){

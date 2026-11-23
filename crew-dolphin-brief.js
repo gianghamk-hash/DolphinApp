@@ -30,14 +30,16 @@
  function trending(brief,seen,now=Date.now(),random=Math.random){
   const feed=brief?.trends;
   if(!feed||!(now-feed.updated>=0&&now-feed.updated<18*hour))return null;
-  const items=(feed.items||[]).filter(x=>Object.hasOwn(questions,x.category)&&typeof x.title==='string'&&
-   /^https:\/\/(?:mastodon\.social\/tags\/|bsky\.app\/profile\/)/i.test(x.url));
+  const items=(feed.items||[]).filter(x=>x?.region==='VN'&&x.observed<=now&&now-x.observed<36*hour&&
+   Object.hasOwn(questions,x.category)&&typeof x.title==='string'&&(
+    x.source==='TikTok'&&/^https:\/\/www\.tiktok\.com\/@[\w.-]+\/video\/\d+$/i.test(x.url)||
+    x.source==='Facebook'&&/^https:\/\/(?:www\.)?facebook\.com\/(?:[\w.-]+\/(?:posts|videos)\/[\w.-]+|reel\/\d+)\/?$/i.test(x.url)));
   if(!items.length)return null;
   if(items.every(x=>seen.has(x.url)))seen.clear();
   const fresh=items.filter(x=>!seen.has(x.url)),item=fresh[Math.floor(random()*fresh.length)];
   seen.add(item.url);
-  return {text:'Trên '+item.source+' đang rôm rả về '+item.title+'. '+questions[item.category],
-   source:item.source,url:item.url};
+  return {text:(item.source==='TikTok'?'Trong các video TikTok đang được xem nhiều ở Việt Nam có':'Trên các trang Facebook Việt mình theo dõi, nhiều người đang tương tác với')+' “'+item.title+'”. '+questions[item.category],
+   source:item.source==='TikTok'?'TikTok · qua Endless':item.source,url:item.url};
  }
  function weather(brief,now=Date.now()){
   const data=brief?.weather;

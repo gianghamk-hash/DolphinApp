@@ -323,9 +323,9 @@
   state.profile=next?progress:null;
   state.form=next;
   if(!next||who.employeeId!==prev?.employeeId){
-   clearTimeout(state.tapTimer);state.tapTimer=0;state.briefSerial++;state.seen.clear();
+   clearTimeout(state.tapTimer);state.tapTimer=0;state.briefSerial++;state.seen.clear();state.smallTalk=0;
    clearTimeout(state.poseTimer);delete state.flight.dataset.pose;
-   state.nextChat=Date.now()+300000;state.nextWeather=Date.now()+20000;
+   state.nextChat=Date.now()+60000;state.nextWeather=Date.now()+20000;
   }
   if(!next){
    state.lastWelcome=0;state.touchCount=0;state.lastHint='';state.pendingHint='';state.bubble.hidden=true;
@@ -333,7 +333,7 @@
    root.clearTimeout(state.hintTimer);root.clearTimeout(state.reactionTimer);root.clearTimeout(state.talkTimer);
    syncVisibility();return;
   }
-  state.flight.setAttribute('aria-label',next.name+' · Level '+next.currentLevel+' · Chạm để trò chuyện, chạm hai lần hoặc nhấn Enter để mở vòng chọn');
+  state.flight.setAttribute('aria-label',next.name+' · Level '+next.currentLevel+' · '+state.flight.title+' · Enter để mở vòng chọn');
   state.stage.dataset.form=String(next.index);
   state.stage.dataset.effect=effects[next.index];
   const current=slot(hourVN(new Date()));
@@ -388,7 +388,11 @@
   const name=identity()?.name?.trim().split(/\s+/).pop();
   if(item)talk((name?name+' ơi, ':'')+item.text,'hello',12000,null,item);
   else if(manual)talk(kind==='weather'?'Mình chưa lấy được thời tiết mới ở Hạ Long.':'Mình chưa tìm thấy chủ đề mới để kể bạn nghe.','hello',4000);
-  else if(kind==='chat')talk((nickname||'Mình')+' ở đây với bạn. Ca làm hôm nay có điều gì vui không?','hello',7000);
+  else if(kind==='chat'){
+   const prompts=['Ca làm hôm nay có điều gì vui không?','Nếu được đặt tên cho một hòn đảo ngoài vịnh, bạn sẽ gọi là gì?','Trên tàu hôm nay có khoảnh khắc nào làm bạn mỉm cười không?'];
+   const turn=state.smallTalk||0;state.smallTalk=(turn+1)%prompts.length;
+   talk((nickname||'Mình')+' ở đây với bạn. '+prompts[turn],'hello',7000);
+  }
  }
  function checkBulletin(){
   if(!canShow()||state.stage.dataset.play||!state.bubble.hidden)return;
@@ -399,7 +403,7 @@
  function petAction(key){
   if(!canShow())return;
   if(key==='chat'||key==='weather'){void bulletin(key,true);return;}
-  const poses={bow:'Chào bạn, thuyền trưởng!',roll:'Xem mình lộn một vòng nhé!',peek:'Để mình ngó một chút nào!'};
+  const poses={bow:'Chào bạn, thuyền trưởng!',roll:'Xem mình lộn một vòng nhé!',peek:'Để mình ngó một chút nào!',heart:'Tặng bạn một trái tim đại dương! 🩵',pearl:['Ngọc san hô gửi bạn một lời chúc: hôm nay có người khiến bạn bật cười.','Ngọc ánh trăng rủ bạn tìm một điều đẹp ngoài vịnh.','Ngọc mặt trời thách bạn gửi lời cảm ơn tới một đồng đội.'][Math.floor(Math.random()*3)]};
   if(poses[key]){
    talk(poses[key],'pet',2100);clearTimeout(state.poseTimer);delete state.flight.dataset.pose;
    void state.art.offsetWidth;state.flight.dataset.pose=key;
@@ -447,7 +451,9 @@
   });
   state.source=doc.createElement('a');state.source.className='dcl-bubble-source';state.source.hidden=true;state.source.target='_blank';state.source.rel='noopener noreferrer';
   state.bubble.append(state.bubbleText,state.source,state.bubbleAction);
-  state.flight.title='Chạm để trò chuyện · Chạm hai lần để mở vòng chọn';
+  const installed=root.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||/Dolphin(?:Staff|Manager)\//i.test(navigator.userAgent);
+  state.flight.toggleAttribute('data-installed',installed);
+  state.flight.title=installed?'Nhấn để mở vòng chọn':'Chạm một lần hoặc nhấp đúp chuột để mở vòng chọn';
   state.flight.setAttribute('aria-haspopup','dialog');
   landing.addEventListener('dolphin-pet-action',e=>{syncVisibility();petAction(e.detail);});
   landing.addEventListener('dolphin-pet-say',e=>{syncVisibility();talk(String(e.detail),'hello',4200);});
@@ -482,7 +488,7 @@
    const movement=Math.hypot(e.clientX-state.press.x,e.clientY-state.press.y);
    const second=state.press.second;state.press=null;
    if(movement>=24||state.play?.consumedHold())return;
-   if(second)state.openOnClick=true;
+   if(installed||e.pointerType==='touch'||e.pointerType==='pen'||second)state.openOnClick=true;
    else state.tapTimer=setTimeout(()=>{state.tapTimer=0;touchPet();},330);
   });
   state.flight.addEventListener('pointercancel',()=>{state.press=null;});

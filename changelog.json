@@ -1,26 +1,90 @@
 {
-  "version": "1.1.153",
-  "previousVersion": "1.1.152",
-  "commit": "9ccd8ea",
-  "previousCommit": "983b3ca",
-  "buildDate": "2026-11-22T10:04:40.734Z",
-  "summary": "Add water-ball rallies and curious dolphin gestures on landing (#297)",
+  "version": "1.1.154",
+  "previousVersion": "1.1.153",
+  "commit": "a6d4627",
+  "previousCommit": "9ccd8ea",
+  "buildDate": "2026-11-23T00:52:59.165Z",
+  "summary": "Personalize the landing dolphin with a radial menu and live briefings (#298)",
   "changes": {
-    "totalCommits": 375,
-    "filesChanged": 9,
+    "totalCommits": 376,
+    "filesChanged": 32,
     "insertions": 0,
     "deletions": 0
   },
   "details": [
-    "Add water-ball rallies and curious dolphin gestures on landing (#297)"
+    "Personalize the landing dolphin with a radial menu and live briefings (#298)"
   ],
   "fileChanges": [
+    {
+      "file": ".github/workflows/dolphin-companion-bulletin.yml",
+      "type": "update"
+    },
     {
       "file": ".github/workflows/dolphin-companion.yml",
       "type": "update"
     },
     {
-      "file": "crew-dolphin-landing.css",
+      "file": "assets/dolphin-forms-v3.glb",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/LICENSE.txt",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/ball.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/chat.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/collection.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/flower.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/hat.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/mood.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/pose.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/ribbon.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/scarf.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/skill.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/star.png",
+      "type": "update"
+    },
+    {
+      "file": "assets/dolphin-wheel/weather.png",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-brief.js",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-landing-3d.js",
       "type": "update"
     },
     {
@@ -32,11 +96,39 @@
       "type": "update"
     },
     {
-      "file": "crew-dolphin-play.js",
+      "file": "crew-dolphin-wardrobe.js",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-wheel.css",
+      "type": "update"
+    },
+    {
+      "file": "crew-dolphin-wheel.js",
       "type": "update"
     },
     {
       "file": "index.html",
+      "type": "update"
+    },
+    {
+      "file": "scripts/build-dolphin-landing-model.py",
+      "type": "update"
+    },
+    {
+      "file": "scripts/companion-feed/package-lock.json",
+      "type": "update"
+    },
+    {
+      "file": "scripts/companion-feed/package.json",
+      "type": "update"
+    },
+    {
+      "file": "scripts/companion-feed/refresh.mjs",
+      "type": "update"
+    },
+    {
+      "file": "scripts/dolphin-brief.test.cjs",
       "type": "update"
     },
     {

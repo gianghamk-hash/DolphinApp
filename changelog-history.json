@@ -1,6 +1,14 @@
 {
   "versions": [
     {
+      "version": "1.1.153",
+      "releaseDate": "2026-11-22T10:04:40.734Z",
+      "summary": "Add water-ball rallies and curious dolphin gestures on landing (#297)",
+      "details": [
+        "Add water-ball rallies and curious dolphin gestures on landing (#297)"
+      ]
+    },
+    {
       "version": "1.1.152",
       "releaseDate": "2026-11-22T09:13:11.335Z",
       "summary": "Enlarge the landing dolphin and add effects for every form (#296)",
@@ -390,14 +398,6 @@
       "summary": "feat(arcade): adopt approved glossy 2D icons for all games",
       "details": [
         "feat(arcade): adopt approved glossy 2D icons for all games"
-      ]
-    },
-    {
-      "version": "1.1.101",
-      "releaseDate": "2026-11-10T05:25:32.536Z",
-      "summary": "fix(multiplayer): restore room creation across online games",
-      "details": [
-        "fix(multiplayer): restore room creation across online games"
       ]
     }
   ]

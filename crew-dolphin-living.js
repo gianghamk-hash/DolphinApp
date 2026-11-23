@@ -58,7 +58,7 @@
  if(!doc)return;
  const $=id=>doc.getElementById(id);
  const state={owner:'',form:null,profile:null,place:'',
-  panel:null,dock:null,performBtn:null,avatarBtn:null,collectionBtn:null,treasureBtn:null,
+  panel:null,wheel:null,performBtn:null,avatarBtn:null,treasureAvailable:false,
   scene:null,avatarFx:null,status:null,dialog:null,items:null,seen:null,petStage:null,
   collection:null,carry:null,allowed:false,due:0,sceneTimer:0,avatarTimer:0,dialogVisible:false,
   busy:false,autoGreeted:false,manualAvatar:false,lastPosition:null};
@@ -73,7 +73,8 @@
   return state.place==='landing'&&active()&&landing&&!doc.hidden&&
    !doc.body.classList.contains('app-mode')&&landing.style.display!=='none'&&
    !landing.classList.contains('fade-out')&&
-   !['orderNotif','reminderAlarm'].some(n=>$(n)?.classList.contains('show'));
+   !['orderNotif','reminderAlarm'].some(n=>{const el=$(n);if(!el)return false;const css=getComputedStyle(el);
+    return el.classList.contains('show')||(css.display!=='none'&&css.visibility!=='hidden'&&Number(css.opacity)>.1);});
  }
  function profileVisible(){
   return state.place==='profile'&&active()&&!doc.hidden&&
@@ -88,6 +89,8 @@
    if(!saved||!Array.isArray(saved.items))return emptyCollection();
    return {items:[...new Set(saved.items.filter(x=>REWARDS.some(r=>r.id===x)))].slice(0,REWARDS.length),
     openedDay:typeof saved.openedDay==='string'?saved.openedDay:'',
+    nickname:typeof saved.nickname==='string'?saved.nickname.slice(0,22):'',
+    mood:['cheerful','calm','sleepy'].includes(saved.mood)?saved.mood:'auto',
     selected:typeof saved.selected==='string'&&REWARDS.some(r=>r.id===saved.selected)?saved.selected:''};
   }catch(_){return emptyCollection();}
  }
@@ -98,6 +101,7 @@
  }
  function status(text){
   if(state.status)state.status.textContent=text;
+  if(state.place==='landing'&&landingVisible())$('landing').dispatchEvent(new CustomEvent('dolphin-pet-say',{detail:text}));
  }
  function el(tag,className,text){
   const n=doc.createElement(tag);
@@ -139,28 +143,42 @@
   return true;
  }
  function makeLanding(){
-  const landing=$('landing'),grid=landing?.querySelector('.area-grid');
-  const stage=$('dolphinLandingCompanion');
-  if(!grid||!stage)return false;
+  const landing=$('landing'),stage=$('dolphinLandingCompanion');
+  if(!landing||!stage||!root.DolphinWheel)return false;
+  const flight=stage.querySelector('.dcl-flight');
   state.place='landing';state.petStage=stage;
-  state.panel=el('section','dcl-living-panel dcl-living-landing');
-  state.panel.setAttribute('aria-label','Hoạt động giải trí cùng cá heo');
-  const title=el('strong','dcl-living-title','🐬 DOLPHIN COMPANION');
-  const actions=el('div','dcl-living-actions');
-  state.performBtn=btn('✦ Biểu diễn / Perform','dcl-living-button',()=>perform());
-  state.collectionBtn=btn('♢ Bộ sưu tập kho báu','dcl-living-button',()=>openCollection());
-  state.treasureBtn=btn('🎁 Mở rương bí mật','dcl-living-button dcl-living-treasure',()=>openTreasure());
-  state.treasureBtn.hidden=true;
-  const playBtn=btn('Chuyền bóng nước','dcl-living-button',()=>{
+  const item=(key,short,label,icon,extra={})=>({key,short,label,icon,...extra});
+  function items(page){
+   if(page==='pose')return [item('bow','Cúi chào','Cúi chào','ribbon'),item('roll','Lộn vòng','Lộn vòng','pose'),item('peek','Nghiêng đầu','Nghiêng đầu','flower')];
+   if(page==='mood')return [['auto','Theo giờ','weather'],['cheerful','Tinh nghịch','skill'],['calm','Thư thái','flower'],['sleepy','Buồn ngủ','mood']]
+    .map(([key,short,icon])=>item(key,short,short,icon,{selected:key===(state.collection?.mood||'auto')}));
+   return [item('skill','Tuyệt chiêu','Biểu diễn '+SKILLS[state.form.index].name,'skill'),
+    item('play','Chuyền bóng','Chuyền bóng nước','ball'),item('pose','Tạo dáng','Chọn tư thế','pose'),
+    item('mood','Tâm trạng','Chọn trạng thái','mood'),item('chat','Chuyện mới','Chuyện đang thịnh hành','chat'),
+    item('weather','Thời tiết','Hỏi thời tiết Hạ Long','weather'),item('collection','Sưu tập','Bộ sưu tập kho báu','collection'),
+    item('chest','Mở rương',state.treasureAvailable?'Mở rương bí mật':'Chưa có rương hôm nay','chest',{locked:!state.treasureAvailable})];
+  }
+  function act(key){
    if(!landingVisible())return;
-   const started=!landing.dispatchEvent(new CustomEvent('dolphin-play-invite',{detail:playBtn,cancelable:true}));
-   status(started?'Chạm bóng 3 lần khi bóng quay về.':'Cuộn tới khoảng trống cạnh logo để chuyền bóng.');
+   if(key==='skill'){perform();return;}
+   if(key==='play'){
+    const started=!landing.dispatchEvent(new CustomEvent('dolphin-play-invite',{detail:flight,cancelable:true}));
+    if(!started)status('Mình cần thêm một chút khoảng trống để chuyền bóng.');
+    return;
+   }
+   if(key==='collection'){openCollection();return;}
+   if(key==='chest'){openTreasure();return;}
+   if(['auto','cheerful','calm','sleepy'].includes(key)){
+    state.collection.mood=key;saveCollection();
+   }
+   landing.dispatchEvent(new CustomEvent('dolphin-pet-action',{detail:key}));
+  }
+  state.wheel=root.DolphinWheel.create(landing,{flight,available:landingVisible,items,act,chest:()=>state.treasureAvailable,
+   profile:()=>({name:state.collection?.nickname||state.form.name,nickname:state.collection?.nickname,level:root.DolphinCompanion.forms[state.form.index].level}),
+   rename(value){if(landingVisible()){state.collection.nickname=value.slice(0,22);saveCollection();}}
   });
-  playBtn.title='Chuyền bóng với cá heo. Giữ ngón tay gần cá heo để gọi lại.';
-  actions.append(state.performBtn,playBtn,state.collectionBtn,state.treasureBtn);
-  state.status=el('p','dcl-living-status','');state.status.setAttribute('role','status');
-  state.panel.append(title,actions,state.status);
-  grid.insertAdjacentElement('afterend',state.panel);
+  state.panel=state.wheel.sheet;
+  landing.addEventListener('dolphin-wheel-open',()=>{tickTreasure();state.wheel.open();});
   state.scene=createScene(stage);
   state.carry=el('span','dcl-living-carry');state.carry.hidden=true;
   state.carry.setAttribute('aria-hidden','true');stage.append(state.carry);
@@ -171,7 +189,7 @@
   state.items=el('div','dcl-living-items');
   const foot=el('p','dcl-living-disclaimer','Vật phẩm chỉ mang tính trang trí, được lưu trên trình duyệt hiện tại. Không liên quan XP hay doanh thu.');
   state.dialog.append(head,state.items,foot);
-  state.dialog.addEventListener('close',()=>{state.dialogVisible=false;});
+  state.dialog.addEventListener('close',()=>{state.dialogVisible=false;if(landingVisible())flight.focus({preventScroll:true});});
   landing.append(state.dialog);
   return true;
  }
@@ -225,14 +243,14 @@
   else state.dialog.setAttribute('open','');
  }
  function openTreasure(){
-  if(!landingVisible()||!state.collection||!state.treasureBtn||state.treasureBtn.hidden)return;
+  if(!landingVisible()||!state.collection||!state.treasureAvailable)return;
   const day=dateVN(new Date());
   if(!offer(state.owner,day,state.form.index,state.collection.openedDay))return;
   const reward=drawReward(state.owner,day,state.form.index);
   state.collection.openedDay=day;
   if(!state.collection.items.includes(reward.id))state.collection.items.push(reward.id);
   state.collection.selected=reward.id;saveCollection();
-  state.treasureBtn.hidden=true;
+  state.treasureAvailable=false;
   if(state.carry)state.carry.hidden=true;
   applyCosmetic();
   status('🎁 Rương kho báu: '+reward.name+' ('+reward.rarity+'). Đã thêm vào bộ sưu tập!');
@@ -279,17 +297,15 @@
   },3200);
  }
  function tickTreasure(){
-  if(state.place!=='landing'||!state.treasureBtn)return;
+  if(state.place!=='landing'||!state.wheel)return;
   const day=dateVN(new Date());
   const available=!!(landingVisible()&&Date.now()>=state.due&&
     state.collection&&offer(state.owner,day,state.form.index,state.collection.openedDay));
-  state.treasureBtn.hidden=!available;
+  state.treasureAvailable=available;state.wheel.refresh();
   if(state.carry){state.carry.hidden=!available;
    if(available&&state.lastPosition)state.carry.style.transform='translate3d('+(state.lastPosition.x+13)+'px,'+(state.lastPosition.y-36)+'px,0)';
   }
-  if(state.collectionBtn)state.collectionBtn.hidden=!landingVisible();
-  if(state.performBtn)state.performBtn.hidden=!landingVisible();
-  if(state.panel)state.panel.hidden=!landingVisible();
+  if(!landingVisible()){state.wheel.close();if(state.dialog?.open)state.dialog.close();}
  }
  function render(profile){
   const id=currentIdentity(),next=form(profile,id,root.DolphinCompanion);
@@ -299,8 +315,9 @@
    state.owner='';state.form=null;state.profile=null;state.collection=null;state.due=0;
    destroyAction();
    if(state.dialog?.open)state.dialog.close();
-   if(state.panel)state.panel.hidden=true;
-   if(state.treasureBtn)state.treasureBtn.hidden=true;
+   state.wheel?.close();
+   if(state.place==='profile'&&state.panel)state.panel.hidden=true;
+   state.treasureAvailable=false;
    if(state.carry)state.carry.hidden=true;
    if(state.scene)state.scene.hidden=true;
    return;
@@ -313,10 +330,10 @@
    state.collection=loadCollection(next.employeeId);
    state.autoGreeted=false;state.manualAvatar=false;
    state.due=Date.now()+6500;
-   if(state.place==='landing')status('Giữ ngón tay hoặc con trỏ gần cá heo để gọi lại.');
+   state.wheel?.close();
    if(state.dialog?.open)state.dialog.close();
-  }else if(lowered)destroyAction();
-  if(state.panel)state.panel.hidden=!hasGate();
+  }else if(lowered||prev.currentLevel!==next.currentLevel){destroyAction();state.wheel?.close();}
+  if(state.place==='profile'&&state.panel)state.panel.hidden=!hasGate();
   if(state.performBtn){
    state.performBtn.textContent='✦ '+SKILLS[next.index].vi;
    state.performBtn.setAttribute('aria-label','Biểu diễn '+SKILLS[next.index].name+' (Level '+next.currentLevel+')');
@@ -327,7 +344,7 @@
     state.autoGreeted=true;
     root.setTimeout(()=>{if(active()&&profileVisible()&&!state.manualAvatar)meetAvatar(true);},1000);
    }
-  }else tickTreasure();
+  }else{tickTreasure();$('landing').dispatchEvent(new Event('dolphin-pet-preferences'));}
  }
  function init(){
   if(state.panel||!root.DolphinCompanion?.model)return;
@@ -342,7 +359,8 @@
   if(state.place==='landing'){
    const obs=new MutationObserver(tickTreasure);
    for(const id of ['orderNotif','reminderAlarm'])if($(id))
-    obs.observe($(id),{attributes:true,attributeFilter:['class']});
+    obs.observe($(id),{attributes:true,attributeFilter:['class','style']});
+   obs.observe($('landing'),{attributes:true,attributeFilter:['class','style']});
    obs.observe(doc.body,{attributes:true,attributeFilter:['class']});
    obs.observe(doc.documentElement,{attributes:true,attributeFilter:['class']});
    root.setInterval(tickTreasure,4000);
@@ -352,7 +370,7 @@
   }
   render(root.DolphinPrestige?.getMine?.());
  }
- root.DolphinLivingBridge=Object.freeze({move(x,y){
+ root.DolphinLivingBridge=Object.freeze({preferences:()=>currentIdentity()?.employeeId===state.owner?state.collection:null,move(x,y){
   if(state.place!=='landing'||!state.form)return;
   state.lastPosition={x,y};
   if(state.scene&&!state.scene.hidden){state.scene.style.setProperty('--dcl-sx',x+'px');state.scene.style.setProperty('--dcl-sy',y+'px');}

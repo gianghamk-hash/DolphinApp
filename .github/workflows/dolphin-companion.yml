@@ -1,10 +1,10 @@
 name: Dolphin companion
 on:
   pull_request:
-    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-play.js','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','.github/workflows/dolphin-companion.yml']
+    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-play.js','crew-dolphin-wheel.*','crew-dolphin-brief.js','crew-dolphin-wardrobe.js','assets/dolphin-wheel/**','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','scripts/dolphin-brief*','.github/workflows/dolphin-companion.yml']
   push:
     branches: [main]
-    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-play.js','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','.github/workflows/dolphin-companion.yml']
+    paths: ['crew-dolphin-companion.*','assets/dolphin-companions-v1.png','dolphin-profile.html','crew-ascension.css','scripts/dolphin-companion*','crew-dolphin-landing.*','crew-dolphin-play.js','crew-dolphin-wheel.*','crew-dolphin-brief.js','crew-dolphin-wardrobe.js','assets/dolphin-wheel/**','crew-dolphin-landing-3d.js','scripts/build-dolphin-landing-model.py','assets/dolphin-forms-v*.glb','assets/dolphin-level-*.png','assets/eternal-dolphin-swim-*.png','vendor/dolphin-three-*','scripts/dolphin-landing*','index.html','service-worker.js','crew-dolphin-living.*','assets/dolphin-treasure-chest.svg','scripts/dolphin-living*','scripts/dolphin-brief*','.github/workflows/dolphin-companion.yml']
 permissions:
   contents: read
 jobs:
@@ -15,7 +15,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: '22'
-      - run: node --test scripts/dolphin-companion.test.cjs scripts/dolphin-landing.test.cjs scripts/dolphin-living.test.cjs
+      - run: node --test scripts/dolphin-companion.test.cjs scripts/dolphin-landing.test.cjs scripts/dolphin-living.test.cjs scripts/dolphin-brief.test.cjs
       - run: npm install --no-save --package-lock=false playwright
       - run: npx playwright install --with-deps chromium
       - run: node scripts/dolphin-companion-browser.cjs

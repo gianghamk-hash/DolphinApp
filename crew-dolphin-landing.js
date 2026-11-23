@@ -44,10 +44,10 @@
  root.DolphinLandingCompanionLogic=logic;
  const doc=root.document;
  if(!doc)return;
- const modelURL=new URL('./crew-dolphin-landing-3d.js?v=rig-v2',doc.currentScript?.src||doc.baseURI);
+ const modelURL=new URL('./crew-dolphin-landing-3d.js?v=rig-v3',doc.currentScript?.src||doc.baseURI);
  const state={stage:null,flight:null,sprite:null,bubble:null,bubbleText:null,bubbleAction:null,
   profile:null,form:null,path:null,position:null,exit:null,frame:0,turn:0,
-  play:null,art:null,model:null,modelRequested:false,
+  tapTimer:0,nextChat:0,nextWeather:0,briefSerial:0,seen:new Set(),poseTimer:0,outfit:null,play:null,art:null,model:null,modelRequested:false,
   lastWelcome:0,lastHint:'',pendingHint:'',lastSlot:'',touchCount:0,lastSecret:0,facing:1,
   obstacles:null,obstaclesAt:0,nextRouteAt:0,
   reactionTimer:0,talkTimer:0,hintTimer:0,press:null,enabled:false};
@@ -200,6 +200,9 @@
   if(!canShow()||root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){syncVisibility();return;}
   state.frame=root.requestAnimationFrame(tick);
   const bounds=size(),rects=protect();
+  if(state.tapTimer&&state.position&&allowedNode(state.position,bounds,rects)){
+   move(state.position.x,state.position.y,0,0,now);state.path=null;return;
+  }
   if(state.play?.tick(now,playground(bounds,rects)))return;
   if(!state.path&&now>=state.nextRouteAt&&!startPath(now,bounds,rects))state.nextRouteAt=now+300;
   if(!state.path){
@@ -230,7 +233,7 @@
  }
  function syncModel(){
   if(state.model){
-   state.model.setForm(state.form.index);
+   state.model.setForm(state.form.index);state.model.setOutfit(state.outfit);
    return;
   }
   if(state.modelRequested||!root.WebGL2RenderingContext)return;
@@ -244,7 +247,8 @@
   if(!state.stage)return;
   const active=canShow();
   state.stage.hidden=!active;
-  if(!active){state.play?.reset();stop();return;}
+  if(!active){clearTimeout(state.tapTimer);state.tapTimer=0;state.press=null;
+   state.briefSerial++;state.play?.reset();stop();return;}
   if(root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){
    stop();
    const position=park(size(),protect());
@@ -259,15 +263,19 @@
    state.lastWelcome=now;
    root.setTimeout(()=>{if(canShow()&&Date.now()-state.lastWelcome<3000){
     const name=identity()?.name;
-    talk((typeof name==='string'&&name.trim()?name.trim():'Bạn')+' ơi! '+slot(hourVN(new Date())).text,'hello',4600);
+    const friend=root.DolphinLivingBridge?.preferences()?.nickname;
+    talk((friend?friend+' đây! ':'')+(typeof name==='string'&&name.trim()?name.trim():'Bạn')+' ơi! '+slot(hourVN(new Date())).text,'hello',4600);
    }},650);
    scheduleCheckin();
   }
  }
- function talk(message,emotion,duration,action){
+ function talk(message,emotion,duration,action,source){
   if(!canShow())return;
   root.clearTimeout(state.talkTimer);
   if(action==='checkin')state.play?.reset();
+  state.source.hidden=!source;
+  if(source){state.source.href=source.url;state.source.textContent=source.source;}
+  else state.source.removeAttribute('href');
   state.bubbleText.textContent=message;
   state.bubbleAction.hidden=action!=='checkin';
   state.bubble.hidden=false;
@@ -313,17 +321,22 @@
   const prev=state.form;
   state.profile=next?progress:null;
   state.form=next;
+  if(!next||who.employeeId!==prev?.employeeId){
+   clearTimeout(state.tapTimer);state.tapTimer=0;state.briefSerial++;state.seen.clear();
+   clearTimeout(state.poseTimer);delete state.flight.dataset.pose;
+   state.nextChat=Date.now()+300000;state.nextWeather=Date.now()+20000;
+  }
   if(!next){
    state.lastWelcome=0;state.touchCount=0;state.lastHint='';state.pendingHint='';state.bubble.hidden=true;
    delete state.flight.dataset.reaction;
    root.clearTimeout(state.hintTimer);root.clearTimeout(state.reactionTimer);root.clearTimeout(state.talkTimer);
    syncVisibility();return;
   }
-  state.flight.setAttribute('aria-label',next.name+' · Level '+next.currentLevel+' · Chạm để vuốt ve linh thú');
+  state.flight.setAttribute('aria-label',next.name+' · Level '+next.currentLevel+' · Chạm để trò chuyện, chạm hai lần hoặc nhấn Enter để mở vòng chọn');
   state.stage.dataset.form=String(next.index);
   state.stage.dataset.effect=effects[next.index];
   const current=slot(hourVN(new Date()));
-  state.flight.dataset.mood=current.mood;state.lastSlot=current.key;
+  state.flight.dataset.mood=petMood(current.mood);state.lastSlot=current.key;
   const same=prev&&prev.employeeId===next.employeeId;
   if(!same||next.currentLevel!==prev.currentLevel||next.xp<prev.xp)state.play?.reset();
   if(!same){
@@ -348,11 +361,52 @@
  }
  function setMood(){
   const current=slot(hourVN(new Date()));
-  if(current.key!==state.lastSlot){
-   state.lastSlot=current.key;state.flight.dataset.mood=current.mood;
-  }
+  state.lastSlot=current.key;state.flight.dataset.mood=petMood(current.mood);
+  dress();
   if(state.form&&canShow())scheduleCheckin();
   syncVisibility();
+ }
+ function petMood(fallback){
+  const mood=root.DolphinLivingBridge?.preferences()?.mood;
+  return ['cheerful','calm','sleepy'].includes(mood)?mood:fallback;
+ }
+ function dress(){
+  const look=root.DolphinWardrobe?.select(new Date(),doc.body.dataset.theme);
+  if(!look||look.key===state.outfit?.key)return;
+  state.outfit=look;state.stage.dataset.outfit=look.key;state.garment.src='./assets/dolphin-wheel/'+look.icon+'.png';
+  state.garment.hidden=false;state.model?.setOutfit(look);
+ }
+ async function bulletin(kind,manual=false){
+  const api=root.DolphinBrief;
+  if(!api||!canShow()||(!manual&&(!state.bubble.hidden||state.stage.dataset.play)))return;
+  const serial=++state.briefSerial,owner=state.form.employeeId;
+  const data=await api.read();
+  if(serial!==state.briefSerial||!canShow()||owner!==state.form?.employeeId||(!manual&&(!state.bubble.hidden||state.stage.dataset.play)))return;
+  const item=kind==='weather'?api.weather(data):api.trending(data,state.seen);
+  const nickname=root.DolphinLivingBridge?.preferences()?.nickname;
+  const name=identity()?.name?.trim().split(/\s+/).pop();
+  if(item)talk((name?name+' ơi, ':'')+item.text,'hello',12000,null,item);
+  else if(manual)talk(kind==='weather'?'Mình chưa lấy được thời tiết mới ở Hạ Long.':'Mình chưa tìm thấy chủ đề mới để kể bạn nghe.','hello',4000);
+  else if(kind==='chat')talk((nickname||'Mình')+' ở đây với bạn. Ca làm hôm nay có điều gì vui không?','hello',7000);
+ }
+ function checkBulletin(){
+  if(!canShow()||state.stage.dataset.play||!state.bubble.hidden)return;
+  const now=Date.now();
+  if(now>=state.nextChat){state.nextChat=now+300000;void bulletin('chat');}
+  else if(now>=state.nextWeather){state.nextWeather=now+3600000;void bulletin('weather');}
+ }
+ function petAction(key){
+  if(!canShow())return;
+  if(key==='chat'||key==='weather'){void bulletin(key,true);return;}
+  const poses={bow:'Chào bạn, thuyền trưởng!',roll:'Xem mình lộn một vòng nhé!',peek:'Để mình ngó một chút nào!'};
+  if(poses[key]){
+   talk(poses[key],'pet',2100);clearTimeout(state.poseTimer);delete state.flight.dataset.pose;
+   void state.art.offsetWidth;state.flight.dataset.pose=key;
+   state.poseTimer=setTimeout(()=>delete state.flight.dataset.pose,2100);return;
+  }
+  state.flight.dataset.mood=petMood(slot(hourVN(new Date())).mood);
+  const phrases={auto:'Mình sẽ đổi tâm trạng theo giờ nhé.',cheerful:'Mình sẵn sàng chơi rồi!',calm:'Mình bơi chầm chậm cùng bạn nhé.',sleepy:'Cho mình lim dim bên bạn một lát nhé.'};
+  if(phrases[key])talk(phrases[key],'hello',2800);
  }
  function makeEffects(){
   const effectsRoot=doc.createElement('span');
@@ -373,7 +427,8 @@
   state.flight=doc.createElement('button');state.flight.type='button';state.flight.className='dcl-flight';
   state.art=doc.createElement('span');state.art.className='dcl-art';
   state.sprite=doc.createElement('span');state.sprite.className='dcl-sprite';state.sprite.setAttribute('aria-hidden','true');
-  state.art.append(state.sprite);state.flight.append(makeEffects(),state.art);
+  state.garment=doc.createElement('img');state.garment.className='dcl-outfit';state.garment.alt='';state.garment.hidden=true;
+  state.art.append(state.sprite,state.garment);dress();state.flight.append(makeEffects(),state.art);
   state.bubble=doc.createElement('div');state.bubble.className='dcl-bubble';state.bubble.hidden=true;
   state.bubble.setAttribute('role','status');state.bubble.setAttribute('aria-live','polite');
   state.bubbleText=doc.createElement('span');state.bubbleText.className='dcl-bubble-text';
@@ -382,7 +437,15 @@
   state.bubbleAction.addEventListener('click',e=>{e.preventDefault();e.stopPropagation();
    if(canShow())root.openApp?.('profile');
   });
-  state.bubble.append(state.bubbleText,state.bubbleAction);
+  state.source=doc.createElement('a');state.source.className='dcl-bubble-source';state.source.hidden=true;state.source.target='_blank';state.source.rel='noopener noreferrer';
+  state.bubble.append(state.bubbleText,state.source,state.bubbleAction);
+  state.flight.title='Chạm để trò chuyện · Chạm hai lần để mở vòng chọn';
+  state.flight.setAttribute('aria-haspopup','dialog');
+  landing.addEventListener('dolphin-pet-action',e=>{syncVisibility();petAction(e.detail);});
+  landing.addEventListener('dolphin-pet-say',e=>{syncVisibility();talk(String(e.detail),'hello',4200);});
+  landing.addEventListener('dolphin-pet-preferences',()=>{state.flight.dataset.mood=petMood(slot(hourVN(new Date())).mood);});
+  root.addEventListener('dolphin-theme-changed',dress);
+  root.setInterval(checkBulletin,5000);
   state.stage.append(state.flight,state.bubble);landing.append(state.stage);
   state.play=root.DolphinLandingPlay?.create({stage:state.stage,flight:state.flight,landing,
    snapshot:playground,canPlay:canShow,
@@ -392,6 +455,7 @@
     root.matchMedia('(prefers-reduced-motion: reduce)').matches?undefined:now);}
   });
   landing.addEventListener('dolphin-play-invite',event=>{
+   syncVisibility();
    if(state.play?.invite(true,event.detail))event.preventDefault();
   });
   // Dialogs are created by the living companion after the landing initializes.
@@ -399,16 +463,28 @@
   doc.addEventListener('close',e=>{if(e.target.tagName==='DIALOG')syncVisibility();},true);
   state.flight.addEventListener('pointerdown',e=>{
    if(e.button!==undefined&&e.button!==0)return;
-   state.press={x:e.clientX,y:e.clientY};
+   if(!e.isPrimary)return;
+   state.openOnClick=false;state.press={x:e.clientX,y:e.clientY,second:!!state.tapTimer};
+   clearTimeout(state.tapTimer);state.tapTimer=0;
    try{state.flight.setPointerCapture(e.pointerId);}catch(_){}
   });
   state.flight.addEventListener('pointerup',e=>{
    if(!state.press)return;
    const movement=Math.hypot(e.clientX-state.press.x,e.clientY-state.press.y);
-   state.press=null;if(movement<180&&!state.play?.consumedHold())touchPet();
+   const second=state.press.second;state.press=null;
+   if(movement>=24||state.play?.consumedHold())return;
+   if(second)state.openOnClick=true;
+   else state.tapTimer=setTimeout(()=>{state.tapTimer=0;touchPet();},330);
   });
   state.flight.addEventListener('pointercancel',()=>{state.press=null;});
-  state.flight.addEventListener('click',e=>{if(e.detail===0)touchPet();});
+  function openWheel(){if(!canShow())return;state.briefSerial++;state.bubble.hidden=true;
+   landing.dispatchEvent(new Event('dolphin-wheel-open'));}
+  state.flight.addEventListener('dblclick',e=>e.preventDefault());
+  state.flight.addEventListener('click',e=>{
+   if(state.openOnClick){state.openOnClick=false;openWheel();}
+   else if(e.detail===0){if(root.DolphinWheel)openWheel();else touchPet();}
+  });
+  state.flight.addEventListener('contextmenu',e=>e.preventDefault());
   root.addEventListener('dolphin-my-progress-updated',event=>applyProgress(event.detail));
   root.addEventListener('dolphin-staff-id-changed',()=>applyProgress(root.DolphinPrestige?.getMine?.()));
   doc.addEventListener('visibilitychange',syncVisibility);

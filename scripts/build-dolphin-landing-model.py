@@ -124,8 +124,8 @@ def base_dolphin():
     surf.sweep([
         (-1.44,-.08,0,.015,.045),(-1.36,-.035,0,.105,.19),
         (-1.14,.052,0,.218,.265),(-.91,.215,0,.382,.345),
-        (-.56,.225,0,.466,.425),(-.23,.115,0,.375,.375),
-        (.14,.006,0,.27,.30),(.48,-.12,0,.19,.22),
+        (-.56,.195,0,.505,.452),(-.23,.085,0,.445,.423),
+        (.14,-.016,0,.326,.345),(.48,-.125,0,.207,.243),
         (.79,-.25,0,.107,.13),(1.06,-.33,0,.062,.078),
         (1.28,-.31,0,.023,.043),(1.33,-.29,0,.004,.008)
     ], "body", trunk_skin, around=32, subdivisions=3, dorsal=True, belly=True)
@@ -274,11 +274,47 @@ JOINTS = ["Spine","Tail","Flukes","FinNear","FinFar","WingNear","WingFar"]
 PARENT = [None,0,1,0,0,0,0]
 
 
+def wardrobe(style):
+    s = Surface()
+    if style in ("scarf", "bow", "flower", "medal"):
+        # A collar following the neck section, with the knot and tails on both sides.
+        s.sweep([(-.57,.18,0,.51,.458),(-.53,.178,0,.524,.468),
+                 (-.40,.146,0,.509,.466),(-.37,.141,0,.484,.445)],
+                "cloth", dorsal=True, around=32)
+        for sign in (-1, 1):
+            z = sign*.46
+            if style == "scarf":
+                ribbon(s,[(-.46,.05,z,.10,.055),(-.33,-.08,z,.094,.046),
+                          (-.12,-.18,z*.94,.064,.029),(-.02,-.14,z*.90,.009,.009)],"cloth",0)
+                s.ellipse((-.47,.065,z),(.088,.08,.054),"piping")
+            elif style == "bow":
+                for side in (-1,1):
+                    s.ellipse((-.48+side*.087,.045,z),(.105,.09,.049),"cloth")
+                s.ellipse((-.48,.045,z*1.08),(.043,.062,.032),"piping")
+            elif style == "flower":
+                for i in range(5):
+                    a=i*TAU/5
+                    s.ellipse((-.46+.086*math.cos(a),.04+.086*math.sin(a),z),
+                              (.064,.065,.043),"cloth")
+                s.ellipse((-.46,.04,z*1.08),(.051,.051,.03),"piping")
+            else:
+                s.ellipse((-.46,.025,z),(.11,.133,.035),"piping")
+                s.ellipse((-.46,.025,z*1.07),(.065,.084,.025),"cloth")
+    else:
+        # Soft pompom cap and broad-brimmed witch hat follow the head joint.
+        s.ellipse((-.68,.66,0),(.29,.055,.23) if style=="hat" else (.235,.075,.20),"piping")
+        ribbon(s,[(-.68,.66,0,.19,.16),(-.65,.78,0,.16,.14),
+                  (-.56,.89,0,.092,.087),(-.44,.91,0,.037,.039),
+                  (-.39,.86,0,.009,.012)],"cloth",0,plane=False)
+        if style=="cap": s.ellipse((-.39,.85,0),(.065,.069,.065),"piping")
+    return s
+
+
 def build(path):
     materials = {
         **dict(zip(PALETTE, FORMS[-1][1:-1])),
         "eyeRim":"c8f1ff", "iris":"2375c5", "pupil":"102450", "light":"f5ffff",
-        "mouth":"682a58", "starlight":"dc9f46"
+        "mouth":"682a58", "starlight":"dc9f46", "cloth":"157a95", "piping":"ffe5ac"
     }
     forms = [{"level": row[0], "colors": dict(zip(PALETTE, map(rgb, row[1:-1]))),
               "parts": row[-1]} for row in FORMS]
@@ -341,7 +377,8 @@ def build(path):
 
     for label, mesh in [("dolphin",base_dolphin()),("crest",sea_crests()),("wings",wings()),
                         ("tiara",tiara()),("coral",coral()),("regalia",regalia()),
-                        ("aura",eternal_aura())]:
+                        ("aura",eternal_aura()), *[(style,wardrobe(style)) for style in
+                        ("bow","scarf","flower","medal","hat","cap")]]:
         attributes = {
             "POSITION":vectors(mesh.points,"f","VEC3",bounds=True,target=34962),
             "NORMAL":vectors([unit(n) for n in mesh.normals],"f","VEC3",target=34962),

@@ -3,7 +3,7 @@ import {
   Scene, WebGLRenderer, GLTFLoader
 } from './vendor/dolphin-three-r180.js';
 
-const asset = new URL('./assets/dolphin-forms-v2.glb', import.meta.url);
+const asset = new URL('./assets/dolphin-forms-v3.glb', import.meta.url);
 const clamp = (value, min, max) => Math.max(min, Math.min(max, value));
 
 export async function createDolphinModel(host) {
@@ -66,17 +66,30 @@ export async function createDolphinModel(host) {
     host.dataset.modelReady = String(visible);
   }
 
+  let outfit=null;
+  function dress(){
+    if(currentForm<0)return;
+    const selection=new Set(model.userData.forms[currentForm].parts);
+    if(outfit){
+      if(outfit.part==='cap'||outfit.part==='hat')selection.delete('tiara');
+      selection.add(outfit.part);
+      for(const mat of materials.get('cloth')||[])mat.color.set(outfit.color);
+      for(const mat of materials.get('piping')||[])mat.color.set(outfit.trim);
+    }
+    for(const part of parts)part.visible=selection.has(part.userData.part);
+  }
+  function setOutfit(next){if(next?.key!==outfit?.key){outfit=next;dress();}}
   function setForm(formIndex) {
     if (currentForm === formIndex) return;
     const variant = model.userData.forms[formIndex];
     for (const [name, color] of Object.entries(variant.colors)) {
       for (const material of materials.get(name) ?? []) material.color.fromArray(color);
     }
-    const selection = new Set(variant.parts);
-    for (const part of parts) part.visible = selection.has(part.userData.part);
+
     rim.color.fromArray(variant.colors.wingTip).lerp(mainLight.color,.28);
     rim.intensity = 1.55+formIndex*.14;
     currentForm = formIndex;
+    dress();
     canvas.dataset.level = String(variant.level);
   }
 
@@ -111,7 +124,7 @@ export async function createDolphinModel(host) {
   canvas.addEventListener('webglcontextrestored', () => { lastFrame = undefined; });
   host.append(canvas);
   return {
-    setForm,
+    setForm,setOutfit,
     draw,
     pause() { lastFrame = undefined; show(false); },
     dispose() {

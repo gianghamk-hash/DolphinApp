@@ -282,21 +282,23 @@ def wardrobe(style):
                  (-.40,.146,0,.509,.466),(-.37,.141,0,.484,.445)],
                 "cloth", dorsal=True, around=32)
         for sign in (-1, 1):
-            z = sign*.46
+            z = sign*.475
             if style == "scarf":
                 ribbon(s,[(-.46,.05,z,.10,.055),(-.33,-.08,z,.094,.046),
                           (-.12,-.18,z*.94,.064,.029),(-.02,-.14,z*.90,.009,.009)],"cloth",0)
                 s.ellipse((-.47,.065,z),(.088,.08,.054),"piping")
             elif style == "bow":
                 for side in (-1,1):
-                    s.ellipse((-.48+side*.087,.045,z),(.105,.09,.049),"cloth")
+                    s.ellipse((-.48+side*.13,.045,z),(.14,.114,.055),"cloth")
+                    ribbon(s,[(-.48,.06,z,.052,.045),(-.48+side*.08,-.08,z,.070,.04),
+                              (-.48+side*.16,-.165,z*.96,.039,.028)],"cloth",0)
                 s.ellipse((-.48,.045,z*1.08),(.043,.062,.032),"piping")
             elif style == "flower":
                 for i in range(5):
                     a=i*TAU/5
-                    s.ellipse((-.46+.086*math.cos(a),.04+.086*math.sin(a),z),
-                              (.064,.065,.043),"cloth")
-                s.ellipse((-.46,.04,z*1.08),(.051,.051,.03),"piping")
+                    s.ellipse((-.46+.116*math.cos(a),.05+.116*math.sin(a),z),
+                              (.088,.092,.049),"piping")
+                s.ellipse((-.46,.04,z*1.08),(.063,.063,.037),"cloth")
             else:
                 s.ellipse((-.46,.025,z),(.11,.133,.035),"piping")
                 s.ellipse((-.46,.025,z*1.07),(.065,.084,.025),"cloth")

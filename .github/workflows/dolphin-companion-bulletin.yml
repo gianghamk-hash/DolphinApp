@@ -20,6 +20,8 @@ jobs:
         with:
           node-version: '22'
       - run: npm ci --prefix scripts/companion-feed --no-audit --no-fund
+        env:
+          ONNXRUNTIME_NODE_INSTALL_CUDA: skip
       - run: node scripts/companion-feed/refresh.mjs brief.json
       - uses: actions/upload-artifact@v4
         with:

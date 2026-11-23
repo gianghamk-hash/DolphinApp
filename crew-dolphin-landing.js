@@ -452,8 +452,9 @@
   state.source=doc.createElement('a');state.source.className='dcl-bubble-source';state.source.hidden=true;state.source.target='_blank';state.source.rel='noopener noreferrer';
   state.bubble.append(state.bubbleText,state.source,state.bubbleAction);
   const installed=root.matchMedia('(display-mode: standalone)').matches||navigator.standalone===true||/Dolphin(?:Staff|Manager)\//i.test(navigator.userAgent);
+  const tapDevice=installed||navigator.userAgentData?.mobile===true||/Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
   state.flight.toggleAttribute('data-installed',installed);
-  state.flight.title=installed?'Nhấn để mở vòng chọn':'Chạm một lần hoặc nhấp đúp chuột để mở vòng chọn';
+  state.flight.title=tapDevice?'Nhấn để mở vòng chọn':'Chạm một lần hoặc nhấp đúp chuột để mở vòng chọn';
   state.flight.setAttribute('aria-haspopup','dialog');
   landing.addEventListener('dolphin-pet-action',e=>{syncVisibility();petAction(e.detail);});
   landing.addEventListener('dolphin-pet-say',e=>{syncVisibility();talk(String(e.detail),'hello',4200);});
@@ -488,13 +489,16 @@
    const movement=Math.hypot(e.clientX-state.press.x,e.clientY-state.press.y);
    const second=state.press.second;state.press=null;
    if(movement>=24||state.play?.consumedHold())return;
-   if(installed||e.pointerType==='touch'||e.pointerType==='pen'||second)state.openOnClick=true;
+   if(tapDevice||e.pointerType==='touch'||e.pointerType==='pen'||second)state.openOnClick=true;
    else state.tapTimer=setTimeout(()=>{state.tapTimer=0;touchPet();},330);
   });
   state.flight.addEventListener('pointercancel',()=>{state.press=null;});
   function openWheel(){if(!canShow())return;state.briefSerial++;state.bubble.hidden=true;
    landing.dispatchEvent(new Event('dolphin-wheel-open'));}
-  state.flight.addEventListener('dblclick',e=>e.preventDefault());
+  state.flight.addEventListener('dblclick',e=>{
+   e.preventDefault();
+   if(state.tapTimer){clearTimeout(state.tapTimer);state.tapTimer=0;openWheel();}
+  });
   state.flight.addEventListener('click',e=>{
    if(state.openOnClick){state.openOnClick=false;openWheel();}
    else if(e.detail===0){if(root.DolphinWheel)openWheel();else touchPet();}

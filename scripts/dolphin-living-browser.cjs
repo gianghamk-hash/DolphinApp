@@ -202,6 +202,23 @@ for(const name of ['index.html','dolphin-profile.html'])
   assert.equal(await friend.locator('.dcl-bubble-source').getAttribute('href'),'https://www.tiktok.com/@ocean/video/123456789');
   assert.equal(reads,1,'weather and conversations share one cached bulletin');
   await finger.detach();await friend.close();
+  for(const device of ['standalone','DolphinStaff/1.0','DolphinManager/1.0']){
+   const installed=await context.newPage();await installed.emulateMedia({reducedMotion:'reduce'});
+   await installed.goto(origin+'/index.html');
+   await installed.evaluate(mode=>{
+    if(mode==='standalone'){
+     const media=window.matchMedia.bind(window);
+     window.matchMedia=query=>query==='(display-mode: standalone)'?{matches:true}:media(query);
+    }else Object.defineProperty(navigator,'userAgent',{value:'Android '+mode});
+    window.DolphinStaffId={get:()=>({employeeId:'DOL-0001',verified:true,name:'Lan'})};
+    window.DolphinPrestige={getMine:()=>({employeeId:'DOL-0001',xp:15,level:10})};
+    document.documentElement.classList.add('dolphin-access-allowed');
+   },device);
+   for(const file of ['companion','wheel','play','landing','living'])await installed.addScriptTag({url:origin+'/crew-dolphin-'+file+'.js'});
+   await installed.locator('.dcl-flight').click();
+   await installed.locator('.dcl-wheel[open]').waitFor({state:'visible',timeout:4000});
+   await installed.close();
+  }
   for(const [width,height] of [[320,568],[1280,800]]){
    await page.setViewportSize({width,height});await page.emulateMedia({reducedMotion:'reduce'});
    await page.evaluate(()=>document.documentElement.classList.add('dolphin-access-allowed'));

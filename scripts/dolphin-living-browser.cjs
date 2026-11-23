@@ -45,8 +45,8 @@ for(const name of ['index.html','dolphin-profile.html'])
   assert.equal(await page.locator('.dcl-living-landing').count(),0);
   assert(await wheel.isHidden());
   async function openWheel(){
-   await pet.waitFor({state:'visible'});const r=await pet.boundingBox();
-   await page.mouse.dblclick(r.x+r.width/2,r.y+r.height/2);
+   await pet.waitFor({state:'visible'});await pet.hover({force:true});
+   await pet.dblclick({force:true});
    await wheel.waitFor({state:'visible',timeout:4000});
   }
   await openWheel();

@@ -200,7 +200,8 @@
   if(!canShow()||root.matchMedia?.('(prefers-reduced-motion: reduce)').matches){syncVisibility();return;}
   state.frame=root.requestAnimationFrame(tick);
   const bounds=size(),rects=protect();
-  if(state.tapTimer&&state.position&&allowedNode(state.position,bounds,rects)){
+  if(state.entering)return;
+  if((state.tapTimer||now<state.hoverUntil)&&!state.stage.dataset.play&&state.position&&allowedNode(state.position,bounds,rects)){
    move(state.position.x,state.position.y,0,0,now);state.path=null;return;
   }
   if(state.play?.tick(now,playground(bounds,rects)))return;
@@ -422,6 +423,13 @@
  function init(){
   const landing=$('landing');
   if(!landing||state.stage||!root.DolphinCompanion)return;
+  // Choose the first route against settled logo and card positions.
+  const entrances=[...landing.querySelectorAll('.fade-up')].flatMap(el=>el.getAnimations())
+   .filter(animation=>animation.animationName==='float-up'&&animation.playState!=='finished');
+  state.entering=entrances.length>0;
+  Promise.allSettled(entrances.map(animation=>animation.finished)).then(()=>{
+   state.entering=false;state.obstacles=null;
+  });
   state.stage=doc.createElement('div');state.stage.id='dolphinLandingCompanion';state.stage.className='dcl-stage';
   state.stage.hidden=true;state.stage.setAttribute('aria-label','Linh thú Dolphin đồng hành');
   state.flight=doc.createElement('button');state.flight.type='button';state.flight.className='dcl-flight';
@@ -461,6 +469,7 @@
   // Dialogs are created by the living companion after the landing initializes.
   doc.addEventListener('toggle',e=>{if(e.target.tagName==='DIALOG')syncVisibility();},true);
   doc.addEventListener('close',e=>{if(e.target.tagName==='DIALOG')syncVisibility();},true);
+  state.flight.addEventListener('pointerenter',e=>{if(e.pointerType==='mouse')state.hoverUntil=performance.now()+380;});
   state.flight.addEventListener('pointerdown',e=>{
    if(e.button!==undefined&&e.button!==0)return;
    if(!e.isPrimary)return;

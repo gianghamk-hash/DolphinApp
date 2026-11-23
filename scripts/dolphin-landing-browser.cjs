@@ -7,7 +7,7 @@ fs.mkdirSync(output,{recursive:true});
 const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
  .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi,'');
 (async()=>{
- const browser=await chromium.launch({headless:true,args:['--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+ const browser=await chromium.launch({headless:true,args:['--enable-unsafe-swiftshader']});
  try{
   const context=await browser.newContext({viewport:{width:390,height:844},serviceWorkers:'block',reducedMotion:'no-preference'});
   await context.route('**/*',route=>{
@@ -32,6 +32,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   });
   await page.addScriptTag({url:origin+'/crew-dolphin-companion.js'});
   await page.addScriptTag({url:origin+'/crew-dolphin-play.js'});
+  await page.addScriptTag({url:origin+'/crew-dolphin-wardrobe.js'});
   await page.addScriptTag({url:origin+'/crew-dolphin-landing.js'});
   const pet=page.locator('.dcl-flight'),stage=page.locator('#dolphinLandingCompanion');
   assert(await stage.isVisible(),'verified staff gets a visible companion');
@@ -75,7 +76,7 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
   assert.equal(await model.getAttribute('data-level'),'100','landing loads the rig for the current form');
   assert.equal(await sprite.evaluate(el=>getComputedStyle(el).visibility),'hidden','3D hides the 2D fallback');
   const rendered=await page.evaluate(async()=>{
-   const {createDolphinModel}=await import('/crew-dolphin-landing-3d.js?v=rig-v2');
+   const {createDolphinModel}=await import('/crew-dolphin-landing-3d.js?v=rig-v3');
    const host=document.createElement('span');
    const model=await createDolphinModel(host);
    const canvas=host.querySelector('canvas');
@@ -96,12 +97,16 @@ const index=fs.readFileSync(path.join(root,'index.html'),'utf8')
     results.push({level:Number(canvas.dataset.level),...pose(form*100)});
    }
    const animated=pose(950).checksum!==pose(1000).checksum;
+   const outfits=['christmas','halloween','tet','valentine','midautumn','winter'].map(theme=>{
+    model.setOutfit(DolphinWardrobe.select(new Date(),theme));model.pause();return pose(1000).checksum;
+   });
    model.dispose();
-   return {results,animated};
+   return {results,animated,outfits};
   });
   assert.deepEqual(rendered.results.map(x=>x.level),[...milestones,100]);
   assert(rendered.results.every(x=>x.transparent&&x.drawn),'every form renders on a transparent canvas');
   assert.equal(new Set(rendered.results.map(x=>x.checksum)).size,10,'all ten forms look different');
+  assert.equal(new Set(rendered.outfits).size,6,'six costume meshes render distinct silhouettes at a fixed pose');
   assert(rendered.animated,'the rig changes rendered pixels while the viewport and facing stay fixed');
   for(const [width,height,minSize] of [[320,568,72],[390,844,72],[768,860,107],[1280,860,152]]){
    await page.setViewportSize({width,height});

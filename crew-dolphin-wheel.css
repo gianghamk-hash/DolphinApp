@@ -1,0 +1,41 @@
+.dcl-wheel{
+ --diam:min(352px,calc(100vw - 20px),calc(100dvh - 34px));--aqua:#7fe9de;--gold:#f3d798;
+ position:fixed;inset:auto;margin:0;transform:translate(-50%,-50%);width:var(--diam);height:var(--diam);max-width:none;max-height:none;
+ padding:0;overflow:visible;box-sizing:border-box;border:1px solid #d6bd80;border-radius:50%;color:#ecfcff;
+ background:radial-gradient(circle at 39% 23%,#326872,#133d4c 42%,#082430 80%);
+ box-shadow:0 16px 45px #00121c99,inset 0 0 0 4px #092635,inset 0 0 0 5px #598383;font:600 13px/1.15 system-ui,sans-serif;
+}
+.dcl-wheel::backdrop{background:#00151d69;backdrop-filter:blur(3px)}
+.dcl-wheel[open]{animation:dcl-wheel-in .22s ease-out}
+.dcl-wheel [hidden]{display:none!important}
+.dcl-wheel-ring{position:absolute;inset:6px;border-radius:50%;transform:rotate(var(--turn,0deg));transition:transform .27s cubic-bezier(.2,.8,.2,1);
+ background:repeating-conic-gradient(from calc(var(--slice)/-2),#86b1af88 0deg .55deg,transparent .7deg var(--slice));
+ touch-action:none}
+.dcl-wheel-ring::before{content:'';position:absolute;inset:3px;border-radius:50%;pointer-events:none;border:1px dashed #9eb9af70}
+.dcl-wheel-item,.dcl-wheel-hub,.dcl-wheel-close{font:inherit;cursor:pointer;color:inherit;-webkit-tap-highlight-color:transparent}
+.dcl-wheel-item{position:absolute;left:50%;top:50%;width:23%;height:22%;padding:2px 0;display:flex;align-items:center;justify-content:center;gap:3px;flex-direction:column;border:0;border-radius:30%;
+ background:transparent;transform:translate(-50%,-50%) rotate(var(--angle)) translateY(calc(var(--diam)*-.36)) rotate(calc(0deg - var(--angle) - var(--turn,0deg)));}
+.dcl-wheel-item img{width:clamp(24px,8vw,34px);height:clamp(24px,8vw,34px);object-fit:contain;filter:drop-shadow(0 2px 3px #00131daa)}
+.dcl-wheel-item span{font-size:clamp(10px,2.8vw,12px);line-height:1.15;max-width:100%;text-align:center;color:#def4ed}
+.dcl-wheel-item:is(:hover,:focus-visible),.dcl-wheel-item[aria-pressed="true"]{background:#78ebd622;outline:1px solid #a8f1d9}
+.dcl-wheel-item[aria-disabled="true"]{opacity:.42;cursor:default}
+.dcl-wheel-hub{position:absolute;inset:32%;padding:3px;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:1px;border:1px solid var(--gold);border-radius:50%;
+ background:radial-gradient(ellipse at top,#245661,#091f2d 74%);box-shadow:0 0 0 4px #082a32,0 0 0 5px #639897,inset 0 0 15px #73d1bd22}
+.dcl-wheel-hub img{height:48%;max-width:64%;object-fit:contain}
+.dcl-wheel-hub strong{max-width:89%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px;color:var(--gold)}
+.dcl-wheel-hub small{font-size:10px;color:#bed3cf}
+.dcl-wheel-close{position:absolute;top:0;right:1%;width:34px;height:34px;border-radius:50%;background:#0c2836;border:1px solid #a3c7bc;font-size:23px;line-height:1}
+.dcl-wheel-name{position:absolute;inset:23% 13%;display:grid;align-content:center;gap:10px;text-align:center}
+.dcl-wheel-name input,.dcl-wheel-name button{box-sizing:border-box;width:100%;margin-top:7px;padding:9px;border:1px solid #94c8bf;border-radius:10px;color:white;background:#123c49;font:inherit}
+.dcl-wheel-name button{background:#265f65;cursor:pointer}
+@keyframes dcl-wheel-in{from{opacity:0;scale:.95}to{opacity:1;scale:1}}
+@media(prefers-reduced-motion:reduce){.dcl-wheel[open],.dcl-wheel-ring{animation:none;transition:none}}
+.dcl-bubble-source{display:block;margin-top:4px;color:#a6e8dc;text-decoration:underline;pointer-events:auto;font-size:10px}
+.dcl-bubble-source[hidden]{display:none}
+.dcl-outfit{position:absolute;z-index:2;pointer-events:none;left:42%;top:45%;width:23%;height:23%;object-fit:contain;transform:translateX(calc(var(--dcl-face,1)*-24%))}
+.dcl-art[data-model-ready="true"] .dcl-outfit{display:none}
+.dcl-art .dcl-sprite{scale:1 1.07}
+.dcl-flight[data-pose="roll"] .dcl-art{animation:dcl-somersault 1.15s ease-in-out both}
+.dcl-flight[data-pose="bow"] .dcl-art{animation:dcl-bow 1.5s ease-in-out}
+.dcl-flight[data-pose="peek"] .dcl-art{animation:dcl-peek 1s ease-in-out 2 alternate}
+@keyframes dcl-bow{40%,65%{transform:rotate(calc(var(--dcl-face)*22deg)) translateY(6%)}}
